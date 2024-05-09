@@ -11,7 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.MsdialCore.Algorithm {
+namespace CompMs.MsdialCore.Algorithm
+{
 
     public class IsotopeTemp {
         public int WeightNumber { get; set; }
@@ -23,8 +24,6 @@ namespace CompMs.MsdialCore.Algorithm {
 
     public sealed class IsotopeEstimator
     {
-        private IsotopeEstimator() { }
-
         /// <summary>
         /// This method tries to decide if the detected peak is the isotopic ion or not.
         /// The peaks less than the abundance of the mono isotopic ion will be assigned to the isotopic ions within the same data point.

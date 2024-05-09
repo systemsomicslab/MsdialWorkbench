@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 
 namespace CompMs.Common.Parser.Tests
 {
@@ -82,12 +83,11 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.AdductType).ToList();
-            var expected = data.Split('\n').Skip(1).Select(row => AdductIonParser.GetAdductIonBean(row.TrimEnd('\r').Split('\t')[3])).ToList();
-            results.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
-            expected.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
+            var expected = data.Split('\n').Skip(1).Select(row => AdductIon.GetAdductIon(row.TrimEnd('\r').Split('\t')[3])).ToList();
 
             foreach ((AdductIon a, AdductIon b) in expected.Zip(results))
             {
+                Debug.WriteLine($"{a.AdductIonName}\t{b.AdductIonName}");
                 Assert.AreEqual(a.AdductIonAccurateMass, b.AdductIonAccurateMass);
                 Assert.AreEqual(a.AdductIonXmer, b.AdductIonXmer);
                 Assert.AreEqual(a.AdductIonName, b.AdductIonName);
@@ -422,6 +422,16 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var results = TextLibraryParser.TextLibraryReader(sr, out _);
             Assert.AreEqual("PC 36:2|PC 18:0_18:2(9,12)", results[0].Name);
+        }
+
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\txt_invalid_formula.txt", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\txt_invalid_formula.txt")]
+        public void TextLibraryReaderWorks(string library) {
+            var results = TextLibraryParser.TextLibraryReader(library, out var error);
+            Debug.WriteLine($"Error message: {error}");
+            Debug.WriteLine($"Count: {results.Count}");
         }
     }
 

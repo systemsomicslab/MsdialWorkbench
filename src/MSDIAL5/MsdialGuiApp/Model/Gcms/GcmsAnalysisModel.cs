@@ -14,6 +14,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -133,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             NumberOfEIChromatograms = numberOfChromatograms;
             var spectra = new RawSpectra(provider, projectParameter.IonMode, file.AcquisitionType);
             var rawChromatograms = selectedSpectrum.SkipNull()
-                .SelectSwitch(feature => rawSpectrumLoader_.LoadSpectrumAsObservable(feature).CombineLatest(numberOfChromatograms, (List<SpectrumPeak> spectrum, int number) => (feature, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
+                .SelectSwitch(feature => rawSpectrumLoader_.LoadScanAsObservable(feature).CombineLatest(numberOfChromatograms, (IMSScanProperty? scan, int number) => (feature, spectrum: (IEnumerable<SpectrumPeak>?)scan?.Spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass) ?? Array.Empty<SpectrumPeak>())))
                 .Select(pair => spectra.GetMS1ExtractedChromatograms(pair.spectrum.Select(s => s.Mass), peakPickParameter.CentroidMs1Tolerance, new ChromatogramRange(pair.feature.QuantifiedChromatogramPeak.PeakFeature, ChromXType.RT, ChromXUnit.Min)))
                 .Select(chromatograms => chromatograms.Select(chromatogram => chromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, peakPickParameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(

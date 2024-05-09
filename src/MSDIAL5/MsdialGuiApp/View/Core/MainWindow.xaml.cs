@@ -262,14 +262,16 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
-            var dialog = new ShortMessageWindow
-            {
-                DataContext = request.Content,
-                Text = request.Content,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            request.Result = dialog.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var dialog = new ShortMessageWindow
+                {
+                    DataContext = request.Content,
+                    Text = request.Content,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                request.Result = dialog.ShowDialog();
+            });
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {

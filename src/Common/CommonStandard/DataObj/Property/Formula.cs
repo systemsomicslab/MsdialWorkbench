@@ -233,6 +233,7 @@ namespace CompMs.Common.DataObj.Property
 
             Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, tmsCount, meoxCount);
+            IsCorrectlyImported = !string.IsNullOrEmpty(FormulaString);
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
@@ -253,6 +254,7 @@ namespace CompMs.Common.DataObj.Property
             Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
                 cLabelMass, hLabelMass, nLabelMass, oLabelMass, pLabelMass, sLabelMass, fLabelMass, clLabelMass, brLabelMass, iLabelMass, siLabelMass);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, 0, 0);
+            IsCorrectlyImported = !string.IsNullOrEmpty(FormulaString);
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
@@ -274,12 +276,14 @@ namespace CompMs.Common.DataObj.Property
 
             Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, c13num, h2num);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, c13num, h2num, tmsCount, meoxCount);
+            IsCorrectlyImported = !string.IsNullOrEmpty(FormulaString);
         }
 
         public Formula(Dictionary<string, int> elem2count) {
             Element2Count = elem2count;
             Mass = FormulaCalculateUtility.GetExactMass(elem2count);
             FormulaString = FormulaCalculateUtility.GetFormulaString(elem2count);
+            IsCorrectlyImported = !string.IsNullOrEmpty(FormulaString);
         }
 
         [Key(0)]

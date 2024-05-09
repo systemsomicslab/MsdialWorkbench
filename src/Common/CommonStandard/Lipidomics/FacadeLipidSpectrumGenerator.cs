@@ -80,6 +80,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.Cer_AP, new CeramidePhytoSphSpectrumGenerator());
                     generator.Add(LbmClass.Cer_BS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.Cer_BDS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_ABP, new CeramidePhytoSphSpectrumGenerator());
                     //generator.Add(LbmClass.Cer_HS, new CeramideSpectrumGenerator());
                     //generator.Add(LbmClass.Cer_HDS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.HexCer_NS, new HexCerSpectrumGenerator());
@@ -134,6 +135,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.SM, new SMOadSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NDS, new CeramideOadSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NS, new CeramideOadSpectrumGenerator());
+                    generator.Add(LbmClass.DMEDFAHFA, new DMEDFAHFAOadSpectrumGenerator());
                     @oadlipidgenerator = generator;
                 }
                 return @oadlipidgenerator;

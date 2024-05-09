@@ -30,8 +30,8 @@ namespace CompMs.MsdialCore.Algorithm {
 
             // original RT array
             var spectrumList = provider.LoadMsSpectrums();
-            var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToArray();
-            return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = originalRTs.ToList() };
+            var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToList();
+            return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
         private static List<StandardPair> GetStdPair(
@@ -72,7 +72,8 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
 
-        public static RetentionTimeCorrectionBean GetRetentionTimeCorrectionBean_SampleMinusAverage(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
+        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBean_SampleMinusAverage(
+            RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
             double[] xOriginal, List<CommonStdData> commonStdList) {
             var xList = new List<double>();
             var yList = new List<double>();
@@ -83,15 +84,15 @@ namespace CompMs.MsdialCore.Algorithm {
                 var y = x - commonStdList[i].AverageRetentionTime;
                 xList.Add(x); yList.Add(y);
             }
-            if (yList.Count == 0) return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = xOriginal.ToList(), PredictedRt = xOriginal.ToList() };
+            if (yList.Count == 0) return new (xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
             if (rtParam.InterpolationMethod == InterpolationMethod.Linear)
                 return GetRetentionTimeCorrectionBeanUsingLinearMethod(rtParam, stdList, xList, yList, xOriginal);
             else {
-                return new RetentionTimeCorrectionBean();
+                return new(xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
             }
         }
 
-        public static RetentionTimeCorrectionBean GetRetentionTimeCorrectionBean_SampleMinusReference(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
+        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBean_SampleMinusReference(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
             double[] xOriginal) {
             var xList = new List<double>();
             var yList = new List<double>();
@@ -101,15 +102,16 @@ namespace CompMs.MsdialCore.Algorithm {
                 xList.Add(val.SamplePeakAreaBean.ChromXs.RT.Value);
                 yList.Add(val.RtDiff);
             }
-            if (yList.Count == 0) return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = xOriginal.ToList(), PredictedRt = xOriginal.ToList() };
+            var originalRt = xOriginal.ToList();
+            if (yList.Count == 0) return new(xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
             if (rtParam.InterpolationMethod == InterpolationMethod.Linear)
                 return GetRetentionTimeCorrectionBeanUsingLinearMethod(rtParam, stdList, xList, yList, xOriginal);
             else {
-                return new RetentionTimeCorrectionBean();
+                return new(xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
             }
         }
 
-        public static RetentionTimeCorrectionBean GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
+        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
             List<double> xList, List<double> yList, double[] xOriginal) {
             List<double> predictedRts;
 
@@ -142,13 +144,7 @@ namespace CompMs.MsdialCore.Algorithm {
             if (rtParam.doSmoothing)
                 predictedRtDiffList = Smoothing(xOriginalList, predictedRtDiffList);
             predictedRts = CalcPredictedRT(xOriginalList, predictedRtDiffList);
-            var bean = new RetentionTimeCorrectionBean() {
-                OriginalRt = xOriginalList,
-                RtDiff = predictedRtDiffList,
-                PredictedRt = predictedRts,
-                StandardList = stdList
-            };
-            return bean;
+            return (xOriginalList, predictedRtDiffList, predictedRts);
         }
 
         public static List<double> CalcPredictedRT(List<double> originalRTs, List<double> rtDiff, double minRtDiff = 0.00001) {

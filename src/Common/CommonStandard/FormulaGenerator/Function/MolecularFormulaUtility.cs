@@ -148,7 +148,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     case "[M]+":
                         return formula;
@@ -166,7 +167,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     case "[M+Na]+":
                         return formula;
@@ -184,7 +186,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     default:
                         return formula;
@@ -205,7 +208,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     case "[M-H2O-H]-":
                         return new Formula() {
@@ -221,7 +225,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     case "[M+FA-H]-":
                         return new Formula() {
@@ -237,7 +242,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     case "[M+Hac-H]-":
                         return new Formula() {
@@ -253,7 +259,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
                             Inum = formula.Inum,
                             Sinum = formula.Sinum,
                             TmsCount = formula.TmsCount,
-                            MeoxCount = formula.MeoxCount
+                            MeoxCount = formula.MeoxCount,
+                            IsCorrectlyImported = true,
                         };
                     default:
                         return formula;

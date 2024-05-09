@@ -102,7 +102,6 @@ namespace CompMs.App.Msdial.Model.Core
             _pbw.Close();
 
             _rtCorrectionWin!.VM.RtCorrectionResUpdate();
-
             Mouse.OverrideCursor = null;
             _rtCorrectionWin.IsEnabled = true;
         }

@@ -126,14 +126,12 @@ namespace CompMs.App.MsdialConsole.Process
             var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
             var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
-            using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write)) {
-                using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
-                    var align_exporter = new AlignmentCSVExporter();
-                    align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files,
-                        align_accessor, align_quantAccessor, align_stats);
-                    IAlignmentExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
-                    align_mspexporter.Export(streammsp, result.AlignmentSpotProperties, align_decResults, files, align_accessor, align_quantAccessor, align_stats);
-                }
+            var align_exporter = new AlignmentCSVExporter();
+            using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write))
+            using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
+                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+                IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
+                align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
             }
 
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);

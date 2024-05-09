@@ -11,8 +11,8 @@ namespace CompMs.Common.MessagePack.Tests
     {
         [TestMethod()]
         [DataRow(100)]
-        //[DataRow(13421775)] // 1073741823 / 80 = 13421772.8
-        //[DataRow(20000000)]
+        // [DataRow(13421775)] // 1073741823 / 80 = 13421772.8
+        // [DataRow(20000000)]
         // [DataRow(1073741823)]
         // [DataRow(1073741825)]
         public void SaveAndLoadLargeSampleTest(int size) {

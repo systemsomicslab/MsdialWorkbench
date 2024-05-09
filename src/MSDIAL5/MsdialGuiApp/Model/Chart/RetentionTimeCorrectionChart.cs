@@ -74,8 +74,8 @@ namespace CompMs.App.Msdial.Model.Chart {
                 Brush = Brushes.Blue,
                 Pen = new Pen(Brushes.Blue, 1.5),
             };
-            for (var i = 0; i < rt1.OriginalRt.Count; i++) {
-                s.AddPoint((float)rt1.OriginalRt[i], (float)rt1.RtDiff[i] * 60);
+            for (var i = 0; i < rt1.originalRt.Count; i++) {
+                s.AddPoint((float)rt1.originalRt[i], (float)rt1.rtDiff[i] * 60);
             }
             var s2 = new Series() {
                 ChartType = ChartType.Line,
@@ -84,8 +84,8 @@ namespace CompMs.App.Msdial.Model.Chart {
                 Brush = Brushes.Green,
                 Pen = new Pen(Brushes.Green, 1.5),
             };
-            for (var i = 0; i < rt2.OriginalRt.Count; i++) {
-                s2.AddPoint((float)rt2.OriginalRt[i], (float)rt2.RtDiff[i] * 60);
+            for (var i = 0; i < rt2.originalRt.Count; i++) {
+                s2.AddPoint((float)rt2.originalRt[i], (float)rt2.rtDiff[i] * 60);
             }
             if (s.Points.Count > 0)
                 slist.Series.Add(s);
