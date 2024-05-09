@@ -1,0 +1,485 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.MsResult.AccumulatedMs1SpectrumView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
+             xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             x:Name="AccumulatedSpectrumView"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AccumulatedMs1SpectrumViewModel}}"
+             d:Background="White"
+             d:DesignHeight="600" d:DesignWidth="800" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
+            <mvvm:BindingProxy x:Key="EICCommand" Data="{Binding CalculateExtractedIonChromatogramCommand, Mode=OneTime}"/>
+            <mvvm:BindingProxy x:Key="SaveNistCommand" Data="{Binding SaveAsNistCommand, Mode=OneTime}"/>
+            <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=AccumulatedSpectrumView}"/>
+            <mvvm:BindingProxy x:Key="ContentsProxy" Data="{Binding ElementName=Contents}"/>
+            <io:HeaderConverter x:Key="AttatchHeader" Header="{Binding Data.DataContext.FileModel.AnalysisFileName, Source={StaticResource ViewRoot}}"/>
+            <io:SaveImageAsCommand x:Key="SaveImageCommand" Format="Png" Converter="{StaticResource AttatchHeader}"/>
+            <io:CopyImageAsCommand x:Key="CopyImageCommand" Format="Png" Converter="{StaticResource AttatchHeader}"/>
+        </Grid.Resources>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Save view image as...">
+                    <MenuItem Header="Save as emf"
+                              Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Save as png"
+                              Command="{StaticResource SaveImageCommand}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+                <MenuItem Header="Copy view image as...">
+                    <MenuItem Header="Copy as emf"
+                              Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Copy as png"
+                              Command="{StaticResource CopyImageCommand}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+                <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                <Separator/>
+                <MenuItem Header="Save current layout"
+                          Command="{Binding SerializeLayoutCommand, Mode=OneTime}"
+                          CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                <!--
+                <MenuItem Header="Load previous layout"
+                          Command="{Binding DeserializeLayoutCommand, Mode=OneTime}"/>
+                -->
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <ui:DockItemsControl x:Name="Contents" ItemsSource="{Binding ViewModels, Mode=OneTime}" LayoutElement="{Binding Layout.Value}">
+            <ui:DockItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}"/>
+                </DataTemplate>
+            </ui:DockItemsControl.ItemTemplate>
+            <ui:DockItemsControl.ContentTemplate>
+                <DataTemplate>
+                    <DataTemplate.Resources>
+                        <DataTemplate DataType="{x:Type vm:AccumulatedMs1SpectrumViewModel_Spectrum}">
+                            <Grid x:Name="Spectrum">
+                                <chart:MultiChart DataContext="{Binding MsSpectrumViewModel.Value}"
+                                                  HorizontalAxis="{Binding HorizontalAxis.Value}"
+                                                  GraphTitle="{Binding GraphTitle.Value}"
+                                                  HorizontalTitle="{Binding HorizontalTitle.Value}"
+                                                  VerticalTitle="{Binding VerticalTitle.Value}"
+                                                  Style="{StaticResource UnmoveVerticalConcatChart}">
+                                    <chart:MultiChart.RenderAreaControlState>
+                                        <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
+                                    </chart:MultiChart.RenderAreaControlState>
+                                    <chart:MultiChart.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Show extracted ion chromatogram" Command="{Binding Data, Source={StaticResource EICCommand}}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Save spectrum as nist format" Command="{Binding Data, Source={StaticResource SaveNistCommand}}"/>
+                                            <MenuItem Header="Save image as...">
+                                                <MenuItem Header="Save as emf"
+                                                          Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                <MenuItem Header="Save as png"
+                                                          Command="{StaticResource SaveImageCommand}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy image as...">
+                                                <MenuItem Header="Copy as emf"
+                                                          Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                <MenuItem Header="Copy as png"
+                                                          Command="{StaticResource CopyImageCommand}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Save view image as...">
+                                                <MenuItem Header="Save as emf"
+                                                          Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                                <MenuItem Header="Save as png"
+                                                          Command="{StaticResource SaveImageCommand}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy view image as...">
+                                                <MenuItem Header="Copy as emf"
+                                                          Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                                <MenuItem Header="Copy as png"
+                                                          Command="{StaticResource CopyImageCommand}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                            <Separator/>
+                                            <MenuItem Header="Save current layout"
+                                                      Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                      CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                                        </ContextMenu>
+                                    </chart:MultiChart.ContextMenu>
+                                    <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
+                                                  core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisItem.Value.AxisManager}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Grid/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type vmchart:SingleSpectrumViewModel}">
+                                                <Grid Visibility="{Binding IsVisible.Value, Converter={StaticResource BooleanToVisibility}}">
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <StackPanel.Style>
+                                                            <Style TargetType="StackPanel">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Style>
+                                                        <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                                                        <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                                                    </StackPanel>
+                                                    <chart:LineSpectrumControlSlim x:Name="MS2Line"
+                                                                                   ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                                                   DataType="{x:Type components:SpectrumPeak}"
+                                                                                   HorizontalProperty="{Binding HorizontalProperty}"
+                                                                                   VerticalProperty="{Binding VerticalProperty}"
+                                                                                   LineBrush="{Binding Brush.Value}"
+                                                                                   LineThickness="{Binding LineThickness.Value}"
+                                                                                   HueProperty="SpectrumComment">
+                                                        <chart:LineSpectrumControlSlim.ToolTip>
+                                                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                                                     d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="m/z: "/>
+                                                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                                                    <TextBlock Text=" Intensity: "/>
+                                                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                                                </StackPanel>
+                                                            </ToolTip>
+                                                        </chart:LineSpectrumControlSlim.ToolTip>
+                                                    </chart:LineSpectrumControlSlim>
+                                                    <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                                     HorizontalPropertyName="{Binding HorizontalProperty}"
+                                                                     VerticalPropertyName="{Binding VerticalProperty}"
+                                                                     LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                                                     OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                                                     Brush="Black"
+                                                                     Overlap="Horizontal, Direct"
+                                                                     Format="F4"
+                                                                     ClipToBounds="True"/>
+                                                    <AdornerDecorator>
+                                                        <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                             Background="Transparent"
+                                                                             ClipToBounds="True"/>
+                                                    </AdornerDecorator>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Grid core:ChartBaseControl.FlippedY="False" DataContext="{Binding LowerSpectrumViewModel}" core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}">
+                                        <TextBlock Text="No information" FontSize="24"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   DataContext="{Binding MsSpectrum.Value}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasSpectrum, Mode=OneTime}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <chart:LineSpectrumControlSlim x:Name="MS2Ref"
+                                                                       ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                                       DataType="{x:Type components:SpectrumPeak}"
+                                                                       HorizontalProperty="{Binding HorizontalProperty}"
+                                                                       VerticalProperty="{Binding VerticalProperty}"
+                                                                       LineBrush="{Binding Brush.Value}"
+                                                                       HueProperty="SpectrumComment">
+                                            <chart:LineSpectrumControlSlim.ToolTip>
+                                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                                    <StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}" Margin="4,0"/>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding FocusedItem.SpectrumComment, StringFormat=Spectrum: {0}}"/>
+                                                        <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
+                                                    </StackPanel>
+                                                </ToolTip>
+                                            </chart:LineSpectrumControlSlim.ToolTip>
+                                        </chart:LineSpectrumControlSlim>
+                                        <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                         HorizontalPropertyName="{Binding HorizontalProperty}"
+                                                         VerticalPropertyName="{Binding VerticalProperty}"
+                                                         LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                                         OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                                         ContentAlignment="BottomCenter"
+                                                         Brush="Black"
+                                                         Overlap="Horizontal, Direct"
+                                                         Format="F4"
+                                                         ClipToBounds="True"/>
+                                    </Grid>
+                                </chart:MultiChart>
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AccumulatedMs1SpectrumViewModel_Search}">
+                            <Grid x:Name="Search">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{StaticResource SaveImageCommand}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{StaticResource CopyImageCommand}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Save view image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{StaticResource SaveImageCommand}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy view image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{StaticResource CopyImageCommand}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                        <Separator/>
+                                        <MenuItem Header="Save current layout"
+                                                  Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                  CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+
+                                <StackPanel Grid.Row="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:LabeledContent PrependLabel="Select annotation method:"
+                                                           HorizontalAlignment="Left"
+                                                           Margin="4">
+                                            <ComboBox ItemsSource="{Binding SearchMethods, Mode=OneTime}"
+                                                      SelectedItem="{Binding SearchMethod.Value}"
+                                                      DisplayMemberPath="Id"
+                                                      VerticalAlignment="Center"
+                                                      Width="200"/>
+                                        </ui:LabeledContent>
+                                        <Button Content="Import" Command="{Binding ImportDataBaseCommand, Mode=OneTime}"
+                                                Width="64" Height="24" Margin="8, 0"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                                            <!--Currently Ms2Tolerance property is used to calculate similarity. This should be updated.-->
+                                            <TextBox Name="TextBox_Ms1Tolerance"
+                                                     DataContext="{Binding ParameterViewModel.Value}"
+                                                     Text="{Binding Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                                     HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                     Width="32"/>
+                                        </ui:LabeledContent>
+                                        <Button Content="Search" Command="{Binding SearchCompoundCommand, Mode=OneTime}"
+                                                Width="64"/>
+                                        <Button Content="Export" Command="{Binding ExportCompoundCommand, Mode=OneTime}"
+                                                Width="64" Margin="8,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <DataGrid ItemsSource="{Binding Compounds.Value}"
+                                          SelectedItem="{Binding SelectedCompound.Value}"
+                                          IsSynchronizedWithCurrentItem="True"
+                                          CanUserAddRows="False" CanUserDeleteRows="False"
+                                          CanUserReorderColumns="False" CanUserSortColumns="True"
+                                          SelectionUnit="FullRow" IsReadOnly="True"
+                                          HeadersVisibility="All" AutoGenerateColumns="False"
+                                          Margin="4" Grid.Row="1">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" >
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Rt [min]" Width="*" Binding="{Binding Path=ChromXs.RT.Value, StringFormat=N1}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=N2}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=N2}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=N2}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
+                                        <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AccumulatedMs1SpectrumViewModel_Chromatogram}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="80" />
+                                </Grid.ColumnDefinitions>
+                                <chart:SimpleChartControl x:Name="Chromatogram"
+                                                          HorizontalAxis="{Binding ExtractedIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                                                          VerticalAxis="{Binding ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
+                                                          HorizontalTitle="{Binding ExtractedIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                                                          GraphTitle="{Binding ExtractedIonChromatogram.Value.GraphTitle}"
+                                                          Background="WhiteSmoke"
+                                                          BorderBrush="Black">
+                                    <chart:SimpleChartControl.RenderAreaControlState>
+                                        <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
+                                    </chart:SimpleChartControl.RenderAreaControlState>
+                                    <chart:SimpleChartControl.Style>
+                                        <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource UnmoveBasicChart}">
+                                            <Setter Property="VerticalTitle">
+                                                <Setter.Value>
+                                                    <MultiBinding StringFormat="{}{0}({1})">
+                                                        <MultiBinding.Bindings>
+                                                            <Binding Path="ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                                            <Binding Path="ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
+                                                        </MultiBinding.Bindings>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                                                    <Setter Property="VerticalTitle" Value="{Binding ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.GraphLabel}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </chart:SimpleChartControl.Style>
+                                    <Grid>
+                                        <ItemsControl DataContext="{Binding ExtractedIonChromatogram.Value}"
+                                                      ItemsSource="{Binding DisplayChromatograms}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Grid/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid ClipToBounds="True">
+                                                        <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                                                LinePen="{Binding LinePen}"
+                                                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                                                VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                                        <chart:MultiAreaChartControl ItemsSources="{Binding Peaks}"
+                                                                                     CollectionDataType="{x:Type do:DisplayPeakOfChromatogram}"
+                                                                                     ItemsProperty="Points"
+                                                                                     ItemsDataType="{x:Type do:PeakItem}"
+                                                                                     HorizontalProperty="Time"
+                                                                                     VerticalProperty="Intensity"
+                                                                                     AreaBrush="{Binding BrushMapper, Mode=OneWay}"
+                                                                                     AreaOpacity=".2"
+                                                                                     IsHitTestVisible="False"/>
+                                                        <chart:Annotator ItemsSource="{Binding Peaks}"
+                                                                         HorizontalPropertyName="Time"
+                                                                         VerticalPropertyName="Intensity"
+                                                                         LabelPropertyName="Label"
+                                                                         Overlap="Direct"
+                                                                         IsHitTestVisible="False">
+                                                            <chart:Annotator.RenderTransform>
+                                                                <TranslateTransform Y="-30"/>
+                                                            </chart:Annotator.RenderTransform>
+                                                        </chart:Annotator>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <AdornerDecorator>
+                                            <chart:RangeSelector SelectedRange="{Binding ProductIonRange.Value, Mode=TwoWay}"
+                                                                 Background="Transparent"
+                                                                 ClipToBounds="True"/>
+                                        </AdornerDecorator>
+                                    </Grid>
+                                    <chart:SimpleChartControl.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Save image as...">
+                                                <MenuItem Header="Save as emf"
+                                                          Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                <MenuItem Header="Save as png"
+                                                          Command="{StaticResource SaveImageCommand}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy image as...">
+                                                <MenuItem Header="Copy as emf"
+                                                          Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                <MenuItem Header="Copy as png"
+                                                          Command="{StaticResource CopyImageCommand}"
+                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Save view image as...">
+                                                <MenuItem Header="Save as emf"
+                                                          Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                                <MenuItem Header="Save as png"
+                                                          Command="{StaticResource SaveImageCommand}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy view image as...">
+                                                <MenuItem Header="Copy as emf"
+                                                          Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                                <MenuItem Header="Copy as png"
+                                                          Command="{StaticResource CopyImageCommand}"
+                                                          CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            </MenuItem>
+                                            <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                            <Separator/>
+                                            <MenuItem Header="Save current layout"
+                                                      Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                      CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                                        </ContextMenu>
+                                    </chart:SimpleChartControl.ContextMenu>
+                                </chart:SimpleChartControl>
+                                <StackPanel Margin="8" Grid.Column="1">
+                                    <Button Content="Detect" Command="{Binding DetectPeaksCommand, Mode=OneTime}" Margin="8"/>
+                                    <Button Content="Add" Command="{Binding AddPeakCommand, Mode=OneTime}" Margin="8"/>
+                                    <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Margin="8"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </DataTemplate.Resources>
+                    <ContentPresenter Content="{Binding}"/>
+                </DataTemplate>
+            </ui:DockItemsControl.ContentTemplate>
+        </ui:DockItemsControl>
+    </Grid>
+</UserControl>

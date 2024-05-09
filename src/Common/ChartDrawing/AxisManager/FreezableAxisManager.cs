@@ -11,14 +11,14 @@ namespace CompMs.Graphics.AxisManager
         #region DependencyProperty
         public static readonly DependencyProperty RangeProperty =
             DependencyProperty.Register(
-                nameof(Range), typeof(Range), typeof(FreezableAxisManager),
+                nameof(Range), typeof(AxisRange), typeof(FreezableAxisManager),
                 new FrameworkPropertyMetadata(
-                    new Range(minimum: 0, maximum: 1),
+                    new AxisRange(minimum: 0, maximum: 1),
                     OnRangeChanged,
                     CoerceRange));
 
-        public Range Range {
-            get => (Range)GetValue(RangeProperty);
+        public AxisRange Range {
+            get => (AxisRange)GetValue(RangeProperty);
             set => SetValue(RangeProperty, value);
         }
 
@@ -30,7 +30,7 @@ namespace CompMs.Graphics.AxisManager
         }
 
         static object CoerceRange(DependencyObject d, object value) {
-            var range = (Range)value;
+            var range = (AxisRange)value;
 
             var axis = (FreezableAxisManager)d;
             range = range.Intersect(axis.InitialRange);
@@ -44,12 +44,12 @@ namespace CompMs.Graphics.AxisManager
 
         public static readonly DependencyProperty BoundsProperty =
             DependencyProperty.Register(
-                nameof(Bounds), typeof(Range), typeof(FreezableAxisManager),
+                nameof(Bounds), typeof(AxisRange), typeof(FreezableAxisManager),
                 new PropertyMetadata(
                     null,
                     OnBoundsChanged));
-        public Range Bounds {
-            get => (Range)GetValue(BoundsProperty);
+        public AxisRange Bounds {
+            get => (AxisRange)GetValue(BoundsProperty);
             set => SetValue(BoundsProperty, value);
         }
 
@@ -60,14 +60,14 @@ namespace CompMs.Graphics.AxisManager
 
         public static readonly DependencyProperty InitialRangeProperty =
             DependencyProperty.Register(
-                nameof(InitialRange), typeof(Range), typeof(FreezableAxisManager),
+                nameof(InitialRange), typeof(AxisRange), typeof(FreezableAxisManager),
                 new PropertyMetadata(
-                    new Range(minimum: 0, maximum: 1),
+                    new AxisRange(minimum: 0, maximum: 1),
                     OnInitialRangeChanged,
                     CoerceInitialRange));
 
-        public Range InitialRange {
-            get => (Range)GetValue(InitialRangeProperty);
+        public AxisRange InitialRange {
+            get => (AxisRange)GetValue(InitialRangeProperty);
             set => SetValue(InitialRangeProperty, value);
         }
 
@@ -75,14 +75,14 @@ namespace CompMs.Graphics.AxisManager
 
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (FreezableAxisManager)d;
-            axis.Focus((Range)e.NewValue);
+            axis.Focus((AxisRange)e.NewValue);
             axis.InitialRangeChanged?.Invoke(axis, args);
         }
 
         static object CoerceInitialRange(DependencyObject d, object value) {
-            var initial = (Range)value;
+            var initial = (AxisRange)value;
             if (initial.Minimum == initial.Maximum) {
-                initial = new Range(initial.Minimum - 0.5, initial.Maximum + 0.5);
+                initial = new AxisRange(initial.Minimum - 0.5, initial.Maximum + 0.5);
             }
 
             return initial;
@@ -119,17 +119,17 @@ namespace CompMs.Graphics.AxisManager
         #region Property
         public AxisValue Min {
             get => Range.Minimum;
-            set => Focus(new Range(minimum: value, maximum: Range.Maximum));
+            set => Focus(new AxisRange(minimum: value, maximum: Range.Maximum));
         }
 
         public AxisValue Max {
             get => Range.Maximum;
-            set => Focus(new Range(minimum: Range.Minimum, maximum: value));
+            set => Focus(new AxisRange(minimum: Range.Minimum, maximum: value));
         }
 
         #endregion
 
-        public void Focus(Range range) {
+        public void Focus(AxisRange range) {
             Range = range;
         }
 

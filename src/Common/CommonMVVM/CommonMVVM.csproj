@@ -9,6 +9,8 @@
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>CommonMVVM</AssemblyName>
+    <LangVersion>12</LangVersion>
+    <Nullable>annotations</Nullable>
 	</PropertyGroup>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -37,7 +39,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release vendor unsupported|AnyCPU'">
@@ -46,7 +47,6 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
 

@@ -24,15 +24,15 @@ namespace CompMs.Graphics.Core.Base
         public double Left { get; set; }
         public double Right { get; set; }
 
-        public Range Add(Range range) {
+        public AxisRange Add(AxisRange range) {
             var d = range.Delta;
-            return new Range(range.Minimum - d * Left, range.Maximum + d * Right);
+            return new AxisRange(range.Minimum - d * Left, range.Maximum + d * Right);
         }
 
-        public Range Remove(Range range) {
+        public AxisRange Remove(AxisRange range) {
             var d = range.Delta / (1 + Left + Right);
             var x = range.Minimum + Left * d;
-            return new Range(x, x + d);
+            return new AxisRange(x, x + d);
         }
 
         public (double, double) Add(double lower, double upper) {

@@ -65,7 +65,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 },
             };
 
-            var ms1Spectra = new Ms1Spectra(spectra, Common.Enum.IonMode.Positive);
+            var ms1Spectra = new Ms1Spectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA);
             var rawSpectra = new RawSpectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA);
             filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, 0);
             Debug.WriteLine($"Mass: {spot.AlignedPeakProperties[0].Mass}");

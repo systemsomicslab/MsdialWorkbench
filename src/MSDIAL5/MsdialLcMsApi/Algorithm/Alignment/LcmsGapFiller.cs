@@ -44,7 +44,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 
             var chromatogramRange = new ChromatogramRange(center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5, ChromXType.RT, ChromXUnit.Min);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
-            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
+            return peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
         }
     }
 }

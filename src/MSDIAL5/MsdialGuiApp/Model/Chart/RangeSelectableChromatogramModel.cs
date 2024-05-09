@@ -5,51 +5,90 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    internal class RangeSelectableChromatogramModel : BindableBase
+    internal sealed class RangeSelectableChromatogramModel : BindableBase
     {
+        private readonly ObservableCollection<RangeSelection> _selectedRanges;
+        private readonly ObservableCollection<RangeSelection> _subtractRanges;
+
         public RangeSelectableChromatogramModel(ChromatogramsModel chromatogramModel) {
             ChromatogramModel = chromatogramModel;
-            SelectedRanges = new ObservableCollection<RangeSelection>();
+            _selectedRanges = new ObservableCollection<RangeSelection>();
+            SelectedRanges = new ReadOnlyObservableCollection<RangeSelection>(_selectedRanges);
+            _subtractRanges = new ObservableCollection<RangeSelection>();
+            SubtractRanges = new ReadOnlyObservableCollection<RangeSelection>(_subtractRanges);
         }
 
         public ChromatogramsModel ChromatogramModel { get; }
 
-        public Range? SelectedRange {
+        public AxisRange? SelectedRange {
             get => selectedRange;
             set => SetProperty(ref selectedRange, value);
         }
-        private Range? selectedRange;
+        private AxisRange? selectedRange;
 
-        public ObservableCollection<RangeSelection> SelectedRanges { get; }
+        public ReadOnlyObservableCollection<RangeSelection> SelectedRanges { get; }
+
+        public RangeSelection? MainRange {
+            get => _mainRange;
+            private set => SetProperty(ref _mainRange, value);
+        }
+        private RangeSelection? _mainRange;
+
+        public ReadOnlyObservableCollection<RangeSelection> SubtractRanges { get; }
 
         public bool CanSetMainRange() {
-            return SelectedRanges.Count == 1;
+            return SelectedRange is not null;
         }
 
         public void SetMainRange() {
-            if (SelectedRange != null) {
-                SelectedRanges.Add(new RangeSelection(SelectedRange) { Color = Colors.Blue, IsSelected = true, });
+            if (SelectedRange is not null) {
+                if (MainRange is not null) {
+                    _selectedRanges.Remove(MainRange);
+                }
+                RangeSelection selection = new RangeSelection(SelectedRange) { Color = Colors.Blue, IsSelected = true, };
+                _selectedRanges.Add(selection);
+                MainRange = selection;
                 SelectedRange = null;
             }
         }
 
+        public void RemoveMainRange() {
+            if (MainRange is null) {
+                return;
+            }
+            _selectedRanges.Remove(MainRange);
+            MainRange = null;
+        }
+
         public bool CanSetSubstractRange() {
-            return SelectedRanges.Count == 0;
+            return SelectedRange is not null;
         }
 
         public void SetSubtractRange() {
             if (SelectedRange != null) {
-                SelectedRanges.Add(new RangeSelection(SelectedRange) { Color = Colors.Red, IsSelected = true, });
+                RangeSelection selection = new RangeSelection(SelectedRange) { Color = Colors.Red, IsSelected = true, };
+                _selectedRanges.Add(selection);
+                _subtractRanges.Add(selection);
                 SelectedRange = null;
             }
         }
 
+        public void ClearSubtractRanges() {
+            foreach (var range in _subtractRanges) {
+                _selectedRanges.Remove(range);
+            }
+            _subtractRanges.Clear();
+        }
+
         public void RemoveRanges() {
-            SelectedRanges.Clear();
+            _selectedRanges.Clear();
+            _mainRange = null;
+            _subtractRanges.Clear();
         }
 
         public (double, double) ConvertToRt(RangeSelection range) {
-            return (range.Range.Minimum.Value, range.Range.Maximum.Value);
+            var axis = ChromatogramModel.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
+            return range.ConvertBy(axis);
         }
     }
 }

@@ -225,7 +225,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 file.AnalysisFileName,
                 (float)alignmentProp.MassCenter,
                 ms1Tolerance,
-                chromatogram.Convert().Peaks);
+                chromatogram.Convert().AsPeakArray());
             var vm = new ChromatogramXicViewModelLegacy(
                 chromatogramBean,
                 ChromatogramEditMode.Display,

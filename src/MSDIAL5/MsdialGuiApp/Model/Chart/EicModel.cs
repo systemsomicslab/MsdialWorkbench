@@ -24,11 +24,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Chromatogram = chromatogram_;
             ItemLoaded = itemLoaded;
-            ChromRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
+            ChromRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetTimeRange() ?? new AxisRange(0d, 1d))
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
-            AbundanceRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
+            AbundanceRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new AxisRange(0d, 1d))
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
             chromatogram_.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
@@ -57,11 +57,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
+            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetTimeRange() ?? new AxisRange(0d, 1d))
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
-            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
+            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new AxisRange(0d, 1d))
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
 
             Chromatogram.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
@@ -76,8 +76,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IReadOnlyReactiveProperty<PeakChromatogram?> Chromatogram { get; }
 
-        public IObservable<Range> ChromRangeSource { get; }
-        public IObservable<Range> AbundanceRangeSource { get; }
+        public IObservable<AxisRange> ChromRangeSource { get; }
+        public IObservable<AxisRange> AbundanceRangeSource { get; }
 
         public string HorizontalTitle {
             get => horizontalTitle;

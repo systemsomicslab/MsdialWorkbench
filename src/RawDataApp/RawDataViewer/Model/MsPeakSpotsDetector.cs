@@ -35,7 +35,7 @@ namespace CompMs.App.RawDataViewer.Model
                         var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
                         var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                         var parameter = new ParameterBase();
-                        var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                        var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel).AsPeakArray();
 
                         var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, parameter.MinimumDatapoints, parameter.MinimumAmplitude);
                         if (peakPickResults.IsEmptyOrNull()) {

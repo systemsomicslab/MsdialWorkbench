@@ -6,11 +6,8 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -20,30 +17,28 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private readonly double _relativeRange;
         private readonly bool _isRelative;
+        private readonly IDataProvider _provider;
 
         private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd) : base(analysisFile, provider, parameter.PeakPickBaseParam, parameter.IonMode, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = false;
+            _provider = provider;
         }
 
         private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd, double relativeRange) : base(analysisFile, provider, parameter.PeakPickBaseParam, parameter.IonMode, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = true;
+            _provider = provider;
             _relativeRange = relativeRange;
         }
 
-        protected override Task<List<PeakItem>> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        protected override async Task<Chromatogram> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var width = _isRelative
                 ? target.InnerModel.PeakWidth(ChromXType.Mz) / 2d * _relativeRange
                 : MZ_MARGIN;
             var leftMz = (target.ChromXValue ?? 0d) - width;
             var rightMz = (target.ChromXValue ?? 0d) + width;
-            return Task.Run(async () =>
-            {
-                var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
-                return new CompMs.Common.Components.Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz), ChromXType.Mz, ChromXUnit.Mz)
-                    .Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
-                    .Select(peak => new PeakItem(peak))
-                    .ToList();
-            });
+            var spectra = await _provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+            return new Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz), ChromXType.Mz, ChromXUnit.Mz)
+                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
         public static DimsEicLoader BuildForEicView(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter) {

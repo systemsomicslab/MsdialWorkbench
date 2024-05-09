@@ -1,46 +1,62 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Enum;
-using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.Common.Components
 {
-    public sealed class ExtractedIonChromatogram : IDisposable {
-        private IReadOnlyList<ValuePeak> _peaks;
-        private readonly int _size;
-        private readonly ChromXType _type;
-        private readonly ChromXUnit _unit;
-        private ArrayPool<ValuePeak> _arrayPool;
+    public sealed class ExtractedIonChromatogram : Chromatogram {
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
-        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
-            _peaks = peaks as IReadOnlyList<ValuePeak> ?? peaks?.ToArray() ?? throw new ArgumentNullException(nameof(peaks));
-            _size = _peaks.Count;
-            _type = type;
-            _unit = unit;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtractedIonChromatogram"/> class using a collection of <see cref="ValuePeak"/> objects, chromatogram type, unit, and the extracted m/z.
+        /// </summary>
+        /// <param name="peaks">An <see cref="IEnumerable{ValuePeak}"/> representing the peaks in the chromatogram.</param>
+        /// <param name="type">The type of chromatogram, represented by the <see cref="ChromXType"/> enumeration.</param>
+        /// <param name="unit">The unit of measurement for the chromatogram, represented by the <see cref="ChromXUnit"/> enumeration.</param>
+        /// <param name="extractedMz">The extracted m/z for which the chromatogram is generated.</param>
+        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="peaks"/> collection is null.</exception>
+        /// <remarks>
+        /// This constructor is suitable for cases where the peaks are provided in a collection that may not be initially indexed. It ensures that the peaks are stored internally as a read-only list, facilitating efficient access while preserving immutability.
+        /// </remarks>
+        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) : base(peaks, type, unit) {
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
             ExtractedMz = extractedMz;
         }
 
-        public ExtractedIonChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, double extractedMz, ArrayPool<ValuePeak> arrayPool) {
-            _peaks = peaks;
-            _size = size;
-            _type = type;
-            _unit = unit;
-            _arrayPool = arrayPool;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtractedIonChromatogram"/> class using an array of <see cref="ValuePeak"/> objects rented from an <see cref="ArrayPool{ValuePeak}"/>, size of the peak array, chromatogram type, unit, the extracted mass-to-charge ratio (m/z), and a specific <see cref="ArrayPool{ValuePeak}"/>.
+        /// </summary>
+        /// <param name="peaks">An array of <see cref="ValuePeak"/> representing the peaks in the chromatogram. This array should be rented from an <see cref="ArrayPool{ValuePeak}"/> to optimize memory usage.</param>
+        /// <param name="size">The size of the peak array, indicating the number of peaks included.</param>
+        /// <param name="type">The type of chromatogram, represented by the <see cref="ChromXType"/> enumeration.</param>
+        /// <param name="unit">The unit of measurement for the chromatogram, represented by the <see cref="ChromXUnit"/> enumeration.</param>
+        /// <param name="extractedMz">The extracted mass-to-charge ratio (m/z) for which the chromatogram is generated.</param>
+        /// <param name="arrayPool">The <see cref="ArrayPool{ValuePeak}"/> from which the peaks array was rented. It is used for recycling the peak array after use, optimizing memory usage.</param>
+        /// <remarks>
+        /// This constructor is optimized for scenarios where memory efficiency is crucial, utilizing an <see cref="ArrayPool{ValuePeak}"/> for the peak array. This approach is particularly useful in high-throughput environments or when processing large datasets. Ensure to call <see cref="Dispose"/> when done using the instance to release the array back to the specified <see cref="ArrayPool{ValuePeak}"/>, preventing memory leaks and ensuring the array can be reused. It is essential that the provided `peaks` array is rented from an array pool to align with the disposal pattern and memory management practices.
+        /// </remarks>
+        public ExtractedIonChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, double extractedMz, ArrayPool<ValuePeak> arrayPool) : base(peaks, size, type, unit, arrayPool) {
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
             ExtractedMz = extractedMz;
         }
 
         public double ExtractedMz { get; }
 
-        public bool IsEmpty => _size == 0;
-        public int Length => _size;
-
-        public ValuePeak[] AsPeakArray() {
+        /// <summary>
+        /// Creates and returns a copy of the peak array.
+        /// </summary>
+        /// <returns>An array of <see cref="ValuePeak"/> representing the chromatographic peaks.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the <see cref="ExtractedIonChromatogram"/> has been disposed and the peak data is no longer accessible.</exception>
+        /// <remarks>
+        /// This method ensures the integrity of the chromatographic data by returning a copy of the internal peak array, 
+        /// allowing safe read-only access to the peak data.
+        /// </remarks>
+        public new ValuePeak[] AsPeakArray() {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            } 
             var dest = new ValuePeak[_size];
             if (_peaks is ValuePeak[] array) {
                 Array.Copy(array, dest, _size);
@@ -52,199 +68,36 @@ namespace CompMs.Common.Components
             return dest;
         }
 
-        public double Time(int index) {
-            return _peaks[index].Time;
-        }
-
-        public double Intensity(int index) {
-            return _peaks[index].Intensity;
-        }
-
-        public double Mz(int index) {
-            return _peaks[index].Mz;
-        }
-
-        public int Id(int index) {
-            return _peaks[index].Id;
-        }
-
-        public ChromXs PeakChromXs(double chromValue, double mz) {
-            var result = new ChromXs(chromValue, _type, _unit);
-            if (_type != ChromXType.Mz) {
-                result.Mz = new MzValue(mz);
-            }
-            return result;
-        }
-
-        public int GetPeakTopId(int start, int end) {
-            var peakTopIntensity = double.MinValue;
-            var peakTopId = start;
-            for (int i = start; i < end; i++) {
-                if (peakTopIntensity < _peaks[i].Intensity) {
-                    peakTopIntensity = _peaks[i].Intensity;
-                    peakTopId = i;
-                }
-            }
-            return peakTopId;
-        }
-
-        
-
-        public (int, int, int) ShrinkPeakRange(int start, int end, int averagePeakWidth) {
-            var peakTopId = GetPeakTopId(start, end);
-
-            var newStart = start;
-            for (int j = peakTopId - averagePeakWidth; j >= start; j--) {
-                if (j - 1 < start) {
-                    break;
-                }
-                if (_peaks[j - 1].Intensity >= _peaks[j].Intensity) {
-                    newStart = j;
-                    break;
-                }
-            }
-
-            var newEnd = end;
-            for (int j = peakTopId + averagePeakWidth; j < end; j++) {
-                if (j + 1 >= end) {
-                    break;
-                }
-                if (_peaks[j].Intensity <= _peaks[j + 1].Intensity) {
-                    newEnd = j + 1;
-                    break;
-                }
-            }
-
-            return (newStart, peakTopId, newEnd);
-        }
-
-        public (double MinHeight, double MaxHeight) PeakHeightFromBounds(int start, int end, int top) {
-            var topIntensity = _peaks[top].Intensity;
-            var leftIntensity = _peaks[start].Intensity;
-            var rightIntensity = _peaks[end - 1].Intensity;
-            return (topIntensity - Math.Max(leftIntensity, rightIntensity), topIntensity - Math.Min(leftIntensity, rightIntensity));
-        }
-
-        public bool AnyBoundsLowHeight(int start, int end, double threshold) {
-            return Math.Min(_peaks[start].Intensity, _peaks[end - 1].Intensity) < threshold;
-        }
-
-        public double IntensityDifference(int i, int j) {
-            return _peaks[i].Intensity - _peaks[j].Intensity;
-        }
-
-        public double TimeDifference(int i, int j) {
-            return _peaks[i].Time - _peaks[j].Time;
-        }
-
-        public double CalculateArea(int i, int j) {
-            return (_peaks[i].Intensity + _peaks[j].Intensity) * (_peaks[i].Time - _peaks[j].Time) / 2;
-        }
-
-        public bool IsValidPeakTop(int topId) {
-            return topId - 1 >= 0 && topId + 1 <= _size - 1
-                && _peaks[topId - 1].Intensity > 0 && _peaks[topId + 1].Intensity > 0;
-        }
-
-        public int CountSpikes(int leftId, int rightId, double threshold) {
-            var leftBound = Math.Max(leftId, 1);
-            var rightBound = Math.Min(rightId, _size - 2);
-
-            var counter = 0;
-            double? spikeMax = null, spikeMin = null;
-            for (int i = leftBound; i <= rightBound; i++) {
-                if (IsPeakTop(i)) {
-                    spikeMax = _peaks[i].Intensity;
-                }
-                else if (IsBottom(i)) {
-                    spikeMin = _peaks[i].Intensity;
-                }
-                if (spikeMax.HasValue && spikeMin.HasValue) {
-                    var noise = Math.Abs(spikeMax.Value - spikeMin.Value) / 2;
-                    if (noise > threshold) {
-                        counter++;
-                    }
-                    spikeMax = null; spikeMin = null;
-                }
-            }
-            return counter;
-        }
-
-        public bool IsPeakTop(int topId) {
-            return _peaks[topId - 1].Intensity <= _peaks[topId].Intensity && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
-        }
-
-        public bool IsLargePeakTop(int topId) {
-            return _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity && IsPeakTop(topId) && _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity;
-        }
-
-        public bool IsBroadPeakTop(int topId) {
-            return IsPeakTop(topId) && (_peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity || _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity);
-        }
-
-        public bool IsBottom(int bottomId) {
-            return _peaks[bottomId - 1].Intensity >= _peaks[bottomId].Intensity && _peaks[bottomId].Intensity <= _peaks[bottomId + 1].Intensity;
-        }
-
-        public bool IsLargeBottom(int bottomId) {
-            return _peaks[bottomId - 2].Intensity >= _peaks[bottomId - 1].Intensity && IsBottom(bottomId) && _peaks[bottomId + 1].Intensity <= _peaks[bottomId + 2].Intensity;
-        }
-
-        public bool IsBroadBottom(int bottomId) {
-            return IsBottom(bottomId) && (_peaks[bottomId - 2].Intensity >= _peaks[bottomId - 1].Intensity || _peaks[bottomId + 1].Intensity <= _peaks[bottomId + 2].Intensity);
-        }
-
-        public bool IsFlat(int centerId, double amplitudeNoise) {
-            return Math.Abs(_peaks[centerId - 1].Intensity - _peaks[centerId].Intensity) < amplitudeNoise && Math.Abs(_peaks[centerId].Intensity - _peaks[centerId + 1].Intensity) < amplitudeNoise;
-        }
-
+        /// <summary>
+        /// Extracts a subset of peaks from the chromatogram, creating a new array of peaks between the specified indices, inclusive of the start index and the end index.
+        /// </summary>
+        /// <param name="left">The zero-based start index for the subset of peaks to extract.</param>
+        /// <param name="right">The zero-based end index for the subset of peaks to extract.</param>
+        /// <returns>An array of <see cref="ValuePeak"/> containing the extracted subset of peaks.</returns>
+        /// <remarks>
+        /// This method is useful for isolating a specific section of the chromatogram for detailed analysis or for operations that require a focus on a particular segment of the data. It effectively allows for the zooming into a region of interest by trimming the peak data to just the relevant part.
+        /// Note that the method assumes the indices are within the bounds of the peak array and does not perform bounds checking; it is the caller's responsibility to ensure the indices are valid.
+        /// </remarks>
         public ValuePeak[] TrimPeaks(int left, int right) {
             var result = new ValuePeak[right - left + 1];
+            if (_peaks is ValuePeak[] array) {
+                Array.Copy(array, left, result, 0, result.Length);
+                return result;
+            }
             for (int i = 0; i < result.Length; i++) {
                 result[i] = _peaks[i + left];
             }
             return result;
         }
 
-        public double GetIntensityMedian() {
-            return BasicMathematics.InplaceSortMedian(_peaks.Take(_size).Select(peak => peak.Intensity).ToArray());
-        }
-
-        public double GetMaximumIntensity() {
-            return _peaks.Take(_size).Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-        }
-
-        public double GetMinimumIntensity() {
-            return _peaks.Take(_size).Select(peak => peak.Intensity).DefaultIfEmpty().Min();
-        }
-
-        public double GetMinimumNoiseLevel(int binSize, int minWindowSize, double minNoiseLevel) {
-            var buffer = ArrayPool<double>.Shared.Rent((_size + binSize - 1) / binSize);
-            try {
-                var size = 0;
-                int i = 0;
-                while(i < _size) {
-                    var (min, max) = (double.MaxValue, double.MinValue);
-                    for (int j = 0; j < binSize; j++) {
-                        min = Math.Min(min, _peaks[i].Intensity);
-                        max = Math.Max(max, _peaks[i].Intensity);
-                        if (++i == _size) {
-                            break;
-                        }
-                    }
-                    if (min < max) {
-                        buffer[size++] = max - min;
-                    }
-                }
-                return size >= minWindowSize
-                    ? BasicMathematics.InplaceSortMedian(buffer, size)
-                    : minNoiseLevel;
-            }
-            finally {
-                ArrayPool<double>.Shared.Return(buffer);
-            }
-        }
-
+        /// <summary>
+        /// Calculates the difference between this chromatogram and another, based on the intensity of peaks.
+        /// </summary>
+        /// <param name="other">The <see cref="ExtractedIonChromatogram"/> to compare with.</param>
+        /// <returns>A new <see cref="ExtractedIonChromatogram"/> representing the difference in intensity between the two chromatograms.</returns>
+        /// <remarks>
+        /// This method generates a new chromatogram where each peak's intensity is the result of subtracting the intensity of the corresponding peak in the 'other' chromatogram from this chromatogram's peak intensity. Negative intensity values are floored at zero, as negative intensities are not physically meaningful in this context. This can be useful for background subtraction, noise reduction, or identifying significant changes in peak intensities between experiments.
+        /// </remarks>
         public ExtractedIonChromatogram Difference(ExtractedIonChromatogram other) {
             System.Diagnostics.Debug.Assert(_type == other._type);
             System.Diagnostics.Debug.Assert(_unit == other._unit);
@@ -257,13 +110,27 @@ namespace CompMs.Common.Components
             return new ExtractedIonChromatogram(peaks, _size, _type, _unit, ExtractedMz, arrayPool);
         }
 
-        public ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
-            ValuePeak[] peaks = null;
-            if (method == SmoothingMethod.LinearWeightedMovingAverage) {
-                peaks = _peaks as ValuePeak[];
+        /// <summary>
+        /// Applies a specified smoothing algorithm to the chromatogram, aiming to reduce noise and enhance peak detection.
+        /// </summary>
+        /// <param name="method">The smoothing method to apply, defined by the <see cref="SmoothingMethod"/> enumeration.</param>
+        /// <param name="level">The level of smoothing to apply, which may affect the degree of noise reduction and peak preservation based on the chosen method.</param>
+        /// <returns>A new <see cref="ExtractedIonChromatogram"/> instance representing the smoothed chromatogram.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
+        /// <remarks>
+        /// This method facilitates various smoothing techniques, each with their own strengths in different analytical contexts. For instance, simple moving averages are effective for general noise reduction, while more sophisticated methods like Savitzky-Golay filtering can preserve peak shape and height better. The choice of method and level should be tailored to the specific needs of the chromatographic analysis.
+        /// </remarks>
+        public new ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
             }
-            if (peaks is null) {
-                peaks = _peaks.Take(_size).ToArray();
+            ValuePeak[] peaks;
+            if (method == SmoothingMethod.LinearWeightedMovingAverage || _peaks.Length == _size) {
+                peaks = _peaks;
+            }
+            else {
+                peaks = new ValuePeak[_size];
+                Array.Copy(_peaks, peaks, _size);
             }
 
             switch (method) {
@@ -286,6 +153,19 @@ namespace CompMs.Common.Components
             }
         }
 
+        protected override Chromatogram ChromatogramSmoothingCore(SmoothingMethod method, int level) {
+            return ChromatogramSmoothing(method, level);
+        }
+
+        /// <summary>
+        /// Analyzes a specified range within the chromatogram to detect peaks and evaluate their characteristics.
+        /// </summary>
+        /// <param name="startID">The start index of the range to analyze for peak detection.</param>
+        /// <param name="endID">The end index of the range to analyze for peak detection.</param>
+        /// <returns>A <see cref="PeakDetectionResult"/> object containing details about detected peaks and their properties within the specified range.</returns>
+        /// <remarks>
+        /// This method is designed to focus peak detection efforts on a specific segment of the chromatogram, allowing for targeted analysis of areas of interest.
+        /// </remarks>
         public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
             var datapoints = new List<double[]>();
             var datapointsPeakTopIndex = 0;
@@ -301,43 +181,6 @@ namespace CompMs.Common.Components
                 }
             }
             return PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
-        }
-
-        public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
-            using var sChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
-            var ssChromatogram = sChromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
-            var baselineChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 20);
-            var baselineCorrectedChromatogram = ssChromatogram.Difference(baselineChromatogram);
-            var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel) * noiseFactor;
-
-            // checking chromatogram properties
-            var baselineMedian = GetIntensityMedian();
-            var maxChromIntensity = GetMaximumIntensity();
-            var minChromIntensity = GetMinimumIntensity();
-            var isHighBaseline = baselineMedian > (maxChromIntensity + minChromIntensity) * 0.5;
-            return new ChromatogramGlobalProperty_temp2(maxChromIntensity, minChromIntensity, baselineMedian, noise, isHighBaseline, ssChromatogram, baselineChromatogram, baselineCorrectedChromatogram);
-        }
-
-        internal ChroChroChromatogram GetChroChroChromatogram(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
-            // 'chromatogram' properties
-            var globalProperty = GetProperty(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
-
-            // differential factors
-            var differencialCoefficients = globalProperty.GenerateDifferencialCoefficients();
-
-            // slope noises
-            var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
-
-            return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
-        }
-
-        public void Dispose() {
-            if (_arrayPool is null) {
-                return;
-            }
-            _arrayPool.Return((ValuePeak[])_peaks);
-            _peaks = null;
-            _arrayPool = null;
         }
     }
 }

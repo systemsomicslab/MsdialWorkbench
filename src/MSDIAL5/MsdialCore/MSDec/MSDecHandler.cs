@@ -270,7 +270,7 @@ namespace CompMs.MsdialCore.MSDec {
             var offset = 0.1;
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             //targetMz = (int)targetMz;
-            var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.MassSliceWidth), chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
             var peak = peakResult.ConvertToPeakFeature(chrom, targetMz);
             var peakShape = new ChromatogramPeakShape(peakResult);
@@ -498,7 +498,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
 
-            var sPeaklist = peaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var sPeaklist = peaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
             if (sPeaklist.Count != 0) {
 
                 var maxID = -1;
@@ -1323,7 +1323,7 @@ namespace CompMs.MsdialCore.MSDec {
                 peaklist.Add(new ChromatogramPeak(spectrum.Index, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
             }
 
-            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
             for (int i = 0; i < smoothedMargin - leftRemainder; i++) smoothedPeaklist.RemoveAt(0);
             for (int i = 0; i < smoothedMargin - rightRemainder; i++) smoothedPeaklist.RemoveAt(smoothedPeaklist.Count - 1);
 

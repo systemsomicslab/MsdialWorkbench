@@ -14,6 +14,13 @@ namespace CompMs.Common.Tests.Utility
             }
         }
 
+        public static void AreEqual<T>(this CollectionAssert assert, IList<T> expected, IList<T> actual, Action<Assert, T, T, string> assertAction) {
+            Assert.AreEqual(expected.Count, actual.Count);
+            for (int i = 0; i < expected.Count; i++) {
+                assertAction(Assert.That, expected[i], actual[i], string.Empty);
+            }
+        }
+
         public static void AreEqual<T>(this CollectionAssert assert, IList<T> expected, IList<T> actual, Action<T, T> assertAction) {
             Assert.AreEqual(expected.Count, actual.Count);
             for (int i = 0; i < expected.Count; i++) {

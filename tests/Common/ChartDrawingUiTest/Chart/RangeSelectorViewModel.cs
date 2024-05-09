@@ -23,11 +23,11 @@ namespace ChartDrawingUiTest.Chart
         public ContinuousAxisManager<double> HorizontalAxis { get; }
         public ContinuousAxisManager<double> VerticalAxis { get; }
 
-        public Range SelectedRange {
+        public AxisRange SelectedRange {
             get => selectedRange;
             set => SetProperty(ref selectedRange, value);
         }
-        private Range selectedRange;
+        private AxisRange selectedRange;
 
         public ObservableCollection<RangeSelection> SelectedRanges {
             get => selectedRanges;

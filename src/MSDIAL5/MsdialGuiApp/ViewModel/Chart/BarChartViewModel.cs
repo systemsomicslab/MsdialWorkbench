@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             VerticalAxis = model
                 .VerticalRangeAsObservable
-                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new AxisRange(0, 0), LabelType.Order)
                 .AddTo(Disposables);
 
             var brushSource = model.ClassBrush;

@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IReadOnlyList<LcmsCompoundResult> Search(PeakSpotModel peakSpot) {
             var results = SelectedCompoundSearcher?.Search(
                 peakSpot.PeakSpot.MSIon,
-                peakSpot.MSDecResult,
+                peakSpot.MsScan,
                 new List<RawPeakElement>(),
                 new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
             );

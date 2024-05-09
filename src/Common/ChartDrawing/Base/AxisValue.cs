@@ -7,6 +7,8 @@ namespace CompMs.Graphics.Core.Base
     [TypeConverter(typeof(AxisValueTypeConverter))]
     public struct AxisValue : IComparable<AxisValue>
     {
+        private static double eps = 1e-9;
+
         public double Value { get; }
         public static readonly AxisValue NaN = new AxisValue(double.NaN);
 
@@ -22,8 +24,25 @@ namespace CompMs.Graphics.Core.Base
             return new AxisValue(val);
         }
 
+        public static bool operator <(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) < 0;
+        public static bool operator >(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) > 0;
+        public static bool operator <=(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) <= 0;
+        public static bool operator >=(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) >= 0;
+
         public int CompareTo(AxisValue other) {
-            return Value.CompareTo(other.Value);
+            if (double.IsNaN(other.Value)) {
+                return 1;
+            }
+            if (double.IsNaN(Value)) {
+                return -1;
+            }
+            if (Value - other.Value >= eps) {
+                return 1;
+            }
+            if (other.Value - Value >= eps) {
+                return -1;
+            }
+            return 0;
         }
 
         public override bool Equals(object obj) {

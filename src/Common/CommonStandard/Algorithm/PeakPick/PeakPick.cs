@@ -69,7 +69,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
         }
 
-        public List<PeakDetectionResult> PeakDetectionVS1(ExtractedIonChromatogram chromatogram) {
+        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram chromatogram) {
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;

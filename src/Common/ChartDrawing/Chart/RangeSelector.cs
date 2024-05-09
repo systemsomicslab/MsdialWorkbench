@@ -38,12 +38,28 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty SelectedRangeProperty =
             DependencyProperty.Register(
                 nameof(SelectedRange),
-                typeof(Range),
-                typeof(RangeSelector));
+                typeof(AxisRange),
+                typeof(RangeSelector),
+                new PropertyMetadata(
+                    null,
+                    OnSelectedRangePropertyChanged));
 
-        public Range SelectedRange {
-            get => (Range)GetValue(SelectedRangeProperty);
+        public AxisRange SelectedRange {
+            get => (AxisRange)GetValue(SelectedRangeProperty);
             set => SetValue(SelectedRangeProperty, value);
+        }
+
+        private static void OnSelectedRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is RangeSelector rs) {
+                rs.OnSelectedRangePropertyChanged((AxisRange)e.OldValue, (AxisRange)e.NewValue);
+            }
+        }
+
+        private void OnSelectedRangePropertyChanged(AxisRange oldValue, AxisRange newValue) {
+            if (!(SelectedRangeAdorner is null) && SelectedRangeAdorner.HorizontalRange.Equals(oldValue) && oldValue != newValue && !dragging) {
+                SelectedRangeAdorner.Detach();
+                ClearValue(SelectedRangeAdornerProperty);
+            }
         }
 
         public static readonly Color SelectedColor = Colors.Gray;
@@ -91,10 +107,20 @@ namespace CompMs.Graphics.Chart
             }
 
             var addValues = newValues.Except(oldValues);
+            var newAdorners = new List<RangeSelectAdorner>();
             foreach (var addValue in addValues) {
                 var adorner = new RangeSelectAdorner(this, addValue);
                 adorner.Attach();
                 Adorners.Add(adorner);
+                newAdorners.Add(adorner);
+            }
+            foreach (var adorner in newAdorners) {
+                try {
+                    adorner.IsClipEnabled = true;
+                }
+                catch (NullReferenceException e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
         }
 
@@ -113,7 +139,7 @@ namespace CompMs.Graphics.Chart
             }
             if (e.NewItems != null) {
                 foreach (var item in e.NewItems.OfType<RangeSelection>()) {
-                    var adorner = new RangeSelectAdorner(this, item);
+                    var adorner = new RangeSelectAdorner(this, item) { IsClipEnabled = true };
                     adorner.Attach();
                     Adorners.Add(adorner);
                 }
@@ -172,7 +198,7 @@ namespace CompMs.Graphics.Chart
                 var initial = e.GetPosition(fe);
                 InitialPoint = initial;
                 var x = HorizontalAxis.TranslateFromRenderPoint(initial.X, FlippedX, ActualWidth);
-                var adorner = new RangeSelectAdorner(fe, new Range(x, x) , SelectedColor, false) { IsClipEnabled = true, };
+                var adorner = new RangeSelectAdorner(fe, new AxisRange(x, x) , SelectedColor, false) { IsClipEnabled = true, };
                 adorner.Attach();
                 SelectedRangeAdorner = adorner;
                 fe.CaptureMouse();

@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis is null) {
                 verticalAxis = model.VerticalRangeSource
-                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 40), new Range(0d, 0d), LabelType.Order)
+                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 40), new AxisRange(0d, 0d), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;

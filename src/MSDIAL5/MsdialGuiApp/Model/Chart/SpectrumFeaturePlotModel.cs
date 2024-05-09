@@ -39,11 +39,11 @@ namespace CompMs.App.Msdial.Model.Chart
             .AddTo(Disposables);
 
             HorizontalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
-                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.RT.Value), peaks.Max(p => p.RT.Value)) : new Range(0, 1))
+                .Select(_ => peaks.Any() ? new AxisRange(peaks.Min(p => p.RT.Value), peaks.Max(p => p.RT.Value)) : new AxisRange(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             VerticalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
-                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.Mass), peaks.Max(p => p.Mass)) : new Range(0, 1))
+                .Select(_ => peaks.Any() ? new AxisRange(peaks.Min(p => p.Mass), peaks.Max(p => p.Mass)) : new AxisRange(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
         }

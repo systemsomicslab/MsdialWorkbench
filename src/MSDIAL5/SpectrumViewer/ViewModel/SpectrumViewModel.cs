@@ -34,16 +34,16 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             HorizontalAxis = collectionChanged
                 .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
-                    .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Mass) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Mass) ?? 0d))
+                    .Select(scan => new AxisRange(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Mass) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Mass) ?? 0d))
                     .Aggregate((acc, range) => acc.Union(range)))
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(30), labelType: LabelType.Standard)
                 .AddTo(Disposables);
             var verticalRange = collectionChanged
                 .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
-                    .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Intensity) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity) ?? 0d))
+                    .Select(scan => new AxisRange(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Intensity) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity) ?? 0d))
                     .Aggregate((acc, range) => acc.Union(range)));
-            var verticalAxis = verticalRange.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order).AddTo(Disposables);
+            var verticalAxis = verticalRange.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new AxisRange(0, 0), labelType: LabelType.Order).AddTo(Disposables);
             var verticalAxes = new object[]
             {
                 new { Label = "Normal", Axis = verticalAxis, },

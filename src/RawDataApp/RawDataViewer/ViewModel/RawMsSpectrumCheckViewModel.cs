@@ -36,7 +36,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
                 .AddTo(Disposables);
             VerticalAxis = spectrumOx
                 .Select(spectrum => (spectrum.Min(v => v.Intensity), spectrum.Max(v => v.Intensity)))
-                .ToReactiveContinuousAxisManager(new ConstantMargin(0, 20), new Graphics.Core.Base.Range(0d, 0d))
+                .ToReactiveContinuousAxisManager(new ConstantMargin(0, 20), new Graphics.Core.Base.AxisRange(0d, 0d))
                 .AddTo(Disposables);
         }
 
