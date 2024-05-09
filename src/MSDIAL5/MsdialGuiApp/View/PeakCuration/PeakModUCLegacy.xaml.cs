@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
     public partial class PeakModUCLegacy : UserControl {
         private readonly PeakModFELegacy _fe;
         public DrawVisualManualPeakModification? drawing;
-        public AlignedChromatogramModificationViewModelLegacy? VM { get; set; }
+        private AlignedChromatogramModificationViewModelLegacy? VM { get; set; }
 
         public PeakModType Type { get; set; }
         public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             RefreshUI();
         }
 
-        public PeakModUCLegacy(AlignedChromatogramModificationViewModelLegacy vm, 
+        internal PeakModUCLegacy(AlignedChromatogramModificationViewModelLegacy vm, 
             DrawVisualManualPeakModification drawing, 
             MouseActionSetting setting, PeakModType type = PeakModType.Original, 
             List<PeakPropertyLegacy>? peakPropertyList = null) {

@@ -18,19 +18,14 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class AlignmentEicModel : DisposableModelBase
     {
         public AlignmentEicModel(
-            IObservable<AlignmentSpotPropertyModel?> model,
-            IObservable<List<PeakChromatogram>> chromatoramSource,
+            IObservable<AlignedChromatograms?> spotChromatograms,
             List<AnalysisFileBean> analysisFiles,
             ParameterBase parameter,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
 
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (chromatoramSource is null) {
-                throw new ArgumentNullException(nameof(chromatoramSource));
+            if (spotChromatograms is null) {
+                throw new ArgumentNullException(nameof(spotChromatograms));
             }
 
             if (horizontalSelector is null) {
@@ -41,10 +36,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
+            var chromatoramSource = spotChromatograms.DefaultIfNull(s => s.Chromatograms, Observable.Return(new List<PeakChromatogram>(0))).Switch();
             EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
-            var eicChromatograms = chromatoramSource.Throttle(TimeSpan.FromSeconds(.05d)).ToReactiveProperty().AddTo(Disposables);
 
-            var peaksox = eicChromatograms
+            var peaksox = EicChromatograms
                 .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
 
             var nopeak = peaksox.Where(peaks => !peaks.Any()).ToConstant(new Range(0, 1));
@@ -58,9 +53,9 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
             VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
 
-            var isSelected = model.Select(m => m != null).ToReactiveProperty().AddTo(Disposables);
+            var isSelected = spotChromatograms.Select(m => m is not null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
-            var isLoaded = model.SkipNull().SelectSwitch(m => m.AlignedPeakPropertiesModelProperty).Select(props => props?.Any() ?? false);
+            var isLoaded = spotChromatograms.SkipNull().SelectSwitch(m => m.Spot.AlignedPeakPropertiesModelProperty).Select(props => props?.Any() ?? false);
             IsPeakLoaded = new[]
             {
                 isSelected,
@@ -68,18 +63,15 @@ namespace CompMs.App.Msdial.Model.Chart
             }.CombineLatestValuesAreAllTrue()
             .ToReactiveProperty().AddTo(Disposables);
 
-            var modelAndChromatogram = model.CombineLatest(eicChromatograms).ToReactiveProperty().AddTo(Disposables);
-            CanShow = modelAndChromatogram.Select(mc =>
-                new[]
-                {
-                    mc.First?.AlignedPeakPropertiesModelProperty.Select(features => features?.Any() ?? false)
-                        ?? Observable.Return(false),
-                    Observable.Return(mc.Second?.Any() ?? false),
-                }.CombineLatestValuesAreAllTrue().StartWith(false)
-            ).Switch().ToReactiveProperty().AddTo(Disposables);
+            CanShow = spotChromatograms.DefaultIfNull(
+                s => new[] {
+                    s.Spot.AlignedPeakPropertiesModelProperty.Select(features => features?.Any() ?? false),
+                    s.Chromatograms.Select(c => c.Any()),
+                }.CombineLatestValuesAreAllTrue().StartWith(false), Observable.Return(false))
+                .Switch().ToReactiveProperty().AddTo(Disposables);
 
-            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(model, eicChromatograms, analysisFiles, parameter).AddTo(Disposables);
-            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(model, eicChromatograms, analysisFiles, parameter).AddTo(Disposables);
+            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatograms, analysisFiles, parameter).AddTo(Disposables);
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter).AddTo(Disposables);
         }
 
         public IObservable<bool> CanShow { get; }
@@ -104,11 +96,11 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<PeakItem, double> verticalSelector) {
 
             return new AlignmentEicModel(
-                source,
-                source.DefaultIfNull(loader.LoadEicAsObservable, Observable.Never<List<PeakChromatogram>>()).Switch(),
+                source.DefaultIfNull(s => new AlignedChromatograms(s, loader.LoadEicAsObservable(s))),
                 AnalysisFiles,
                 Param,
-                horizontalSelector, verticalSelector
+                horizontalSelector,
+                verticalSelector
             );
         }
     }
