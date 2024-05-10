@@ -10,10 +10,10 @@ namespace CompMs.App.Msdial.Model.Dims
 {
     internal sealed class DimsAlignmentMetadataAccessorFactory : IAlignmentMetadataAccessorFactory
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly ParameterBase _parameter;
 
-        public DimsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
+        public DimsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) {
             _refer = refer;
             _parameter = parameter;
         }

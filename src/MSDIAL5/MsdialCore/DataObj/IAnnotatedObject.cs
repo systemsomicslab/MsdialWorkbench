@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.DataObj
             return self.MatchResults.RepresentativeProtein(refer);
         }
 
-        public static T Refer<T>(this IAnnotatedObject self, IMatchResultRefer<T, MsScanMatchResult> refer) {
+        public static T? Refer<T>(this IAnnotatedObject? self, IMatchResultRefer<T?, MsScanMatchResult?> refer) {
             return refer.Refer(self?.MatchResults.Representative);
         }
     }

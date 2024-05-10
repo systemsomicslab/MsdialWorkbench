@@ -110,8 +110,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
-                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
-                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -267,8 +267,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public bool CanSaveSpectra() => Target.Value?.innerModel != null && _msdecResult.Value != null;
 
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
-            if (Target.Value is AlignmentSpotPropertyModel spot) {
-                SpectraExport.SaveSpectraTable(format, stream, spot.innerModel, _msdecResult.Value, _dataBaseMapper, _parameter);
+            if (Target.Value is AlignmentSpotPropertyModel spot && _msdecResult.Value is { } msdec) {
+                SpectraExport.SaveSpectraTable(format, stream, spot.innerModel, msdec, _dataBaseMapper, _parameter);
             }
         }
 

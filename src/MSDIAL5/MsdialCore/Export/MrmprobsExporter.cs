@@ -22,9 +22,9 @@ namespace CompMs.MsdialCore.Export
     public sealed class EsiMrmprobsExporter
     {
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
 
-        public EsiMrmprobsExporter(IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+        public EsiMrmprobsExporter(IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer)
         {
             _evaluator = evaluator;
             _refer = refer;
@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Export
         public void ExportReferenceMsms<T>(Stream stream, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
             using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
-                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                MoleculeMsReference? reference = _refer.Refer(peakSpot.MatchResults.Representative);
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) {
                     return;
                 }

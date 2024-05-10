@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void ExecuteSecondRoundAnnotationProcess(
             IReadOnlyList<AnalysisFileBean> files,
-            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<PeptideMsReference?, MsScanMatchResult?> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage dataBases,
             ParameterBase param,
@@ -107,7 +107,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             string file,
             AlignmentResultContainer alignmentContainer,
             List<DataBaseItem<ShotgunProteomicsDB>> databases,
-            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<PeptideMsReference?, MsScanMatchResult?> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase param) {
 
@@ -287,7 +287,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<AlignmentSpotProperty> features,
             List<DataBaseItem<ShotgunProteomicsDB>> databases,
-            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<PeptideMsReference?, MsScanMatchResult?> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetAlignmentSpotPropertiesIntegratingRtAndDriftData(features);
             var isIonMobility = features.Count != featureObjs.Count;
@@ -353,11 +353,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var feature = featureObjs[score.PeakID];
                 if (score.IsDecoy) {
                     feature.MatchResults.DecoyRepresentative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "TRUE", feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "TRUE", feature.MasterPeakID, feature.PeakFeature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
                 }
                 else {
                     feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "FALSE", feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "FALSE", feature.MasterPeakID, feature.PeakFeature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
                 }
 
                 if (annotatedNum < minimumAnnotatedCount) {

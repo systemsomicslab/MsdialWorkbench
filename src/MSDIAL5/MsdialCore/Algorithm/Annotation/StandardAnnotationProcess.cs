@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 
-        public StandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public StandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             _queryFactories = queryFactories;
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
@@ -67,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _queryFactories;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
 
         private void RunBySingleThread(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,

@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Information
 {
     internal sealed class CompoundDetailModel : DisposableModelBase
     {
-        public CompoundDetailModel(IObservable<MsScanMatchResult?> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public CompoundDetailModel(IObservable<MsScanMatchResult?> result, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             _annotation = string.Empty;
             _compoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
             _annotatorId = string.Empty;

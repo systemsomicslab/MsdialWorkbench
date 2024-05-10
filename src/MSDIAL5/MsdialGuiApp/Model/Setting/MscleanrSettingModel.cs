@@ -110,15 +110,15 @@ namespace CompMs.App.Msdial.Model.Setting {
                 spot.IsRsdFilteredByPostCurator = false;
                 spot.IsRmdFilteredByPostCurator = false;
 
-                var blankProps = spot.AlignedPeakProperties.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Blank).ToList();
+                var blankProps = spot.AlignedPeakPropertiesModelProperty.Value?.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Blank).ToList();
                 var isBlankDataAvailable = blankProps.IsEmptyOrNull() ? false : true;
                 var avgBlank = isBlankDataAvailable ? blankProps.Average(x => x.PeakHeightTop) : 0.0;
 
-                var qcProps = spot.AlignedPeakProperties.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.QC).ToList();
+                var qcProps = spot.AlignedPeakPropertiesModelProperty.Value?.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.QC).ToList();
                 var isQcDataAvailable = qcProps.IsEmptyOrNull() ? false : true;
                 var avgQC = isQcDataAvailable ? qcProps.Average(x => x.PeakHeightTop) : 0.0;
 
-                var sampleProps = spot.AlignedPeakProperties.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Sample).ToList();
+                var sampleProps = spot.AlignedPeakPropertiesModelProperty.Value?.Where(x => _parameter.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Sample).ToList();
                 var isSampleDataAvailable = sampleProps.IsEmptyOrNull() ? false : true;
                 var avgSample = isSampleDataAvailable ? sampleProps.Average(x => x.PeakHeightTop) : 0.0;
 
@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.Model.Setting {
                     foreach (var class_ in _parameter.FileID_ClassName.Values.Distinct()) {
                         classToHeights[class_] = new List<double>();
                     }
-                    foreach (var props in spot.AlignedPeakProperties) {
+                    foreach (var props in spot.AlignedPeakPropertiesModelProperty.Value.OrEmptyIfNull()) {
                         if (_parameter.FileID_AnalysisFileType[props.FileID] != AnalysisFileType.Blank) {
                             classToHeights[_parameter.FileID_ClassName[props.FileID]].Add(props.PeakHeightTop);
                         }

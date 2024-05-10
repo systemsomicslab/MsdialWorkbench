@@ -6,11 +6,11 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class ReferenceSpectrumLoader<T> : IMsSpectrumLoader<MsScanMatchResult> where T: IMSScanProperty
+    internal sealed class ReferenceSpectrumLoader<T> : IMsSpectrumLoader<MsScanMatchResult> where T: IMSScanProperty?
     {
-        private readonly IMatchResultRefer<T, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<T, MsScanMatchResult?> _refer;
 
-        public ReferenceSpectrumLoader(IMatchResultRefer<T, MsScanMatchResult> refer) {
+        public ReferenceSpectrumLoader(IMatchResultRefer<T, MsScanMatchResult?> refer) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 

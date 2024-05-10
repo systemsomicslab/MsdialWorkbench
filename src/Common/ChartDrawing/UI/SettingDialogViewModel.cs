@@ -11,8 +11,8 @@ namespace CompMs.Graphics.UI
         }
         private bool? _result;
 
-        public virtual ICommand ApplyCommand { get; }
-        public virtual ICommand CancelCommand { get; }
-        public virtual ICommand FinishCommand { get; }
+        public virtual ICommand? ApplyCommand { get; }
+        public virtual ICommand? CancelCommand { get; }
+        public virtual ICommand? FinishCommand { get; }
     }
 }

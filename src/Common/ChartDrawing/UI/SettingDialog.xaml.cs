@@ -18,8 +18,8 @@ namespace CompMs.Graphics.UI
                 typeof(ICommand),
                 typeof(SettingDialog));
 
-        public ICommand ApplyCommand {
-            get => (ICommand)GetValue(ApplyCommandProperty);
+        public ICommand? ApplyCommand {
+            get => (ICommand?)GetValue(ApplyCommandProperty);
             set => SetValue(ApplyCommandProperty, value);
         }
 
@@ -29,8 +29,8 @@ namespace CompMs.Graphics.UI
                 typeof(ICommand),
                 typeof(SettingDialog));
 
-        public ICommand FinishCommand {
-            get => (ICommand)GetValue(FinishCommandProperty);
+        public ICommand? FinishCommand {
+            get => (ICommand?)GetValue(FinishCommandProperty);
             set => SetValue(FinishCommandProperty, value);
         }
 
@@ -40,8 +40,8 @@ namespace CompMs.Graphics.UI
                 typeof(ICommand),
                 typeof(SettingDialog));
 
-        public ICommand CancelCommand {
-            get => (ICommand)GetValue(CancelCommandProperty);
+        public ICommand? CancelCommand {
+            get => (ICommand?)GetValue(CancelCommandProperty);
             set => SetValue(CancelCommandProperty, value);
         }
 

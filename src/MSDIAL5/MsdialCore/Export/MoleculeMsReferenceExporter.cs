@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class MoleculeMsReferenceExporter : ISpectraExporter, IDisposable, IObserver<MoleculeMsReference>
+    public sealed class MoleculeMsReferenceExporter : ISpectraExporter, IDisposable, IObserver<MoleculeMsReference?>
     {
         private IDisposable _unsubscriber;
-        private MoleculeMsReference _cache;
+        private MoleculeMsReference? _cache;
 
-        public MoleculeMsReferenceExporter(IObservable<MoleculeMsReference> chromatogramPeakFeature) {
+        public MoleculeMsReferenceExporter(IObservable<MoleculeMsReference?> chromatogramPeakFeature) {
             _unsubscriber = chromatogramPeakFeature.Subscribe(this);
         }
 
@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Export
 
         }
 
-        public void OnNext(MoleculeMsReference value) {
+        public void OnNext(MoleculeMsReference? value) {
             _cache = value;
         }
         

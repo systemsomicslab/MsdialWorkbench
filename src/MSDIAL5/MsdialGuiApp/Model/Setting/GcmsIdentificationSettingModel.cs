@@ -250,7 +250,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _onlyReportTopHit;
 
-        public DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             var result = DataBaseStorage.CreateEmpty();
             if (IsReadOnly) {
                 return result;
@@ -263,7 +263,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.IsReplaceQuantmassByUserDefinedValue = UseQuantmassDefinedInLibrary;
             _parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = OnlyReportTopHit;
 
-            if (File.Exists(MspFilePath)) {
+            if (MspFilePath is { } && File.Exists(MspFilePath)) {
                 var database = new MoleculeDataBase(MspFileParser.MspFileReader(MspFilePath), "0", DataBaseSource.Msp, SourceType.MspDB);
                 var annotator = new MassAnnotator(database, _parameter.RefSpecMatchBaseParam.MspSearchParam, TargetOmics.Metabolomics, SourceType.MspDB, "annotator_0", 0);
                 var pair = new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, _parameter.PeakPickBaseParam, _parameter.RefSpecMatchBaseParam.MspSearchParam));

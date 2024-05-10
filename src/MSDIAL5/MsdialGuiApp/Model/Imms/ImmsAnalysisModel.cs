@@ -107,8 +107,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
-                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
-                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
 
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
@@ -262,19 +262,18 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveSpectra(string filename) {
-            if (Target.Value is null) {
+            if (Target.Value is null || MsdecResult.Value is null) {
                 return;
             }
-            using (var file = File.Open(filename, FileMode.Create)) {
-                SpectraExport.SaveSpectraTable(
-                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                    file,
-                    Target.Value.InnerModel,
-                    MsdecResult.Value,
-                    _provider.LoadMs1Spectrums(),
-                    _dataBaseMapper,
-                    _parameter);
-            }
+            using var file = File.Open(filename, FileMode.Create);
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                file,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                _provider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
         }
 
         public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;

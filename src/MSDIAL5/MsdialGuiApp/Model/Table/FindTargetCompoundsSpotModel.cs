@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
-using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -34,8 +33,10 @@ namespace CompMs.App.Msdial.Model.Table
             var empty = new ReadOnlyCollection<MatchedSpotCandidate<AlignmentChromPeakFeatureModel>?>(Array.Empty<MatchedSpotCandidate<AlignmentChromPeakFeatureModel>>());
             SelectedCandidatePeaks = SelectedCandidate.Select(
                 candidate => {
-                    var peaksOx = candidate?.Spot.AlignedPeakPropertiesModelProperty;
-                    return peaksOx?.Select(peaks => peaks.Select(peak => _currentCalculator?.Match(peak, candidate?.Reference)).ToList().AsReadOnly()) ?? Observable.Return(empty);
+                    if (candidate is null) {
+                        return Observable.Return(empty);
+                    }
+                    return candidate.Spot.AlignedPeakPropertiesModelProperty.Select(peaks => peaks.Select(peak => _currentCalculator?.Match(peak, candidate.Reference)).ToList().AsReadOnly());
                 }).Switch()
                 .ToReadOnlyReactivePropertySlim(empty).AddTo(Disposables);
         }
@@ -109,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Table
         }
 
         public async Task ExportAsync(Stream stream) {
-            if (_currentCalculator is null) {
+            if (_currentCalculator is null || Candidates is null) {
                 return;
             }
             var task = TaskNotification.Start("Exporting library matched spots");

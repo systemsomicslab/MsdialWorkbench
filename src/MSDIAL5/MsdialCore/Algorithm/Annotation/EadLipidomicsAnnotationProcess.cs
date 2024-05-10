@@ -41,13 +41,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _moleculeQueryFactries;
         private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _eadQueryFactories;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
         public EadLipidomicsAnnotationProcess(
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> moleculeQueryFactories,
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> eadQueryFactories,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) { 
             _moleculeQueryFactries = moleculeQueryFactories ?? throw new ArgumentNullException(nameof(moleculeQueryFactories));
             _eadQueryFactories = eadQueryFactories ?? throw new ArgumentNullException(nameof(eadQueryFactories));

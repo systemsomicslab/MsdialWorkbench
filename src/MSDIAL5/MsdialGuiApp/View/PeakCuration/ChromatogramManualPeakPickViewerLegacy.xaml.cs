@@ -293,12 +293,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
                     var isFiehn = Param.MachineCategory == CompMs.Common.Enum.MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames;
 
-                    if (isFiehn) {
+                    if (isFiehn && revFiehnRiCoeff is not null) {
                         rtTop = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtTop);
                         rtLeft = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtLeft);
                         rtRight = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtRight);
                     }
-                    else {
+                    else if (carbonRtDict is not null) {
                         rtTop = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtTop);
                         rtLeft = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtLeft);
                         rtRight = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtRight);

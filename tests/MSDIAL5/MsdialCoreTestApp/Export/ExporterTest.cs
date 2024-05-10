@@ -43,7 +43,7 @@ namespace CompMs.App.MsdialConsole.Export
                     deserializer,
                     path => new DirectoryTreeStreamManager(path),
                     projectDir,
-                    async parameter =>
+                    parameter =>
                     {
                         string result = null;
                         //await Application.Current.Dispatcher.InvokeAsync(() => {
@@ -56,7 +56,7 @@ namespace CompMs.App.MsdialConsole.Export
                         //        result = newofd.FileName;
                         //    }
                         //});
-                        return result;
+                        return Task.FromResult(result);
                     },
                     null);
                 ((IStreamManager)streamManager).Complete();

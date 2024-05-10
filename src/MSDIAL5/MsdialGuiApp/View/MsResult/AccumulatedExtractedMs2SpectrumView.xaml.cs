@@ -41,12 +41,12 @@ namespace CompMs.App.Msdial.View.MsResult
             }
         }
 
-        public static T FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
+        public static T? FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
         {  
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T && (child as FrameworkElement).Name == childName)
+                if (child is T && (child as FrameworkElement)?.Name == childName)
                     return (T)child;
 
                 var foundChild = FindChild<T>(child, childName);

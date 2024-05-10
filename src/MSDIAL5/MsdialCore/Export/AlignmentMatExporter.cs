@@ -12,10 +12,10 @@ namespace CompMs.MsdialCore.Export
     // TODO: Implement functions for isotope tracking analysis.
     public sealed class AlignmentMatExporter : IAlignmentSpectraExporter
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly ParameterBase _parameter;
 
-        public AlignmentMatExporter(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
+        public AlignmentMatExporter(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
