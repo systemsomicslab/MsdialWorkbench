@@ -13,12 +13,12 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAlignmentCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, PeakSpotModel>
     {
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
 
-        public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
+        public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
             _calculateMatchScore = calculateMatchScore;
-            SearchParameter = calculateMatchScore.SearchParameter;
+            SearchParameter = calculateMatchScore?.SearchParameter;
         }
 
         public IList SearchMethods => Array.Empty<object>();

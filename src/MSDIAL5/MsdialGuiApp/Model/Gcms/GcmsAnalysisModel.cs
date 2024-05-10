@@ -50,11 +50,11 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
         private readonly RawSpectra _rawSpectra;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore? calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
             var peakPickParameter = parameter.PeakPickBaseParam;
             var chromDecParameter = parameter.ChromDecBaseParam;
