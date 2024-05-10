@@ -45,7 +45,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             _annotatorID = annotatorID;
         }
 
-        public MsRefSearchParameterBase SearchParameter => new MsRefSearchParameterBase(_searchParameter);
+        public MsRefSearchParameterBase CopySearchParameter() => new MsRefSearchParameterBase(_searchParameter);
 
         public RetentionType RetentionType { get; }
 
@@ -56,10 +56,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 float tolerance;
                 switch (RetentionType) {
                     case RetentionType.RI:
-                        tolerance = _searchParameter.RtTolerance;
+                        tolerance = _searchParameter.RiTolerance;
                         break;
                     case RetentionType.RT:
-                        tolerance = _searchParameter.RiTolerance;
+                        tolerance = _searchParameter.RtTolerance;
                         break;
                     default:
                         throw new Exception($"Unknown {nameof(RetentionType)}: {RetentionType}");
