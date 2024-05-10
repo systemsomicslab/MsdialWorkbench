@@ -34,6 +34,8 @@ namespace MsdialPrivateConsoleApp {
             var new_mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated.msp";
             var new_resultfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated_woms2.txt";
 
+            formulacalcbatch.calc(@"C:\Users\hiros\Desktop\hirose\formula.txt", @"C:\Users\hiros\Desktop\hirose\formula-mass.txt");
+
             //MspManager.ExtractPositiveSpectra(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\new_ontlogycasmi2022.msp", 
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\casmi2022_pos.msp");
@@ -50,8 +52,8 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.edge");
             //MspManager.MergeMspFiles(@"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\input_msn_neg",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp");
-            MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
-                @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+            //MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
             //MspManager.Msp2TextAsMsdialAlignmentResultFormat(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.txt",

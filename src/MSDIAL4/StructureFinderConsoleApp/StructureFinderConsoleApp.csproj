@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BondPathStatistics.cs" />
+    <Compile Include="Code4CASMI.cs" />
     <Compile Include="Code4NPR2020.cs" />
     <Compile Include="MergeFragmentInfoManager.cs" />
     <Compile Include="Program.cs" />
