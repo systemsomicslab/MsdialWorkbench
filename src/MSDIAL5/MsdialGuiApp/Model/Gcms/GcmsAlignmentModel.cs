@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
         private readonly ProjectBaseParameter _projectParameter;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel?> _target;
@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
-            CalculateMatchScore calculateMatchScore,
+            CalculateMatchScore? calculateMatchScore,
             IMessageBroker broker)
             : base(alignmentFileBean, broker)
         {
