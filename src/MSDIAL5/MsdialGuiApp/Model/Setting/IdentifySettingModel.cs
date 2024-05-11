@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public interface IIdentificationSettingModel {
         bool IsReadOnly { get; }
-        DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
+        DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer);
         void LoadParameter(ParameterBase parameter);
     }
 
@@ -155,7 +155,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isCompleted;
 
-        public DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             var result = DataBaseStorage.CreateEmpty();
             if (IsReadOnly) {
                 return result;
@@ -167,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return result;
         }
 
-        private void SetAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        private void SetAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             var request = new ProcessMessageRequest("Loading msp, lbm and text libraries...",
                 async () =>
                 {
@@ -196,7 +196,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _broker.Publish(request);
         }
 
-        private void SetProteomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        private void SetProteomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             var request = new ProcessMessageRequest("Loading fasta libraries...",
                 async () =>
                 {
@@ -225,7 +225,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _broker.Publish(request);
         }
 
-        private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             var request = new ProcessMessageRequest("Building in silico lipid libraries...",
                 async () =>
                 {

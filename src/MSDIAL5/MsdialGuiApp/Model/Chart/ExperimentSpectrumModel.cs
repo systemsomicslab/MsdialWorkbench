@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IFileBean analysisFile,
             IDataProvider provider,
             ChromatogramPeakFeature peak,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             ParameterBase parameter) {
 
             RangeSelectableChromatogramModel = model;
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ChromatogramPeakFeature Peak { get; }
 
-        public IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> Refer { get; }
+        public IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> Refer { get; }
 
         public ParameterBase Parameter { get; }
 

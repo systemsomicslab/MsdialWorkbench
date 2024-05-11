@@ -42,7 +42,7 @@ namespace CompMs.Graphics.Core.Base
             return new AxisRange(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
         }
 
-        public AxisRange Union(AxisRange other) {
+        public AxisRange Union(AxisRange? other) {
             if (other == null) {
                 return this;
             }

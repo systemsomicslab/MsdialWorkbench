@@ -24,8 +24,10 @@ namespace CompMs.App.Msdial.Model.Export
             if (peaks is null) {
                 peaks = await task.ConfigureAwait(false);
             }
-            foreach (var peak in peaks) {
-                spotElement.Add(ToXml(calculator.Score(peak, reference)));
+            if (peaks is not null) {
+                foreach (var peak in peaks) {
+                    spotElement.Add(ToXml(calculator.Score(peak, reference)));
+                }
             }
             return spotElement;
         }

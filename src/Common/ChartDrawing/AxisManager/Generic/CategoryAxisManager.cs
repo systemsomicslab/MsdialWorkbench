@@ -10,7 +10,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         public CategoryAxisManager(
             IReadOnlyCollection<T> collection,
             Func<T, U> toKey,
-            Func<T, string> toLabel = null)
+            Func<T, string>? toLabel = null)
             : base(CountElement(collection, toKey)) {
 
             this.collection = collection;
@@ -84,7 +84,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return value;
         }
 
-        public CategoryAxisManager(IReadOnlyCollection<T> collection, Func<T, string> toLabel = null)
+        public CategoryAxisManager(IReadOnlyCollection<T> collection, Func<T, string>? toLabel = null)
             : base(collection, Identity, toLabel) {
         }
     }

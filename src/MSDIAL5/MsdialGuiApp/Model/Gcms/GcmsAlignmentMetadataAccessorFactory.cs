@@ -11,10 +11,10 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAlignmentMetadataAccessorFactory : IAlignmentMetadataAccessorFactory
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly ParameterBase _parameter;
 
-        public GcmsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
+        public GcmsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }

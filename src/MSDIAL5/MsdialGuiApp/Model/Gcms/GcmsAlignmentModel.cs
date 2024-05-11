@@ -121,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
             // MS spectrum
-            var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(alignmentFileBean);
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels msGraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));

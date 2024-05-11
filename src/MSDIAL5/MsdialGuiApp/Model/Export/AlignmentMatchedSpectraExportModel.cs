@@ -17,12 +17,12 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AlignmentMatchedSpectraExportModel : BindableBase, IAlignmentResultExportModel
     {
         private readonly AlignmentPeakSpotSupplyer _peakSpotSupplyer;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ConcurrentDictionary<int, MSDecLoader?> _loaders;
         private readonly IReadOnlyList<AnalysisFileBeanModel> _analysisFiles;
 
-        public AlignmentMatchedSpectraExportModel(AlignmentPeakSpotSupplyer peakSpotSupplyer, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IEnumerable<AnalysisFileBeanModel> analysisFiles, CompoundSearcherCollection compoundSearchers) {
+        public AlignmentMatchedSpectraExportModel(AlignmentPeakSpotSupplyer peakSpotSupplyer, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IEnumerable<AnalysisFileBeanModel> analysisFiles, CompoundSearcherCollection compoundSearchers) {
             _peakSpotSupplyer = peakSpotSupplyer;
             _refer = refer;
             _compoundSearchers = compoundSearchers;

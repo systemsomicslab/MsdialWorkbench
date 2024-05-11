@@ -993,7 +993,7 @@ namespace CompMs.MsdialCore.Parameter
     [MessagePackObject]
     public class ReferenceBaseParameter {
         [Key(0)]
-        public string MspFilePath { get; set; } = string.Empty;
+        public string? MspFilePath { get; set; } = string.Empty;
         [Key(1)]
         public string TextDBFilePath { get; set; } = string.Empty;
         [Key(2)]

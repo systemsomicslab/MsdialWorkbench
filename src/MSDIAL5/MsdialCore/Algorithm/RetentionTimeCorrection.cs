@@ -111,7 +111,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
+        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair>? stdList,
             List<double> xList, List<double> yList, double[] xOriginal) {
             List<double> predictedRts;
 
