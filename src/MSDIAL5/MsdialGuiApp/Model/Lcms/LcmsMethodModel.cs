@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => m.AlignmentFile).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(storage.Parameter.ProjectParam, exportMatForMsfinder, currentAlignmentFile);
         }
 

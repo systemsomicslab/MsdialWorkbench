@@ -71,6 +71,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
+            AlignmentSpotSource = spotsSource;
             Ms1Spots = spotsSource.Spots!.Items;
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Imms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, fileCollection, _dataBaseMapper, MatchResultEvaluator, InternalStandardSetModel, _parameter, broker).AddTo(Disposables);
@@ -206,6 +207,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public UndoManager UndoManager => _undoManager;
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+        public override AlignmentSpotSource AlignmentSpotSource { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }

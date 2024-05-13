@@ -1,5 +1,7 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
@@ -36,10 +38,10 @@ namespace CompMs.App.Msdial.Model.Setting
         internal readonly AnalysisParamOfMsfinder parameter;
         internal readonly AlignmentSpectraExportGroupModel exporter;
 
-        public InternalMsfinderSettingModel(ProjectBaseParameter projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> currentAlignmentFile)
+        public InternalMsfinderSettingModel(ProjectBaseParameter projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<IAlignmentModel?> currentAlignmentModel)
         {
             this.exporter = exporter;
-            this.CurrentAlignmentFile = currentAlignmentFile;
+            this.CurrentAlignmentModel = currentAlignmentModel;
             parameter = new AnalysisParamOfMsfinder();
             parameter.MS1PositiveAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Positive);
             parameter.MS1NegativeAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Negative);
@@ -392,7 +394,7 @@ namespace CompMs.App.Msdial.Model.Setting
             userDefinedProjectFolderName = "";
         }
 
-        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentAlignmentFile { get; }
+        public ReadOnlyReactivePropertySlim<IAlignmentModel?> CurrentAlignmentModel { get; }
 
         public FormulaFinderAdductIonSettingModel FormulaFinderAdductIonSetting { get;  }
         public MassToleranceType MassTolType
@@ -1195,9 +1197,11 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public List<MsfinderQueryFile> MsfinderQueryFiles { get; } = new List<MsfinderQueryFile>();
 
+        public InternalMsFinder InternalMsFinderModel { get; private set; }
+
         public void Process()
         {
-            if (CurrentAlignmentFile.Value == null) {
+            if (CurrentAlignmentModel.Value is null) {
                 return;
             }
             SetUserDefinedStructureDB();
@@ -1207,11 +1211,11 @@ namespace CompMs.App.Msdial.Model.Setting
             var dt = DateTime.Now;
             if (IsCreateNewProject)
             {
-                var directory = Path.GetDirectoryName(CurrentAlignmentFile.Value.FilePath); // project folder
+                var directory = Path.GetDirectoryName(CurrentAlignmentModel.Value.AlignmentFile.FilePath); // project folder
                 string foldername;
                 if (IsUseAutoDefinedFolderName)
                 {
-                    foldername = $"{CurrentAlignmentFile.Value.FileName}_{dt:yyyyMMddHHmmss}";
+                    foldername = $"{CurrentAlignmentModel.Value.AlignmentFile.FileName}_{dt:yyyyMMddHHmmss}";
                 }
                 else
                 {
@@ -1222,7 +1226,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 {
                     Directory.CreateDirectory(fullpath);
                 }
-                exporter.Export(CurrentAlignmentFile.Value, fullpath, null);
+                exporter.Export(CurrentAlignmentModel.Value.AlignmentFile, fullpath, null);
             }
             else
             {
@@ -1264,6 +1268,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 var finder = new StructureFinderBatchProcess();
                 finder.Process(MsfinderQueryFiles, parameter, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             }
+
+            
+            InternalMsFinderModel = new InternalMsFinder(parameter, CurrentAlignmentModel.Value.AlignmentFile, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots);
         }
 
         

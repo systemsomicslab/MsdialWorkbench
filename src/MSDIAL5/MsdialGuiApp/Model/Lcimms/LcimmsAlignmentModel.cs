@@ -129,6 +129,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
+            AlignmentSpotSource = new AlignmentSpotSource(alignmentFileBean, Container, DRIFT_CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, peakSpotFiltering).AddTo(Disposables);
             var filterableEvaluator = evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
@@ -301,6 +302,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public UndoManager UndoManager => _undoManager;
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+        public override AlignmentSpotSource AlignmentSpotSource { get; }
         public ReactiveProperty<AlignmentSpotPropertyModel?> Target { get; }
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult?> MsdecResult { get; }

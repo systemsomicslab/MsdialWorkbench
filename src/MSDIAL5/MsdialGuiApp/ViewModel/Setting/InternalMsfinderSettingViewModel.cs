@@ -1,4 +1,6 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
@@ -437,7 +439,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsCreateNewProject = model.ToReactivePropertySlimAsSynchronized(m => m.IsCreateNewProject).AddTo(Disposables);
             IsUseAutoDefinedFolderName = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseAutoDefinedFolderName).AddTo(Disposables);
 
-            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            char[] invalidChars = System.IO.Path.GetInvalidPathChars();
             UserDefinedProjectFolderName = model.ToReactivePropertyAsSynchronized(m => m.UserDefinedProjectFolderName, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => UserDefinedProjectFolderName)
                 .SetValidateNotifyError(path => path.IndexOfAny(invalidChars) >= 0 ? "Invalid character contains." : null).AddTo(Disposables);
@@ -472,24 +474,27 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsUseAutoDefinedFolderName.Inverse(),
                 invalidUserDefinedProjectFolderName,
             }.CombineLatestValuesAreAllTrue();
+
             Run = new[] {
-                model.CurrentAlignmentFile.Select(f => f != null),
+                model.CurrentAlignmentModel.Select(f => f is not null),
                 loadProjectAndFolderDoesNotExists.Inverse(),
                 createNewFolderAndInvalidFolderName.Inverse(),
             }.CombineLatestValuesAreAllTrue() // Commandが実行できる条件
-                .ToReactiveCommand().WithSubscribe(() =>
-                {
-                    model.Process();
-                }).AddTo(Disposables);
-            //Run = new ReactiveCommand().WithSubscribe(() => model.Process()).AddTo(Disposables);
+            .ToReactiveCommand().WithSubscribe(() =>
+            {
+                model.Process();
+                broker.Publish(InternalMsFinderViewModel);
+            }).AddTo(Disposables);
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {
                 model.Cancel();
             }).AddTo(Disposables);
         }
 
-        private readonly InternalMsfinderSettingModel model;    
-        
+        private readonly InternalMsfinderSettingModel model;
+
+        public InternalMsFinderViewModel InternalMsFinderViewModel { get; }
+
         public FormulaFinderAdductIonSettingViewModel FormulaFinderAdductIonSettingViewModel { get; }
 
         public ReactivePropertySlim<MassToleranceType> MassTolType { get; }

@@ -118,6 +118,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowInternalMsfinderSettingView);
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
+            broker.ToObservable<InternalMsFinderViewModel>()
+                .Subscribe(ShowChildViewWithDispose<InternalMsFinderView>("brabra", height: 400, width: 1000));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);

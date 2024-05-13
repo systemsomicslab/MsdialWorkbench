@@ -83,6 +83,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _target = target;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
+            AlignmentSpotSource = spotsSource;
 
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
@@ -243,6 +244,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
         }
 
+        public override AlignmentSpotSource AlignmentSpotSource { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public BarChartModel BarChartModel { get; }
