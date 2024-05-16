@@ -35,6 +35,7 @@
 		<None Remove="Resources\MolecularNetworking.ico" />
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
+		<None Remove="Resources\MUVR.R" />
 		<None Remove="Resources\notame.png" />
 		<None Remove="Resources\Notame.R" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
@@ -44,6 +45,7 @@
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\MUVR.R" />
 	  <EmbeddedResource Include="Resources\Notame.R" />
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>

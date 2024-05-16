@@ -75,21 +75,25 @@ namespace CompMs.App.Msdial.Model.Statistics {
         private string FileName = string.Empty;
 
         public void Run() {
-            NotameIonMode = GetIonMode();
-            NotameExport = GetExportFolder();
-            MessageBox.Show("Please wait until drift correction and batch correction are done.");
-            RunNotame();
-            RunMuvr();
-        }
-
-        private void RunNotame() {
-            var rReader = new NotameRReader();
-            rReader.Read();
-            var NotameR = rReader.rScript;
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             var engine = REngine.GetInstance();
             engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
+            NotameIonMode = GetIonMode();
+            NotameExport = GetExportFolder();
+            //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
+
+            RunNotame(engine);
+            RunMuvr(engine);
+            engine.Dispose();
+
+            MessageBox.Show("Output files are successfully created.");
+        }
+
+        private void RunNotame(REngine engine) {
+            var rReader = new NotameRReader();
+            rReader.Read();
+            var NotameR = rReader.rScript;
             engine.Evaluate("library(notame)");
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
@@ -97,29 +101,19 @@ namespace CompMs.App.Msdial.Model.Statistics {
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
-
             engine.Evaluate(NotameR);
-            MessageBox.Show("Drift correction and batch correction files are saved. MUVR processing started. Please wait for a minute.");
-            engine.Dispose();
         }
 
-        private void RunMuvr() {
+        private void RunMuvr(REngine engine) {
             var muvrRReader = new MuvrRReader();
             muvrRReader.Read();
             var MUVR = muvrRReader.muvrRScript;
-            REngine.SetEnvironmentVariables();
-            REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
-            var engine = REngine.GetInstance();
-            engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
             engine.Evaluate("library(notame)");
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
             engine.Evaluate("library(openxlsx)");
-            engine.SetSymbol("ppath", engine.CreateCharacter(NotameExport));
-
+            engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.Evaluate(MUVR);
-            MessageBox.Show("Output files are successfully created.");
-            engine.Dispose();
         }
     }
 }
