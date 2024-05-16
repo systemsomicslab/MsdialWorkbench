@@ -35,7 +35,6 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
             _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToArray();
             _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
-            var factor = searchParameter.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
         }
 
         private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID) {
@@ -83,7 +82,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var refQuery = _mspDB[i];
                 var refRetention = RetentionType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < tolerance);
-                if (Math.Abs(rValue - refRetention) < tolerance) {
+                if (!_searchParameter.IsUseTimeForAnnotationFiltering || Math.Abs(rValue - refRetention) < tolerance) {
                     var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI);
                     result.LibraryIDWhenOrdered = i;
                     result.AnnotatorID = _annotatorID;
