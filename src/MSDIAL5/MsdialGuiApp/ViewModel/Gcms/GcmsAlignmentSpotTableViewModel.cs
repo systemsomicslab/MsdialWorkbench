@@ -15,11 +15,17 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             MassMax = model.MassMax;
             RtMin = model.RtMin;
             RtMax = model.RtMax;
+            RiMin = model.RiMin;
+            RiMax = model.RiMax;
+            IsRiValid = model.IsRiValid;
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+        public double RiMin { get; }
+        public double RiMax { get; }
+        public bool IsRiValid { get; }
     }
 }

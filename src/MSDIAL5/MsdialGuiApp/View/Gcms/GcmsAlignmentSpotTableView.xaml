@@ -175,7 +175,12 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="RT(min)"
-                                    Binding="{Binding Path=TimesCenter, StringFormat=F4}"
+                                    Binding="{Binding Path=RT, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
+                <DataGridTextColumn Header="RI"
+                                    Binding="{Binding Path=RI, StringFormat=F4}"
+                                    Visibility="{Binding Path=Data.IsRiValid, Source={StaticResource TableVM}, Converter={StaticResource BooleanToVisibility}}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"

@@ -21,11 +21,17 @@ namespace CompMs.App.Msdial.Model.Gcms
             MassMax = spots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = spots.Select(s => s.RT).DefaultIfEmpty().Min();
             RtMax = spots.Select(s => s.RT).DefaultIfEmpty().Max();
+            RiMin = spots.Select(s => s.RI).DefaultIfEmpty().Min();
+            RiMax = spots.Select(s => s.RI).DefaultIfEmpty().Max();
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+        public double RiMin { get; }
+        public double RiMax { get; }
+
+        public bool IsRiValid => RiMin >= 0d;
     }
 }
