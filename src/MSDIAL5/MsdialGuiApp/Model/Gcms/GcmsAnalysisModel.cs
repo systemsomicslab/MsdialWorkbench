@@ -176,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var peakInformationModel = new PeakInformationMs1BasedModel(selectedSpectrum).AddTo(_disposables);
             peakInformationModel.Add(t => new RtPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.ChromXs.RT.Value));
-            if (parameter.RetentionType == RetentionType.RI) {
+            if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
                 peakInformationModel.Add(t => new RiPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.ChromXs.RI.Value));
             }
             peakInformationModel.Add(t => new QuantMassPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.PrecursorMz));
@@ -189,7 +189,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d));
-            if (parameter.RetentionType == RetentionType.RI) {
+            if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
                 compoundDetailModel.Add(r_ => new RiSimilarity(r_?.RiSimilarity ?? 0d));
             }
             compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));

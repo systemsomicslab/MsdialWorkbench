@@ -1194,6 +1194,8 @@ namespace CompMs.MsdialCore.Parameter
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
         [Key(7)]
         public MsRefSearchParameterBase LbmSearchParam { get; set; } = new MsRefSearchParameterBase();
+        [IgnoreMember]
+        public bool MayRiDictionaryImported => FileIdRiInfoDictionary.Count > 0;
     }
 
     [MessagePackObject]
