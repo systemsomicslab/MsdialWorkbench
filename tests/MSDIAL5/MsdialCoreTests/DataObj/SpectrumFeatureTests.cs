@@ -1,7 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.MSDec;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 namespace CompMs.MsdialCore.DataObj.Tests

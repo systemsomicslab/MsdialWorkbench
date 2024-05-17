@@ -197,9 +197,13 @@ namespace CompMs.App.Msdial.Model.Gcms
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
+                    peakInformationModel.Add(t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value));
                     break;
                 case AlignmentIndexType.RT:
                     peakInformationModel.Add(t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value));
+                    if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
+                        peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
+                    }
                     break;
             }
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));

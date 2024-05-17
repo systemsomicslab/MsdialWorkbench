@@ -12,14 +12,15 @@ namespace CompMs.Common.Utility {
     public sealed class RetentionIndexHandler {
         private readonly RiCompoundType _riCompoundType;
         private readonly Dictionary<int, float> _carbon2RtDict;
-        private readonly FiehnRiCoefficient _fiehnRiCoefficient;
+        private readonly FiehnRiCoefficient _fiehnRiCoefficient, _revFiehnRiCoefficient;
 
         public RetentionIndexHandler(RiCompoundType riCompoundType, Dictionary<int, float> carbon2RtDict)
         {
             _riCompoundType = riCompoundType;
             _carbon2RtDict = carbon2RtDict;
             if (riCompoundType == RiCompoundType.Fames) {
-                _fiehnRiCoefficient = GetFiehnRiCoefficient(carbon2RtDict, GetFiehnFamesDictionary());
+                _fiehnRiCoefficient = GetFiehnRiCoefficient(GetFiehnFamesDictionary(), carbon2RtDict);
+                _revFiehnRiCoefficient = GetFiehnRiCoefficient(carbon2RtDict, GetFiehnFamesDictionary());
             }
         }
 
@@ -42,7 +43,7 @@ namespace CompMs.Common.Utility {
                 case RiCompoundType.Alkanes:
                     return new RetentionTime(ConvertKovatsRiToRetentiontime(_carbon2RtDict, retentionIndex.Value));
                 case RiCompoundType.Fames:
-                    return new RetentionTime(ConvertFiehnRiToRetentionTime(_fiehnRiCoefficient, retentionIndex.Value));
+                    return new RetentionTime(ConvertFiehnRiToRetentionTime(_revFiehnRiCoefficient, retentionIndex.Value));
                 default:
                     throw new NotSupportedException($"RI compound type: {_riCompoundType}");
             }
@@ -53,9 +54,7 @@ namespace CompMs.Common.Utility {
         } 
 
         private RetentionIndex ConvertWithFiehnFames(RetentionTime retentionTime) {
-            var fiehnRiDict = GetFiehnFamesDictionary();
-            var fiehnRiCoeff = GetFiehnRiCoefficient(fiehnRiDict, _carbon2RtDict);
-            return new RetentionIndex(Math.Round(CalculateFiehnRi(fiehnRiCoeff, retentionTime.Value), 1));
+            return new RetentionIndex(Math.Round(CalculateFiehnRi(_fiehnRiCoefficient, retentionTime.Value), 1));
         }
 
         public static Dictionary<int, float> GetRiDictionary(string filePath) {

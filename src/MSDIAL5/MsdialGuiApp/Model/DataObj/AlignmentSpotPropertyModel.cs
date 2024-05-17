@@ -35,6 +35,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> _alignedPeakPropertiesModelProperty;
 
         public double RT => innerModel.TimesCenter.RT.Value;
+        public double RI => innerModel.TimesCenter.RI.Value;
         public double Drift => innerModel.TimesCenter.Drift.Value;
 
         public double TimesCenter {
