@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -409,7 +410,7 @@ namespace CompMs.MsdialCore.Algorithm
                 var leftRt = feature.ChromXsLeft.RT.Value;
                 var rightRt = feature.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-                using var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                using var peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(feature.Mass, param.CentroidMs1Tolerance), chromatogramRange);
                 using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
             }

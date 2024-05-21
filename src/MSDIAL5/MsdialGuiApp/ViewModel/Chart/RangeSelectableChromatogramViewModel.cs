@@ -3,23 +3,19 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Reactive;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    internal class RangeSelectableChromatogramViewModel : ViewModelBase
+    internal sealed class RangeSelectableChromatogramViewModel : ViewModelBase
     {
         public RangeSelectableChromatogramViewModel(RangeSelectableChromatogramModel model) {
             Model = model;
-            SelectedRanges = model.SelectedRanges.ToReadOnlyReactiveCollection().AddTo(Disposables);
             ChromatogramsViewModel = new ChromatogramsViewModel(model.ChromatogramModel);
             SelectedRange = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedRange).AddTo(Disposables);
 
-            var commandChange = model.SelectedRanges
-                .CollectionChangedAsObservable()
-                .ToUnit()
-                .StartWith(Unit.Default);
+            var commandChange = model.ObserveProperty(m => m.SelectedRange);
 
             SetMainRangeCommand = commandChange.Select(_ => model.CanSetMainRange())
                 .ToReactiveCommand()
@@ -44,9 +40,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand RemoveRangesCommand { get; }
 
-        public ReactivePropertySlim<Range?> SelectedRange { get; }
+        public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
-        public ReadOnlyReactiveCollection<RangeSelection> SelectedRanges { get; }
+        public ReadOnlyObservableCollection<RangeSelection> SelectedRanges => Model.SelectedRanges;
 
         public RangeSelectableChromatogramModel Model { get; }
     }

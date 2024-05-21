@@ -9,7 +9,7 @@ namespace CompMs.Graphics.AxisManager.Generic
     {
         public static ConstantAxisManager<T> Instance { get; } = new ConstantAxisManager<T>();
 
-        public Range Range { get; } = new Range(new AxisValue(-1d), new AxisValue(1d));
+        public AxisRange Range { get; } = new AxisRange(new AxisValue(-1d), new AxisValue(1d));
 
         public event EventHandler RangeChanged {
             add { }
@@ -28,7 +28,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return true;
         }
 
-        public void Focus(Range range) {
+        public void Focus(AxisRange range) {
             
         }
 

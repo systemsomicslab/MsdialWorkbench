@@ -34,7 +34,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             indexType = param.AlignmentIndexType;
         }
 
-        protected double GetQuantmass(List<AlignmentChromPeakFeature> peaks) {
+        protected double GetQuantmass(AlignmentChromPeakFeature[] peaks) {
             var repFileID = DataObjConverter.GetRepresentativeFileID(peaks);
             var repPeak = peaks.FirstOrDefault(peak => peak.FileID == repFileID);
             var mspId = repPeak.MspID();
@@ -99,7 +99,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            var peaklist = peaks.ToList();
+            var peaklist = peaks as AlignmentChromPeakFeature[] ?? peaks.ToArray();
             return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
             {
                 RI = new RetentionIndex(peaklist.Average(peak => peak.ChromXsTop.RI.Value)),
@@ -128,8 +128,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             var rtTol = maxRt.Value - minRt.Value;
 
             var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
-            return rawSpectra.GetMs1ExtractedChromatogram(centralMz, _parameter.CentroidMs1Tolerance, range)
-                .Smoothing(smoothingMethod, smoothingLevel);
+            using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range))
+            using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
+                return smoothed.AsPeakArray();
+            }
         }
     }
 
@@ -149,7 +151,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            var peaklist = peaks.ToList();
+            var peaklist = peaks as AlignmentChromPeakFeature[] ?? peaks.ToArray();
             return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RI.Value), ChromXType.RI, ChromXUnit.None)
             {
                 RT = new RetentionTime(peaklist.Average(peak => peak.ChromXsTop.RT.Value)),
@@ -183,13 +185,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             var rtTol = maxRt.Value - minRt.Value;
 
             var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
-            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(centralMz, _parameter.CentroidMs1Tolerance, range)
-                .Smoothing(smoothingMethod, smoothingLevel);
-            foreach (var peak in chromatogram) {
-                peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
-                peak.ChromXs.MainType = ChromXType.RI;
+            using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range))
+            using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
+                var peaks = smoothed.AsPeakArray();
+                foreach (var peak in peaks) {
+                    peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
+                    peak.ChromXs.MainType = ChromXType.RI;
+                }
+                return peaks;
             }
-            return chromatogram;
         }
     }
 }

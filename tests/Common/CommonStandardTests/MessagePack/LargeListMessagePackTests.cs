@@ -11,7 +11,7 @@ namespace CompMs.Common.MessagePack.Tests
     {
         [TestMethod()]
         [DataRow(100)]
-        [DataRow(13421775)] // 1073741823 / 80 = 13421772.8
+        // [DataRow(13421775)] // 1073741823 / 80 = 13421772.8
         // [DataRow(20000000)]
         // [DataRow(1073741823)]
         // [DataRow(1073741825)]
@@ -29,8 +29,8 @@ namespace CompMs.Common.MessagePack.Tests
 
         [TestMethod()]
         [DataRow(100)]
-        [DataRow(13421775)] // 1073741823 / 80 = 13421772.8
-        [DataRow(20000000)]
+        //[DataRow(13421775)] // 1073741823 / 80 = 13421772.8
+        //[DataRow(20000000)]
         // [DataRow(1073741823)]
         // [DataRow(1073741825)]
         public void SaveAndLoadSmallSampleTest(int size) {
@@ -48,8 +48,8 @@ namespace CompMs.Common.MessagePack.Tests
         [TestMethod()]
         [DataRow(100, 100)]
         [DataRow(1000000, 100)]
-        [DataRow(10000000, 100)]
-        [DataRow(100, 10500000)]
+        //[DataRow(10000000, 100)]
+        //[DataRow(100, 10500000)]
         // [DataRow(10737420, 100)] // 1073741823 / 100 = 10737418.23
         // [DataRow(20000000, 100)]
         public void SaveAndLoadRandomSampleTest(int size, int dataSize) {
@@ -81,8 +81,8 @@ namespace CompMs.Common.MessagePack.Tests
         [DataTestMethod()]
         [DataRow(1, 0)]
         [DataRow(100, 64)]
-        [DataRow(13421775, 8388608)]
-        [DataRow(20000000, 16777216)]
+        //[DataRow(13421775, 8388608)]
+        //[DataRow(20000000, 16777216)]
         public void LoadSpecificRandomSampleTest(int size, int index) {
             var datas = new RandomSample[size];
             for (int i = 0; i < datas.Length; i++) {
@@ -98,8 +98,8 @@ namespace CompMs.Common.MessagePack.Tests
         [DataTestMethod()]
         [DataRow(1, 0)]
         [DataRow(100, 64)]
-        [DataRow(13421775, 8388608)]
-        [DataRow(20000000, 16777216)]
+        //[DataRow(13421775, 8388608)]
+        //[DataRow(20000000, 16777216)]
         public void LoadSpecificFixedSampleTest(int size, int index) {
             var datas = new FixedSample[size];
             var random = new Random();

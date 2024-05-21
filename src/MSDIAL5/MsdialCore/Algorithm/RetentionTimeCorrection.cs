@@ -60,8 +60,8 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
-                var peaklist = chromatogram.Peaks.Select(peak => ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
+                var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {
@@ -111,7 +111,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
+        public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBeanUsingLinearMethod(RetentionTimeCorrectionParam rtParam, List<StandardPair>? stdList,
             List<double> xList, List<double> yList, double[] xOriginal) {
             List<double> predictedRts;
 
@@ -165,7 +165,7 @@ namespace CompMs.MsdialCore.Algorithm {
             for (var i = 0; i < x.Count; i++) {
                 peaks.Add(ChromatogramPeak.Create(i, 0, y[i], new RetentionTime(x[i])));
             }
-            var speaklist = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min).Smoothing(SmoothingMethod.SimpleMovingAverage, 50);
+            var speaklist = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(SmoothingMethod.SimpleMovingAverage, 50).AsPeakArray();
             return speaklist.Select(z => z.Intensity).ToList();
         }
 

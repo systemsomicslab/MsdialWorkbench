@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Export
             _handler.License = _studyContextModel.License;
             _handler.Instrument = _studyContextModel.Instrument;
             _handler.InstrumentType = _studyContextModel.InstrumentType;
-            _handler.ContributorIdentifier = ContributorID;
+            _handler.ContributorIdentifier = ContributorID ?? string.Empty;
 
             var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
             var loader = fileBeanModel.MSDecLoader;

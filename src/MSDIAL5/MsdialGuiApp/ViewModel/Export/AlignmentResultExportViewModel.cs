@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                ExportDirectory = fbd.SelectedPath;
+                ExportDirectory = fbd.SelectedPath!;
             }
         }
 

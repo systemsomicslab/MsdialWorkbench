@@ -60,6 +60,10 @@ namespace CompMs.App.Msdial.Model.Export
             public string Label { get; }
 
             async Task IExport.ExportAsync(AlignmentSpotPropertyModel spot) {
+                var decResult = await _file.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID).ConfigureAwait(false);
+                if (decResult is null) {
+                    return;
+                }
                 var request = new SelectFolderRequest
                 {
                     Title = "Choose the folder",
@@ -70,7 +74,6 @@ namespace CompMs.App.Msdial.Model.Export
                 }
                 string destDirectory = request.SelectedPath!;
                 var fileName = _fileName.Invoke(spot);
-                var decResult = await _file.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID).ConfigureAwait(false);
                 using var stream = File.Open(Path.Combine(destDirectory, fileName), FileMode.Create);
                 _exporter.Export(stream, spot.innerModel, decResult);
             }

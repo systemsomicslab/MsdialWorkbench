@@ -3315,9 +3315,10 @@ namespace CompMs.Common.Lipidomics
                 {
                     oxidizedCount = oxidizedmoiety.Split(',').Length;
                 }
-                else
+                else if(oxidizedmoiety.Contains("O"))
                 {
                     int.TryParse(oxidizedmoiety.Replace("O", string.Empty), out oxidizedCount);
+                    if (oxidizedCount == 0) {  oxidizedCount = 1; }
                 }
 
                 ////modified by MT 2020/12/11 & 2021/01/12

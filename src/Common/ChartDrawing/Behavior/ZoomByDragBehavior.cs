@@ -140,13 +140,13 @@ namespace CompMs.Graphics.Behavior
             }
         }
 
-        static Range RenderPointsToRange(double u, double v, double w, IAxisManager am, bool flipped) {
+        static AxisRange RenderPointsToRange(double u, double v, double w, IAxisManager am, bool flipped) {
             var uu = am.TranslateFromRenderPoint(u, flipped, w);
             var vv = am.TranslateFromRenderPoint(v, flipped, w);
             if (uu.Value <= vv.Value)
-                return new Range(uu, vv);
+                return new AxisRange(uu, vv);
             else
-                return new Range(vv, uu);
+                return new AxisRange(vv, uu);
         }
     }
 }

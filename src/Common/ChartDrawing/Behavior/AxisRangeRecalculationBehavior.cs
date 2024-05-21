@@ -19,7 +19,9 @@ namespace CompMs.Graphics.Behavior
         public static void SetIsEnabled(DependencyObject d, bool value) => d.SetValue(IsEnabledProperty, BooleanBoxes.Box(value));
 
         private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var fe = (FrameworkElement)d;
+            if (!(d is FrameworkElement fe)) {
+                return;
+            }
             var hAxis = GetHorizontalAxis(fe);
             var vAxis = GetVerticalAxis(fe);
             if ((bool)e.NewValue) {

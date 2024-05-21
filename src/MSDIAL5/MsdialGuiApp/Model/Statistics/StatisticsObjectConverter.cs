@@ -120,9 +120,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 var spotID = alignProp.MasterAlignmentID;
                 if (!metaboliteIDs.Contains(spotID)) continue;
                 counterSample = 0;
-                var properties = alignProp.AlignedPeakProperties;
+                var properties = alignProp.AlignedPeakPropertiesModelProperty.Value;
+                if (properties is null) {
+                    continue;
+                }
                 for (int j = 0; j < files.Count; j++) {
-                    if (files[j].AnalysisFileIncluded == true) {
+                    if (files[j].AnalysisFileIncluded) {
                         dataArray[counterSample, counterMetabolite] = properties[j].NormalizedPeakHeight;
                         counterSample++;
                     }

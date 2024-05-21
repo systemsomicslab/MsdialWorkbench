@@ -101,7 +101,7 @@ namespace CompMs.Graphics.Core.Base
             InvalidateVisual();
         }
 
-        public Range RangeX {
+        public AxisRange RangeX {
             get => HorizontalAxis?.Range;
             set {
                 if (HorizontalAxis != null)
@@ -109,7 +109,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        public Range RangeY {
+        public AxisRange RangeY {
             get => VerticalAxis?.Range;
             set {
                 if (VerticalAxis != null)
