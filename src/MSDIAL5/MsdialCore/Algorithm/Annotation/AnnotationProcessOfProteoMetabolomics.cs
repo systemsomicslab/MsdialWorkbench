@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> moleculeQueryFactories,
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> peptideQueryFactories,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> moleculeRefer, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> peptideRefer) {
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> moleculeRefer, IMatchResultRefer<PeptideMsReference?, MsScanMatchResult?> peptideRefer) {
 
             _moleculeQueryFactories = moleculeQueryFactories ?? throw new ArgumentNullException(nameof(moleculeQueryFactories));
             _peptideQueryFactories = peptideQueryFactories ?? throw new ArgumentNullException(nameof(peptideQueryFactories));

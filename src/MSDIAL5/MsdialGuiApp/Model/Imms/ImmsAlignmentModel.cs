@@ -97,8 +97,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
-                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
-                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -258,7 +258,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public void SaveSpectra(string filename) {
-            if (Target.Value is not AlignmentSpotPropertyModel spot) {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || MsdecResult.Value is not { } msdec) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return;
             }
@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 file,
                 spot.innerModel,
-                MsdecResult.Value,
+                msdec,
                 _dataBaseMapper,
                 _parameter);
         }

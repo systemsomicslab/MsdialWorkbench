@@ -19,22 +19,24 @@ namespace CompMs.Common.MessagePack {
         static byte[] buffer = null;
         static byte[] bufferLz = null;
 
-        public static byte[] GetBuffer()
+        private static byte[] GetBuffer()
         {
-            if (buffer == null)
-            {
-                buffer = new byte[65536];
-            }
-            return buffer;
+            return new byte[65536];
+            //if (buffer is null)
+            //{
+            //    buffer = new byte[65536];
+            //}
+            //return buffer;
         }
 
-        public static byte[] GetBufferLZ4()
+        private static byte[] GetBufferLZ4()
         {
-            if (bufferLz == null)
-            {
-                bufferLz = new byte[65536];
-            }
-            return bufferLz;
+            return new byte[65536];
+            //if (bufferLz is null)
+            //{
+            //    bufferLz = new byte[65536];
+            //}
+            //return bufferLz;
         }
 
         public static IFormatterResolver DefaultResolver {

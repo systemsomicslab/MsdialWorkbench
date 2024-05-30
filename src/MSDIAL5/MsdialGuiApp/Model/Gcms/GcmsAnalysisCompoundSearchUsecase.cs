@@ -13,12 +13,12 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAnalysisCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, Ms1BasedSpectrumFeature>
     {
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
 
-        public GcmsAnalysisCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
+        public GcmsAnalysisCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
-            _calculateMatchScore = calculateMatchScore;
-            SearchParameter = calculateMatchScore.SearchParameter;
+            SearchParameter = calculateMatchScore?.CopySearchParameter();
+            _calculateMatchScore = calculateMatchScore?.With(SearchParameter);
         }
 
         public IList SearchMethods => Array.Empty<object>();

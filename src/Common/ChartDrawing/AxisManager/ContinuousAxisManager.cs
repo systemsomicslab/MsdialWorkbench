@@ -8,7 +8,7 @@ namespace CompMs.Graphics.AxisManager
     public class ContinuousAxisManager : FreezableAxisManager
     {
         static ContinuousAxisManager() {
-            InitialRangeProperty.OverrideMetadata(typeof(ContinuousAxisManager), new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged, CoerceInitialRange));
+            InitialRangeProperty.OverrideMetadata(typeof(ContinuousAxisManager), new PropertyMetadata(new AxisRange(minimum: 0, maximum: 1), OnInitialRangeChanged, CoerceInitialRange));
         }
 
         private static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -28,7 +28,7 @@ namespace CompMs.Graphics.AxisManager
             }
 
             var r = axis.ChartMargin;
-            return new Range(
+            return new AxisRange(
                 minimum: min - ((max - min) * r?.Left ?? 0d),
                 maximum: max + ((max - min) * r?.Right ?? 0d)
             );

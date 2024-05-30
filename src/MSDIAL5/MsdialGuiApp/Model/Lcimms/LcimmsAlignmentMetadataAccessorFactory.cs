@@ -11,10 +11,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 {
     internal sealed class LcimmsAlignmentMetadataAccessorFactory : IAlignmentMetadataAccessorFactory
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly MsdialLcImMsParameter _parameter;
 
-        public LcimmsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, MsdialLcImMsParameter parameter) {
+        public LcimmsAlignmentMetadataAccessorFactory(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, MsdialLcImMsParameter parameter) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }

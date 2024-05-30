@@ -1,17 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace CompMs.Graphics.Core.Base
 {
-    [TypeConverter(typeof(RangeTypeConverter))]
-    public class Range
+    [TypeConverter(typeof(AxisRangeTypeConverter))]
+    public sealed class AxisRange : IEquatable<AxisRange>
     {
         public AxisValue Minimum { get; private set; }
         public AxisValue Maximum { get; private set; }
 
-        public Range(AxisValue minimum, AxisValue maximum) {
+        public AxisRange(AxisValue minimum, AxisValue maximum) {
             if (minimum <= maximum) {
                 Minimum = minimum;
                 Maximum = maximum;
@@ -31,31 +30,35 @@ namespace CompMs.Graphics.Core.Base
             return Minimum <= value && value <= Maximum;
         }
 
-        public bool Contains(Range other)
+        public bool Contains(AxisRange other)
         {
             return Contains(other.Minimum) && Contains(other.Maximum);
         }
 
-        public Range Intersect(Range other) {
+        public AxisRange Intersect(AxisRange other) {
             if (other == null) {
                 return this;
             }
-            return new Range(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
+            return new AxisRange(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
         }
 
-        public Range Union(Range other) {
+        public AxisRange Union(AxisRange? other) {
             if (other == null) {
                 return this;
             }
-            return new Range(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
+            return new AxisRange(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
         }
 
         public override string ToString() {
             return $"{Minimum.Value}-{Maximum.Value}";
         }
+
+        public bool Equals(AxisRange other) {
+            return !(other is null) && Maximum == other.Maximum && Minimum == other.Minimum;
+        }
     }
 
-    public class RangeTypeConverter : TypeConverter
+    public sealed class AxisRangeTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
             return sourceType == typeof(string);
@@ -71,7 +74,7 @@ namespace CompMs.Graphics.Core.Base
             if (!double.TryParse(values[0].Trim(), out var min)) return null;
             if (!double.TryParse(values[1].Trim(), out var max)) return null;
 
-            return new Range(new AxisValue(min), new AxisValue(max));
+            return new AxisRange(new AxisValue(min), new AxisValue(max));
         }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
@@ -79,7 +82,7 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
-            return (value is Range range) ? $"{range.Minimum.Value},{range.Maximum.Value}" : null;
+            return (value is AxisRange range) ? $"{range.Minimum.Value},{range.Maximum.Value}" : null;
         }
     }
 }

@@ -17,10 +17,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         public StandardCompound Compound => _compound;
 
         public void Commit() {
-            _compound.StandardName = StandardName;
+            _compound.StandardName = StandardName ?? string.Empty;
             _compound.MolecularWeight = MolecularWeight;
             _compound.Concentration = Concentration;
-            _compound.TargetClass = TargetClass;
+            _compound.TargetClass = TargetClass ?? string.Empty;
             _compound.DilutionRate = DilutionRate;
             _compound.PeakID = PeakID;
         }

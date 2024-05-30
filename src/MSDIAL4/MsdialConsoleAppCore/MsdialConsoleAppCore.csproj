@@ -2,10 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>
-      net472;
-      netcoreapp3.1
-    </TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1;net8</TargetFrameworks>
     <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
     <AssemblyName>MsdialConsoleApp</AssemblyName>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>

@@ -1,17 +1,16 @@
-﻿using CompMs.MsdialCore.MSDec;
+﻿using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
     internal sealed class PeakSpotModel
     {
-        public PeakSpotModel(IPeakSpotModel peakSpot, MSDecResult msdec)
+        public PeakSpotModel(IPeakSpotModel peakSpot, IMSScanProperty msscan)
         {
             PeakSpot = peakSpot;
-            MSDecResult = msdec;
+            MsScan = msscan;
         }
 
         public IPeakSpotModel PeakSpot { get; }
-
-        public MSDecResult MSDecResult { get; }
+        public IMSScanProperty MsScan { get; }
     }
 }

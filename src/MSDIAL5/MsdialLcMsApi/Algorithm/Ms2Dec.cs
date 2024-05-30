@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -106,7 +107,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectrum = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
-            var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
+            var ms1Peaklist = ((Chromatogram)rawSpectrum.GetMS1ExtractedChromatogram(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange)).AsPeakArray();
 
             var startIndex = ms1Peaklist[0].ID;
             var endIndex = ms1Peaklist[ms1Peaklist.Count - 1].ID;

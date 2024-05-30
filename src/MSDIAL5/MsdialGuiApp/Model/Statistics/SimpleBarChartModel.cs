@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             if (items.IsEmptyOrNull()) return;
 
             XAxis = new CategoryAxisManager<string>(items.Select(loading => loading.Legend).ToArray());
-            YAxis = new AbsoluteAxisManager(new Range(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
+            YAxis = new AbsoluteAxisManager(new AxisRange(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
         }
         public string? XAxisTitle {
             get => xAxisTitle;

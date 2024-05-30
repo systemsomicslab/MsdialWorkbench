@@ -5,10 +5,12 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -48,12 +50,11 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
-        private readonly IWholeChromatogramLoader _ticLoader, _bpcLoader;
-        private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
+        private readonly RawSpectra _rawSpectra;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore? calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
             var peakPickParameter = parameter.PeakPickBaseParam;
             var chromDecParameter = parameter.ChromDecBaseParam;
@@ -66,6 +67,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _calculateMatchScore = calculateMatchScore;
             _broker = broker;
             UndoManager = new UndoManager().AddTo(_disposables);
+            CompoundSearcher = new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore);
 
             var selectedSpectrum = _spectrumFeatures.SelectedSpectrum;
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
@@ -80,16 +82,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);
 
             IDataProvider provider = providerFactory.Create(file);
-
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.File.AcquisitionType);
-            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, peakPickParameter);
-            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
-            var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            _eicLoader = eicLoader2;
+            _rawSpectra = new RawSpectra(provider, parameter.IonMode, file.File.AcquisitionType);
 
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
+            var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
             EicLoader = tableEicLoader;
             EicModel = EicModel.CreateBuilder(string.Empty, string.Empty, string.Empty)
@@ -104,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType, chromDecParameter);
             var decLoader = file.MSDecLoader;
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, _spectrumFeatures.Items);
-            var refLoader = (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(dbMapper);
+            var refLoader = (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(dbMapper);
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
 
@@ -138,11 +135,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             var spectra = new RawSpectra(provider, projectParameter.IonMode, file.AcquisitionType);
             var rawChromatograms = selectedSpectrum.SkipNull()
                 .SelectSwitch(feature => rawSpectrumLoader_.LoadScanAsObservable(feature).CombineLatest(numberOfChromatograms, (IMSScanProperty? scan, int number) => (feature, spectrum: (IEnumerable<SpectrumPeak>?)scan?.Spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass) ?? Array.Empty<SpectrumPeak>())))
-                .Select(pair => spectra.GetMs1ExtractedChromatograms_temp2(pair.spectrum.Select(s => s.Mass), peakPickParameter.CentroidMs1Tolerance, new ChromatogramRange(pair.feature.QuantifiedChromatogramPeak.PeakFeature, ChromXType.RT, ChromXUnit.Min)))
+                .Select(pair => spectra.GetMS1ExtractedChromatograms(pair.spectrum.Select(s => s.Mass), peakPickParameter.CentroidMs1Tolerance, new ChromatogramRange(pair.feature.QuantifiedChromatogramPeak.PeakFeature, ChromXType.RT, ChromXUnit.Min)))
                 .Select(chromatograms => chromatograms.Select(chromatogram => chromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, peakPickParameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",
-                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram.AsPeakArray().Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.ExtractedMz.ToString("F2"))).ToList(),
+                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F2"))).ToList(),
                     "EI chromatograms",
                     "Retention time [min]",
                     "Abundance"));
@@ -152,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 .CombineLatest(numberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",
-                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F2") ?? "NA")).ToList(),
+                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F2") ?? "NA")).ToList(),
                     "EI chromatograms",
                     "Retention time [min]",
                     "Abundance"));
@@ -179,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var peakInformationModel = new PeakInformationMs1BasedModel(selectedSpectrum).AddTo(_disposables);
             peakInformationModel.Add(t => new RtPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.ChromXs.RT.Value));
-            if (parameter.RetentionType == RetentionType.RI) {
+            if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
                 peakInformationModel.Add(t => new RiPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.ChromXs.RI.Value));
             }
             peakInformationModel.Add(t => new QuantMassPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t?.MatchResults.Representative)?.PrecursorMz));
@@ -192,7 +189,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d));
-            if (parameter.RetentionType == RetentionType.RI) {
+            if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
                 compoundDetailModel.Add(r_ => new RiSimilarity(r_?.RiSimilarity ?? 0d));
             }
             compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
@@ -213,8 +210,11 @@ namespace CompMs.App.Msdial.Model.Gcms
                 (rtSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value),
                 (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
+
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode);
         }
 
+        public AnalysisFileBeanModel AnalysisFileModel => _file;
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
         public RawDecSpectrumsModel RawDecSpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
@@ -232,6 +232,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAnalysisPeakTableModel PeakTableModel { get; }
         public UndoManager UndoManager { get; }
 
+        public GcmsAnalysisCompoundSearchUsecase CompoundSearcher { get; }
+
         public IObservable<bool> CanSetUnknown => _spectrumFeatures.SelectedSpectrum.Select(t => !(t is null));
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
@@ -239,8 +241,11 @@ namespace CompMs.App.Msdial.Model.Gcms
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
+            var chromatogramRange = new ChromatogramRange(_peakPickParameter.RetentionTimeBegin, _peakPickParameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            return new LoadChromatogramsUsecase(_rawSpectra, chromatogramRange, _peakPickParameter, _projectParameter.IonMode, _peaks);
         }
+
+        public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public CompoundSearchModel<Ms1BasedSpectrumFeature>? CreateCompoundSearchModel() {
             if (_spectrumFeatures.SelectedSpectrum.Value is not Ms1BasedSpectrumFeature spectrumFeature) {
@@ -251,7 +256,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var compoundSearch = new CompoundSearchModel<Ms1BasedSpectrumFeature>(
                 _file,
                 spectrumFeature,
-                new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore),
+                CompoundSearcher,
                 plotService,
                 new SetAnnotationUsecase(spectrumFeature.Molecule, spectrumFeature.MatchResults, UndoManager));
             compoundSearch.Disposables.Add(plotService);

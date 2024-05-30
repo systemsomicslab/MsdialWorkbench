@@ -157,8 +157,16 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
             double peakAreaAboveZero = 0d;
-            for (int i = leftId; i < rightId; i++)
-                peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value);
+            if (center.Type == ChromXType.RI) {
+                for (int i = leftId; i < rightId; i++) {
+                    peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.RT.Value - sPeaklist[i].ChromXs.RT.Value);
+                }
+            }
+            else {
+                for (int i = leftId; i < rightId; i++) {
+                    peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value);
+                }
+            }
 
             System.Diagnostics.Debug.Assert(sPeaklist[id].ChromXs != null);
             System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);

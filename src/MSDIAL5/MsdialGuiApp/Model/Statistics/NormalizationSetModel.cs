@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             AlignmentResultContainer container,
             IReadOnlyList<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             InternalStandardSetModel isSetModel,
             ParameterBase parameter,

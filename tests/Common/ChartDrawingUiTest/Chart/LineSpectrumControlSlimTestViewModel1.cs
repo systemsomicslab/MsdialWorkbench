@@ -18,7 +18,7 @@ namespace ChartDrawingUiTest.Chart
             var horizontalAxis = ContinuousAxisManager<double>.Build(Series, p => p.X);
             horizontalAxis.ChartMargin = new RelativeMargin(0.05);
             HorizontalAxis = horizontalAxis;
-            var verticalAxis = ContinuousAxisManager<double>.Build(Series, p => p.Y, new Range(0d, 0d));
+            var verticalAxis = ContinuousAxisManager<double>.Build(Series, p => p.Y, new AxisRange(0d, 0d));
             verticalAxis.ChartMargin = new RelativeMargin(0.05);
             VerticalAxis = verticalAxis;
         }

@@ -5,12 +5,14 @@
 
     <IsPackable>false</IsPackable>
     <LangVersion>12</LangVersion>
+    <Nullable>annotations</Nullable>
 
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
