@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net481</TargetFrameworks>
+    <TargetFrameworks>net48;net481;net472</TargetFrameworks>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MSDIAL</AssemblyName>
     <OutputType>WinExe</OutputType>
