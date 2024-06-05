@@ -195,7 +195,6 @@
                         Twitter
                     </Hyperlink>
                 </TextBlock>
-                <Button Content="Setting MSFINDER parameter" Command="{Binding ShowMsfinderSettingViewCommand}"/>
             </StackPanel>
         </Grid>
 
