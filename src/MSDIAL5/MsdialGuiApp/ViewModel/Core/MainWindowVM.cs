@@ -87,16 +87,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             _broker.ToObservable<ITaskNotification>()
                 .Subscribe(_taskProgressCollection.Update)
                 .AddTo(Disposables);
-
-            //InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(Model.InternalMsfinderSettingModel, _broker).AddTo(Disposables);
-            //ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
         }
 
         private readonly IMessageBroker _broker;
-
-        //public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
-
-        //public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 
         public MainWindowModel Model { get; }
 
