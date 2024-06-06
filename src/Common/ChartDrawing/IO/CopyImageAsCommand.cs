@@ -6,7 +6,7 @@ namespace CompMs.Graphics.IO
 {
     public class CopyImageAsCommand : ICommand
     {
-        public static CopyImageAsCommand BitmapInstance { get; } = new CopyImageAsCommand(ImageFormat.Png);
+        public static CopyImageAsCommand BitmapInstance { get; } = new CopyImageAsCommand(ImageFormat.Png) { Converter = SetBackgroundConverter.White };
 
         public static CopyImageAsCommand EmfInstance { get; } = new CopyImageAsCommand(ImageFormat.Emf);
 
