@@ -11,7 +11,7 @@ namespace CompMs.Graphics.IO
     {
         public static SaveImageAsCommand Instance { get; } = new SaveImageAsCommand();
 
-        public static SaveImageAsCommand PngInstance { get; } = new SaveImageAsCommand(ImageFormat.Png);
+        public static SaveImageAsCommand PngInstance { get; } = new SaveImageAsCommand(ImageFormat.Png) { Converter = SetBackgroundConverter.White };
 
         public static SaveImageAsCommand EmfInstance { get; } = new SaveImageAsCommand(ImageFormat.Emf);
 
