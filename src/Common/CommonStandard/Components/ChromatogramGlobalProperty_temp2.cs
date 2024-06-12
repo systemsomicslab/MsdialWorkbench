@@ -228,7 +228,7 @@ namespace CompMs.Common.Components
             var results = new List<PeakDetectionResult>();
             var infinitLoopCheck = false;
             var infinitLoopID = 0;
-            var margin = Math.Max((int)minimumDatapointCriteria, 5);
+            var margin = Math.Max((int)minimumDatapointCriteria, 2);
             for (int i = margin; i < _globalProperty.SmoothedChromatogram.Length - margin; i++) {
                 if (IsPeakStarted(i, slopeNoiseFoldCriteria)) {
                     var start = _globalProperty.SearchRealLeftEdge(i);
