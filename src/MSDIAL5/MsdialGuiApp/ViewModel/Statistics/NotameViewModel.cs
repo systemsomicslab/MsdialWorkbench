@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
@@ -122,6 +123,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public DelegateCommand RunNotameCommand { get; }
 
         private async void RunNotame() {
+            var task = TaskNotification.Start($"Notame running in the background...");
+            _broker.Publish(task);
             await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
             _notame.Run();
         }

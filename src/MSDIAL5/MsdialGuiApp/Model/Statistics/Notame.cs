@@ -86,10 +86,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
             NotameExport = GetExportFolder(ExportDirectory);
             RPath = GetExportFolder(RDirectory);
             REngine.SetEnvironmentVariables();
-            //REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
             var engine = REngine.GetInstance();
-            //engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
             engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
             //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
 
