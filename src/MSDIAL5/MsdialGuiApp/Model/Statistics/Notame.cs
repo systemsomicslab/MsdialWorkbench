@@ -28,8 +28,14 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
         private string _exportDirectory = string.Empty;
 
-        public string GetExportFolder() {
-            var folder = ExportDirectory.Replace("\\", "/");
+        public string RDirectory {
+            get => _rDirectory;
+            set => SetProperty(ref _rDirectory, value);
+        }
+        private string _rDirectory = "C:/Program files/r/r-4.3.2";
+
+        public string GetExportFolder(string directory) {
+            var folder = directory.Replace("\\", "/");
             return folder;
         }
 
@@ -73,14 +79,18 @@ namespace CompMs.App.Msdial.Model.Statistics {
         private string NotameIonMode = string.Empty;
         private string NotameExport = string.Empty;
         private string FileName = string.Empty;
+        private string RPath = string.Empty;
 
         public void Run() {
-            REngine.SetEnvironmentVariables();
-            REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
-            var engine = REngine.GetInstance();
-            engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
             NotameIonMode = GetIonMode();
-            NotameExport = GetExportFolder();
+            NotameExport = GetExportFolder(ExportDirectory);
+            RPath = GetExportFolder(RDirectory);
+            REngine.SetEnvironmentVariables();
+            //REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
+            REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
+            var engine = REngine.GetInstance();
+            //engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
+            engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
             //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
 
             RunNotame(engine);

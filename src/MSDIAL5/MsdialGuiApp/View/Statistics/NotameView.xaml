@@ -14,6 +14,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <Grid Margin="8" Grid.Row="0">
@@ -69,5 +70,24 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <Grid Margin="8" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="R directory:"
+                    VerticalAlignment="Center"
+                    Grid.Column="0"/>
+            <TextBox Text="{Binding RDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                    Margin="5,0"
+                    Grid.Column="1"/>
+            <Button Content="Browse"
+                    Command="{Binding BrowseRDirectoryCommand}"
+                    Grid.Column="2"/>
+        </Grid>
     </Grid>
 </UserControl>

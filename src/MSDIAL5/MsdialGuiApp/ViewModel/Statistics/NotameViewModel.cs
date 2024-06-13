@@ -34,14 +34,28 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             AlignmentFile = notame.AlignmentFilesForExport.SelectedFile;
             ExportDirectory = notame.ExportDirectory;
-
+            RDirectory = notame.RDirectory;
             ExportViewModel = new AlignmentExportGroupViewModel(notame.ExportModel).AddTo(Disposables);
         }
         
+        [Required(ErrorMessage = "Please browse R directory.")]
+        [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
+        public string RDirectory { 
+            get => _rDirectory; 
+            set {
+                if (SetProperty(ref _rDirectory, value)) {
+                    if (!ContainsError(nameof(_rDirectory))) {
+                        _notame.RDirectory = _rDirectory;
+                    }
+                }
+            }
+        }
+        private string _rDirectory = string.Empty;
+
         [Required(ErrorMessage = "Please browse a folder for result export.")]
         [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
-        public string ExportDirectory { 
-            get => _exportDirectory; 
+        public string ExportDirectory {
+            get => _exportDirectory;
             set {
                 if (SetProperty(ref _exportDirectory, value)) {
                     if (!ContainsError(nameof(_exportDirectory))) {
@@ -89,6 +103,19 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             if (win.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 ExportDirectory = win.SelectedPath;
+            }
+        }
+
+        public DelegateCommand BrowseRDirectoryCommand => _browseRDirectoryCommand ?? (_browseRDirectoryCommand = new DelegateCommand(BrowseRDirectory));
+        private DelegateCommand? _browseRDirectoryCommand;
+
+        private void BrowseRDirectory() {
+            var win = new Graphics.Window.SelectFolderDialog {
+                Title = "Choose R directory.",
+            };
+
+            if (win.ShowDialog() == Graphics.Window.DialogResult.OK) {
+                RDirectory = win.SelectedPath;
             }
         }
 
