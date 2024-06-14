@@ -22,7 +22,7 @@
             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">
                 NOTAME ('NOn-TArgeted MEtabolomics') is an R-based tool to preprocess and clean metabolomics data (RStudio.exe will be needed).<LineBreak></LineBreak>
                 In order to use Notame:<LineBreak></LineBreak>1. You need to have a class property with 2 analysis parameters connected with underbar (ex. Time_Age).
-                <LineBreak></LineBreak>2. Quality control samples should be more than 3 (you can set QC class as 'QC_QC' and blank as just 'blank').<LineBreak></LineBreak>
+                <LineBreak></LineBreak>2. Quality control samples should be more than 3 (you can set QC's class as 'QC_QC' and blank's as just 'blank').<LineBreak></LineBreak>
                 For further information: 
                 <Hyperlink NavigateUri="https://github.com/antonvsdata/notame">https://github.com/antonvsdata/notame</Hyperlink>
             </TextBlock>
