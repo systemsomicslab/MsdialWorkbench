@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Algorithm.IsotopeCalc;
-#if  NETSTANDARD
+#if  NETSTANDARD || NETFRAMEWORK
 using CompMs.Common.Extension;
 #endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
