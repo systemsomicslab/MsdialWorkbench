@@ -33,12 +33,12 @@ namespace CompMs.CommonMVVM.Common
                         }
                     }
                     else {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             foreach (var disposable in this) {
                                 disposable?.Dispose();
                             }
-                        });
+                        }, System.Windows.Threading.DispatcherPriority.Background);
                     }
                 }
 

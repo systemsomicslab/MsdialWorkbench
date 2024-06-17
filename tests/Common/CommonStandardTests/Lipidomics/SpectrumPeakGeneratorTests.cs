@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-#if NETSTANDARD
+#if NETSTANDARD || NETFRAMEWORK
 using CompMs.Common.Extension;
 #endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;

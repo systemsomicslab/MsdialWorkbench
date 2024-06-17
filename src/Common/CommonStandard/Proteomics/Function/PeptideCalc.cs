@@ -188,7 +188,7 @@ namespace CompMs.Common.Proteomics.Function {
             foreach (var result in results) {
                 var nPep = new Peptide() {
                     DatabaseOrigin = peptide.DatabaseOrigin, DatabaseOriginID = peptide.DatabaseOriginID, SequenceObj = result,
-                    Position = new Range(peptide.Position.Start, peptide.Position.End), IsProteinCterminal = peptide.IsProteinCterminal, IsProteinNterminal = peptide.IsProteinNterminal
+                    Position = new CompMs.Common.DataObj.Range(peptide.Position.Start, peptide.Position.End), IsProteinCterminal = peptide.IsProteinCterminal, IsProteinNterminal = peptide.IsProteinNterminal
                 };
                 //nPep.SequenceObj = result;
                 var formula = CalculatePeptideFormula(result);
@@ -273,7 +273,7 @@ namespace CompMs.Common.Proteomics.Function {
                         DatabaseOrigin = peptide.DatabaseOrigin, 
                         DatabaseOriginID = peptide.DatabaseOriginID,
                         SequenceObj = result,
-                        Position = new Range(peptide.Position.Start, peptide.Position.End), 
+                        Position = new CompMs.Common.DataObj.Range(peptide.Position.Start, peptide.Position.End), 
                         IsProteinCterminal = peptide.IsProteinCterminal, 
                         IsProteinNterminal = peptide.IsProteinNterminal
                     };
