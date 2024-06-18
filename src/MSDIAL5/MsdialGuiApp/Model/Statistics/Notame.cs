@@ -1,6 +1,8 @@
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
+using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -89,13 +91,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
             RPath = GetExportFolder(RDirectory);
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
-            var engine = REngine.GetInstance();
+            using (var engine = REngine.GetInstance()) {
             engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
             //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
-
             RunNotame(engine);
             RunMuvr(engine);
-            engine.Dispose();
+            }
 
             MessageBox.Show("Output files are successfully created.");
 
@@ -106,9 +107,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private void RunNotame(REngine engine) {
-            var rReader = new NotameRReader();
-            rReader.Read();
-            var NotameR = rReader.rScript;
+            var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.Notame.R");
             engine.Evaluate("library(notame)");
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
@@ -116,19 +115,17 @@ namespace CompMs.App.Msdial.Model.Statistics {
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
-            engine.Evaluate(NotameR);
+            runner.Run(engine);
         }
 
         private void RunMuvr(REngine engine) {
-            var muvrRReader = new MuvrRReader();
-            muvrRReader.Read();
-            var MUVR = muvrRReader.muvrRScript;
             engine.Evaluate("library(notame)");
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
             engine.Evaluate("library(openxlsx)");
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
-            engine.Evaluate(MUVR);
+            var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.MUVR.R");
+            runner.Run(engine);
         }
     }
 }
