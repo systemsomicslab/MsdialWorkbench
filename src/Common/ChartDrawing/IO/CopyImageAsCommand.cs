@@ -6,7 +6,7 @@ namespace CompMs.Graphics.IO
 {
     public class CopyImageAsCommand : ICommand
     {
-        public static CopyImageAsCommand BitmapInstance { get; } = new CopyImageAsCommand(ImageFormat.Png);
+        public static CopyImageAsCommand BitmapInstance { get; } = new CopyImageAsCommand(ImageFormat.Png) { Converter = SetBackgroundConverter.White };
 
         public static CopyImageAsCommand EmfInstance { get; } = new CopyImageAsCommand(ImageFormat.Emf);
 
@@ -17,10 +17,12 @@ namespace CompMs.Graphics.IO
         private CopyImageAsCommand(ImageFormat format) {
             Format = format;
             Formatter = new NoneFormatter();
+            Converter = NoneVisualConverter.Instance;
         }
 
         public ImageFormat Format { get; set; }
         public IElementFormatter Formatter { get; set; }
+        public IVisualConverter Converter { get; set; }
 
 #pragma warning disable 67
         public event EventHandler CanExecuteChanged;
@@ -34,7 +36,8 @@ namespace CompMs.Graphics.IO
             if (parameter is FrameworkElement element) {
                 using (await Formatter.Format(element)) {
                     var encoder = GetEncoder(Format);
-                    var obj = encoder.Get(element);
+                    var converted = Converter.Convert(element);
+                    var obj = encoder.Get(converted);
                     var dataFormat = GetDataFormat(Format);
                     Clipboard.SetData(dataFormat, obj);
                 }

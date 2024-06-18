@@ -17,12 +17,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
-        public double? ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
-        public double? ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
+        public double ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
+        public double ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public MzValue Mz => innerModel.ChromXs.Mz;
         public DriftTime Drift => innerModel.ChromXs.Drift;
         public RetentionTime RT => innerModel.ChromXs.RT;
+        public ChromXs ChromXs => innerModel.ChromXs;
+
         public double Mass {
             get => innerModel.PeakFeature.Mass;
             set {

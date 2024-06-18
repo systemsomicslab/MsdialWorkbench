@@ -13,12 +13,12 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAlignmentCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, PeakSpotModel>
     {
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
 
-        public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
+        public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
-            _calculateMatchScore = calculateMatchScore;
-            SearchParameter = calculateMatchScore.SearchParameter;
+            SearchParameter = calculateMatchScore?.CopySearchParameter();
+            _calculateMatchScore = calculateMatchScore?.With(SearchParameter);
         }
 
         public IList SearchMethods => Array.Empty<object>();
@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (_calculateMatchScore is null) {
                 return Array.Empty<GcmsCompoundResult>();
             }
-            var compounds = _calculateMatchScore.CalculateMatches(target.MSDecResult)
+            var compounds = _calculateMatchScore.CalculateMatches(target.MsScan)
                     .OrderByDescending(r => r.TotalScore)
                     .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))
                     .ToArray();

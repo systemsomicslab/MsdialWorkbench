@@ -35,7 +35,7 @@ namespace CompMs.MsdialCore.Normalize
             new MTicNormalize(files, applyDilutionFactor).Normalize(globalSpots, evaluator);
         }
 
-        public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool applyDilutionFactor) {
+        public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool applyDilutionFactor) {
             new SplashNormalize(files, applyDilutionFactor).Normalize(globalSpots, refer, splashLipids, unit, evaluator);
         }
     }
@@ -269,7 +269,7 @@ namespace CompMs.MsdialCore.Normalize
             _applyDilutionFactor = applyDilutionFactor;
         }
 
-        public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             var compounds = new StandardCompoundSet(splashLipids);
             var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());

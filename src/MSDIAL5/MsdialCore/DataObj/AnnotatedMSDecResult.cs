@@ -81,8 +81,8 @@ namespace CompMs.MsdialCore.DataObj
                 currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 4);
                 var memory = new MemoryStream();
                 MsdecResultsWriter.MSDecWriterVer1(memory, value.MSDecResult);
-                var buffer = memory.ToArray();
                 memory.Close();
+                var buffer = memory.ToArray();
                 currentOffset += formatterResolver.GetFormatterWithVerify<byte[]>().Serialize(ref bytes, currentOffset, buffer, formatterResolver);
                 currentOffset += formatterResolver.GetFormatterWithVerify<MsScanMatchResultContainer>().Serialize(ref bytes, currentOffset, value.MatchResults, formatterResolver);
                 currentOffset += MoleculePropertyExtension.Formatter.Serialize(ref bytes, currentOffset, value.Molecule, formatterResolver);

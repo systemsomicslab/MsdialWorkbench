@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -34,8 +33,8 @@ namespace CompMs.App.Msdial.Model.Information
                 return new CompositeDisposable
                 {
                     (m?.ObserveProperty(m_ => m_.Name) ?? Observable.Return(string.Empty)).Subscribe(m_ => Annotation = m_),
-                    (m?.ObserveProperty(m_ => m_.AdductType) ?? Observable.Return(AdductIon.Default)).Subscribe(m_ => AdductIonName = m_.AdductIonName),
-                    (m?.ObserveProperty(m_ => m_.Formula) ?? Observable.Return(new CompMs.Common.DataObj.Property.Formula())).Subscribe(m_ => Formula = m_.FormulaString),
+                    (m?.ObserveProperty(m_ => m_.AdductType) ?? Observable.Return(AdductIon.Default)).Subscribe(m_ => AdductIonName = m_?.AdductIonName),
+                    (m?.ObserveProperty(m_ => m_.Formula) ?? Observable.Return(new Formula())).Subscribe(m_ => Formula = m_?.FormulaString),
                     (m?.ObserveProperty(m_ => m_.Ontology) ?? Observable.Return(string.Empty)).Subscribe(m_ => Ontology = m_),
                     (m?.ObserveProperty(m_ => m_.InChIKey) ?? Observable.Return(string.Empty)).Subscribe(m_ => InChIKey = m_),
                     (m?.ObserveProperty(m_ => m_.Comment) ?? Observable.Return(string.Empty)).Subscribe(m_ => Comment = m_)
@@ -136,8 +135,8 @@ namespace CompMs.App.Msdial.Model.Information
                 return new CompositeDisposable
                 {
                     m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
-                    m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_.AdductIonName),
-                    m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_.FormulaString),
+                    m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_?.AdductIonName),
+                    m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
                     m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
                     m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
                     m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)

@@ -79,8 +79,8 @@ namespace CompMs.Graphics.Window
         #endregion
 
         #region Properties
-        public string SelectedPath { get; set; }
-        public string Title { get; set; }
+        public string? SelectedPath { get; set; }
+        public string? Title { get; set; }
         #endregion
 
         #region Initializes

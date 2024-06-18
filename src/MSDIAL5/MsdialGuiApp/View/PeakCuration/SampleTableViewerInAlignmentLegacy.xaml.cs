@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Legacy;
@@ -163,13 +164,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
     }
 
     internal sealed class SampleTableViewerInAlignmentModelLegacy : DisposableModelBase {
-        public SampleTableViewerInAlignmentModelLegacy(
-            IObservable<AlignmentSpotPropertyModel?> alignmentProp,
-            IObservable<List<PeakChromatogram>> chromatoramSource,
-            List<AnalysisFileBean> files,
-            ParameterBase parameter) {
-
-            Source = GetSourceOfAlignedSampleTableViewer(alignmentProp, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        public SampleTableViewerInAlignmentModelLegacy(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
+            Source = GetSourceOfAlignedSampleTableViewer(spotChromatograms, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Parameter = parameter;
             switch (parameter) {
                 case MsdialGcMsApi.Parameter.MsdialGcmsParameter gcparameter:
@@ -198,25 +194,20 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
         }
 
-        private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(
-            IObservable<AlignmentSpotPropertyModel?> alignmentProp,
-            IObservable<List<PeakChromatogram>> chromatogramSource,
-            List<AnalysisFileBean> files,
-            ParameterBase parameter) {
+        private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
-            return alignmentProp.ObserveOn(TaskPoolScheduler.Default).Select(prop => {
-                var observablePeaks = prop?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
-                return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) => {
-                    var chromatograms_ = chromatograms ?? Enumerable.Empty<PeakChromatogram>();
-                    var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
-                    var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
-                    var rows = files.Zip(peaks_, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
-                        .Zip(chromatograms_, (triple, chromatogram) =>
-                            GetSampleTableRow(prop!, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
-                    return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
-                });
-            }).Switch();
+            return spotChromatograms.ObserveOn(TaskPoolScheduler.Default).DefaultIfNull(s =>
+            s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, (peaks, chromatograms) => {
+                if (peaks is null) {
+                    return new SampleTableRows(new ObservableCollection<SampleTableRow>());
+                }
+                var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
+                var rows = files.Zip(peaks, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
+                    .Zip(chromatograms, (triple, chromatogram) =>
+                        GetSampleTableRow(s.Spot, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
+                return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
+            }), Observable.Return(new SampleTableRows(new ObservableCollection<SampleTableRow>()))).Switch();
         }
 
         private static SampleTableRow GetSampleTableRow(
@@ -234,7 +225,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 file.AnalysisFileName,
                 (float)alignmentProp.MassCenter,
                 ms1Tolerance,
-                chromatogram.Convert().Peaks);
+                chromatogram.Convert().AsPeakArray());
             var vm = new ChromatogramXicViewModelLegacy(
                 chromatogramBean,
                 ChromatogramEditMode.Display,

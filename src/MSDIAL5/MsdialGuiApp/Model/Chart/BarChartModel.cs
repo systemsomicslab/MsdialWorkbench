@@ -38,11 +38,11 @@ namespace CompMs.App.Msdial.Model.Chart
                     if (items?.Any() ?? false) {
                         var minimum = items.Min(item => item.Height - (double.IsNaN(item.Error) ? 0 : item.Error));
                         var maximum = items.Max(item => item.Height + (double.IsNaN(item.Error) ? 0 : item.Error));
-                        return new Range(minimum, maximum);
+                        return new AxisRange(minimum, maximum);
                     }
-                    return new Range(0, 1);
+                    return new AxisRange(0, 1);
                 })
-                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
 
             Elements.HorizontalTitle = "Class";
@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }
-        public IObservable<Range> VerticalRangeAsObservable { get; }
+        public IObservable<AxisRange> VerticalRangeAsObservable { get; }
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
         public IReactiveProperty<BarItemsLoaderData> BarItemsLoaderData { get; }
         public IList<BarItemsLoaderData> BarItemsLoaderDatas { get; }

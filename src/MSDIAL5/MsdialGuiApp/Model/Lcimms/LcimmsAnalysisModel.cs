@@ -5,10 +5,12 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
@@ -54,9 +56,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
-        private readonly TicLoader _ticLoader;
-        private readonly BpcLoader _bpcLoader;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _accumulatedPeakModels;
+        private readonly RawSpectra _rawSpectra;
 
         public LcimmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -169,10 +170,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .Subscribe(title => RtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
-            var rawSpectra = new RawSpectra(accSpectrumProvider.LoadMs1Spectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
-            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _rawSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
             var rtEicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(accumulatedTarget, rtEicLoader)
@@ -213,12 +211,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _msdecResult = msdecResult;
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
+            CompoundSearcher = new LcimmsCompoundSearchUsecase(compoundSearchers.Items);
             var rawLoader = new MultiMsmsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
-                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
-                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
 
@@ -291,7 +290,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r, compoundSearchers))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -302,8 +301,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }.CombineLatestValuesAreAllTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
         }
 
+        public AnalysisFileBeanModel AnalysisFileModel => _analysisFileModel;
         public UndoManager UndoManager => _undoManager;
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }
@@ -323,9 +325,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>?> CompoundSearchModel { get; }
+        public LcimmsCompoundSearchUsecase CompoundSearcher { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
-        private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
+        private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec) {
             if (peak is null || msdec is null) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
@@ -335,7 +338,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _analysisFileModel,
                 new PeakSpotModel(peak, msdec),
-                new LcimmsCompoundSearchUsecase(compoundSearchers.Items),
+                CompoundSearcher,
                 plotService,
                 new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
@@ -344,8 +347,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
+        public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, RtEicLoader, _accumulatedPeakModels, _parameter.PeakPickBaseParam);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            return new LoadChromatogramsUsecase(_rawSpectra, chromatogramRange, _parameter.PeakPickBaseParam, _parameter.ProjectParam.IonMode, _accumulatedPeakModels);
         }
 
         private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
@@ -371,6 +377,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public void SearchFragment() {

@@ -10,7 +10,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         public CategoryAxisManager(
             IReadOnlyCollection<T> collection,
             Func<T, U> toKey,
-            Func<T, string> toLabel = null)
+            Func<T, string>? toLabel = null)
             : base(CountElement(collection, toKey)) {
 
             this.collection = collection;
@@ -20,9 +20,9 @@ namespace CompMs.Graphics.AxisManager.Generic
             ChartMargin = new RelativeMargin(0.05);
         }
 
-        private static Range CountElement(IReadOnlyCollection<T> collection, Func<T, U> toKey) {
+        private static AxisRange CountElement(IReadOnlyCollection<T> collection, Func<T, U> toKey) {
             var set = collection.Select(toKey).ToHashSet();
-            return new Range(0d, set.Count);
+            return new AxisRange(0d, set.Count);
         }
 
         private static Dictionary<U, AxisValue> ToDictionary(IEnumerable<T> xs, Func<T, U> toKey) {
@@ -84,7 +84,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return value;
         }
 
-        public CategoryAxisManager(IReadOnlyCollection<T> collection, Func<T, string> toLabel = null)
+        public CategoryAxisManager(IReadOnlyCollection<T> collection, Func<T, string>? toLabel = null)
             : base(collection, Identity, toLabel) {
         }
     }

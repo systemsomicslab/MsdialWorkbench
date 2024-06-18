@@ -23,7 +23,7 @@ namespace CompMs.Graphics.Behavior
             if (d is FrameworkElement fe) {
                 if ((bool)e.OldValue)
                     OnDetaching(fe);
-                if ((bool)e.NewValue)
+                if ((bool)e.NewValue && !(bool)e.OldValue)
                     OnAttached(fe);
             }
         }
@@ -84,7 +84,7 @@ namespace CompMs.Graphics.Behavior
                         var prev = haxis.TranslateFromRenderPoint(previous.X, flippedX, fe.ActualWidth);
                         var curr = haxis.TranslateFromRenderPoint(current.X, flippedX, fe.ActualWidth);
                         var delta = prev - curr;
-                        rangeX = new Range(rangeX.Minimum + delta, rangeX.Maximum + delta);
+                        rangeX = new AxisRange(rangeX.Minimum + delta, rangeX.Maximum + delta);
                         if (haxis.Contains(rangeX)) {
                             haxis.Focus(rangeX);
                         }
@@ -97,7 +97,7 @@ namespace CompMs.Graphics.Behavior
                         var prev = vaxis.TranslateFromRenderPoint(previous.Y, flippedY, fe.ActualHeight);
                         var curr = vaxis.TranslateFromRenderPoint(current.Y, flippedY, fe.ActualHeight);
                         var delta = prev - curr;
-                        rangeY = new Range(rangeY.Minimum + delta, rangeY.Maximum + delta);
+                        rangeY = new AxisRange(rangeY.Minimum + delta, rangeY.Maximum + delta);
                         if (vaxis.Contains(rangeY)) {
                             vaxis.Focus(rangeY);
                         }

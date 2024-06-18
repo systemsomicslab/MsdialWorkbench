@@ -1,12 +1,10 @@
-﻿using CompMs.App.Msdial.Model.Service;
-using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Interfaces;
 using System.ComponentModel;
 
-namespace CompMs.App.Msdial.Model.DataObj
+namespace CompMs.App.Msdial.Model.DataObj;
+
+internal interface IPeakSpotModel : INotifyPropertyChanged
 {
-    internal interface IPeakSpotModel : INotifyPropertyChanged
-    {
-        IMSIonProperty MSIon { get; }
-        IMoleculeProperty Molecule { get; }
-    }
+    IMSIonProperty MSIon { get; }
+    IMoleculeProperty Molecule { get; }
 }

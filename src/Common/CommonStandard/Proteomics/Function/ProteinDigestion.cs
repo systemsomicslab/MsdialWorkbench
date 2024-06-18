@@ -29,7 +29,7 @@ namespace CompMs.Common.Proteomics.Function {
 
                 if (cleavagesites.Contains(twoletterAAs)) {
                     end = i;
-                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
+                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new CompMs.Common.DataObj.Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSeqObj.Count - 1 ? true : false;
                     peptides.Add(peptide);
@@ -57,7 +57,7 @@ namespace CompMs.Common.Proteomics.Function {
                     start = peptides[j].Position.Start;
                     end = peptides[j + i].Position.End;
 
-                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
+                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new CompMs.Common.DataObj.Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
                     peptide.MissedCleavages = i;

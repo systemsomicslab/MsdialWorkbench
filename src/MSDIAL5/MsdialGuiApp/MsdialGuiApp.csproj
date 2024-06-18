@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>net472;net48;net481</TargetFrameworks>
+		<TargetFrameworks>net48;net481</TargetFrameworks>
 		<UseWPF>true</UseWPF>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AssemblyName>MSDIAL</AssemblyName>
@@ -9,8 +9,8 @@
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
-		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20230908_conventional_converted_dev.lbm2</Lbm2Url>
-    <LangVersion>9</LangVersion>
+		<Lbm2Url>https://zenodo.org/records/11399747/files/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
+    <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">

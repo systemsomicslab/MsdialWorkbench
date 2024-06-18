@@ -131,7 +131,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
                 }
             }
-            var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode);
+            var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
             var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
             var peakInfos = peaks.Zip(spots)
                 .AsParallel()

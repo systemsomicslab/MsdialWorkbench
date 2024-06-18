@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Algorithm.IsotopeCalc;
-#if  NETSTANDARD
+#if  NETSTANDARD || NETFRAMEWORK
 using CompMs.Common.Extension;
 #endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -422,6 +422,16 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var results = TextLibraryParser.TextLibraryReader(sr, out _);
             Assert.AreEqual("PC 36:2|PC 18:0_18:2(9,12)", results[0].Name);
+        }
+
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\txt_invalid_formula.txt", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\txt_invalid_formula.txt")]
+        public void TextLibraryReaderWorks(string library) {
+            var results = TextLibraryParser.TextLibraryReader(library, out var error);
+            Debug.WriteLine($"Error message: {error}");
+            Debug.WriteLine($"Count: {results.Count}");
         }
     }
 

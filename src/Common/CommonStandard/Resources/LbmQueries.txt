@@ -447,3 +447,8 @@ GM3	[M-2H]2-	Negative	TRUE
 #bmPC	[M+CH3COO]-	Negative	FALSE
 #bmPC	[M+HCOO]-	Negative	FALSE
 #BisMeLPA	[M+H]+	Positive	FALSE
+#BisMeLPA	[M+NH4]+	Positive	FALSE
+#Cer_ABP	[M+H]+	Positive	FALSE
+#Cer_ABP	[M-H]-	Negative	FALSE
+#Cer_ABP	[M+HCOO]-	Negative	FALSE
+#Cer_ABP	[M+CH3COO]-	Negative	FALSE
