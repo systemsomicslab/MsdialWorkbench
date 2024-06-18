@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.3.240617.
+        ///   Looks up a localized string similar to 5.3.240617-alpha.
         /// </summary>
         public static string VERSION {
             get {
