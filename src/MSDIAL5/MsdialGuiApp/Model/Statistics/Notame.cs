@@ -1,19 +1,18 @@
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.Model.Export;
-using CompMs.CommonMVVM;
+using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections.ObjectModel;
-using CompMs.App.Msdial.Properties;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class Notame : BindableBase {
@@ -92,10 +91,10 @@ namespace CompMs.App.Msdial.Model.Statistics {
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
             using (var engine = REngine.GetInstance()) {
-            engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
-            //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
-            RunNotame(engine);
-            RunMuvr(engine);
+                engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
+                //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
+                RunNotame(engine);
+                RunMuvr(engine);
             }
 
             MessageBox.Show("Output files are successfully created.");
