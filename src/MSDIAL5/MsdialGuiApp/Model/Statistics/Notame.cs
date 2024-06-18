@@ -92,6 +92,16 @@ namespace CompMs.App.Msdial.Model.Statistics {
             REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
             using (var engine = REngine.GetInstance()) {
                 engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
+                string[] libraries = ["notame", "doParallel", "dplyr", "openxlsx", "MUVR", "pcaMethods"];
+                var check = libraries.SelectMany(lib => engine.Evaluate($"require(\"{lib}\")").AsLogical().AsEnumerable());
+                if (check.Any(x => !x)) {
+                    MessageBox.Show("All of the following libraries must be installed: 'notame', 'doParallel', 'dplyr', 'openxlsx', 'MUVR', and 'pcaMethods'.");
+                    return;
+                }
+
+            }
+            using (var engine = REngine.GetInstance()) {
+                engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
                 //MessageBox.Show("Drift correction and batch correction are started. It takes a few minutes.");
                 RunNotame(engine);
                 RunMuvr(engine);
