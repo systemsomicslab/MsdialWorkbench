@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using CompMs.App.Msdial.Properties;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class Notame : BindableBase {
@@ -20,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             ExportModel = exportModel;
             ExportDirectory = dataExportParameter.ExportFolderPath;
             IonMode = parameterBase.IonMode;
+            RDirectory = Settings.Default.RHome;
         }
 
         public string ExportDirectory {
@@ -32,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             get => _rDirectory;
             set => SetProperty(ref _rDirectory, value);
         }
-        private string _rDirectory = "C:/Program files/r/r-4.3.2";
+        private string _rDirectory = string.Empty;
 
         public string GetExportFolder(string directory) {
             var folder = directory.Replace("\\", "/");
@@ -96,6 +98,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
             engine.Dispose();
 
             MessageBox.Show("Output files are successfully created.");
+
+            if (Settings.Default.RHome != RDirectory) {
+                Settings.Default.RHome = RDirectory;
+                Settings.Default.Save();
+            }
         }
 
         private void RunNotame(REngine engine) {
