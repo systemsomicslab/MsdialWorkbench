@@ -6,6 +6,7 @@ namespace CompMs.App.Msdial.Properties
 {
     internal sealed partial class Settings : System.Configuration.ApplicationSettingsBase {
         [System.Configuration.UserScopedSetting()]
+        [System.Configuration.DefaultSettingValue(null)]
         public List<ProjectCrumb> PreviousProjects {
             get {
                 return (List<ProjectCrumb>)this["PreviousProjects"];
@@ -16,6 +17,7 @@ namespace CompMs.App.Msdial.Properties
         }
 
         [System.Configuration.UserScopedSetting()]
+        [System.Configuration.DefaultSettingValue(null)]
         public DockLayoutElement ChromatogramsViewLayoutTemplate {
             get {
                 return (DockLayoutElement)this["ChromatogramsViewLayoutTemplate"];
@@ -26,12 +28,25 @@ namespace CompMs.App.Msdial.Properties
         }
 
         [System.Configuration.UserScopedSetting()]
+        [System.Configuration.DefaultSettingValue(null)]
         public DockLayoutElement AccumulatedSpectrumViewLayoutTemplate {
             get {
                 return (DockLayoutElement)this["AccumulatedSpectrumViewLayoutTemplate"];
             }
             set {
                 this["AccumulatedSpectrumViewLayoutTemplate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(null)]
+        public string RHome {
+            get {
+                return ((string)(this["RHome"]));
+            }
+            set {
+                this["RHome"] = value;
             }
         }
     }

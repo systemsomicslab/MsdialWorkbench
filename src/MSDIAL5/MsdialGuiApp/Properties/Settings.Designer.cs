@@ -34,17 +34,5 @@ namespace CompMs.App.Msdial.Properties {
                 this["ShouldUpgrade"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string RHome {
-            get {
-                return ((string)(this["RHome"]));
-            }
-            set {
-                this["RHome"] = value;
-            }
-        }
     }
 }
