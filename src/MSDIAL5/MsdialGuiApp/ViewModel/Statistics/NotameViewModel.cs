@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            RunNotameCommand = new DelegateCommand(RunNotame);
+            RunNotameCommand = new DelegateCommand(RunNotame, () => !HasValidationErrors);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
 
             AlignmentFile = notame.AlignmentFilesForExport.SelectedFile;
@@ -47,6 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 if (SetProperty(ref _rDirectory, value)) {
                     if (!ContainsError(nameof(_rDirectory))) {
                         _notame.RDirectory = _rDirectory;
+                        RunNotameCommand?.RaiseCanExecuteChanged();
                     }
                 }
             }
@@ -61,6 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 if (SetProperty(ref _exportDirectory, value)) {
                     if (!ContainsError(nameof(_exportDirectory))) {
                         _notame.ExportDirectory = _exportDirectory;
+                        RunNotameCommand?.RaiseCanExecuteChanged();
                     }
                 }
             }
@@ -74,6 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 if (SetProperty(ref _alignmentFile, value)) {
                     if (!ContainsError(nameof(AlignmentFile))) {
                         _notame.AlignmentFilesForExport.SelectedFile = _alignmentFile;
+                        RunNotameCommand?.RaiseCanExecuteChanged();
                     }
                 }
             }
@@ -94,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             }
         }
 
-        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
+        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ??= new DelegateCommand(BrowseDirectory);
         private DelegateCommand? _browseDirectoryCommand;
 
         private void BrowseDirectory() {
@@ -103,11 +106,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             };
 
             if (win.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                ExportDirectory = win.SelectedPath;
+                ExportDirectory = win.SelectedPath!;
             }
         }
 
-        public DelegateCommand BrowseRDirectoryCommand => _browseRDirectoryCommand ?? (_browseRDirectoryCommand = new DelegateCommand(BrowseRDirectory));
+        public DelegateCommand BrowseRDirectoryCommand => _browseRDirectoryCommand ??= new DelegateCommand(BrowseRDirectory);
         private DelegateCommand? _browseRDirectoryCommand;
 
         private void BrowseRDirectory() {
@@ -116,7 +119,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             };
 
             if (win.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                RDirectory = win.SelectedPath;
+                RDirectory = win.SelectedPath!;
             }
         }
 
