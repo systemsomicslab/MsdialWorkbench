@@ -126,10 +126,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public DelegateCommand RunNotameCommand { get; }
 
         private async void RunNotame() {
-            var task = TaskNotification.Start($"Notame running in the background...");
-            _broker.Publish(task);
-            await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
-            _notame.Run();
+            var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
+            using (publisher.Start()) {
+                await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
+                _notame.Run();
+            }
         }
 
         public DelegateCommand ShowSettingViewCommand { get; }
