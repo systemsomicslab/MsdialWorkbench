@@ -120,8 +120,12 @@ save_dc_plots_temp <- function (orig, dc, predicted,
   dc_plot_helper <- function(data, fname, title = NULL) {
     tryCatch({
       p <- ggplot(mapping = aes_string(x = "Injection_order", 
-                                       y = fname)) + theme_bw() + theme(panel.grid = element_blank()) + 
-        color_scale + shape_scale + labs(title = title)
+                                       y = fname)) + theme_bw() +
+        theme(panel.grid = element_blank(),
+              legend.position = "bottom"
+              ) + 
+        color_scale + shape_scale + 
+        labs(title = title)
       mean_qc <- finite_mean(data[data$QC == "QC", fname])
       sd_qc <- finite_sd(data[data$QC == "QC", fname])
       mean_sample <- finite_mean(data[data$QC != "QC", 
@@ -145,7 +149,6 @@ save_dc_plots_temp <- function (orig, dc, predicted,
       print(fname)
     })
   }
-
   # Discard ones with missing QC as they cant be plotted!
   orig <- orig[dc@featureData@data$DC_note != "Missing_QCS",]
   predicted <- predicted[dc@featureData@data$DC_note != "Missing_QCS",]
@@ -166,6 +169,8 @@ save_dc_plots_temp <- function (orig, dc, predicted,
   
   temp <- fData(dc)
   # headilla ascendic
+  sel_feat_1 <- head(temp[order(temp$DC_delta_D_ratio_r, decreasing = T),],
+                   n = 1)$Feature_ID
   sel_feat <- head(temp[order(temp$DC_delta_D_ratio_r, decreasing = T),],
                    n = round(n_plotting/2))$Feature_ID
   # descendic
@@ -181,7 +186,9 @@ save_dc_plots_temp <- function (orig, dc, predicted,
   dc_data <- combined_data(dc)
   predictions <- as.data.frame(t(predicted))
   predictions$Injection_order <- orig_data$Injection_order
-  pdf(file, width = width, height = height)
+  
+  pdf(paste0(file, "Drift_correction_",format(Sys.time(), "%Y%m%d"), ".pdf"),
+      width = width, height = height)
   for (fname in Biobase::featureNames(dc)) {
     p2 <- dc_plot_helper(data = dc_data, fname = fname, 
                          title = "After")
@@ -215,6 +222,42 @@ save_dc_plots_temp <- function (orig, dc, predicted,
     }
     plot(p) 
   }
+  dev.off()
+  
+  Cairo::Cairo(file = paste0(file, "drift_cor_report.png"), unit = "in", dpi = 72, width = 7, 
+               height = 7, type = "png", bg = "white")
+  fname <- sel_feat_1
+  p2 <- dc_plot_helper(data = dc_data, fname = fname, 
+                       title = "After")
+  if (log_transform) {
+    p1 <- dc_plot_helper(data = orig_data, fname = fname, 
+                         title = "Before")
+    p3 <- dc_plot_helper(data = orig_data_log, fname = fname, 
+                         title = "Drift correction in log space") + geom_line(data = predictions, 
+                                                                              color = "grey")
+    p4 <- dc_plot_helper(data = dc_data_log, fname = fname, 
+                         title = "Corrected data in log space")
+    tryCatch(expr = {
+      p <- cowplot::plot_grid(p1, p3, p2, p4, nrow = 2)
+    }, error = function(e) {
+      message("Caught an error!")
+      print(fname)
+      print(e)
+    })
+  }
+  else {
+    p1 <- dc_plot_helper(data = orig_data, fname = fname, 
+                         title = "Before (original values)") + geom_line(data = predictions, 
+                                                                         color = "grey")
+    tryCatch(expr = {
+      p <- cowplot::plot_grid(p1, p2, nrow = 2)
+    }, error = function(e) {
+      message("Caught an error!")
+      print(fname)
+      print(e)
+    })
+  }
+  plot(p) 
   dev.off()
   log_text(paste("\nSaved drift correction plots to:", file))
 }
@@ -347,10 +390,12 @@ read_MSDIAL <- function(tablefile, ion_mod = ""){
   
   # mark blanks
   pData$QC[grepl("blank",pData$Sample_ID, ignore.case = T)]<-"Blank"
-  # pData$Sample_ID[grepl("blank",pData$Sample_ID, ignore.case = T)] <- "Blank1"
+  pData$Sample_ID[pData$Sample_ID == "Blank"] <- paste0("Blank_", seq_len(sum(pData$Sample_ID == "Blank", na.rm = T)))
   
   # mark QC
   pData$QC[grepl("QC",pData$Sample_ID, ignore.case = T)] <- "QC"
+  subset <- pData$Sample_ID == "QC" & !is.na(pData$Sample_ID)
+  pData$Sample_ID[subset] <- paste0("QC_", seq_len(sum(pData$Sample_ID == "QC", na.rm = T)))
   # pData$Sample_ID[grepl("QC",pData$Sample_ID, ignore.case = T)] <- "QC"
   
   # If averages and stdev still occure this will remove those
@@ -399,7 +444,7 @@ if (exists("data")) {
   # Works with one or more modes
   # Construct MetaboSet objects
   # (note: assumption is that the dataset already contains group information)
- 
+  
   # take the parameters and use them
   
   # num_params <- sum(stringr::str_count(string = colnames(data$pheno_data), pattern = "Parameter"))
@@ -411,7 +456,7 @@ if (exists("data")) {
   } else{
     metaboset <- notame::construct_metabosets(exprs = data$exprs, pheno_data = data$pheno_data,
                                               feature_data = data$feature_data,
-                                              group_col = "Class", split_data = F, )
+                                              group_col = "Class", split_data = F)
   }
   
   # Make sure that injection order is numeric
@@ -419,7 +464,7 @@ if (exists("data")) {
   
   # Plot PCA at the beginning and then after preprocessing at the end
   metaboset_temp <- metaboset[,!metaboset$QC %in% "Blank"]
-  metaboset_temp <- metaboset_temp[, metaboset_temp$QC != "QC"]
+  # metaboset_temp <- metaboset_temp[, metaboset_temp$QC != "QC"]
   
   PCA_start <- plot_pca(metaboset_temp, color = "Class", title = "Before preprocessing")
   PCA_start_inj <- plot_pca(metaboset_temp, color = "Injection_order", title = "Before preprocessing")
@@ -434,7 +479,7 @@ if (exists("data")) {
   metaboset <- notame::mark_nas(metaboset, value = 1)
   metaboset <- notame::flag_detection(metaboset)
   
-
+  
   # Then check that there is QC samples.
   # The whole process is dependent on QC samples
   if("QC" %in% metaboset$QC ){
@@ -449,7 +494,7 @@ if (exists("data")) {
     if (len_qc > 3){
       # Correct the possible drift
       corrected <- correct_drift_temp(metaboset, check_quality = T, log_transform = T,
-                                      plotting = T, file = paste0(path, "Drift_correction_plot.pdf"),
+                                      plotting = T, file = path,
                                       n_plotting = 20)
     } else{
       log_text(paste("\nNot enough QC samples. Only", len_qc, "QC samples and 4 needed."))
@@ -460,10 +505,14 @@ if (exists("data")) {
     # flag based on quality
     corrected <- notame::flag_quality(corrected)
     # visualizations(corrected, prefix = paste0(path, "figures/", name, "_CLEANED"))
+    PCA_after_drift <- plot_pca(corrected, color = "Class", title = "After drift correction")
+    PCA_after_drift_inj <- plot_pca(corrected, color = "Injection_order", title = "After drift correction")
     
     # Remove the QCs for imputation
     merged_no_qc <- notame::drop_qcs(corrected)
     merged_no_qc <- merged_no_qc[,!merged_no_qc$QC %in% "Blank"]
+    
+    #visualizations(merged_no_qc, prefix = paste0(path, "figures/FULL_NO_QC"))
     
     # Imputation
     # (note: may not be necessary especially if gap filling by compulsion was used in MS-DIAL)
@@ -484,12 +533,25 @@ if (exists("data")) {
     
     PCA_end <- plot_pca(imputed, color = "Class", title = "After preprocessing")
     
+    # Plot the PCA for report
+    Cairo::Cairo(file = paste0(path,"PCA_for_report.png"), unit = "in", dpi = 72, width = 7, 
+                 height = 7, type = "png", bg = "white")
+    if(exists("PCA_after_drift")){
+      plot(PCA_after_drift)
+    } else {
+      plot(PCA_end)
+    }
+    
+    dev.off()
+    
     pdf(file = paste0(path, "PCA.pdf"), width = 16, height = 8)
     if (length(unique(metaboset_temp$Batch))>1){
       plot(plot_pca(metaboset_temp, color = "Batch", title = "Before preprocessing"))
     }
     plot(PCA_start)
     plot(PCA_start_inj)
+    plot(PCA_after_drift)
+    plot(PCA_after_drift_inj)
     if (length(unique(imputed$Batch))>1){
       plot(plot_pca(imputed, color = "Batch", title = "After preprocessing"))
     }
