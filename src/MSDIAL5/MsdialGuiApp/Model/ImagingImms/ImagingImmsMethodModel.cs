@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var processor = new FileProcess(_storage, null, null, _evaluator);
                 await processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>?>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
+                    var model = new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
+                    ImageModels.Add(model);
+                    model.ImageResult.ResetRawSpectraOnPixels();
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {

@@ -1,7 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
-using CompMs.Common.DataObj;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
@@ -14,12 +12,11 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingRoiModel : DisposableModelBase
     {
-        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak) {
+        public ImagingRoiModel(string id, RoiModel roi, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak, RawIntensityOnPixelsLoader intensitiesLoader) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
 
-            RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(
-                rawSpectraOnPixels.PixelPeakFeaturesList.Zip(peaks, (pixelFeaturs, peak) => new RoiPeakSummaryModel(roi, pixelFeaturs, peak)));
+            RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(peaks.Select((peak, idx) => new RoiPeakSummaryModel(roi, peak, intensitiesLoader, idx)));
             RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 

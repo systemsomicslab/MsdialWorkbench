@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -28,6 +29,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ImmsAnalysisModel _analysisModel;
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
+        private readonly AnalysisFileBeanModel _file;
+        private readonly MaldiFrames _maldiFrames;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
@@ -35,18 +38,17 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
-            var rawSpectraOnPixels = wholeRoi.RetrieveRawSpectraOnPixels(_elements);
-            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, rawSpectraOnPixels, analysisModel.Ms1Peaks, analysisModel.Target).AddTo(Disposables);
+            var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
             ImagingRoiModel.Select();
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<IntensityImageModel>(
-                analysisModel.Ms1Peaks.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
-                    (peak, pixelPeaks) => new IntensityImageModel(pixelPeaks, maldiFrames, peak, laserInfo)));
+            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
             Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
             analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .SkipNull()
                 .Subscribe(intensity => SelectedPeakIntensities = intensity)
                 .AddTo(Disposables);
+            _file = file;
+            _maldiFrames = maldiFrames;
         }
 
         public ImmsAnalysisModel AnalysisModel => _analysisModel;
@@ -65,11 +67,17 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
         {
-            var rawSpectraOnPixels = await Task.Run(() => roi.RetrieveRawSpectraOnPixels(_elements)).ConfigureAwait(false);
-            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, rawSpectraOnPixels, _analysisModel.Ms1Peaks, _analysisModel.Target);
+            var loader = await Task.Run(() => roi.GetIntensityOnPixelsLoader(_elements)).ConfigureAwait(false);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
             result.Select();
             return result;
         }
+
+        public void ResetRawSpectraOnPixels() {
+            using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
+            rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
+        }
+
         public Task SaveAsync()
         {
             return _analysisModel.SaveAsync(default);
