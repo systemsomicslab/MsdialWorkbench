@@ -80,5 +80,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             }
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
+
+        public async Task SaveIntensitiesAsync(CancellationToken token = default) {
+            await Task.WhenAll([SaveRoisAsync(token), ImageResult.SaveIntensitiesAsync(token)]).ConfigureAwait(false);
+        }
     }
 }
