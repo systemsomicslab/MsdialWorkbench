@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -18,8 +17,11 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
@@ -73,6 +75,27 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return result;
         }
 
+        public async Task SaveIntensitiesAsync(CancellationToken token = default) {
+            using var writer = File.Open("pixel_intensiites.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var header = string.Join(",", new[] { "ID", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
+            var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
+            writer.Write(encoded, 0, encoded.Length);
+            using var sem = new SemaphoreSlim(8, 8);
+            var tasks = new List<Task>(Intensities.Count);
+            foreach (var ints in Intensities) {
+                tasks.Add(Task.Run(async () => {
+                    await sem.WaitAsync().ConfigureAwait(false);
+                    try {
+                        await ints.SaveAsync(writer);
+                    }
+                    finally {
+                        sem.Release();
+                    }
+                }, token));
+            }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
         public void ResetRawSpectraOnPixels() {
             using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
             rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
@@ -82,6 +105,5 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         {
             return _analysisModel.SaveAsync(default);
         }
-
     }
 }

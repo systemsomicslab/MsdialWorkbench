@@ -5,7 +5,10 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imaging
@@ -55,6 +58,13 @@ namespace CompMs.App.Msdial.Model.Imaging
                 };
                 return BitmapImageModel.Create(factory, width, height, pf, Colormaps.Viridis, $"m/z {Mz.Value}, Mobility {Drift.Value} [1/K0]");
             }
+        }
+
+        public async Task SaveAsync(Stream stream) {
+            var pixels = _intensitiesLoader.Load(_peakIndex);
+            var row = string.Join(",", new double[] { Peak.MasterPeakID, Mz.Value, Drift.Value }.Concat(pixels.PixelPeakFeaturesList[0].IntensityArray));
+            var encoded = UTF8Encoding.Default.GetBytes(row + "\n");
+            await stream.WriteAsync(encoded, 0, encoded.Length).ConfigureAwait(false);
         }
     }
 }
