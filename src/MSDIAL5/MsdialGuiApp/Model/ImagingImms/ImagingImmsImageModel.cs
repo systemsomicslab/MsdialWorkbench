@@ -11,9 +11,11 @@ using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
 {
@@ -69,6 +71,14 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             {
                 _semaphoreSlim.Release();
             }
+        }
+
+        public async Task SaveRoisAsync(CancellationToken token = default) {
+            var tasks = new List<Task>();
+            foreach (var roi in ImagingRoiModels) {
+                tasks.Add(roi.SavePositionsAsync(token));
+            }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
 }

@@ -5,8 +5,13 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
@@ -38,6 +43,20 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public void Select() {
             IsSelected = true;
+        }
+
+        public async Task SavePositionsAsync(CancellationToken token = default) {
+            using var stream = File.Open($"{Id}.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var header = string.Join(",", ["XIndex", "YIndex", "Pos"]);
+            var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
+            await stream.WriteAsync(encoded, 0, encoded.Length).ConfigureAwait(false);
+            var builder = new StringBuilder();
+            foreach (var info in Roi.Frames.Infos) {
+                builder.AppendFormat("{0},{1},{0}_{1}\n", info.XIndexPos, info.YIndexPos);
+            }
+            var contents = builder.ToString();
+            var cEncoded = UTF8Encoding.Default.GetBytes(contents);
+            await stream.WriteAsync(cEncoded, 0, cEncoded.Length).ConfigureAwait(false);
         }
     }
 }
