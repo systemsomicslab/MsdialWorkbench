@@ -27,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
             SaveImagesViewModel = new SaveImagesViewModel(model.SaveImagesModel, broker).AddTo(Disposables);
             AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
+            SaveIntensitiesCommand = new AsyncReactiveCommand().WithSubscribe(() => model.SaveIntensitiesAsync()).AddTo(Disposables);
         }
 
         public string ImageTitle => _model.File.AnalysisFileName;
@@ -37,5 +38,6 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public SaveImagesViewModel SaveImagesViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels => ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels;
         public AsyncReactiveCommand AddRoiCommand { get; }
+        public AsyncReactiveCommand SaveIntensitiesCommand { get; }
     }
 }

@@ -327,6 +327,7 @@
                                 </StackPanel>
                             </ContentControl>
                             <Button Content="Save" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.SaveCommand}"/>
+                            <Button Content="Save intensities" Command="{Binding SelectedImageViewModel.SaveIntensitiesCommand}"/>
                         </ItemsControl>
                     </GroupBox>
                 </StackPanel>
