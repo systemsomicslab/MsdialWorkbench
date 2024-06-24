@@ -61,8 +61,11 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
 
         public async Task SaveAsync(Stream stream) {
+            if (string.IsNullOrEmpty(Peak.Name)) {
+                return;
+            }
             var pixels = _intensitiesLoader.Load(_peakIndex);
-            var row = string.Join(",", new double[] { Peak.MasterPeakID, Mz.Value, Drift.Value }.Concat(pixels.PixelPeakFeaturesList[0].IntensityArray));
+            var row = string.Format("{0},{1},{2},{3},", Peak.MasterPeakID, Peak.Name, Mz.Value, Drift.Value) + string.Join(",", pixels.PixelPeakFeaturesList[0].IntensityArray);
             var encoded = UTF8Encoding.Default.GetBytes(row + "\n");
             await stream.WriteAsync(encoded, 0, encoded.Length).ConfigureAwait(false);
         }
