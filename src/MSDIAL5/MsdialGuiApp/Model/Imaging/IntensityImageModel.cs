@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Imaging
             Peak = peak;
             _intensitiesLoader = intensitiesLoader;
             _peakIndex = peakIndex;
-            Mz = peak.Mz;
+            Mz = new MzValue(peak.Mass);
             Drift = peak.Drift;
         }
 
