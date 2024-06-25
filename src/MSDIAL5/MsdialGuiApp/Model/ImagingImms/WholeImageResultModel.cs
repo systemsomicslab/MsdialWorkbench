@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public async Task SaveIntensitiesAsync(CancellationToken token = default) {
             using var writer = File.Open("pixel_intensiites.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            var header = string.Join(",", new[] { "ID", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
+            var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
             var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
             writer.Write(encoded, 0, encoded.Length);
             using var sem = new SemaphoreSlim(8, 8);
