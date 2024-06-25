@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj;
 using CompMs.RawDataHandler.Core;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imaging;
 
@@ -22,6 +21,6 @@ internal sealed class RawIntensityOnPixelsLoader
 
     public RawSpectraOnPixels Load(int index) {
         using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
-        return rawDataAccess.GetRawPixelFeature(_targets, index, _frames.Infos.ToList(), isNewProcess: false);
+        return rawDataAccess.GetRawPixelFeature(_targets, index, [.. _frames.Infos], isNewProcess: false);
     }
 }

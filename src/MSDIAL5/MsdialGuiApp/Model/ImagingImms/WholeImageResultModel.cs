@@ -33,6 +33,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly List<Raw2DElement> _elements;
         private readonly AnalysisFileBeanModel _file;
         private readonly MaldiFrames _maldiFrames;
+        private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
@@ -41,7 +42,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
             var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
-            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
             ImagingRoiModel.Select();
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
             _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
@@ -51,6 +52,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 .AddTo(Disposables);
             _file = file;
             _maldiFrames = maldiFrames;
+            _wholeRoi = wholeRoi;
         }
 
         public ImmsAnalysisModel AnalysisModel => _analysisModel;
@@ -70,7 +72,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
         {
             var loader = roi.GetIntensityOnPixelsLoader(_elements);
-            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
             result.Select();
             return result;
         }

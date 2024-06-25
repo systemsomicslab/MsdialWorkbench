@@ -14,13 +14,15 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
-    internal sealed class ImagingRoiModel : DisposableModelBase
-    {
-        public ImagingRoiModel(string id, RoiModel roi, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak, RawIntensityOnPixelsLoader intensitiesLoader) {
+    internal sealed class ImagingRoiModel : DisposableModelBase {
+        private readonly RoiAccess _access;
+
+        public ImagingRoiModel(string id, RoiModel roi, RoiModel? wholeRoi, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak, RawIntensityOnPixelsLoader intensitiesLoader) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
+            _access = new RoiAccess(roi, wholeRoi);
 
-            RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(peaks.Select((peak, idx) => new RoiPeakSummaryModel(roi, peak, intensitiesLoader, idx)));
+            RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(peaks.Select((peak, idx) => new RoiPeakSummaryModel(_access, peak, intensitiesLoader, idx)));
             RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 

@@ -6,12 +6,12 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class RoiPeakSummaryModel : BindableBase
     {
-        private readonly RoiModel _roi;
+        private readonly RoiAccess _access;
         private readonly RawIntensityOnPixelsLoader _intensitiesLoader;
         private readonly int _peakIndex;
 
-        public RoiPeakSummaryModel(RoiModel roi, ChromatogramPeakFeatureModel peak, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
-            _roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
+        public RoiPeakSummaryModel(RoiAccess access, ChromatogramPeakFeatureModel peak, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
+            _access = access ?? throw new System.ArgumentNullException(nameof(access));
             Peak = peak;
             _intensitiesLoader = intensitiesLoader;
             _peakIndex = peakIndex;
@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         private double? _accumulatedIntensity = null;
 
         private void  CalculateAccumulatedIntensity() {
-            _accumulatedIntensity = _intensitiesLoader.Load(_peakIndex).PixelPeakFeaturesList[0].IntensityArray.Average();
+            _accumulatedIntensity = _access.Access(_intensitiesLoader.Load(_peakIndex).PixelPeakFeaturesList[0].IntensityArray).Average();
         }
     }
 }
