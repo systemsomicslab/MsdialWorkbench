@@ -12,7 +12,6 @@ using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
-using CompMs.Common.StructureFinder;
 using CompMs.Common.StructureFinder.DataObj;
 using CompMs.Common.StructureFinder.Parser;
 using CompMs.Common.Utility;
@@ -23,11 +22,8 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using FragmentDbParser = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser;
 
 namespace CompMs.App.Msdial.Model.Setting
@@ -38,8 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
         internal readonly AnalysisParamOfMsfinder parameter;
         internal readonly AlignmentSpectraExportGroupModel exporter;
 
-        public InternalMsfinderSettingModel(ProjectBaseParameter projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<IAlignmentModel?> currentAlignmentModel)
-        {
+        public InternalMsfinderSettingModel(ProjectBaseParameter projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<IAlignmentModel?> currentAlignmentModel) {
             this.exporter = exporter;
             this.CurrentAlignmentModel = currentAlignmentModel;
             parameter = new AnalysisParamOfMsfinder();
@@ -1199,52 +1194,40 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public InternalMsFinder InternalMsFinderModel { get; private set; }
 
-        public void Process()
-        {
+        public void Process() {
             if (CurrentAlignmentModel.Value is null) {
                 return;
             }
             SetUserDefinedStructureDB();
 
-
             string fullpath;
             var dt = DateTime.Now;
-            if (IsCreateNewProject)
-            {
+            if (IsCreateNewProject) {
                 var directory = Path.GetDirectoryName(CurrentAlignmentModel.Value.AlignmentFile.FilePath); // project folder
                 string foldername;
-                if (IsUseAutoDefinedFolderName)
-                {
+                if (IsUseAutoDefinedFolderName) {
                     foldername = $"{CurrentAlignmentModel.Value.AlignmentFile.FileName}_{dt:yyyyMMddHHmmss}";
-                }
-                else
-                {
+                }else{
                     foldername = UserDefinedProjectFolderName;
                 }
                 fullpath = Path.Combine(directory, foldername); // export folder
-                if (!Directory.Exists(fullpath))
-                {
+                if (!Directory.Exists(fullpath)) {
                     Directory.CreateDirectory(fullpath);
                 }
                 exporter.Export(CurrentAlignmentModel.Value.AlignmentFile, fullpath, null);
-            }
-            else
-            {
+            }else{
                 fullpath = ExistProjectPath;
             }
             
 
             Commit();
-            if (parameter.IsFormulaFinder)
-            {
-
+            if (parameter.IsFormulaFinder) {
                 var paramfile = Path.Combine(fullpath, $"batchparam-{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 MsFinderIniParser.Write(parameter, paramfile);
 
                 var matFilePaths = Directory.GetFiles(fullpath, "*.mat");
 
-                foreach (var matFilePath in matFilePaths)
-                {
+                foreach (var matFilePath in matFilePaths) {
                     var msfinderQueryFile = new MsfinderQueryFile();
                     var rawData = RawDataParcer.RawDataFileReader(matFilePath, parameter);
                     var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, rawData, parameter);
@@ -1256,43 +1239,34 @@ namespace CompMs.App.Msdial.Model.Setting
                     msfinderQueryFile.FormulaFilePath = fgtFilepath;
                     msfinderQueryFile.FormulaFileName = Path.GetFileName(matFilePath);
                     msfinderQueryFile.StructureFolderPath = Path.ChangeExtension(msfinderQueryFile.RawDataFilePath, null);
-                    if (!Directory.Exists(msfinderQueryFile.StructureFolderPath))
-                    {
+                    if (!Directory.Exists(msfinderQueryFile.StructureFolderPath)) {
                         Directory.CreateDirectory(msfinderQueryFile.StructureFolderPath);
                     }
                     MsfinderQueryFiles.Add(msfinderQueryFile);
                 }
             }
-            if (parameter.IsStructureFinder)
-            {
+            if (parameter.IsStructureFinder) {
                 var finder = new StructureFinderBatchProcess();
                 finder.Process(MsfinderQueryFiles, parameter, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             }
-
-            
             InternalMsFinderModel = new InternalMsFinder(parameter, CurrentAlignmentModel.Value.AlignmentFile, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots);
         }
 
         
-        private void SetUserDefinedStructureDB()
-        {
-            if (parameter.IsUserDefinedDB)
-            {
+        private void SetUserDefinedStructureDB() {
+            if (parameter.IsUserDefinedDB) {
                 var userDefinedDbFilePath = parameter.UserDefinedDbFilePath;
-                if (userDefinedDbFilePath == null || userDefinedDbFilePath == string.Empty)
-                {
+                if (userDefinedDbFilePath == null || userDefinedDbFilePath == string.Empty) {
                     MessageBox.Show("Select your own structure database, or uncheck the user-defined database option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                if (!File.Exists(userDefinedDbFilePath))
-                {
+                if (!File.Exists(userDefinedDbFilePath)) {
                     MessageBox.Show(userDefinedDbFilePath + " file is not existed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 var userDefinedDb = ExistStructureDbParser.ReadExistStructureDB(parameter.UserDefinedDbFilePath);
-                if (userDefinedDb == null || userDefinedDb.Count == 0)
-                {
+                if (userDefinedDb == null || userDefinedDb.Count == 0) {
                     MessageBox.Show("Your own structure DB does not have the queries or the data format is not correct.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
