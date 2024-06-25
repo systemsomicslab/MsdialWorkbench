@@ -67,9 +67,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
         private IntensityImageModel? _selectedPeakIntensities;
 
-        public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
+        public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
         {
-            var loader = await Task.Run(() => roi.GetIntensityOnPixelsLoader(_elements)).ConfigureAwait(false);
+            var loader = roi.GetIntensityOnPixelsLoader(_elements);
             var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
             result.Select();
             return result;

@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 {
                     return;
                 }
-                var imagingRoi = await ImageResult.CreateImagingRoiModelAsync(roi);
+                var imagingRoi = ImageResult.CreateImagingRoiModel(roi);
                 if (imagingRoi is null)
                 {
                     return;
