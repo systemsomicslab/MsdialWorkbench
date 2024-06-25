@@ -328,6 +328,7 @@
                             </ContentControl>
                             <Button Content="Save" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.SaveCommand}"/>
                             <Button Content="Save intensities" Command="{Binding SelectedImageViewModel.SaveIntensitiesCommand}"/>
+                            <Button Content="Load ROI" Command="{Binding SelectedImageViewModel.LoadRoiCommand}"/>
                         </ItemsControl>
                     </GroupBox>
                 </StackPanel>

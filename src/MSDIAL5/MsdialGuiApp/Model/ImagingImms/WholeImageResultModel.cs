@@ -101,6 +101,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
         }
 
+        public MaldiFrames GetFramesFromPositions(HashSet<(int, int)> sets) {
+            return new MaldiFrames(_maldiFrames.Infos.Where(info => sets.Contains((info.XIndexPos, info.YIndexPos))), _maldiFrames);
+        }
+
         public Task SaveAsync()
         {
             return _analysisModel.SaveAsync(default);
