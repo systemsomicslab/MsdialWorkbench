@@ -483,7 +483,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReactiveCommand().WithSubscribe(() =>
             {
                 model.Process();
-                broker.Publish(InternalMsFinderViewModel);
+                broker.Publish(InternalMsFinderViewModel = new InternalMsFinderViewModel(model.InternalMsFinderModel, broker));
             }).AddTo(Disposables);
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {
@@ -493,7 +493,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private readonly InternalMsfinderSettingModel model;
 
-        public InternalMsFinderViewModel InternalMsFinderViewModel { get; }
+        public InternalMsFinderViewModel InternalMsFinderViewModel { get; set; }
 
         public FormulaFinderAdductIonSettingViewModel FormulaFinderAdductIonSettingViewModel { get; }
 
