@@ -7,6 +7,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
+using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -30,18 +31,23 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search {
-        internal sealed class InternalMsFinder
-        {
-            private readonly AlignmentSpotPropertyModelCollection _spots;
-
-            public InternalMsFinder(AnalysisParamOfMsfinder parameter, AlignmentFileBeanModel alignmentFileBean, AlignmentSpotPropertyModelCollection spots)
-        {
-                Parameter = parameter;
-                File = alignmentFileBean;
-                _spots = spots;
-            }
-
+        internal sealed class InternalMsFinder : BindableBase {
             public AlignmentFileBeanModel File { get; }
             public AnalysisParamOfMsfinder Parameter { get; }
+            private AlignmentSpotPropertyModelCollection _spots { get; }
+
+            public InternalMsFinder(AnalysisParamOfMsfinder parameter, AlignmentFileBeanModel alignmentFile, AlignmentSpotPropertyModelCollection spots) {
+                Parameter = parameter;
+                File = alignmentFile;
+                _spots = spots;
+                InternalMsFinderMetaboliteList = new InternalMsFinderMetaboliteList(alignmentFile, spots, SettingModel);
+                MsfinderObservedMetabolites = InternalMsFinderMetaboliteList.ObservedMetabolites;
+                MsfinderSelectedMetabolites = InternalMsFinderMetaboliteList.SelectedObservedMetabolite;
+            }
+
+            public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; set; }
+            public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
+            public MsfinderObservedMetabolite MsfinderSelectedMetabolites { get; }
+            public InternalMsfinderSettingModel SettingModel;
         }
 }

@@ -40,17 +40,16 @@
                        Height="25" Grid.Row="0" />
 
                 <ListBox Name="ListBox_MetaboliteList"
-                     ItemsSource="{Binding MetaboliteList}"
-                     SelectedItem="{Binding SelectedAnalysisFile.Value, Mode=TwoWay}"
-                     DisplayMemberPath="FileName"
-                     IsSynchronizedWithCurrentItem="True"
-                     BorderThickness="0"
-                     Margin="0,28,0,2"
-                     behavior:ChildDoubleClickBehavior.IsEnable="True"
-                     behavior:ChildDoubleClickBehavior.Command="{Binding LoadAnalysisFileCommand, Mode=OneWay}"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     Grid.Row="0">
+                         ItemsSource="{Binding MsfinderObservedMetabolites, Mode=OneWay}"
+                         DisplayMemberPath="metaboliteName"
+                         IsSynchronizedWithCurrentItem="True"
+                         BorderThickness="0"
+                         Margin="0,28,0,2"
+                         behavior:ChildDoubleClickBehavior.IsEnable="True"
+                         behavior:ChildDoubleClickBehavior.Command="{Binding LoadAsyncCommand, Mode=OneWay}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                         Grid.Row="0">
                     <ToolTipService.ToolTip>
                         <ToolTip Content="Double click a file to show the result in peak viewer" />
                     </ToolTipService.ToolTip>
@@ -103,33 +102,33 @@
 
                 <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,25,0,0">
                     <TextBox Name="TextBox_Metabolite_Name" 
-						 Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.MetaboliteName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+						 Text="{Binding Path=MetaboliteName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_ID" 
-						 Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.AlignmentID, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                    <TextBox Name="TextBox_Alignment_ID" 
+						 Text="{Binding Path=AlignmentID, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                     <TextBox Name="TextBox_Metabolite_RetentionTime" 
-						 Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.CentralRetentionTime, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+						 Text="{Binding Path=RetentionTime, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                     <TextBox Name="TextBox_Metabolite_CCS" 
-						 Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.CentralCcs, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+						 Text="{Binding Path=CentralCcs, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <ComboBox Name="ComboBox_Metabolite_PrecursorMz" ItemsSource="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Ms1SpecString}" Height="25" Margin="0,0,5,0" />
-                    <ComboBox Name="TextBox_Metabolite_PrecursorType" ItemsSource="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Adduct}" Height="25" Margin="0,0,5,0" />
-                    <ComboBox Name="ComboBox_Metabolite_IonMode" SelectedValue="{Binding Path=RawDataVM.IonMode}" Height="25" Margin="0,0,5,0" />
-                    <ComboBox Name="ComboBox_Metabolite_SpectrumType" SelectedValue="{Binding Path=RawDataVM.SpectrumType}" Height="25" Margin="0,0,5,0" />
+                    <ComboBox Name="ComboBox_Metabolite_PrecursorMz" ItemsSource="{Binding Path=Mass}" Height="25" Margin="0,0,5,0" />
+                    <ComboBox Name="TextBox_Metabolite_PrecursorType" ItemsSource="{Binding Path=Adduct}" Height="25" Margin="0,0,5,0" />
+                    <ComboBox Name="ComboBox_Metabolite_IonMode" SelectedValue="{Binding Path=IonMode}" Height="25" Margin="0,0,5,0" />
+                    <ComboBox Name="ComboBox_Metabolite_SpectrumType" SelectedValue="{Binding Path=SpectrumType}" Height="25" Margin="0,0,5,0" />
                     <TextBox Name="TextBox_Metabolite_CollisionEnergy" 
-                             Text="{Binding Path=RawDataVM.CollisionEnergy, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" 
+                             Text="{Binding Path=CollisionEnergy, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" 
                              VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_Formula" Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Formula, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_Ontology" Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Ontology, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_SMILES" Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Smiles, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_InChIKey" Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.InchiKey, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Name="TextBox_Metabolite_Intensity" Text="{Binding Path=AlignmentSpotRow.AlignmentPropertyBean.Comment, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                    <TextBox Name="TextBox_Metabolite_Formula" Text="{Binding Path=Formula, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                    <TextBox Name="TextBox_Metabolite_Ontology" Text="{Binding Path=Ontology, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                    <TextBox Name="TextBox_Metabolite_SMILES" Text="{Binding Path=Smiles, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                    <TextBox Name="TextBox_Metabolite_InChIKey" Text="{Binding Path=InchiKey, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                    <TextBox Name="TextBox_Metabolite_Intensity" Text="{Binding Path=Comment, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                     <!--<TextBox Name="TextBox_Metabolite_IsMarked" Text="{Binding Path=RawDataVM.IsMarked, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />-->
-                    <TextBox Name="TextBox_Metabolite_Ms1PeakNumber" Text="{Binding Path=RawDataVM.Ms1PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
-                    <TextBox Name="TextBox_Metabolite_Ms2PeakNumber" Text="{Binding Path=RawDataVM.Ms2PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                    <TextBox Name="TextBox_Metabolite_Ms1PeakNumber" Text="{Binding Path=Ms1PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                    <TextBox Name="TextBox_Metabolite_Ms2PeakNumber" Text="{Binding Path=Ms2PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
                 </StackPanel>
             </Grid>
         </Grid>
