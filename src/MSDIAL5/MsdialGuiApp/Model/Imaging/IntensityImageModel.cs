@@ -39,9 +39,9 @@ namespace CompMs.App.Msdial.Model.Imaging
                 var height = BitmapImageModel.WithMarginToLength(_frameInfos.YIndexHeight);
                 var pf = PixelFormats.Indexed8;
                 var stride = (pf.BitsPerPixel + 7) / 8;
-                var image = new byte[width * stride * height];
 
                 var factory = () => {
+                    var image = new byte[width * stride * height];
                     var pixels = _intensitiesLoader.Load(_peakIndex);
                     var features = pixels.PixelPeakFeaturesList[0];
                     var sorted = features.IntensityArray.OrderBy(x => x).ToArray();
