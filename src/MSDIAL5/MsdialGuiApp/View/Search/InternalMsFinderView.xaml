@@ -40,7 +40,8 @@
                        Height="25" Grid.Row="0" />
 
                 <ListBox Name="ListBox_MetaboliteList"
-                         ItemsSource="{Binding MsfinderObservedMetabolites, Mode=OneWay}"
+                         ItemsSource="{Binding MsfinderObservedMetabolites, Mode=OneTime}"
+                         SelectedItem="{Binding MsfinderSelectedMetabolite.Value, Mode=TwoWay}"
                          DisplayMemberPath="metaboliteName"
                          IsSynchronizedWithCurrentItem="True"
                          BorderThickness="0"

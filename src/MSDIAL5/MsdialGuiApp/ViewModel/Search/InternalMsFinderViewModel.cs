@@ -1,9 +1,13 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Search
@@ -17,27 +21,26 @@ namespace CompMs.App.Msdial.ViewModel.Search
             _broker = broker;
 
             MsfinderObservedMetabolites = model.MsfinderObservedMetabolites;
-            MsfinderSelectedMetabolite = model.MsfinderSelectedMetabolites;
-
-            MetaboliteName = MsfinderSelectedMetabolite.metaboliteName;
-            AlignmentID = MsfinderSelectedMetabolite.alignmentID;
-            RetentionTime = MsfinderSelectedMetabolite.retentionTime;
-            CentralCcs = MsfinderSelectedMetabolite.centralCcs;
-            Mass = MsfinderSelectedMetabolite.mass;
-            Adduct = MsfinderSelectedMetabolite.adduct;
-            Formula = MsfinderSelectedMetabolite.formula;
-            Ontology = MsfinderSelectedMetabolite.ontology;
-            Smiles = MsfinderSelectedMetabolite.smiles;
-            InchiKey = MsfinderSelectedMetabolite.inchikey;
-            Comment = MsfinderSelectedMetabolite.comment;
-            IonMode = MsfinderSelectedMetabolite.ionMode;
+            MsfinderSelectedMetabolite = model.ToReactivePropertySlimAsSynchronized(m => m.MsfinderSelectedMetabolite).AddTo(Disposables);
+            MetaboliteName = MsfinderSelectedMetabolite.Value.metaboliteName;
+            AlignmentID = MsfinderSelectedMetabolite.Value.alignmentID;
+            RetentionTime = MsfinderSelectedMetabolite.Value.retentionTime;
+            CentralCcs = MsfinderSelectedMetabolite.Value.centralCcs;
+            Mass = MsfinderSelectedMetabolite.Value.mass;
+            Adduct = MsfinderSelectedMetabolite.Value.adduct;
+            Formula = MsfinderSelectedMetabolite.Value.formula;
+            Ontology = MsfinderSelectedMetabolite.Value.ontology;
+            Smiles = MsfinderSelectedMetabolite.Value.smiles;
+            InchiKey = MsfinderSelectedMetabolite.Value.inchikey;
+            Comment = MsfinderSelectedMetabolite.Value.comment;
+            IonMode = MsfinderSelectedMetabolite.Value.ionMode;
 
             LoadAsyncCommand = new DelegateCommand(LoadAsync);
         }
 
         public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; set; }
         public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
-        public MsfinderObservedMetabolite MsfinderSelectedMetabolite { get; }
+        public ReactivePropertySlim<MsfinderObservedMetabolite?> MsfinderSelectedMetabolite { get; }
         public ObservableCollection<string> MetaboliteList { get; }
 
         public DelegateCommand LoadAsyncCommand { get; }

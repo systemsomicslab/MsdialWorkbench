@@ -31,23 +31,27 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search {
-        internal sealed class InternalMsFinder : BindableBase {
-            public AlignmentFileBeanModel File { get; }
-            public AnalysisParamOfMsfinder Parameter { get; }
-            private AlignmentSpotPropertyModelCollection _spots { get; }
+    internal sealed class InternalMsFinder : BindableBase {
+        public AlignmentFileBeanModel File { get; }
+        public AnalysisParamOfMsfinder Parameter { get; }
+        private AlignmentSpotPropertyModelCollection _spots { get; }
 
-            public InternalMsFinder(AnalysisParamOfMsfinder parameter, AlignmentFileBeanModel alignmentFile, AlignmentSpotPropertyModelCollection spots) {
-                Parameter = parameter;
-                File = alignmentFile;
-                _spots = spots;
-                InternalMsFinderMetaboliteList = new InternalMsFinderMetaboliteList(alignmentFile, spots, SettingModel);
-                MsfinderObservedMetabolites = InternalMsFinderMetaboliteList.ObservedMetabolites;
-                MsfinderSelectedMetabolites = InternalMsFinderMetaboliteList.SelectedObservedMetabolite;
-            }
-
-            public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; set; }
-            public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
-            public MsfinderObservedMetabolite MsfinderSelectedMetabolites { get; }
-            public InternalMsfinderSettingModel SettingModel;
+        public InternalMsFinder(AnalysisParamOfMsfinder parameter, AlignmentFileBeanModel alignmentFile, AlignmentSpotPropertyModelCollection spots) {
+            Parameter = parameter;
+            File = alignmentFile;
+            _spots = spots;
+            InternalMsFinderMetaboliteList = new InternalMsFinderMetaboliteList(alignmentFile, spots, SettingModel);
+            MsfinderObservedMetabolites = InternalMsFinderMetaboliteList.ObservedMetabolites;
+            MsfinderSelectedMetabolite = InternalMsFinderMetaboliteList.SelectedObservedMetabolite;
         }
+
+        public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
+        public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
+        public MsfinderObservedMetabolite? MsfinderSelectedMetabolite {
+            get => _msfinderObservedMetabolite;
+            set => SetProperty(ref _msfinderObservedMetabolite, value);
+        }
+        private MsfinderObservedMetabolite? _msfinderObservedMetabolite;
+        public InternalMsfinderSettingModel SettingModel;
+    }
 }
