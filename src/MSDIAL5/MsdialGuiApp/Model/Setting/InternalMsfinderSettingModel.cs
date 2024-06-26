@@ -1225,14 +1225,8 @@ namespace CompMs.App.Msdial.Model.Setting
             var msfinderQueryFiles = new List<MsfinderQueryFile>(matFilePaths.Length);
             foreach (var matFilePath in matFilePaths)
             {
-                var msfinderQueryFile = new MsfinderQueryFile();
-                var fgtFilePath = Path.ChangeExtension(matFilePath, ".fgt");
-
-                msfinderQueryFile.RawDataFilePath = matFilePath;
-                msfinderQueryFile.RawDataFileName = Path.GetFileName(matFilePath);
-                msfinderQueryFile.FormulaFilePath = fgtFilePath;
-                msfinderQueryFile.FormulaFileName = Path.GetFileName(matFilePath);
-                msfinderQueryFile.StructureFolderPath = Path.ChangeExtension(msfinderQueryFile.RawDataFilePath, null);
+                var msfinderQueryFile = new MsfinderQueryFile(matFilePath);
+                
                 if (!Directory.Exists(msfinderQueryFile.StructureFolderPath))
                 {
                     Directory.CreateDirectory(msfinderQueryFile.StructureFolderPath);
@@ -1255,8 +1249,11 @@ namespace CompMs.App.Msdial.Model.Setting
                 finder.Process(msfinderQueryFiles, parameter, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             }
 
-
-            InternalMsFinderModel = new InternalMsFinder(parameter, CurrentAlignmentModel.Value.AlignmentFile, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots);
+            if (CurrentAlignmentModel.Value.AlignmentSpotSource.Spots is null) {
+                return;
+            }
+            var metaboliteList = new InternalMsFinderMetaboliteList(msfinderQueryFiles, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots, this, parameter);
+            InternalMsFinderModel = new InternalMsFinder(metaboliteList);
         }
 
         public InternalMsFinder InternalMsFinderModel { get; private set; }

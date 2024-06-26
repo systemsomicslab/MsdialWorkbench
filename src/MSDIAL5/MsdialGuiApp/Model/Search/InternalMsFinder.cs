@@ -34,13 +34,10 @@ namespace CompMs.App.Msdial.Model.Search {
     internal sealed class InternalMsFinder : BindableBase {
         public AlignmentFileBeanModel File { get; }
         public AnalysisParamOfMsfinder Parameter { get; }
-        private AlignmentSpotPropertyModelCollection _spots { get; }
+        private AlignmentSpotPropertyModelCollection spots { get; }
 
-        public InternalMsFinder(AnalysisParamOfMsfinder parameter, AlignmentFileBeanModel alignmentFile, AlignmentSpotPropertyModelCollection spots) {
-            Parameter = parameter;
-            File = alignmentFile;
-            _spots = spots;
-            InternalMsFinderMetaboliteList = new InternalMsFinderMetaboliteList(alignmentFile, spots, SettingModel);
+        public InternalMsFinder(InternalMsFinderMetaboliteList metaboliteList) {
+            InternalMsFinderMetaboliteList = metaboliteList;
             MsfinderObservedMetabolites = InternalMsFinderMetaboliteList.ObservedMetabolites;
             MsfinderSelectedMetabolite = InternalMsFinderMetaboliteList.SelectedObservedMetabolite;
         }
