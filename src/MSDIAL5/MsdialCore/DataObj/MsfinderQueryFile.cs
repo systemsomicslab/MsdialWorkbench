@@ -1,4 +1,6 @@
-﻿namespace CompMs.MsdialCore.DataObj
+﻿using System.IO;
+
+namespace CompMs.MsdialCore.DataObj
 {
     /// <summary>
     /// mat: raw data file
@@ -11,52 +13,28 @@
 
     public class MsfinderQueryFile
     {
-        private string rawDataFilePath;
-        private string rawDataFileName;
-        private string formulaFilePath;
-        private string formulaFileName;
-        private string structureFolderPath;
-        private string structureFolderName;
         //private SolidColorBrush bgColor; // temp
-        public MsfinderQueryFile()
+        public MsfinderQueryFile(string rawDataFilePath)
         {
+            RawDataFilePath = rawDataFilePath;
+            RawDataFileName = Path.GetFileName(rawDataFilePath);
+            FormulaFilePath = Path.ChangeExtension(rawDataFilePath, ".fgt");
+            FormulaFileName = Path.GetFileName(FormulaFilePath);
+            StructureFolderPath = Path.ChangeExtension(rawDataFilePath, null);
+            StructureFolderName = Path.GetFileName(StructureFolderPath);
             //this.bgColor = Brushes.White;
         }
 
-        public string RawDataFilePath
-        {
-            get { return rawDataFilePath; }
-            set { rawDataFilePath = value; }
-        }
+        public string RawDataFilePath { get; }
 
-        public string RawDataFileName
-        {
-            get { return rawDataFileName; }
-            set { rawDataFileName = value; }
-        }
+        public string RawDataFileName { get; }
 
-        public string FormulaFilePath
-        {
-            get { return formulaFilePath; }
-            set { formulaFilePath = value; }
-        }
+        public string FormulaFilePath { get; }
+        
+        public string FormulaFileName { get; }
 
-        public string FormulaFileName
-        {
-            get { return formulaFileName; }
-            set { formulaFileName = value; }
-        }
+        public string StructureFolderPath { get; }
 
-        public string StructureFolderPath
-        {
-            get { return structureFolderPath; }
-            set { structureFolderPath = value; }
-        }
-
-        public string StructureFolderName
-        {
-            get { return structureFolderName; }
-            set { structureFolderName = value; }
-        }
+        public string StructureFolderName { get; }
     }
 }
