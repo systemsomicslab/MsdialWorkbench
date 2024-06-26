@@ -22,19 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
             MsfinderObservedMetabolites = model.MsfinderObservedMetabolites;
             MsfinderSelectedMetabolite = model.ToReactivePropertySlimAsSynchronized(m => m.MsfinderSelectedMetabolite).AddTo(Disposables);
-            MetaboliteName = MsfinderSelectedMetabolite.Value.metaboliteName;
-            AlignmentID = MsfinderSelectedMetabolite.Value.alignmentID;
-            RetentionTime = MsfinderSelectedMetabolite.Value.retentionTime;
-            CentralCcs = MsfinderSelectedMetabolite.Value.centralCcs;
-            Mass = MsfinderSelectedMetabolite.Value.mass;
-            Adduct = MsfinderSelectedMetabolite.Value.adduct;
-            Formula = MsfinderSelectedMetabolite.Value.formula;
-            Ontology = MsfinderSelectedMetabolite.Value.ontology;
-            Smiles = MsfinderSelectedMetabolite.Value.smiles;
-            InchiKey = MsfinderSelectedMetabolite.Value.inchikey;
-            Comment = MsfinderSelectedMetabolite.Value.comment;
-            IonMode = MsfinderSelectedMetabolite.Value.ionMode;
-
+            
             LoadAsyncCommand = new DelegateCommand(LoadAsync);
         }
 
@@ -44,18 +32,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ObservableCollection<string> MetaboliteList { get; }
 
         public DelegateCommand LoadAsyncCommand { get; }
-        public string MetaboliteName { get; set; }
-        public int AlignmentID { get; set; }
-        public double RetentionTime { get; set; }
-        public double CentralCcs { get; set; }
-        public double Mass { get; set; }
-        public string Adduct {  get; set; }
-        public Formula Formula { get; set; }
-        public string Ontology { get; set; }
-        public string Smiles { get; set; }
-        public string InchiKey { get; set; }
-        public string Comment { get; set; }
-        public IonMode IonMode { get; set; }
 
         private void LoadAsync()  {
             Mouse.OverrideCursor = Cursors.Wait;
