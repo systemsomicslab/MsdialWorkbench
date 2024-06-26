@@ -38,17 +38,9 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public InternalMsFinder(InternalMsFinderMetaboliteList metaboliteList) {
             InternalMsFinderMetaboliteList = metaboliteList;
-            MsfinderObservedMetabolites = InternalMsFinderMetaboliteList.ObservedMetabolites;
-            MsfinderSelectedMetabolite = InternalMsFinderMetaboliteList.SelectedObservedMetabolite;
         }
 
         public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
-        public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
-        public MsfinderObservedMetabolite? MsfinderSelectedMetabolite {
-            get => _msfinderObservedMetabolite;
-            set => SetProperty(ref _msfinderObservedMetabolite, value);
-        }
-        private MsfinderObservedMetabolite? _msfinderObservedMetabolite;
         public InternalMsfinderSettingModel SettingModel;
     }
 }

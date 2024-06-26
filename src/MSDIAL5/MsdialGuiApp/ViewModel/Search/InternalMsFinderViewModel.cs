@@ -19,17 +19,12 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public InternalMsFinderViewModel(InternalMsFinder model, IMessageBroker broker) {
             _model = model;
             _broker = broker;
-
-            MsfinderObservedMetabolites = model.MsfinderObservedMetabolites;
-            MsfinderSelectedMetabolite = model.ToReactivePropertySlimAsSynchronized(m => m.MsfinderSelectedMetabolite).AddTo(Disposables);
+            InternalMsFinderMetaboliteList = model.InternalMsFinderMetaboliteList;
             
             LoadAsyncCommand = new DelegateCommand(LoadAsync);
         }
 
-        public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; set; }
-        public ReadOnlyObservableCollection<MsfinderObservedMetabolite> MsfinderObservedMetabolites { get; }
-        public ReactivePropertySlim<MsfinderObservedMetabolite?> MsfinderSelectedMetabolite { get; }
-        public ObservableCollection<string> MetaboliteList { get; }
+        public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
 
         public DelegateCommand LoadAsyncCommand { get; }
 

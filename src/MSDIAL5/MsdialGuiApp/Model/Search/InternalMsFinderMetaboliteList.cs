@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
@@ -17,7 +18,6 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search {
     internal class InternalMsFinderMetaboliteList : BindableBase {
-        private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly AlignmentSpotPropertyModelCollection _spots;
         private readonly InternalMsfinderSettingModel _settingModel;
 
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public MsfinderObservedMetabolite? SelectedObservedMetabolite {
             get => _selectedObservedMetabolite; 
-            set => _selectedObservedMetabolite = value;
+            set => SetProperty(ref _selectedObservedMetabolite, value);
         }
         private MsfinderObservedMetabolite? _selectedObservedMetabolite;
     }
@@ -223,6 +223,8 @@ namespace CompMs.App.Msdial.Model.Search {
         public int ms2Num {
             get => _spotData.Ms2PeakNumber;
         }
+        public MsSpectrum ms1Spectrum { get; private set; }
+        public MsSpectrum ms2Spectrum { get; private set; }
 
         public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter) {
             _queryFile = queryFile;
@@ -235,6 +237,8 @@ namespace CompMs.App.Msdial.Model.Search {
 
         private void Load() {
             _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
+            ms1Spectrum = new MsSpectrum(_spotData.Ms1Spectrum);
+            ms2Spectrum = new MsSpectrum(_spotData.Ms2Spectrum);
         }
 
         public Task ClearAsync(CancellationToken token = default) {
