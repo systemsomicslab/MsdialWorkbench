@@ -22,6 +22,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using FragmentDbParser = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser;
@@ -1176,13 +1177,6 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string existProjectPath;
 
-        public string FgtFilePath
-        {
-            get => fgtFilePath;
-            set => SetProperty(ref fgtFilePath, value);
-        }
-        private string fgtFilePath;
-
         private readonly List<ProductIon> productIonDB = FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
         private readonly List<NeutralLoss> neutralLossDB = FragmentDbParser.GetNeutralLossDB(
@@ -1196,8 +1190,6 @@ namespace CompMs.App.Msdial.Model.Setting
         private List<MoleculeMsReference> mspDB = new List<MoleculeMsReference>();
         private List<ExistStructureQuery> userDefinedStructureDB;
         private readonly List<FragmentLibrary>  eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
-
-        public List<MsfinderQueryFile> MsfinderQueryFiles { get; } = new List<MsfinderQueryFile>();
 
         public MsfinderObservedMetabolite observedMetabolite { get; private set; }
         public AlignmentSpotPropertyModel _spot { get; private set; }
@@ -1227,37 +1219,43 @@ namespace CompMs.App.Msdial.Model.Setting
                 fullpath = ExistProjectPath;
             }
             
-
             Commit();
+
+            var matFilePaths = Directory.GetFiles(fullpath, "*.mat");
+            var msfinderQueryFiles = new List<MsfinderQueryFile>(matFilePaths.Length);
+            foreach (var matFilePath in matFilePaths)
+            {
+                var msfinderQueryFile = new MsfinderQueryFile();
+                var fgtFilePath = Path.ChangeExtension(matFilePath, ".fgt");
+
+                msfinderQueryFile.RawDataFilePath = matFilePath;
+                msfinderQueryFile.RawDataFileName = Path.GetFileName(matFilePath);
+                msfinderQueryFile.FormulaFilePath = fgtFilePath;
+                msfinderQueryFile.FormulaFileName = Path.GetFileName(matFilePath);
+                msfinderQueryFile.StructureFolderPath = Path.ChangeExtension(msfinderQueryFile.RawDataFilePath, null);
+                if (!Directory.Exists(msfinderQueryFile.StructureFolderPath))
+                {
+                    Directory.CreateDirectory(msfinderQueryFile.StructureFolderPath);
+                }
+                msfinderQueryFiles.Add(msfinderQueryFile);
+            }
+
             if (parameter.IsFormulaFinder) {
                 var paramfile = Path.Combine(fullpath, $"batchparam-{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 MsFinderIniParser.Write(parameter, paramfile);
 
-                var matFilePaths = Directory.GetFiles(fullpath, "*.mat");
-
-                foreach (var matFilePath in matFilePaths) {
-                    var msfinderQueryFile = new MsfinderQueryFile();
-                    var rawData = RawDataParcer.RawDataFileReader(matFilePath, parameter);
+                foreach (var msfinderQueryFile in msfinderQueryFiles) {
+                    var rawData = RawDataParcer.RawDataFileReader(msfinderQueryFile.RawDataFilePath, parameter);
                     var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, rawData, parameter);
-                    fgtFilePath = Path.ChangeExtension(matFilePath, ".fgt");
-                    FormulaResultParcer.FormulaResultsWriter(fgtFilePath, formulaResults);
-
-                    msfinderQueryFile.RawDataFilePath = matFilePath;
-                    msfinderQueryFile.RawDataFileName = Path.GetFileName(matFilePath);
-                    msfinderQueryFile.FormulaFilePath = fgtFilePath;
-                    msfinderQueryFile.FormulaFileName = Path.GetFileName(matFilePath);
-                    msfinderQueryFile.StructureFolderPath = Path.ChangeExtension(msfinderQueryFile.RawDataFilePath, null);
-                    if (!Directory.Exists(msfinderQueryFile.StructureFolderPath)) {
-                        Directory.CreateDirectory(msfinderQueryFile.StructureFolderPath);
-                    }
-                    MsfinderQueryFiles.Add(msfinderQueryFile);
-                    observedMetabolite = new MsfinderObservedMetabolite(_spot, fgtFilePath);
+                    FormulaResultParcer.FormulaResultsWriter(msfinderQueryFile.FormulaFilePath, formulaResults);
                 }
             }
             if (parameter.IsStructureFinder) {
                 var finder = new StructureFinderBatchProcess();
-                finder.Process(MsfinderQueryFiles, parameter, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+                finder.Process(msfinderQueryFiles, parameter, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             }
+
+
             InternalMsFinderModel = new InternalMsFinder(parameter, CurrentAlignmentModel.Value.AlignmentFile, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots);
         }
 
