@@ -237,6 +237,20 @@ namespace CompMs.App.Msdial.Model.Search {
                 }
             }
         }
+
+        public double collisionEnergy
+        {
+            get => _spotData.CollisionEnergy;
+            set
+            {
+                if (_spotData.CollisionEnergy != value)
+                {
+                    _spotData.CollisionEnergy = value;
+                    OnPropertyChanged(nameof(collisionEnergy));
+                }
+            }
+        }
+
         public int ms1Num {
             get => _spotData.Ms1PeakNumber;
         }

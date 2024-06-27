@@ -122,7 +122,7 @@
                                 <ComboBoxItem>Profile</ComboBoxItem>
                             </ComboBox.Items>
                         </ComboBox>
-                        <TextBox IsEnabled="False" Text="{Binding Path=CollisionEnergy, UpdateSourceTrigger=Explicit}" 
+                        <TextBox IsEnabled="False" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.collisionEnergy, UpdateSourceTrigger=Explicit}" 
                              VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                         <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                         <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
