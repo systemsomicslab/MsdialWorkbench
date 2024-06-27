@@ -1194,9 +1194,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public MsfinderObservedMetabolite observedMetabolite { get; private set; }
         public AlignmentSpotPropertyModel _spot { get; private set; }
 
-        public void Process() {
+        public InternalMsFinder? Process() {
             if (CurrentAlignmentModel.Value is null) {
-                return;
+                return null;
             }
             SetUserDefinedStructureDB();
 
@@ -1250,13 +1250,12 @@ namespace CompMs.App.Msdial.Model.Setting
             }
 
             if (CurrentAlignmentModel.Value.AlignmentSpotSource.Spots is null) {
-                return;
+                return null;
             }
             var metaboliteList = new InternalMsFinderMetaboliteList(msfinderQueryFiles, CurrentAlignmentModel.Value.AlignmentSpotSource.Spots, this, parameter);
-            InternalMsFinderModel = new InternalMsFinder(metaboliteList);
+            var internalMsFinderModel = new InternalMsFinder(metaboliteList);
+            return internalMsFinderModel;
         }
-
-        public InternalMsFinder InternalMsFinderModel { get; private set; }
 
         private void SetUserDefinedStructureDB() {
             if (parameter.IsUserDefinedDB) {

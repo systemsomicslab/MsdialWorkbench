@@ -482,8 +482,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue() // Commandが実行できる条件
             .ToReactiveCommand().WithSubscribe(() =>
             {
-                model.Process();
-                broker.Publish(InternalMsFinderViewModel = new InternalMsFinderViewModel(model.InternalMsFinderModel, broker));
+                var msfinder = model.Process();
+                if (msfinder is not null)
+                {
+                    broker.Publish(InternalMsFinderViewModel = new InternalMsFinderViewModel(msfinder, broker));
+                }
             }).AddTo(Disposables);
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {

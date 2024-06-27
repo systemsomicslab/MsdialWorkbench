@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsFinderViewModel}}"
              d:DesignHeight="775" d:DesignWidth="1280">
 	<d:DesignerProperties.DesignStyle>
@@ -27,13 +28,13 @@
             <ColumnDefinition Width="3*" MinWidth="250" />
             <ColumnDefinition Width="3*" MinWidth="250" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" MinHeight="430" />
-        </Grid.RowDefinitions>
 
         <Grid Grid.Column="0" Grid.Row="0">
-            <Grid Name="MetaboliteList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" MinHeight="430" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Name="MetaboliteList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Label Content="Metabolite List" 
                        Foreground="Black" Background="{StaticResource MainThemeColor}"
                        VerticalAlignment="Top" HorizontalContentAlignment="Center" 
@@ -56,86 +57,118 @@
                     </ToolTipService.ToolTip>
                 </ListBox>
             </Grid>
-            <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
-        </Grid>
-        
-        <Grid Grid.Column="0" Grid.Row="1">
-            <Label Content="Information" 
+            <GridSplitter Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+            <Grid Grid.Column="0" Grid.Row="1">
+                <Label Content="Information" 
                    Foreground="Black" Background="{StaticResource MainThemeColor}"
                    VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                    Height="25" Grid.Row="0" />
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                <Grid.Resources>
-                    <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="Black" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="IsReadOnly" Value="True" />
-                    </Style>
-                </Grid.Resources>
+                    <Grid.Resources>
+                        <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="IsReadOnly" Value="True" />
+                        </Style>
+                    </Grid.Resources>
 
-                <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="5,25,0,0">
-                    <Label Content="Name:" Height="25" />
-                    <Label Content="Scan number:" Height="25"/>
-                    <Label Content="Retention time (min):" Height="25"/>
-                    <Label Content="CCS:" Height="25"/>
-                    <Label Content="Precursor m/z:" Height="25"/>
-                    <Label Content="Adduct type:" Height="25"/>
-                    <Label Content="Ion mode:" Height="25"/>
-                    <Label Content="Spectrum type:" Height="25"/>
-                    <Label Content="Collision energy:" Height="25"/>
-                    <Label Content="Formula:" Height="25"/>
-                    <Label Content="Ontology:" Height="25"/>
-                    <Label Content="SMILES:" Height="25" />
-                    <Label Content="InChIKey:" Height="25"/>
-                    <Label Content="Comment:" Height="25"/>
-                    <Label Content="MS1 peak number:" Height="25"/>
-                    <Label Content="MS2 peak number:" Height="25"/>
-                </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="5,25,0,0">
+                        <Label Content="Name:" Height="25" />
+                        <Label Content="Scan number:" Height="25"/>
+                        <Label Content="Retention time (min):" Height="25"/>
+                        <Label Content="CCS:" Height="25"/>
+                        <Label Content="Precursor m/z:" Height="25"/>
+                        <Label Content="Adduct type:" Height="25"/>
+                        <Label Content="Ion mode:" Height="25"/>
+                        <Label Content="Spectrum type:" Height="25"/>
+                        <Label Content="Collision energy:" Height="25"/>
+                        <Label Content="Formula:" Height="25"/>
+                        <Label Content="Ontology:" Height="25"/>
+                        <Label Content="SMILES:" Height="25" />
+                        <Label Content="InChIKey:" Height="25"/>
+                        <Label Content="Comment:" Height="25"/>
+                        <Label Content="MS1 peak number:" Height="25"/>
+                        <Label Content="MS2 peak number:" Height="25"/>
+                    </StackPanel>
 
-                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,25,0,0">
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName}" 
+                    <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,25,0,0">
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.alignmentID}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.alignmentID}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.retentionTime, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.retentionTime, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.centralCcs, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.centralCcs, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.mass}" Height="25" Margin="0,0,5,0" />
-                    <ComboBox ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adductIons}" SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
-                    <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ionMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
-                        <ComboBox.Items>
-                            <ComboBoxItem>Positive</ComboBoxItem>
-                            <ComboBoxItem>Negative</ComboBoxItem>
-                        </ComboBox.Items>
-                    </ComboBox>
-                    <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.spectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
-                        <ComboBox.Items>
-                            <ComboBoxItem>Centroid</ComboBoxItem>
-                            <ComboBoxItem>Profile</ComboBoxItem>
-                        </ComboBox.Items>
-                    </ComboBox>
-                    <TextBox IsEnabled="False" Text="{Binding Path=CollisionEnergy, UpdateSourceTrigger=Explicit}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.mass}" Height="25" Margin="0,0,5,0" />
+                        <ComboBox ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adductIons}" SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
+                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ionMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                            <ComboBox.Items>
+                                <ComboBoxItem>Positive</ComboBoxItem>
+                                <ComboBoxItem>Negative</ComboBoxItem>
+                            </ComboBox.Items>
+                        </ComboBox>
+                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.spectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                            <ComboBox.Items>
+                                <ComboBoxItem>Centroid</ComboBoxItem>
+                                <ComboBoxItem>Profile</ComboBoxItem>
+                            </ComboBox.Items>
+                        </ComboBox>
+                        <TextBox IsEnabled="False" Text="{Binding Path=CollisionEnergy, UpdateSourceTrigger=Explicit}" 
                              VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.comment}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.comment}" 
                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
-                    <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
-                </StackPanel>
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
-        <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+        <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" MinHeight="430" />
+            </Grid.RowDefinitions>
+            <Label Content="Formula finder" 
+                   Foreground="Black" Background="{StaticResource MainThemeColor}"
+                   VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                   Height="25" Grid.Row="0"/>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Label Content="MS spectrum" 
+                            Foreground="Black" Background="{StaticResource MainThemeColor}"
+                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                            Height="25" Grid.Row="0"/>
+                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                </Grid>
+                <GridSplitter Height="2" Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+                <Grid Grid.Row="1">
+                    <Label Content="MS/MS spectrum" 
+                               Foreground="Black" Background="{StaticResource MainThemeColor}"
+                               VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                               Height="25" Grid.Row="0" />
+                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs2ViewModel}"/>
+                </Grid>
+            </Grid>
+            <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+        </Grid>
+        <GridSplitter Width="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
     </Grid>
 </UserControl>

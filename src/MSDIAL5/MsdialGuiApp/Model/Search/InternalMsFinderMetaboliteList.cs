@@ -1,23 +1,36 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace CompMs.App.Msdial.Model.Search {
-    internal class InternalMsFinderMetaboliteList : BindableBase {
+    internal class InternalMsFinderMetaboliteList : DisposableModelBase {
         private readonly AlignmentSpotPropertyModelCollection _spots;
         private readonly InternalMsfinderSettingModel _settingModel;
 
@@ -28,7 +41,14 @@ namespace CompMs.App.Msdial.Model.Search {
             _observedMetabolites = new ObservableCollection<MsfinderObservedMetabolite>(metabolites);
             ObservedMetabolites = new ReadOnlyObservableCollection<MsfinderObservedMetabolite>(_observedMetabolites);
             _selectedObservedMetabolite = ObservedMetabolites.FirstOrDefault();
+            var ms1 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.ms1Spectrum);
+            var ms2 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.ms2Spectrum);
+            internalMsFinderMs1 = new ObservableMsSpectrum(ms1, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            internalMsFinderMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
         }
+
+        public ObservableMsSpectrum internalMsFinderMs1 { get; }
+        public ObservableMsSpectrum internalMsFinderMs2 { get; }
 
         private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile>msfinderQueryFiles, AnalysisParamOfMsfinder parameter) {
             var metaboliteList = new List<MsfinderObservedMetabolite>();
@@ -232,6 +252,8 @@ namespace CompMs.App.Msdial.Model.Search {
             Load();
         }
 
+        public ReadOnlyReactivePropertySlim<bool>? SpectrumLoaded { get; }
+        public IObservable<ISpectraExporter> Exporter { get; }
         public AlignmentSpotPropertyModel Spot { get; private set; }
         public InternalMsfinderSettingModel SettingModel { get; }
 
@@ -243,12 +265,10 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public Task ClearAsync(CancellationToken token = default) {
             throw new NotImplementedException();
-            // formula = null;
         }
 
         public Task ReflectToMsdialAsync(CancellationToken token = default) {
             throw new NotImplementedException();
-            //Spot.Formula = formula;
         }
     }
 }
