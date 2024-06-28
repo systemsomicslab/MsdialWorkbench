@@ -36,5 +36,9 @@ namespace CompMs.MsdialCore.DataObj
         public string StructureFolderPath { get; }
 
         public string StructureFolderName { get; }
+
+        public bool FormulaFileExists => File.Exists(FormulaFilePath);
+
+        public bool StructureFileExists => File.Exists(StructureFolderPath);
     }
 }
