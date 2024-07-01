@@ -47,8 +47,6 @@
                          IsSynchronizedWithCurrentItem="True"
                          BorderThickness="0"
                          Margin="0,28,0,2"
-                         behavior:ChildDoubleClickBehavior.IsEnable="True"
-                         behavior:ChildDoubleClickBehavior.Command="{Binding LoadAsyncCommand, Mode=OneWay}"
                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                          ScrollViewer.VerticalScrollBarVisibility="Auto" 
                          Grid.Row="0">
@@ -152,6 +150,9 @@
                            Foreground="Black" Background="{StaticResource MainThemeColor}"
                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                            Height="25"/>
+                    <Button Content="Search formula" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindFormula}" 
+                            Background="AliceBlue" BorderThickness="2" 
+                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
@@ -208,7 +209,6 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -240,10 +240,15 @@
         <GridSplitter Width="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
         <Grid Grid.Column="2" Grid.Row="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="LightSteelBlue" />
+                <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
             <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Spot}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="0,0,0,0">
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader" >
@@ -267,8 +272,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
-
                     <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
