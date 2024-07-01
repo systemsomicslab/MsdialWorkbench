@@ -4,7 +4,7 @@ namespace CompMs.App.Msdial.Model.Service
 {
     internal sealed class SelectFolderRequest
     {
-        private readonly Action<string> handler;
+        private readonly Action<string>? handler;
 
         public SelectFolderRequest() {
 
@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Service
             handler?.Invoke(filePath);
         }
 
-        public string Title { get; set; }
-        public string SelectedPath { get; set; }
+        public string? Title { get; set; }
+        public string? SelectedPath { get; set; }
     }
 }

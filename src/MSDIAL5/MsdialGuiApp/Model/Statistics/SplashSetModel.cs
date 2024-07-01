@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
@@ -30,12 +31,12 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly ParameterBase _parameter;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
 
-        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IReadOnlyList<AnalysisFileBean> files, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
+        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IReadOnlyList<AnalysisFileBean> files, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             _container = container;
             _internalStandardSetModel = internalStandardSetModel ?? throw new System.ArgumentNullException(nameof(internalStandardSetModel));
             _files = files;
@@ -70,18 +71,18 @@ namespace CompMs.App.Msdial.Model.Statistics
                 new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells),
                 new IonAbundance(IonAbundanceUnit.NormalizedByInternalStandardPeakHeight),
             };
-            OutputUnit = OutputUnits.FirstOrDefault();
+            _outputUnit = OutputUnits.First();
 
             CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).SelectSwitch(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public ObservableCollection<SplashProduct> SplashProducts { get; }
 
-        public SplashProduct SplashProduct {
+        public SplashProduct? SplashProduct {
             get => _splashProduct;
             set => SetProperty(ref _splashProduct, value);
         }
-        private SplashProduct _splashProduct;
+        private SplashProduct? _splashProduct;
 
         public ObservableCollection<IonAbundance> OutputUnits { get; }
 
@@ -94,6 +95,9 @@ namespace CompMs.App.Msdial.Model.Statistics
         public ReadOnlyCollection<string> TargetMetabolites { get; }
 
         public void Find() {
+            if (SplashProduct is null) {
+                return;
+            }
             foreach (var lipid in SplashProduct.Lipids) {
                 foreach (var spot in _spots) {
                     if (spot.IsReferenceMatched(_evaluator) && lipid.TrySetIdIfMatch(spot)) {
@@ -119,6 +123,10 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public void Normalize(bool applyDilutionFactor) {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
+            if (SplashProduct is null) {
+                _broker.Publish(new ShortMessageRequest("No splash product selected."));
+                return;
+            }
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
@@ -144,18 +152,16 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public static List<SplashProduct> GetPublicSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
-                var data = XElement.Load(stream);
-                return data.Elements("Product").Select(SplashProduct.BuildPublicProduct).Where(product => !(product is null)).ToList();
-            }
+            using var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml");
+            var data = XElement.Load(stream);
+            return data.Elements("Product").Select(SplashProduct.BuildPublicProduct).OfType<SplashProduct>().ToList();
         }
 
         public static List<SplashProduct> GetPrivateSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
-                var data = XElement.Load(stream);
-                return data.Elements("Product").Select(SplashProduct.BuildPrivateProduct).Where(product => !(product is null)).ToList();
-            }
+            using var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml");
+            var data = XElement.Load(stream);
+            return data.Elements("Product").Select(SplashProduct.BuildPrivateProduct).OfType<SplashProduct>().ToList();
         }
     }
 }

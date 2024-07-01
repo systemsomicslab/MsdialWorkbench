@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -91,7 +92,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 massStep = 1.0F;
             }
 
-            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
+            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep);
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
@@ -151,7 +152,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
             //get EIC chromatogram
-            var chromatogram = accSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, _parameter.MassSliceWidth, chromatogramRange);
+            var chromatogram = accSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange);
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;

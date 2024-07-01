@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
@@ -12,6 +13,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -27,14 +29,14 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal interface IMethodSettingModelFactory
     {
-        DataCollectionSettingModel CreateDataCollectionSetting();
-        PeakDetectionSettingModel CreatePeakDetectionSetting();
-        DeconvolutionSettingModel CreateDeconvolutionSetting();
-        IdentifySettingModel CreateIdentifySetting();
-        AdductIonSettingModel CreateAdductIonSetting();
-        AlignmentParameterSettingModel CreateAlignmentParameterSetting();
-        MobilitySettingModel CreateMobilitySetting();
-        IsotopeTrackSettingModel CreateIsotopeTrackSetting();
+        IDataCollectionSettingModel? CreateDataCollectionSetting();
+        IPeakDetectionSettingModel? CreatePeakDetectionSetting();
+        DeconvolutionSettingModel? CreateDeconvolutionSetting();
+        IIdentificationSettingModel? CreateIdentifySetting();
+        AdductIonSettingModel? CreateAdductIonSetting();
+        IAlignmentParameterSettingModel? CreateAlignmentParameterSetting();
+        MobilitySettingModel? CreateMobilitySetting();
+        IsotopeTrackSettingModel? CreateIsotopeTrackSetting();
         IMethodModel BuildMethod();
     }
 
@@ -59,6 +61,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
                     factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, dimsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
+                case IMsdialDataStorage<MsdialGcmsParameter> gcmsStorage:
+                    factoryImpl = new GcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, gcmsStorage, fileProperties, studyContext, process, messageBroker);
+                    break;
                 default:
                     throw new ArgumentException(nameof(storage));
             }
@@ -67,14 +72,14 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly IMethodSettingModelFactory factoryImpl;
 
         public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
-        public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
-        public DataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
-        public DeconvolutionSettingModel CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
-        public IdentifySettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
-        public IsotopeTrackSettingModel CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
-        public MobilitySettingModel CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
+        public AdductIonSettingModel? CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
+        public IAlignmentParameterSettingModel? CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
+        public IDataCollectionSettingModel? CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
+        public DeconvolutionSettingModel? CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
+        public IIdentificationSettingModel? CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
+        public IsotopeTrackSettingModel? CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
+        public MobilitySettingModel? CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
+        public IPeakDetectionSettingModel? CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
     }
 
 
@@ -102,11 +107,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -114,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory(parameter), process, _messageBroker, storage.DataBases);
 
@@ -160,11 +165,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -201,11 +206,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -213,7 +218,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
@@ -255,11 +260,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -292,11 +297,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -304,7 +309,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
@@ -349,7 +354,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -380,11 +385,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -392,7 +397,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new LcimmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
@@ -437,7 +442,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -470,11 +475,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -482,7 +487,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
@@ -527,13 +532,81 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
         public IMethodModel BuildMethod() {
             var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
             return method;
+        }
+    }
+
+    internal sealed class GcmsMethodSettingModelFactory : IMethodSettingModelFactory
+    {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
+        private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
+        private readonly IMsdialDataStorage<MsdialGcmsParameter> storage;
+        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
+        private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
+
+        public GcmsMethodSettingModelFactory(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
+            AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
+            IMsdialDataStorage<MsdialGcmsParameter> storage,
+            FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
+            ProcessOption process,
+            IMessageBroker broker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
+            _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
+            this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
+            this.process = process;
+            _broker = broker;
+            if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                this.storage.Parameter.MaxChargeNumber = 8;
+                this.storage.Parameter.RemoveAfterPrecursor = false;
+            }
+        }
+
+        public AdductIonSettingModel? CreateAdductIonSetting() {
+            return null;
+        }
+
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+            return new GcmsAlignmentParameterSettingModel(storage.Parameter, DateTime.Now, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, process, _broker);
+        }
+
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
+            return new GcmsDataCollectionSettingModel(storage.Parameter, process);
+        }
+
+        public DeconvolutionSettingModel CreateDeconvolutionSetting() {
+            return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
+        }
+
+        public IIdentificationSettingModel CreateIdentifySetting() {
+            return new GcmsIdentificationSettingModel(storage.Parameter, _analysisFileBeanModelCollection, process, _broker);
+        }
+
+        public IsotopeTrackSettingModel? CreateIsotopeTrackSetting() {
+            return null;
+        }
+
+        public MobilitySettingModel? CreateMobilitySetting() {
+            return null;
+        }
+
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
+            return new GcmsPeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, storage.Parameter.ChromDecBaseParam, process);
+        }
+
+        public IMethodModel BuildMethod() {
+            return new GcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);
         }
     }
 }

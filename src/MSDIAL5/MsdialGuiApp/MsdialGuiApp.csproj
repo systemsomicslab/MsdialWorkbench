@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>net472;net481</TargetFrameworks>
+		<TargetFrameworks>net48;net481</TargetFrameworks>
 		<UseWPF>true</UseWPF>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AssemblyName>MSDIAL</AssemblyName>
@@ -9,8 +9,9 @@
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
-		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20230908_conventional_converted_dev.lbm2</Lbm2Url>
-    <LangVersion>8</LangVersion>
+		<Lbm2Url>https://zenodo.org/records/11399747/files/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>
@@ -22,6 +23,9 @@
 		<HighEntropyVA>false</HighEntropyVA>
 		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
 	<ItemGroup>
 		<None Remove="App.xaml" />
 		<None Remove="Resources\BinVestigate.ico" />
@@ -90,6 +94,11 @@
 	  </Resource>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Properties\Settings.Designer.cs">
 	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	    <AutoGen>True</AutoGen>
@@ -200,5 +209,12 @@
         <Content Include="CytoscapeLocalBrowser\assembly\style.css" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>

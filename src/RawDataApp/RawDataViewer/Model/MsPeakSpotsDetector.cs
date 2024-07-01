@@ -16,33 +16,33 @@ namespace CompMs.App.RawDataViewer.Model
 {
     public class MsPeakSpotsDetector
     {
-        public async Task<MsPeakSpotsSummary> DetectAsync(AnalysisDataModel dataModel, CancellationToken token = default) {
+        public async Task<(MsPeakSpotsSummary, MsSnDistribution)> DetectAsync(AnalysisDataModel dataModel, CancellationToken token = default) {
             var ionMode = dataModel.IonMode;
             switch (dataModel.MachineCategory) {
                 case MachineCategory.LCMS: {
                         var provider = await dataModel.CreateDataProvider(token).ConfigureAwait(false);
                         var peaks = new MsdialLcMsApi.Algorithm.PeakSpotting(dataModel.AnalysisFile, 0, 100).Run(provider, new MsdialLcmsApi.Parameter.MsdialLcmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }, token, null);
-                        return PeaksToSummary(peaks);
+                        return (PeaksToSummary(peaks), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.IMMS: {
                         var providerFactory = new MsdialImmsCore.Algorithm.ImmsAverageDataProviderFactory(massTolerance: 0.001, driftTolerance: 0.002);
                         var provider = await dataModel.CreateDataProviderByFactory(providerFactory, token).ConfigureAwait(false);
                         var peaks = new MsdialImmsCore.Algorithm.PeakSpotting(new MsdialImmsCore.Parameter.MsdialImmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }).Run(dataModel.AnalysisFile, provider, 0, 100);
-                        return PeaksToSummary(peaks.Items);
+                        return (PeaksToSummary(peaks.Items), new MsSnDistribution(peaks.Items));
                     }
                 case MachineCategory.IFMS: {
                         var provider = await dataModel.CreateDataProvider(token).ConfigureAwait(false);
                         var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
                         var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                         var parameter = new ParameterBase();
-                        var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                        var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel).AsPeakArray();
 
                         var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, parameter.MinimumDatapoints, parameter.MinimumAmplitude);
                         if (peakPickResults.IsEmptyOrNull()) {
-                            return new MsPeakSpotsSummary(new DataPoint[0]);
+                            return (new MsPeakSpotsSummary(new DataPoint[0]), new MsSnDistribution(Array.Empty<ChromatogramPeakFeature>()));
                         }
                         var peaks = MsdialDimsCore.ProcessFile.ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, dataModel.AnalysisFile.AcquisitionType);
-                        return PeaksToSummary(peaks);
+                        return (PeaksToSummary(peaks), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.LCIMMS: {
                         var providers = await Task.WhenAll(new[]
@@ -54,11 +54,12 @@ namespace CompMs.App.RawDataViewer.Model
                         var accProvider = providers[1];
                         var parameter = new MsdialLcImMsApi.Parameter.MsdialLcImMsParameter { MinimumAmplitude = 0d, IonMode = ionMode, };
                         var peaks = new MsdialLcImMsApi.Algorithm.PeakSpotting(0, 100, parameter).Execute4DFeatureDetection(dataModel.AnalysisFile, provider, accProvider, parameter.NumThreads, token, null);
-                        return PeaksToSummary(peaks.SelectMany(peak => peak.DriftChromFeatures).ToList());
+                        var flatten = peaks.SelectMany(peak => peak.DriftChromFeatures).ToList();
+                        return (PeaksToSummary(flatten), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.GCMS:
                 default:
-                    return new MsPeakSpotsSummary(new DataPoint[0]);
+                    return (new MsPeakSpotsSummary(new DataPoint[0]), new MsSnDistribution(Array.Empty<ChromatogramPeakFeature>()));
             }
         }
 

@@ -7,23 +7,24 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
-        public double? ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
-        public double? ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
+        public double ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
+        public double ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public MzValue Mz => innerModel.ChromXs.Mz;
         public DriftTime Drift => innerModel.ChromXs.Drift;
         public RetentionTime RT => innerModel.ChromXs.RT;
+        public ChromXs ChromXs => innerModel.ChromXs;
+
         public double Mass {
             get => innerModel.PeakFeature.Mass;
             set {
@@ -54,7 +55,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
-        public string AdductIonName => innerModel.AdductType?.AdductIonName;
+        public string? AdductIonName => innerModel.AdductType?.AdductIonName;
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
             set {
@@ -274,6 +275,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
             undoManager.Add(command);
+        }
+
+        // IIonProperty
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            innerModel.SetAdductType(adduct);
+            OnPropertyChanged(nameof(AdductType));
+            OnPropertyChanged(nameof(AdductIonName));
         }
     }
 }

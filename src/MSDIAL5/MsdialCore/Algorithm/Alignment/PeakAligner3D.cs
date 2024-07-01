@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -55,15 +56,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                         spot.IsotopicPeaks = new List<IsotopicPeak>(0);
                     }
                     else {
-                        spot.IsotopicPeaks = DataAccess.GetFineIsotopicPeaks(peak, accumulated[index], Param.CentroidMs1Tolerance);
+                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     }
                 }
 
                 // UNDONE: retrieve spectrum data
                 var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, rtRange);
+                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5), rtRange);
                 var peakInfo = new ChromatogramPeakInfo(
-                    peak.FileID, chromatogram.Peaks,
+                    peak.FileID, ((Chromatogram)chromatogram).AsPeakArray(),
                     (float)peak.ChromXsTop.Value,
                     (float)peak.ChromXsLeft.Value,
                     (float)peak.ChromXsRight.Value
@@ -81,7 +82,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     var dRawSpectra = dRawSpectras[peak.IonMode].Value;
                     var dChromatogram = dRawSpectra.GetDriftChromatogramByScanRtMz(dpeak.MS1RawSpectrumIdTop, (float)peak.ChromXsTop.RT.Value, (float)Filler3d.AxTolFirst, (float)peak.Mass, (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f);
                     var dpeakInfo = new ChromatogramPeakInfo(
-                        dpeak.FileID, dChromatogram.Peaks,
+                        dpeak.FileID, dChromatogram.AsPeakArray(),
                         (float)dpeak.ChromXsTop.Value,
                         (float)dpeak.ChromXsLeft.Value,
                         (float)dpeak.ChromXsRight.Value

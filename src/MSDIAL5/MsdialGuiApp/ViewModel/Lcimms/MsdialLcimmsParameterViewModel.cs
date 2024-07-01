@@ -91,7 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             IsAccumulateMS2Spectra = new ReactivePropertySlim<bool>(model.IsAccumulateMS2Spectra).AddTo(Disposables);
             CommitAsObservable
-                .Subscribe(_ => model.IsAccumulateMS2Spectra = IsAllCalibrantDataImported.Value)
+                .Subscribe(_ => model.IsAccumulateMS2Spectra = IsAccumulateMS2Spectra.Value)
                 .AddTo(Disposables);
             IonMobilityType = new ReactiveProperty<IonMobilityType>(model.IonMobilityType)
                 .SetValidateAttribute(() => IonMobilityType)

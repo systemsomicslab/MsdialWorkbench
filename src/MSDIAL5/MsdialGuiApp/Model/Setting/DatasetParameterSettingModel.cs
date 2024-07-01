@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
@@ -28,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Setting
     internal sealed class DatasetParameterSettingModel : BindableBase
     {
         private readonly DatasetFileSettingModel fileSettingModel;
-        private readonly Action<DatasetModel> next;
+        private readonly Action<DatasetModel>? next;
         private readonly IMessageBroker _broker;
 
         public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next, IMessageBroker broker) {
@@ -80,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => datasetFileName;
             set => SetProperty(ref datasetFileName, value);
         }
-        private string datasetFileName;
+        private string datasetFileName = string.Empty;
 
         public Ionization Ionization {
             get => ionization;
@@ -185,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 DatasetFileName += ".mddata";
             }
 
-            var parameter = ParameterFactory.CreateParameter(Ionization, SeparationType);
+            var parameter = CreateParameter();
             var projectParameter = parameter.ProjectParam;
             fileSettingModel.CommitFileParameters(projectParameter);
             projectParameter.ProjectFileName = DatasetFileName;
@@ -215,6 +216,41 @@ namespace CompMs.App.Msdial.Model.Setting
             next?.Invoke(dataset);
         }
 
+        private ParameterBase CreateParameter() {
+            if (SeparationType == (SeparationType.Imaging | SeparationType.IonMobility))
+                return new MsdialImmsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.EI && SeparationType == SeparationType.Chromatography) {
+                var parameter = new MsdialGcmsParameter(GlobalResources.Instance.IsLabPrivate);
+                parameter.PeakPickBaseParam.MassRangeEnd = 1000;
+                parameter.PeakPickBaseParam.CentroidMs1Tolerance = .025f;
+                parameter.PeakPickBaseParam.MinimumDatapoints = 20;
+                parameter.ChromDecBaseParam.AccuracyType = AccuracyType.IsNominal;
+                parameter.ChromDecBaseParam.AmplitudeCutoff = 10;
+                parameter.RetentionType = RetentionType.RI;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = 20;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance = .5f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance = .5f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff = .7f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff = .7f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring = true;
+                parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = true;
+                parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary = fileSettingModel.IncludedFileModels.ToDictionary(f => f.AnalysisFileId, _ => new RiDictionaryInfo());
+                parameter.RetentionIndexAlignmentTolerance = 20;
+                parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance = .075f;
+                parameter.AlignmentBaseParam.Ms1AlignmentTolerance = .7f;
+                return parameter;
+            }
+            if (Ionization == Ionization.ESI && SeparationType == SeparationType.Chromatography)
+                return new MsdialLcmsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Chromatography | SeparationType.IonMobility))
+                return new MsdialLcImMsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == SeparationType.Infusion)
+                return new MsdialDimsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Infusion | SeparationType.IonMobility))
+                return new MsdialImmsParameter(isImaging: false, GlobalResources.Instance.IsLabPrivate);
+            throw new Exception("Not supported separation type is selected.");
+        }
+
         // TODO: How can I remove direct dependency to each methods?
         private static IMsdialDataStorage<ParameterBase> CreateDataStorage(ParameterBase parameter) {
             switch (parameter) {
@@ -226,6 +262,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return new MsdialImmsDataStorage() { MsdialImmsParameter = immsParameter };
                 case MsdialDimsParameter dimsParameter:
                     return new MsdialDimsDataStorage() { MsdialDimsParameter = dimsParameter };
+                case MsdialGcmsParameter gcmsParameter:
+                    return new MsdialGcmsDataStorage() { MsdialGcmsParameter = gcmsParameter };
             }
             throw new NotImplementedException("This method is not implemented");
         }

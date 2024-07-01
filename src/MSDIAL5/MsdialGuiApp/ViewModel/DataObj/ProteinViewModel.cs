@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
@@ -23,12 +18,13 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             OrganismIdentifier = model.fastaProperty.OrganismIdentifier;
             GeneName = model.fastaProperty.GeneName;
             SequenceVersion = model.fastaProperty.SequenceVersion;
+            ProteinExistence = model.fastaProperty.ProteinExistence;
             IsValidated = model.fastaProperty.IsValidated;
             IsDecoy = model.fastaProperty.IsDecoy;
 
             Sequence = model.fastaProperty.Sequence;
-
         }
+
         private readonly ProteinModel _model;
         public string DatabaseId { get; }
         public string Header { get; }

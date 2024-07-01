@@ -18,9 +18,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new RawSpectrum { Index = 3, ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
                 new RawSpectrum { Index = 4, ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
             },
-            IonMode.Positive);
+            IonMode.Positive, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).Peaks;
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);
@@ -46,9 +46,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new RawSpectrum { Index = 3, DriftTime = 4d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
                 new RawSpectrum { Index = 4, DriftTime = 5d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
             },
-            IonMode.Negative);
+            IonMode.Negative, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.Drift, ChromXUnit.Msec);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).Peaks;
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);

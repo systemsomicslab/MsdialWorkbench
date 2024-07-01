@@ -46,7 +46,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else {
                 //ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2";
-                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw|LCD file(*.lcd)|*.lcd|QGD file(*.qgd)|*.qgd|LRP file(*.lrp)|*.lrp";
+                ofd.Filter = "ABF file(*.abf)|*.abf|Hive file(*.hmd, *.mzB)|*.hmd;*.mzB|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw|LCD file(*.lcd)|*.lcd|QGD file(*.qgd)|*.qgd|LRP file(*.lrp)|*.lrp";
             }
             ofd.Title = "Import analysis files";
             ofd.InitialDirectory = mainWindow.ProjectProperty.ProjectFolderPath;

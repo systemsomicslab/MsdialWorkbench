@@ -16,6 +16,8 @@ namespace CompMs.App.Msdial.View.Setting
     public partial class DatasetFileSettingView : UserControl {
         private static readonly IFileSelectionItem[] FILE_SELECTION_ITEMS = new[] {
             new FileSelectionItem("ABF file", ".abf"),
+            new FileSelectionItem("Hive HMD file", ".hmd"),
+            new FileSelectionItem("Hive mzB file", ".mzb"),
             new FileSelectionItem("mzML file", ".mzml"),
             new FileSelectionItem("netCDF file", ".cdf"),
             new FileSelectionItem("IBF file", ".ibf"),
@@ -62,8 +64,8 @@ namespace CompMs.App.Msdial.View.Setting
             SendQuery(files);
         }
 
-        private void SendQuery(string[] files) {
-            if (!(files is null)) {
+        private void SendQuery(string[]? files) {
+            if (files is not null) {
                 if (files.Select(Path.GetDirectoryName).Distinct().Count() != 1) {
                     MessageBox.Show("All analysis files should be placed in the same directory.",
                                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);

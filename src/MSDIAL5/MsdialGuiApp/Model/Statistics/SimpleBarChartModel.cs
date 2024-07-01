@@ -3,45 +3,43 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Statistics {
+namespace CompMs.App.Msdial.Model.Statistics
+{
     internal class SimpleBarChartModel : BindableBase {
         public SimpleBarChartModel(ObservableCollection<SimpleBarItem> items, 
             string xAxisTitle, 
             string yAxisTitle,
             string graphTitle) { 
-            BarItems = items;
+            barItems = items;
             XAxisTitle = xAxisTitle;
             YAxisTitle = yAxisTitle;
             GraphTitle = graphTitle;
             if (items.IsEmptyOrNull()) return;
 
             XAxis = new CategoryAxisManager<string>(items.Select(loading => loading.Legend).ToArray());
-            YAxis = new AbsoluteAxisManager(new Range(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
+            YAxis = new AbsoluteAxisManager(new AxisRange(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
         }
-        public string XAxisTitle {
+        public string? XAxisTitle {
             get => xAxisTitle;
             set => SetProperty(ref xAxisTitle, value);
         }
-        private string xAxisTitle;
+        private string? xAxisTitle;
 
-        public string YAxisTitle {
+        public string? YAxisTitle {
             get => yAxisTitle;
             set => SetProperty(ref yAxisTitle, value);
         }
-        private string yAxisTitle;
+        private string? yAxisTitle;
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);
         }
-        private string graphTitle;
+        private string? graphTitle;
 
         public ObservableCollection<SimpleBarItem> BarItems {
             get => barItems;
@@ -50,21 +48,20 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
         private ObservableCollection<SimpleBarItem> barItems;
 
-        public IAxisManager<string> XAxis {
+        public IAxisManager<string>? XAxis {
             get => xAxis;
             set => SetProperty(ref xAxis, value);
         }
-        private IAxisManager<string> xAxis;
+        private IAxisManager<string>? xAxis;
 
-        public IAxisManager<double> YAxis {
+        public IAxisManager<double>? YAxis {
             get => yAxis;
             set => SetProperty(ref yAxis, value);
         }
-        private IAxisManager<double> yAxis;
+        private IAxisManager<double>? yAxis;
     }
 
     internal class SimpleBarItem : BindableBase {
-        public SimpleBarItem() { }
         public SimpleBarItem(int id, string legend, double value, double error) {
             ID = id;
             Legend = legend;
@@ -86,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref legend, value);
         }
 
-        private string legend;
+        private string legend = string.Empty;
         public double YValue {
             get => yValue;
             set => SetProperty(ref yValue, value);

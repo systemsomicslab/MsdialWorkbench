@@ -71,7 +71,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
             //    Console.WriteLine();
             //}
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
             SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
             SetTextDBAnnotationResult(chromPeakFeature, msdecResult, isotopes, textDBAnnotator, parameter.TextDbSearchParam);

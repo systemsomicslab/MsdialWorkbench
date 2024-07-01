@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -54,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            Initialization(chromPeakFeatures);
+            ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
@@ -134,18 +135,28 @@ namespace CompMs.MsdialCore.Algorithm
             else return true;
         }
 
-
-        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
+        public void ResetAdductAndLink(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
+                if (peak.MatchResults.IsReferenceMatched(evaluator)) {
+                    character.IsotopeParentPeakID = peak.PeakID;
+                    character.IsotopeWeightNumber = 0;
+                    foreach (var link in character.PeakLinks) {
+                        if (link.Character == PeakLinkFeatureEnum.Isotope) {
+                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.RemoveAll(l => l.LinkedPeakID == peak.PeakID && l.Character == PeakLinkFeatureEnum.Isotope);
+                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.IsLinked = chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.Count > 0;
+                        }
+                    }
+                    character.PeakLinks.RemoveAll(l => l.Character == PeakLinkFeatureEnum.Isotope);
+                    character.IsLinked = character.PeakLinks.Count > 0;
+                }
                 if (character.IsotopeWeightNumber > 0) {
                     var parentID = character.IsotopeParentPeakID;
                     var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
                     if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
                         peak.SetAdductType(parentCharacter.AdductType);
                     }
-                    if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
-                        n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
+                    if (character.PeakLinks.All(n => n.LinkedPeakID != parentID || n.Character != PeakLinkFeatureEnum.Isotope)) {
 
                         character.PeakLinks.Add(new LinkedPeakFeature() {
                             LinkedPeakID = parentID,
@@ -153,11 +164,12 @@ namespace CompMs.MsdialCore.Algorithm
                         });
                         character.IsLinked = true;
 
-                        if (parentCharacter.PeakLinks.Count(n => n.LinkedPeakID == peak.PeakID && n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
+                        if (parentCharacter.PeakLinks.All(n => n.LinkedPeakID != peak.PeakID || n.Character != PeakLinkFeatureEnum.Isotope)) {
                             parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
                                 LinkedPeakID = peak.PeakID,
                                 Character = PeakLinkFeatureEnum.Isotope
                             });
+                            parentCharacter.IsLinked = true;
                         }
                     }
                 }
@@ -398,10 +410,9 @@ namespace CompMs.MsdialCore.Algorithm
                 var leftRt = feature.ChromXsLeft.RT.Value;
                 var rightRt = feature.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-                var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                var sPeaks = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
-
-                tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sPeaks });
+                using var peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(feature.Mass, param.CentroidMs1Tolerance), chromatogramRange);
+                using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
             }
 
             for (int i = 0; i < tempFeatures.Count; i++) {

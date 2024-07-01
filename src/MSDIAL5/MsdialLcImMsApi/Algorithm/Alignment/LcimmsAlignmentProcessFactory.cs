@@ -40,10 +40,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 
         public override IPeakJoiner CreatePeakJoiner() {
             return new LcimmsPeakJoiner(
-                LcimmsParameter.RetentionTimeAlignmentTolerance, LcimmsParameter.RetentionTimeAlignmentTolerance,
-                LcimmsParameter.Ms1AlignmentTolerance, LcimmsParameter.Ms1AlignmentFactor,
-                LcimmsParameter.DriftTimeAlignmentTolerance, LcimmsParameter.DriftTimeAlignmentFactor
-                );
+                LcimmsParameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance, LcimmsParameter.AlignmentBaseParam.RetentionTimeAlignmentFactor,
+                LcimmsParameter.AlignmentBaseParam.Ms1AlignmentTolerance, LcimmsParameter.AlignmentBaseParam.Ms1AlignmentFactor,
+                LcimmsParameter.DriftTimeAlignmentTolerance, LcimmsParameter.DriftTimeAlignmentFactor);
         }
     }
 }

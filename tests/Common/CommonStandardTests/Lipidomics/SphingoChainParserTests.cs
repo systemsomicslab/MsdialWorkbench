@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -75,7 +76,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(18, acyl.CarbonCount);
             Assert.AreEqual(1, acyl.DoubleBondCount);
             Assert.AreEqual(3, acyl.OxidizedCount);
-            CollectionAssert.AreEqual(new[] { 4 }, ((SphingoChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
+            CollectionAssert.AreEqual(Array.Empty<int>(), ((SphingoChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
             CollectionAssert.AreEqual(new[] { 1, 3, 4 }, ((SphingoChain)acyl).Oxidized.Oxidises);
 
             acyl = parser.Parse("18:1(1OH,3OH,4OH)"); // "18:1(4);1OH,3OH,4OH"
@@ -83,7 +84,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(18, acyl.CarbonCount);
             Assert.AreEqual(1, acyl.DoubleBondCount);
             Assert.AreEqual(3, acyl.OxidizedCount);
-            CollectionAssert.AreEqual(new[] { 4 }, ((SphingoChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
+            CollectionAssert.AreEqual(Array.Empty<int>(), ((SphingoChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
             CollectionAssert.AreEqual(new[] { 1, 3, 4 }, ((SphingoChain)acyl).Oxidized.Oxidises);
 
         }

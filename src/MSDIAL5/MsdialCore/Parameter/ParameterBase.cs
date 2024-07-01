@@ -7,6 +7,7 @@ using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.Common.Query;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Properties;
 using MessagePack;
@@ -599,6 +600,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Considering Br and Cl for isotopes", IsBrClConsideredForIsotopes.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude mass list", 
                 String.Join(";", ExcludedMassList.Select(n => String.Join(" ", new string[] { n.Mass.ToString(), n.MassTolerance.ToString() })))}));
+            pStrings.Add($"Max isotopes detected in ms1 spectrum: {PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum}");
 
             pStrings.Add("\r\n");
             pStrings.Add("# Deconvolution");
@@ -612,45 +614,47 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Andromeda max peaks", AndromedaMaxPeaks.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Target CE", TargetCE.ToString() }));
 
+            //pStrings.Add("\r\n");
+            //pStrings.Add("# MSP-based annotation");
+            //pStrings.Add(String.Join(": ", new string[] { "RT tolerance for MSP-based annotation", MspSearchParam.RtTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "RI tolerance for MSP-based annotation", MspSearchParam.RiTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for MSP-based annotation", MspSearchParam.CcsTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Mass range begin for MSP-based annotation", MspSearchParam.MassRangeBegin.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Mass range end for MSP-based annotation", MspSearchParam.MassRangeEnd.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", MspSearchParam.RelativeAmpCutoff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Absolute amplitude cutoff for MSP-based annotation", MspSearchParam.AbsoluteAmpCutoff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Weighted dot product cutoff", MspSearchParam.WeightedDotProductCutOff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Simple dot product cutoff", MspSearchParam.SimpleDotProductCutOff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Reverse dot product cutoff", MspSearchParam.ReverseDotProductCutOff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Matched peaks percentage cutoff", MspSearchParam.MatchedPeaksPercentageCutOff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Minimum spectrum match", MspSearchParam.MinimumSpectrumMatch.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for MSP-based annotation", MspSearchParam.TotalScoreCutoff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for MSP-based annotation", MspSearchParam.Ms1Tolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "MS2 tolerance for MSP-based annotation", MspSearchParam.Ms2Tolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation scoring", MspSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation filtering", MspSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation scoring", MspSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation filtering", MspSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Only report top hit for MSP-based annotation", OnlyReportTopHitInMspSearch.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Execute annotation process only for alignment file", IsIdentificationOnlyPerformedForAlignmentFile.ToString() }));
             pStrings.Add("\r\n");
-            pStrings.Add("# MSP-based annotation");
-            pStrings.Add(String.Join(": ", new string[] { "RT tolerance for MSP-based annotation", MspSearchParam.RtTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "RI tolerance for MSP-based annotation", MspSearchParam.RiTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for MSP-based annotation", MspSearchParam.CcsTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Mass range begin for MSP-based annotation", MspSearchParam.MassRangeBegin.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Mass range end for MSP-based annotation", MspSearchParam.MassRangeEnd.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", MspSearchParam.RelativeAmpCutoff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Absolute amplitude cutoff for MSP-based annotation", MspSearchParam.AbsoluteAmpCutoff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Weighted dot product cutoff", MspSearchParam.WeightedDotProductCutOff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Simple dot product cutoff", MspSearchParam.SimpleDotProductCutOff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Reverse dot product cutoff", MspSearchParam.ReverseDotProductCutOff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Matched peaks percentage cutoff", MspSearchParam.MatchedPeaksPercentageCutOff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Minimum spectrum match", MspSearchParam.MinimumSpectrumMatch.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for MSP-based annotation", MspSearchParam.TotalScoreCutoff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for MSP-based annotation", MspSearchParam.Ms1Tolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "MS2 tolerance for MSP-based annotation", MspSearchParam.Ms2Tolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation scoring", MspSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation filtering", MspSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation scoring", MspSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation filtering", MspSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Only report top hit for MSP-based annotation", OnlyReportTopHitInMspSearch.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Execute annotation process only for alignment file", IsIdentificationOnlyPerformedForAlignmentFile.ToString() }));
+            pStrings.Add("# Annotation parameter");
             pStrings.Add(String.Join(": ", new string[] { "Solvent type", LipidQueryContainer.SolventType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Searched lipid class",  
                 String.Join(";", LipidQueryContainer.LbmQueries.Where(n => n.IsSelected).Select(n => String.Join(" ", new string[] { n.LbmClass.ToString(), n.AdductType.AdductIonName })).ToArray()) }));
 
-            pStrings.Add("\r\n");
-            pStrings.Add("# Text-based annotation");
-            pStrings.Add(String.Join(": ", new string[] { "RT tolerance for Text-based annotation", TextDbSearchParam.RtTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "RI tolerance for Text-based annotation", TextDbSearchParam.RiTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for Text-based annotation", TextDbSearchParam.CcsTolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for Text-based annotation", TextDbSearchParam.TotalScoreCutoff.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Accurate ms1 tolerance for Text-based annotation", TextDbSearchParam.Ms1Tolerance.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation scoring", TextDbSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation filtering", TextDbSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation scoring", TextDbSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation filtering", TextDbSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Only report top hit for Text-based annotation", OnlyReportTopHitInTextDBSearch.ToString() }));
+            //pStrings.Add("\r\n");
+            //pStrings.Add("# Text-based annotation");
+            //pStrings.Add(String.Join(": ", new string[] { "RT tolerance for Text-based annotation", TextDbSearchParam.RtTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "RI tolerance for Text-based annotation", TextDbSearchParam.RiTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for Text-based annotation", TextDbSearchParam.CcsTolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for Text-based annotation", TextDbSearchParam.TotalScoreCutoff.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Accurate ms1 tolerance for Text-based annotation", TextDbSearchParam.Ms1Tolerance.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation scoring", TextDbSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation filtering", TextDbSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation scoring", TextDbSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation filtering", TextDbSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
+            //pStrings.Add(String.Join(": ", new string[] { "Only report top hit for Text-based annotation", OnlyReportTopHitInTextDBSearch.ToString() }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Retention index dictionary information");
@@ -737,6 +741,39 @@ namespace CompMs.MsdialCore.Parameter
         public string DictionaryFilePath { get; set; } = string.Empty;
         [Key(1)]
         public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
+
+        [IgnoreMember]
+        public bool IsIncorrectFormat => RiDictionary is null || RiDictionary.Count == 0;
+
+        [IgnoreMember]
+        public bool IsFamesContents {
+            get {
+                var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
+                if (RiDictionary is null || fiehnFamesDictionary.Count != RiDictionary.Count) {
+                    return false;
+                }
+                return fiehnFamesDictionary.Keys.All(RiDictionary.ContainsKey);
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsSequentialCarbonRtOrdering {
+            get {
+                return RiDictionary?.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value)
+                    .Aggregate((acc: true, rt: float.MinValue), (prev, rt) => (prev.acc && prev.rt < rt, rt)).acc
+                    ?? false;
+            }
+        }
+
+        public static RiDictionaryInfo FromDictionaryFile(string filePath) {
+            return new RiDictionaryInfo
+            {
+                DictionaryFilePath = filePath,
+                RiDictionary = File.Exists(filePath)
+                    ? RetentionIndexHandler.GetRiDictionary(filePath)
+                    : new Dictionary<int, float>(0),
+            };
+        }
     }
 
     [MessagePackObject]
@@ -956,7 +993,7 @@ namespace CompMs.MsdialCore.Parameter
     [MessagePackObject]
     public class ReferenceBaseParameter {
         [Key(0)]
-        public string MspFilePath { get; set; } = string.Empty;
+        public string? MspFilePath { get; set; } = string.Empty;
         [Key(1)]
         public string TextDBFilePath { get; set; } = string.Empty;
         [Key(2)]
@@ -1084,6 +1121,8 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
         [Key(15)]
         public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+        [Key(16)]
+        public int MaxIsotopesDetectedInMs1Spectrum { get; set; } = 2;
 
         public bool ShouldExclude(double mass) {
             foreach (var query in ExcludedMassList) {
@@ -1155,6 +1194,8 @@ namespace CompMs.MsdialCore.Parameter
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
         [Key(7)]
         public MsRefSearchParameterBase LbmSearchParam { get; set; } = new MsRefSearchParameterBase();
+        [IgnoreMember]
+        public bool MayRiDictionaryImported => FileIdRiInfoDictionary.Count > 0;
     }
 
     [MessagePackObject]

@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.Common.Algorithm.ChromSmoothing;
+﻿using CompMs.Common.Components;
+#if NETSTANDARD || NETFRAMEWORK
+using CompMs.Common.Extension;
+#endif
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using CompMs.Common.Components;
 using System.Diagnostics;
+using System.Linq;
 
 namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
 {
@@ -187,7 +189,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
             }
 
             // Simple width ∘ Simple width equals to LinearWeighted (width * 2) except at the begins and ends width * 2.
-            foreach ((var peak1, var peak2) in expected.Zip(actual).Skip(width * 2).SkipLast(width * 2)) {
+            foreach ((var peak1, var peak2) in expected.Zip(actual).Skip(width * 2).Take(actual.Count - width * 4)) {
                 Assert.AreEqual(peak1.ID, peak2.ID);
                 Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
                 Assert.AreEqual(peak1.Mass, peak2.Mass);

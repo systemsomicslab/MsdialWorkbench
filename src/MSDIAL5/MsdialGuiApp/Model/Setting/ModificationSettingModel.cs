@@ -1,16 +1,14 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.Common.Extension;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.Common.Proteomics.DataObj;
 
-namespace CompMs.App.Msdial.Model.Setting {
+namespace CompMs.App.Msdial.Model.Setting
+{
     class ModificationSettingModel : ValidatableBase {
         private ProteomicsParameter Parameter { get; set; }
         public ModificationSettingModel(ProteomicsParameter Parameter) {
@@ -53,8 +51,8 @@ namespace CompMs.App.Msdial.Model.Setting {
                 }
             }
 
-            UnSelectedVariableModifications = new ObservableCollection<Modification>(unselectedVModifications);
-            SelectedVariableModifications = new ObservableCollection<Modification>(selectedVModifications);
+            unSelectedVariableModifications = new ObservableCollection<Modification>(unselectedVModifications);
+            selectedVariableModifications = new ObservableCollection<Modification>(selectedVModifications);
 
             if (isFirstApp && selectedFModifications.IsEmptyOrNull()) {
                 var defaultFMods = new List<string> { "Carbamidomethyl (C)" };
@@ -73,8 +71,8 @@ namespace CompMs.App.Msdial.Model.Setting {
                 }
             }
 
-            UnSelectedFixedModifications = new ObservableCollection<Modification>(unselectedFModifications);
-            SelectedFixedModifications = new ObservableCollection<Modification>(selectedFModifications);
+            unSelectedFixedModifications = new ObservableCollection<Modification>(unselectedFModifications);
+            selectedFixedModifications = new ObservableCollection<Modification>(selectedFModifications);
 
             MaxNumberOfModificationsPerPeptide = Parameter.MaxNumberOfModificationsPerPeptide;
         }

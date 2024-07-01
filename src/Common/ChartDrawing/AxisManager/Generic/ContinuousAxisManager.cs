@@ -7,59 +7,59 @@ namespace CompMs.Graphics.AxisManager.Generic
 {
     public class ContinuousAxisManager<T> : BaseAxisManager<T> where T : IConvertible
     {
-        public ContinuousAxisManager(Range range) : base(range) {
+        public ContinuousAxisManager(AxisRange range) : base(range) {
 
         }
 
-        public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
+        public ContinuousAxisManager(AxisRange range, AxisRange bounds) : base(range, bounds) {
 
         }
 
-        public ContinuousAxisManager(Range range, IChartMargin margin) : base(range, margin) {
+        public ContinuousAxisManager(AxisRange range, IChartMargin margin) : base(range, margin) {
 
         }
 
-        public ContinuousAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
+        public ContinuousAxisManager(AxisRange range, IChartMargin margin, AxisRange bounds) : base(range, margin, bounds) {
 
         }
 
-        public ContinuousAxisManager(Range range, IChartMargin margin, T lowBound, T highBound) : base(range, margin, new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
+        public ContinuousAxisManager(AxisRange range, IChartMargin margin, T lowBound, T highBound) : base(range, margin, new AxisRange(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
 
         }
 
         public ContinuousAxisManager(T low, T high)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high))) {
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high))) {
 
         }
 
         public ContinuousAxisManager(T low, T high, IChartMargin margin)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), margin) {
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)), margin) {
 
         }
 
-        public ContinuousAxisManager(Range range, T lowBound, T highBound)
-            : base(range, new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
+        public ContinuousAxisManager(AxisRange range, T lowBound, T highBound)
+            : base(range, new AxisRange(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
 
         }
 
         public ContinuousAxisManager(T low, T high, T lowBound, T highBound)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)),
-                  new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)),
+                  new AxisRange(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
 
         }
 
-        public ContinuousAxisManager(T low, T high, Range bounds)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), bounds) {
+        public ContinuousAxisManager(T low, T high, AxisRange bounds)
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)), bounds) {
 
         }
 
-        public ContinuousAxisManager(T low, T high, IChartMargin margin, Range bounds)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), margin, bounds) {
+        public ContinuousAxisManager(T low, T high, IChartMargin margin, AxisRange bounds)
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)), margin, bounds) {
 
         }
 
         public ContinuousAxisManager(T low, T high, IChartMargin margin, T lowBound, T highBound)
-            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), margin, new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
+            : base(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)), margin, new AxisRange(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
 
         }
 
@@ -75,11 +75,11 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public ContinuousAxisManager(ICollection<T> source, Range bounds) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), bounds) {
+        public ContinuousAxisManager(ICollection<T> source, AxisRange bounds) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), bounds) {
 
         }
 
-        public ContinuousAxisManager(ICollection<T> source, IChartMargin margin, Range bounds) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), margin, bounds) {
+        public ContinuousAxisManager(ICollection<T> source, IChartMargin margin, AxisRange bounds) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), margin, bounds) {
 
         }
 
@@ -115,11 +115,11 @@ namespace CompMs.Graphics.AxisManager.Generic
         private ILabelGenerator labelGenerator;
 
         public void UpdateInitialRange(T low, T high) {
-            UpdateInitialRange(new Range(Convert.ToDouble(low), Convert.ToDouble(high)));
+            UpdateInitialRange(new AxisRange(Convert.ToDouble(low), Convert.ToDouble(high)));
         }
 
         public void UpdateInitialRange(ICollection<T> source) {
-            UpdateInitialRange(new Range(Convert.ToDouble(source.DefaultIfEmpty().Min()), Convert.ToDouble(source.DefaultIfEmpty().Max())));
+            UpdateInitialRange(new AxisRange(Convert.ToDouble(source.DefaultIfEmpty().Min()), Convert.ToDouble(source.DefaultIfEmpty().Max())));
         }
 
         protected override void OnRangeChanged() {
@@ -147,7 +147,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new ContinuousAxisManager<T>(source.Select(map).ToList(), lowBound, highBound);
         }
 
-        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, Range bound) {
+        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, AxisRange bound) {
             return new ContinuousAxisManager<T>(source.Select(map).ToList(), bound);
         }
     }

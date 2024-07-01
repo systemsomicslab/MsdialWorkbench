@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         private List<SpectrumPeak> _spectrum;
         
-        public MsSpectrum(List<SpectrumPeak> spectrum) {
+        public MsSpectrum(IReadOnlyList<SpectrumPeak> spectrum) {
             _spectrum = spectrum?.OrderBy(peak => peak.Mass).ToList() ?? new List<SpectrumPeak>(0);
         }
 
@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Chart
             return (_spectrum.Min(selector), _spectrum.Max(selector));
         }
 
-        public MsSpectrum Difference(MsSpectrum other, double tolerance) {
+        public MsSpectrum Difference(MsSpectrum? other, double tolerance) {
             if (other is null) {
                 return new MsSpectrum(new List<SpectrumPeak>(0));
             }
@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Chart
             return new MsSpectrum(result);
         }
 
-        public MsSpectrum Product(MsSpectrum other, double tolerance) {
+        public MsSpectrum Product(MsSpectrum? other, double tolerance) {
             if (other is null) {
                 return new MsSpectrum(new List<SpectrumPeak>(0));
             }

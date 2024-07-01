@@ -11,19 +11,19 @@ namespace CompMs.App.Msdial.Model.Information
 {
     internal sealed class MoleculeStructureModel : DisposableModelBase
     {
-        private CacheProxy<IMoleculeProperty, MoleculeImage> _proxy;
+        private CacheProxy<IMoleculeProperty, MoleculeImage>? _proxy;
 
         public MoleculeStructureModel() {
             _proxy = new CacheProxy<IMoleculeProperty, MoleculeImage>(20, MoleculeImage.Create);
         }
 
-        public MoleculeImage Current {
+        public MoleculeImage? Current {
             get => _current;
             private set => SetProperty(ref _current, value);
         }
-        private MoleculeImage _current;
+        private MoleculeImage? _current;
 
-        public void UpdateMolecule(IMoleculeProperty molecule) {
+        public void UpdateMolecule(IMoleculeProperty? molecule) {
             if (molecule is null) {
                 Current = MoleculeImage.FailedMoleculeImage;
                 return;
@@ -40,10 +40,10 @@ namespace CompMs.App.Msdial.Model.Information
 
     internal sealed class MoleculeImage : DisposableModelBase {
         public static readonly MoleculeImage FailedMoleculeImage = new MoleculeImage();
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource? _cts;
 
         private MoleculeImage() {
-            Image = Task.FromResult((BitmapSource)null);
+            Image = Task.FromResult((BitmapSource?)null);
             IsFailed = true;
             _cts = null;
         }
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Information
             }, token);
         }
 
-        public Task<BitmapSource> Image { get; }
+        public Task<BitmapSource?> Image { get; }
 
         public bool IsLoading {
             get => _isLoading;

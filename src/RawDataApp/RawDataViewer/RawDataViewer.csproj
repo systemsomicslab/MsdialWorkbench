@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net48;net481</TargetFrameworks>
     <RootNamespace>CompMs.App.RawDataViewer</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationIcon>msdial_icon.ico</ApplicationIcon>

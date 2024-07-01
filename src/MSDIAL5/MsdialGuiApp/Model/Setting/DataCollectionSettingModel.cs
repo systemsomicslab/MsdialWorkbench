@@ -15,7 +15,13 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DataCollectionSettingModel : BindableBase {
+    public interface IDataCollectionSettingModel {
+        bool IsReadOnly { get; }
+        void LoadParameter(ParameterBase parameter);
+        bool TryCommit();
+    }
+
+    public sealed class DataCollectionSettingModel : BindableBase, IDataCollectionSettingModel {
         private readonly ParameterBase parameter;
         private readonly IReadOnlyList<AnalysisFileBean> analysisFiles;
 
@@ -28,6 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
             Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
             MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
+            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
@@ -69,6 +76,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isBrClConsideredForIsotopes;
 
+        public int MaxIsotopesDetectedInMs1Spectrum {
+            get => _maxIsotopesDetectedInMs1Spectrum;
+            set => SetProperty(ref _maxIsotopesDetectedInMs1Spectrum, value);
+        }
+        private int _maxIsotopesDetectedInMs1Spectrum;
+
         public int NumberOfThreads {
             get => numberOfThreads;
             set => SetProperty(ref numberOfThreads, value);
@@ -81,8 +94,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool excuteRtCorrection;
 
-        public DimsDataCollectionSettingModel DimsProviderFactoryParameter { get; }
-        public ImmsDataCollectionSettingModel ImmsProviderFactoryParameter { get; }
+        public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
+        public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
 
         public bool TryCommit() {
             if (IsReadOnly) {
@@ -98,16 +111,21 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;
             parameter.PeakPickBaseParam.MaxChargeNumber = MaxChargeNumber;
             parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes = IsBrClConsideredForIsotopes;
+            parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum = MaxIsotopesDetectedInMs1Spectrum;
             parameter.ProcessBaseParam.NumThreads = NumberOfThreads;
             foreach (var s in DataCollectionRangeSettings) {
                 s.Commit(); 
             }
             switch (parameter) {
                 case MsdialDimsParameter dimsParameter:
-                    dimsParameter.ProviderFactoryParameter = DimsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    if (DimsProviderFactoryParameter is not null) {
+                        dimsParameter.ProviderFactoryParameter = DimsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    }
                     break;
                 case MsdialImmsParameter immsParameter:
-                    immsParameter.ProviderFactoryParameter = ImmsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    if (ImmsProviderFactoryParameter is not null) {
+                        immsParameter.ProviderFactoryParameter = ImmsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    }
                     break;
             }
             return true;
@@ -121,11 +139,11 @@ namespace CompMs.App.Msdial.Model.Setting
             Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
             MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
+            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
-            DataCollectionRangeSettings.Clear();
-            foreach (var s in PrepareRangeSettings(parameter)) {
-                DataCollectionRangeSettings.Add(s);
+            foreach (var s in DataCollectionRangeSettings) {
+                s.Update(parameter);
             }
             if (DimsProviderFactoryParameter != null) {
                 DimsProviderFactoryParameter?.LoadParameter(((MsdialDimsParameter)parameter).ProviderFactoryParameter);

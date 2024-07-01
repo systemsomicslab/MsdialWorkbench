@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.Utility {
             var massDiffBase = MassDiffDictionary.CHNO_AverageStepSize;
             var maxIsotopeRange = (double)maxIsotopes;
             var isotopes = new List<IsotopicPeak>();
-            for (int i = 0; i < maxIsotopes; i++) {
+            for (int i = 0; i <= maxIsotopes; i++) {
                 isotopes.Add(new IsotopicPeak() {
                     Mass = targetedMz + (double)i * massDiffBase,
                     MassDifferenceFromMonoisotopicIon = (double)i * massDiffBase
@@ -189,16 +189,34 @@ namespace CompMs.MsdialCore.Utility {
             return isotopes;
         }
 
-        public static List<IsotopicPeak> GetFineIsotopicPeaks(AlignmentChromPeakFeature peakSpot, RawSpectrum spectrum, float massTolerance, int maxIsotopes = 2) {
+        /// <summary>
+        /// Retrieves the fine isotopic peaks from a raw spectrum based on specified ion characteristics and mass tolerance. 
+        /// This method aims to identify and isolate isotopic peaks corresponding to a specific ion feature within a raw mass spectrum.
+        /// </summary>
+        /// <param name="spectrum">The raw spectrum containing a sequence of m/z and intensity pairs. 
+        /// It represents the entire scan data from which specific isotopic peaks are to be extracted.</param>
+        /// <param name="ionFeature">The monoisotopic ion feature character, providing details such as charge state that are crucial for calculating isotopic peak positions.</param>
+        /// <param name="mz">The theoretical m/z value of the monoisotopic ion. This value serves as the reference point for identifying isotopic peaks.</param>
+        /// <param name="mzTolerance">The mass tolerance allowed when matching observed peaks to theoretical isotopic peak positions. 
+        /// This value is used in a ± manner, effectively doubling the search width around the theoretical m/z value. For example, a massTolerance of 0.1 would search in a range of ±0.1 around the specified m/z, resulting in a total search width of 0.2.</param>
+        /// <param name="maxIsotopes">The maximum number of isotopes to retrieve starting from the monoisotopic peak. This limit helps to narrow down the search to the most relevant isotopic peaks. Default is 2.</param>
+        /// <returns>A list of fine isotopic peaks that have been identified within the specified mass tolerance and criteria. Each isotopic peak includes information such as the mass (m/z) and the absolute abundance (intensity).</returns>
+        /// <remarks>
+        /// This method is particularly useful for high-resolution mass spectrometry data analysis where precise isotopic peak identification is necessary for compound characterization and quantification.
+        /// The method iterates through the raw spectrum, applying the mass tolerance and charge state information to accurately locate isotopic peaks relative to the specified monoisotopic peak.
+        /// </remarks>
+        public static List<IsotopicPeak> GetFineIsotopicPeaks(RawSpectrum spectrum, IonFeatureCharacter ionFeature, double mz, float mzTolerance, int maxIsotopes = 2) {
             var peaks = spectrum.Spectrum;
-            var targetedMz = peakSpot.Mass;
-            var startID = peaks.LowerBound(targetedMz - massTolerance, (a, b) => a.Mz.CompareTo(b));
-            var maxIsotopeRange = (maxIsotopes + .1d) / peakSpot.PeakCharacter.Charge;
+            var startID = peaks.LowerBound(mz - mzTolerance, (a, b) => a.Mz.CompareTo(b));
+            var maxIsotopeRange = (maxIsotopes + .1d) / ionFeature.Charge;
+            var diff = 1d / ionFeature.Charge;
             var isotopes = new List<IsotopicPeak>();
             for (int i = startID; i < peaks.Length; i++) {
                 var peak = peaks[i];
-                if (peak.Mz > targetedMz + maxIsotopeRange + massTolerance) break;
-                isotopes.Add(new IsotopicPeak { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity, });
+                if (peak.Mz - mz > maxIsotopeRange + mzTolerance) break;
+                if ((peak.Mz - mz + mzTolerance) % diff - mzTolerance * 2 < 1e-9) {
+                    isotopes.Add(new IsotopicPeak { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity, });
+                }
             }
             return isotopes;
         }
@@ -628,13 +646,20 @@ namespace CompMs.MsdialCore.Utility {
 
 
         public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, List<int> points, double bin) {
+            var targets = new List<RawSpectrum>(points.Count);
+            foreach (var point in points) {
+                if (point < 0 || point > spectrumList.Count - 1) continue;
+                targets.Add(spectrumList[point]);
+            }
+            return GetAverageSpectrum(targets, bin);
+        }
+
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyCollection<RawSpectrum> spectrumList, double bin) {
             var peaks = new List<SpectrumPeak>();
             var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
             var factor = 1.0 / bin;
 
-            foreach (var point in points) {
-                if (point < 0 || point > spectrumList.Count - 1) continue;
-                var spec = spectrumList[point];
+            foreach (var spec in spectrumList) {
                 foreach (var peak in spec.Spectrum) {
                     var mass = (int)(peak.Mz * factor);
                     var intensity = peak.Intensity;
@@ -650,7 +675,7 @@ namespace CompMs.MsdialCore.Utility {
 
             foreach (var item in mass2peaks) {
                 var repMass = item.Value.Argmax(n => n.Intensity).Mass;
-                var aveIntensity = item.Value.Sum(n => n.Intensity) / (double)points.Count;
+                var aveIntensity = item.Value.Sum(n => n.Intensity) / spectrumList.Count;
                 var peak = new SpectrumPeak() { Mass = repMass, Intensity = aveIntensity };
                 peaks.Add(peak);
             }
@@ -718,10 +743,10 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<ValuePeak[]> GetAccumulatedMs2PeakListList(IDataProvider provider,
+        public static List<(ValuePeak[], double)> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             // var ms2peaklistlist = new List<List<ChromatogramPeak>>();
-            var ms2peaklistlist = new List<ValuePeak[]>();
+            var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             var rt = rtChromPeakFeature.ChromXsTop.Value;
@@ -859,7 +884,7 @@ namespace CompMs.MsdialCore.Utility {
                 for (int i = 0; i < sortedPeaklist.Count; i++) {
                     ms2peaklist[i] = new ValuePeak(i, sortedPeaklist[i][1], sortedPeaklist[i][2], sortedPeaklist[i][3]);
                 }
-                ms2peaklistlist.Add(ms2peaklist);
+                ms2peaklistlist.Add((ms2peaklist, targetMz));
 
                 //foreach (var peaks in sortedPeaklist) {
                 //    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));

@@ -80,6 +80,7 @@ namespace CompMs.Graphics.Chart
                 _unsubscriber = null;
                 SetItemsGetter(newValue, ItemsProperty);
                 if (!(_seriesesCV is null || _itemsGetter is null)) {
+                    _seriesesCV.CollectionChanged += OnItemsChanged;
                     _unsubscriber = NotifyCollectionChangedHelper.Manage(_seriesesCV, _itemsGetter, OnItemsChanged);
                 }
                 SetDatas();
@@ -107,6 +108,7 @@ namespace CompMs.Graphics.Chart
                 _unsubscriber = null;
                 SetItemsGetter(CollectionDataType, newValue);
                 if (!(_seriesesCV is null || _itemsGetter is null)) {
+                    _seriesesCV.CollectionChanged += OnItemsChanged;
                     _unsubscriber = NotifyCollectionChangedHelper.Manage(_seriesesCV, _itemsGetter, OnItemsChanged);
                 }
                 SetDatas();

@@ -40,7 +40,6 @@
                       CommandParameter="{x:Static enum:MultivariateAnalysisOption.Hca}"
                       KeyTip="H"/>
         <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
-                      IsEnabled="True"
                       Command="{Binding ShowMolecularNetworkingVisualizationSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="M"/>
         <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"

@@ -1,12 +1,10 @@
 ﻿using CompMs.Common.DataObj.Result;
-using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -70,7 +68,7 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
             var provider = _factory.Create(file);
 

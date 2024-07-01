@@ -13,39 +13,46 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.PeakCuration
 {
-    public sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
+    internal sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
         private readonly AlignedChromatogramModificationModelLegacy _model;
 
-        public PeakModUCLegacy OriginalChromUC {
+        public PeakModUCLegacy? OriginalChromUC {
             get => _originalChromUC;
             set => SetProperty(ref _originalChromUC, value);
         }
-        private PeakModUCLegacy _originalChromUC;
-        public PeakModUCLegacy AlignedChromUC {
+        private PeakModUCLegacy? _originalChromUC;
+        public PeakModUCLegacy? AlignedChromUC {
             get => _alignedChromUC;
             set => SetProperty(ref _alignedChromUC, value);
         }
-        private PeakModUCLegacy _alignedChromUC;
-        public PeakModUCLegacy PickingUC {
+        private PeakModUCLegacy? _alignedChromUC;
+        public PeakModUCLegacy? PickingUC {
             get => _pickingUC;
             set => SetProperty(ref _pickingUC, value);
         }
-        private PeakModUCLegacy _pickingUC;
+        private PeakModUCLegacy? _pickingUC;
 
-        public PeakPropertyLegacy[] PeakPropertyList => _model.ObservablePeakProperties.Value.Properties;
+        public PeakPropertyLegacy[] PeakPropertyList => _model.ObservablePeakProperties.Value?.Properties ?? Array.Empty<PeakPropertyLegacy>();
         public bool IsRI => _model.IsRI.Value;
 
         public AlignedChromatogramModificationViewModelLegacy(AlignedChromatogramModificationModelLegacy model) {
             _model = model;
             model.ObservablePeakProperties.ObserveOnDispatcher().Subscribe(peakProperties =>
             {
-                var dv_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Original);
-                var dv2_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Aligned);
-                var dv3_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Picking);
-                var originalChromUC = new PeakModUCLegacy(this, dv_, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, peakProperties.Properties.ToList());
+                if (peakProperties is null) {
+                    OriginalChromUC = new PeakModUCLegacy();
+                    AlignedChromUC = new PeakModUCLegacy();
+                    PickingUC = new PeakModUCLegacy();
+                    return;
+                }
+                PeakPropertyLegacy[] properties = peakProperties.Properties;
+                var dv_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Original);
+                var dv2_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Aligned);
+                var dv3_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Picking);
+                var originalChromUC = new PeakModUCLegacy(this, dv_, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, properties.ToList());
                 originalChromUC.RefreshUI();
                 OriginalChromUC = originalChromUC;
-                var alignedChromUC = new PeakModUCLegacy(this, dv2_, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, peakProperties.Properties.ToList());
+                var alignedChromUC = new PeakModUCLegacy(this, dv2_, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, properties.ToList());
                 alignedChromUC.RefreshUI();
                 AlignedChromUC = alignedChromUC;
                 var pickingUC = new PeakModUCLegacy(this, dv3_, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
@@ -115,7 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             if (rtList.Max() > 0) {
                 Properties[0].AverageRt = (float)rtList.Average();
             }
-            _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
+            _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value?.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
             _spot.IsManuallyModifiedForQuant = true;
         }
 
@@ -136,7 +143,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public float AverageRt { get; set; }
         public float PeakAreaAboveZero { get; set; }
         public float PeakHeight { get; set; }
-        public Accessory Accessory { get; set; }
+        public Accessory? Accessory { get; set; }
 
         //public PeakPropertyLegacy(AlignmentChromPeakFeature bean, ChromatogramPeakInfo info, Brush brush, List<ChromatogramPeak> speaks) {
         //    Model = bean;
@@ -149,6 +156,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             Model = bean;
             Brush = brush;
             SmoothedPeakList = speaks;
+            AlignedPeakList = new List<ChromatogramPeak>(0);
         }
 
         public void SetAlignOffSet(float val) {
@@ -229,7 +237,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         }
 
         public static DrawVisualManualPeakModification GetDrawingVisualUC(IReadOnlyList<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false, bool isDrift = false) {
-            if (peakProperties == null || peakProperties.Count == 0) return null;
+            System.Diagnostics.Debug.Assert(peakProperties != null && peakProperties.Count > 0);
             var xtitle = "Retention time (min)";
             if (isRI)
                 xtitle = "Retention index";
@@ -249,7 +257,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 title.Label = "Aligned chromatograms";
             else
                 title.Label = "Manually modified chromatograms";
-            var slist = GetChromatogramFromAlignedData(peakProperties, type, isRI);
+            var slist = GetChromatogramFromAlignedData(peakProperties!, type, isRI);
             return new DrawVisualManualPeakModification(area, title, slist);
         }
 

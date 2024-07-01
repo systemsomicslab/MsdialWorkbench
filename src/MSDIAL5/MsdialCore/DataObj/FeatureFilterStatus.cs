@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MessagePack;
+﻿using MessagePack;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
     public class FeatureFilterStatus {
         [SerializationConstructor]

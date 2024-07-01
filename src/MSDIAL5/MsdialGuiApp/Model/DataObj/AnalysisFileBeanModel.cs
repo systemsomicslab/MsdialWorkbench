@@ -2,8 +2,11 @@
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -129,14 +132,29 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
         public MSDecLoader MSDecLoader {
-            get => _mSDecLoader ?? (_mSDecLoader = new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables));
+            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables);
         }
-        private MSDecLoader _mSDecLoader;
+        private MSDecLoader? _mSDecLoader;
 
         public void ReleaseMSDecLoader() {
             var loader = _mSDecLoader;
             _mSDecLoader = null;
             loader?.Dispose();
+            if (loader is not null && Disposables.Contains(loader)) {
+                Disposables.Remove(loader);
+            }
+        }
+
+        public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {
+            var collection = _file.LoadSpectrumFeatures();
+            return new Ms1BasedSpectrumFeatureCollection(collection);
+        }
+
+        public ObservableCollection<ChromatogramPeakFeatureModel> LoadChromatogramPeakFeatureModels() {
+            var peaks = _file.LoadChromatogramPeakFeatureCollectionAsync().Result;
+            return new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Items.Select(peak => new ChromatogramPeakFeatureModel(peak))
+            );
         }
 
         int IFileBean.FileID => AnalysisFileId;

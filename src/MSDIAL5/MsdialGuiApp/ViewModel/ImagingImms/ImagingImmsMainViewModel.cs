@@ -38,17 +38,17 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
 
         public ReadOnlyObservableCollection<ImagingImmsImageViewModel> ImageViewModels { get; }
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
-        public ImagingImmsImageViewModel SelectedImageViewModel {
+        public ImagingImmsImageViewModel? SelectedImageViewModel {
             get => _selectedImageViewModel;
             set => SetProperty(ref _selectedImageViewModel, value);
         }
-        private ImagingImmsImageViewModel _selectedImageViewModel;
+        private ImagingImmsImageViewModel? _selectedImageViewModel;
 
-        public ImagingRoiCompareViewModel SelectedRoiCompareViewModel {
+        public ImagingRoiCompareViewModel? SelectedRoiCompareViewModel {
             get => _selectedRoiCompareViewModel;
             set => SetProperty(ref _selectedRoiCompareViewModel, value);
         }
-        private ImagingRoiCompareViewModel _selectedRoiCompareViewModel;
+        private ImagingRoiCompareViewModel? _selectedRoiCompareViewModel;
 
         public AsyncReactiveCommand ExportParameterCommand { get; }
 
@@ -60,8 +60,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             return Task.CompletedTask;
         }
 
-        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
-        private DelegateCommand _exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
+        private DelegateCommand? _exportAnalysisResultCommand;
 
         private void ExportAnalysis() {
             var m = _model.CreateExportAnalysisModel();

@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Export
                 return 0;
             }
             var peaks = _supplyer.Supply(alignmentFile, default);
-            var tasks = peaks.Select(peak => alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).ContinueWith(t => t.Result.Spectrum.Count >= 2)).ToArray();
+            var tasks = peaks.Select(peak => alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).ContinueWith(t => t.Result is not null && t.Result.Spectrum.Count >= 2)).ToArray();
             Task.WaitAll(tasks);
             return tasks.Count(t => t.Result);
         }
@@ -59,10 +59,13 @@ namespace CompMs.App.Msdial.Model.Export
             var peaks = _supplyer.Supply(alignmentFile, default);
             foreach (var peak in peaks) {
                 string accession = handler.GetAccession(peak);
-                using (var stream = File.Open(Path.Combine(exportDirectory, accession + ".txt"), FileMode.Create)) {
-                    notification.Invoke($"Exporting {accession}");
-                    handler.WriteRecord(stream, peak, peak, alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result, peak);
+                MsdialCore.MSDec.MSDecResult? scan = alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result;
+                if (scan is null) {
+                    continue;
                 }
+                notification.Invoke($"Exporting {accession}");
+                using var stream = File.Open(Path.Combine(exportDirectory, accession + ".txt"), FileMode.Create);
+                handler.WriteRecord(stream, peak, peak, scan, peak);
             }
         }
     }

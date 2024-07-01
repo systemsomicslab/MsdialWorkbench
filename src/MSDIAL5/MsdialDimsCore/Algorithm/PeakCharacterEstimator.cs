@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -36,7 +37,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            Initialization(chromPeakFeatures);
+            new MsdialCore.Algorithm.PeakCharacterEstimator(0d, 100d).ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             CharacterAssigner(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter);
             ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);
@@ -90,36 +91,6 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             if (frag == true) return false;
             else return true;
-        }
-
-
-        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
-            foreach (var peak in chromPeakFeatures) {
-                var character = peak.PeakCharacter;
-                if (character.IsotopeWeightNumber > 0) {
-                    var parentID = character.IsotopeParentPeakID;
-                    var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
-                        peak.SetAdductType(parentCharacter.AdductType);
-                    }
-                    if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
-                        n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-
-                        character.PeakLinks.Add(new LinkedPeakFeature() {
-                            LinkedPeakID = parentID,
-                            Character = PeakLinkFeatureEnum.Isotope
-                        });
-                        character.IsLinked = true;
-
-                        if (parentCharacter.PeakLinks.Count(n => n.LinkedPeakID == peak.PeakID && n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-                            parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
-                                LinkedPeakID = peak.PeakID,
-                                Character = PeakLinkFeatureEnum.Isotope
-                            });
-                        }
-                    }
-                }
-            }
         }
 
         private void SearchedAdductInitialize(ParameterBase param) {
@@ -328,14 +299,14 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 var tLeftRt = peak.ChromXsLeft.RT.Value;
                 var tRightRt = peak.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-                var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var tPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
+                var tChrom = tPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
                 foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
                 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                    var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                    var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                    var cPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(cPeak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
+                    var cChrom = cPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
                     var col = BasicMathematics.Coefficient(cChrom.Select(chrom => chrom.Intensity).ToArray(), tChrom.Select(chrom => chrom.Intensity).ToArray());
                     if (col > 0.95) {

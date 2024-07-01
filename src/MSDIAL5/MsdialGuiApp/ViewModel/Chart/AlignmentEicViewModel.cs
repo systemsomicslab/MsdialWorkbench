@@ -20,8 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public AlignmentEicViewModel(
             AlignmentEicModel model,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double>? horizontalAxis = null,
+            IAxisManager<double>? verticalAxis = null) {
 
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis is null) {
                 verticalAxis = model.VerticalRange
-                    .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                    .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new AxisRange(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
@@ -46,23 +46,23 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
 
             GraphTitle = model.Elements.ObserveProperty(m => m.GraphTitle)
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
             HorizontalTitle = model.Elements.ObserveProperty(m => m.HorizontalTitle)
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
             VerticalTitle = model.Elements.ObserveProperty(m => m.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
             HorizontalProperty = model.Elements.ObserveProperty(m => m.HorizontalProperty)
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
             VerticalProperty = model.Elements.ObserveProperty(m => m.VerticalProperty)
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
             Brush = new DelegateBrushMapper<PeakChromatogram>(chromatogram => chromatogram.Color);
@@ -92,15 +92,15 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IBrushMapper<PeakChromatogram> Brush { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
 
         public ReactiveCommand ShowPeakCurationWinByOverlayEICsCommand { get; }
         public ReactiveCommand ShowPeakCurationWinBySampleTableCommand { get; }

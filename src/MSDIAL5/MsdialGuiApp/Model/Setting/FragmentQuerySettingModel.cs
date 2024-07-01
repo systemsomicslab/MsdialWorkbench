@@ -13,12 +13,12 @@ using System.Windows;
 namespace CompMs.App.Msdial.Model.Setting {
     internal sealed class FragmentQuerySettingModel : BindableBase {
         private readonly AdvancedProcessOptionBaseParameter _parameter;
-        private readonly IAnalysisModel _analysisModel;
-        private readonly IAlignmentModel _alignmentModel;
+        private readonly IAnalysisModel? _analysisModel;
+        private readonly IAlignmentModel? _alignmentModel;
         private readonly List<PeakFeatureSearchValue> _fragmentQuerySettingValues;
         private readonly ObservableCollection<PeakFeatureSearchValueModel> _fragmentQuerySettingValueModels;
 
-        public FragmentQuerySettingModel(AdvancedProcessOptionBaseParameter parameter, IAnalysisModel analysisModel, IAlignmentModel alignmentModel) {
+        public FragmentQuerySettingModel(AdvancedProcessOptionBaseParameter parameter, IAnalysisModel? analysisModel, IAlignmentModel? alignmentModel) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _analysisModel = analysisModel;
             _alignmentModel = alignmentModel;

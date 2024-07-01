@@ -1,28 +1,17 @@
 ﻿using CompMs.Graphics.IO;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Export {
+namespace CompMs.App.Msdial.View.Export
+{
     /// <summary>
     /// Interaction logic for SaveImageAsWinLegacy.xaml
     /// </summary>
     public partial class SaveImageAsWinLegacy : Window {
-        private object target;
-        private string saveImageFormat;
-        private string saveImageFilePath;
+        private object? target;
+        private string? saveImageFormat;
+        private string? saveImageFilePath;
         private double horizontalDpi;
         private double verticalDpi;
         private string filefilter = "PNG format(*.png)|*.png;|JPEG format(*.jpg)|*.jpg;|BMP format(*.bmp)|*.bmp;|TIFF format(*.tiff)|*.tiff;|GIF format(*.gif)|*.gif;|EMF format(*.emf)|*.emf;";

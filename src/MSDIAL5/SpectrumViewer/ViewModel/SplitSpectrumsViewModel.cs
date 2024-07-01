@@ -38,11 +38,11 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             HorizontalAxis = collectionChanged
                 .Where(_ => Model.DisplayScans.Any())
                 .Select(_ => Model.DisplayScans
-                    .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Mass) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Mass) ?? 0d))
+                    .Select(scan => new AxisRange(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Mass) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Mass) ?? 0d))
                     .Aggregate((acc, range) => acc.Union(range)))
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(30), labelType: LabelType.Standard)
                 .AddTo(Disposables);
-            VerticalAxis = RelativeAxisManager.CreateBaseAxis(new ConstantMargin(0, 30), new Range(0, 0));
+            VerticalAxis = RelativeAxisManager.CreateBaseAxis(new ConstantMargin(0, 30), new AxisRange(0, 0));
             var intensityAxis = RelativeAxisManager.CreateBaseAxis();
             IntensityGradientAxis = intensityAxis;
             DefectVerticalAxis = new DefectAxisManager(CH2, new ConstantMargin(10)).AddTo(Disposables);

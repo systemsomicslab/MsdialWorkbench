@@ -34,13 +34,12 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isSelected = false;
 
-        public void Export(IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, string fileNameTemplate, string exportDirectory, Action<string> notification) {
+        public void Export(IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, string fileNameTemplate, string exportDirectory, Action<string>? notification) {
             var outName = string.Format(fileNameTemplate, Label, _extension);
             var outPath = Path.Combine(exportDirectory, outName);
             notification?.Invoke(outName);
-            using (var stream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
-                _exporter.Export(stream, spots, msdecResults);
-            }
+            using var stream = File.Open(outPath, FileMode.Create, FileAccess.Write);
+            _exporter.BatchExport(stream, spots, msdecResults);
         }
     }
 }

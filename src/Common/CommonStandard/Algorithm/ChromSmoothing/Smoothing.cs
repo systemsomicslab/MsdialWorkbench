@@ -4,6 +4,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Mathematics.Matrix;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,59 +18,56 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
     /// The second argument of all smoothing methods is the number of data points which are used for the smoothing.
     /// </summary>
     public sealed class Smoothing {
-        private readonly List<double> intensitiesBuffer = new List<double>();
-
         public Smoothing() {
 
         }
 
-        // imos method
         public ValuePeak[] LinearWeightedMovingAverage(IReadOnlyList<ValuePeak> peaklist, int smoothingLevel) {
             var peaklist_ = peaklist as ValuePeak[] ?? peaklist.ToArray();
-            var n = peaklist_.Length;
+            var smoothedPeaklist = new ValuePeak[peaklist_.Length];
+            LinearWeightedMovingAverage(peaklist_, smoothedPeaklist, peaklist_.Length, smoothingLevel);
+            return smoothedPeaklist;
+        }
+
+        // imos method
+        public void LinearWeightedMovingAverage(ValuePeak[] peaklist, ValuePeak[] dest, int datasize, int smoothingLevel) {
             int normalizationValue = (smoothingLevel + 1) * (smoothingLevel + 1);
 
-            lock (intensitiesBuffer) {
-                var size = n + smoothingLevel * 2 + 2;
-                if (intensitiesBuffer.Count < size) {
-                    intensitiesBuffer.AddRange(new double[size - intensitiesBuffer.Count]);
+            var size = datasize + smoothingLevel * 2 + 2;
+            var intensities = ArrayPool<double>.Shared.Rent(size);
+            for (int i = 0; i < size; i++) {
+                intensities[i] = 0d;
+                if (i < datasize) {
+                    intensities[i] += peaklist[i].Intensity;
                 }
-                var intensities = intensitiesBuffer;
-                for (int i = 0; i < size; i++) {
-                    intensities[i] = 0d;
-                    if (i < peaklist_.Length) {
-                        intensities[i] += peaklist_[i].Intensity;
-                    }
-                    if (i - smoothingLevel - 1 >= 0 && i - smoothingLevel - 1 < peaklist_.Length) {
-                        intensities[i] -= peaklist_[i - smoothingLevel - 1].Intensity * 2;
-                    }
-                    if (i - smoothingLevel * 2 - 2 >= 0) {
-                        intensities[i] += peaklist_[i - smoothingLevel * 2 - 2].Intensity;
-                    }
+                if (i - smoothingLevel - 1 >= 0 && i - smoothingLevel - 1 < datasize) {
+                    intensities[i] -= peaklist[i - smoothingLevel - 1].Intensity * 2;
                 }
-
-                for (int i = 1; i < size; i++) {
-                    intensities[i] += intensities[i - 1];
+                if (i - smoothingLevel * 2 - 2 >= 0) {
+                    intensities[i] += peaklist[i - smoothingLevel * 2 - 2].Intensity;
                 }
-
-                for (int i = 1; i < size; i++) {
-                    intensities[i] += intensities[i - 1];
-                }
-
-                for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
-                    intensities[i + smoothingLevel] += peaklist_[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
-                }
-
-                for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
-                    intensities[n - 1 - i + smoothingLevel] += peaklist_[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
-                }
-
-                var smoothedPeaklist = new ValuePeak[n];
-                for (int i = 0; i < peaklist_.Length; i++) {
-                    smoothedPeaklist[i] = new ValuePeak(peaklist_[i].Id, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
-                }
-                return smoothedPeaklist;
             }
+
+            for (int i = 1; i < size; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 1; i < size; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, datasize); i++) {
+                intensities[i + smoothingLevel] += peaklist[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, datasize); i++) {
+                intensities[datasize - 1 - i + smoothingLevel] += peaklist[datasize - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            for (int i = 0; i < datasize; i++) {
+                dest[i] = new ValuePeak(peaklist[i].Id, peaklist[i].Time, peaklist[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
+            }
+            ArrayPool<double>.Shared.Return(intensities);
         }
 
         public static RawPeakElement[] LinearWeightedMovingAverage(RawPeakElement[] peaklist, int smoothingLevel) {

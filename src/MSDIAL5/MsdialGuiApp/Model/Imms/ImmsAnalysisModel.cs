@@ -1,13 +1,16 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -37,12 +40,12 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly MsdialImmsParameter _parameter;
+        private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
-        private readonly TicLoader _ticLoader;
-        private readonly BpcLoader _bpcLoader;
+        private readonly RawSpectra _rawSpectra;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -63,7 +66,9 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _parameter = parameter;
+            _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
+            CompoundSearcher = new ImmsCompoundSearchUsecase(_compoundSearchers.Items);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -91,22 +96,19 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
             EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
-            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.DriftTimeBegin, parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
-            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _rawSpectra = new RawSpectra(provider, parameter.IonMode, analysisFileModel.File.AcquisitionType);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
-                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
-                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
 
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
@@ -134,18 +136,13 @@ namespace CompMs.App.Msdial.Model.Imms
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
-            var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
-                .AddTo(Disposables);
-            SurveyScanModel = new SurveyScanModel(
-                surveyScanSpectrum,
-                spec => spec.Mass,
-                spec => spec.Intensity
-            ).AddTo(Disposables);
+            var surveyScanSpectrum = SurveyScanSpectrum.Create(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token))).AddTo(Disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, _undoManager).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F5", "m/z", isItalic: true).AddTo(Disposables);
             var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F4", "Mobility[1/k0]", isItalic: false).AddTo(Disposables);
@@ -176,6 +173,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -201,11 +200,16 @@ namespace CompMs.App.Msdial.Model.Imms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
+        public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+
+        public ImmsCompoundSearchUsecase CompoundSearcher { get; }
+
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
+            return new LoadChromatogramsUsecase(_rawSpectra, chromatogramRange, _parameter.PeakPickBaseParam, _parameter.ProjectParam.IonMode, Ms1Peaks);
         }
 
-        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
                 return Task.FromResult(new List<SpectrumPeakWrapper>(0));
             }
@@ -220,13 +224,14 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchUsecase(_compoundSearchers.Items),
@@ -244,7 +249,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || MsdecResult.Value is null || MsdecResult.Value.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
@@ -257,19 +262,21 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveSpectra(string filename) {
-            using (var file = File.Open(filename, FileMode.Create)) {
-                SpectraExport.SaveSpectraTable(
-                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                    file,
-                    Target.Value.InnerModel,
-                    MsdecResult.Value,
-                    _provider.LoadMs1Spectrums(),
-                    _dataBaseMapper,
-                    _parameter);
+            if (Target.Value is null || MsdecResult.Value is null) {
+                return;
             }
+            using var file = File.Open(filename, FileMode.Create);
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                file,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                _provider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();

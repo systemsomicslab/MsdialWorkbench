@@ -11,10 +11,10 @@ namespace CompMs.App.Msdial.Model.Setting {
     internal sealed class MolecularNetworkingSettingModel : DisposableModelBase {
 
         private readonly MolecularSpectrumNetworkingBaseParameter _parameter;
-        private readonly IReadOnlyReactiveProperty<IAnalysisModel> _currentFileModel;
-        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentAlignmentModel;
+        private readonly IReadOnlyReactiveProperty<IAnalysisModel?> _currentFileModel;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel?> _currentAlignmentModel;
 
-        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IReadOnlyReactiveProperty<IAnalysisModel> currentFileModel, IReadOnlyReactiveProperty<IAlignmentModel> currentAlignmentModel) {
+        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IReadOnlyReactiveProperty<IAnalysisModel?> currentFileModel, IReadOnlyReactiveProperty<IAlignmentModel?> currentAlignmentModel) {
             _currentFileModel = currentFileModel;
             _currentAlignmentModel = currentAlignmentModel;
 
@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             get => exportFolderPath;
             set => SetProperty(ref exportFolderPath, value);
         }
-        private string exportFolderPath;
+        private string exportFolderPath = string.Empty;
 
         public bool IsAlignSpotViewSelected {
             get => isAlignSpotViewSelected;

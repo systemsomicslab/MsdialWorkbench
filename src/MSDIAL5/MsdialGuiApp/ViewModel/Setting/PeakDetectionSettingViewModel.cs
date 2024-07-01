@@ -19,37 +19,39 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             Model = model;
             IsReadOnly = model.IsReadOnly;
 
-            MinimumAmplitude = Model.ToReactivePropertyAsSynchronized(
+            MinimumAmplitude = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
-            MassSliceWidth = Model.ToReactivePropertyAsSynchronized(
+            MassSliceWidth = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
-            SmoothingMethod = Model.ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod).AddTo(Disposables);
+            SmoothingMethod = Model.PeakPickSettingModel
+                .ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod).AddTo(Disposables);
 
-            SmoothingLevel = Model.ToReactivePropertyAsSynchronized(
+            SmoothingLevel = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,
                 m => m.ToString(),
                 vm => int.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SmoothingLevel).AddTo(Disposables);
 
-            MinimumDatapoints = Model.ToReactivePropertyAsSynchronized(
+            MinimumDatapoints = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumDatapoints,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumDatapoints).AddTo(Disposables);
 
-            ExcludedMassList = Model.ExcludedMassList.ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
+            ExcludedMassList = Model.PeakPickSettingModel.ExcludedMassList
+                .ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
 
             AddCommand = new[]
             {
@@ -58,13 +60,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.Merge()
             .Select(_ => !ContainsError(nameof(NewMass)) && !ContainsError(nameof(NewTolerance)))
             .ToReactiveCommand()
-            .WithSubscribe(() => Model.AddQuery(NewMass, NewTolerance))
+            .WithSubscribe(() => Model.PeakPickSettingModel.AddQuery(NewMass, NewTolerance))
             .AddTo(Disposables);
 
             RemoveCommand = this.ObserveProperty(vm => vm.SelectedQuery)
-                .Select(q => q != null)
+                .Select(q => q is not null)
                 .ToReactiveCommand()
-                .WithSubscribe(() => Model.RemoveQuery(SelectedQuery.Model))
+                .WithSubscribe(() => Model.PeakPickSettingModel.RemoveQuery(SelectedQuery!.Model))
                 .AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -134,11 +136,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactiveCollection<MzSearchQueryViewModel> ExcludedMassList { get; }
 
-        public MzSearchQueryViewModel SelectedQuery {
+        public MzSearchQueryViewModel? SelectedQuery {
             get => selectedQuery;
             set => SetProperty(ref selectedQuery, value);
         }
-        private MzSearchQueryViewModel selectedQuery;
+        private MzSearchQueryViewModel? selectedQuery;
 
         [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Data points should be positive value.")]
@@ -171,7 +173,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

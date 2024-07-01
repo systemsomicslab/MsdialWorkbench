@@ -18,9 +18,17 @@ namespace CompMs.App.Msdial.Utility
             return source.CombineLatestValuesAreAllFalse().Inverse();
         }
 
-        public static IObservable<U> DefaultIfNull<T, U>(this IObservable<T> source, Func<T, U> ifNotNull, U ifNull = default) where T: class {
+        public static IObservable<U?> DefaultIfNull<T, U>(this IObservable<T?> source, Func<T, U?> ifNotNull) where T: class {
+            return source.Publish(src => {
+                var x = src.Where(v => v is null).ToConstant(default(U?));
+                var y = src.Where(v => v is not null).Select(v => ifNotNull(v!));
+                return Observable.Merge(x, y);
+            });
+        }
+
+        public static IObservable<U> DefaultIfNull<T, U>(this IObservable<T?> source, Func<T, U> ifNotNull, U ifNull) where T: class {
             var x = source.Where(v => v is null).ToConstant(ifNull);
-            var y = source.Where(v => !(v is null)).Select(ifNotNull);
+            var y = source.Where(v => v is not null).Select(v => ifNotNull(v!));
             return Observable.Merge(x, y);
         }
 
@@ -58,12 +66,12 @@ namespace CompMs.App.Msdial.Utility
             return source.Select(selector).Switch();
         }
 
-        public static IObservable<T> TakeNull<T>(this IObservable<T> source) {
+        public static IObservable<T?> TakeNull<T>(this IObservable<T?> source) {
             return source.Where(x => x == null);
         }
 
-        public static IObservable<T> SkipNull<T>(this IObservable<T> source) {
-            return source.Where(x => x != null);
+        public static IObservable<T> SkipNull<T>(this IObservable<T?> source) {
+            return source.Where(x => x != null).Select(x => x!);
         }
 
         public static IObservable<U> ToConstant<T, U>(this IObservable<T> source, U constant) {

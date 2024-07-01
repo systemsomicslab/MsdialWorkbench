@@ -11,7 +11,7 @@ namespace CompMs.Graphics.Adorner
 {
     public class RangeSelectAdorner : System.Windows.Documents.Adorner
     {
-        public RangeSelectAdorner(UIElement adornedElement, Range horizontalRange, Color color, bool isSelected) : base(adornedElement) {
+        public RangeSelectAdorner(UIElement adornedElement, AxisRange horizontalRange, Color color, bool isSelected) : base(adornedElement) {
             if (GetHorizontalAxis(adornedElement) is IAxisManager ha) {
                 InitialX = horizontalRange.Minimum;
                 CurrentX = horizontalRange.Maximum;
@@ -114,8 +114,8 @@ namespace CompMs.Graphics.Adorner
             set => SetValue(CurrentXProperty, value);
         }
 
-        public Range HorizontalRange {
-            get => new Range(Math.Min(InitialX, CurrentX), Math.Max(InitialX, CurrentX));
+        public AxisRange HorizontalRange {
+            get => new AxisRange(Math.Min(InitialX, CurrentX), Math.Max(InitialX, CurrentX));
             set {
                 InitialX = value.Minimum;
                 CurrentX = value.Maximum;

@@ -104,10 +104,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var maxDT = (float)(dtChromPeak.ChromXsTop.Value + peakWidth * 1.5F);
 
             var ms2ChromPeaksList = DataAccess.GetAccumulatedMs2PeakListList(provider, rtChromPeak, curatedSpectra, minDT, maxDT, param.IonMode);
-            var smoothedMs2ChromPeaksList = new List<Chromatogram_temp2>();
+            var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>();
 
-            foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram_temp2(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            foreach (var (chromPeaks, mz) in ms2ChromPeaksList) {
+                var sChromPeaks = new ExtractedIonChromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec, mz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 

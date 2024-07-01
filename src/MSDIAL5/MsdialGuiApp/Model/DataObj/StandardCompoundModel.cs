@@ -17,10 +17,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         public StandardCompound Compound => _compound;
 
         public void Commit() {
-            _compound.StandardName = StandardName;
+            _compound.StandardName = StandardName ?? string.Empty;
             _compound.MolecularWeight = MolecularWeight;
             _compound.Concentration = Concentration;
-            _compound.TargetClass = TargetClass;
+            _compound.TargetClass = TargetClass ?? string.Empty;
             _compound.DilutionRate = DilutionRate;
             _compound.PeakID = PeakID;
         }
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public bool TrySetIdIfMatch(AlignmentSpotProperty spotProperty) {
-            if (!string.IsNullOrEmpty(spotProperty?.Name) && spotProperty.Name.Contains(StandardName)) {
+            if (!string.IsNullOrEmpty(spotProperty.Name) && spotProperty.Name.Contains(StandardName)) {
                 PeakID = spotProperty.MasterAlignmentID;
                 return true;
             }
@@ -49,11 +49,11 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
-        public string StandardName {
+        public string? StandardName {
             get => _standardName;
             set => SetProperty(ref _standardName, value);
         }
-        private string _standardName;
+        private string? _standardName;
 
         public double MolecularWeight {
             get => _molecularWeight;
@@ -67,11 +67,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private double _concentration;
 
-        public string TargetClass {
+        public string? TargetClass {
             get => _targetClass;
             set => SetProperty(ref _targetClass, value);
         }
-        private string _targetClass;
+        private string? _targetClass;
 
         public double DilutionRate {
             get => _dilutionRate;

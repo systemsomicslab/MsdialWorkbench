@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => userDefinedAdductName;
             set => SetProperty(ref userDefinedAdductName, value);
         }
-        private string userDefinedAdductName;
+        private string userDefinedAdductName = string.Empty;
 
         public AdductIon UserDefinedAdduct => AdductIon.GetAdductIon(userDefinedAdductName);
 

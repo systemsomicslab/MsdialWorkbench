@@ -104,7 +104,7 @@
                                 <TextBox Text="{Binding NewMass}" Width="64"
                                          IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                             </ui:LabeledContent>
-                            <ui:LabeledContent PrependLabel="Tolerane:">
+                            <ui:LabeledContent PrependLabel="Tolerance:">
                                 <TextBox Text="{Binding NewTolerance}" Width="64"
                                          IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                             </ui:LabeledContent>

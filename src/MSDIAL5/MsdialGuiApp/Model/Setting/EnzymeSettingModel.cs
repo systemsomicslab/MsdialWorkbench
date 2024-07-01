@@ -1,16 +1,14 @@
 ﻿using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using CompMs.MsdialCore.Parameter;
 using CompMs.Common.Proteomics.Parser;
 
-namespace CompMs.App.Msdial.Model.Setting {
+namespace CompMs.App.Msdial.Model.Setting
+{
     class EnzymeSettingModel : ValidatableBase {
         private ProteomicsParameter Parameter { get; set; }
         public EnzymeSettingModel(ProteomicsParameter Parameter) {
@@ -38,8 +36,8 @@ namespace CompMs.App.Msdial.Model.Setting {
                 }
             }
 
-            UnSelectedEnzymes = new ObservableCollection<Enzyme>(unselectedEnzymes);
-            SelectedEnzymes = new ObservableCollection<Enzyme>(selectedEnzymes);
+            unSelectedEnzymes = new ObservableCollection<Enzyme>(unselectedEnzymes);
+            this.selectedEnzymes = new ObservableCollection<Enzyme>(selectedEnzymes);
 
             MaxMissedCleavage = Parameter.MaxMissedCleavage;
         }

@@ -147,5 +147,5 @@ namespace CompMs.Common.Enum
 
     public enum SearchType { ProductIon, NeutralLoss }
     public enum AndOr { AND, OR }
-    public enum MsmsSimilarityCalc { ModDot, Bonanza }
+    public enum MsmsSimilarityCalc { ModDot, Bonanza, Cosine, All }
 }

@@ -122,7 +122,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
 
             //Do MS2Dec deconvolution
-            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Chromatogram.Peaks, ms2ChromPeaksList, parameter);
+            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Chromatogram.AsPeakArray(), ms2ChromPeaksList, parameter);
             if (msdecResult == null) { //if null (any pure chromatogram is not found.)
                 if (parameter.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, parameter, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
@@ -179,7 +179,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectra = new RawSpectra(provider, ionMode, type);
             var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
-            return rawSpectra.GetMs1ExtractedChromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, chromatogramRange);
+            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(chromPeakFeature.Mass, centroidMs1Tolerance), chromatogramRange);
         }
 
         //private static List<List<ChromatogramPeak>> GetMs2PeaksList(
@@ -198,17 +198,18 @@ namespace CompMs.MsdialImmsCore.Algorithm
         //    return smoothedMs2ChromPeaksList;
         //}
 
-        private static List<Chromatogram_temp2> GetMs2PeaksList(
+        private static List<ExtractedIonChromatogram> GetMs2PeaksList(
             IDataProvider provider,
             double precursorMz, List<double> productMz,
             Chromatogram ms1Chromatogram,
             MsdialImmsParameter parameter, double targetCE, AcquisitionType type) {
 
-            var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
+            IReadOnlyList<IChromatogramPeak> peaks = ms1Chromatogram.AsPeakArray();
+            var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, peaks.First().ID, peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
 
-            var smoothedMs2ChromPeaksList = new List<Chromatogram_temp2>(ms2ChromPeaksList.Count);
-            foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram_temp2(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+            var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>(ms2ChromPeaksList.Count);
+            foreach (var (chromPeaks, mz) in ms2ChromPeaksList.Zip(productMz)) {
+                var sChromPeaks = new ExtractedIonChromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec, mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
             return smoothedMs2ChromPeaksList;
@@ -217,7 +218,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private static MSDecResult RunDeconvolution(
             ChromatogramPeakFeature chromPeakFeature,
             IReadOnlyList<IChromatogramPeak> ms1PeakList,
-            List<Chromatogram_temp2> ms2PeaksList,
+            List<ExtractedIonChromatogram> ms2PeaksList,
             MsdialImmsParameter parameter) {
 
             var topScanNum = SearchSpectrumIndex(chromPeakFeature, ms1PeakList);

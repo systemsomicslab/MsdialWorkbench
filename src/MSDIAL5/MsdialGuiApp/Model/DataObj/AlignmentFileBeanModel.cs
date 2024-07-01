@@ -64,21 +64,21 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        private Task<MSDecLoader> MSDecLoader {
+        private Task<MSDecLoader?> MSDecLoader {
             get {
                 if (_mSDecLoader?.Result is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
                     try {
                         var loader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
-                        return _mSDecLoader = Task.FromResult(loader);
+                        return _mSDecLoader = Task.FromResult((MSDecLoader?)loader);
                     }
                     catch (ArgumentException) {
-                        return _mSDecLoader = Task.FromResult((MSDecLoader)null);
+                        return _mSDecLoader = Task.FromResult((MSDecLoader?)null);
                     }
                 }
                 return _mSDecLoader;
             }
         }
-        private Task<MSDecLoader> _mSDecLoader;
+        private Task<MSDecLoader?>? _mSDecLoader;
 
         /// <summary>
         /// Generate a temporarily available MSDecLoader.
@@ -89,13 +89,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new MSDecLoader(File.Open(_alignmentFile.SpectraFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete));
         }
 
-        public async Task<MSDecResult> LoadMSDecResultByIndexAsync(int index, CancellationToken token = default) {
+        public async Task<MSDecResult?> LoadMSDecResultByIndexAsync(int index, CancellationToken token = default) {
             await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             try {
                 var loader = await MSDecLoader.ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                return loader.LoadMSDecResult(index);
+                return loader?.LoadMSDecResult(index);
             }
             finally {
                 _alignmentMsdecSem.Release();

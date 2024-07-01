@@ -15,8 +15,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
     /// </summary>
     public partial class PeakModUCLegacy : UserControl {
         private readonly PeakModFELegacy _fe;
-        public DrawVisualManualPeakModification drawing;
-        public AlignedChromatogramModificationViewModelLegacy VM { get; set; }
+        public DrawVisualManualPeakModification? drawing;
+        private AlignedChromatogramModificationViewModelLegacy? VM { get; set; }
 
         public PeakModType Type { get; set; }
         public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
@@ -49,6 +49,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             this.drawing = null;
             this._fe = new PeakModFELegacy(new DrawVisualManualPeakModification(), this);
             this.Content = this._fe;
+            PeakPropertyList = new List<PeakPropertyLegacy>(0);
 
             this.MouseMove -= new MouseEventHandler(this.UserControl_MouseMove);
             this.MouseLeave -= new MouseEventHandler(this.UserControl_MouseLeave);
@@ -65,6 +66,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             this.drawing = drawing;
             this._fe = new PeakModFELegacy(this.drawing, this);
             this.Content = this._fe;
+            PeakPropertyList = new List<PeakPropertyLegacy>(0);
 
             this.MouseLeftButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonUp);
             this.MouseLeftButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonDown);
@@ -82,13 +84,14 @@ namespace CompMs.App.Msdial.View.PeakCuration
             this.Content = this._fe;
             this.Type = PeakModType.TargetPick;
             this.drawing.IsTargetManualPickMode = true;
+            PeakPropertyList = new List<PeakPropertyLegacy>(0);
             RefreshUI();
         }
 
-        public PeakModUCLegacy(AlignedChromatogramModificationViewModelLegacy vm, 
+        internal PeakModUCLegacy(AlignedChromatogramModificationViewModelLegacy vm, 
             DrawVisualManualPeakModification drawing, 
             MouseActionSetting setting, PeakModType type = PeakModType.Original, 
-            List<PeakPropertyLegacy> peakPropertyList = null) {
+            List<PeakPropertyLegacy>? peakPropertyList = null) {
             InitializeComponent();
 
             //Property settting
@@ -98,7 +101,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             this._fe = new PeakModFELegacy(this.drawing, this);
             this.Content = this._fe;
             this.Type = type;
-            this.PeakPropertyList = peakPropertyList;
+            this.PeakPropertyList = peakPropertyList ?? new List<PeakPropertyLegacy>(0);
 
             if (!setting.CanMouseAction) {
                 this.MouseMove -= new MouseEventHandler(this.UserControl_MouseMove);
@@ -261,7 +264,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                         //              }
                     }
                     else if (this._rightMouseButtonChromatogramLeftRightZoom) {
-                        float[] peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
+                        float[]? peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
                         if (peakInformation == null) return;
                         float mousePointRt = peakInformation[1];
 
@@ -299,7 +302,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     }
                     else if (this._rightMouseButtonChromatogramUpDownZoom) {
 
-                        float[] peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
+                        float[]? peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
                         if (peakInformation == null) return;
 
                         // Mouse On Y-Axis                
@@ -381,14 +384,14 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     Mouse.OverrideCursor = Cursors.Wait;
                     UtilityLegacy.ChangeAlignedRtProperty(this.PeakPropertyList, minX, maxX);
                     _fe.Draw();
-                    this.VM.UpdateAlignedChromUC();
+                    this.VM?.UpdateAlignedChromUC();
                     Mouse.OverrideCursor = null;
                 }
                 else if (this.Type == PeakModType.Aligned) {
                     Mouse.OverrideCursor = Cursors.Wait;
                     UtilityLegacy.ModifyPeakEdge(this.PeakPropertyList, minX, maxX);
-                    this.VM.UpdateAlignedChromUC();
-                    this.VM.UpdatePickingChromUC();
+                    this.VM?.UpdateAlignedChromUC();
+                    this.VM?.UpdatePickingChromUC();
                     Mouse.OverrideCursor = null;
                 }
                 else {

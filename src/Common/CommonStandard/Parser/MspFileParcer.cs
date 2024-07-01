@@ -300,7 +300,7 @@ namespace CompMs.Common.Parser
 
                 case "ionmode": 
                 case "ion_mode":
-                case "ionization": 
+                //case "ionization":
                     mspObj.IonMode = fieldValue.ToLower().Contains("n") ? IonMode.Negative : IonMode.Positive; 
                      return false;
 
@@ -340,6 +340,8 @@ namespace CompMs.Common.Parser
                     if (mspObj.Comment == string.Empty) mspObj.Comment = "scannumber=" + fieldValue;
                     else mspObj.Comment += "; scannumber=" + fieldValue;
                     return false;
+                case "databaseuniqueidentifier":
+                    mspObj.DatabaseUniqueIdentifier = fieldValue; return false;
                 case "num peaks":
                 case "numpeaks":
                 case "num_peaks":
@@ -573,10 +575,13 @@ namespace CompMs.Common.Parser
             sw.WriteLine("PRECURSORTYPE: " + adducttype);
             sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT.Value);
             sw.WriteLine("FORMULA: " + record.Formula);
+            sw.WriteLine("ONTOLOGY: " + record.Ontology);
             sw.WriteLine("SMILES: " + record.SMILES);
             sw.WriteLine("INCHIKEY: " + record.InChIKey);
+            sw.WriteLine("INSTRUMENTTYPE: " + record.InstrumentType);
             sw.WriteLine("COLLISIONENERGY: " + record.CollisionEnergy);
             sw.WriteLine("IONMODE: " + record.IonMode);
+            sw.WriteLine("DatabaseUniqueIdentifier: " + record.DatabaseUniqueIdentifier);
             sw.WriteLine("Comment: " + record.Comment);
             sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
 

@@ -15,6 +15,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             _license = parameter.License;
             _instrument = parameter.Instrument;
             _instrumentType = parameter.InstrumentType;
+            _collisionEnergy = parameter.CollisionEnergy ;
+            _comment = parameter.Comment;
         }
 
         public string Authors {
@@ -45,13 +47,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             get => _collisionEnergy;
             set => SetProperty(ref _collisionEnergy, value);
         }
-        private string _collisionEnergy;
+        private string _collisionEnergy = string.Empty;
 
         public string Comment {
             get => _comment;
             set => SetProperty(ref _comment, value);
         }
-        private string _comment;
+        private string _comment = string.Empty;
 
         public void Commit() {
             _parameter.Authors = _authors;

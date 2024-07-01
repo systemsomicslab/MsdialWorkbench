@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -7,7 +6,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialImmsCore.Parameter;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -64,57 +62,14 @@ namespace CompMs.MsdialImmsCore.Process
             Console.WriteLine("Annotation started");
             _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
-            var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
-            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
-
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
 
             reportAction?.Invoke(100);
-        }
-
-        public async Task RunAsyncTest(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-            Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = _peakPickProcess.Pick(file, provider, reportAction);
-
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
-            file.ChromPeakFeaturesSummary = summary;
-
-            Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(file, provider, chromPeakFeatures.Items, summary, reportAction, token);
-
-            // annotations
-            Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
-            var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
-            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
-
-            foreach (var element in pixels.PixelPeakFeaturesList) {
-                if (Math.Abs(element.Mz - 885.5472) < 0.01) {
-                    Console.WriteLine(element.Mz + "\t" + element.Drift);
-                    var frames = pixels.XYFrames;
-                    for (int i = 0; i < element.IntensityArray.Length; i++) {
-                        Console.WriteLine(frames[i].XIndexPos + "\t" + frames[i].YIndexPos + "\t" + element.IntensityArray[i]);
-                    }
-                }
-            }
-
-
-            // file save
-            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
-            reportAction?.Invoke(100);
-        }
-
-        public RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess) {
-            if (targetElements.IsEmptyOrNull()) return null;
-            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015)) {
-                return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames(), isNewFileProcess)
-                    ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
-            }
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync();
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
 
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);

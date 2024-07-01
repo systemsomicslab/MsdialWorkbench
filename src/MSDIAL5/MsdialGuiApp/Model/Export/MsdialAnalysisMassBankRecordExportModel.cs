@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Export
 
         public string Label { get; } = "MassBank record";
 
-        public string ContributorID {
+        public string? ContributorID {
             get => _contributorID;
             set => SetProperty(ref _contributorID, value);
         }
-        private string _contributorID;
+        private string? _contributorID;
 
         public bool ShouldExport {
             get => _shouldExport;
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Export
             _handler.License = _studyContextModel.License;
             _handler.Instrument = _studyContextModel.Instrument;
             _handler.InstrumentType = _studyContextModel.InstrumentType;
-            _handler.ContributorIdentifier = ContributorID;
+            _handler.ContributorIdentifier = ContributorID ?? string.Empty;
 
             var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
             var loader = fileBeanModel.MSDecLoader;

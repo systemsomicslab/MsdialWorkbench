@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public RetentionTimeCorrectionWinLegacy RtWin;
         public RetentionTimeCorrectionCommon RtCorrectionCommon { get; set; }
         public RetentionTimeCorrectionParam RtCorrectionParam { get; set; }
-        public List<CommonStdData> CommonStdList { get; set; }
+        public List<CommonStdData> CommonStdList { get; set; } = new List<CommonStdData>(0);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -72,8 +72,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region UserControls for graph
-        private DefaultUC allRtDiffUc;
-        public DefaultUC AllRtDiffUC {
+        private DefaultUC? allRtDiffUc;
+        public DefaultUC? AllRtDiffUC {
             get {
                 return allRtDiffUc;
             }
@@ -82,8 +82,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
         }
 
-        private StackPanel _stackEachRtDiffUc;
-        public StackPanel StackPanel_EachRtDiffUc {
+        private StackPanel? _stackEachRtDiffUc;
+        public StackPanel? StackPanel_EachRtDiffUc {
             get {
                 return _stackEachRtDiffUc;
             }
@@ -92,8 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
         }
 
-        private StackPanel _stackEachPeakHeight;
-        public StackPanel StackPanel_EachStdPeakHeightUc {
+        private StackPanel? _stackEachPeakHeight;
+        public StackPanel? StackPanel_EachStdPeakHeightUc {
             get {
                 return _stackEachPeakHeight;
             }
@@ -103,8 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
 
-        private Grid _grid_EachStdEICUc;
-        public Grid Grid_EachStdEICUc {
+        private Grid? _grid_EachStdEICUc;
+        public Grid? Grid_EachStdEICUc {
             get {
                 return _grid_EachStdEICUc;
             }
@@ -119,8 +119,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region constructor
-        public RetentionTimeCorrectionViewModelLegacy() { }
-
         public RetentionTimeCorrectionViewModelLegacy(
             IReadOnlyList<AnalysisFileBean> files, ParameterBase param, 
             RetentionTimeCorrectionWinLegacy win, bool isViewMode) {
@@ -130,14 +128,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
             this.RtWin = win;
             this.RtCorrectionCommon = param.RetentionTimeCorrectionCommon;
+            //this.RtCorrectionCommon.AnalysisFileNames = files.Select(n => n.AnalysisFileName).ToList();
             this.RtCorrectionParam = this.RtCorrectionCommon.RetentionTimeCorrectionParam;
             parallelOptions.MaxDegreeOfParallelism = param.NumThreads;
 
 
             if (this.RtCorrectionCommon.StandardLibrary == null || this.RtCorrectionCommon.StandardLibrary.Count == 0)
-                StandardData = RetentionTimeCorrectionModelLegacy.InitializeStandardDataTable();
+                _standardData = RetentionTimeCorrectionModelLegacy.InitializeStandardDataTable();
             else {
-                StandardData = RetentionTimeCorrectionModelLegacy.ConvertTextFormatToCompoundVM(this.RtCorrectionCommon.StandardLibrary);
+                _standardData = RetentionTimeCorrectionModelLegacy.ConvertTextFormatToCompoundVM(this.RtCorrectionCommon.StandardLibrary) ?? new List<StandardCompoundVM>(0);
                 this.RtWin.ComboBox_Interpolation.SelectedIndex = (int)RtCorrectionParam.InterpolationMethod;
                 this.RtWin.ComboBox_Extrapolation_Begin.SelectedIndex = (int)RtCorrectionParam.ExtrapolationMethodBegin;
                 this.RtWin.ComboBox_Extrapolation_End.SelectedIndex = (int)RtCorrectionParam.ExtrapolationMethodEnd;
@@ -152,10 +151,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #region Delegate commands
 
         #region Load Library
-        private DelegateCommand _loadLibrary;
+        private DelegateCommand? _loadLibrary;
         public DelegateCommand LoadLibrary {
             get {
-                return _loadLibrary ?? (_loadLibrary = new DelegateCommand(excuteLoadLibrary, canLoadLibrary));
+                return _loadLibrary ??= new DelegateCommand(excuteLoadLibrary, canLoadLibrary);
             }
         }
 
@@ -172,18 +171,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region Excute RtCorrection
-        private DelegateCommand _rtCorrection;
+        private DelegateCommand? _rtCorrection;
         public DelegateCommand RtCorrection {
             get {
-                return _rtCorrection ??
-                    (_rtCorrection = new DelegateCommand(excuteRtCorrection, canRtCorrection));
+                return _rtCorrection ??= new DelegateCommand(excuteRtCorrection, canRtCorrection);
             }
         }
 
         private void excuteRtCorrection() {
-            foreach (var f in this.AnalysisFiles) {
-                f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
-            }
+            //foreach (var f in this.AnalysisFiles) {
+            //    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+            //}
             RtCorrectionCommon.SampleCellInfoListList = new List<List<SampleListCellInfo>>();
             RtCorrectionCommon.StandardLibrary = RetentionTimeCorrectionModelLegacy.ConvertCompoundVMtoTextFormat(StandardData);
             new RtCorrectionProcessModelLegacy().Process(this.AnalysisFiles, this.Parameter, this.RtWin);
@@ -206,11 +204,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region AutoFill
-        private DelegateCommand<bool> _autoFill;
+        private DelegateCommand<bool>? _autoFill;
         public DelegateCommand<bool> AutoFill {
             get {
-                return _autoFill ??
-                    (_autoFill = new DelegateCommand<bool>(excuteAutoFill, canAutoFill));
+                return _autoFill ??= new DelegateCommand<bool>(excuteAutoFill, canAutoFill);
             }
         }
 
@@ -260,11 +257,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region UpdateRtTune
-        private DelegateCommand<bool> _updateRtTune;
+        private DelegateCommand<bool>? _updateRtTune;
         public DelegateCommand<bool> UpdateRtTune {
             get {
-                return _updateRtTune ??
-                    (_updateRtTune = new DelegateCommand<bool>(excuteUpdateRtTune, canUpdateRtTune));
+                return _updateRtTune ??= new DelegateCommand<bool>(excuteUpdateRtTune, canUpdateRtTune);
             }
         }
 
@@ -313,26 +309,25 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 }
                 RtCorrectionCommon.SampleCellInfoListList.Add(l);
             }
-            CommonStdList = RetentionTimeCorrectionModelLegacy.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
         }
 
         #endregion
 
         #region Run 
-        private DelegateCommand<bool> _next;
+        private DelegateCommand<bool>? _next;
         public DelegateCommand<bool> Next {
             get {
-                return _next ??
-                    (_next = new DelegateCommand<bool>(excuteNext, canNext));
+                return _next ??= new DelegateCommand<bool>(excuteNext, canNext);
             }
         }
 
         private void excuteNext(bool obj) {
-            if (!CheckBox_RunWithRtCorrection) {
-                foreach (var f in this.AnalysisFiles) {
-                    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
-                }
-            }
+            //if (!CheckBox_RunWithRtCorrection) {
+            //    foreach (var f in this.AnalysisFiles) {
+            //        f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+            //    }
+            //}
             Parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = CheckBox_RunWithRtCorrection; 
             this.RtWin.DialogResult = true;
             this.RtWin.Close();
@@ -357,7 +352,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region SampleList DataGrid
-        public List<SampleListVM> SampleListVMs { get; set; }
+        public List<SampleListVM> SampleListVMs { get; set; } = new List<SampleListVM>(0);
 
         public void CreateSampleList() {
             SampleListVMs = new List<SampleListVM>();
@@ -497,9 +492,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             var num = files.Count;
             var yMax = float.MinValue; var yMin = float.MaxValue;
             foreach (var f in files) {
-                if (f.RetentionTimeCorrectionBean.RtDiff != null) {
-                    var tmp_max = f.RetentionTimeCorrectionBean.RtDiff.Max();
-                    var tmp_min = f.RetentionTimeCorrectionBean.RtDiff.Min();
+                var rtDiff = f.RetentionTimeCorrectionBean.RtDiff;
+                if (rtDiff != null) {
+                    var tmp_max = rtDiff.Max();
+                    var tmp_min = rtDiff.Min();
                     if (yMax < tmp_max) yMax = (float)tmp_max;
                     if (yMin > tmp_min) yMin = (float)tmp_min;
                 }
@@ -596,13 +592,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (this.CheckBox_SkipCheck)
                 excuteNext(false);
 
-            CommonStdList = RetentionTimeCorrectionModelLegacy.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
             if (isAfterRtTune) {
                 var NoHitCompList = CommonStdList.Where(x => x.NumHit == 0).Select(x => x.Reference).ToList();
                 ShowMessage_NoHitCompounds(NoHitCompList);
             }
 
-            RetentionTimeCorrectionModelLegacy.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            //this.RtCorrectionCommon.CommonStdList = CommonStdList;
+
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -613,7 +611,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (!Processed) { SetDemoData(); return; }
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
-            RetentionTimeCorrectionModelLegacy.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;

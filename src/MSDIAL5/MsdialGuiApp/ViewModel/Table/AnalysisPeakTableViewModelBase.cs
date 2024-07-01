@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -11,19 +10,15 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial.ViewModel.Table
 {
     internal abstract class AnalysisPeakTableViewModelBase : PeakSpotTableViewModelBase {
-        public AnalysisPeakTableViewModelBase(AnalysisPeakSpotTableModelBase model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknonwCommand, UndoManagerViewModel undoManagerViewModel, IObservable<EicLoader> eicLoader)
+        public AnalysisPeakTableViewModelBase(IPeakSpotTableModelBase model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknonwCommand, UndoManagerViewModel undoManagerViewModel, IObservable<EicLoader> eicLoader)
             : base(model, peakSpotNavigatorViewModel, setUnknonwCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
 
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
-            SwitchTagCommand = new ReactiveCommand<PeakSpotTag>().WithSubscribe(model.SwitchTag).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-        public ReactiveCommand MarkAllAsConfirmedCommand { get; }
-        public ReactiveCommand<PeakSpotTag> SwitchTagCommand { get; }
+        public ReadOnlyReactivePropertySlim<EicLoader?> EicLoader { get; }
     }
 }

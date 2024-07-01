@@ -18,15 +18,14 @@ namespace CompMs.App.Msdial.Dto
         }
 
         [XmlElement("Title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
         [XmlElement("FilePath")]
-        public string FilePath { get; set; }
+        public string? FilePath { get; set; }
         [XmlElement("FinalSavedDate")]
         public DateTime FinalSavedDate { get; set; }
 
         public bool MaybeSame(ProjectCrumb other) {
             return Title == other.Title;
         }
-
     }
 }

@@ -12,10 +12,10 @@ namespace CompMs.App.Msdial.ViewModel.Service
             _manager = manager;
         }
 
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_manager.Undo));
-        private ICommand _undoCommand;
+        public ICommand UndoCommand => _undoCommand ??= new DelegateCommand(_manager.Undo);
+        private ICommand? _undoCommand;
 
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_manager.Redo));
-        private ICommand _redoCommand;
+        public ICommand RedoCommand => _redoCommand ??= new DelegateCommand(_manager.Redo);
+        private ICommand? _redoCommand;
     }
 }

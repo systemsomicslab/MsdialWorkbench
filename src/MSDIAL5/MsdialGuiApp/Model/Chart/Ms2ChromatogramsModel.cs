@@ -15,6 +15,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -32,17 +33,23 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
         private readonly IMessageBroker _broker;
 
-        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel?> peak, IObservable<MSDecResult?> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
             var smoother = new Smoothing();
             var rawChromatograms = peak.SkipNull()
-                .SelectSwitch(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
-                .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter, acquisitionType))
-                .Select(chromatograms => chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel)))
+                .SelectSwitch(t => loader.LoadScanAsObservable(t).CombineLatest(NumberOfChromatograms, (scan, number) => (t, spectrum: (scan?.Spectrum ?? new List<SpectrumPeak>(0)).OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
+                .Select(pair => {
+                    var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
+                    var unit = ChromXUnit.Min;
+                    double[] pMzValues = pair.spectrum.Select(peak_ => peak_.Mass).ToArray();
+                    var chromatograms = DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pMzValues, parameter, acquisitionType, type: type, unit: unit);
+                    var smootheds = chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel));
+                    return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
+                })
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
-                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(), // TODO: [magic number] ChromXType, ChromXUnit
+                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F5"))).ToList(),
                     "Raw MS/MS chromatogram",
                     "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
@@ -50,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .CombineLatest(NumberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Deconvoluted MS/MS chromatogram",
-                    chromatograms.Zip(DECONVOLUTION_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
+                    chromatograms.Zip(DECONVOLUTION_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F5") ?? "NA")).ToList(),
                     "Deconvoluted MS/MS chromatogram",
                     "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
@@ -79,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Chart
             _broker = broker;
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsModel> ChromatogramsModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsModel?> ChromatogramsModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }
@@ -91,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactiveProperty<int> NumberOfChromatograms { get; }
 
-        public MultiMsmsRawSpectrumLoader Loader { get; }
+        public MultiMsmsRawSpectrumLoader? Loader { get; }
 
         public void CopyAsTable() {
             if (!(ChromatogramsModel.Value is ChromatogramsModel chromatograms)) {

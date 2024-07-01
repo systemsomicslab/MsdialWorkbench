@@ -25,8 +25,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
         }
 
-        public DelegateCommand MassqlSearchCommand => massqlSearchCommand ?? (massqlSearchCommand = new DelegateCommand(model.SendMassql));//, Model.CanNormalize));
-        private DelegateCommand massqlSearchCommand;
+        public DelegateCommand MassqlSearchCommand => massqlSearchCommand ??= new DelegateCommand(model.SendMassql);//, Model.CanNormalize));
+        private DelegateCommand? massqlSearchCommand;
 
     }
 }

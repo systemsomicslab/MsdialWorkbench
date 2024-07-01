@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
@@ -96,9 +96,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
 
-        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>?> SelectedBrush { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
@@ -124,30 +124,30 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
-        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
-        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
-        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ??= new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod);
+        private DelegateCommand? _searchAlignmentSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
+        private DelegateCommand? _goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
             _model.InvokeMsfinder();
         }
 
-        public ICommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
+        public ICommand SaveSpectraCommand => _saveSpectraCommand ??= new DelegateCommand(SaveSpectra, CanSaveSpectra);
 
-        private DelegateCommand _saveSpectraCommand;
+        private DelegateCommand? _saveSpectraCommand;
 
         private void SaveSpectra() {
             var request = new SaveFileNameRequest(_model.SaveSpectra)

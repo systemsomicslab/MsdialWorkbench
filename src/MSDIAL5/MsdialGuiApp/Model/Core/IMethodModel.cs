@@ -10,11 +10,11 @@ namespace CompMs.App.Msdial.Model.Core
     internal interface IMethodModel : INotifyPropertyChanged, IDisposable {
         AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
-        AnalysisFileBeanModel AnalysisFileModel { get; }
+        AnalysisFileBeanModel? AnalysisFileModel { get; }
 
         AlignmentFileBeanModelCollection AlignmentFiles { get; }
 
-        AlignmentFileBeanModel AlignmentFile { get; }
+        AlignmentFileBeanModel? AlignmentFile { get; }
 
         Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token);
 

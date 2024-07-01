@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ReactiveCommand<(NormalizationSpotPropertyViewModel selected, IEnumerable<NormalizationSpotPropertyViewModel> targets)> AutoFillCommand { get; }
 
-        public ReactiveCommand ApplyChangeCommand => _applyChangeCommand;
+        public override ICommand ApplyCommand => _applyChangeCommand;
         public override ICommand FinishCommand => _applyChangeCommand;
         public override ICommand CancelCommand => _cancelCommand;
     }

@@ -15,13 +15,13 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
-        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, FilePropertiesModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
-            var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+        public BarChartModel(IObservable<AlignmentSpotPropertyModel?> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, FilePropertiesModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
+            var barItemsLoader = barItemsLoaderData.Where(data => data != null).Select(data => data.Loader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? new BarItemCollection()
                         : loader.LoadBarItemsAsObservable(src))
-                .ToReactiveProperty()
+                .ToReactiveProperty(new BarItemCollection())
                 .AddTo(Disposables);
             BarItemsSource = barItemCollectionSource
                 .SelectSwitch(collection => collection.ObservableItems)
@@ -38,11 +38,11 @@ namespace CompMs.App.Msdial.Model.Chart
                     if (items?.Any() ?? false) {
                         var minimum = items.Min(item => item.Height - (double.IsNaN(item.Error) ? 0 : item.Error));
                         var maximum = items.Max(item => item.Height + (double.IsNaN(item.Error) ? 0 : item.Error));
-                        return new Range(minimum, maximum);
+                        return new AxisRange(minimum, maximum);
                     }
-                    return new Range(0, 1);
+                    return new AxisRange(0, 1);
                 })
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d))
                 .AddTo(Disposables);
 
             Elements.HorizontalTitle = "Class";
@@ -55,12 +55,12 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
 
-            var orderedClasses = fileClassProperties.GetOrderedUsedClasses(fileModelCollection).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var orderedClasses = fileClassProperties.GetOrderedUsedClasses(fileModelCollection).ToReadOnlyReactivePropertySlim(Array.Empty<string>()).AddTo(Disposables);
             OrderedClasses = orderedClasses;
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }
-        public IObservable<Range> VerticalRangeAsObservable { get; }
+        public IObservable<AxisRange> VerticalRangeAsObservable { get; }
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
         public IReactiveProperty<BarItemsLoaderData> BarItemsLoaderData { get; }
         public IList<BarItemsLoaderData> BarItemsLoaderDatas { get; }

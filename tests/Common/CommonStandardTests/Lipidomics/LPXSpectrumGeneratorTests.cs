@@ -1,9 +1,11 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
+#if NETSTANDARD || NETFRAMEWORK
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {

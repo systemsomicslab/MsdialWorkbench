@@ -53,6 +53,14 @@ namespace CompMs.Common.Lipidomics {
                     scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 0, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
         }
+        public static (ILipid, double[]) Characterize4Fahfa(
+            IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,
+            float tolerance, float mzBegin, float mzEnd)
+        {
+            var defaultResult = OadMsCharacterizationUtility.GetDefaultScore(
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 0, 0.5);
+            return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForFahfa(molecule, defaultResult);
+        }
 
     }
 }

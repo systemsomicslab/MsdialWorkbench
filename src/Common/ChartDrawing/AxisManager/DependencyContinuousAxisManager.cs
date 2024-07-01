@@ -25,8 +25,8 @@ namespace CompMs.Graphics.AxisManager
             );
 
         public static readonly DependencyProperty TargetRangeProperty = DependencyProperty.Register(
-            nameof(TargetRange), typeof(Range), typeof(DependencyContinuousAxisManager),
-            new PropertyMetadata(new Range(0, 0), OnTargetRangeChanged)
+            nameof(TargetRange), typeof(AxisRange), typeof(DependencyContinuousAxisManager),
+            new PropertyMetadata(new AxisRange(0, 0), OnTargetRangeChanged)
             );
         #endregion
 
@@ -41,8 +41,8 @@ namespace CompMs.Graphics.AxisManager
             set => SetValue(TargetPropertyNameProperty, value);
         }
 
-        public Range TargetRange {
-            get => (Range)GetValue(TargetRangeProperty);
+        public AxisRange TargetRange {
+            get => (AxisRange)GetValue(TargetRangeProperty);
             set => SetValue(TargetRangeProperty, value);
         }
         #endregion
@@ -97,7 +97,7 @@ namespace CompMs.Graphics.AxisManager
             var minidx = Math.Max(SearchCollection.UpperBound(targets, range.Minimum, (u, v) => u.Value.CompareTo(v.Value)) - 1, 0);
             var maxidx = SearchCollection.UpperBound(targets, range.Maximum, (u, v) => u.Value.CompareTo(v.Value));
 
-            Focus(new Range(minTree.Query(minidx, maxidx), maxTree.Query(minidx, maxidx)));
+            Focus(new AxisRange(minTree.Query(minidx, maxidx), maxTree.Query(minidx, maxidx)));
         }
 
         #region event handler

@@ -49,18 +49,18 @@ namespace CompMs.Common.Mathematics.Statistics.Test
                 }
                 else
                 {
-                    clusters[e.To] = tree[e.To].Select(e_ =>
+                    clusters[e.To] = new HashSet<int>(tree[e.To].Select(e_ =>
                             clusters[e_.To]
                         ).Aggregate<IEnumerable<int>>((acc, s) =>
                             acc.Union(s)
-                        ).ToHashSet();
+                        ));
                 }
             });
-            clusters[tree.Root] = tree[tree.Root].Select(
+            clusters[tree.Root] = new HashSet<int>(tree[tree.Root].Select(
                 e_ => clusters[e_.To]
                 ).Aggregate<IEnumerable<int>>(
                 (acc, s) => acc.Union(s)
-                ).ToHashSet();
+                ));
 
             var expected = new HashSet<int>[]
             {
@@ -134,18 +134,18 @@ namespace CompMs.Common.Mathematics.Statistics.Test
                 }
                 else
                 {
-                    clusters[e.To] = tree[e.To].Select(e_ =>
+                    clusters[e.To] = new HashSet<int>(tree[e.To].Select(e_ =>
                             clusters[e_.To]
                         ).Aggregate<IEnumerable<int>>((acc, s) =>
                             acc.Union(s)
-                        ).ToHashSet();
+                        ));
                 }
             });
-            clusters[tree.Root] = tree[tree.Root].Select(
+            clusters[tree.Root] = new HashSet<int>(tree[tree.Root].Select(
                 e_ => clusters[e_.To]
                 ).Aggregate<IEnumerable<int>>(
                 (acc, s) => acc.Union(s)
-                ).ToHashSet();
+                ));
 
             var expected = new HashSet<int>[]
             {

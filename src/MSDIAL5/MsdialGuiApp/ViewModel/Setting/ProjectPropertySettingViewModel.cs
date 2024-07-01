@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveProperty<string> Comment { get; }
 
-        public override ICommand ApplyCommand => null;
+        public override ICommand? ApplyCommand => null;
         public override ICommand CancelCommand { get; }
         public override ICommand FinishCommand { get; }
 

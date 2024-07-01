@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<string> UserDefinedAdductName { get; }
 
-        public ReadOnlyReactivePropertySlim<AdductIon> UserDefinedAdduct { get; }
+        public ReadOnlyReactivePropertySlim<AdductIon?> UserDefinedAdduct { get; }
 
         public ReactiveCommand AddCommand { get; }
 
@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

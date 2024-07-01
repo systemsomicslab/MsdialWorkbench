@@ -14,10 +14,10 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public class RtCorrectionProcessModelLegacy {
         #region // members
-        private BackgroundWorker _bgWorker;
-        private ProgressBarWindow _pbw;
-        private string _progressFileMax;
-        private RetentionTimeCorrectionWinLegacy _rtCorrectionWin;
+        private BackgroundWorker? _bgWorker;
+        private ProgressBarWindow? _pbw;
+        private string? _progressFileMax;
+        private RetentionTimeCorrectionWinLegacy? _rtCorrectionWin;
         #endregion
 
         #region // data processing method summary
@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Core
             _rtCorrectionWin = rtCorrectionWin;
             BgWorkerInitialize(files);
 
-            _bgWorker.DoWork += new DoWorkEventHandler(BgWorker_Process_DoWork);
+            _bgWorker!.DoWork += new DoWorkEventHandler(BgWorker_Process_DoWork);
 
             _bgWorker.RunWorkerAsync(
                 new object[] { 
@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         private void BgWorkerInitialize(IReadOnlyList<AnalysisFileBean> files) {
-            _rtCorrectionWin.IsEnabled = false;
+            _rtCorrectionWin!.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             _progressFileMax = files.Count.ToString();
 
@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Core
                 StandardDataProviderFactory factory = new StandardDataProviderFactory();
                 var provider = factory.Create(f);
                 RetentionTimeCorrection.Execute(f, param, provider);
-                _bgWorker.ReportProgress(1);
+                _bgWorker!.ReportProgress(1);
             });
 
             param.MinimumAmplitude = tmp_originalSettings;
@@ -93,16 +93,15 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         private void BgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-            ((ProgressBarVM)_pbw.DataContext).CurrentValue += e.ProgressPercentage;
+            ((ProgressBarVM)_pbw!.DataContext).CurrentValue += e.ProgressPercentage;
             ((ProgressBarVM)_pbw.DataContext).Label = $"File {((ProgressBarVM)this._pbw.DataContext).CurrentValue}/{this._progressFileMax}";
         }
 
         private void BgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            ((ProgressBarVM)_pbw.DataContext).Label = "Visualizing & Exporting PDF";
+            ((ProgressBarVM)_pbw!.DataContext).Label = "Visualizing & Exporting PDF";
             _pbw.Close();
 
-            _rtCorrectionWin.VM.RtCorrectionResUpdate();
-
+            _rtCorrectionWin!.VM.RtCorrectionResUpdate();
             Mouse.OverrideCursor = null;
             _rtCorrectionWin.IsEnabled = true;
         }

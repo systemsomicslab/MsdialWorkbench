@@ -98,7 +98,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
 
-            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, matchResultEvaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, matchResultEvaluator);
             processor.RunAsyncTest(file, provider).Wait();
 
             using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
@@ -180,7 +180,7 @@ namespace CompMs.App.MsdialConsole.Process
             storage.AddStorage(container);
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, evaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, evaluator);
             processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {

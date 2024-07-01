@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+#if NETFRAMEWORK || NETSTANDARD
 using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
@@ -39,6 +41,24 @@ namespace CompMs.Common.Algorithm.PeakPick
             var peakheightFromEdge = IntensityAtPeakTop - edgeIntensity;
             return IntensityAtPeakTop <= 0 || peakheightFromEdge < maxIntensityAtPeaks * INTENSITY_FOLDCHANGE_THREASHOLD;
         }
+
+        public BaseChromatogramPeakFeature ConvertToPeakFeature(ExtractedIonChromatogram chromatogram, double mz) {
+            return new BaseChromatogramPeakFeature
+            {
+                ChromScanIdLeft = ScanNumAtLeftPeakEdge,
+                ChromScanIdTop = ScanNumAtPeakTop,
+                ChromScanIdRight = ScanNumAtRightPeakEdge,
+                ChromXsLeft = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtLeftPeakEdge), ChromXUnit.Min)),
+                ChromXsTop = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtPeakTop), ChromXUnit.Min)),
+                ChromXsRight = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtRightPeakEdge), ChromXUnit.Min)),
+                PeakHeightLeft = IntensityAtLeftPeakEdge,
+                PeakHeightTop = IntensityAtPeakTop,
+                PeakHeightRight = IntensityAtRightPeakEdge,
+                PeakAreaAboveZero = AreaAboveZero,
+                PeakAreaAboveBaseline = AreaAboveBaseline,
+                Mass = mz,
+            };
+        }
     }
 
     public sealed partial class PeakDetection {
@@ -51,13 +71,13 @@ namespace CompMs.Common.Algorithm.PeakPick
             _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
         }
 
-        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram_temp2 chromatogram) {
+        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram chromatogram) {
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;
             var minNoiseLevel = 0d;
             var noiseFactor = 3d;
-            var chroChroChromatogram = chromatogram.GetChroChroChromatogram(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
+            using var chroChroChromatogram = chromatogram.GetChroChroChromatogram(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
 
             var averagePeakWidth = 20;
             var amplitudeNoiseFoldCriteria = 4d;
@@ -414,7 +434,7 @@ namespace CompMs.Common.Algorithm.PeakPick
                 .Select(bin => bin.Max(peak => peak.Intensity) - bin.Min(peak => peak.Intensity))
                 .Where(diff => diff > 0)
                 .ToList();
-            if (amplitudeDiffs.Count >= minNoiseWindowSize) {
+            if (amplitudeDiffs.Count() >= minNoiseWindowSize) {
                 minNoiseLevel = BasicMathematics.Median(amplitudeDiffs);
             }
             var noise = minNoiseLevel * noiseFactor;

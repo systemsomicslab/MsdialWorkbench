@@ -16,13 +16,13 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class PlotComparedMsSpectrumUsecase : IDisposable
     {
-        private CompositeDisposable _disposables = new CompositeDisposable();
-        private Subject<IMSScanProperty> _reference;
-        private Subject<Ms2ScanMatching> _matchingScorer;
+        private CompositeDisposable? _disposables = new CompositeDisposable();
+        private Subject<IMSScanProperty?>? _reference;
+        private Subject<Ms2ScanMatching>? _matchingScorer;
 
         public PlotComparedMsSpectrumUsecase(IMSScanProperty scan)
         {
-            _reference = new Subject<IMSScanProperty>().AddTo(_disposables);
+            _reference = new Subject<IMSScanProperty?>().AddTo(_disposables);
             _matchingScorer = new Subject<Ms2ScanMatching>().AddTo(_disposables);
 
             var referenceSpectrum = _reference
@@ -30,8 +30,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(_disposables);
             GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            ObservableMsSpectrum upperObservableMsSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(scan.Spectrum)), null, Observable.Return((ISpectraExporter)null)).AddTo(_disposables);
-            ObservableMsSpectrum lowerObservableMsSpectrum = new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(_disposables), Observable.Return((ISpectraExporter)null)).AddTo(_disposables);
+            ObservableMsSpectrum upperObservableMsSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(scan.Spectrum)), null, Observable.Return((ISpectraExporter?)null)).AddTo(_disposables);
+            ObservableMsSpectrum lowerObservableMsSpectrum = new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(_disposables), Observable.Return((ISpectraExporter?)null)).AddTo(_disposables);
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
             ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Blue));
@@ -58,21 +58,21 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel MsSpectrumModel { get; }
 
-        public void UpdateReference(IMSScanProperty reference) {
+        public void UpdateReference(IMSScanProperty? reference) {
             _reference?.OnNext(reference);
         }
 
         public void UpdateMatchingScorer(Ms2ScanMatching scorer) {
-            if (!(scorer is null)) {
+            if (scorer is not null) {
                 _matchingScorer?.OnNext(scorer);
             }
         }
 
         public void Dispose() {
-            if (!(_disposables is null)) {
-                _reference.OnCompleted();
+            if (_disposables is not null) {
+                _reference!.OnCompleted();
                 _reference = null;
-                _matchingScorer.OnCompleted();
+                _matchingScorer!.OnCompleted();
                 _matchingScorer = null;
                 _disposables.Dispose();
                 _disposables = null;

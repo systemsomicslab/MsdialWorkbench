@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
+        public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             AmplitudeFilterModel = amplitudeFilterModel;
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
@@ -31,13 +31,14 @@ namespace CompMs.App.Msdial.Model.Search
             TagSearchQueryBuilder = tagSearchQueryBuilderModel;
         }
 
-        public string SelectedAnnotationLabel {
+        public string? SelectedAnnotationLabel {
             get => _selectedAnnotationLabel;
             set => SetProperty(ref _selectedAnnotationLabel, value);
         }
-        private string _selectedAnnotationLabel;
+        private string? _selectedAnnotationLabel;
 
-        public IReadOnlyList<IFilterable> PeakSpots { get; }
+        public object PeakSpots { get; }
+
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
         public ValueFilterModel AmplitudeFilterModel { get; }
         public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }

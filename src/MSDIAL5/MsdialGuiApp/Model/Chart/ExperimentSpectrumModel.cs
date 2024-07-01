@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class ExperimentSpectrumModel : BindableBase {
+    internal class ExperimentSpectrumModel : BindableBase {
         private readonly IDataProvider provider;
 
         public ExperimentSpectrumModel(
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IFileBean analysisFile,
             IDataProvider provider,
             ChromatogramPeakFeature peak,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             ParameterBase parameter) {
 
             RangeSelectableChromatogramModel = model;
@@ -38,28 +38,31 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public RangeSelectableChromatogramModel RangeSelectableChromatogramModel { get; }
         public IFileBean AnalysisFile { get; }
-        public SummarizedSpectrumModel Ms1Spectrum {
+        public SummarizedSpectrumModel? Ms1Spectrum {
             get => ms1Spectrum;
             set => SetProperty(ref ms1Spectrum, value);
         }
-        private SummarizedSpectrumModel ms1Spectrum;
+        private SummarizedSpectrumModel? ms1Spectrum;
 
         public ObservableCollection<SummarizedSpectrumModel> Ms2Spectrums { get; }
 
         public ChromatogramPeakFeature Peak { get; }
 
-        public IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> Refer { get; }
+        public IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> Refer { get; }
 
         public ParameterBase Parameter { get; }
 
         public bool CanSetExperimentSpectrum() {
-            return RangeSelectableChromatogramModel.SelectedRanges.Count == 2;
+            return RangeSelectableChromatogramModel is { MainRange: not null, SubtractRanges: { Count: > 0 } };
         }
 
         public async Task SetExperimentSpectrumAsync(CancellationToken token) {
+            if (RangeSelectableChromatogramModel is null or { MainRange: null } or { SubtractRanges: { Count: 0 } }) {
+                return;
+            }
             var rangeModel = RangeSelectableChromatogramModel;
-            (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[1]);
-            (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[0]);
+            (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.MainRange);
+            (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SubtractRanges[0]);
 
             var spectrum = await provider.LoadMsNSpectrumsAsync(level: 2, token).ConfigureAwait(false);
             var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();
@@ -76,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public void SaveSpectrumAsNist(string mspFileName) {
-            var comment = Peak?.Comment ?? string.Empty;
+            var comment = Peak.Comment ?? string.Empty;
             using (var fs = File.Open(mspFileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
                 foreach (var spectra in Ms2Spectrums) {
                     Peak.Comment = $"{comment}|ExperimentId={spectra.ExperimentId}";

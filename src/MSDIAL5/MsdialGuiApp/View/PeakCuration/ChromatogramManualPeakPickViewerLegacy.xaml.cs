@@ -1,36 +1,24 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Legacy;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.PeakCuration {
+namespace CompMs.App.Msdial.View.PeakCuration
+{
     /// <summary>
     /// Interaction logic for ChromatogramManualPeakPickViewerLegacy.xaml
     /// </summary>
     public partial class ChromatogramManualPeakPickViewerLegacy : Window {
-        public ChromatogramManualPeakPickViewModelLegacy VM { get; set; }
+        public ChromatogramManualPeakPickViewModelLegacy? VM { get; set; }
 
         public ChromatogramManualPeakPickViewerLegacy() {
             InitializeComponent();
@@ -65,7 +53,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         private void Button_Update_Click(object sender, RoutedEventArgs e) {
             this.DialogResult = true;
 
-            VM.UpdateAlignedProp();
+            VM?.UpdateAlignedProp();
 
             this.Close();
         }
@@ -78,88 +66,88 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         public ParameterBase Param { get; set; }
 
         //GC
-        private Dictionary<int, float> carbonRtDict;
+        private Dictionary<int, float>? carbonRtDict;
         private Dictionary<int, float> fiehnRiDictionary;
-        private FiehnRiCoefficient fiehnRiCoeff;
-        private FiehnRiCoefficient revFiehnRiCoeff;
+        private FiehnRiCoefficient? fiehnRiCoeff;
+        private FiehnRiCoefficient? revFiehnRiCoeff;
 
         //Ion mobility
         public bool IsIonMobility { get; set; }
         public bool IsRi { get; set; }
 
         #region
-        public int ScanTop {
-            get { return ChromUC.drawing.ChromPeakProperty.ScanTop; }
+        public int? ScanTop {
+            get { return ChromUC.drawing?.ChromPeakProperty.ScanTop; }
             set { OnPropertyChanged("ScanTop"); }
         }
 
-        public float RtTop {
-            get { return ChromUC.drawing.ChromPeakProperty.RtTop; }
+        public float? RtTop {
+            get { return ChromUC.drawing?.ChromPeakProperty.RtTop; }
             set { OnPropertyChanged("RtTop"); }
         }
 
-        public float HeightFromZero {
-            get { return ChromUC.drawing.ChromPeakProperty.HeightFromZero; }
+        public float? HeightFromZero {
+            get { return ChromUC.drawing?.ChromPeakProperty.HeightFromZero; }
             set { OnPropertyChanged("HeightFromZero"); }
         }
 
-        public float AreaFromZero {
-            get { return ChromUC.drawing.ChromPeakProperty.AreaFromZero; }
+        public float? AreaFromZero {
+            get { return ChromUC.drawing?.ChromPeakProperty.AreaFromZero; }
             set { OnPropertyChanged("AreaFromZero"); }
         }
 
-        public int ScanLeft {
-            get { return ChromUC.drawing.ChromPeakProperty.ScanLeft; }
+        public int? ScanLeft {
+            get { return ChromUC.drawing?.ChromPeakProperty.ScanLeft; }
             set { OnPropertyChanged("ScanLeft"); }
         }
 
-        public float ScanRight {
-            get { return ChromUC.drawing.ChromPeakProperty.ScanRight; }
+        public float? ScanRight {
+            get { return ChromUC.drawing?.ChromPeakProperty.ScanRight; }
             set { OnPropertyChanged("ScanRight"); }
         }
 
-        public float RtLeft {
-            get { return ChromUC.drawing.ChromPeakProperty.RtLeft; }
+        public float? RtLeft {
+            get { return ChromUC.drawing?.ChromPeakProperty.RtLeft; }
             set { OnPropertyChanged("RtLeft"); }
         }
 
-        public float RtRight {
-            get { return ChromUC.drawing.ChromPeakProperty.RtRight; }
+        public float? RtRight {
+            get { return ChromUC.drawing?.ChromPeakProperty.RtRight; }
             set { OnPropertyChanged("RtRight"); }
         }
 
-        public float HeightLeftFromZero {
-            get { return ChromUC.drawing.ChromPeakProperty.HeightLeftFromZero; }
+        public float? HeightLeftFromZero {
+            get { return ChromUC.drawing?.ChromPeakProperty.HeightLeftFromZero; }
             set { OnPropertyChanged("HeightLeftFromZero"); }
         }
 
-        public float HeightRightFromZero {
-            get { return ChromUC.drawing.ChromPeakProperty.HeightRightFromZero; }
+        public float? HeightRightFromZero {
+            get { return ChromUC.drawing?.ChromPeakProperty.HeightRightFromZero; }
             set { OnPropertyChanged("HeightRightFromZero"); }
         }
 
-        public float HeightFromBaseline {
-            get { return ChromUC.drawing.ChromPeakProperty.HeightFromBaseline; }
+        public float? HeightFromBaseline {
+            get { return ChromUC.drawing?.ChromPeakProperty.HeightFromBaseline; }
             set { OnPropertyChanged("HeightFromBaseline"); }
         }
 
-        public float HeightFromParallelBaseline {
-            get { return ChromUC.drawing.ChromPeakProperty.HeightFromParallelBaseline; }
+        public float? HeightFromParallelBaseline {
+            get { return ChromUC.drawing?.ChromPeakProperty.HeightFromParallelBaseline; }
             set { OnPropertyChanged("HeightFromParallelBaseline"); }
         }
 
-        public float AreaFromBaseline {
-            get { return ChromUC.drawing.ChromPeakProperty.AreaFromBaseline; }
+        public float? AreaFromBaseline {
+            get { return ChromUC.drawing?.ChromPeakProperty.AreaFromBaseline; }
             set { OnPropertyChanged("AreaFromBaseline"); }
         }
 
-        public float AreaFromParallelBaseline {
-            get { return ChromUC.drawing.ChromPeakProperty.AreaFromParallelBaseline; }
+        public float? AreaFromParallelBaseline {
+            get { return ChromUC.drawing?.ChromPeakProperty.AreaFromParallelBaseline; }
             set { OnPropertyChanged("AreaFromParallelBaseline"); }
         }
 
-        public float SignalToNoise {
-            get { return ChromUC.drawing.ChromPeakProperty.SignalToNoise; }
+        public float? SignalToNoise {
+            get { return ChromUC.drawing?.ChromPeakProperty.SignalToNoise; }
             set { OnPropertyChanged("SignalToNoise"); }
         }
         #endregion
@@ -279,7 +267,9 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         }
 
         public void UpdateAlignedProp() {
-
+            if (this.ChromUC.drawing?.ChromPeakProperty is null) {
+                return;
+            }
             var prop = this.ChromUC.drawing.ChromPeakProperty;
             var type = this.SelectedData.AlignedPeakProperty.ChromXsTop.Type;
             var unit = this.SelectedData.AlignedPeakProperty.ChromXsTop.Unit;
@@ -303,12 +293,12 @@ namespace CompMs.App.Msdial.View.PeakCuration {
 
                     var isFiehn = Param.MachineCategory == CompMs.Common.Enum.MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames;
 
-                    if (isFiehn) {
+                    if (isFiehn && revFiehnRiCoeff is not null) {
                         rtTop = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtTop);
                         rtLeft = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtLeft);
                         rtRight = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtRight);
                     }
-                    else {
+                    else if (carbonRtDict is not null) {
                         rtTop = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtTop);
                         rtLeft = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtLeft);
                         rtRight = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtRight);

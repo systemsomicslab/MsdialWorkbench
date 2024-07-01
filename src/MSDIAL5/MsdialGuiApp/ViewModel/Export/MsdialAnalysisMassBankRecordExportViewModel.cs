@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public string Label => _model.Label;
 
-        public ReactiveProperty<string> ContributorID { get; }
+        public ReactiveProperty<string?> ContributorID { get; }
 
         public ReactivePropertySlim<bool> ShouldExport { get; }
 

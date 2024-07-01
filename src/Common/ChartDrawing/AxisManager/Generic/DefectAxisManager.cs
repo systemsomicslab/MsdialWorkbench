@@ -6,13 +6,13 @@ namespace CompMs.Graphics.AxisManager.Generic
 {
     public sealed class DefectAxisManager : BaseAxisManager<double>
     {
-        private static readonly Range DEFECT_RANGE = new Range(-.5, .5);
+        private static readonly AxisRange DEFECT_RANGE = new AxisRange(-.5, .5);
 
         public DefectAxisManager(double divisor) : base(DEFECT_RANGE) {
             Divisor = divisor;
         }
 
-        public DefectAxisManager(double divisor, Range bounds) : base(DEFECT_RANGE, bounds) {
+        public DefectAxisManager(double divisor, AxisRange bounds) : base(DEFECT_RANGE, bounds) {
             Divisor = divisor;
         }
 
@@ -20,7 +20,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             Divisor = divisor;
         }
 
-        public DefectAxisManager(double divisor, IChartMargin margin, Range bounds) : base(DEFECT_RANGE, margin, bounds) {
+        public DefectAxisManager(double divisor, IChartMargin margin, AxisRange bounds) : base(DEFECT_RANGE, margin, bounds) {
             Divisor = divisor;
         }
 

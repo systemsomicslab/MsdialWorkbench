@@ -72,8 +72,9 @@
                     <Setter Property="Width" Value="80"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="Apply" Command="{Binding IsSetViewModel.ApplyCommand}"
-                    Visibility="{Binding IsSetViewModelVisible.Value, Converter={StaticResource BooleanToVisibility}}"/>
+            <Button Content="Apply setting" Command="{Binding IsSetViewModel.ApplyCommand}"
+                    Visibility="{Binding IsSetViewModelVisible.Value, Converter={StaticResource BooleanToVisibility}}"
+                    Width="80"/>
             <Button Content="Normalize" Command="{Binding NormalizeCommand}" Click="Invoke_Normalize"/>
             <Button Content="Cancel" Command="{Binding CancelCommand}" Click="Click_Cancel"/>
         </StackPanel>

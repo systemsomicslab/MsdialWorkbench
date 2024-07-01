@@ -50,14 +50,13 @@
                 <RadioButton Name="RadioButton_EI"
                              Content="Hard ionization (GC/MS)"
                              IsChecked="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EI, Mode=TwoWay}"
-                             IsEnabled="False"
                              Margin="8,8,0,0"
                              ToolTip="Type 2: When you analyze an EI type data like GC/MS, select this option."/>
             </StackPanel>
         </GroupBox>
 
         <GroupBox Header="Separation type" Padding="4" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <Grid>
+            <Grid IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -117,7 +116,7 @@
 
         <GroupBox Header="Collision type"
                   IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <UniformGrid Columns="6">
+            <UniformGrid Columns="6" IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
                         <Setter Property="Margin" Value="8"/>

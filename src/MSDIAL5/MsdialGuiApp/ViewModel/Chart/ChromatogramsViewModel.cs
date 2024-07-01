@@ -14,11 +14,11 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public sealed class ChromatogramsViewModel : ViewModelBase {
+    internal sealed class ChromatogramsViewModel : ViewModelBase {
         private readonly ChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
-        public ChromatogramsViewModel(ChromatogramsModel model, IMessageBroker broker = null) {
+        public ChromatogramsViewModel(ChromatogramsModel model, IMessageBroker? broker = null) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(CopyAsTable).AddTo(Disposables);
@@ -27,13 +27,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
 
-        public IAxisManager<double> HorizontalAxis => _model.ChromAxis;
-        public IAxisManager<double> VerticalAxis => _model.AbundanceAxis;
+        public AxisItemSelector<double> HorizontalSelector => _model.ChromAxisItemSelector;
+        public AxisItemSelector<double> VerticalSelector => _model.AbundanceAxisItemSelector;
+
+        public IAxisManager<double> HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
+        public IAxisManager<double> VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager;
 
         public string GraphTitle => _model.GraphTitle;
 
-        public string HorizontalTitle => _model.HorizontalTitle;
-        public string VerticalTitle => _model.VerticalTitle;
+        public string HorizontalTitle => _model.ChromAxisItemSelector.SelectedAxisItem.GraphLabel;
+        public string VerticalTitle => _model.AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel;
 
         public string HorizontalProperty => _model.HorizontalProperty;
         public string VerticalProperty => _model.VerticalProperty;

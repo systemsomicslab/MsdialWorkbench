@@ -37,8 +37,8 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public ReactivePropertySlim<double> MainChromXTolerance { get; }
         public ReactivePropertySlim<double> AmplitudeThreshold { get; }
 
-        public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>> SelectedCandidate => _model.SelectedCandidate;
-        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MatchedSpotCandidate<AlignmentChromPeakFeatureModel>>> SelectedCandidatePeaks => _model.SelectedCandidatePeaks;
+        public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>?> SelectedCandidate => _model.SelectedCandidate;
+        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MatchedSpotCandidate<AlignmentChromPeakFeatureModel>?>> SelectedCandidatePeaks => _model.SelectedCandidatePeaks;
 
         public ReactiveCommand FindCommand { get; }
         public AsyncReactiveCommand ExportCommand { get; }
@@ -47,9 +47,8 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public ReactiveCommand SetLibraryCommand { get; }
 
         private void OpenSetLibraryDialog() {
-            using (var vm = new TargetCompoundLibrarySettingViewModel(_model.LibrarySettingModel, _broker)) {
-                _broker.Publish(vm);
-            }
+            using var vm = new TargetCompoundLibrarySettingViewModel(_model.LibrarySettingModel, _broker);
+            _broker.Publish(vm);
         }
 
         private async Task ExportAsync() {
@@ -61,9 +60,8 @@ namespace CompMs.App.Msdial.ViewModel.Table
             };
             _broker.Publish(request);
             if (request.Result == true) {
-                using (var stream = File.Open(exportFileName, FileMode.Create)) {
-                    await _model.ExportAsync(stream).ConfigureAwait(false);
-                }
+                using var stream = File.Open(exportFileName, FileMode.Create);
+                await _model.ExportAsync(stream).ConfigureAwait(false);
             }
         }
 

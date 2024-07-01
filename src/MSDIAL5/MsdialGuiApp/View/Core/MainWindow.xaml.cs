@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.MsResult;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
@@ -11,12 +12,14 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.CommonMVVM.Common;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Behavior;
 using CompMs.Graphics.UI;
@@ -65,6 +68,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorConfirmationMessage);
+            broker.ToObservable<RiDictionarySettingViewModel>()
+                .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
@@ -80,7 +85,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
             broker.ToObservable<CheckChromatogramsViewModel>()
-                .Subscribe(ShowChildViewWithDispose<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000));
+                .Subscribe(ShowChildContent<CheckChromatogramsView>(height: 400, width: 1000, needDispose: true));
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(ShowChildDialog<NormalizationSetView>);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
@@ -111,6 +116,14 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<ExportMrmprobsViewModel>()
                 .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
+            broker.ToObservable<AccumulatedMs1SpectrumViewModel>()
+                .Subscribe(ShowChildContent<AccumulatedMs1SpectrumView>(height: 600, width: 800));
+            broker.ToObservable<AccumulatedMs2SpectrumViewModel>()
+                .Subscribe(ShowChildContent<AccumulatedMs2SpectrumView>(height: 600, width: 800));
+            broker.ToObservable<AccumulatedExtractedMs2SpectrumViewModel>()
+                .Subscribe(ShowChildContent<AccumulatedExtractedMs2SpectrumView>(height: 600, width: 800));
+            broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
+                .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
@@ -145,6 +158,32 @@ namespace CompMs.App.Msdial.View.Core
             view.Show();
         }
 
+        private Action<object> ShowChildContent<TView>(string? title = null, double? height = null, double? width = null, bool needDispose = false) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var view = new Window
+                {
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                if ((title ?? (viewmodel as IDialogPropertiesViewModel)?.Title) is string t) {
+                    view.Title = t;
+                }
+                if ((height ?? (viewmodel as IDialogPropertiesViewModel)?.Height) is double h) {
+                    view.Height = h;
+                }
+                if ((width ?? (viewmodel as IDialogPropertiesViewModel)?.Width) is double w) {
+                    view.Width = w;
+                }
+                if (needDispose) {
+                    DataContextCleanupBehavior.SetIsEnabled(view, true);
+                }
+                view.Show();
+            }
+            return InnerShowDialog;
+        }
+
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
             Window view = new TView()
             {
@@ -154,23 +193,6 @@ namespace CompMs.App.Msdial.View.Core
             };
             DataContextCleanupBehavior.SetIsEnabled(view, true);
             view.Show();
-        }
-
-        private Action<object> ShowChildViewWithDispose<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
-            void InnerShowDialog(object viewmodel) {
-                var view = new Window
-                {
-                    Height = height, Width = width,
-                    Title = title,
-                    Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    DataContext = viewmodel,
-                    Content = new TView(),
-                };
-                DataContextCleanupBehavior.SetIsEnabled(view, true);
-                view.Show();
-            }
-            return InnerShowDialog;
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
@@ -183,7 +205,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object finishCommandContent = null)
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog
@@ -195,7 +217,7 @@ namespace CompMs.App.Msdial.View.Core
                     DataContext = viewmodel,
                     Content = new TView(),
                 };
-                if (finishCommandContent != null) {
+                if (finishCommandContent is not null) {
                     dialog.FinishCommandContent = finishCommandContent;
                 }
                 dialog.ShowDialog();
@@ -240,14 +262,16 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
-            var dialog = new ShortMessageWindow
-            {
-                DataContext = request.Content,
-                Text = request.Content,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            request.Result = dialog.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var dialog = new ShortMessageWindow
+                {
+                    DataContext = request.Content,
+                    Text = request.Content,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                request.Result = dialog.ShowDialog();
+            });
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {
@@ -316,7 +340,7 @@ namespace CompMs.App.Msdial.View.Core
             };
 
             if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
-                request.Run(sfd.SelectedPath);
+                request.Run(sfd.SelectedPath!);
             }
         }
 
@@ -325,6 +349,23 @@ namespace CompMs.App.Msdial.View.Core
             {
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
                 request.Result = result;
+            });
+        }
+
+        private void ShowRiDictionarySettingDialog(RiDictionarySettingViewModel viewmodel) {
+            Dispatcher.Invoke(() => {
+                var dialog = new SettingDialog
+                {
+                    DataContext = viewmodel,
+                    Height = 600, Width = 800,
+                    Title = "Retention index dictionary setting",
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new RetentionIndexDictionarySettingView(),
+                    ApplyCommand = viewmodel.ApplyCommand,
+                    FinishCommand = viewmodel.ApplyCommand,
+                };
+                dialog.ShowDialog();
             });
         }
 

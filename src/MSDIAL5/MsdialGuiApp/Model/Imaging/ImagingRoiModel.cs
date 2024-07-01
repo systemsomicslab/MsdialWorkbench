@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingRoiModel : DisposableModelBase
     {
-        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel> selectedPeak) {
+        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
 
@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Imaging
         public RoiModel Roi { get; }
         public ObservableCollection<RoiPeakSummaryModel> RoiPeakSummaries { get; }
 
-        public RoiPeakSummaryModel SelectedRoiPeakSummary {
+        public RoiPeakSummaryModel? SelectedRoiPeakSummary {
             get => _selectedRoiPeakSummary;
             set => SetProperty(ref _selectedRoiPeakSummary, value);
         }
-        private RoiPeakSummaryModel _selectedRoiPeakSummary;
+        private RoiPeakSummaryModel? _selectedRoiPeakSummary;
 
         public bool IsSelected {
             get => _isSelected;

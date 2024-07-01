@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 }
             }
         }
-        private string _blankRatioMinimum;
+        private string _blankRatioMinimum = string.Empty;
 
         public bool DeleteGhostPeaksChecked {
             get => _deleteGhostPeaksChecked;
@@ -100,7 +100,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 }
             }
         }
-        private string _RSDMaximum;
+        private string _RSDMaximum = string.Empty;
 
         public bool RMDChecked {
             get => _RMDChecked;
@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 }
             }
         }
-        private string _RMDMinimum;
+        private string _RMDMinimum = string.Empty;
 
         [Required(ErrorMessage = "Maximum RMD must be a positive number value.")]
         [Range(0.0, double.MaxValue, ErrorMessage = "Maximum RMD must be a positive number value.")]
@@ -150,10 +150,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
 
         }
-        private string _RMDMaximum;
+        private string _RMDMaximum = string.Empty;
 
-        public DelegateCommand MscleanrFilterCommand => mscleanrFilterCommand ?? (mscleanrFilterCommand = new DelegateCommand(model.RunMscleanrFilter, () => !HasValidationErrors));//, Model.CanNormalize));
-        private DelegateCommand mscleanrFilterCommand;
+        public DelegateCommand MscleanrFilterCommand => mscleanrFilterCommand ??= new DelegateCommand(model.RunMscleanrFilter, () => !HasValidationErrors);//, Model.CanNormalize));
+        private DelegateCommand? mscleanrFilterCommand;
 
     }
 }

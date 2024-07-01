@@ -22,16 +22,13 @@ namespace CompMs.App.Msdial.ViewModel.Information
                 .ToReactivePropertyAsSynchronized(
                     m => m.Value,
                     oxp => oxp,
-                    oxr => Candidates.SelectSwitch(cs =>
-                        cs is null
-                            ? Observable.Never<MsScanMatchResult>()
-                            : Observable.Defer(() => oxr.Where(cs.Contains))),
+                    oxr => Candidates.DefaultIfNull(cs => oxr.Where(r => r is not null && cs.Contains(r)), Observable.Never<MsScanMatchResult>()).Switch(),
                     ignoreValidationErrorValue: true
                 ).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<MsScanMatchResult> Representative { get; }
-        public ReactiveProperty<MsScanMatchResult> SelectedCandidate { get; }
+        public ReadOnlyReactivePropertySlim<MsScanMatchResult?> Representative { get; }
+        public ReactiveProperty<MsScanMatchResult?> SelectedCandidate { get; }
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
     }
 }

@@ -4,6 +4,7 @@
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI"
                     xmlns:template="clr-namespace:CompMs.Graphics.Template"
+                    xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
                     xmlns:converter="clr-namespace:CompMs.Graphics.Converter" 
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
@@ -156,10 +157,10 @@
                                 Grid.Row="1" Grid.Column="2">
                             <Border x:Name="PART_ChartArea"
                                     Background="{TemplateBinding Background}"
-                                    behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                    behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ContentPresenter/>
                             </Border>
                         </Border>
@@ -799,6 +800,66 @@
                             <TextBox Text="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="3" Grid.Column="2"/>
                         </Grid>
                     </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:ResizableItemsControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:ResizableItemsControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid x:Name="PART_Grid"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:DockItemsControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:DockItemsControl}">
+                    <ContentControl Content="{Binding Path=Containers.Root, RelativeSource={RelativeSource TemplatedParent}}">
+                        <ContentControl.Resources>
+                            <mvvm:BindingProxy x:Key="callback" Data="{Binding MoveNodeCallback, Mode=OneTime, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <DataTemplate DataType="{x:Type ui:ContainerOver}">
+                                <TabControl ItemsSource="{Binding Children}"
+                                            behavior:MovableItemsControlBehavior.Collection="{Binding}"
+                                            behavior:MovableItemsControlBehavior.Callback="{Binding Data, Source={StaticResource callback}}"
+                                            AllowDrop="True">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem">
+                                            <Setter Property="HeaderTemplate" Value="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"/>
+                                            <Setter Property="Header" Value="{Binding Content}"/>
+                                            <Setter Property="ContextMenu">
+                                                <Setter.Value>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Split horizontal"
+                                                                  Command="{x:Static ui:DockItemsControl.SplitHorizontalCommand}"
+                                                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        <MenuItem Header="Split vertical"
+                                                                  Command="{x:Static ui:DockItemsControl.SplitVerticalCommand}"
+                                                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                    </ContextMenu>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                </TabControl>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type ui:ContainerSplit}">
+                                <ui:ResizableItemsControl Orientation="{Binding Orientation}" ItemsSource="{Binding Children}"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type ui:ContainerLeaf}">
+                                <ContentPresenter Content="{Binding Content}"
+                                                  ContentTemplate="{Binding ContentTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"/>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

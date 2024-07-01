@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             VerticalAxis = model
                 .VerticalRangeAsObservable
-                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new AxisRange(0, 0), LabelType.Order)
                 .AddTo(Disposables);
 
             var brushSource = model.ClassBrush;
@@ -58,9 +58,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             BrushSource = brushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Errors = BarItems
-                .Where(items => items != null)
+                .Where(items => items is not null)
                 .Select(items => items.Select(item => item.Error).ToArray())
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(Array.Empty<double>())
                 .AddTo(Disposables);
 
             HorizontalTitle = model.Elements
@@ -107,15 +107,15 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> BrushSource { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>?> BrushSource { get; }
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }

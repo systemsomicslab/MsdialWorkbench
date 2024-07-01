@@ -131,7 +131,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
                 }
             }
-            var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode);
+            var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
             var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
             var peakInfos = peaks.Zip(spots)
                 .AsParallel()
@@ -149,7 +149,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                             spot.IsotopicPeaks = new List<IsotopicPeak>(0);
                         }
                         else {
-                            spot.IsotopicPeaks = DataAccess.GetFineIsotopicPeaks(peak, spectra[index], Param.CentroidMs1Tolerance);
+                            spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                         }
                     }
 

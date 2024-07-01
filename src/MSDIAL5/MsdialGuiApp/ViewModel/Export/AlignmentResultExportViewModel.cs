@@ -57,10 +57,10 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private string _exportDirectory;
+        private string _exportDirectory = string.Empty;
 
         [Required(ErrorMessage = "Please select alignment file.")]
-        public AlignmentFileBeanModel AlignmentFile {
+        public AlignmentFileBeanModel? AlignmentFile {
             get => _alignmentFile;
             set {
                 if (SetProperty(ref _alignmentFile, value)) {
@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private AlignmentFileBeanModel _alignmentFile;
+        private AlignmentFileBeanModel? _alignmentFile;
 
         public ICollectionView AlignmentFiles { get; }
 
@@ -84,8 +84,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
 
-        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
-        private DelegateCommand _browseDirectoryCommand;
+        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ??= new DelegateCommand(BrowseDirectory);
+        private DelegateCommand? _browseDirectoryCommand;
 
         private void BrowseDirectory() {
             var fbd = new Graphics.Window.SelectFolderDialog
@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                ExportDirectory = fbd.SelectedPath;
+                ExportDirectory = fbd.SelectedPath!;
             }
         }
 

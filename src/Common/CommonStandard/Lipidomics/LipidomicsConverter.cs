@@ -3309,18 +3309,29 @@ namespace CompMs.Common.Lipidomics
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
-                var oxidizedmoiety = chainString.Split(';')[1]; //2O, O2
-                //modified by MT 2020/12/11 & 2021/01/12
-                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                ////Fixed by MT 2024/2/15
+                var oxidizedmoiety = chainString.Split(';')[1].Replace("(", string.Empty).Replace(")", string.Empty); //2O, O2
+                if (oxidizedmoiety.Contains("OH"))
                 {
-                    expectedOxCount = "1";
+                    oxidizedCount = oxidizedmoiety.Split(',').Length;
                 }
-                else if (oxidizedmoiety.Contains("(2OH)") || oxidizedmoiety.Contains("(3OH)"))
+                else if(oxidizedmoiety.Contains("O"))
                 {
-                    expectedOxCount = "1";
+                    int.TryParse(oxidizedmoiety.Replace("O", string.Empty), out oxidizedCount);
+                    if (oxidizedCount == 0) {  oxidizedCount = 1; }
                 }
-                int.TryParse(expectedOxCount, out oxidizedCount);
+
+                ////modified by MT 2020/12/11 & 2021/01/12
+                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                //if (expectedOxCount == string.Empty || expectedOxCount == "")
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //else if (oxidizedmoiety.Contains("(2OH)") || oxidizedmoiety.Contains("(3OH)"))
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
             }
             else if (chainString.Contains("+"))
@@ -3929,6 +3940,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Cer_NS: return "Cer-NS";
                 case LbmClass.Cer_NP: return "Cer-NP";
                 case LbmClass.Cer_AP: return "Cer-AP";
+                case LbmClass.Cer_ABP: return "Cer-ABP";
                 case LbmClass.Cer_EODS: return "Cer-EODS";
                 case LbmClass.Cer_EOS: return "Cer-EOS";
                 case LbmClass.Cer_OS: return "Cer-OS";
@@ -4373,6 +4385,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer-NS": return LbmClass.Cer_NS;
                 case "Cer-NP": return LbmClass.Cer_NP;
                 case "Cer-AP": return LbmClass.Cer_AP;
+                case "Cer-ABP": return LbmClass.Cer_ABP;
                 case "Cer-EODS": return LbmClass.Cer_EODS;
                 case "Cer-EOS": return LbmClass.Cer_EOS;
                 case "Cer-OS": return LbmClass.Cer_OS;
@@ -4402,6 +4415,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NS": return LbmClass.Cer_NS;
                 case "Cer_NP": return LbmClass.Cer_NP;
                 case "Cer_AP": return LbmClass.Cer_AP;
+                case "Cer_ABP": return LbmClass.Cer_ABP;
                 case "Cer_EODS": return LbmClass.Cer_EODS;
                 case "Cer_EOS": return LbmClass.Cer_EOS;
                 case "Cer_OS": return LbmClass.Cer_OS;
@@ -4845,6 +4859,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NS": return "Sphingolipids";
                 case "Cer_NP": return "Sphingolipids";
                 case "Cer_AP": return "Sphingolipids";
+                case "Cer_ABP": return "Sphingolipids";
                 case "Cer_OS": return "Sphingolipids";
                 case "Cer_HS": return "Sphingolipids";
                 case "Cer_HDS": return "Sphingolipids";

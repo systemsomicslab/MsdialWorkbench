@@ -3,14 +3,12 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Parameter;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.ViewModel.Setting {
+namespace CompMs.App.Msdial.ViewModel.Setting
+{
     class EnzymeSettingViewModel : ViewModelBase {
         public EnzymeSettingViewModel(ProteomicsParameter Parameter) : this(new EnzymeSettingModel(Parameter)) {
 
@@ -34,14 +32,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public EnzymeSettingModel Model { get; }
 
-        public DelegateCommand SetCommand => setCommand ?? (setCommand = new DelegateCommand(SetParam, CanSet));
-        private DelegateCommand setCommand;
+        public DelegateCommand SetCommand => setCommand ??= new DelegateCommand(SetParam, CanSet);
+        private DelegateCommand? setCommand;
 
         private void SetParam() {
             result = Task.Run(() => Model.Set());
             SetCommand.RaiseCanExecuteChanged();
         }
-        private Task result;
+        private Task? result;
 
         private bool CanSet() {
             return result?.Status != TaskStatus.Running && !HasValidationErrors;
@@ -50,29 +48,29 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public MappedReadOnlyObservableCollection<Enzyme, EnzymeBeanSelection> SelectedTo { get; }
 
-        public DelegateCommand AddItemsCommand => addItemsCommand ?? (addItemsCommand = new DelegateCommand(AddItems));
-        private DelegateCommand addItemsCommand;
+        public DelegateCommand AddItemsCommand => addItemsCommand ??= new DelegateCommand(AddItems);
+        private DelegateCommand? addItemsCommand;
 
         private void AddItems() {
             Model.Selects(SelectedFrom.Where(enzyme => enzyme.IsChecked).Select(enzyme => enzyme.Enzyme).ToList());
         }
 
-        public DelegateCommand AddAllItemsCommand => addAllItemsCommand ?? (addAllItemsCommand = new DelegateCommand(AddAllItems));
-        private DelegateCommand addAllItemsCommand;
+        public DelegateCommand AddAllItemsCommand => addAllItemsCommand ??= new DelegateCommand(AddAllItems);
+        private DelegateCommand? addAllItemsCommand;
 
         private void AddAllItems() {
             Model.Selects(SelectedFrom.Select(enzyme => enzyme.Enzyme).ToList());
         }
 
-        public DelegateCommand RemoveItemsCommand => removeItemsCommand ?? (removeItemsCommand = new DelegateCommand(RemoveItems));
-        private DelegateCommand removeItemsCommand;
+        public DelegateCommand RemoveItemsCommand => removeItemsCommand ??= new DelegateCommand(RemoveItems);
+        private DelegateCommand? removeItemsCommand;
 
         private void RemoveItems() {
             Model.UnSelects(SelectedTo.Where(enzyme => enzyme.IsChecked).Select(enzyme => enzyme.Enzyme).ToList());
         }
 
-        public DelegateCommand RemoveAllItemsCommand => removeAllItemsCommand ?? (removeAllItemsCommand = new DelegateCommand(RemoveAllItems));
-        private DelegateCommand removeAllItemsCommand;
+        public DelegateCommand RemoveAllItemsCommand => removeAllItemsCommand ??= new DelegateCommand(RemoveAllItems);
+        private DelegateCommand? removeAllItemsCommand;
 
         private void RemoveAllItems() {
             Model.UnSelects(SelectedTo.Select(enzyme => enzyme.Enzyme).ToList());

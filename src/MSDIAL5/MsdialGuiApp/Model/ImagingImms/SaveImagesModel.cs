@@ -29,7 +29,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public Task SaveAsync()
         {
-            var image = _imageResult.SelectedPeakIntensities.BitmapImageModel;
+            var image = _imageResult.SelectedPeakIntensities?.BitmapImageModel;
+            if (image is null) {
+                return Task.CompletedTask;
+            }
             var rois = _roiModels.Where(roi => roi.IsSelected).Select(roi => roi.Roi.RoiImage).ToArray();
 
             return Task.Run(() =>
@@ -37,7 +40,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 if (string.IsNullOrEmpty(Path)) {
                     return;
                 }
-                BitmapEncoder encoder = null;
+                BitmapEncoder? encoder = null;
                 if (Path.EndsWith("png"))
                 {
                     encoder = new PngBitmapEncoder();

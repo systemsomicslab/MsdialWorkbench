@@ -13,8 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public EicViewModel(
             EicModel model,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double>? horizontalAxis = null,
+            IAxisManager<double>? verticalAxis = null) {
 
             ItemLoaded = model.ItemLoaded;
 
@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis is null) {
                 verticalAxis = model.AbundanceRangeSource
-                    .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.1), new Range(0d, 0d), LabelType.Order)
+                    .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.1), new AxisRange(0d, 0d), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
@@ -56,20 +56,20 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public ReadOnlyReactivePropertySlim<PeakChromatogram> Chromatogram { get; }
+        public ReadOnlyReactivePropertySlim<PeakChromatogram?> Chromatogram { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
     }
 }

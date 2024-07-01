@@ -93,7 +93,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RT = new RetentionTime(alignments[2].TimesCenter.RT.Value + 0.025 * 0.99, unit: alignments[3].TimesCenter.RT.Unit);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
             expects[1].QuantMass = expects[0].QuantMass + param.CentroidMs1Tolerance * 0.99;
@@ -148,7 +149,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 2.5 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
@@ -204,7 +206,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 1000 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
