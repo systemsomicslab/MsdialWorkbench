@@ -131,7 +131,7 @@
                         <DataTemplate>
                             <DataTemplate.Resources>
                                 <DataTemplate DataType="{x:Type vm:GcmsAnalysisViewModel}">
-                                    <chart:SpectrumFeaturePlotView DataContext="{Binding PeakPlotViewModel}"/>
+                                    <local:GcmsAnalysisPeakView/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
                                     <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"

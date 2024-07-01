@@ -30,6 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
+            GcgcSpectrumPeakPlotViewModel = new GcgcSpectrumPeakPlotViewModel(model.GcgcPeaks, () => { }, Observable.Return(false), broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PeakPlotViewModel.HorizontalAxis as IAxisManager<double>).AddTo(Disposables);
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.RawDecSpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
@@ -44,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
+            PeakDetailViewModels = [peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel,];
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
@@ -54,6 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public IResultModel Model => _model;
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public GcgcSpectrumPeakPlotViewModel GcgcSpectrumPeakPlotViewModel { get; }
 
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
