@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
-            IObservable<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> props = target.AlignedPeakPropertiesModelProperty;
+            IObservable<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> props = target.AlignedPeakPropertiesModelProperty;
             var task = target.AlignedPeakPropertiesModelProperty.ToTask();
             if (target.AlignedPeakPropertiesModelProperty.Value is null) {
                 props = Observable.FromAsync(() => task);

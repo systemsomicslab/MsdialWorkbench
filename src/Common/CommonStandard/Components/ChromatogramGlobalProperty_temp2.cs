@@ -7,12 +7,12 @@ using System.Linq;
 namespace CompMs.Common.Components
 {
     internal sealed class ChroChroChromatogram : IDisposable {
-        private readonly ExtractedIonChromatogram _chromatogram;
+        private readonly Chromatogram _chromatogram;
         private ChromatogramGlobalProperty_temp2 _globalProperty;
         private readonly DifferencialCoefficients _differencialCoefficients;
         private readonly ChromatogramNoises _noises;
 
-        internal ChroChroChromatogram(ExtractedIonChromatogram chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
+        internal ChroChroChromatogram(Chromatogram chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
             _chromatogram = chromatogram;
             _globalProperty = globalProperty;
             _differencialCoefficients = differencialCoefficients;
@@ -64,7 +64,7 @@ namespace CompMs.Common.Components
         }
 
         internal bool IsNoise(double maxPeakHeight, double minPeakHeight, double _minimumAmplitudeCriteria, double amplitudeNoiseFoldCriteria, int start, int end) {
-            return maxPeakHeight < _globalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)_noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (_globalProperty.IsHighBaseline && _chromatogram.AnyBoundsLowHeight(start, end, _globalProperty.BaselineMedian));
+            return maxPeakHeight < _globalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)_noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (_globalProperty.IsHighBaseline && _chromatogram.HasBoundaryBelowThreshold(start, end, _globalProperty.BaselineMedian));
         }
 
         internal PeakDetectionResult GetPeakDetectionResult(int peakTopId, int start, int end, double noiseFactor, double maxPeakHeight) {
@@ -228,7 +228,7 @@ namespace CompMs.Common.Components
             var results = new List<PeakDetectionResult>();
             var infinitLoopCheck = false;
             var infinitLoopID = 0;
-            var margin = Math.Max((int)minimumDatapointCriteria, 5);
+            var margin = Math.Max((int)minimumDatapointCriteria, 2);
             for (int i = margin; i < _globalProperty.SmoothedChromatogram.Length - margin; i++) {
                 if (IsPeakStarted(i, slopeNoiseFoldCriteria)) {
                     var start = _globalProperty.SearchRealLeftEdge(i);
@@ -274,11 +274,11 @@ namespace CompMs.Common.Components
         private readonly static double[] FIRST_DIFF_COEFF = new double[] { -0.2, -0.1, 0, 0.1, 0.2 };
         private readonly static double[] SECOND_DIFF_COEFF = new double[] { 0.14285714, -0.07142857, -0.1428571, -0.07142857, 0.14285714 };
 
-        private ExtractedIonChromatogram _baselineChromatogram;
-        private ExtractedIonChromatogram _baselineCorrectedChromatogram;
+        private Chromatogram _baselineChromatogram;
+        private Chromatogram _baselineCorrectedChromatogram;
 
         internal ChromatogramGlobalProperty_temp2(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline,
-            ExtractedIonChromatogram smoothedPeakList, ExtractedIonChromatogram baseline, ExtractedIonChromatogram baselineCorrectedPeakList) {
+            Chromatogram smoothedPeakList, Chromatogram baseline, Chromatogram baselineCorrectedPeakList) {
             MaxIntensity = maxIntensity;
             MinIntensity = minIntensity;
             BaselineMedian = baselineMedian;
@@ -294,7 +294,7 @@ namespace CompMs.Common.Components
         public double BaselineMedian { get; }
         public double Noise { get; }
         public bool IsHighBaseline { get; }
-        internal ExtractedIonChromatogram SmoothedChromatogram { get; private set; }
+        internal Chromatogram SmoothedChromatogram { get; private set; }
 
         public DifferencialCoefficients GenerateDifferencialCoefficients() {
 

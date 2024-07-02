@@ -18,7 +18,7 @@ namespace CompMs.App.RawDataViewer.Model
             AccumulatedHistogram = Histogram.Accumulate();
 
             HorizontalAxis = new LogScaleAxisManager<double>(Histogram.Select(item => item.X).ToArray(), new ConstantMargin(30), base_: 2).AddTo(Disposables);
-            VerticalAxis = new ContinuousAxisManager<double>(AccumulatedHistogram.Select(item => item.Y).ToArray(), new ConstantMargin(0, 20), new Range(0d, 0d)).AddTo(Disposables);
+            VerticalAxis = new ContinuousAxisManager<double>(AccumulatedHistogram.Select(item => item.Y).ToArray(), new ConstantMargin(0, 20), new AxisRange(0d, 0d)).AddTo(Disposables);
         }
 
         public DataPointCollection Histogram { get; }

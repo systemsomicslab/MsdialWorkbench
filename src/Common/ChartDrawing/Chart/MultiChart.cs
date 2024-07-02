@@ -44,6 +44,11 @@ namespace CompMs.Graphics.Chart
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MultiChart), new FrameworkPropertyMetadata(typeof(MultiChart)));
         }
 
+        public MultiChart()
+        {
+            SetValue(RenderAreaControlStateProperty, new RenderAreaControlState());
+        }
+
         public static readonly DependencyProperty HorizontalAxisProperty =
             ChartBaseControl.HorizontalAxisProperty.AddOwner(
                 typeof(MultiChart),
@@ -120,6 +125,16 @@ namespace CompMs.Graphics.Chart
         public string VerticalTitle {
             get => (string)GetValue(VerticalTitleProperty);
             set => SetValue(VerticalTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty RenderAreaControlStateProperty =
+            DependencyProperty.Register(
+                nameof(RenderAreaControlState), typeof(RenderAreaControlState), typeof(MultiChart),
+                new PropertyMetadata(null));
+
+        public RenderAreaControlState RenderAreaControlState {
+            get => (RenderAreaControlState)GetValue(RenderAreaControlStateProperty);
+            set => SetValue(RenderAreaControlStateProperty, value);
         }
 
         private ChartBaseControl horizontalAxisElement, verticalAxisElement;

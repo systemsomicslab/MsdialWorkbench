@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
         private readonly ProjectBaseParameter _projectParameter;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel?> _target;
@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
-            CalculateMatchScore calculateMatchScore,
+            CalculateMatchScore? calculateMatchScore,
             IMessageBroker broker)
             : base(alignmentFileBean, broker)
         {
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
             // MS spectrum
-            var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(alignmentFileBean);
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels msGraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -198,9 +198,13 @@ namespace CompMs.App.Msdial.Model.Gcms
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
+                    peakInformationModel.Add(t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value));
                     break;
                 case AlignmentIndexType.RT:
                     peakInformationModel.Add(t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value));
+                    if (parameter.RefSpecMatchBaseParam.MayRiDictionaryImported) {
+                        peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
+                    }
                     break;
             }
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));

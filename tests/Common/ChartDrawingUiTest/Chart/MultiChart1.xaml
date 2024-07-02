@@ -22,6 +22,16 @@
                                   MaxValue="{Binding MaxY, Source={StaticResource vm}}"
                                   MinValue="{Binding MinY, Source={StaticResource vm}}"
                                   ChartMargin="0.05"/>
+        <io:SaveImageAsCommand x:Key="SaveImageCommand" Format="Png">
+            <io:SaveImageAsCommand.Converter>
+                <io:HeaderConverter Header="Header png"/>
+            </io:SaveImageAsCommand.Converter>
+        </io:SaveImageAsCommand>
+        <io:CopyImageAsCommand x:Key="CopyImageCommand" Format="Png">
+            <io:CopyImageAsCommand.Converter>
+                <io:HeaderConverter Header="Header bitmap"/>
+            </io:CopyImageAsCommand.Converter>
+        </io:CopyImageAsCommand>
     </Page.Resources>
 
     <Grid>
@@ -65,10 +75,18 @@
                 <ContextMenu>
                     <MenuItem Header="Save image">
                         <MenuItem Header="Save as png"
-                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  Command="{StaticResource SaveImageCommand}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image">
+                        <MenuItem Header="Copy as png"
+                                  Command="{StaticResource CopyImageCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                 </ContextMenu>

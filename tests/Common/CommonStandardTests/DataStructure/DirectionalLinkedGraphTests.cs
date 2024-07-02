@@ -72,7 +72,7 @@ namespace CompMs.Common.DataStructure.Tests
 
         class LengthComparer : IEqualityComparer<string>
         {
-#if NETSTANDARD
+#if NETSTANDARD || NETFRAMEWORK
             public bool Equals(string x, string y) {
 #else
             public bool Equals([AllowNull] string x, [AllowNull] string y) {
@@ -82,7 +82,7 @@ namespace CompMs.Common.DataStructure.Tests
                 return x.Length == y.Length;
             }
 
-#if NETSTANDARD
+#if NETSTANDARD || NETFRAMEWORK
             public int GetHashCode(string obj) {
 #else
             public int GetHashCode([DisallowNull] string obj) {

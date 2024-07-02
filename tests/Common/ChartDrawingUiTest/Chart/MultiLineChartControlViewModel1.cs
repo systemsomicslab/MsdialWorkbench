@@ -12,8 +12,10 @@ namespace ChartDrawingUiTest.Chart
 {
     internal sealed class MultiLineChartControlViewModel1 : ViewModelBase
     {
+        readonly int _datapoints = 10000;
+
         public MultiLineChartControlViewModel1() {
-            var datapoints = 10000;
+            var datapoints = _datapoints;
             Serieses = new ObservableCollection<Series>(
                 Enumerable.Range(0, 12)
                     .Select(i => new Series(
@@ -32,6 +34,26 @@ namespace ChartDrawingUiTest.Chart
         public IAxisManager HorizontalAxis { get; }
         public IAxisManager VerticalAxis { get; }
         public IBrushMapper<Series> Brush { get; }
+
+        public DelegateCommand AddCommand => _addCommand ?? (_addCommand = new DelegateCommand(Add));
+        private DelegateCommand _addCommand;
+
+        public DelegateCommand ClearCommand => _clearCommand ?? (_clearCommand = new DelegateCommand(Clear));
+        private DelegateCommand _clearCommand;
+
+        private void Add() {
+            var rand = new Random();
+            var i = rand.NextDouble() * 12d;
+            var data = Enumerable.Range(0, _datapoints)
+                .Select(r => Math.PI / _datapoints * r * 2)
+                .Select((r, j) => new DataPoint { X = r + i / 6d * Math.PI, Y = Math.Sin(r), Type = (int)i * _datapoints + j, })
+                .ToArray();
+            Serieses.Add(new Series(data) { Type = -1 });
+        }
+
+        private void Clear() {
+            Serieses.Clear();
+        }
     }
 
     internal sealed class Series : ViewModelBase {

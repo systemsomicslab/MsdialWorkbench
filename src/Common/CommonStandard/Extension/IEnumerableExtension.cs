@@ -9,11 +9,11 @@ namespace CompMs.Common.Extension {
         public static IEnumerable<(T, int)> WithIndex<T>(this IEnumerable<T> ts) {
             return ts.Select((t, i) => (t, i));
         }
-        public static IEnumerable<T> OrEmptyIfNull<T>(this IEnumerable<T> collection) {
+        public static IEnumerable<T> OrEmptyIfNull<T>(this IEnumerable<T>? collection) {
             return collection ?? Enumerable.Empty<T>();
         }
 
-        public static bool IsEmptyOrNull<T>(this IEnumerable<T> collection) {
+        public static bool IsEmptyOrNull<T>(this IEnumerable<T>? collection) {
             return collection == null || !collection.Any();
         }
 

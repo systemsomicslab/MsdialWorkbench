@@ -13,7 +13,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.PeakCuration
 {
-    public sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
+    internal sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
         private readonly AlignedChromatogramModificationModelLegacy _model;
 
         public PeakModUCLegacy? OriginalChromUC {
@@ -32,13 +32,19 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         }
         private PeakModUCLegacy? _pickingUC;
 
-        public PeakPropertyLegacy[] PeakPropertyList => _model.ObservablePeakProperties.Value.Properties;
+        public PeakPropertyLegacy[] PeakPropertyList => _model.ObservablePeakProperties.Value?.Properties ?? Array.Empty<PeakPropertyLegacy>();
         public bool IsRI => _model.IsRI.Value;
 
         public AlignedChromatogramModificationViewModelLegacy(AlignedChromatogramModificationModelLegacy model) {
             _model = model;
             model.ObservablePeakProperties.ObserveOnDispatcher().Subscribe(peakProperties =>
             {
+                if (peakProperties is null) {
+                    OriginalChromUC = new PeakModUCLegacy();
+                    AlignedChromUC = new PeakModUCLegacy();
+                    PickingUC = new PeakModUCLegacy();
+                    return;
+                }
                 PeakPropertyLegacy[] properties = peakProperties.Properties;
                 var dv_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Original);
                 var dv2_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Aligned);
@@ -116,7 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             if (rtList.Max() > 0) {
                 Properties[0].AverageRt = (float)rtList.Average();
             }
-            _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
+            _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value?.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
             _spot.IsManuallyModifiedForQuant = true;
         }
 

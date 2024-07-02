@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -54,6 +55,12 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(NormalizationSetViewModel)).AddTo(Disposables);
         }
 
         public BarChartViewModel BarChartViewModel { get; }
@@ -61,7 +68,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public GcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
-        public ICommand InternalStandardSetCommand => throw new NotImplementedException();
+        public ICommand InternalStandardSetCommand { get; }
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
         public IResultModel Model => _model;
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

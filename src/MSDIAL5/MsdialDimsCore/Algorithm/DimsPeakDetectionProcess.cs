@@ -29,7 +29,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).Smoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
+            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel).AsPeakArray();
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, peakPickParameter.MinimumDatapoints, peakPickParameter.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) {

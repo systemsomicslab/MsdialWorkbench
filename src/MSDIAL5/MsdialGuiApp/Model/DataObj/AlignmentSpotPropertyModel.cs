@@ -30,11 +30,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
-        public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel => _alignedPeakPropertiesModelProperty.Value;
-        public IReadOnlyReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> AlignedPeakPropertiesModelProperty => _alignedPeakPropertiesModelProperty;
-        private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> _alignedPeakPropertiesModelProperty;
+        public ReadOnlyCollection<AlignmentChromPeakFeatureModel>? AlignedPeakPropertiesModel => _alignedPeakPropertiesModelProperty.Value;
+        public IReadOnlyReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> AlignedPeakPropertiesModelProperty => _alignedPeakPropertiesModelProperty;
+        private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> _alignedPeakPropertiesModelProperty;
 
         public double RT => innerModel.TimesCenter.RT.Value;
+        public double RI => innerModel.TimesCenter.RI.Value;
         public double Drift => innerModel.TimesCenter.Drift.Value;
 
         public double TimesCenter {

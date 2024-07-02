@@ -1,6 +1,9 @@
 ﻿using CompMs.Common.Algorithm.IsotopeCalc;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -110,9 +113,11 @@ namespace CompMs.Common.Parser
                 if (n > 5)
                 {
                     reference.Formula = FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(lineArray[5]);
-                    reference.Formula.M1IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM1IsotopicAbundance(reference.Formula);
-                    reference.Formula.M2IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM2IsotopicAbundance(reference.Formula);
-                    reference.IsotopicPeaks = IsotopeCalculator.GetAccurateIsotopeProperty(reference.Formula.FormulaString, 2, iupacDb).IsotopeProfile;
+                    if (reference.Formula is { } formula && formula.IsCorrectlyImported) {
+                        reference.Formula.M1IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula);
+                        reference.Formula.M2IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula);
+                        reference.IsotopicPeaks = IsotopeCalculator.GetAccurateIsotopeProperty(formula.FormulaString, 2, iupacDb)?.IsotopeProfile;
+                    }
                 }
                 if (n > 6)
                     reference.SMILES = lineArray[6];
@@ -168,6 +173,15 @@ namespace CompMs.Common.Parser
             }
 
             return peaks;
+        }
+
+        public static string PeaksToText(IReadOnlyList<ISpectrumPeak> peaks, char mzIntSep, char peakSep) {
+            if (peaks.IsEmptyOrNull()) return string.Empty;
+            var peakstrings = new List<string>();
+            foreach (var peak in peaks) {
+                peakstrings.Add(peak.Mass.ToString() + mzIntSep.ToString() + peak.Intensity.ToString());
+            }
+            return String.Join(peakSep.ToString(), peakstrings);
         }
 
         public static List<MoleculeMsReference> TextLibraryReader(string filePath, out string error)

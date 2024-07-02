@@ -45,7 +45,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var counter = 0;
                 Parallel.For(0, ms1DecResults.Count, index => {
                     var results = containers[index] = new MsScanMatchResultContainer();
-                    results.AddResults(_calculateMatchScore.CalculateMatches(ms1DecResults[index]).Where(result => result.IsSpectrumMatch).OrderByDescending(r => r.TotalScore));
+                    results.AddResults(_calculateMatchScore.CalculateMatches(ms1DecResults[index]).Where(result => result.IsSpectrumMatch).OrderByDescending(r => r.TotalScore).Take(5));
                     System.Diagnostics.Debug.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(Interlocked.Increment(ref counter), ms1DecResults.Count);
                 });

@@ -993,7 +993,7 @@ namespace CompMs.MsdialCore.Parameter
     [MessagePackObject]
     public class ReferenceBaseParameter {
         [Key(0)]
-        public string MspFilePath { get; set; } = string.Empty;
+        public string? MspFilePath { get; set; } = string.Empty;
         [Key(1)]
         public string TextDBFilePath { get; set; } = string.Empty;
         [Key(2)]
@@ -1194,6 +1194,8 @@ namespace CompMs.MsdialCore.Parameter
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
         [Key(7)]
         public MsRefSearchParameterBase LbmSearchParam { get; set; } = new MsRefSearchParameterBase();
+        [IgnoreMember]
+        public bool MayRiDictionaryImported => FileIdRiInfoDictionary.Count > 0;
     }
 
     [MessagePackObject]

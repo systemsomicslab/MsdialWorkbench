@@ -60,11 +60,82 @@
                                 BorderThickness="1,0,0,1"
                                 Grid.Row="1" Grid.Column="2">
                             <Border Background="{TemplateBinding Background}"
-                                    behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                    behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
-                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="True">
+                                    core:ChartBaseControl.HorizontalAxis="{TemplateBinding HorizontalAxis}"
+                                    core:ChartBaseControl.VerticalAxis="{TemplateBinding VerticalAxis}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ContentPresenter behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
+                            </Border>
+                        </Border>
+
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="1,0,0,0"
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
+                        <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                                  HorizontalAxis="{x:Null}"
+                                                  Margin="0,0,0,1"
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="UnmoveBasicChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Name="GraphTitle"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:SimpleChartControl}}}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="2"/>
+
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,0,0,1"
+                                Grid.Row="1" Grid.Column="2">
+                            <Border Background="{TemplateBinding Background}"
+                                    core:ChartBaseControl.HorizontalAxis="{TemplateBinding HorizontalAxis}"
+                                    core:ChartBaseControl.VerticalAxis="{TemplateBinding VerticalAxis}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="False"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ContentPresenter behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
@@ -398,11 +469,91 @@
                             <Border Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
                                     core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
                                     core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
-                                    behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                    behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
-                                <ContentControl Content="{Binding}"/>
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                <ContentControl Content="{Binding}" behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
+                            </Border>
+                        </Border>
+                        <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                                   FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                   HorizontalAxis="{x:Null}"
+                                                   Grid.Column="0"/>
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="UnmoveVerticalConcatChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:MultiChart}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Name="GraphTitle"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="1" />
+                        <UniformGrid IsItemsHost="True"
+                                     Columns="1"
+                                     Grid.Row="1" Grid.Column="1"/>
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="57.5,0,0,0"
+                                                    Grid.Row="2" Grid.Column="1" />
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="1" />
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="56"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                BorderThickness="1.5,0,0,1.5"
+                                Grid.Column="1">
+                            <Border Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                    core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="False"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                <ContentControl Content="{Binding}" behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"

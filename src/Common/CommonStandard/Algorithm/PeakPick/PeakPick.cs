@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+#if NETFRAMEWORK || NETSTANDARD
 using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
@@ -69,7 +71,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
         }
 
-        public List<PeakDetectionResult> PeakDetectionVS1(ExtractedIonChromatogram chromatogram) {
+        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram chromatogram) {
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;
@@ -432,7 +434,7 @@ namespace CompMs.Common.Algorithm.PeakPick
                 .Select(bin => bin.Max(peak => peak.Intensity) - bin.Min(peak => peak.Intensity))
                 .Where(diff => diff > 0)
                 .ToList();
-            if (amplitudeDiffs.Count >= minNoiseWindowSize) {
+            if (amplitudeDiffs.Count() >= minNoiseWindowSize) {
                 minNoiseLevel = BasicMathematics.Median(amplitudeDiffs);
             }
             var noise = minNoiseLevel * noiseFactor;

@@ -12,10 +12,12 @@ namespace CompMs.MsdialCore.DataObj
         private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra> _spectraImpls;
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
+        private readonly AcquisitionType _acquisitionType;
 
-        public Ms1Spectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode) {
+        public Ms1Spectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = spectra;
             _ionMode = ionMode;
+            _acquisitionType = acquisitionType;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
         }
 
@@ -25,15 +27,15 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode));
+            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType));
         }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode) {
+        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
             switch (type) {
                 case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode);
+                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
-                    return new DriftTimeTypedSpectra(spectra, unit, ionMode);
+                    return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 default:
                     throw new ArgumentException($"ChromXType {type} is not supported.");
             }

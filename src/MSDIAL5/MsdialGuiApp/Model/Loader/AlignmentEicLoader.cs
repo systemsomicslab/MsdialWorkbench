@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -65,16 +66,12 @@ namespace CompMs.App.Msdial.Model.Loader
             }
 
             public IObservable<PeakChromatogram?> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo) {
-                var peaks = _peakInfo.Chromatogram.Select(peak => new PeakItem(peak)).ToList();
-                var area = new[]
-                {
-                    _peak.SkipNull().Select(p => peaks.Where(item => p.ChromXsLeft.Value <= item.Time && item.Time <= p.ChromXsRight.Value).ToList()),
-                    _peak.TakeNull().Select(_ => new List<PeakItem>(0)),
-                }.Merge();
+                var chromatogram = new Chromatogram(_peakInfo.Chromatogram, _spot.ChromXType, _spot.ChromXUnit);
+                var chromatogramArea = _peak.DefaultIfNull(p => chromatogram.AsPeak(p.ChromXsLeft.Value, p.ChromXsRight.Value));
 
                 return new IObservable<IObservable<PeakChromatogram?>>[]
                 {
-                    _includes.Where(x => x).Select(_ => Observable.Return(Unit.Default).CombineLatest(_clss, _name, _color, area, (_2, clss, name, color, area_) => new PeakChromatogram(peaks, area_, clss, color, _spot.ChromXType, _spot.ChromXUnit, name))),
+                    _includes.Where(x => x).Select(_ => Observable.CombineLatest(_clss, _name, _color, chromatogramArea, (clss, name, color, area_) => new PeakChromatogram(chromatogram, area_, clss, color, name))),
                     _includes.Where(x => !x).Select(_ => Observable.Return((PeakChromatogram?)null)),
                 }.Merge().Switch();
             }

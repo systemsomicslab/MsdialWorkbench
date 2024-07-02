@@ -33,7 +33,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         [IgnoreMember]
         public string ModifiedSequence { get => SequenceObj.IsEmptyOrNull() ? string.Empty : String.Join("", SequenceObj.Select(n => n.Code())); }
         [Key(2)]
-        public Range Position { get; set; }
+        public CompMs.Common.DataObj.Range Position { get; set; }
         [Key(3)]
         public double ExactMass { get; set; }
         [IgnoreMember]
