@@ -10,11 +10,11 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 		<Lbm2Url>https://zenodo.org/records/11399747/files/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
-        <LangVersion>12</LangVersion>
-		<IcdUrl>http://prime.psc.riken.jp/compms/code/InchikeyClassyfireDB-VS5.icd</IcdUrl>
-		<MsdUrl>http://prime.psc.riken.jp/compms/code/MINEs-StructureDB-vs1.msd</MsdUrl>
-		<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>
-		<EtmUrl>http://prime.psc.riken.jp/compms/code/MSMS-DBs-vs1.etm</EtmUrl>
+		<LangVersion>12</LangVersion>
+		<IcdUrl>https://zenodo.org/records/12618137/files/InchikeyClassyfireDB-VS5.icd</IcdUrl>
+		<MsdUrl>https://zenodo.org/records/12618137/files/MINEs-StructureDB-vs1.msd</MsdUrl>
+		<EsdUrl>https://zenodo.org/records/12618137/files/MsfinderStructureDB-VS15.esd</EsdUrl>
+		<EtmUrl>https://zenodo.org/records/12618137/files/MSMS-DBs-vs1.etm</EtmUrl>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
