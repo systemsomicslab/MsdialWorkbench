@@ -20,7 +20,7 @@ internal sealed class GcgcSpectrumPeakPlotModel : AnalysisPeakPlotModel<Ms1Based
         var disposable = new SerialDisposable();
         _serialDisposable = disposable;
         Disposables.Add(disposable);
-        var axis = new DefectAxisManager(_timeStep);
+        var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
         _secondColumnAxis = axis;
         _serialDisposable.Disposable = axis;
     }
@@ -30,7 +30,7 @@ internal sealed class GcgcSpectrumPeakPlotModel : AnalysisPeakPlotModel<Ms1Based
         set {
             if (SetProperty(ref _timeStep, value)) {
                 if (_timeStep > 0d) {
-                    SecondColumnAxis = new DefectAxisManager(_timeStep);
+                    SecondColumnAxis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
                 }
             }
         }
