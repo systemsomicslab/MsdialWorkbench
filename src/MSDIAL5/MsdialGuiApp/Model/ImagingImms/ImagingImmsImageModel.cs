@@ -73,6 +73,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             }
         }
 
+        public void RemoveRoi(ImagingRoiModel model) {
+            ImagingRoiModels.Remove(model);
+        }
+
         public async Task SaveRoisAsync(CancellationToken token = default) {
             var tasks = new List<Task>();
             foreach (var roi in ImagingRoiModels) {

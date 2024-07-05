@@ -10,6 +10,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging;
 internal sealed class ImagingRoiViewModel : ViewModelBase
 {
     public ImagingRoiViewModel(ImagingRoiModel model) {
+        Model = model;
         Id = model.ToReactivePropertySlimAsSynchronized(m => m.Id).AddTo(Disposables);
         RoiPeakSummaries = model.RoiPeakSummaries.ToReadOnlyReactiveCollection(summary => new RoiPeakSummaryViewModel(summary)).AddTo(Disposables);
         SelectedRoiPeakSummary = model.ToReactivePropertyAsSynchronized(
@@ -26,4 +27,5 @@ internal sealed class ImagingRoiViewModel : ViewModelBase
     public ReactiveProperty<RoiPeakSummaryViewModel> SelectedRoiPeakSummary { get; }
     public RoiViewModel Roi { get; }
     public ReactivePropertySlim<bool> IsSelected { get; }
+    public ImagingRoiModel Model { get; }
 }

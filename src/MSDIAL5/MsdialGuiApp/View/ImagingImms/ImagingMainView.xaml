@@ -88,6 +88,10 @@
                                         </Rectangle>
                                     </StackPanel>
                                     <ToggleButton x:Name="EditButton" Content="&#xED63;" FontFamily="Segoe MDL2 Assets" Margin="4,2" Background="White"/>
+                                    <Button Command="{Binding DataContext.(vm:ImagingImmsImageViewModel.RemoveRoiCommand), Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Model}"
+                                            Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                            Margin="4,2" Background="White"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
