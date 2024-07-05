@@ -286,6 +286,10 @@
                 </TabControl.ItemTemplate>
             </TabControl>
             <Grid Grid.Row="1">
+            <Grid.InputBindings>
+                <KeyBinding Gesture="Ctrl+Z" Command="{x:Static ui:AreaSelector.UndoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+                <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+            </Grid.InputBindings>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -357,7 +361,8 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <ui:AreaSelector SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
+                            <ui:AreaSelector x:Name="roiSelector"
+                                             SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
                                              Background="Transparent"
                                              Stroke="Red"
                                              VerticalAlignment="Stretch"
