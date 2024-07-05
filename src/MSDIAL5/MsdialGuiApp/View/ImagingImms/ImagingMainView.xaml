@@ -61,19 +61,34 @@
                     <ItemsControl ItemsSource="{Binding RoiViewModels}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
-                                <CheckBox IsChecked="{Binding IsSelected.Value}">
-                                    <CheckBox.Content>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Id}"/>
-                                            <Rectangle Width="16" Height="8" Margin="8,0,0,0">
-                                                <Rectangle.Fill>
-                                                    <SolidColorBrush Color="{Binding Roi.Color}"
-                                                                     PresentationOptions:Freeze="True"/>
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                                        </StackPanel>
-                                    </CheckBox.Content>
-                                </CheckBox>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected.Value}"
+                                              Tag="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource NegativeConverter}}"
+                                              Visibility="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Id.Value}"/>
+                                                <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                         PresentationOptions:Freeze="True"/>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </StackPanel>
+                                        </CheckBox.Content>
+                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox IsChecked="{Binding IsSelected.Value}" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding Id.Value}"/>
+                                        <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                 PresentationOptions:Freeze="True"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="EditButton" Content="&#xED63;" FontFamily="Segoe MDL2 Assets" Margin="4,2" Background="White"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

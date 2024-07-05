@@ -26,7 +26,11 @@ namespace CompMs.App.Msdial.Model.Imaging
             RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 
-        public string Id { get; }
+        public string Id {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+        private string _id = string.Empty;
         public RoiModel Roi { get; }
         public ObservableCollection<RoiPeakSummaryModel> RoiPeakSummaries { get; }
 
