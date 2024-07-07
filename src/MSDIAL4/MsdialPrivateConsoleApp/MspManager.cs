@@ -141,6 +141,7 @@ namespace MsdialPrivateConsoleApp {
                     }
                 }
             }
+        }
 
         public static void MergeMspFiles(string folder, string outputfile) {
             var files = Directory.GetFiles(folder, "*.*msp", SearchOption.AllDirectories);

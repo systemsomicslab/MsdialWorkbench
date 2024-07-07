@@ -34,9 +34,9 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\tablefile-checked.txt");
 
 
-            MspManager.AddMetadata2Msp(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\mspformat_65lipidstandards",
-                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\tablefile.txt",
-                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\mspformat_65lipidstandards_v2");
+            //MspManager.AddMetadata2Msp(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\mspformat_65lipidstandards",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\tablefile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\old\mspformat_65lipidstandards_v2");
             var mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19.msp";
             var inchikeytable = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\inchikey2ontology.txt";
             var new_mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated.msp";
@@ -58,8 +58,11 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.edge");
             //MspManager.MergeMspFiles(@"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\input_msn_neg",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp");
-            MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
-                @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+            //MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+
+            LipidomicsResultCuration.StatisticsMsdialValidationResult(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\sourcedata\figure2\result_to_create_figure2c\resultdata.txt",
+                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\sourcedata\figure2\result_to_create_figure2c\resultdata_curated.txt");
             //MspManager.Msp2TextAsMsdialAlignmentResultFormat(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.txt",

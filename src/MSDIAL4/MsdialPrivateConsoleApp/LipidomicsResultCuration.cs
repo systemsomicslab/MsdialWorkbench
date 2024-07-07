@@ -84,6 +84,25 @@ namespace MsdialPrivateConsoleApp {
 
     }
 
+    public class SplashTestResult {
+        public int noMS2 { get; set; }
+        public int MSL { get; set; }
+        public int SN { get; set; }
+        public int Full { get; set; }
+        public int misslabel { get; set; }
+        public int DB { get; set; }
+        public int OH { get; set; }
+        public int SL { get; set; }
+        public double Total => MSL + SN + Full + misslabel + DB + OH + SL;
+        public double CorrectAnnotationTotal => MSL + SN + Full + DB + OH + SL;
+        public double Accuray => CorrectAnnotationTotal / Total * 100.0;
+        
+        public double InDepthAnnotation => SN + Full + DB + OH;
+        public double InDepthAnnotationPercent => InDepthAnnotation / CorrectAnnotationTotal * 100.0;
+
+    }
+
+
     public class EadResultObj {
         public string FileName { get; set; } = string.Empty;
         public string Lipid { get; set; } = string.Empty;
@@ -101,6 +120,74 @@ namespace MsdialPrivateConsoleApp {
         private LipidomicsResultCuration() { }
 
         // msdial5 paper
+        public static void StatisticsMsdialValidationResult(string input, string output) {
+            var checkstrings = new List<string>() { "x1", "x2", "x5", "x10", "x20", "x50", "x100", "x200", "x500", "x1000", "blank"};
+            var name2result = new Dictionary<string, SplashTestResult>();
+            foreach (var checker in checkstrings) name2result[checker] = new SplashTestResult();
+
+            using (var sr = new StreamReader(input)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+                    if (linearray.Length == 2) {
+                        var name = linearray[0];
+                        var type = linearray[1];
+                        switch (type) {
+                            case "noMS2":
+                                name2result[name].noMS2++;
+                                break;
+                            case "MSL":
+                                name2result[name].MSL++;
+                                break;
+                            case "Full":
+                                name2result[name].Full++;
+                                break;
+                            case "DB":
+                                name2result[name].DB++;
+                                break;
+                            case "OH":
+                                name2result[name].OH++;
+                                break;
+                            case "misslabel":
+                                name2result[name].misslabel++;
+                                break;
+                            case "SN":
+                                name2result[name].SN++;
+                                break;
+                            case "SL":
+                                name2result[name].SL++;
+                                break;
+                        }
+                    }
+                }
+            };
+
+            using (var sw = new StreamWriter(output)) {
+                var header = new List<string>() { "Label", "Detail", "Count", "%" };
+                for (int i = 0; i < checkstrings.Count; i++) {
+                    var checker = checkstrings[i];
+                    var result = name2result[checker];
+
+                    sw.WriteLine(checker);
+                    sw.WriteLine(String.Join("t", header));
+                    sw.WriteLine("Full" + "\t" + "SN+DB or OH+DB resolved" + "\t" + result.Full + "\t" + (result.Full / result.Total * 100).ToString());
+                    sw.WriteLine("DB" + "\t" + "C=C position resolved" + "\t" + result.DB + "\t" + (result.DB / result.Total * 100).ToString());
+                    sw.WriteLine("SN" + "\t" + "SN-position resolved" + "\t" + result.MSL + "\t" + (result.SN / result.Total * 100).ToString());
+                    sw.WriteLine("OH" + "\t" + "OH-position resolved" + "\t" + result.MSL + "\t" + (result.OH / result.Total * 100).ToString());
+                    sw.WriteLine("MSL" + "\t" + "Molecular species level" + "\t" + result.MSL + "\t" + (result.MSL / result.Total * 100).ToString());
+                    sw.WriteLine("SL" + "\t" + "Species level" + "\t" + result.MSL + "\t" + (result.SL / result.Total * 100).ToString());
+                    sw.WriteLine("Misslabel" + "\t" + "False annotation" + "\t" + result.misslabel + "\t" + (result.misslabel / result.Total * 100).ToString());
+                    sw.WriteLine("noMS2" + "\t" + "No MS2 info" + "\t" + result.noMS2 + "\t" + "-");
+                    sw.WriteLine("-" + "\t" + "Total" + "\t" + result.Total + "\t" + "-");
+                    sw.WriteLine("-" + "\t" + "Correct total" + "\t" + result.CorrectAnnotationTotal + "\t" + (result.CorrectAnnotationTotal / result.Total * 100).ToString());
+                    sw.WriteLine("-" + "\t" + "Annotation level > MSL&SL" + "\t" + result.InDepthAnnotation + "\t" + (result.InDepthAnnotation / result.CorrectAnnotationTotal * 100).ToString());
+
+                    sw.WriteLine();
+                }
+            }
+        }
+
         public static void EadValidationResultExport(string annofile, string pairfile, string peaknamefile, string exportfile) {
 
             // parse pairfile
