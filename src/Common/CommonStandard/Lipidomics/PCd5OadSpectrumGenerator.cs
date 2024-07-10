@@ -11,8 +11,7 @@ namespace CompMs.Common.Lipidomics {
     public class PCd5OadSpectrumGenerator : ILipidSpectrumGenerator {
         private static readonly double C5H9D5NO4P = new[] {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * 9,
-            MassDiffDictionary.Hydrogen2Mass * 5,
+            MassDiffDictionary.HydrogenMass * 14,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 4,
             MassDiffDictionary.PhosphorusMass,
