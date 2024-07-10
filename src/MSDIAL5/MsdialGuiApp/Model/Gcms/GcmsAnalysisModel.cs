@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
-            var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType, chromDecParameter);
+            var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType);
             var decLoader = file.MSDecLoader;
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, _spectrumFeatures.Items);
             var refLoader = (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(dbMapper);
