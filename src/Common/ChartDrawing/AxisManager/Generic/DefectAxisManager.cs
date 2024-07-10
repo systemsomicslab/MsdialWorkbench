@@ -15,7 +15,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         public DefectAxisManager(double divisor, AxisRange bounds) : base(DEFECT_RANGE, bounds) {
             Divisor = divisor;
         }
-
+        
         public DefectAxisManager(double divisor, IChartMargin margin) : base(DEFECT_RANGE, margin) {
             Divisor = divisor;
         }
@@ -94,7 +94,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public override AxisValue TranslateToAxisValue(double value) {
             if (Factor != 0d) {
-                return new AxisValue((value / Divisor - Math.Round(value / Divisor) + .5d) * Factor);
+                return new AxisValue((value / Divisor - Math.Floor(value / Divisor)) * Factor);
             }
             else {
                 return new AxisValue(value / Divisor - Math.Round(value / Divisor));
