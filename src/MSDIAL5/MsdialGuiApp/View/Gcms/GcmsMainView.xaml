@@ -134,9 +134,7 @@
                                     <local:GcmsAnalysisPeakView/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
-                                    <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
-                                                                 Focusable="True"
-                                                                 behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"/>
+                                    <local:GcmsAlignmentPeakView/>
                                 </DataTemplate>
                             </DataTemplate.Resources>
                             <ContentPresenter Content="{Binding Value}"/>
