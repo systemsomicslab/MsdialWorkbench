@@ -421,7 +421,7 @@ if(report){
              "complete LC-MS workflow, is freely available.",
              "\\footnote{Klåvus A, Kokla M, Noerman S, et al. \\textit{“Notame”: Workflow for Non-Targeted LC–MS Metabolic Profiling},", 
              "Metabolites. 2020; 10(4):135.}\n")
-  cat(descr, file = rnwFile, append = TRUE)
+  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
   # Drift correction
   descr <- c("\\section{Drift correction}\n",
@@ -531,10 +531,11 @@ if(report){
   
   
   utils::Sweave(file = "Notame_Report.Rnw", encoding = "utf8")
+  tinytex::tlmgr_update()
+  tinytex::tlmgr_install("updmap")
+  system("updmap-sys --force --enable Map=pdftex.map")
+  tinytex::tlmgr_install("grfext")
   res <- try(tools::texi2dvi("Notame_Report.tex", pdf = TRUE,
                              quiet = TRUE))
-  
-  
 }
-
 # END

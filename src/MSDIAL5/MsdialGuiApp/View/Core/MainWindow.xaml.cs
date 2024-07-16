@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
                 .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
             broker.ToObservable<NotameViewModel>()
-                .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 440, width: 450, finishCommandContent: "Run"));
+                .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 460, width: 450, finishCommandContent: "Run"));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
