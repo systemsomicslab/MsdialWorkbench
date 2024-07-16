@@ -7,7 +7,6 @@ namespace CompMs.Common.Lipidomics.Tests
     public class SmilesInchikeyGeneratorTest
     {
         [TestMethod()]
-        [Ignore]
         public void GenerateTest()
         {
             //// PC P-18:1(12)/20:5(5,8,11,14,17)

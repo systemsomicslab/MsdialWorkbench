@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore
       - name: Test
-        run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported" --framework net48
+        run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported" -e "PATH=$env:PATH;${{ github.workspace }}\tests\Common\CommonStandardTests\bin\Debug vendor unsupported\net48\x64"
 
   publish-msdial5:
     needs: test
