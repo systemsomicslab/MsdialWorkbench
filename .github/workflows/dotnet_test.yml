@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore
       - name: Test
-        run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
+        run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported" -e "PATH=$env:PATH;${{ github.workspace }}/tests/Common/CommonStandardTests/bin/Debug vendor unsupported/net48/x64" --framework net48
 
   publish-msdial5:
     needs: test
@@ -51,7 +51,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported" --framework net481
+        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported" --framework net48
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
@@ -76,7 +76,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net481
+        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net48
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
