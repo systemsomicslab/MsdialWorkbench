@@ -17,6 +17,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CompMs.Graphics.UI;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -56,10 +58,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public sealed class RiDictionarySettingViewModel : SettingDialogViewModel {
         private readonly RiDictionarySettingModel _model;
+        private readonly ICollectionView _retentionIndexFilesView;
 
         public RiDictionarySettingViewModel(RiDictionarySettingModel model, IMessageBroker broker) {
             _model = model;
             RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
+            _retentionIndexFilesView = CollectionViewSource.GetDefaultView(RetentionIndexFiles);
             UseAlkanes = model.ToReactivePropertySlimAsSynchronized(
                 m => m.CompoundType,
                 op => op.Select(p => p == RiCompoundType.Alkanes),
@@ -74,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             _finishCommand = RetentionIndexFiles.Select(ri => ri.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => ri.HasValidationErrors))
                 .CombineLatestValuesAreAllFalse()
                 .ToReactiveCommand().WithSubscribe(Set).AddTo(Disposables);
-            AutoFillCommand = new ReactiveCommand<RiDictionaryViewModel>().WithSubscribe(vm => model.AutoFill(vm.Model)).AddTo(Disposables);
+            AutoFillCommand = new ReactiveCommand<RiDictionaryViewModel>().WithSubscribe(vm => model.AutoFill(vm.Model, GetBelowModels(vm))).AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
@@ -89,6 +93,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private void Set() {
             _model.TrySet();
+        }
+
+        private RiDictionaryModel[] GetBelowModels(RiDictionaryViewModel vm)
+        {
+            var index = _retentionIndexFilesView.Cast<RiDictionaryViewModel>().ToList().IndexOf(vm);
+            if (index >= 0 && index < RetentionIndexFiles.Count)
+            {
+                return _retentionIndexFilesView.Cast<RiDictionaryViewModel>().Skip(index + 1).Select(v => v.Model).ToArray();
+            }
+            return [];
         }
     }
     
