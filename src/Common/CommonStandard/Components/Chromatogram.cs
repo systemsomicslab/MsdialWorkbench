@@ -302,7 +302,7 @@ namespace CompMs.Common.Components
             int? minRightId = null;
             var minRightInt = _peaks[top].Intensity;
             double rightEdge = _peaks[top].Time + width;
-            for (int i = top + minPoints; i < _peaks.Length - 1; i++) {
+            for (int i = top + minPoints; i < _size - 1; i++) {
                 if (minRightInt < _peaks[i].Intensity || rightEdge < _peaks[i].Time) {
                     break;
                 }

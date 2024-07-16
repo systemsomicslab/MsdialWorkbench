@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD
+﻿#if NETSTANDARD || NETFRAMEWORK
 using CompMs.Common.Extension;
 #endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;

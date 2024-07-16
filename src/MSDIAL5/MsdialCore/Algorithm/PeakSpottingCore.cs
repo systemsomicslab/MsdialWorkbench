@@ -520,7 +520,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
                 // for tsugawa own research
-                //if (spec.ExperimentID != 6) continue;
+                // if (spec.ExperimentID != 3) continue;
 
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
                     if (IsInMassWindow(mass, spec, ms2Tol, type) && spec.Spectrum.Length > 0) {

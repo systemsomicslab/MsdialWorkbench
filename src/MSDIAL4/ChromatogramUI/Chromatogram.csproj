@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net48;net472</TargetFrameworks>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <UseWPF>true</UseWPF>
@@ -38,7 +38,7 @@
     <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
-    <PackageReference Include="RawDataHandler" Version="1.0.8763.372" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
     <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
