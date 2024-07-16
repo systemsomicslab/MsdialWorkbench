@@ -59,7 +59,8 @@ namespace CompMs.Common.Utility {
 
         public static Dictionary<int, float> GetRiDictionary(string filePath) {
             var dict = new Dictionary<int, float>();
-            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var sr = new StreamReader(stream, Encoding.ASCII)) {
                 sr.ReadLine();
                 while (sr.Peek() > -1) {
                     var line = sr.ReadLine();
