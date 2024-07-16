@@ -165,6 +165,15 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
+        public void AutoFill(RiDictionaryModel model, RiDictionaryModel[] models) {
+            if (model is null || string.IsNullOrEmpty(model.DictionaryPath)) {
+                return;
+            }
+            foreach (var file in models) {
+                file.DictionaryPath = model.DictionaryPath;
+            }
+        }
+
         public bool TrySet() {
             var errors = RetentionIndexFiles.SelectMany(file => file.Validate(CompoundType)).ToList();
             errors = RiDictionaryModel.RiDictionaryError.MergeErrors(errors);
