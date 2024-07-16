@@ -294,6 +294,14 @@ namespace CompMs.Common.Parser
                         if (isFiehnDB) {
                             mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
                         }
+                    } else if (fieldValue.Contains("a=")) {
+                        var newFieldValue = fieldValue.Replace("a=", "");
+                        if (float.TryParse(newFieldValue, out ri)) {
+                            mspObj.ChromXs.RI = new RetentionIndex(ri);
+                            if (isFiehnDB) {
+                                mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
+                            }
+                        }
                     }
                    
                      return false;
