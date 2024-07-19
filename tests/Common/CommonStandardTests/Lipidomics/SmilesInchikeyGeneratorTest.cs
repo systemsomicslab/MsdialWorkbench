@@ -4,10 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CompMs.Common.Lipidomics.Tests
 {
     [TestClass()]
+    [DeploymentItem("x64/libinchi.dll", "x64")]
     public class SmilesInchikeyGeneratorTest
     {
         [TestMethod()]
-        [Ignore]
         public void GenerateTest()
         {
             //// PC P-18:1(12)/20:5(5,8,11,14,17)
