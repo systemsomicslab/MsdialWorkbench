@@ -67,27 +67,28 @@ namespace CompMs.Common.Lipidomics
                 new string[] {
                 "OAD01",
                 "OAD02",
-                "OAD02+O",
+                //"OAD02+O",
                 "OAD03",
                 "OAD04",
-                //"OAD05",
+                "OAD05",
                 //"OAD06",
                 //"OAD07",
-                "OAD08",
+                //"OAD08",
                 //"OAD09",
-                //"OAD10",
+                "OAD10",
                 //"OAD11",
-                "OAD12",
-                //"OAD13",
-                "OAD14",
+                //"OAD12",
+                "OAD13",
+                //"OAD14",
                 "OAD15",
-                "OAD15+O",
+                //"OAD15+O",
                 "OAD16",
-                "OAD17",
+                //"OAD17",
                 "OAD12+O",
                 "OAD12+O+H",
                 "OAD12+O+2H",
-                "OAD01+H"  } :
+                //"OAD01+H"
+                } :
             new string[] {
                 "OAD01",
                 "OAD02",
@@ -133,7 +134,7 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange
                 (
                     new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 500d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 100d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H8NO6P), 500d, "Precursor -C3H8NO6P") { SpectrumComment = SpectrumComment.metaboliteclass,  IsAbsolutelyRequiredFragmentForAnnotation = true  },
                     }
                 );
