@@ -42,10 +42,7 @@ namespace CompMs.Common.Lipidomics {
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
-            if (adduct.AdductIonName == "[M+NH4]+"
-                || adduct.AdductIonName == "[M-H]-"
-                )
-            {
+            if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M-H]-") {
                 return true;
             }
             return false;
@@ -131,7 +128,7 @@ namespace CompMs.Common.Lipidomics {
                     new[] {
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 100d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-NH3, 100d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
-                            new SpectrumPeak(lipid.Mass - C6H13O9P+MassDiffDictionary.ProtonMass, 999d, "Precursor -C6H13O9P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
+                            new SpectrumPeak(lipid.Mass - C6H13O9P + MassDiffDictionary.ProtonMass, 999d, "Precursor -C6H13O9P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
                     }
                 );
                 if (lipid.Chains is SeparatedChains Chains) {
