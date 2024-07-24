@@ -152,6 +152,8 @@ namespace CompMs.Common.Lipidomics {
                 (
                      new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O, 200d, "Precursor-H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O - MassDiffDictionary.HydrogenMass, 20d, "Precursor-H2O-H") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O + MassDiffDictionary.HydrogenMass, 70d, "Precursor-H2O+H") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                         //new SpectrumPeak(lipidD7mass + MassDiffDictionary.ProtonMass - CH6O2, 100d, "[M+H]+ -CH6O2") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
@@ -160,6 +162,8 @@ namespace CompMs.Common.Lipidomics {
                     (
                          new[] {
                              new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O*2, 100d, "Precursor-2H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                             new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O*2 - MassDiffDictionary.HydrogenMass, 20d, "Precursor-2H2O-H") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                             new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O*2 + MassDiffDictionary.HydrogenMass, 70d, "Precursor-2H2O+H") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                          }
                     );
                 }
