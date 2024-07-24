@@ -145,7 +145,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.LPC_d5, new LPCd5OadSpectrumGenerator());
                     generator.Add(LbmClass.LPE_d5, new LPEd5OadSpectrumGenerator());
                     generator.Add(LbmClass.LPG_d5, new LPGd5OadSpectrumGenerator());
-                    //generator.Add(LbmClass.LPI_d5, new LPId5SpectrumGenerator());
+                    generator.Add(LbmClass.LPI_d5, new LPId5OadSpectrumGenerator());
                     generator.Add(LbmClass.LPS_d5, new LPSd5OadSpectrumGenerator());
                     generator.Add(LbmClass.DG_d5, new DGd5OadSpectrumGenerator());
 
