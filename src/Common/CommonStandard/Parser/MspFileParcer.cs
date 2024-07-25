@@ -265,7 +265,7 @@ namespace CompMs.Common.Parser
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 
                         var isotopeProp = IsotopeCalculator.GetAccurateIsotopeProperty(mspObj.Formula.FormulaString, 2, IupacDatabase);
-                        mspObj.IsotopicPeaks = isotopeProp.IsotopeProfile;
+                        mspObj.IsotopicPeaks = isotopeProp?.IsotopeProfile ?? new List<IsotopicPeak>(0);
                     }
                     return false;
                 case "smiles": mspObj.SMILES = fieldValue;  return false;
