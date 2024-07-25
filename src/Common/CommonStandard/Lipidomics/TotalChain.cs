@@ -61,10 +61,6 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Separate(this);
         }
-        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IOadChainVariationGenerator oadChainVariationGenerator) {
-            return oadChainVariationGenerator.Separate(this);
-        }
-
         public override string ToString() {
             return string.Format("{0}{1}:{2}{3}", EtherSymbol(AlkylChainCount), CarbonCount, DoubleBondCount, OxidizeSymbol(OxidizedCount));
         }

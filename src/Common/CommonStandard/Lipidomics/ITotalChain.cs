@@ -33,7 +33,6 @@ namespace CompMs.Common.Lipidomics
         IChain[] GetDeterminedChains();
         bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
-        IEnumerable<ITotalChain> GetCandidateSets(IOadChainVariationGenerator oadChainVariationGenerator);
     }
 
     public static class TotalChainExtension

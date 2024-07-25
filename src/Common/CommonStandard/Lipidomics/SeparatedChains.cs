@@ -75,15 +75,6 @@ namespace CompMs.Common.Lipidomics
             ITotalChain pc = new PositionLevelChains(_decided.Select(c => c.Chain).ToArray());
             return pc.GetCandidateSets(totalChainGenerator);
         }
-        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IOadChainVariationGenerator oadChainVariationGenerator) {
-            var gc = new GenerateChain(_chains.Length, _decided);
-            var indetermined = _undecided.Select(c => c.Chain).ToArray();
-            if (indetermined.Length > 0) {
-                return SearchCollection.Permutations(indetermined).Select(cs => new PositionLevelChains(gc.Apply(cs)));
-            }
-            ITotalChain pc = new PositionLevelChains(_decided.Select(c => c.Chain).ToArray());
-            return pc.GetCandidateSets(oadChainVariationGenerator);
-        }
 
         public override string ToString() {
             var box = new ChainInformation[_chains.Length];

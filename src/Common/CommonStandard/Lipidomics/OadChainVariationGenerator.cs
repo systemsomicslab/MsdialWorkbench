@@ -5,15 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
-    public interface IOadChainVariationGenerator
-    {
-        IEnumerable<ITotalChain> Separate(TotalChain chain);
-
-        IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains);
-
-        IEnumerable<ITotalChain> Product(PositionLevelChains chains);
-    }
-    public class OadChainVariationGenerator : IOadChainVariationGenerator {
+    public class OadChainVariationGenerator : ITotalChainVariationGenerator {
         public OadChainVariationGenerator(IChainGenerator chainGenerator, int minLength) {
             MinLength = minLength;
             this.chainGenerator = chainGenerator;
