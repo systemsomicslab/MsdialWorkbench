@@ -31,6 +31,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             switch (db.Source) {
                 case DataBaseSource.OadLipid:
+                    _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12)));
                     _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
                     break;
                 case DataBaseSource.EidLipid:
