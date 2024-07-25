@@ -39,7 +39,6 @@ namespace CompMs.Common.Lipidomics {
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
             if (adduct.AdductIonName == "[M+H]+" ||
-                adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M+HCOO]-" ||
                 adduct.AdductIonName == "[M+CH3COO]-") {
                 return true;
@@ -155,8 +154,8 @@ namespace CompMs.Common.Lipidomics {
                         spectrum.AddRange
                         (
                             new[] {
-                                new SpectrumPeak(chain.Mass+MassDiffDictionary.OxygenMass+Electron, 30d, $"{chain} FA") { SpectrumComment = SpectrumComment.acylchain },
-                                new SpectrumPeak(chain.Mass+MassDiffDictionary.OxygenMass+Electron+MassDiffDictionary.HydrogenMass, 10d, $"{chain} FA +H") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(chain.Mass + MassDiffDictionary.OxygenMass + Electron, 30d, $"{chain} FA") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(chain.Mass + MassDiffDictionary.OxygenMass + Electron + MassDiffDictionary.HydrogenMass, 10d, $"{chain} FA +H") { SpectrumComment = SpectrumComment.acylchain },
                             }
                         );
                     }
