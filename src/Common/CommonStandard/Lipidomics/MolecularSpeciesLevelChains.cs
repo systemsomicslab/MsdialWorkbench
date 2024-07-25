@@ -15,9 +15,12 @@ namespace CompMs.Common.Lipidomics
         IChain ITotalChain.GetChainByPosition(int position) {
             return null;
         }
-
+        private readonly IOadChainVariationGenerator oadChainVariationGenerator;
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Permutate(this);
+        }
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IOadChainVariationGenerator oadChainGenerator) {
+            return oadChainGenerator.Permutate(this);
         }
 
         public override string ToString() {

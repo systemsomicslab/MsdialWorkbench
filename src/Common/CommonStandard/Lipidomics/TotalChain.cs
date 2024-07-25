@@ -58,9 +58,11 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBondCount == chains.DoubleBondCount
                 && OxidizedCount == chains.OxidizedCount;
         }
-
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Separate(this);
+        }
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IOadChainVariationGenerator oadChainVariationGenerator) {
+            return oadChainVariationGenerator.Separate(this);
         }
 
         public override string ToString() {

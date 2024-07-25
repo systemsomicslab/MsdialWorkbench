@@ -22,8 +22,15 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Product(this);
         }
-
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IOadChainVariationGenerator oadChainGenerator) {
+            return oadChainGenerator.Product(this);
+        }
+        private readonly ITotalChainVariationGenerator totalChainGenerator;
+        private readonly IOadChainVariationGenerator oadChainVariationGenerator;
         public override string ToString() {
+            if (totalChainGenerator is null) {
+                return string.Join("_", GetDeterminedChains().Select(c => c.ToString()));
+            }
             return string.Join("/", GetDeterminedChains().Select(c => c.ToString()));
         }
 
