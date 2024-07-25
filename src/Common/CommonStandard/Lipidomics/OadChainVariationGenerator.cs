@@ -104,7 +104,13 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            return SearchCollection.Combination(chains.GetDeterminedChains()).Select<IChain[], ITotalChain>(set => new PositionLevelChains(set)).Distinct(ChainsComparer);
+            if (chains.GetDeterminedChains().All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0))
+            {
+                return Enumerable.Empty<ITotalChain>();
+            }
+            return SearchCollection.CartesianProduct(chains.GetDeterminedChains().Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray())
+                .Select(set => new MolecularSpeciesLevelChains(set))
+                .Distinct(ChainsComparer);
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
