@@ -68,7 +68,7 @@ namespace CompMs.Common.Lipidomics {
                 adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M+HCOO]-" ||
                 adduct.AdductIonName == "[M+CH3COO]-";
-            }
+        }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = 40.0;
@@ -134,8 +134,16 @@ namespace CompMs.Common.Lipidomics {
                     }
                 );
             }
-            else
-            {
+            if (adduct.AdductIonName == "[M+Na]+") {
+                spectrum.AddRange
+                (
+                    new[] {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H14NO4P), 100d, "NL of header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H9N), 100d, "NL of C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
+                    }
+                );
+            } else {
                 spectrum.AddRange
                 (
                     new[] {

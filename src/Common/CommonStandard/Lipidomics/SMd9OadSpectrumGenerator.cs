@@ -129,7 +129,7 @@ namespace CompMs.Common.Lipidomics {
                 (
                      new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - C3D9N, 150d, "Precursor-C3D9N") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - C5H5D9NO4P, 150d, "Precursor-Header") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - C5H5D9NO4P, 150d, "NL of header") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }
