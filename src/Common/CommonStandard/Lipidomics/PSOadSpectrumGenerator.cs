@@ -48,7 +48,7 @@ namespace CompMs.Common.Lipidomics {
             return adduct.AdductIonName == "[M+H]+" ||
                 adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M-H]-";
-            }
+        }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = adduct.IonMode == IonMode.Positive ? 40.0 : 20.0;
@@ -145,7 +145,29 @@ namespace CompMs.Common.Lipidomics {
                     }
                 }
             }
-            else if (adduct.AdductIonName == "[M+H]-") {
+            else if (adduct.AdductIonName == "[M+Na]+") {
+                spectrum.AddRange
+                (
+                    new[] {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(lipid.Mass-C3H8NO6P, 100d, "Precursor -C3H8NO6P") { SpectrumComment = SpectrumComment.metaboliteclass, },
+                    }
+                );
+                if (lipid.Chains is SeparatedChains Chains)
+                {
+                    foreach (AcylChain chain in lipid.Chains.GetDeterminedChains())
+                    {
+                        spectrum.AddRange
+                        (
+                            new[] {
+                                new SpectrumPeak(chain.Mass+MassDiffDictionary.OxygenMass+Electron, 30d, $"{chain} FA") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(chain.Mass+MassDiffDictionary.OxygenMass+Electron+MassDiffDictionary.HydrogenMass, 10d, $"{chain} FA +H") { SpectrumComment = SpectrumComment.acylchain },
+                            }
+                        );
+                    }
+                }
+            }
+            else if (adduct.AdductIonName == "[M-H]-") {
                 spectrum.AddRange
                 (
                     new[] {
