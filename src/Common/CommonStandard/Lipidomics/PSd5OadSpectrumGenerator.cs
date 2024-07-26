@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
     public class PSd5OadSpectrumGenerator : ILipidSpectrumGenerator {
+
         private static readonly double C3H8NO6P = new[] {
             MassDiffDictionary.CarbonMass * 3,
             MassDiffDictionary.HydrogenMass * 8,
@@ -45,15 +46,10 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            if (adduct.AdductIonName == "[M+H]+" ||
+            return adduct.AdductIonName == "[M+H]+" ||
                 adduct.AdductIonName == "[M+Na]+" ||
-                adduct.AdductIonName == "[M+HCOO]-" ||
-                adduct.AdductIonName == "[M+CH3COO]-")
-            {
-                return true;
+                adduct.AdductIonName == "[M-H]-";
             }
-            return false;
-        }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = adduct.IonMode == IonMode.Positive ? 40.0 : 20.0;
@@ -112,7 +108,7 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD01+H" 
             };
 
-            if (lipid.Chains is PositionLevelChains plChains) {
+            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }

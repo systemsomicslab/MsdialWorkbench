@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.Common.Lipidomics
-{
+namespace CompMs.Common.Lipidomics {
     public class TGd5OadSpectrumGenerator : ILipidSpectrumGenerator {
+
         private static readonly double NH3 = new[] {
             MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.NitrogenMass,
         }.Sum();
+
         private static readonly double H2O = new[] {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
@@ -30,10 +31,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            if (adduct.AdductIonName == "[M+NH4]+") {
-                return true;
-            }
-            return false;
+            return adduct.AdductIonName == "[M+NH4]+";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -66,9 +64,9 @@ namespace CompMs.Common.Lipidomics
                 "OAD12+O+H",
                 "OAD12+O+2H",
                 "OAD01+H"
-            };
+                };
 
-            if (lipid.Chains is PositionLevelChains plChains) {
+            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }

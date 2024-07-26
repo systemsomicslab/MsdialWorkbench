@@ -7,10 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.Common.Lipidomics
-{
-    public class CeramideOadSpectrumGenerator : ILipidSpectrumGenerator
-    {
+namespace CompMs.Common.Lipidomics {
+    public class CeramideOadSpectrumGenerator : ILipidSpectrumGenerator {
         private static readonly double C5H14NO4P = new[] {
             MassDiffDictionary.CarbonMass * 5,
             MassDiffDictionary.HydrogenMass * 14,
@@ -19,14 +17,12 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        private static readonly double H2O = new[]
-        {
+        private static readonly double H2O = new[] {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
-        private static readonly double C2H2N = new[]
-        {
+        private static readonly double C2H2N = new[] {
             MassDiffDictionary.CarbonMass * 2,
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.NitrogenMass *1,
@@ -35,31 +31,19 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
-        public CeramideOadSpectrumGenerator()
-        {
+        public CeramideOadSpectrumGenerator() {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public CeramideOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator)
-        {
+        public CeramideOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
 
-        public bool CanGenerate(ILipid lipid, AdductIon adduct)
-        {
-            if (adduct.AdductIonName == "[M+H]+" //||
-                //adduct.AdductIonName == "[M+Na]+" ||
-                //adduct.AdductIonName == "[M+HCOO]-" ||
-                //adduct.AdductIonName == "[M+CH3COO]-"
-                )
-            {
-                return true;
-            }
-            return false;
+        public bool CanGenerate(ILipid lipid, AdductIon adduct) {
+            return adduct.AdductIonName == "[M+H]+" ;
         }
 
-        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
-        {
+        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = 40.0;
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
@@ -94,13 +78,11 @@ namespace CompMs.Common.Lipidomics
                 "SphOAD-CO"
             };
 
-            if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
-            {
+            if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
                 spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
                 spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
             }
-            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
-            {
+            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
                 //spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
             }

@@ -61,12 +61,8 @@ namespace CompMs.Common.Lipidomics {
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            if (lipid.LipidClass == LbmClass.LPI_d5) {
-                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+NH4]+") {
-                    return true;
-                }
-            }
-            return false;
+            return adduct.AdductIonName == "[M+NH4]+" ||
+                adduct.AdductIonName == "[M-H]-";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -101,7 +97,7 @@ namespace CompMs.Common.Lipidomics {
                 "OAD01+H"
                 };
 
-            if (lipid.Chains is PositionLevelChains plChains) {
+            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
@@ -147,10 +143,8 @@ namespace CompMs.Common.Lipidomics {
             return spectrum.ToArray();
         }
                 
-        private MoleculeMsReference CreateReference(ILipid lipid, AdductIon adduct, List<SpectrumPeak> spectrum, IMoleculeProperty molecule)
-        {
-            return new MoleculeMsReference
-            {
+        private MoleculeMsReference CreateReference(ILipid lipid, AdductIon adduct, List<SpectrumPeak> spectrum, IMoleculeProperty molecule) {
+            return new MoleculeMsReference {
                 PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,

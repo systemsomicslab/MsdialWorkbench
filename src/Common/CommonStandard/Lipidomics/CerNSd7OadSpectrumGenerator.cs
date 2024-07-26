@@ -63,12 +63,8 @@ namespace CompMs.Common.Lipidomics {
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            if (lipid.LipidClass == LbmClass.Cer_NS_d7) {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+" || adduct.AdductIonName == "[M+Na]+") {
-                    return true;
-                }
-            }
-            return false;
+            return adduct.AdductIonName == "[M+H]+" ||
+                adduct.AdductIonName == "[M+Na]+";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -108,9 +104,7 @@ namespace CompMs.Common.Lipidomics {
                 //"SphOAD+2H",
                 "SphOAD-CO"
             };
-            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
-            {
-                //spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
+            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass - sphD7MassBalance, 30d, oadId));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
