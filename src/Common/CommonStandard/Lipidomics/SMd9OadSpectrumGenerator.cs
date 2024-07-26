@@ -106,7 +106,7 @@ namespace CompMs.Common.Lipidomics {
                 //"SphOAD-CO"
             };
 
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
+            if (lipid.Chains is PositionLevelChains plChains) {
                 if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
                     spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
                 }
@@ -137,12 +137,12 @@ namespace CompMs.Common.Lipidomics {
                 spectrum.AddRange
                 (
                     new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                        new SpectrumPeak(adduct.ConvertToMz(C5H5D9NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 500d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(adduct.ConvertToMz(C5H5D9NO4P), 999d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
             }
-            else if (adduct.AdductIonName == "[M+CH3COO]-") {
+            else if (adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-") {
                 spectrum.AddRange
                 (
                     new[] {

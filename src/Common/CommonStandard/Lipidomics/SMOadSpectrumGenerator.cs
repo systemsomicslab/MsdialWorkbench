@@ -105,7 +105,7 @@ namespace CompMs.Common.Lipidomics {
                 //"SphOAD-CO"
             };
 
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
+            if (lipid.Chains is PositionLevelChains plChains) {
                 if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
                     //spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
                     spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
