@@ -17,7 +17,7 @@ namespace CompMs.Common.Lipidomics
             return false;
         }
 
-        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
+        public IMSScanProperty? Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             if (map.TryGetValue(lipid.LipidClass, out var generators)) {
                 var generator = generators.FirstOrDefault(gen => gen.CanGenerate(lipid, adduct));
                 return generator?.Generate(lipid, adduct, molecule);
