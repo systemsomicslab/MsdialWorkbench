@@ -13,6 +13,7 @@ namespace CompMs.Common.Lipidomics
 
         public static readonly string Pattern = $"{CarbonPattern}:{DoubleBondPattern}{OxidizedPattern}";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+        private readonly ITotalChainVariationGenerator totalChainVariationGenerator;
 
         public IChain Parse(string chainStr) {
             var match = pattern.Match(chainStr);
@@ -62,24 +63,27 @@ namespace CompMs.Common.Lipidomics
         }
 
         private Oxidized ParseOxidized(GroupCollection groups) {
-            if (groups["oxpos"].Success) {
-                var oxpos = groups["oxpos"].Captures.Cast<Capture>().Select(c => int.Parse(c.Value)).ToArray();
-                return new Oxidized(oxpos.Length, oxpos);
-            }
-            if (groups["ox"].Success) {
-                var ox = !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);
-                switch (ox) //TBC
-                {
-                    case 1:
-                        return new Oxidized(ox, 1);
-                    case 2:
-                        return new Oxidized(ox, 1, 3);
-                    case 3:
-                        return new Oxidized(ox, 1, 3, 4);
+            if (totalChainVariationGenerator is not null) {
+                if (groups["oxpos"].Success) {
+                    var oxpos = groups["oxpos"].Captures.Cast<Capture>().Select(c => int.Parse(c.Value)).ToArray();
+                    return new Oxidized(oxpos.Length, oxpos);
                 }
-                return new Oxidized(int.Parse(groups["oxnum"].Value), 1, 3);
+                if (groups["ox"].Success) {
+                    var ox = !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);
+                    switch (ox) //TBC
+                    {
+                        case 1:
+                            return new Oxidized(ox, 1);
+                        case 2:
+                            return new Oxidized(ox, 1, 3);
+                        case 3:
+                            return new Oxidized(ox, 1, 3, 4);
+                    }
+                    return new Oxidized(int.Parse(groups["oxnum"].Value), 1, 3);
+                }
+                return new Oxidized(0);
             }
-            return new Oxidized(0);
+            return new Oxidized(2);
         }
     }
 }

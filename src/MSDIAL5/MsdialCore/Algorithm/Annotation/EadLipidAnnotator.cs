@@ -25,7 +25,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly LipidDescription _description;
 
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
-            _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainNoOxiVariationGenerator(), minLength: 12)));
+            _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12)));
             _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
 
             Id = id ?? throw new ArgumentNullException(nameof(id));
@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             switch (db.Source) {
                 case DataBaseSource.OadLipid:
-                    _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12)));
+                    _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainNoOxiVariationGenerator(), minLength: 12)));
                     _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.DoubleBondPosition;
                     _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
                     break;
@@ -103,7 +103,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private IEnumerable<ILipid> GenerateLipid(ILipid lipid) {
             if (_lipidDatabase.Source == DataBaseSource.OadLipid) {
-                return _lipidGenerator.GenerateUntil(lipid, l => l.AnnotationLevel >= 2).Prepend(lipid);
+                return _lipidGenerator.GenerateUntil(lipid, l => l.AnnotationLevel >= 1).Prepend(lipid);
             }
             return _lipidGenerator.GenerateUntil(lipid, _ => true).Prepend(lipid);
         }

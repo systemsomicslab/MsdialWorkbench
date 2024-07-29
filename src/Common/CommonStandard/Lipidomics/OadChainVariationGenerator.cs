@@ -83,15 +83,13 @@ namespace CompMs.Common.Lipidomics {
 
             var css = Distribute(chains.CarbonCount, minAcylCarbon, maxAcylCarbon, minAlkylCarbon, maxAlkylCarbon, minSphingoCarbon, maxSphingoCarbon).ToArray();
             var dbss = Distribute(chains.DoubleBondCount, minAcylDb, maxAcylDb, minAlkylDb, maxAlkylDb, minSphingoDb, maxSphingoDb).ToArray();
-            var oxss = Distribute(chains.OxidizedCount, minAcylOx, maxAcylOx, minAlkylOx, maxAlkylOx, minSphingoOx, maxSphingoOx).ToArray();
 
             return from cs in css
                    from dbs in dbss
-                   from oxs in oxss
                    select new ChainSet(
-                       new ChainCandidate(chains.AcylChainCount, cs[0], dbs[0], oxs[0], 0),
-                       new ChainCandidate(chains.AlkylChainCount, cs[1], dbs[1], oxs[1], 0),
-                       new ChainCandidate(chains.SphingoChainCount, cs[2], dbs[2], oxs[2], 2));
+                       new ChainCandidate(chains.AcylChainCount, cs[0], dbs[0], chains.OxidizedCount, 0),
+                       new ChainCandidate(chains.AlkylChainCount, cs[1], dbs[1], chains.OxidizedCount, 0),
+                       new ChainCandidate(chains.SphingoChainCount, cs[2], dbs[2], chains.OxidizedCount, 2));
         }
 
         private IEnumerable<int[]> Distribute(int count, int acylMin, int acylMax, int alkylMin, int alkylMax, int sphingoMin, int sphingoMax) {
@@ -104,8 +102,7 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            if (chains.GetDeterminedChains().All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0))
-            {
+            if (chains.GetDeterminedChains().All(chain => chain.DoubleBond.UnDecidedCount == 0)) {
                 return Enumerable.Empty<ITotalChain>();
             }
             return SearchCollection.CartesianProduct(chains.GetDeterminedChains().Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray())
@@ -114,7 +111,7 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
-            if (chains.GetDeterminedChains().All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0)) {
+            if (chains.GetDeterminedChains().All(chain => chain.DoubleBond.UnDecidedCount == 0)) {
                 return Enumerable.Empty<ITotalChain>();
             }
             return SearchCollection.CartesianProduct(chains.GetDeterminedChains().Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray())
@@ -164,7 +161,7 @@ namespace CompMs.Common.Lipidomics {
                         if (!IsLexicographicOrder(minCarbon_, minDb_, c, d)) {
                             continue;
                         }
-                        for (var o = candidate.MinimumOxidizedCount; o <= ox_; o++) {
+                        for (var o = candidate.OxidizedCount; o <= ox_; o++) {
                             if (!IsLexicographicOrder(minCarbon_, minDb_, minOx_, c, d, o)) {
                                 continue;
                             }
