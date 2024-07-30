@@ -92,7 +92,7 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD01+H"
                 };
 
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
+            if (lipid.Chains is PositionLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }

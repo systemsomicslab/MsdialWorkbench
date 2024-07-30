@@ -76,13 +76,8 @@ namespace CompMs.Common.Lipidomics {
             };
 
             if (lipid.Chains is PositionLevelChains plChains) {
-                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
-                    spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    var sphingoToAcyl = new AcylChain(sphingo.CarbonCount, sphingo.DoubleBond, sphingo.Oxidized);
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, sphingoToAcyl, adduct, nlMass, 30d, oadId));
-                }
-                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
+                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
