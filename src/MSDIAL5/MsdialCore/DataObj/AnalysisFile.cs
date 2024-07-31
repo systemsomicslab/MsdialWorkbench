@@ -114,6 +114,18 @@ namespace CompMs.MsdialCore.DataObj {
             return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);
         }
 
+        public RawMeasurement LoadPixelMeasurement(double driftTolerance, bool isGuiProcess, int retry, int sleepMilliSeconds) {
+            using var access = new RawDataAccess(AnalysisFilePath, 0, false, isImagingMsData: true, isGuiProcess, RetentionTimeCorrectionBean.PredictedRt) { DriftToleranceForPixelData = driftTolerance };
+            for (var i = 0; i < retry; i++)
+            {
+                var rawObj = access.GetMeasurement();
+                if (rawObj != null)
+                    return rawObj;
+                Thread.Sleep(sleepMilliSeconds);
+            }
+            throw new FileLoadException($"Loading {AnalysisFilePath} failed.");
+        }
+
         public MaldiFrameLaserInfo GetMaldiFrameLaserInfo() {
             return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrameLaserInfo();
         }

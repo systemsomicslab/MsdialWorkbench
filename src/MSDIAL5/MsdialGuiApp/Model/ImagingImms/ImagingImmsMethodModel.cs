@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _projectBaseParameter = projectBaseParameter;
             StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
+            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBeanModel file) => file.File.LoadPixelMeasurement(.1d, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
             Image = ImageModels.FirstOrDefault();
 
