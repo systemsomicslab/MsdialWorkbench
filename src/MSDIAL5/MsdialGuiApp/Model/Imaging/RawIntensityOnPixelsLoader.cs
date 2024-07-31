@@ -20,7 +20,7 @@ internal sealed class RawIntensityOnPixelsLoader
 
 
     public RawSpectraOnPixels Load(int index) {
-        using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
+        using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true) { DriftToleranceForPixelData = .1d };
         return rawDataAccess.GetRawPixelFeature(_targets, index, [.. _frames.Infos], isNewProcess: false);
     }
 }
