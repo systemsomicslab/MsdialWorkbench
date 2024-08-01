@@ -51,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Export
             _handler.ContributorIdentifier = ContributorID ?? string.Empty;
 
             var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
+            features = features.Flatten();
             var loader = fileBeanModel.MSDecLoader;
 
             foreach (var feature in features.Items) {
