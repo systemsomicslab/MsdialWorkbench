@@ -11,12 +11,25 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialLcImMsApi.Export
 {
+    /// <summary>
+    /// The LcimmsAnalysisMetadataAccessor class is responsible for gathering and summarizing necessary metadata from surrounding objects when outputting peak information.
+    /// </summary>
     public sealed class LcimmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LcimmsAnalysisMetadataAccessor"/> class.
+        /// </summary>
+        /// <param name="refer">An object that provides references for MoleculeMsReference and MsScanMatchResult.</param>
+        /// <param name="parameter">Parameters for the analysis.</param>
+        /// <param name="type">The type of export spectra.</param>
         public LcimmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 
+        /// <summary>
+        /// Gets the headers for the metadata.
+        /// </summary>
+        /// <returns>An array of metadata headers.</returns>
         protected override string[] GetHeadersCore() {
             return new string[] {
                 "Peak ID",
@@ -62,6 +75,16 @@ namespace CompMs.MsdialLcImMsApi.Export
                 "MSMS spectrum" };
         }
 
+        /// <summary>
+        /// Gets the content for the metadata.
+        /// </summary>
+        /// <param name="feature">The chromatogram peak feature.</param>
+        /// <param name="msdec">The MSDec result.</param>
+        /// <param name="reference">The molecule MS reference.</param>
+        /// <param name="matchResult">The match result.</param>
+        /// <param name="spectrumList">The list of raw spectra.</param>
+        /// <param name="analysisFile">The analysis file bean.</param>
+        /// <returns>A dictionary containing the metadata content.</returns>
         protected override Dictionary<string, string> GetContentCore(
             ChromatogramPeakFeature feature,
             MSDecResult msdec,
