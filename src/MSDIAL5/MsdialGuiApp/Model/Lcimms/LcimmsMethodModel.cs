@@ -12,10 +12,12 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
+using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings;
@@ -37,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel fileProperties, IMessageBroker broker)
+        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -45,6 +47,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             Storage = storage;
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
+            _studyContext = studyContext;
             _broker = broker;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
@@ -130,6 +133,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
         private readonly FilePropertiesModel _fileProperties;
+        private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
@@ -260,6 +264,51 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 });
             _broker.Publish(request);
             return request.Result ?? false;
+        }
+
+        public AnalysisResultExportModel ExportAnalysis()
+        {
+            static RawMeasurement map(AnalysisFileBean file) {
+                return file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
+            }
+            var factory = providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map);
+
+            var spectraTypes = new List<SpectraType>
+            {
+                new SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new ChromatogramShapeMetadataAccessorDecorator(new LcimmsAnalysisMetadataAccessor(Storage.DataBaseMapper, Storage.Parameter, ExportspectraType.deconvoluted)),
+                    factory),
+            };
+            var spectraFormats = new[]
+            {
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
+            };
+
+            var models = new IMsdialAnalysisExport[]
+            {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(Storage.DataBaseMapper, Storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(Storage.DataBaseMapper, Storage.Parameter, file => new CentroidMsScanPropertyLoader(factory.Create(file), Storage.Parameter.MS2DataType)),
+                })
+                {
+                    FilePrefix = "Msp",
+                    FileSuffix = "msp",
+                    Label = "Nist format (*.msp)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(factory.Create(file), Storage.Parameter.MS2DataType)),
+                })
+                {
+                    FilePrefix = "Mgf",
+                    FileSuffix = "mgf",
+                    Label = "MASCOT format (*.mgf)"
+                },
+                new MsdialAnalysisMassBankRecordExportModel(Storage.Parameter.ProjectParam, _studyContext),
+            };
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, Storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public void SaveProject() {
