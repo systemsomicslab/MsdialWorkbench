@@ -55,7 +55,7 @@ namespace CompMs.Common.Lipidomics {
             var abundance = adduct.IonMode == IonMode.Positive ? 40.0 : 20.0;
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetPCOadSpectrum(lipid, adduct));
+            spectrum.AddRange(GetPSOadSpectrum(lipid, adduct));
             string[] oadId =
                 adduct.IonMode == IonMode.Positive ?
                 new string[] {
@@ -110,7 +110,8 @@ namespace CompMs.Common.Lipidomics {
 
             if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
+                    var nlLipid = new Lipid(lipid.LipidClass, lipid.Mass - C3H8NO6P, lipid.Chains);
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(nlLipid, chain, adduct, nlMass, abundance, oadId));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -120,7 +121,7 @@ namespace CompMs.Common.Lipidomics {
             return CreateReference(lipid, adduct, spectrum, molecule);
         }
 
-        private SpectrumPeak[] GetPCOadSpectrum(Lipid lipid, AdductIon adduct) {
+        private SpectrumPeak[] GetPSOadSpectrum(Lipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>();
 
             if (adduct.AdductIonName == "[M+H]+") {
