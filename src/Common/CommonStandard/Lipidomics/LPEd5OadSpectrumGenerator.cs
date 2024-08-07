@@ -23,6 +23,12 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.OxygenMass * 2,
         }.Sum();
 
+        private static readonly double C5H11NO5P = new[] {
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.OxygenMass * 2,
+        }.Sum();
+
         private static readonly double H2O = new[] {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
@@ -45,7 +51,8 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            return adduct.AdductIonName == "[M+H]+";
+            return adduct.AdductIonName == "[M+H]+" ||
+                adduct.AdductIonName == "[M-H]-";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -115,7 +122,27 @@ namespace CompMs.Common.Lipidomics {
                         }
                     }
                 }
-            } else {
+            }
+            if (adduct.AdductIonName == "[M-H]-") {
+                spectrum.AddRange
+                (
+                    new[] {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                    }
+                );
+                if (lipid.Chains is SeparatedChains Chains) {
+                    foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
+                        if (chain.CarbonCount != 0) {
+                            spectrum.AddRange(
+                            new[] {
+                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass -H2O), 100d, $"-{chain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                            });
+                        }
+                    }
+                }
+            }
+            else {
                 spectrum.AddRange
                 (
                     new[] {
