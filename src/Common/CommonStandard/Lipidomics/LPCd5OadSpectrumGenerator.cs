@@ -18,6 +18,7 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass * 4,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
+
         private static readonly double C5H14NO = new[] {
             MassDiffDictionary.CarbonMass * 5,
             MassDiffDictionary.HydrogenMass * 13,
@@ -35,6 +36,12 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.CarbonMass,
         }.Sum();
+
+        private static readonly double CH3COO = new[] {
+            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.CarbonMass*2,
+            MassDiffDictionary.OxygenMass*2,
+        }.Sum();
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
@@ -47,7 +54,8 @@ namespace CompMs.Common.Lipidomics
         }
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            return adduct.AdductIonName == "[M+H]+";
+            return adduct.AdductIonName == "[M+H]+" ||
+                adduct.AdductIonName == "[M+CH3COO]-";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -84,7 +92,12 @@ namespace CompMs.Common.Lipidomics
 
             if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
+                    if (adduct.AdductIonName == "[M+CH3COO]-") {
+                        var nlLipid = new Lipid(lipid.LipidClass, lipid.Mass - CH3-CH3COO, lipid.Chains);
+                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(nlLipid, chain, adduct, nlMass, abundance, oadId));
+                    } else {
+                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
+                    }
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -115,6 +128,28 @@ namespace CompMs.Common.Lipidomics
                                 new[] {
                                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
                                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass*2), 10d, $"-{chain}+H") { SpectrumComment = SpectrumComment.acylchain },
+                                }
+                            );
+                        }
+                    }
+                }
+            }
+            if (adduct.AdductIonName == "[M+CH3COO]-") {
+                spectrum.AddRange
+                (
+                    new[] {
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH3COO), 300d, "NL of CH3COO") { SpectrumComment = SpectrumComment.precursor },
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH3-CH3COO), 100d, "NL of CH3+CH3COO") { SpectrumComment = SpectrumComment.metaboliteclass },
+                    }
+                );
+                if (lipid.Chains is SeparatedChains Chains) {
+                    foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
+                        if (chain.CarbonCount != 0) {
+                            spectrum.AddRange
+                            (
+                                new[] {
+                                    new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
                                 }
                             );
                         }
