@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
@@ -10,8 +11,11 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parameter;
 using CompMs.Common.StructureFinder.DataObj;
+using CompMs.Common.StructureFinder.Parser;
+using CompMs.Common.StructureFinder.Result;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
@@ -27,11 +31,13 @@ namespace CompMs.App.Msdial.Model.Search {
     internal class InternalMsFinderMetaboliteList : DisposableModelBase {
         private readonly AlignmentSpotPropertyModelCollection _spots;
         private readonly InternalMsfinderSettingModel _settingModel;
+        public List<ExistStructureQuery> _structureQueries;
 
-        public InternalMsFinderMetaboliteList(List<MsfinderQueryFile>msfinderQueryFiles, AlignmentSpotPropertyModelCollection spots, InternalMsfinderSettingModel settingModel, AnalysisParamOfMsfinder parameter) {
+        public InternalMsFinderMetaboliteList(List<MsfinderQueryFile>msfinderQueryFiles, AlignmentSpotPropertyModelCollection spots, InternalMsfinderSettingModel settingModel, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> structureQueries) {
             _spots = spots;
             _settingModel = settingModel;
-            var metabolites = LoadMetabolites(msfinderQueryFiles, parameter);
+            _structureQueries = structureQueries;
+            var metabolites = LoadMetabolites(msfinderQueryFiles, parameter, structureQueries);
             _observedMetabolites = new ObservableCollection<MsfinderObservedMetabolite>(metabolites);
             ObservedMetabolites = new ReadOnlyObservableCollection<MsfinderObservedMetabolite>(_observedMetabolites);
             _selectedObservedMetabolite = ObservedMetabolites.FirstOrDefault();
@@ -44,10 +50,10 @@ namespace CompMs.App.Msdial.Model.Search {
         public ObservableMsSpectrum internalMsFinderMs1 { get; }
         public ObservableMsSpectrum internalMsFinderMs2 { get; }
 
-        private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile>msfinderQueryFiles, AnalysisParamOfMsfinder parameter) {
+        private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile>msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery>queries) {
             var metaboliteList = new List<MsfinderObservedMetabolite>();
             foreach (var queryFile in msfinderQueryFiles) {
-                var metabolite = new MsfinderObservedMetabolite(queryFile, parameter);
+                var metabolite = new MsfinderObservedMetabolite(queryFile, parameter, queries);
                 metaboliteList.Add(metabolite);
             }
             return metaboliteList;
@@ -68,14 +74,20 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly AnalysisParamOfMsfinder _parameter;
         private RawData? _spotData;
         public List<FormulaResult> _formulaData;
+        public List<FragmenterResult> _structureData;
+        public List<ExistStructureQuery> _userDefinedDB;
 
-
-        private static readonly List<ProductIon> productIonDB = FragmentDbParser.GetProductIonDB(
+        private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
-        private static readonly List<NeutralLoss> neutralLossDB = FragmentDbParser.GetNeutralLossDB(
+        private static readonly List<NeutralLoss> neutralLossDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetNeutralLossDB(
             @"Resources\msfinderLibrary\NeutralLossDB_vs2.ndb", out string _);
         private static readonly List<ExistFormulaQuery> existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(
             @"Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd", out string _);
+
+        private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
+        private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
+        private static List<MoleculeMsReference> mspDB = new List<MoleculeMsReference>();
+        private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
 
         public string metaboliteName {
@@ -235,21 +247,39 @@ namespace CompMs.App.Msdial.Model.Search {
             }
         }
 
+        public List<FragmenterResult>? structureList {
+            get => _structureData;
+            set {
+                if (_structureData != value) {
+                    _structureData = value;
+                    OnPropertyChanged(nameof(structureList));
+                }
+            }
+        }
+
         public MsSpectrum ms1Spectrum { get; private set; }
         public MsSpectrum ms2Spectrum { get; private set; }
 
-        public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter) {
+        public MsSpectrum experimentSpectrum { get; private set; }
+        public MsSpectrum referenceSpectrum { get; private set; }
+
+        public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries) {
             _queryFile = queryFile;
             _parameter = parameter;
+            _userDefinedDB = existStructureQueries;
             Load();
-            LoadFormulaFile();
+            LoadExistingFiles();
         }
 
         public AlignmentSpotPropertyModel Spot { get; private set; }
         public InternalMsfinderSettingModel SettingModel { get; }
+        public StructureFinderBatchProcess StructureFinderBatchProcess { get; }
 
-        public DelegateCommand RunFindFormula => _runFindFormula = new DelegateCommand(FindFormula);
-        private DelegateCommand _runFindFormula;
+        public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
+        private DelegateCommand? _runFindFormula;
+
+        public DelegateCommand RunFindStructure => _runFindStructure ??= new DelegateCommand(FindStructure);
+        private DelegateCommand? _runFindStructure;
 
         private void Load() {
             _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
@@ -257,10 +287,16 @@ namespace CompMs.App.Msdial.Model.Search {
             ms2Spectrum = new MsSpectrum(_spotData.Ms2Spectrum);
         }
 
-        public void LoadFormulaFile() {
+        public void LoadExistingFiles() {
             var error = string.Empty;
             if (_queryFile.FormulaFileExists) {
-                _formulaData = FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
+                _formulaData =  FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
+            }
+            if (_queryFile.StructureFileExists) {
+                var structureFilePath = System.IO.Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
+                foreach (var file in structureFilePath) {
+                    FragmenterResultParser.FragmenterResultReader(file);
+                }
             }
         }
 
@@ -270,6 +306,16 @@ namespace CompMs.App.Msdial.Model.Search {
             var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, rawData, _parameter);
             FormulaResultParcer.FormulaResultsWriter(_queryFile.FormulaFilePath, formulaResults);
             _formulaData = FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
+        }
+
+        private void FindStructure() {
+            var rawData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
+            var process = new StructureFinderBatchProcess();
+            process.SingleSearchOfStructureFinder(_queryFile, rawData, _parameter, existStructureDB, _userDefinedDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+            var structureFilePath = System.IO.Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
+            foreach (var file in structureFilePath) { 
+                FragmenterResultParser.FragmenterResultReader(file);
+            }
         }
 
         public Task ClearAsync(CancellationToken token = default) {

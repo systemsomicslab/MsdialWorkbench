@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
             broker.ToObservable<InternalMsFinderViewModel>()
-                .Subscribe(ShowChildViewWithDispose<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1000));
+                .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);

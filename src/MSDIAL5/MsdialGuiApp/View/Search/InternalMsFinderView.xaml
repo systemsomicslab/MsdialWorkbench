@@ -8,7 +8,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsFinderViewModel}}"
-             d:DesignHeight="775" d:DesignWidth="1280">
+             d:DesignHeight="780" d:DesignWidth="1280">
 	<d:DesignerProperties.DesignStyle>
 		<Style TargetType="UserControl">
 			<Setter Property="Background" Value="White"/>
@@ -245,43 +245,98 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Spot}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="0,0,0,0">
-                <DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="DataGridColumnHeader" >
-                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn SortMemberPath="Name" Width="*" Header="Name" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Name, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                <Button Content="Search structure" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindStructure}" 
+                        Background="AliceBlue" BorderThickness="2" 
+                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.structureList}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn SortMemberPath="Name" Width="*" Header="Name" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Title, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="Score (max=10)" Width="*" Binding="{Binding Path=TotalScore, StringFormat=0.00, Mode=OneWay}" IsReadOnly="True" />
-                    <DataGridTemplateColumn SortMemberPath="Ontology" Width="1.5*" Header="Ontology" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Ontology, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=InChIKey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                </DataGrid.Columns>
-            </DataGrid>
+                        <DataGridTextColumn Header="Score (max=10)" Width="*" Binding="{Binding Path=TotalScore, StringFormat=0.00, Mode=OneWay}" IsReadOnly="True"/>
+                        <DataGridTemplateColumn SortMemberPath="Ontology" Width="1.5*" Header="Ontology" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Ontology, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            
+            <TabControl Grid.Row="1">
+                <TabItem Header="Spectrum" Margin="0,0,2,0" ContextMenu="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite}">
+                    <chart:MsSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                </TabItem>
+                <TabItem Header="Structure" Name="TabItem_StructureImage">
+                    <Image Name="Image_Structure" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                </TabItem>
+                <TabItem Header="Meta data">
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.Resources>
+                            <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="IsReadOnly" Value="True" />
+                            </Style>
+                        </Grid.Resources>
+                        <StackPanel Grid.Column="0" Orientation="Vertical">
+                            <Label Content="Name: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="InChIKey: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Substructure inChIKeys: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="SMILES: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Bond-dissociation energy: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Retention time / Score: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="CCS / Score: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Fragmenter score: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Database score: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Substructure score: " Height="30" Margin="5,0,0,0" />
+                            <Label Content="Resources: " Height="30" Margin="5,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Grid.Column="1">
+                            <TextBox Name="TextBox_Structure_Name" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_InChIKey" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureInChIKeys" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_Smiles" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
     </Grid>
 </UserControl>

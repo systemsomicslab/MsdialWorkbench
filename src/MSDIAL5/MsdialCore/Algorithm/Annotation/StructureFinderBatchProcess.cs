@@ -9,10 +9,8 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
@@ -83,6 +81,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             List<ExistStructureQuery> existStructureDB, List<ExistStructureQuery> userDefinedDB, List<ExistStructureQuery> mineStructureDB,
             List<FragmentOntology> fragmentOntologyDB, List<MoleculeMsReference> mspDB, List<FragmentLibrary> eiFragmentDB)
         {
+            if (!Directory.Exists(file.StructureFolderPath))
+            {
+                Directory.CreateDirectory(file.StructureFolderPath);
+            }
+            
             var structureFiles = System.IO.Directory.GetFiles(file.StructureFolderPath, "*.sfd");
             if (structureFiles.Length > 0) FileStorageUtility.DeleteSfdFiles(structureFiles);
 
