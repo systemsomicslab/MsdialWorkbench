@@ -245,6 +245,8 @@ namespace CompMs.App.Msdial.Model.Gcms
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(timeSpotFocus, spot => spot.TimesCenter),
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
+
+            MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
@@ -252,6 +254,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
+        public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
