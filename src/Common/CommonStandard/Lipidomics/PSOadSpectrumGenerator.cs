@@ -52,7 +52,7 @@ namespace CompMs.Common.Lipidomics {
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = adduct.IonMode == IonMode.Positive ? 40.0 : 20.0;
-            var nlMass = 0.0;
+            var nlMass = adduct.IonMode == IonMode.Positive ? C3H8NO6P : 0.0;
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPCOadSpectrum(lipid, adduct));
             string[] oadId =
