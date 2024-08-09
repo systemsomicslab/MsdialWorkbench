@@ -19,6 +19,12 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
         }.Sum();
+
+        private static readonly double CD3O = new[] {
+            MassDiffDictionary.CarbonMass,
+            MassDiffDictionary.Hydrogen2Mass*3,
+            MassDiffDictionary.OxygenMass,
+        }.Sum();
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
@@ -67,7 +73,10 @@ namespace CompMs.Common.Lipidomics {
                 };
 
             if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
-                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
+                var chains = lipid.Chains.GetDeterminedChains().ToArray();
+                for (int i = 0; i < chains.Length; i++) {
+                    var chain = new AcylChain(chains[i].CarbonCount, chains[i].DoubleBond, chains[i].Oxidized);
+                    nlMass = chains[(i + 1) % chains.Length].Mass + CD3O;
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
             }
