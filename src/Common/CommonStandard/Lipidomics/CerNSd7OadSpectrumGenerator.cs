@@ -89,7 +89,7 @@ namespace CompMs.Common.Lipidomics {
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
             return adduct.AdductIonName == "[M+H]+" ||
                 adduct.AdductIonName == "[M+Na]+" ||
-                //adduct.AdductIonName == "[M-H]-" ||
+                adduct.AdductIonName == "[M-H]-" ||
                 adduct.AdductIonName == "[M+CH3COO]-";
         }
 
@@ -129,8 +129,6 @@ namespace CompMs.Common.Lipidomics {
 
             if (lipid.Chains is PositionLevelChains plChains) {
                 if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
-                    spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    var sphingoToAcyl = new AcylChain(sphingo.CarbonCount, sphingo.DoubleBond, sphingo.Oxidized);
                     spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass - sphD7MassBalance, 30d, oadId));
                 }
                 if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
@@ -198,8 +196,8 @@ namespace CompMs.Common.Lipidomics {
                     }
                 );
             }
-                    return spectrum.ToArray();
-                }
+            return spectrum.ToArray();
+        }
         private SpectrumPeak[] GetSphingoSpectrum(ILipid lipid, SphingoChain sphingo, AdductIon adduct) {
             var chainMass = sphingo.Mass + MassDiffDictionary.HydrogenMass + sphD7MassBalance;
             var spectrum = new List<SpectrumPeak>();
