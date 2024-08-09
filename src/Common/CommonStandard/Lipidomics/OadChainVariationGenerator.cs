@@ -59,11 +59,24 @@ namespace CompMs.Common.Lipidomics {
 
         // TODO: refactoring
         private IEnumerable<ITotalChain> ListingCandidates(ChainSet candidates) {
-            var acyls = RecurseGenerate(candidates.AcylCandidate, CreateAcylChain).ToArray();
-            var alkyls = RecurseGenerate(candidates.AlkylCandidate, CreateAlkylChain).ToArray();
-            return from acyl in acyls
-                    from alkyl in alkyls
-                    select new MolecularSpeciesLevelChains(alkyl.Concat<IChain>(acyl).ToArray());            
+            if (candidates.SphingoCandidate.ChainCount > 0)
+            {
+                var sphingos = RecurseGenerate(candidates.SphingoCandidate, CreateSphingoChain).ToArray();
+                var acyls = RecurseGenerate(candidates.AcylCandidate, CreateAcylChain).ToArray();
+                var alkyls = RecurseGenerate(candidates.AlkylCandidate, CreateAlkylChain).ToArray();
+                return from sphingo in sphingos
+                       from acyl in acyls
+                       from alkyl in alkyls
+                       select new PositionLevelChains(sphingo.Concat<IChain>(acyl).Concat(alkyl).ToArray());
+            }
+            else
+            {
+                var acyls = RecurseGenerate(candidates.AcylCandidate, CreateAcylChain).ToArray();
+                var alkyls = RecurseGenerate(candidates.AlkylCandidate, CreateAlkylChain).ToArray();
+                return from acyl in acyls
+                       from alkyl in alkyls
+                       select new MolecularSpeciesLevelChains(alkyl.Concat<IChain>(acyl).ToArray());
+            }
         }
 
         private IEnumerable<ChainSet> InternalSeparate(TotalChain chains) {
@@ -117,6 +130,11 @@ namespace CompMs.Common.Lipidomics {
             return SearchCollection.CartesianProduct(chains.GetDeterminedChains().Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray())
                 .Select(set => new PositionLevelChains(set))
                 .Distinct(ChainsComparer);
+        }
+        private readonly ConcurrentDictionary<(int, int, int), SphingoChain> _sphingoCache = new ConcurrentDictionary<(int, int, int), SphingoChain>();
+        private SphingoChain CreateSphingoChain(int carbon, int db, int ox)
+        {
+            return _sphingoCache.GetOrAdd((carbon, db, ox), triple => new SphingoChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3, 1, 3)));
         }
 
         private bool CarbonNumberValid(int curCarbon) {

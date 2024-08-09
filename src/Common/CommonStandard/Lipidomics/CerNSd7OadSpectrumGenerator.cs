@@ -127,20 +127,14 @@ namespace CompMs.Common.Lipidomics {
                 "SphOAD-CO"
             };
 
-            //if (lipid.Chains is PositionLevelChains plChains) {
-            //    if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
-            //        spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-            //        var sphingoToAcyl = new AcylChain(sphingo.CarbonCount, sphingo.DoubleBond, sphingo.Oxidized);
-            //        //spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, sphingoToAcyl, adduct, nlMass - sphD7MassBalance, 30d, oadId));
-            //        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass - sphD7MassBalance, 30d, oadId));
-            //    }
-            //    if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
-            //        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
-            //    }
-            //}
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
-                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, 30d, oadId));
+            if (lipid.Chains is PositionLevelChains plChains) {
+                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
+                    spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
+                    var sphingoToAcyl = new AcylChain(sphingo.CarbonCount, sphingo.DoubleBond, sphingo.Oxidized);
+                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass - sphD7MassBalance, 30d, oadId));
+                }
+                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)

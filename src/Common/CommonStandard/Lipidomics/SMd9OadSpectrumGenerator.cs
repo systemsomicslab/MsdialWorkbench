@@ -105,23 +105,12 @@ namespace CompMs.Common.Lipidomics {
                 //"SphOAD-CO"
             };
 
-            //if (lipid.Chains is PositionLevelChains plChains) {
-            //    if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
-            //        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
-            //    }
-            //    if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
-            //        spectrum.AddRange
-            //        (
-            //            new[] { new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - acyl.Mass - CD3), 100d, $"NL of CD3 and {acyl}") { SpectrumComment = SpectrumComment.precursor }, }
-            //        );
-            //        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
-            //    }
-            //}
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains)
-            {
-                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains())
-                {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
+            if (lipid.Chains is PositionLevelChains plChains) {
+                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo) {
+                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
+                }
+                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
