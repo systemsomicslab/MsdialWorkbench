@@ -9,18 +9,16 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Process;
+using CompMs.MsdialIntegrate.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CompMs.MsdialLcMsApi.DataObj;
-using CompMs.MsdialIntegrate.Parser;
 
 namespace CompMs.App.MsdialConsole.Process
 {
