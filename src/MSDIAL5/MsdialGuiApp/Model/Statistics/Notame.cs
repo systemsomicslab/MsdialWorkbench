@@ -85,27 +85,32 @@ namespace CompMs.App.Msdial.Model.Statistics {
         private string RPath = string.Empty;
 
         public void Run() {
-            NotameIonMode = GetIonMode();
-            NotameExport = GetExportFolder(ExportDirectory);
-            RPath = GetExportFolder(RDirectory);
-            REngine.SetEnvironmentVariables();
-            REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
-            var engine = REngine.GetInstance();
-            engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
-            string[] libraries = ["notame", "doParallel", "dplyr", "tidyr", "openxlsx", "MUVR", "pcaMethods"];
-            var check = libraries.SelectMany(lib => engine.Evaluate($"require(\"{lib}\")").AsLogical().AsEnumerable());
-            if (check.Any(x => !x)) {
-                MessageBox.Show("All of the following libraries must be installed: 'notame', 'doParallel', 'dplyr', 'tidyr', 'openxlsx', 'MUVR', and 'pcaMethods'.");
-                return;
-            }
-            RunNotame(engine);
-            RunMuvr(engine);
+            try
+            {
+                NotameIonMode = GetIonMode();
+                NotameExport = GetExportFolder(ExportDirectory);
+                RPath = GetExportFolder(RDirectory);
+                REngine.SetEnvironmentVariables();
+                REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
+                var engine = REngine.GetInstance();
+                engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
+                RunNotame(engine);
+                RunMuvr(engine);
 
-            MessageBox.Show("Output files are successfully created.");
+                MessageBox.Show("Output files are successfully created.");
 
-            if (Settings.Default.RHome != RDirectory) {
-                Settings.Default.RHome = RDirectory;
-                Settings.Default.Save();
+                if (Settings.Default.RHome != RDirectory)
+                {
+                    Settings.Default.RHome = RDirectory;
+                    Settings.Default.Save();
+                }
+            } catch (Exception ex) {
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            } finally {
+                if (Settings.Default.RHome != RDirectory) {
+                    Settings.Default.RHome = RDirectory;
+                    Settings.Default.Save();
+                }
             }
         }
 
