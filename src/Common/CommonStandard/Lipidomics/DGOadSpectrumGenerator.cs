@@ -90,9 +90,11 @@ namespace CompMs.Common.Lipidomics {
                 };
 
             if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
-                foreach (AcylChain chain in plChains.GetDeterminedChains()) {
+                var chains = lipid.Chains.GetDeterminedChains().ToArray();
+                for (int i = 0; i < chains.Length; i++) {
+                    var chain = new AcylChain(chains[i].CarbonCount, chains[i].DoubleBond, chains[i].Oxidized);
+                    nlMass = chains[(i + 1) % chains.Length].Mass;
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, NH3 + H2O, abundance, oadIdLossH2O));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
