@@ -2,6 +2,7 @@
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
@@ -18,6 +19,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.MsdialLcMsApi.DataObj;
+using CompMs.MsdialIntegrate.Parser;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -79,33 +82,49 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            var mspDB = new List<MoleculeMsReference>();
-            if (param.MspFilePath != string.Empty)
+         
+
+            //CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _, out var lbmDB);
+
+            
+
+            //var param = ConfigParser.ReadForLcmsParameter(methodFile);
+            //if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
+            //var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
+            //if (!isCorrectlyImported) return -1;
+
+            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB,
+                out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
+                out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
+                out List<MoleculeMsReference> lbmDB);
+
+            
+            var container = new MsdialGcmsDataStorage()
             {
-                if (!File.Exists(param.MspFilePath))
-					throw new FileNotFoundException(String.Format("File '{0}' does not exist.", param.MspFilePath));
-				mspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath);
-                if (mspDB != null && mspDB.Count > 0) {
-                    if (param.RetentionType == RetentionType.RT)
-                        mspDB = mspDB.OrderBy(n => n.ChromXs.RT.Value).ToList();
-                    else
-                        mspDB = mspDB.OrderBy(n => n.ChromXs.RI.Value).ToList();
-                    var counter = 0;
-                    foreach (var query in mspDB) {
-                        query.ScanID = counter; counter++;
-                    }
-                }
-            }
-
-            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _, out var lbmDB);
-
-            var container = new MsdialGcmsDataStorage() {
-                AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-                MspDB = mspDB, MsdialGcmsParameter = param, IupacDatabase = iupacDB, IsotopeTextDB = isotopeTextDB, TextDB = txtDB
+                AnalysisFiles = analysisFiles,
+                AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
+                IsotopeTextDB = isotopeTextDB,
+                IupacDatabase = iupacDB,
+                MsdialGcmsParameter = param
             };
 
+            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
+            var annotator = new MassAnnotator(database, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 0);
+            var dbStorage = DataBaseStorage.CreateEmpty();
+            dbStorage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
+            });
+            var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
+            var textannotator = new MassAnnotator(textdatabase, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB",2);
+            dbStorage.AddMoleculeDataBase(textdatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
+            });
+            container.DataBases = dbStorage;
+            container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, param.ProjectParam.ProjectFileName + ".mdproject"));
+            projectDataStorage.AddStorage(container);
             Console.WriteLine("Start processing..");
-			return Execute(container, outputFolder, isProjectStore);
+			return Execute(projectDataStorage, container, outputFolder, isProjectStore);
 		}
 
         private bool isFamesContanesMatch(Dictionary<int, float> riDictionary)
@@ -165,9 +184,11 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private int Execute(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
+        private int Execute(ProjectDataStorage projectDataStorage, MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved)
+        {
             var files = storage.AnalysisFiles;
-            foreach (var file in files) {
+            foreach (var file in files)
+            {
                 FileProcess.Run(file, storage);
 
                 var chromPeakFeatures = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
@@ -176,21 +197,28 @@ namespace CompMs.App.MsdialConsole.Process
 
                 ResultExporter.ExportChromPeakFeatures(file, outputFolder, storage, null, chromPeakFeatures, msdecResults);
             }
-            if (!storage.MsdialGcmsParameter.TogetherWithAlignment) return 0;
-            var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
-            var aligner = factory.CreatePeakAligner();
-            var result = aligner.Alignment(files, alignmentFile, null);
+            if (storage.MsdialGcmsParameter.TogetherWithAlignment)
+            {
+                var alignmentFile = storage.AlignmentFiles.First();
+                var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
+                var aligner = factory.CreatePeakAligner();
+                var result = aligner.Alignment(files, alignmentFile, null);
 
-            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            using (var streamManager = new DirectoryTreeStreamManager(storage.MsdialGcmsParameter.ProjectFolderPath)) {
-                storage.SaveAsync(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
-                ((IStreamManager)streamManager).Complete();
+                Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            }
+            if (isProjectSaved)
+            {
+                using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
+                using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create))
+                {
+                    projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+                    ((IStreamManager)streamManager).Complete();
+                }
             }
             return 0;
         }
 
-#region // error code
+        #region // error code
 
         private int ridictionaryError()
         {

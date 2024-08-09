@@ -159,7 +159,7 @@ public sealed class NistRecordBuilder
         if (molecule is null) {
             return;
         }
-        _contents["FORMULA"] = molecule.Formula.FormulaString;
+        _contents["FORMULA"] = molecule.Formula?.FormulaString;
         _contents["ONTOLOGY"] = molecule.Ontology;
         _contents["INCHIKEY"] = molecule.InChIKey;
         _contents["SMILES"] = molecule.SMILES;
