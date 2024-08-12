@@ -3,28 +3,7 @@
 # notame preprocessing and quality metrics
 # Additional plotting with PCA and drift correction
 
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
-}
-devtools::install_github("antonvsdata/notame")
 
-install_dependencies(
-  preprocessing = TRUE,
-  extra = TRUE,
-  batch_corr = TRUE,
-  misc = TRUE,
-)
-
-required_packages <- c("notame", "doParallel", "dplyr", "openxlsx", "pcaMethods", "cowplot", "missForest")
-packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
-
-if(length(packages_to_install)) {
-  install.packages(packages_to_install)
-}
-lapply(required_packages, library, character.only = TRUE)
-
-
-# Load libraries
 library(notame)
 library(doParallel)
 library(dplyr)
@@ -144,7 +123,7 @@ save_dc_plots_temp <- function (orig, dc, predicted,
                                        y = fname)) + theme_bw() +
         theme(panel.grid = element_blank(),
               legend.position = "bottom"
-              ) + 
+        ) + 
         color_scale + shape_scale + 
         labs(title = title)
       mean_qc <- finite_mean(data[data$QC == "QC", fname])
@@ -191,7 +170,7 @@ save_dc_plots_temp <- function (orig, dc, predicted,
   temp <- fData(dc)
   # headilla ascendic
   sel_feat_1 <- head(temp[order(temp$DC_delta_D_ratio_r, decreasing = T),],
-                   n = 1)$Feature_ID
+                     n = 1)$Feature_ID
   sel_feat <- head(temp[order(temp$DC_delta_D_ratio_r, decreasing = T),],
                    n = round(n_plotting/2))$Feature_ID
   # descendic

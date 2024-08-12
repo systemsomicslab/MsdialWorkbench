@@ -45,8 +45,12 @@
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\MUVR.R" />
-	  <EmbeddedResource Include="Resources\Notame.R" />
+	  <EmbeddedResource Include="Resources\MUVR.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\Notame.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>
 	<ItemGroup>

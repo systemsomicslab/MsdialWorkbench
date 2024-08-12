@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
@@ -123,13 +124,54 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             }
         }
 
+        private bool CheckPackages() {
+            string msgtext = "Please run this scripts on your local R Studio to install packages used in Notame preprocessing.\r\n\r\n" +
+                            "##########################################################\r\n\r\n" +
+                            "if (!requireNamespace('BiocManager', quietly=TRUE)){\r\n  " +
+                            "install.packages('BiocManager')}\r\n" +
+                            "BiocManager::install('pcaMethods')\r\n" +
+                            "BiocManager::install('Biobase')\r\n\r\n" +
+                            "if (!requireNamespace('devtools', quietly = TRUE)) {\r\n  " +
+                            "install.packages('devtools')}\r\n" +
+                            "devtools::install_github('antonvsdata/notame')\r\n\r\n" +
+                            "if (!requireNamespace('remotes', quietly=TRUE)){\r\n  " +
+                            "install.packages('remotes')}\r\n" +
+                            "library(remotes)\r\n" +
+                            "install_gitlab('CarlBrunius/MUVR')\r\n\r\n" +
+                            "if (!requireNamespace('tinytex', quietly=TRUE)){\r\n  " +
+                            "install.packages('tinytex')}\r\n" +
+                            "tinytex::install_tinytex()\r\n" +
+                            "tinytex::tlmgr_install('grfext')\r\n\r\n" +
+                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tinytex', 'tidyr')\r\n" +
+                            "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
+                            "if(length(packages_to_install)) {\r\n  " +
+                            "install.packages(packages_to_install)}\r\n" +
+                            "lapply(required_packages, library, character.only = TRUE)\r\n\r\n" +
+                            "##########################################################";
+            if (MessageBox.Show(msgtext, "Package installation (click OK to copy)", 
+                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK) {
+                Clipboard.SetText(msgtext);
+            } else {
+                return false;
+            }
+            if (MessageBox.Show("Click OK to run Notame (packages needed to be installed)", "Notame", 
+                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
         public DelegateCommand RunNotameCommand { get; }
 
         private async void RunNotame() {
-            var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
-            using (publisher.Start()) {
-                await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
-                _notame.Run();
+            if (CheckPackages() is true) {
+                var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
+                using (publisher.Start())
+                {
+                    await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
+                    _notame.Run();
+                }
             }
         }
 

@@ -169,16 +169,12 @@ looks_num <- function (x)
 
 # MUVR function
 MUVR_run <- function (object, y = NULL, id = NULL, multi_level = FALSE, 
-          multi_level_var = NULL, covariates = NULL, static_covariates = NULL, 
-          all_features = FALSE, nRep = 5, nOuter = 6, nInner = nOuter - 
-            1, varRatio = 0.75, method = c("PLS", "RF"), ...) 
+                      multi_level_var = NULL, covariates = NULL, static_covariates = NULL, 
+                      all_features = FALSE, nRep = 5, nOuter = 6, nInner = nOuter - 
+                        1, varRatio = 0.75, method = c("PLS", "RF"), ...) 
 {
-  if (!requireNamespace("MUVR", quietly = TRUE)) {
-    stop("Package \"MUVR\" needed for this function to work. Please install it from\n         https://gitlab.com/CarlBrunius/MUVR", 
-         call. = FALSE)
-  }
   add_cit("MUVR package was used to fit multivariate models with variable selection:", 
-               citation("MUVR"))
+          citation("MUVR"))
   classes <- sapply(pData(object)[, c(covariates, static_covariates)], 
                     class)
   if (length(classes) && any(classes != "numeric")) {
@@ -278,13 +274,13 @@ if (min(table(metaboset$Class)) < 2) {
 
 # if () # modify it so that it gives warnings that there is no enough classes!
 #   # alternatively use parameters1 or two to do the MUVR
-  
+
 if (min(table(metaboset$Class)) < 2){
   log_text("\nNumber of Class is too low! MUVR can not be performed!")
 } else {
   # Run the MUVR algorithm to take most interesting ones
   MUVR_res <- MUVR_run(object = metaboset, y = "Class",
-                            method = "RF", nOuter = num_outer)
+                       method = "RF", nOuter = num_outer)
   parallel::stopCluster(cl)
   
   MUVR_vip <- MUVR::getVIP(MVObj = MUVR_res, model = "max")
@@ -344,8 +340,8 @@ metaboset_printer_temp <- function(x) {
   temp <- paste("MetaboSet object with", nrow(x), "features and", ncol(x), "samples.\n")
   temp <- paste(temp, sum(x$QC == "QC"), "QC samples included\n")
   temp <- paste(temp,
-    sum(is.na(flag(x))), "non-flagged features,",
-    sum(!is.na(flag(x))), "flagged features.\n\n")
+                sum(is.na(flag(x))), "non-flagged features,",
+                sum(!is.na(flag(x))), "flagged features.\n\n")
   
   if (!is.na(group_col(x))) {
     temp <- paste0(temp, group_col(x), ":\n")
@@ -360,9 +356,9 @@ metaboset_printer_temp <- function(x) {
     subject <- as.character(pData(x)[, subject_col(x)])
     subject <- subject[!grepl("QC", subject)]
     temp <- paste0(temp,
-      "  ", length(unique(subject)), " distinct subjects\n  min:",
-      min(table(subject)), ", max:", max(table(subject)),
-      " observations per subject.\n"
+                   "  ", length(unique(subject)), " distinct subjects\n  min:",
+                   min(table(subject)), ", max:", max(table(subject)),
+                   " observations per subject.\n"
     )
   }
   
@@ -395,147 +391,147 @@ desc_metaboset <- metaboset_printer_temp(metaboset)
 #####################################################
 # Reporting
 if(report){
-  setwd(ppath)
-  usrName <- "By Hanhineva Lab"
-  file.create("Notame_Report.Rnw")
-  rnwFile <- file("Notame_Report.Rnw", "w")
-  # fig.count <<- 0
-  # table.count <<- 0
-  header <- c("\\documentclass[a4paper]{article}", "\\usepackage[margin=1.0in]{geometry}", 
-              "\\usepackage{longtable}", "\\usepackage{graphicx}", 
-              "\\usepackage{grffile}", "<<echo=false>>=", "options(width=60);", 
-              "@", "\\SweaveOpts{eps=FALSE,pdf=TRUE}", "\\title{Notame preprocessing report}",
-              paste("\\author{", usrName, "}", sep = ""),
-              "\\begin{document}", "\\parskip=.3cm", "\\maketitle")
-  cat(header, file = rnwFile, sep = "\n", append = TRUE)
+    setwd(ppath)
+    usrName <- "By Hanhineva Lab"
+    file.create("Notame_Report.Rnw")
+    rnwFile <- file("Notame_Report.Rnw", "w")
+    # fig.count <<- 0
+    # table.count <<- 0
+    header <- c("\\documentclass[a4paper]{article}", "\\usepackage[margin=1.0in]{geometry}", 
+                "\\usepackage{longtable}", "\\usepackage{graphicx}", 
+                "\\usepackage{grffile}", "<<echo=false>>=", "options(width=60);", 
+                "@", "\\SweaveOpts{eps=FALSE,pdf=TRUE}", "\\title{Notame preprocessing report}",
+                paste("\\author{", usrName, "}", sep = ""),
+                "\\begin{document}", "\\parskip=.3cm", "\\maketitle")
+    cat(header, file = rnwFile, sep = "\n", append = TRUE)
   
-  # Background information
+    # Background information
   
-  descr <- c("\\section{About notame}\n", 
-             "Notame (NOn-TArgeted MEtabolomics) is an R package designed to preprocess",
-             "LC-MS metabolomics data and provide quality metrics, statistics, and",
-             "results visualizations. The package was originally developed by Anton",
-             "Klåvus at the Kati Hanhineva lab, University of Eastern Finland, and",
-             "it utilizes several other R packages, such as MUVR, to perform the",
-             "data processing. The notame publication, inlcuding a description of a",
-             "complete LC-MS workflow, is freely available.",
-             "\\footnote{Klåvus A, Kokla M, Noerman S, et al. \\textit{“Notame”: Workflow for Non-Targeted LC–MS Metabolic Profiling},", 
-             "Metabolites. 2020; 10(4):135.}\n")
-  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    descr <- "\\section{About notame}\n
+            Notame (NOn-TArgeted MEtabolomics) is an R package designed to preprocess
+            LC-MS metabolomics data and provide quality metrics, statistics, and
+            results visualizations. The package was originally developed by Anton
+            Klåvus at the Kati Hanhineva lab, University of Eastern Finland, and
+            it utilizes several other R packages, such as MUVR, to perform the
+            data processing. The notame publication, including a description of a
+            complete LC-MS workflow, is freely available.
+            \\footnote{Klåvus A, Kokla M, Noerman S, et al. 
+            \\textit{“Notame”: Workflow for Non-Targeted LC–MS Metabolic Profiling},
+            Metabolites. 2020; 10(4):135.}\n"
+
+    cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-  # Drift correction
-  descr <- c("\\section{Drift correction}\n",
-             "Signal drift is a typical issue in LC-MS metabolomics, affecting sequences",
-             "with 30 to 50 injections or more. It causes a gradual change in the signal",
-             "intensity of the molecular features during the LC-MS analysis, which should",
-             "be corrected for optimal data quality. Notame utilizes information from the",
-             "QC samples to correct the drift. The QC samples are pooled from the biological",
-             "samples and injected before and after the samples as well as after every",
-             "10 to 12 samples in the sequence. Notame performs drift correction by fitting",
-             "a smoothed cubic spline to the signal intensities of the QC samples,",
-             "separately for each molecular feature. The smoothing function prevents",
-             "overfitting the curve in case there are single deviating QC samples.\n",
-             "Please note that at least four QC samples are needed in the dataset to",
-             "perform this step. If your data has less, it is advisable to check the",
-             "PCA instead, where the QC samples should be tightly clustered.\n")
+    # Drift correction
+    descr <- c("\\section{Drift correction}\n",
+                "Signal drift is a typical issue in LC-MS metabolomics, affecting sequences",
+                "with 30 to 50 injections or more. It causes a gradual change in the signal",
+                "intensity of the molecular features during the LC-MS analysis, which should",
+                "be corrected for optimal data quality. Notame utilizes information from the",
+                "QC samples to correct the drift. The QC samples are pooled from the biological",
+                "samples and injected before and after the samples as well as after every",
+                "10 to 12 samples in the sequence. Notame performs drift correction by fitting",
+                "a smoothed cubic spline to the signal intensities of the QC samples,",
+                "separately for each molecular feature. The smoothing function prevents",
+                "overfitting the curve in case there are single deviating QC samples.\n",
+                "Please note that at least four QC samples are needed in the dataset to",
+                "perform this step. If your data has less, it is advisable to check the",
+                "PCA instead, where the QC samples should be tightly clustered.\n")
   
-  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
-  if(file.exists("drift_cor_report.png")){
+    cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    if(file.exists("drift_cor_report.png")){
     fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
-                                                              "drift_cor_report.png", "}", sep = ""), "\\caption{Most signigicant features}", 
-             "\\end{center}", paste("\\label{", "drift_cor_report.png", 
+                                                                "drift_cor_report.png", "}", sep = ""), "\\caption{Most signigicant features}", 
+                "\\end{center}", paste("\\label{", "drift_cor_report.png", 
                                     "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
     cat(fig, file = rnwFile, append = TRUE, sep = "\n")
-  } else{
+    } else{
     descr <- "\\textbf{Selected peak file has less than 3 QC samples. Thus the drift correction was not made.}"
     cat(descr, file = rnwFile, append = TRUE, sep = "\n")
-  }
-  # Quality metrics
-  descr <- c("\\section{Quality metrics}\n",
-             "The quality of each molecular feature is determined by calculating",
-             "descriptive values according to the recommendations by Broadhurst et al.",
-             "\\footnote{Broadhurst D, Goodacre R, Reinke SN et al.",
-             "\\textit{Guidelines and considerations for the use of system suitability and quality control samples in mass spectrometry assays applied in untargeted clinical metabolomic studies.},", 
-             "Metabolomics 14, 72 (2018).}",
-             ". The following quality criteria should be met to consider the molecular",
-             "feature of good quality: the detection rate in the QC samples is atleast",
-             "70%, relative standard deviation (RSD) in the QC samples is less than 0.2",
-             "(20%), and the D-ratio is less than 0.4. D-ratio or dispersion ratio is",
-             "the sample standard deviation of the QC samples divided by the sample",
-             "standard deviation of the biological samples. The output data matrix from",
-             "Notame will include a column titled Flag that indicates whether the",
-             "molecular feature was flagged for bad quality and the reason (low QC detection",
-             "or low quality).\n",
-             "The flag for low QC detection or low quality is not intended for automatically",
-             "discarding all such peaks but rather be used as a warning signal to pay close",
-             "attention to the peak (e.g., peak shape, peak area integration, signal-to-noise",
-             "ratio) and to decide yourself whether the feature has sufficient quality for",
-             "reporting. For example, in highly variable sample sets, a true metabolite that",
-             "has detectable levels only in a few samples may dilute below the detection limit",
-             "in the pooled QC samples and result in a flag for low QC detection.\n\n")
+    }
+    # Quality metrics
+    descr <- c("\\section{Quality metrics}\n",
+                "The quality of each molecular feature is determined by calculating",
+                "descriptive values according to the recommendations by Broadhurst et al.",
+                "\\footnote{Broadhurst D, Goodacre R, Reinke SN et al.",
+                "\\textit{Guidelines and considerations for the use of system suitability and quality control samples in mass spectrometry assays applied in untargeted clinical metabolomic studies.},", 
+                "Metabolomics 14, 72 (2018).}",
+                ". The following quality criteria should be met to consider the molecular",
+                "feature of good quality: the detection rate in the QC samples is atleast",
+                "70%, relative standard deviation (RSD) in the QC samples is less than 0.2",
+                "(20%), and the D-ratio is less than 0.4. D-ratio or dispersion ratio is",
+                "the sample standard deviation of the QC samples divided by the sample",
+                "standard deviation of the biological samples. The output data matrix from",
+                "Notame will include a column titled Flag that indicates whether the",
+                "molecular feature was flagged for bad quality and the reason (low QC detection",
+                "or low quality).\n",
+                "The flag for low QC detection or low quality is not intended for automatically",
+                "discarding all such peaks but rather be used as a warning signal to pay close",
+                "attention to the peak (e.g., peak shape, peak area integration, signal-to-noise",
+                "ratio) and to decide yourself whether the feature has sufficient quality for",
+                "reporting. For example, in highly variable sample sets, a true metabolite that",
+                "has detectable levels only in a few samples may dilute below the detection limit",
+                "in the pooled QC samples and result in a flag for low QC detection.\n\n")
   
-  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-  # descr <- c("<<echo=false, results=tex>>=", "print(metaboset)", 
-  #            "@", "\n\n")
-  # cat(descr, file = rnwFile, append = TRUE, sep = "\n")
-  cat(desc_metaboset, file = rnwFile, append = TRUE, sep = "\n")
+    # descr <- c("<<echo=false, results=tex>>=", "print(metaboset)", 
+    #            "@", "\n\n")
+    # cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    cat(desc_metaboset, file = rnwFile, append = TRUE, sep = "\n")
   
-  # PCA
-  descr <- c("\\section{Overview of the data}\n",
-             "PCA can give brief overview of the data.")
-  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    # PCA
+    descr <- c("\\section{Overview of the data}\n",
+                "PCA can give brief overview of the data.")
+    cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-  fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
+    fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
                                                             "PCA_for_report.png", "}", sep = ""), "\\caption{PCA plot of classes in data}", 
-           "\\end{center}", paste("\\label{", "PCA_for_report.png", 
-                                  "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
-  cat(fig, file = rnwFile, append = TRUE, sep = "\n")
+            "\\end{center}", paste("\\label{", "PCA_for_report.png", 
+                                    "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
+    cat(fig, file = rnwFile, append = TRUE, sep = "\n")
   
   
   
-  # MUVR
-  descr <- c("\\section{Selection of differential molecular features with MUVR}\n",
-             "MUVR (Multivariate methods with Unbiased Variable selection in R) is an",
-             "algorithm developed by Lin Shi and Carl Brunius at the Chalmers University",
-             "of Technology",
-             "\\footnote{Shi L, Westerhuis JA, Rosén J, et al.",
-             "\\textit{Variable selection and validation in multivariate modelling.},", 
-             "Bioinformatics. 2019 Mar 15;35(6):972-980.}",
-             ". It chooses a limited number of molecular features, in this case maximum",
-             "50, that differ between the study groups (given in the Class column in",
-             "MS-DIAL project). The algorithm uses a recursive variable selection procedure",
-             "with partial least squares (PLS) and random forest (RF) modelling.\n",
-             "The molecular features chosen by MUVR are accompanied with box plots and",
-             "can be used as a starting point for manual curation of the data and finding",
-             "the relevant metabolites for your study question.")
+    # MUVR
+    descr <- c("\\section{Selection of differential molecular features with MUVR}\n",
+                "MUVR (Multivariate methods with Unbiased Variable selection in R) is an",
+                "algorithm developed by Lin Shi and Carl Brunius at the Chalmers University",
+                "of Technology",
+                "\\footnote{Shi L, Westerhuis JA, Rosén J, et al.",
+                "\\textit{Variable selection and validation in multivariate modelling.},", 
+                "Bioinformatics. 2019 Mar 15;35(6):972-980.}",
+                ". It chooses a limited number of molecular features, in this case maximum",
+                "50, that differ between the study groups (given in the Class column in",
+                "MS-DIAL project). The algorithm uses a recursive variable selection procedure",
+                "with partial least squares (PLS) and random forest (RF) modelling.\n",
+                "The molecular features chosen by MUVR are accompanied with box plots and",
+                "can be used as a starting point for manual curation of the data and finding",
+                "the relevant metabolites for your study question.")
   
-  cat(descr, file = rnwFile, append = TRUE, sep = "\n")
+    cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-  fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
+    fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
                                                             "box_plotdpi72.png", "}", sep = ""), "\\caption{12 most signigicant features}", 
-           "\\end{center}", paste("\\label{", "box_plotdpi72.png", 
-                                  "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
-  cat(fig, file = rnwFile, append = TRUE, sep = "\n")
+            "\\end{center}", paste("\\label{", "box_plotdpi72.png", 
+                                    "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
+    cat(fig, file = rnwFile, append = TRUE, sep = "\n")
   
   
-  # Finally close the file
+    # Finally close the file
   
-  end <- c("\\vspace{5 mm}\n\n--------------------------------\n\n", 
-           "The report was generated on \\Sexpr{date()} with \\Sexpr{print(version$version.string)}, OS system:", 
-           "\\Sexpr{Sys.info()['sysname']}, version: \\Sexpr{gsub('#[0-9]+', '', Sys.info()['version'])} .\n", 
-           "\\end{document}\n\n")
-  cat(end, file = rnwFile, append = TRUE)
+    end <- c("\\vspace{5 mm}\n\n--------------------------------\n\n", 
+            "The report was generated on \\Sexpr{date()} with \\Sexpr{print(version$version.string)}, OS system:", 
+            "\\Sexpr{Sys.info()['sysname']}, version: \\Sexpr{gsub('#[0-9]+', '', Sys.info()['version'])} .\n", 
+            "\\end{document}\n\n")
+    cat(end, file = rnwFile, append = TRUE)
   
-  close(rnwFile)
+    close(rnwFile)
   
   
-  utils::Sweave(file = "Notame_Report.Rnw", encoding = "utf8")
-  tinytex::tlmgr_update()
-  tinytex::tlmgr_install("updmap")
-  system("updmap-sys --force --enable Map=pdftex.map")
-  tinytex::tlmgr_install("grfext")
-  res <- try(tools::texi2dvi("Notame_Report.tex", pdf = TRUE,
-                             quiet = TRUE))
+    utils::Sweave(file = "Notame_Report.Rnw", encoding = "utf8")
+    tinytex::tlmgr_install("grfext")
+    res <- try(tools::latexmk("Notame_Report.tex", pdf = TRUE,
+                            quiet = TRUE))
+    tinytex::latexmk("Notame_Report.tex")
 }
 # END

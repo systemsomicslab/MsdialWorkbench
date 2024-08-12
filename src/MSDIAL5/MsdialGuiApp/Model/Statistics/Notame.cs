@@ -116,10 +116,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
         private void RunNotame(REngine engine) {
             var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.Notame.R");
-            engine.Evaluate("library(notame)");
-            engine.Evaluate("library(doParallel)");
-            engine.Evaluate("library(dplyr)");
-            engine.Evaluate("library(openxlsx)");
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
@@ -127,10 +123,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private void RunMuvr(REngine engine) {
-            engine.Evaluate("library(notame)");
-            engine.Evaluate("library(doParallel)");
-            engine.Evaluate("library(dplyr)");
-            engine.Evaluate("library(openxlsx)");
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.MUVR.R");
             runner.Run(engine);
