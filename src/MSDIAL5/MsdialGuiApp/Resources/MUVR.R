@@ -173,10 +173,6 @@ MUVR_run <- function (object, y = NULL, id = NULL, multi_level = FALSE,
           all_features = FALSE, nRep = 5, nOuter = 6, nInner = nOuter - 
             1, varRatio = 0.75, method = c("PLS", "RF"), ...) 
 {
-  if (!requireNamespace("MUVR", quietly = TRUE)) {
-    stop("Package \"MUVR\" needed for this function to work. Please install it from\n         https://gitlab.com/CarlBrunius/MUVR", 
-         call. = FALSE)
-  }
   add_cit("MUVR package was used to fit multivariate models with variable selection:", 
                citation("MUVR"))
   classes <- sapply(pData(object)[, c(covariates, static_covariates)], 
@@ -535,7 +531,8 @@ if(report){
   tinytex::tlmgr_install("updmap")
   system("updmap-sys --force --enable Map=pdftex.map")
   tinytex::tlmgr_install("grfext")
-  res <- try(tools::texi2dvi("Notame_Report.tex", pdf = TRUE,
+  res <- try(tools::latexmk("Notame_Report.tex", pdf = TRUE,
                              quiet = TRUE))
+  tinytex::latexmk("Notame_Report.tex")
 }
 # END
