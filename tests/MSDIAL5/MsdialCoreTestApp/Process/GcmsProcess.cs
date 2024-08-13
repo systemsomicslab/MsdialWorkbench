@@ -1,5 +1,4 @@
-﻿using CompMs.App.MsdialConsole.Export;
-using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
@@ -8,10 +7,12 @@ using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
+using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialIntegrate.Parser;
 using System;
@@ -29,14 +30,13 @@ namespace CompMs.App.MsdialConsole.Process
             var alkaneDict = RetentionIndexHandler.GetRiDictionary(alkaneDictPath);
 
             using (StreamWriter sw = new StreamWriter(outputFilePath, false, Encoding.ASCII)) {
-                using (var sr = new StreamReader(rtListPath, Encoding.ASCII)) {
-                    while (sr.Peek() > -1) {
-                        var line = sr.ReadLine();
-                        if (line == string.Empty) continue;
-                        var ri = RetentionIndexHandler.GetRetentionIndexByAlkanes(alkaneDict, float.Parse(line));
+            using (var sr = new StreamReader(rtListPath, Encoding.ASCII))
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line == string.Empty) continue;
+                    var ri = RetentionIndexHandler.GetRetentionIndexByAlkanes(alkaneDict, float.Parse(line));
 
-                        sw.WriteLine(ri);
-                    }
+                    sw.WriteLine(ri);
                 }
             }
         }
@@ -185,15 +185,17 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(ProjectDataStorage projectDataStorage, MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved)
         {
             var files = storage.AnalysisFiles;
+            var exporterFactory = new AnalysisCSVExporterFactory("\t");
+            var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));
+            var scanExporter = exporterFactory.CreateExporter(metaAccessor);
             foreach (var file in files)
             {
                 FileProcess.Run(file, storage);
 
-                var chromPeakFeatures = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
-                var msdecResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
-                Console.WriteLine("DCL version: {0}", dcl_version);
-
-                ResultExporter.ExportChromPeakFeatures(file, outputFolder, storage, null, chromPeakFeatures, msdecResults);
+                var sfs = file.LoadSpectrumFeatures();
+                using (var stream = File.Open(file.AnalysisFileName, FileMode.Create)) {
+                    scanExporter.Export(stream, file, sfs.Items);
+                }
             }
             if (storage.MsdialGcmsParameter.TogetherWithAlignment)
             {
@@ -201,8 +203,11 @@ namespace CompMs.App.MsdialConsole.Process
                 var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
                 var aligner = factory.CreatePeakAligner();
                 var result = aligner.Alignment(files, alignmentFile, null);
+                result.Save(alignmentFile);
 
-                Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+                var accessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
+                var spotExporter = new AlignmentCSVExporter("\t");
+                spotExporter.Export(null, result.AlignmentSpotProperties, null, files, null, null, accessor, null);
             }
             if (isProjectSaved)
             {
