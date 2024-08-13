@@ -4,7 +4,6 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -137,6 +136,13 @@ namespace CompMs.App.MsdialConsole.Process
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             if (isProjectSaved) {
+                storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
+                storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
+                using (var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath)) {
+                    storage?.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
+                    ((IStreamManager)streamManager).Complete();
+                }
+
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
                 using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create)) {
                     projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
