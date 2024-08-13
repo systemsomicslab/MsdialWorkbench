@@ -61,6 +61,9 @@
             <CheckBox Content="Filtering by current parameter"
                   IsChecked="{Binding UseFilter}"
                   Margin="0,8,0,0"/>
+            <CheckBox Content="ReportExport"
+                  IsChecked="{Binding ExportReport}"
+                  Margin="0,8,0,0"/>
         </StackPanel>
 
         <ItemsControl ItemsSource="{Binding ExportTypes}"

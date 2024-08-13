@@ -35,17 +35,17 @@
 		<None Remove="Resources\MolecularNetworking.ico" />
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
-		<None Remove="Resources\MUVR.R" />
 		<None Remove="Resources\notame.png" />
 		<None Remove="Resources\Notame.R" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
+		<None Remove="Resources\Report.R" />
 		<None Remove="Resources\SplashLipids.xml" />
 		<None Remove="Resources\Table.png" />
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\MUVR.R">
+	  <EmbeddedResource Include="Resources\Report.R">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Resources\Notame.R">

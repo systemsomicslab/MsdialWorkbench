@@ -15,10 +15,8 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel.Statistics
-{
-    internal sealed class NotameViewModel : SettingDialogViewModel
-    {
+namespace CompMs.App.Msdial.ViewModel.Statistics {
+    internal sealed class NotameViewModel : SettingDialogViewModel {
         private readonly Notame _notame;
         private readonly IMessageBroker _broker;
         
@@ -124,6 +122,14 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             }
         }
 
+        public bool ExportReport {
+            get => _notame.exportReport;
+            set { 
+                _notame.exportReport = value;
+                OnPropertyChanged(nameof(ExportReport));
+            }
+        }
+        
         private bool CheckPackages() {
             string msgtext = "Please run this scripts on your local R Studio to install packages used in Notame preprocessing.\r\n\r\n" +
                             "##########################################################\r\n\r\n" +

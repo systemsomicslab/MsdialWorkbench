@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CompMs.App.Msdial.Model.Statistics {
-    internal sealed class Notame : BindableBase {
+    internal sealed class Notame : DisposableModelBase {
         public Notame(AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, AlignmentExportGroupModel exportModel, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
         public ExportMethod ExportMethod => ExportModel.ExportMethod;
         public ReadOnlyObservableCollection<ExportType> ExportTypes => ExportModel.Types;
+        public bool exportReport;
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
@@ -85,8 +86,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
         private string RPath = string.Empty;
 
         public void Run() {
-            try
-            {
+            try {
                 NotameIonMode = GetIonMode();
                 NotameExport = GetExportFolder(ExportDirectory);
                 RPath = GetExportFolder(RDirectory);
@@ -95,37 +95,31 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 var engine = REngine.GetInstance();
                 engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
                 RunNotame(engine);
-                RunMuvr(engine);
-
-                MessageBox.Show("Output files are successfully created.");
-
-                if (Settings.Default.RHome != RDirectory)
-                {
-                    Settings.Default.RHome = RDirectory;
-                    Settings.Default.Save();
+                if (exportReport) {
+                    ExportReport(engine);
                 }
+                MessageBox.Show("Output files are successfully created.");
             } catch (Exception ex) {
                 MessageBox.Show($"An error occurred: {ex.Message}");
-            } finally {
-                if (Settings.Default.RHome != RDirectory) {
-                    Settings.Default.RHome = RDirectory;
-                    Settings.Default.Save();
-                }
             }
         }
 
         private void RunNotame(REngine engine) {
-            var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.Notame.R");
+            string notameScriptPath = "Resources/Notame.R";
+            string notameScript = System.IO.File.ReadAllText(notameScriptPath);
+
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
-            runner.Run(engine);
+            engine.Evaluate(notameScript);
         }
 
-        private void RunMuvr(REngine engine) {
+        private void ExportReport(REngine engine) {
+            string reportScriptPath = "Resources/Report.R";
+            string reportScript = System.IO.File.ReadAllText(reportScriptPath);
+
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
-            var runner = RRunner.LoadFromResource("CompMs.App.Msdial.Resources.MUVR.R");
-            runner.Run(engine);
+            engine.Evaluate(reportScript);
         }
     }
 }
