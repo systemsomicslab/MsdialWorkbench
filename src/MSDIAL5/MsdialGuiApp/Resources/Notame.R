@@ -1,8 +1,7 @@
 # RHaikonen
 # 20240429
-# notame preprocessing and quality metrics
+# notame preprocessing, quality metrics, and MUVR selection
 # Additional plotting with PCA and drift correction
-
 
 library(notame)
 library(doParallel)
@@ -417,10 +416,9 @@ read_MSDIAL <- function(tablefile, ion_mod = ""){
   return(list(exprs = quantval_tbl, pheno_data = pData, feature_data = fData))
 }
 
-
 # set up path
 path <- file.path(path, "/")
-grouping_name <- "Class" # set the name of group that exist MS-dial
+grouping_name <- "Class"
 
 set.seed(1234567)
 
@@ -445,10 +443,6 @@ if (exists("data")) {
   # Construct MetaboSet objects
   # (note: assumption is that the dataset already contains group information)
   
-  # take the parameters and use them
-  
-  # num_params <- sum(stringr::str_count(string = colnames(data$pheno_data), pattern = "Parameter"))
-  
   if ("Parameter1" %in% colnames(data$pheno_data) & "Parameter2" %in% colnames(data$pheno_data)){
     metaboset <- notame::construct_metabosets(exprs = data$exprs, pheno_data = data$pheno_data,
                                               feature_data = data$feature_data,
@@ -471,14 +465,12 @@ if (exists("data")) {
   
   # Preprocessing of ONE mode
   # (NB: visualizations disabled here for saving computational time,
-  # remove the hashtags to enable them.
   # Also, create a folder called figures in the working folder if you create visualizations)
   
   # First, set all zero abundances to NA and asses the detection rate and flag based on that
   metaboset <- notame::mark_nas(metaboset, value = 0)
   metaboset <- notame::mark_nas(metaboset, value = 1)
   metaboset <- notame::flag_detection(metaboset)
-  
   
   # Then check that there is QC samples.
   # The whole process is dependent on QC samples
@@ -516,7 +508,6 @@ if (exists("data")) {
     
     # Imputation
     # (note: may not be necessary especially if gap filling by compulsion was used in MS-DIAL)
-    # Needs missForest package for random forest imputation
     
     # Set seed number for reproducibility
     set.seed(1234567)
@@ -526,7 +517,6 @@ if (exists("data")) {
     # Impute bad quality features
     set.seed(1234567)
     imputed <- impute_rf(imputed, all_features = TRUE)
-    
     
     #Stop using several cores (releases them for other use)
     parallel::stopCluster(cl)
@@ -577,6 +567,9 @@ if (exists("data")) {
 
 #########################################################################
 
+# MUVR model to find most interesting ones
+# Saves boxplot
+
 library(notame)
 library(doParallel)
 library(dplyr)
@@ -586,7 +579,6 @@ library(tidyr)
 notame_repeated_boxes <- function(file_path, file_name = "MUVR_plot.pdf", separate = group_col(object),
                                   face = NULL, object, comp = T, name_col = NULL){
   pdf(file = paste0(file_path, file_name))
-  
   
   for (i in seq_len(nrow(object))) {
     if (i%%500 == 0) {
@@ -957,6 +949,5 @@ print_levels_temp <- function(v) {
   return(paste("  ", output, "\n"))
 }
 desc_metaboset <- metaboset_printer_temp(metaboset)
-
 
 #####################################################
