@@ -99,8 +99,17 @@ namespace CompMs.App.Msdial.Model.Statistics {
                     ExportReport(engine);
                 }
                 MessageBox.Show("Output files are successfully created.");
+                if (Settings.Default.RHome != RDirectory) {
+                    Settings.Default.RHome = RDirectory;
+                    Settings.Default.Save();
+                }
             } catch (Exception ex) {
                 MessageBox.Show($"An error occurred: {ex.Message}");
+            } finally {
+                if (Settings.Default.RHome != RDirectory) {
+                    Settings.Default.RHome = RDirectory;
+                    Settings.Default.Save();
+                }
             }
         }
 
