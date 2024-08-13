@@ -8,11 +8,13 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Export;
+using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialIntegrate.Parser;
 using System;
@@ -193,7 +195,7 @@ namespace CompMs.App.MsdialConsole.Process
                 FileProcess.Run(file, storage);
 
                 var sfs = file.LoadSpectrumFeatures();
-                using (var stream = File.Open(file.AnalysisFileName, FileMode.Create)) {
+                using (var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read)) {
                     scanExporter.Export(stream, file, sfs.Items);
                 }
             }
@@ -205,12 +207,24 @@ namespace CompMs.App.MsdialConsole.Process
                 var result = aligner.Alignment(files, alignmentFile, null);
                 result.Save(alignmentFile);
 
-                var accessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
+                var decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties);
+                var accessor = new GcmsAlignmentMetadataAccessor(storage.DataBaseMapper, storage.MsdialGcmsParameter, false);
+                var quantAccessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
+                var stats = new[] { StatsValue.Average, StatsValue.Stdev };
                 var spotExporter = new AlignmentCSVExporter("\t");
-                spotExporter.Export(null, result.AlignmentSpotProperties, null, files, null, null, accessor, null);
+                using (var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read)) {
+                    spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+                }
             }
             if (isProjectSaved)
             {
+                storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = "console";
+                storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
+                using (var streamManager = new DirectoryTreeStreamManager(storage.MsdialGcmsParameter.ProjectFolderPath)) {
+                    storage?.SaveAsync(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
+                    ((IStreamManager)streamManager).Complete();
+                }
+
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
                 using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create))
                 {
@@ -221,8 +235,35 @@ namespace CompMs.App.MsdialConsole.Process
             return 0;
         }
 
-        #region // error code
+        private static List<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialGcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+            var files = storage.AnalysisFiles;
 
+            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
+            foreach (var file in files) {
+                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+                pointerss.Add((version, pointers, isAnnotationInfo));
+            }
+
+            var streams = new List<FileStream>();
+            var decs = new List<MSDecResult>();
+            try {
+                streams = files.Select(file => File.Open(file.DeconvolutionFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)).ToList();
+                foreach (var spot in spots.OrEmptyIfNull()) {
+                    var repID = spot.RepresentativeFileID;
+                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var decResult = MsdecResultsReader.ReadMSDecResult(
+                        streams[repID], pointerss[repID].pointers[peakID],
+                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
+                    decs.Add(decResult);
+                }
+            }
+            finally {
+                streams.ForEach(stream => stream.Close());
+            }
+            return decs;
+        }
+
+#region // error code
         private int ridictionaryError()
         {
             string error = "Invalid RI information. Please check that your file follows the following format.\r\n";

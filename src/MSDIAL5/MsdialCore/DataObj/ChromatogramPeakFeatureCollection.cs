@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public ChromatogramPeakFeatureCollection Flatten()
         {
-            var flatten = _items.SelectMany(item => item.DriftChromFeatures.Any() ? item.DriftChromFeatures : [item]).ToList();
+            var flatten = _items.SelectMany(item => item?.DriftChromFeatures.Any() ?? false ? item.DriftChromFeatures : [item]).ToList();
             return new ChromatogramPeakFeatureCollection(flatten);
         }
 

@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task SaveAsync() {
-            if (!(CurrentDataset is null)) {
+            if (CurrentDataset is not null) {
                 await CurrentDataset.SaveAsync();
             }
             using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
