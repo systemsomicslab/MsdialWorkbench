@@ -369,6 +369,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
@@ -377,6 +378,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
         }
@@ -447,7 +449,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcimmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
+            return new LcimmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);
         }
     }
 

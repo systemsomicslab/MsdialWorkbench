@@ -113,6 +113,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void Export(Stream stream, AnalysisFileBean file, AnalysisCSVExporterFactory exporterFactory) {
             var peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
+            peaks = peaks.Flatten();
             exporterFactory.CreateExporter(_providerFactory, Accessor).Export(stream, file, peaks);
         }
 

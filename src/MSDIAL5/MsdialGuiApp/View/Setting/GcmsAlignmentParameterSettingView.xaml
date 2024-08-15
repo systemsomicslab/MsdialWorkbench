@@ -285,6 +285,15 @@
                               VerticalContentAlignment="Center"
                               Height="24"/>
                 </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Choose base peak's m/z for rep. quant mass">
+                    <CheckBox IsChecked="{Binding Path=IsRepresentativeQuantMassBasedOnBasePeakMz.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              HorizontalAlignment="Left"
+                              ToolTip="The m/z value of base peak in EI-MS is used for the representative quant mass."
+                              VerticalContentAlignment="Center"
+                              Height="24"/>
+                </ui:LabeledContent>
             </StackPanel>
         </Expander>
     </Grid>
