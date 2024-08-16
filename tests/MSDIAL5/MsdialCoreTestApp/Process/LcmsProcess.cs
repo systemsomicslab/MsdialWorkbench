@@ -138,11 +138,6 @@ namespace CompMs.App.MsdialConsole.Process
             if (isProjectSaved) {
                 storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
                 storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
-                using (var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath)) {
-                    storage?.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
-                    ((IStreamManager)streamManager).Complete();
-                }
-
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
                 using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create)) {
                     projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();

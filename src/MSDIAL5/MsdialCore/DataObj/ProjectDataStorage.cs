@@ -111,7 +111,7 @@ namespace CompMs.MsdialCore.DataObj
             var file = storage.Parameter.ProjectFileName;
             try {
                 using var streamManager = datasetStreamManagerFactory?.Invoke(dir);
-                await serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(file), dir);
+                await serializer.SaveAsync(storage, streamManager, file, dir);
                 streamManager?.Complete();
             }
             catch (Exception ex) {

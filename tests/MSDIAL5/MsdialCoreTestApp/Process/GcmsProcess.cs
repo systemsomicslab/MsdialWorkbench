@@ -121,7 +121,7 @@ namespace CompMs.App.MsdialConsole.Process
             });
             container.DataBases = dbStorage;
             container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
-            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, param.ProjectParam.ProjectFileName + ".mdproject"));
+            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, param.ProjectParam.ProjectFolderPath, param.ProjectParam.ProjectFileName + ".mdproject"));
             projectDataStorage.AddStorage(container);
             Console.WriteLine("Start processing..");
 			return Execute(projectDataStorage, container, outputFolder, isProjectStore);
@@ -220,11 +220,6 @@ namespace CompMs.App.MsdialConsole.Process
             {
                 storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = "console";
                 storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
-                using (var streamManager = new DirectoryTreeStreamManager(storage.MsdialGcmsParameter.ProjectFolderPath)) {
-                    storage?.SaveAsync(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
-                    ((IStreamManager)streamManager).Complete();
-                }
-
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
                 using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create))
                 {

@@ -1,23 +1,21 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
-using CompMs.Common.Query;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public static class CommonProcess {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
@@ -31,7 +29,7 @@ namespace CompMs.App.MsdialConsole.Process {
             }
 
             var dt = DateTime.Now;
-            var projectFileName = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + ".mtd2";
+            var projectFileName = $"Project-{dt:yyMMddhhmm}.mddata";
             var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
             param.ProjectFolderPath = inputfolder;
             param.ProjectFileName = projectFileName;
@@ -104,10 +102,9 @@ namespace CompMs.App.MsdialConsole.Process {
         }
 
         public static void SetLipidQueries(ParameterBase param) {
-            var exeDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var exeDir = AppDomain.CurrentDomain.BaseDirectory;
             var iniLipidPath = exeDir + "LipidQueries.INI";
-            var solvent = param.LipidQueryContainer.SolventType;
-            if (!System.IO.File.Exists(iniLipidPath)) {
+            if (!File.Exists(iniLipidPath)) {
                 using (var sw = new StreamWriter(iniLipidPath, false, Encoding.ASCII)) {
                     sw.WriteLine("Class\tAdduct\tIon mode\tIsSelected");
                     var queries = param.LipidQueryContainer.LbmQueries;
