@@ -112,7 +112,7 @@ namespace CompMs.Common.Lipidomics {
             if (adduct.AdductIonName == "[M+NH4]+") {
                 spectrum.AddRange(
                     new[] {
-                        new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O , 50d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                         //new SpectrumPeak(lipid.Mass+MassDiffDictionary.ProtonMass , 50d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
                     }
@@ -122,7 +122,7 @@ namespace CompMs.Common.Lipidomics {
             {
                 spectrum.AddRange(
                     new[] {
-                        new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O , 50d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
@@ -130,7 +130,7 @@ namespace CompMs.Common.Lipidomics {
             else if (adduct.AdductIonName == "[M+Na]+") {
                 spectrum.AddRange(
                     new[] {
-                        new SpectrumPeak(skelton , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(skelton , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
             }
