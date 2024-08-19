@@ -33,7 +33,8 @@ namespace CompMs.Common.Lipidomics {
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
             return adduct.AdductIonName == "[M+NH4]+" ||
-                adduct.AdductIonName == "[M+Na]+";
+                adduct.AdductIonName == "[M+Na]+" ||
+                adduct.AdductIonName == "[M-H]-";
         }
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = adduct.IonMode == IonMode.Positive ? 40.0 : 20.0;
@@ -114,6 +115,15 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O , 50d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                         //new SpectrumPeak(lipid.Mass+MassDiffDictionary.ProtonMass , 50d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                    }
+                );
+            }
+            if (adduct.AdductIonName == "[M-H]-")
+            {
+                spectrum.AddRange(
+                    new[] {
+                        new SpectrumPeak(skelton+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O , 50d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
             }
