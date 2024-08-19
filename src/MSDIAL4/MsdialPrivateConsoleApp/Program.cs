@@ -61,8 +61,8 @@ namespace MsdialPrivateConsoleApp {
             //MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
 
-            LipidomicsResultCuration.StatisticsMsdialValidationResult(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\sourcedata\figure2\result_to_create_figure2c\resultdata.txt",
-                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\sourcedata\figure2\result_to_create_figure2c\resultdata_curated.txt");
+            LipidomicsResultCuration.StatisticsMsdialValidationResult(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\revision\sourcedata\figure2\result_to_create_figure2c\resultdata.txt",
+                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\revision\sourcedata\figure2\result_to_create_figure2c\resultdata_curated.txt");
             //MspManager.Msp2TextAsMsdialAlignmentResultFormat(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.txt",
