@@ -16,18 +16,20 @@ namespace CompMs.MsdialCore.Algorithm
     public sealed class ProcessRunner
     {
         private readonly IFileProcessor _processor;
+        private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
 
-        public ProcessRunner(IFileProcessor processor) {
+        public ProcessRunner(IFileProcessor processor, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             _processor = processor ?? throw new ArgumentNullException(nameof(processor));
+            _analysisFiles = analysisFiles;
         }
 
-        public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
+        public Task RunAllAsync(IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
+            var consumer = new Consumer(_analysisFiles, reportActions, afterEachRun, token);
             return Task.WhenAll(consumer.ConsumeAllAsync(_processor.RunAsync, numParallel));
         }
 
-        public Task AnnotateAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
+        public Task AnnotateAllAsync(IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
+            var consumer = new Consumer(_analysisFiles, reportActions, afterEachRun, token);
             return Task.WhenAll(consumer.ConsumeAllAsync(_processor.AnnotateAsync, numParallel));
         }
 

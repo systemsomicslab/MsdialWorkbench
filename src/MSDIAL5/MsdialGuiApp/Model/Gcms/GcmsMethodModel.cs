@@ -158,7 +158,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.Identification)) {
                 var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                var runner = new ProcessRunner(processor);
+                var runner = new ProcessRunner(processor, _storage.AnalysisFiles);
 
                 if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
                     if (!RunFromPeakSpotting(runner)) {
@@ -188,7 +188,6 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunFromPeakSpotting(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    _storage.AnalysisFiles,
                     vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                     Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
@@ -201,7 +200,6 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunFromIdentification(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.AnnotateAllAsync(
-                    _storage.AnalysisFiles,
                     vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                     Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,

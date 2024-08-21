@@ -209,7 +209,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
-                var runner = new ProcessRunner(processor);
+                var runner = new ProcessRunner(processor, _storage.AnalysisFiles);
                 if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                     if (!ProcessPickAndAnnotaion(_storage, _storage.AnalysisFiles, runner))
                         return;
@@ -255,7 +255,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    analysisFiles,
                     vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                     Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
@@ -268,7 +267,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.AnnotateAllAsync(
-                    analysisFiles,
                     vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                     Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
