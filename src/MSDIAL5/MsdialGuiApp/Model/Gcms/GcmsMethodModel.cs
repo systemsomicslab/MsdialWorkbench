@@ -156,14 +156,19 @@ namespace CompMs.App.Msdial.Model.Gcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
-                if (!RunFromPeakSpotting()) {
-                    return;
+            if (option.HasFlag(ProcessOption.Identification)) {
+                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
+                var runner = new ProcessRunner(processor);
+
+                if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
+                    if (!RunFromPeakSpotting(runner)) {
+                        return;
+                    }
                 }
-            }
-            else if (option.HasFlag(ProcessOption.Identification)) {
-                if (!RunFromIdentification()) {
-                    return;
+                else if (option.HasFlag(ProcessOption.Identification)) {
+                    if (!RunFromIdentification(runner)) {
+                        return;
+                    }
                 }
             }
 
@@ -180,37 +185,27 @@ namespace CompMs.App.Msdial.Model.Gcms
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunFromPeakSpotting() {
+        private bool RunFromPeakSpotting(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.RunAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
+                vm_ => runner.RunAllAsync(
+                    _storage.AnalysisFiles,
+                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                    vm_.Increment,
+                    default),
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
         }
 
-        private bool RunFromIdentification() {
+        private bool RunFromIdentification(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.AnnotateAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
+                vm_ => runner.AnnotateAllAsync(
+                    _storage.AnalysisFiles,
+                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                    vm_.Increment,
+                    default),
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;

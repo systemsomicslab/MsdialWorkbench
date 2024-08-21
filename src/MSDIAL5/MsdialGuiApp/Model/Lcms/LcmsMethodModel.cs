@@ -207,13 +207,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                if (!ProcessPickAndAnnotaion(_storage, annotationProcess))
-                    return;
-            }
-            else if (processOption.HasFlag(ProcessOption.Identification)) {
-                if (!ProcessAnnotaion(_storage, annotationProcess))
-                    return;
+            if (processOption.HasFlag(ProcessOption.Identification)) {
+                var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
+                var runner = new ProcessRunner(processor);
+                if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                    if (!ProcessPickAndAnnotaion(_storage, _storage.AnalysisFiles, runner))
+                        return;
+                }
+                else if (processOption.HasFlag(ProcessOption.Identification)) {
+                    if (!ProcessAnnotaion(_storage, _storage.AnalysisFiles, runner))
+                        return;
+                }
             }
 
             // Run second process
@@ -248,38 +252,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, _storage.DataBaseMapper, _matchResultEvaluator);
         }
 
-        private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess) {
+        private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
-                    var runner = new ProcessRunner(processor);
-                    return runner.RunAllAsync(
-                        storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
-                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+                vm_ => runner.RunAllAsync(
+                    analysisFiles,
+                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                    vm_.Increment,
+                    default),
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
         }
 
-        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess) {
+        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
-                    var runner = new ProcessRunner(processor);
-                    return runner.AnnotateAllAsync(
-                        storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
-                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+                vm_ => runner.AnnotateAllAsync(
+                    analysisFiles,
+                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                    vm_.Increment,
+                    default),
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
         }
