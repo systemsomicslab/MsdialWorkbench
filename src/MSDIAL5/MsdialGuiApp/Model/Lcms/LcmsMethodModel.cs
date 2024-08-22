@@ -209,13 +209,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
-                var runner = new ProcessRunner(processor, _storage.AnalysisFiles);
+                var runner = new ProcessRunner(processor, _storage.AnalysisFiles, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
                 if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                    if (!ProcessPickAndAnnotaion(_storage, _storage.AnalysisFiles, runner))
+                    if (!ProcessPickAndAnnotaion(_storage.AnalysisFiles, runner))
                         return;
                 }
                 else if (processOption.HasFlag(ProcessOption.Identification)) {
-                    if (!ProcessAnnotaion(_storage, _storage.AnalysisFiles, runner))
+                    if (!ProcessAnnotaion(_storage.AnalysisFiles, runner))
                         return;
                 }
             }
@@ -252,11 +252,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, _storage.DataBaseMapper, _matchResultEvaluator);
         }
 
-        private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
+        private bool ProcessPickAndAnnotaion(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
                     vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
-                    Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
@@ -264,11 +263,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             return request.Result ?? false;
         }
 
-        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
+        private bool ProcessAnnotaion(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.AnnotateAllAsync(
                     vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
-                    Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
