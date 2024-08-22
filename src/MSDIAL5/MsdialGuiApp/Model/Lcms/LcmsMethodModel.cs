@@ -255,7 +255,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),
@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.AnnotateAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),

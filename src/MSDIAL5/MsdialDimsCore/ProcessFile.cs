@@ -265,12 +265,12 @@ namespace CompMs.MsdialDimsCore
             }
         }
 
-        Task IFileProcessor.RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
-            return Task.Run(() => Run(file, reportAction, token));
+        Task IFileProcessor.RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
+            return Task.Run(() => Run(file, reportAction is null ? (Action<int>)null : reportAction.Report, token), token);
         }
 
-        Task IFileProcessor.AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
-            return AnnotateAsync(file, reportAction, token);
+        Task IFileProcessor.AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
+            return AnnotateAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
         }
     }
 }

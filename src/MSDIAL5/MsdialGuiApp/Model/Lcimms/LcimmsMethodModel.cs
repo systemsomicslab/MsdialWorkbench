@@ -229,7 +229,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm => runner.RunAllAsync(vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
+                vm => runner.RunAllAsync(vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), usable, vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
@@ -237,7 +237,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private bool RunAnnotation(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                vm => runner.AnnotateAllAsync(vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
+                vm => runner.AnnotateAllAsync(vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), usable, vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;

@@ -35,7 +35,11 @@ namespace CompMs.MsdialLcMsApi.Process
             _peakPickProcess = new PeakPickProcess(storage);
             _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
             _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
-        }       
+        }
+
+        public Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
+            return RunAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
 
         public Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var provider = _factory.Create(file);
@@ -67,6 +71,9 @@ namespace CompMs.MsdialLcMsApi.Process
             reportAction?.Invoke(100);
         }
 
+        public Task AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token = default) {
+            return AnnotateAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));

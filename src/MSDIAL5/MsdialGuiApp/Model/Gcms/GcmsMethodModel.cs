@@ -188,7 +188,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunFromPeakSpotting(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),
@@ -200,7 +200,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunFromIdentification(ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.AnnotateAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
                     vm_.Increment,
                     default),

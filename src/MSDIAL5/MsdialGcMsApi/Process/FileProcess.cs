@@ -45,6 +45,9 @@ namespace CompMs.MsdialGcMsApi.Process
             _annotation = new Annotation(calculateMatchScore, storage.Parameter);
         }
 
+        public Task RunAsync(AnalysisFileBean analysisFile, IProgress<int> reportAction, CancellationToken token = default) {
+            return RunAsync(analysisFile, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
@@ -87,6 +90,9 @@ namespace CompMs.MsdialGcMsApi.Process
             reportAction?.Invoke((int)PROCESS_END);
         }
 
+        public Task AnnotateAsync(AnalysisFileBean analysisFile, IProgress<int> reportAction, CancellationToken token) {
+            return AnnotateAsync(analysisFile, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
         public async Task AnnotateAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
@@ -120,7 +126,7 @@ namespace CompMs.MsdialGcMsApi.Process
             reportAction?.Invoke((int)PROCESS_END);
         }
 
-        public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
+        public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
             new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType)).RunAsync(file, reportAction, token).Wait();
         }

@@ -44,6 +44,9 @@ namespace CompMs.MsdialLcImMsApi.Process
             this.isGuiProcess = isGuiProcess;
         }
 
+        public Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction = null, CancellationToken token = default) {
+            return RunAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
         public Task RunAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
 
             var parameter = storage.Parameter;
@@ -80,6 +83,9 @@ namespace CompMs.MsdialLcImMsApi.Process
             return Task.CompletedTask;
         }
 
+        public Task AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction = null, CancellationToken token = default) {
+            return AnnotateAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
+        }
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var spectrumProvider = spectrumProviderFactory.Create(rawObj);
