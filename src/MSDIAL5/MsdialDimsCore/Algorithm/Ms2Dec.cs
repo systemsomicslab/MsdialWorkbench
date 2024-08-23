@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -9,7 +8,6 @@ using CompMs.MsdialDimsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialDimsCore.Algorithm
 {
@@ -26,7 +24,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
             double targetCE = -1,
-            Action<int> reportAction = null, System.Threading.CancellationToken token = default) {
+            Action<int> reportAction = null) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var peak in chromPeakFeatures) {

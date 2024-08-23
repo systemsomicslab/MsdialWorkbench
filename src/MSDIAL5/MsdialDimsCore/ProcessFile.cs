@@ -34,7 +34,7 @@ namespace CompMs.MsdialDimsCore
             _evaluator = evaluator;
         }
 
-        public void Run(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
+        public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
             var param = _storage.Parameter;
             // parse raw data
             Console.WriteLine("Loading spectral information");
@@ -62,10 +62,10 @@ namespace CompMs.MsdialDimsCore
             var max_msdec = 30.0;
             var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
             var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
-            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction, token);
+            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction);
 
             Console.WriteLine("Annotation started");
-            _annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
+            await _annotationProcess.RunAnnotationAsync(peakFeatures, msdecResults, provider, param.NumThreads, v => reportAction?.Invoke((int)v), token).ConfigureAwait(false);
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
             characterEstimator.Process(file, peakFeatures, msdecResults, _evaluator, param, reportAction, provider);
@@ -91,7 +91,7 @@ namespace CompMs.MsdialDimsCore
             var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
             var msdecResultss = await Task.WhenAll(msdecResultssTask).ConfigureAwait(false);
             var msdecResults = msdecResultss.FirstOrDefault(results => results.CollisionEnergy == targetCE) ?? msdecResultss.First();
-            _annotationProcess.RunAnnotation(peakFeatures.Items, msdecResults.MSDecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
+            await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults.MSDecResults, provider, param.NumThreads, v => reportAction?.Invoke((int)v), token).ConfigureAwait(false);
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
             characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, param, reportAction, provider);
@@ -100,7 +100,7 @@ namespace CompMs.MsdialDimsCore
             reportAction?.Invoke(100);
         }
 
-        public static void Run(
+        public static async Task RunAsync(
             AnalysisFileBean file,
             IDataProvider provider,
             IMsdialDataStorage<MsdialDimsParameter> storage,
@@ -135,10 +135,10 @@ namespace CompMs.MsdialDimsCore
             var max_msdec = 30.0;
             var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
             var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
-            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction, token);
+            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction);
 
             Console.WriteLine("Annotation started");
-            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
+            await annotationProcess.RunAnnotationAsync(peakFeatures, msdecResults, provider, param.NumThreads, v => reportAction?.Invoke((int)v), token).ConfigureAwait(false);
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
             characterEstimator.Process(file, peakFeatures, msdecResults, evaluator, param, reportAction, provider);
@@ -158,11 +158,11 @@ namespace CompMs.MsdialDimsCore
 
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
-                var chromScanID = peakFeature.ChromScanIdTop;
+                var chromScanID = peakFeature.PeakFeature.ChromScanIdTop;
 
                 IChromatogramPeakFeature peak = peakFeature;
                 peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peak.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
+                peak.ChromXsTop = new ChromXs(peakFeature.PeakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
 
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
@@ -182,7 +182,7 @@ namespace CompMs.MsdialDimsCore
 
 #if DEBUG
                 // check result
-                Console.WriteLine($"Peak ID = {peakFeature.PeakID}, Scan ID = {peakFeature.ChromScanIdTop}, MSSpecID = {peakFeature.ChromXsTop.Mz.Value}, Height = {peakFeature.PeakHeightTop}, Area = {peakFeature.PeakAreaAboveZero}");
+                Console.WriteLine($"Peak ID = {peakFeature.PeakID}, Scan ID = {peakFeature.PeakFeature.ChromScanIdTop}, MSSpecID = {peakFeature.PeakFeature.ChromXsTop.Mz.Value}, Height = {peakFeature.PeakFeature.PeakHeightTop}, Area = {peakFeature.PeakFeature.PeakAreaAboveZero}");
 #endif
             }
 
@@ -266,7 +266,7 @@ namespace CompMs.MsdialDimsCore
         }
 
         Task IFileProcessor.RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
-            return Task.Run(() => Run(file, reportAction is null ? (Action<int>)null : reportAction.Report, token), token);
+            return Task.Run(() => RunAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token), token);
         }
 
         Task IFileProcessor.AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {

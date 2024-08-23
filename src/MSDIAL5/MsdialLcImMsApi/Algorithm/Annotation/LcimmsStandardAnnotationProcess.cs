@@ -29,15 +29,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
-        public void RunAnnotation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResult, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
-            var reporter = ReportProgress.FromRange(reportAction, 0, 1);
-            foreach (var (peak, idx) in chromPeakFeatures.WithIndex()) {
-                RunAnnotationCore(peak, msdecResult, provider);
-                reporter.Show(idx + 1, chromPeakFeatures.Count);
-            }
-        }
-
-        public Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResult, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
+        public Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResult, IDataProvider provider, int numThread = 1, Action<double> reportAction = null, CancellationToken token = default) {
             var reporter = ReportProgress.FromRange(reportAction, 0, 1);
             var queue = new ConcurrentQueue<ChromatogramPeakFeature>(chromPeakFeatures);
             var tasks = new Task[Math.Max(numThread, 1)];

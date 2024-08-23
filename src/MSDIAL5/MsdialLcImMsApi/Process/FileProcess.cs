@@ -47,7 +47,7 @@ namespace CompMs.MsdialLcImMsApi.Process
         public Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction = null, CancellationToken token = default) {
             return RunAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
         }
-        public Task RunAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
+        public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
 
             var parameter = storage.Parameter;
             var iupacDB = storage.IupacDatabase;
@@ -69,7 +69,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures, mSDecResultCollections, parameter, reportAction, token);
+            await PeakAnnotationAsync(annotationProcess, spectrumProvider, chromPeakFeatures, mSDecResultCollections, parameter, reportAction, token).ConfigureAwait(false);
 
             // characterizatin
             //PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
@@ -79,8 +79,6 @@ namespace CompMs.MsdialLcImMsApi.Process
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
 
             reportAction?.Invoke(100);
-
-            return Task.CompletedTask;
         }
 
         public Task AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction = null, CancellationToken token = default) {
@@ -99,7 +97,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);
             chromPeakFeatures.ClearMatchResultProperties();
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
-            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures.Items, mSDecResultCollections, storage.Parameter, reportAction, token);
+            await PeakAnnotationAsync(annotationProcess, spectrumProvider, chromPeakFeatures.Items, mSDecResultCollections, storage.Parameter, reportAction, token).ConfigureAwait(false);
 
             // characterizatin
             PeakCharacterization(file, mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reportAction);
@@ -208,7 +206,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             return targetCE2MSDecResults;
         }
 
-        private static void PeakAnnotation(
+        private static async Task PeakAnnotationAsync(
             IAnnotationProcess annotationProcess,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -223,7 +221,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             foreach (var (mSDecResultCollection, index) in mSDecResultCollections.WithIndex()) {
                 var msdecResults = mSDecResultCollection.MSDecResults;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                annotationProcess.RunAnnotation(chromPeakFeatures, msdecResults, provider, parameter.NumThreads - 1, token, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction));
+                await annotationProcess.RunAnnotationAsync(chromPeakFeatures, msdecResults, provider, parameter.NumThreads - 1, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction), token).ConfigureAwait(false);
             }
         }
 

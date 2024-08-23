@@ -52,7 +52,7 @@ namespace CompMs.App.MsdialConsole.Process
                 evaluator,
                 mapper);
             foreach (var file in files) {
-                ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
+                ProcessFile.RunAsync(file, providerFactory.Create(file), storage, annotationProcess, evaluator).Wait();
             }
 
             if (storage.MsdialDimsParameter.TogetherWithAlignment) {

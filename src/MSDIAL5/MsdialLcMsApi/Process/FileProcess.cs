@@ -38,12 +38,8 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
-            return RunAsync(file, reportAction is null ? (Action<int>)null : reportAction.Report, token);
-        }
-
-        public Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var provider = _factory.Create(file);
-            return RunAsync(file, provider, reportAction, token);
+            return RunAsync(file, provider, reportAction is null ? (Action<int>)null : reportAction.Report, token);
         }
 
         public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction, CancellationToken token = default) {
@@ -63,7 +59,7 @@ namespace CompMs.MsdialLcMsApi.Process
             // annotations
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+            await _peakAnnotationProcess.AnnotateAsync(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction).ConfigureAwait(false);
 
             // file save
             token.ThrowIfCancellationRequested();
@@ -85,7 +81,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);
             chromPeakFeatures.ClearMatchResultProperties();
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
-            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+            await _peakAnnotationProcess.AnnotateAsync(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction).ConfigureAwait(false);
 
             // file save
             token.ThrowIfCancellationRequested();

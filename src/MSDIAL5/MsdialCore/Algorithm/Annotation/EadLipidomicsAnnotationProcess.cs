@@ -17,18 +17,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     {
         private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
 
-        public void RunAnnotation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
-            var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
-
-            for (int i = 0; i < chromPeakFeatures.Count; i++) {
-                var chromPeakFeature = chromPeakFeatures[i];
-                var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                RunAnnotationCore(chromPeakFeature, msdecResult, provider);
-                reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
-            };
-        }
-
-        public async Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
+        public async Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, Action<double> reportAction = null, CancellationToken token = default) {
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -89,24 +78,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 chromPeakFeature.MSDecResultIdUsed = index;
             }
             return msdecResult;
-        }
-
-        private void RunAnnotationCore(
-             ChromatogramPeakFeature chromPeakFeature,
-             MSDecResult msdecResult,
-             IDataProvider provider) {
-
-            foreach (var factory in _moleculeQueryFactries) {
-                var rawSpectrum = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop);
-                var query = factory.Create(
-                    chromPeakFeature,
-                    msdecResult,
-                    rawSpectrum.Spectrum,
-                    chromPeakFeature.PeakCharacter,
-                    factory.PrepareParameter());
-                SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum);
-            }
-            SetRepresentativeProperty(chromPeakFeature);
         }
 
         private Task RunAnnotationCoreAsync(
