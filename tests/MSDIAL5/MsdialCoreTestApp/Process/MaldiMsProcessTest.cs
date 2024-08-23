@@ -265,7 +265,6 @@ namespace CompMs.App.MsdialConsole.Process
                 rawobj = access.GetMeasurement();
             }
             Console.WriteLine("Peak picking...");
-            var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialDimsDataStorage {
                 AnalysisFiles = new List<AnalysisFileBean>() { file },
                 AlignmentFiles = new List<AlignmentFileBean>(),
@@ -285,7 +284,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var annotationProcess = BuildAnnotationProcess(container.DataBases);
 
-            MsdialDimsCore.ProcessFile.RunAsync(file, provider, container, annotationProcess, evaluator).Wait();
+            new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator).RunAsync(file).Wait();
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
             RawSpectraOnPixels pixelData = null;
