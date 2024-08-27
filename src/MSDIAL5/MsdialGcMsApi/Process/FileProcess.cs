@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -10,6 +11,7 @@ using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,11 +47,15 @@ namespace CompMs.MsdialGcMsApi.Process
             _annotation = new Annotation(calculateMatchScore, storage.Parameter);
         }
 
-        public Task RunAsync(AnalysisFileBean analysisFile, IProgress<int> reportAction, CancellationToken token = default) {
-            return RunAsync(analysisFile, reportAction is null ? (Action<int>)null : reportAction.Report, token);
-        }
-        public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
-            reportAction?.Invoke((int)PROCESS_START);
+        public async Task RunAsync(AnalysisFileBean analysisFile, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
+            if (!option.HasFlag(ProcessOption.PeakSpotting) && !option.HasFlag(ProcessOption.Identification)) {
+                return;
+            }
+
+            var report = progress is null ? (Action<int>?)null : progress.Report;
+
+            progress?.Report((int)PROCESS_START);
+
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
             var riHandler = carbon2RtDict is null ? null : new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
 
@@ -57,73 +63,71 @@ namespace CompMs.MsdialGcMsApi.Process
             var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
 
-            // feature detections
-            Console.WriteLine("Peak picking started");
-            var reportSpotting = ReportProgress.FromRange(reportAction, PEAKSPOTTING_START, PEAKSPOTTING_END);
-            var chromPeakFeatures = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
-            SetRetentionIndex(chromPeakFeatures, riHandler);
-            await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
+            var (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults) = option.HasFlag(ProcessOption.PeakSpotting)
+                ? await DetectScans(analysisFile, report, riHandler, provider, token).ConfigureAwait(false)
+                : await LoadScans(analysisFile, report, riHandler, provider, token).ConfigureAwait(false);
+
             token.ThrowIfCancellationRequested();
-
-            // chrom deconvolutions
-            Console.WriteLine("Deconvolution started");
-            var reportDeconvolution = ReportProgress.FromRange(reportAction, DECONVOLUTION_START, DECONVOLUTION_END);
-            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
-            var msdecResults = _ms1Deconvolution.GetMSDecResults(spectra, chromPeakFeatures, reportDeconvolution);
-            SetRetentionIndex(msdecResults, riHandler);
-            token.ThrowIfCancellationRequested();
-
-            // annotations
-            Console.WriteLine("Annotation started");
-            var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
-            token.ThrowIfCancellationRequested();
-
-            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
-            SetRetentionIndex(spectrumFeatureCollection, riHandler);
-
-            // save
-            analysisFile.SaveChromatogramPeakFeatures(chromPeakFeatures);
-            analysisFile.SaveMsdecResultWithAnnotationInfo(msdecResults);
-            analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
-
-            reportAction?.Invoke((int)PROCESS_END);
-        }
-
-        public Task AnnotateAsync(AnalysisFileBean analysisFile, IProgress<int> reportAction, CancellationToken token) {
-            return AnnotateAsync(analysisFile, reportAction is null ? (Action<int>)null : reportAction.Report, token);
-        }
-        public async Task AnnotateAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
-            reportAction?.Invoke((int)PROCESS_START);
-            var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
-            var riHandler = carbon2RtDict is null ? null : new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
-
-            await Task.Yield();
-            Console.WriteLine("Loading spectral information");
-            var provider = _providerFactory.Create(analysisFile);
-            token.ThrowIfCancellationRequested();
-            var spectraTask = provider.LoadMsSpectrumsAsync(token);
-            var chromPeakFeatures = await analysisFile.LoadChromatogramPeakFeatureCollectionAsync();
-            var mSDecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
-
-            SetRetentionIndex(chromPeakFeatures.Items, riHandler);
-            SetRetentionIndex(mSDecResults, riHandler);
-
-            // annotations
-            Console.WriteLine("Annotation started");
-            var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, reportAnnotation);
-            token.ThrowIfCancellationRequested();
-
-            var spectra = await spectraTask.ConfigureAwait(false);
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
             await chromPeakFeatures.SerializeAsync(analysisFile, token);
-            analysisFile.SaveMsdecResultWithAnnotationInfo(mSDecResults);
+            analysisFile.SaveMsdecResultWithAnnotationInfo(msdecResults);
             analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
-            reportAction?.Invoke((int)PROCESS_END);
+
+            progress?.Report((int)PROCESS_END);
+        }
+
+        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>, AnnotatedMSDecResult[])> LoadScans(AnalysisFileBean analysisFile, Action<int> report, RetentionIndexHandler riHandler, IDataProvider provider, CancellationToken token) {
+            var spectraTask = provider.LoadMsSpectrumsAsync(token);
+            var chromPeakFeatures = await analysisFile.LoadChromatogramPeakFeatureCollectionAsync();
+            var msdecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
+
+            SetRetentionIndex(chromPeakFeatures.Items, riHandler);
+            SetRetentionIndex(msdecResults, riHandler);
+
+            // annotations
+            Console.WriteLine("Annotation started");
+            var reportAnnotation = ReportProgress.FromRange(report, ANNOTATION_START, ANNOTATION_END);
+            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
+            token.ThrowIfCancellationRequested();
+
+            var spectra = await spectraTask.ConfigureAwait(false);
+            return (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults);
+        }
+
+        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>, AnnotatedMSDecResult[])> DetectScans(AnalysisFileBean analysisFile, Action<int> report, RetentionIndexHandler riHandler, IDataProvider provider, CancellationToken token) {
+            // feature detections
+            Console.WriteLine("Peak picking started");
+            var reportSpotting = ReportProgress.FromRange(report, PEAKSPOTTING_START, PEAKSPOTTING_END);
+            var chromPeakFeatures_ = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
+            var chromPeakFeatures = new ChromatogramPeakFeatureCollection(chromPeakFeatures_);
+            SetRetentionIndex(chromPeakFeatures_, riHandler);
+            await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures_, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+
+            // chrom deconvolutions
+            Console.WriteLine("Deconvolution started");
+            var reportDeconvolution = ReportProgress.FromRange(report, DECONVOLUTION_START, DECONVOLUTION_END);
+            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            var msdecResults = _ms1Deconvolution.GetMSDecResults(spectra, chromPeakFeatures_, reportDeconvolution);
+            SetRetentionIndex(msdecResults, riHandler);
+            token.ThrowIfCancellationRequested();
+
+            // annotations
+            Console.WriteLine("Annotation started");
+            var reportAnnotation = ReportProgress.FromRange(report, ANNOTATION_START, ANNOTATION_END);
+            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
+            return (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults);
+        }
+
+        public Task RunAsync(AnalysisFileBean analysisFile, IProgress<int> progress, CancellationToken token = default) {
+            return RunAsync(analysisFile, ProcessOption.PeakSpotting | ProcessOption.Identification, progress, token);
+        }
+
+        public Task AnnotateAsync(AnalysisFileBean analysisFile, IProgress<int> progress, CancellationToken token) {
+            return RunAsync(analysisFile, ProcessOption.Identification, progress, token);
         }
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
