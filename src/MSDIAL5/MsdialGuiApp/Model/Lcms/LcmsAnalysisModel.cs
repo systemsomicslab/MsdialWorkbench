@@ -33,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -226,12 +227,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
+            analysisFile = analysisFileModel;
         }
 
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
         private readonly UndoManager _undoManager;
-
+        public AnalysisFileBeanModel analysisFile { get; }
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
@@ -260,6 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
+        public InternalMsFinderSingleSpot InternalMsFinderSingleSpot { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
@@ -281,6 +284,37 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearch.Disposables.Add(plotService);
             return compoundSearch;
+        }
+
+        public void CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return;
+            }
+            try {
+                var tempDir = Path.Combine(Path.GetDirectoryName(analysisFile.AnalysisFilePath), "MSDIAL_TEMP");
+                if (!Directory.Exists(tempDir)) {
+                    Directory.CreateDirectory(tempDir);
+                }
+                var dt = DateTime.Now;
+                var nameString = "PeakID" + peak.InnerModel.PeakID + "_" + dt.Year.ToString() + "_" + dt.Month.ToString() + "_" + dt.Day.ToString() + "_" + dt.Hour.ToString() + "_" + dt.Minute.ToString();
+                var filePath = Path.Combine(tempDir, nameString + "." + ExportSpectraFileFormat.mat);
+
+                using (var file = File.Open(filePath, FileMode.Create)) {
+                    SpectraExport.SaveSpectraTable(
+                        ExportSpectraFileFormat.mat,
+                        file,
+                        peak.InnerModel,
+                        msdec,
+                        _provider.LoadMs1Spectrums(),
+                        DataBaseMapper,
+                        _parameter);
+                }
+                new InternalMsFinderSingleSpot(filePath);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
