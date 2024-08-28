@@ -123,11 +123,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             var centralMz = center.Mz.Value;
             // RT conversion
             var centralRT = center.RT;
-            var maxRt = centralRT + peakWidth * 0.5; // temp
-            var minRt = centralRT - peakWidth * 0.5; // temp
-            var rtTol = maxRt.Value - minRt.Value;
+            var maxRt = centralRT + peakWidth * 2d; // temp
+            var minRt = centralRT - peakWidth * 2d; // temp
 
-            var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
+            var range = ChromatogramRange.FromTimes(minRt, maxRt);
             using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range))
             using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
                 return smoothed.AsPeakArray();
@@ -180,11 +179,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             // RT conversion
             var riHandler = _fileIdToHandler[fileID];
             var centralRT = riHandler.ConvertBack(center.RI);
-            var maxRt = riHandler.ConvertBack(center.RI + peakWidth * 0.5); // temp
-            var minRt = riHandler.ConvertBack(center.RI - peakWidth * 0.5); // temp
+            var maxRt = riHandler.ConvertBack(center.RI + peakWidth * 2d); // temp
+            var minRt = riHandler.ConvertBack(center.RI - peakWidth * 2d); // temp
             var rtTol = maxRt.Value - minRt.Value;
 
-            var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
+            var range = ChromatogramRange.FromTimes(minRt, maxRt);
             using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range))
             using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
                 var peaks = smoothed.AsPeakArray();
