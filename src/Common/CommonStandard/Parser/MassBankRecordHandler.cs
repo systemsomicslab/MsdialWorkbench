@@ -27,7 +27,9 @@ namespace CompMs.Common.Parser
             _splashCalculator = splashCalculator ?? throw new ArgumentNullException(nameof(splashCalculator));
         }
 
-        public string Identifier { get; set; } = "MSDIAL";
+        public string Identifier { get; set; } = "MSBNK";
+        public string Software { get; set; } = "MSDIAL";
+
         public string ContributorIdentifier { get; set; } = "CONTRIBUTOR_IDENTIFIER";
 
         public string Authors { get; set; } = "Authors";
@@ -59,7 +61,7 @@ namespace CompMs.Common.Parser
 
         public string MSType => $"MS{_msLevel}";
 
-        public string GetAccession(IChromatogramPeak peak) => $"{Identifier}-{ContributorIdentifier}-{peak.ID:D8}";
+        public string GetAccession(IChromatogramPeak peak) => $"{Identifier}-{ContributorIdentifier}-{Software}{peak.ID:D8}";
 
         public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty) {
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize: 4096, leaveOpen: true)) {
@@ -126,11 +128,11 @@ namespace CompMs.Common.Parser
                 // ac$instrument_type
                 writer.WriteLine($"AC$INSTRUMENT_TYPE: {InstrumentType}");
 
-                // ac$mass_spectrometry: ion_mode
-                writer.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {IonMode}");
-
                 // ac$mass_spectrometry mstype
                 writer.WriteLine($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
+
+                // ac$mass_spectrometry: ion_mode
+                writer.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {IonMode.ToString().ToUpperInvariant()}");
 
                 // ac$mass_spectrometry: subtag
                 //WriteLineIfPositive(writer, "AC$MASS_SPECTROMETRY: COLLISION_ENERGY {0}", scan.CollisionEnergy);
@@ -155,9 +157,9 @@ namespace CompMs.Common.Parser
                 writer.WriteLine($"PK$SPLASH: {splash}");
 
                 // pk$annotation
-                writer.WriteLine("PK$ANNOTATION: m/z type comment");
+                writer.WriteLine("PK$ANNOTATION: m/z type");
                 foreach (var p in scan.Spectrum) {
-                    writer.WriteLine($"  {p.Mass:F5} {p.SpectrumComment} {p.Comment}");
+                    writer.WriteLine($"  {p.Mass:F5} {p.SpectrumComment}");
                 }
 
                 // pk$num_peak
