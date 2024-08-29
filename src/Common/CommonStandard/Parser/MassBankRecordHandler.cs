@@ -19,12 +19,14 @@ namespace CompMs.Common.Parser
 
 
         private readonly Func<IMSScanProperty, string> _splashCalculator;
+        private readonly DateTime _now;
 
         public MassBankRecordHandler(IonMode ionMode, string instrumentType, Func<IMSScanProperty, string> splashCalculator)
         {
             IonMode = ionMode;
             InstrumentType = instrumentType ?? throw new ArgumentNullException(nameof(instrumentType));
             _splashCalculator = splashCalculator ?? throw new ArgumentNullException(nameof(splashCalculator));
+            _now = DateTime.UtcNow;
         }
 
         public string Identifier { get; set; } = "MSBNK";
@@ -61,7 +63,7 @@ namespace CompMs.Common.Parser
 
         public string MSType => $"MS{_msLevel}";
 
-        public string GetAccession(IChromatogramPeak peak) => $"{Identifier}-{ContributorIdentifier}-{Software}{peak.ID:D8}";
+        public string GetAccession(IChromatogramPeak peak) => $"{Identifier}-{ContributorIdentifier}-{Software}{_now:yyMMdd}{peak.ID:D8}";
 
         public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty) {
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize: 4096, leaveOpen: true)) {
@@ -72,8 +74,7 @@ namespace CompMs.Common.Parser
                 writer.WriteLine($"RECORD_TITLE: {molecule.Name}; {InstrumentType}; {MSType}");
 
                 // date
-                var now = DateTime.UtcNow;
-                writer.WriteLine($"DATE: {now:yyyy.MM.dd}");
+                writer.WriteLine($"DATE: {_now:yyyy.MM.dd}");
 
                 // authors
                 writer.WriteLine($"AUTHORS: {Authors}");
