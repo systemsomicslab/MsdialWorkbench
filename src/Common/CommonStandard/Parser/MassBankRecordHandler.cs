@@ -66,7 +66,7 @@ namespace CompMs.Common.Parser
         public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty) {
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize: 4096, leaveOpen: true)) {
                 // accession
-                writer.WriteLine($"ACCESSION: {Identifier}-{ContributorIdentifier}-{peak.ID:D8}");
+                writer.WriteLine($"ACCESSION: {GetAccession(peak)}");
 
                 // record title
                 writer.WriteLine($"RECORD_TITLE: {molecule.Name}; {InstrumentType}; {MSType}");
