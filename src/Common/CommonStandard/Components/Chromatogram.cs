@@ -78,7 +78,11 @@ namespace CompMs.Common.Components
             if (_peaks is null) {
                 throw new ObjectDisposedException(nameof(_peaks));
             }
-            return _peaks.Take(_size).Select(p => p.ConvertToChromatogramPeak(_type, _unit)).ToList();
+            var result = new List<ChromatogramPeak>(_size);
+            for (int i = 0; i < _size; i++) {
+                result.Add(_peaks[i].ConvertToChromatogramPeak(_type, _unit));
+            }
+            return result;
         }
 
         /// <summary>

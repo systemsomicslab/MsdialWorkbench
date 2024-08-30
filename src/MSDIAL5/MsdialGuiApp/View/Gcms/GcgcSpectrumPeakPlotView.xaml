@@ -1,36 +1,28 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.AlignmentPeakPlotView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Gcms.GcgcSpectrumPeakPlotView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Gcms"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentPeakPlotViewModel}}"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:GcgcSpectrumPeakPlotViewModel}}">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>   
-        </ResourceDictionary>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
     </UserControl.Resources>
     <Grid>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
-                          VerticalAxis="{Binding VerticalAxis.Value, Mode=OneWay}"
-                          GraphTitle="{Binding GraphTitle.Value, Mode=OneTime}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneTime}"
-                          VerticalTitle="{Binding VerticalTitle.Value, Mode=OneTime}"
-                          Style="{StaticResource OverlapChart}"
-                          Background="WhiteSmoke"
-                          BorderBrush="Black">
+                          VerticalAxis="{Binding SecondColumnAxis.Value, Mode=OneWay}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneWay}"
+                          VerticalTitle="{Binding VerticalTitle.Value, Mode=OneWay}"
+                          GraphTitle="{Binding GraphTitle.Value, Mode=OneWay}"
+                          Background="WhiteSmoke" BorderBrush="Black"
+                          Style="{StaticResource OverlapChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save image using dialog"
@@ -55,32 +47,30 @@
                                   Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Duplicate selected peak spot" Command="{Binding DuplicatesCommand, Mode=OneTime}"/>
+                    <!--
                     <MenuItem Header="Export as MRMPROBS reference format">
                         <MenuItem Header="Save as MRMPROBS reference format" Command="{Binding SaveMrmprobsCommand, Mode=OneTime}"/>
                         <MenuItem Header="Copy as MRMPROBS reference format" Command="{Binding CopyMrmprobsCommand, Mode=OneTime}"/>
                     </MenuItem>
+                    -->
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
-            <chart:ScatterControlSlim x:Name="alignmentScatter"
-                                      ItemsSource="{Binding Spots}"
+            <chart:ScatterControlSlim x:Name="analysisScatter"
+                                      ItemsSource="{Binding Spots, Mode=OneWay}"
+                                      DataType="{x:Type do:Ms1BasedSpectrumFeature}"
                                       HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
-                                      PointBrush="{Binding Brush.Value, Mode=OneWay}"
-                                      DataType="{x:Type do:AlignmentSpotPropertyModel}"
+                                      PointBrush="{Binding Brush.Value}"
                                       Radius="5.5"
-                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}"
-                                      Focusable="True">
+                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}">
                 <chart:ScatterControlSlim.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding FocusedItem.MasterAlignmentID, StringFormat=ID: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.AdductType, StringFormat=Ionform: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.TimesCenter, StringFormat=Time: {0:0.000}}"/>
-                            <TextBlock Text="{Binding FocusedItem.MassCenter, StringFormat=m/z: {0:0.0000}}"/>
-                            <TextBlock Text="{Binding FocusedItem.HeightAverage, StringFormat=HeightAve: {0:0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:Ms1BasedSpectrumFeature.Molecule).Name, StringFormat=Name: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak).PeakFeature.ChromXsTop.RT.Value, StringFormat=Time: {0:F3}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak).PeakFeature.Mass, StringFormat=m/z: {0:F4}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak).PeakFeature.PeakHeightTop, StringFormat=Height: {0:F0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak).PeakFeature.PeakAreaAboveZero, StringFormat=Area: {0:F0}}"/>
                         </StackPanel>
                     </ToolTip>
                 </chart:ScatterControlSlim.ToolTip>
@@ -89,7 +79,7 @@
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
-            <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
+            <ContentControl Content="{Binding SelectedPoint, ElementName=analysisScatter}"
                             ContentTemplate="{DynamicResource FocusCross}"
                             IsHitTestVisible="False">
                 <ContentControl.Resources>
@@ -99,7 +89,7 @@
                                 <Style TargetType="Rectangle">
                                     <Setter Property="Visibility" Value="Visible"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedPoint, ElementName=alignmentScatter}" Value="{x:Null}">
+                                        <DataTrigger Binding="{Binding SelectedPoint, ElementName=analysisScatter}" Value="{x:Null}">
                                             <Setter Property="Visibility" Value="Hidden"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -108,7 +98,7 @@
                             <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
                                        Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
                                        Canvas.Left="{Binding X}"/>
-                            <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                            <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
                                        Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
                                        Canvas.Top="{Binding Y}"/>
                         </Canvas>

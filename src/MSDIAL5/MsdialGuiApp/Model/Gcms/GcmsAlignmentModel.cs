@@ -114,9 +114,17 @@ namespace CompMs.App.Msdial.Model.Gcms
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    PlotModel.HorizontalTitle = "Retention time [min]";
+                    PlotModel.HorizontalTitle = "Retention time (min)";
                     break;
             }
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PlotModel.HorizontalAxis)
+            {
+                GraphTitle = alignmentFileBean.FileName,
+                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.RT),
+                HorizontalTitle = PlotModel.HorizontalTitle,
+                VerticalTitle = "2nd column retention time (min)",
+            }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
@@ -248,6 +256,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
+        public GcgcAlignmentPeakPlotModel GcgcPlotModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }

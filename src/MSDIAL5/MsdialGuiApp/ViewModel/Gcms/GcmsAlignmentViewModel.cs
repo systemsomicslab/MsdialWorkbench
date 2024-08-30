@@ -33,6 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            GcgcPlotViewModel = new GcgcAlignmentPeakPlotViewModel(model.GcgcPlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.MsSpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
@@ -83,6 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public GcgcAlignmentPeakPlotViewModel GcgcPlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
 
         public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(SearchCompound);
