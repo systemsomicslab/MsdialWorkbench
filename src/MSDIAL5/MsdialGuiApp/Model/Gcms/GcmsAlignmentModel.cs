@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.RT),
                 HorizontalTitle = PlotModel.HorizontalTitle,
-                VerticalTitle = "Retention time (min)",
+                VerticalTitle = "2nd column retention time (min)",
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
