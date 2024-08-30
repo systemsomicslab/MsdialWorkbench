@@ -902,8 +902,12 @@ namespace CompMs.MsdialCore.Algorithm {
                 peakAreaAboveBaseline = peakAreaAboveZero - (sPeaklist[minLeftId].Intensity + sPeaklist[minRightId].Intensity) *
                     (sPeaklist[minRightId].ChromXs.Value - sPeaklist[minLeftId].ChromXs.Value) / 2;
 
-                peak.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
-                peak.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
+                if (sPeaklist[maxID].ChromXs.MainType == ChromXType.RT) {
+                    peakAreaAboveBaseline *= 60.0;
+                    peakAreaAboveZero *= 60.0;
+                }
+                peak.PeakAreaAboveBaseline = peakAreaAboveBaseline;
+                peak.PeakAreaAboveZero = peakAreaAboveZero;
 
                 peak.ChromXsTop = sPeaklist[maxID].ChromXs;
                 peak.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
