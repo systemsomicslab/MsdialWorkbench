@@ -44,7 +44,7 @@
                       KeyTip="Q">
             <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
         </RibbonButton>
-        <RibbonButton Label="Notame"
+        <RibbonButton Label="Notame (two-parameter processing tool)"
                       LargeImageSource="/Resources/notame.png"
                       DataContext="{Binding MethodViewModel.Value}"
                       Command="{Binding NotameViewModel.ShowSettingViewCommand, FallbackValue={x:Static commonmmvvm:NeverCommand.Instance}}"
