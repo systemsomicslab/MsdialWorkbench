@@ -69,6 +69,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private readonly IonMode IonMode;
+        private REngine? engine;
+        private string originalDir;
 
         public string GetIonMode() {
             if (IonMode == IonMode.Positive) {
@@ -85,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
         private string FileName = string.Empty;
         private string RPath = string.Empty;
 
+        [STAThread]
         public void Run() {
             try {
                 NotameIonMode = GetIonMode();
@@ -92,8 +95,21 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 RPath = GetExportFolder(RDirectory);
                 REngine.SetEnvironmentVariables();
                 REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
-                var engine = REngine.GetInstance();
+                engine = REngine.GetInstance();
                 engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
+                
+                string[] libraries = ["BiocManager", "pcaMethods", "Biobase", "devtools", "notame", "remotes", "tinytex", "cowplot", "missForest", "ggpubr", "Cairo", "doParallel", "dplyr", "tidyr", "openxlsx", "MUVR"];
+                var check = libraries.Select(lib => new {
+                    Package = lib,
+                    IsLoaded = engine.Evaluate($"require(\"{lib}\")").AsLogical().FirstOrDefault()
+                });
+                if (check.Any(x => !x.IsLoaded)) {
+                    foreach (var item in check.Where(x => !x.IsLoaded)) {
+                        MessageBox.Show($"Some packages failed to load: {item.Package}");
+                    }
+                    Packages();
+                }
+                originalDir = engine.Evaluate("getwd()").AsCharacter().First();
                 RunNotame(engine);
                 if (exportReport) {
                     ExportReport(engine);
@@ -110,6 +126,45 @@ namespace CompMs.App.Msdial.Model.Statistics {
                     Settings.Default.RHome = RDirectory;
                     Settings.Default.Save();
                 }
+                engine?.Evaluate($"setwd('{originalDir.Replace(@"\", @"\\")}')");
+            }
+        }
+
+        private bool Packages() {
+            string msgtext = "There is a package which has not installed yet. Please run this scripts on your local R Studio to install packages used in Notame preprocessing.\r\n\r\n" +
+                            "###########################################\r\n\r\n" +
+                            "if (!requireNamespace('BiocManager', quietly=TRUE)){\r\n  " +
+                            "install.packages('BiocManager')}\r\n" +
+                            "BiocManager::install('pcaMethods')\r\n" +
+                            "BiocManager::install('Biobase')\r\n\r\n" +
+                            "if (!requireNamespace('devtools', quietly = TRUE)) {\r\n  " +
+                            "install.packages('devtools')}\r\n" +
+                            "devtools::install_github('antonvsdata/notame')\r\n\r\n" +
+                            "if (!requireNamespace('remotes', quietly=TRUE)){\r\n  " +
+                            "install.packages('remotes')}\r\n" +
+                            "library(remotes)\r\n" +
+                            "install_gitlab('CarlBrunius/MUVR')\r\n\r\n" +
+                            "if (!requireNamespace('tinytex', quietly=TRUE)){\r\n  " +
+                            "install.packages('tinytex')}\r\n" +
+                            "tinytex::install_tinytex()\r\n" +
+                            "tinytex::tlmgr_install('grfext')\r\n\r\n" +
+                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr')\r\n" +
+                            "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
+                            "if(length(packages_to_install)) {\r\n  " +
+                            "install.packages(packages_to_install)}\r\n" +
+                            "lapply(required_packages, library, character.only = TRUE)\r\n\r\n" +
+                            "##########################################";
+            if (MessageBox.Show(msgtext, "Package installation (click OK to copy)",
+                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK) {
+                Clipboard.SetText(msgtext);
+            } else {
+                return false;
+            }
+            if (MessageBox.Show("Click OK to run Notame (packages needed to be installed)", "Notame",
+                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel) {
+                return false;
+            } else {
+                return true;
             }
         }
 
