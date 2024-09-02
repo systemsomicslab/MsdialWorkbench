@@ -181,13 +181,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 async vm =>
                 {
                     var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
-                    var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
-                    await processor.RunAllAsync(
-                        storage.AnalysisFiles,
-                        storage.AnalysisFiles.Select(ProviderFactory.Create),
-                        vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        usable,
-                        vm.Increment)
+                    var processor = new FileProcess(storage, ProviderFactory, null, null, _matchResultEvaluator);
+                    var runner = new ProcessRunner(processor, storage.AnalysisFiles, usable);
+                    await runner.RunAllAsync(
+                        vm.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
+                        vm.Increment,
+                        default)
                     .ConfigureAwait(false);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
@@ -201,13 +200,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 async vm =>
                 {
                     var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
-                    var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
-                    await processor.AnnotateAllAsync(
-                        storage.AnalysisFiles,
-                        storage.AnalysisFiles.Select(ProviderFactory.Create),
-                        vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        usable,
-                        vm.Increment)
+                    var processor = new FileProcess(storage, ProviderFactory, null, null, _matchResultEvaluator);
+                    var runner = new ProcessRunner(processor, storage.AnalysisFiles, usable);
+                    await runner.AnnotateAllAsync(
+                        vm.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
+                        vm.Increment,
+                        default)
                     .ConfigureAwait(false);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());

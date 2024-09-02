@@ -26,10 +26,11 @@ namespace CompMs.MsdialImmsImagingCore.Process
 
         public FileProcess(
             IMsdialDataStorage<MsdialImmsParameter> storage,
+            IDataProviderFactory<AnalysisFileBean> dataProviderFactory,
             IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            _processor = new MsdialImmsCore.Process.FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
+            _processor = new MsdialImmsCore.Process.FileProcess(storage, dataProviderFactory, mspAnnotator, textDBAnnotator, evaluator);
         }
 
         public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
@@ -105,13 +106,17 @@ namespace CompMs.MsdialImmsImagingCore.Process
             using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
                 rawobj = access.GetMeasurement();
             }
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+                return access.GetMeasurement();
+            });
             var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialImmsDataStorage {
                 AnalysisFiles = new List<AnalysisFileBean>() { file }, 
                 AlignmentFiles = new List<AlignmentFileBean>(),
                 MsdialImmsParameter = param
             };
-            var processor = new FileProcess(container, null, null, null);
+            var processor = new FileProcess(container, providerFactory, null, null, null);
             return processor.RunAsync(file, provider);
         }
     }
