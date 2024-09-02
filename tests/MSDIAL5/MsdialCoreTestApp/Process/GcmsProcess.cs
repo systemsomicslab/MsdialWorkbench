@@ -121,7 +121,7 @@ namespace CompMs.App.MsdialConsole.Process
             });
             container.DataBases = dbStorage;
             container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
-            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, param.ProjectParam.ProjectFolderPath, param.ProjectParam.ProjectFileName + ".mdproject"));
+            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, param.ProjectParam.ProjectFolderPath, Path.ChangeExtension(param.ProjectParam.ProjectFileName, ".mdproject")));
             projectDataStorage.AddStorage(container);
             Console.WriteLine("Start processing..");
 			return Execute(projectDataStorage, container, outputFolder, isProjectStore);

@@ -35,6 +35,7 @@ namespace CompMs.App.MsdialConsole.Process
             param.ProjectFileName = projectFileName;
 
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
+            param.FileID_AnalysisFileType = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileType);
 
             foreach (var analysisFile in analysisFiles) {
 #pragma warning disable CS0618 // Type or member is obsolete
