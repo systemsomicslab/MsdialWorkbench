@@ -91,7 +91,7 @@ namespace CompMs.App.MsdialConsole.Process
                     await sem.WaitAsync();
                     try {
                         var provider = providerFactory.Create(file);
-                        await process.RunAsync(file, provider, null).ConfigureAwait(false);
+                        await process.RunAsync(file, null, default).ConfigureAwait(false);
 
                         var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
                         var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");

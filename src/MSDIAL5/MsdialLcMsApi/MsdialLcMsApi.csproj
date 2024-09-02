@@ -4,15 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>CompMs.MsdialLcMsApi</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Algorithm\Alignment\" />
-  </ItemGroup>
-
 </Project>
