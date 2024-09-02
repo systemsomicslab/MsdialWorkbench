@@ -15,6 +15,9 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -80,6 +83,30 @@ namespace CompMs.App.Msdial.Model.Gcms
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(projectParameter.TargetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);
 
+            var mzGradientAxis = new ContinuousAxisManager<double>(0d, 200d).AddTo(_disposables);
+            var gcgcBrushes = new List<BrushMapData<Ms1BasedSpectrumFeature>> {
+                BrushMapData.CreateAmplitudeScoreBursh<Ms1BasedSpectrumFeature>(s => s.QuantifiedChromatogramPeak.PeakShape.AmplitudeScoreValue),
+                BrushMapData.CreateAmplitudeScoreBursh<Ms1BasedSpectrumFeature>(s => Math.Min(1d, s.QuantifiedChromatogramPeak.PeakFeature.Mass / 300d)),
+                new(new GradientBrushMapper<double>(mzGradientAxis, new[]{ Colors.Blue, Colors.Purple, Colors.Red }.Select((c, i) => new GradientStop(c, i / 2d)).ToList()).Contramap((Ms1BasedSpectrumFeature s) => s.QuantifiedChromatogramPeak.PeakFeature.Mass), "Quant mass"),
+                new(new ConstantBrushMapper(Brushes.DarkGray), nameof(Brushes.DarkGray)),
+            };
+            GcgcPeaks = new GcgcSpectrumPeakPlotModel(
+                _spectrumFeatures.Items,
+                s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value,
+                s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value,
+                selectedSpectrum,
+                Observable.Return((string?)null),
+                gcgcBrushes.First(),
+                gcgcBrushes,
+                new PeakLinkModel(_peaks),
+                horizontalAxis: PeakPlotModel.HorizontalAxis)
+            {
+                HorizontalTitle = "Retention time (min)",
+                VerticalTitle = "2nd column retention time (min)",
+                VerticalProperty = $"{nameof(Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak)}.{nameof(QuantifiedChromatogramPeak.PeakFeature)}.{nameof(IChromatogramPeakFeature.ChromXsTop)}.{nameof(ChromXs.RT)}.{nameof(RetentionTime.Value)}",
+                HorizontalProperty = $"{nameof(Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak)}.{nameof(QuantifiedChromatogramPeak.PeakFeature)}.{nameof(IChromatogramPeakFeature.ChromXsTop)}.{nameof(ChromXs.RT)}.{nameof(RetentionTime.Value)}",
+            };
+
             IDataProvider provider = providerFactory.Create(file);
             _rawSpectra = new RawSpectra(provider, parameter.IonMode, file.File.AcquisitionType);
 
@@ -97,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
-            var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType, chromDecParameter);
+            var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType);
             var decLoader = file.MSDecLoader;
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, _spectrumFeatures.Items);
             var refLoader = (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(dbMapper);
@@ -215,6 +242,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public AnalysisFileBeanModel AnalysisFileModel => _file;
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
+        public GcgcSpectrumPeakPlotModel GcgcPeaks { get; }
         public RawDecSpectrumsModel RawDecSpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
         public EiChromatogramsModel EiChromatogramsModel { get; }

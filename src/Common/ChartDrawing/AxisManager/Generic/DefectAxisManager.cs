@@ -15,13 +15,33 @@ namespace CompMs.Graphics.AxisManager.Generic
         public DefectAxisManager(double divisor, AxisRange bounds) : base(DEFECT_RANGE, bounds) {
             Divisor = divisor;
         }
-
+        
         public DefectAxisManager(double divisor, IChartMargin margin) : base(DEFECT_RANGE, margin) {
             Divisor = divisor;
         }
 
         public DefectAxisManager(double divisor, IChartMargin margin, AxisRange bounds) : base(DEFECT_RANGE, margin, bounds) {
             Divisor = divisor;
+        }
+
+        public DefectAxisManager(double divisor, double factor) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, AxisRange bounds) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, bounds) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, IChartMargin margin) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, margin) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, IChartMargin margin, AxisRange bounds) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, margin, bounds) {
+            Divisor = divisor;
+            Factor = factor;
         }
 
         public LabelType LabelType {
@@ -57,6 +77,8 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public double Divisor { get; }
 
+        public double Factor { get; } = 0d;
+
         protected override void OnRangeChanged() {
             labelTicks = null;
             base.OnRangeChanged();
@@ -71,7 +93,12 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public override AxisValue TranslateToAxisValue(double value) {
-            return new AxisValue(value / Divisor - Math.Round(value / Divisor));
+            if (Factor != 0d) {
+                return new AxisValue((value / Divisor - Math.Floor(value / Divisor)) * Factor);
+            }
+            else {
+                return new AxisValue(value / Divisor - Math.Round(value / Divisor));
+            }
         }
     }
 }

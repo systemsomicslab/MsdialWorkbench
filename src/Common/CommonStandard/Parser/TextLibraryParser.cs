@@ -73,6 +73,11 @@ namespace CompMs.Common.Parser
                 lineArray = line.Split('\t');
                 var n = lineArray.Length;
 
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
                 if (n < 2)
                 {
                     messages.Add(string.Format(error_message_templates[0], counter));
