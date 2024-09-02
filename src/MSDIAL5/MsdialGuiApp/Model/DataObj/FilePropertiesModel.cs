@@ -46,10 +46,16 @@ namespace CompMs.App.Msdial.Model.DataObj
 
             var fileClasses = _fileIdToClassName.Values.Distinct();
             var properties = fileClasses.Select(
-                class_ => new FileClassPropertyModel(
-                    class_,
-                    Color.FromArgb(_classnameToColorBytes[class_][3], _classnameToColorBytes[class_][0], _classnameToColorBytes[class_][1], _classnameToColorBytes[class_][2]),
-                    _classnameToOrder[class_]));
+                (class_, i) => {
+                    var color = _classnameToColorBytes.TryGetValue(class_, out var colorBytes)
+                        ? Color.FromArgb(colorBytes[3], colorBytes[0], colorBytes[1], colorBytes[2])
+                        : ChartBrushes.GetChartBrush(i).Color;
+                    if (!_classnameToOrder.TryGetValue(class_, out var order))
+                    {
+                        order = i;
+                    }
+                    return new FileClassPropertyModel(class_, color, order);
+                });
             _classProperties = new ObservableCollection<FileClassPropertyModel>(properties);
             ClassProperties = new FileClassPropertiesModel(_classProperties).AddTo(Disposables);
 

@@ -1,5 +1,4 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
-using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -12,7 +11,6 @@ using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Process
@@ -58,25 +56,27 @@ namespace CompMs.App.MsdialConsole.Process
             var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
             processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
 
-            if (!storage.Parameter.TogetherWithAlignment) return 0;
+            if (storage.Parameter.TogetherWithAlignment) {
+                var alignmentFile = storage.AlignmentFiles.First();
+                var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
+                var aligner = factory.CreatePeakAligner();
+                aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
+                var result = aligner.Alignment(files, alignmentFile, null);
+                result.Save(alignmentFile);
 
-            var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
-            var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
-            var result = aligner.Alignment(files, alignmentFile, null);
-
-            foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {
-                Console.WriteLine(group.Key);
-                foreach (var spot in group.OrderBy(s => s.MassCenter)) {
-                    Console.WriteLine($"\t{spot.Name}\t{spot.AdductType.AdductIonName}\t{spot.MassCenter}\t{spot.TimesCenter.Drift.Value}");
+                foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {
+                    Console.WriteLine(group.Key);
+                    foreach (var spot in group.OrderBy(s => s.MassCenter)) {
+                        Console.WriteLine($"\t{spot.Name}\t{spot.AdductType.AdductIonName}\t{spot.MassCenter}\t{spot.TimesCenter.Drift.Value}");
+                    }
                 }
             }
 
-            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            using (var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath)) {
-                storage.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
-                ((IStreamManager)streamManager).Complete();
+            if (isProjectSaved) {
+                using (var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath)) {
+                    storage.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
+                    ((IStreamManager)streamManager).Complete();
+                }
             }
 
             return 0;

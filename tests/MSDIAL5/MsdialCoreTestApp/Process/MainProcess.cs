@@ -1,11 +1,10 @@
 ﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
 using CompMs.Common.Extension;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public sealed class MainProcess
     {
         private MainProcess() { }
