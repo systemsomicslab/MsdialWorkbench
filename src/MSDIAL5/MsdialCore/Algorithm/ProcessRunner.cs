@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace CompMs.MsdialCore.Algorithm
 {
     public interface IFileProcessor {
+        Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int> reportAction, CancellationToken token);
         Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token);
         Task AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token);
     }
