@@ -147,26 +147,22 @@ namespace CompMs.App.Msdial.Model.Imms
         public StudyContextModel StudyContext { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
-
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
 
             // Run PeakPick and Identification
-            if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                if (!ProcessPeakPickAndAnnotation(_storage)) {
+            if (option.HasFlag(ProcessOption.Identification)) {
+                if (!ProcessFiles(_storage, option)) {
                     return Task.CompletedTask;
                 }
-            }
-            else if (option.HasFlag(ProcessOption.Identification)) {
-                if (!ProcessAnnotation(_storage))
-                    return Task.CompletedTask;
             }
 
             // Run Alignment
             if (option.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(_storage))
+                if (!ProcessAlignment(_storage)) {
                     return Task.CompletedTask;
+                }
             }
 
             stopwatch.Stop();
@@ -176,33 +172,16 @@ namespace CompMs.App.Msdial.Model.Imms
             return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
 
-        private bool ProcessPeakPickAndAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
+        private bool ProcessFiles(IMsdialDataStorage<MsdialImmsParameter> storage, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
                 async vm =>
                 {
-                    var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var usable = Math.Max(storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                     var processor = new FileProcess(storage, ProviderFactory, null, null, _matchResultEvaluator);
-                    var runner = new ProcessRunner(processor, storage.AnalysisFiles, usable);
+                    var runner = new ProcessRunner(processor, usable);
                     await runner.RunAllAsync(
-                        vm.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
-                        vm.Increment,
-                        default)
-                    .ConfigureAwait(false);
-                },
-                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-
-            return request.Result ?? false;
-        }
-
-        private bool ProcessAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
-            var request = new ProgressBarMultiContainerRequest(
-                async vm =>
-                {
-                    var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
-                    var processor = new FileProcess(storage, ProviderFactory, null, null, _matchResultEvaluator);
-                    var runner = new ProcessRunner(processor, storage.AnalysisFiles, usable);
-                    await runner.AnnotateAllAsync(
+                        storage.AnalysisFiles,
+                        processOption,
                         vm.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                         vm.Increment,
                         default)

@@ -87,14 +87,6 @@ public sealed class FileProcess : IFileProcessor
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    public Task RunAsync(AnalysisFileBean file, IProgress<int>? reporter, CancellationToken token) {
-        return RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reporter, token);
-    }
-
-    public Task AnnotateAsync(AnalysisFileBean file, IProgress<int>? reporter, CancellationToken token) {
-        return RunAsync(file, ProcessOption.Identification, reporter, token);
-    }
-
     public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int>? reportAction = null, CancellationToken token = default) {
         Console.WriteLine("Peak picking started");
         var chromPeakFeatures = _peakPickProcess.Pick(file, provider, reportAction);

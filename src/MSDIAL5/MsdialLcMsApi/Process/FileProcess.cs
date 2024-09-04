@@ -88,14 +88,6 @@ public sealed class FileProcess : IFileProcessor {
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 
-    public Task RunAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token) {
-        return RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token);
-    }
-
-    public Task AnnotateAsync(AnalysisFileBean file, IProgress<int> reportAction, CancellationToken token = default) {
-        return RunAsync(file, ProcessOption.Identification, reportAction, token);
-    }
-
     private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
         Task t1, t2;
 

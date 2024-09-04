@@ -292,7 +292,8 @@ namespace CompMs.App.MsdialConsole.Process
 
             var annotationProcess = BuildAnnotationProcess(container.DataBases);
 
-            new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator).RunAsync(file).Wait();
+            MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
+            processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
             RawSpectraOnPixels pixelData = null;

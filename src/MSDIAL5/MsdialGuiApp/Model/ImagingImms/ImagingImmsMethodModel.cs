@@ -63,18 +63,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var stopwatch = Stopwatch.StartNew();
 
             var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
-            if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+            if (option.HasFlag(ProcessOption.Identification)) {
                 var processor = new FileProcess(_storage, _providerFactory, null, null, _evaluator);
-                var runner = new ProcessRunner(processor, _storage.AnalysisFiles, 2);
-                await runner.RunAllAsync(Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
-                foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
-                }
-            }
-            else if (option.HasFlag(ProcessOption.Identification)) {
-                var processor = new FileProcess(_storage, _providerFactory, null, null, _evaluator);
-                var runner = new ProcessRunner(processor, _storage.AnalysisFiles, 2);
-                await runner.AnnotateAllAsync(Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
+                var runner = new ProcessRunner(processor, 2);
+                await runner.RunAllAsync(_storage.AnalysisFiles, option, Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
                 foreach (var file in files) {
                     ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
                 }

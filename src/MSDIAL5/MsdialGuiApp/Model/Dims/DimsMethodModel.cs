@@ -174,16 +174,9 @@ namespace CompMs.App.Msdial.Model.Dims
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 var processor = new ProcessFile(ProviderFactory, Storage, annotationProcess, _matchResultEvaluator);
-                var runner = new ProcessRunner(processor, Storage.AnalysisFiles, usable);
-                if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                    if (!RunProcessAll(Storage.AnalysisFiles, runner)) {
-                        return;
-                    }
-                }
-                else {
-                    if (!RunAnnotationAll(Storage.AnalysisFiles, runner)) {
-                        return;
-                    }
+                var runner = new ProcessRunner(processor, usable);
+                if (!RunProcessAll(Storage.AnalysisFiles, runner, processOption)) {
+                    return;
                 }
             }
 
@@ -201,17 +194,9 @@ namespace CompMs.App.Msdial.Model.Dims
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunProcessAll(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
+        private bool RunProcessAll(List<AnalysisFileBean> analysisFiles, ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
-                vm => runner.RunAllAsync(vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), vm.Increment, default),
-                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
-            var request = new ProgressBarMultiContainerRequest(
-                vm => runner.AnnotateAllAsync(vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), vm.Increment, default),
+                vm => runner.RunAllAsync(analysisFiles, processOption, vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;

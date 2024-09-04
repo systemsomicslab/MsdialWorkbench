@@ -209,14 +209,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
-                var runner = new ProcessRunner(processor, _storage.AnalysisFiles, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
-                if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                    if (!ProcessPickAndAnnotaion(_storage.AnalysisFiles, runner))
-                        return;
-                }
-                else if (processOption.HasFlag(ProcessOption.Identification)) {
-                    if (!ProcessAnnotaion(_storage.AnalysisFiles, runner))
-                        return;
+                var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
+                if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
+                    return;
                 }
             }
 
@@ -252,20 +247,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, _storage.DataBaseMapper, _matchResultEvaluator);
         }
 
-        private bool ProcessPickAndAnnotaion(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
+        private bool ProcessFiles(List<AnalysisFileBean> analysisFiles, ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
-                    vm_.Increment,
-                    default),
-                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool ProcessAnnotaion(List<AnalysisFileBean> analysisFiles, ProcessRunner runner) {
-            var request = new ProgressBarMultiContainerRequest(
-                vm_ => runner.AnnotateAllAsync(
+                    analysisFiles, processOption,
                     vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     vm_.Increment,
                     default),

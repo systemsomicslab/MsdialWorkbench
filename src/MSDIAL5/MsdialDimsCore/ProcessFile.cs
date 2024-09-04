@@ -61,14 +61,6 @@ public sealed class ProcessFile : IFileProcessor {
         reportAction?.Report(100);
     }
 
-    public Task RunAsync(AnalysisFileBean file, IProgress<int>? reportAction = null, CancellationToken token = default) {
-        return RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token);
-    }
-
-    public Task AnnotateAsync(AnalysisFileBean file, IProgress<int>? reportAction = null, CancellationToken token = default) {
-        return RunAsync(file, ProcessOption.Identification, reportAction, token);
-    }
-
     private async Task<(ChromatogramPeakFeatureCollection peakFeatures, MSDecResultCollection msdecResults)> LoadPeaksAndScans(AnalysisFileBean file, IDataProvider provider, CancellationToken token) {
         var peakFeaturesTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
         var msdecResultssTask = MSDecResultCollection.DeserializeAsync(file, token);

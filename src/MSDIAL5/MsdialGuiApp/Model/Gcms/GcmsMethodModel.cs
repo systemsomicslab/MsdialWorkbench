@@ -158,16 +158,9 @@ namespace CompMs.App.Msdial.Model.Gcms
             var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.Identification)) {
                 var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                var runner = new ProcessRunner(processor, _storage.AnalysisFiles, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
-                if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
-                    if (!RunFromPeakSpotting(runner)) {
-                        return;
-                    }
-                }
-                else if (option.HasFlag(ProcessOption.Identification)) {
-                    if (!RunFromIdentification(runner)) {
-                        return;
-                    }
+                var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
+                if (!RunFileProcess(runner, option)) {
+                    return;
                 }
             }
 
@@ -184,20 +177,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunFromPeakSpotting(ProcessRunner runner) {
+        private bool RunFileProcess(ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ => runner.RunAllAsync(
-                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
-                    vm_.Increment,
-                    default),
-                _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool RunFromIdentification(ProcessRunner runner) {
-            var request = new ProgressBarMultiContainerRequest(
-                vm_ => runner.AnnotateAllAsync(
+                    _storage.AnalysisFiles,
+                    processOption,
                     vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
                     vm_.Increment,
                     default),

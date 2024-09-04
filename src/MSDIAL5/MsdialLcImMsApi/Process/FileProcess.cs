@@ -100,14 +100,6 @@ namespace CompMs.MsdialLcImMsApi.Process
             return (chromPeakFeatures, mSDecResultCollections);
         }
 
-        public Task RunAsync(AnalysisFileBean file, IProgress<int>? reporter = null, CancellationToken token = default) {
-            return RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reporter, token);
-        }
-
-        public Task AnnotateAsync(AnalysisFileBean file, IProgress<int>? reporter = null, CancellationToken token = default) {
-            return RunAsync(file, ProcessOption.Identification, reporter, token);
-        }
-
         private List<ChromatogramPeakFeature> PeakSpotting(
             AnalysisFileBean file,
             IDataProvider spectrumProvider,

@@ -122,17 +122,10 @@ namespace CompMs.MsdialGcMsApi.Process
             return (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults);
         }
 
-        public Task RunAsync(AnalysisFileBean analysisFile, IProgress<int> progress, CancellationToken token = default) {
-            return RunAsync(analysisFile, ProcessOption.PeakSpotting | ProcessOption.Identification, progress, token);
-        }
-
-        public Task AnnotateAsync(AnalysisFileBean analysisFile, IProgress<int> progress, CancellationToken token) {
-            return RunAsync(analysisFile, ProcessOption.Identification, progress, token);
-        }
-
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType)).RunAsync(file, reportAction, token).Wait();
+            FileProcess processor = new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType));
+            processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token).Wait();
         }
 
         private void SetRetentionIndex(IReadOnlyList<IChromatogramPeakFeature> peaks, RetentionIndexHandler riHandler) {

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -55,8 +56,8 @@ namespace CompMs.App.MsdialConsole.Process
             storage.DataBases = db;
             var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
             var processor = new FileProcess(storage, providerFactory, mspAnnotator, textDBAnnotator, evaluator);
-            var runner = new ProcessRunner(processor, files, storage.Parameter.NumThreads);
-            runner.RunAllAsync(files.Select(_ => (IProgress<int>)null), () => { }, default);
+            var runner = new ProcessRunner(processor, storage.Parameter.NumThreads);
+            runner.RunAllAsync(files, ProcessOption.PeakSpotting | ProcessOption.Identification, files.Select(_ => (IProgress<int>)null), () => { }, default).Wait();
 
             if (storage.Parameter.TogetherWithAlignment) {
                 var alignmentFile = storage.AlignmentFiles.First();
