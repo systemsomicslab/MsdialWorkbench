@@ -111,5 +111,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     userDefinedDB, mineStructureDB, fragmentDB, fragmentOntologyDB, mspDB);
             }
         }
+        public void DirectSingleSearchOfStructureFinder(RawData rawData, List<FormulaResult> formulaResults, AnalysisParamOfMsfinder parameter, string exportFolderPath,
+            List<ExistStructureQuery> existStructureDB, List<ExistStructureQuery> userDefinedDB, List<ExistStructureQuery> mineStructureDB,
+            List<FragmentOntology> fragmentOntologyDB, List<MoleculeMsReference> mspDB, List<FragmentLibrary> eiFragmentDB) {
+
+            List<FragmentLibrary> fragmentDB = null;
+            if (eiFragmentDB != null && eiFragmentDB.Count > 0) fragmentDB = eiFragmentDB;
+
+            if (formulaResults == null || formulaResults.Count == 0) return;
+
+            foreach (var formula in formulaResults.Where(f => f.IsSelected).ToList()) {
+                var exportFilePath = FileStorageUtility.GetStructureDataFilePath(exportFolderPath, formula.Formula.FormulaString);
+                var finder = new StructureFinder();
+                finder.StructureFinderMainProcess(rawData, formula, parameter, exportFilePath, existStructureDB,
+                    userDefinedDB, mineStructureDB, fragmentDB, fragmentOntologyDB, mspDB);
+            }
+        }
     }
 }
