@@ -45,7 +45,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=_model._formulaData}">
+                              ItemsSource="{Binding  Path=_model.formulaList}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
