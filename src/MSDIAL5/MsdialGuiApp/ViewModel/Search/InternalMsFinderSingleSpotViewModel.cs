@@ -7,7 +7,7 @@ using Reactive.Bindings.Notifiers;
 namespace CompMs.App.Msdial.ViewModel.Search {
     internal class InternalMsFinderSingleSpotViewModel : ViewModelBase {
 
-        public InternalMsFinderSingleSpot _model;
+        public InternalMsFinderSingleSpot _model { get; }
         private readonly IMessageBroker _broker;
 
         public InternalMsFinderSingleSpotViewModel(InternalMsFinderSingleSpot model, IMessageBroker broker) {

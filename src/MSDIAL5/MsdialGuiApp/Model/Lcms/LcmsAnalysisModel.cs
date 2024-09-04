@@ -286,10 +286,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             return compoundSearch;
         }
 
-        public void CreateSingleSearchMsfinderModel() {
+        public InternalMsFinderSingleSpot CreateSingleSearchMsfinderModel() {
             if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
-                return;
+                return null;
             }
             try {
                 var tempDir = Path.Combine(Path.GetDirectoryName(analysisFile.AnalysisFilePath), "MSDIAL_TEMP");
@@ -310,10 +310,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                         DataBaseMapper,
                         _parameter);
                 }
-                new InternalMsFinderSingleSpot(filePath);
+                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath);
+                return msfinder;
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
+                return null;
             }
         }
 

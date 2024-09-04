@@ -1191,8 +1191,6 @@ namespace CompMs.App.Msdial.Model.Setting
         private List<ExistStructureQuery> userDefinedStructureDB;
         private readonly List<FragmentLibrary>  eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
 
-        public MsfinderObservedMetabolite observedMetabolite { get; private set; }
-        public AlignmentSpotPropertyModel _spot { get; private set; }
 
         public InternalMsFinder? Process() {
             if (CurrentAlignmentModel.Value is null) {
