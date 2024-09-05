@@ -15,7 +15,7 @@ namespace Rfx.Riken.OsakaUniv
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
 
         #region
-        [Required(ErrorMessage = "Chose a folder for the exported file.")]
+        [Required(ErrorMessage = "Choose a folder for the exported file.")]
         public string ExportFolderPath
         {
             get { return exportFolderPath; }
@@ -83,7 +83,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose a folder where to save the exported files.";
+            fbd.Description = "Choose a folder where to save the exported files.";
             fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {

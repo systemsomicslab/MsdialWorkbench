@@ -35,7 +35,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose a project folder.";
+            fbd.Description = "Choose a project folder.";
             fbd.SelectedPath = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
