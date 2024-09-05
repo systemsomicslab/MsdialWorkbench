@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<MSDecResult> msdecResult,
             IDataProvider provider,
             int numThread = 1,
-            Action<double> reportAction = null,
+            Action<double>? reportAction = null,
             CancellationToken token = default);
     }
 }

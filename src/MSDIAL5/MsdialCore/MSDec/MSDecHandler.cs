@@ -187,8 +187,7 @@ namespace CompMs.MsdialCore.MSDec {
 
     public static class MSDecHandler {
         #region gcms
-        public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
-            ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
+        public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, ReportProgress reporter) {
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
@@ -238,7 +237,7 @@ namespace CompMs.MsdialCore.MSDec {
 
                     counter++;
                 }
-                ReportProgress.Show(initialProgress, progressMax, i, modelChromatograms.Count, reportAction);
+                reporter.Report(i, modelChromatograms.Count);
             }
 
             foreach (var ms1DecResult in msdecResults) {

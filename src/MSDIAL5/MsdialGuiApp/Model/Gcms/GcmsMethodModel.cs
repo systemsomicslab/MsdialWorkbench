@@ -195,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 async vm => {
                     var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage, _evaluator)
                     {
-                        ReportAction = v => vm.CurrentValue = v
+                        Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.

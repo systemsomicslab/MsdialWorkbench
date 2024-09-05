@@ -33,32 +33,34 @@ public sealed class ProcessFile : IFileProcessor {
         _evaluator = evaluator;
     }
 
-    public async Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? reportAction, CancellationToken token) {
+    public async Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? progress, CancellationToken token) {
         if (!option.HasFlag(ProcessOption.PeakSpotting) && !option.HasFlag(ProcessOption.Identification)) {
             return;
         }
 
         var parameter = _storage.Parameter;
-        var report = reportAction is null ? (Action<int>?)null : reportAction.Report;
         // parse raw data
         Console.WriteLine("Loading spectral information");
         var provider = _providerFactory.Create(file);
 
         var (peakFeatures, msdecResults) = option.HasFlag(ProcessOption.PeakSpotting)
-            ? await FindPeaksAndScans(file, parameter, report, provider, token).ConfigureAwait(false)
+            ? await FindPeaksAndScans(file, parameter, provider, progress, token).ConfigureAwait(false)
             : await LoadPeaksAndScans(file, provider, token).ConfigureAwait(false);
         if (peakFeatures is null || msdecResults is null) {
             return;
         }
 
-        Console.WriteLine("Annotation started");
-        await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults.MSDecResults, provider, parameter.NumThreads, v => reportAction?.Report((int)v), token).ConfigureAwait(false);
-        var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-        characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, parameter, report, provider);
+        if (option.HasFlag(ProcessOption.Identification)) {
+            Console.WriteLine("Annotation started");
+            var reporter = ReportProgress.FromRange(progress, 60d, 90d);
+            await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults.MSDecResults, provider, parameter.NumThreads, reporter.Report, token).ConfigureAwait(false);
+        }
+        var characterEstimator = new Algorithm.PeakCharacterEstimator();
+        characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, parameter, provider, ReportProgress.FromLength(progress, initialProgress: 90d, progressLength: 10d));
 
         await peakFeatures.SerializeAsync(file, token).ConfigureAwait(false);
 
-        reportAction?.Report(100);
+        progress?.Report(100);
     }
 
     private async Task<(ChromatogramPeakFeatureCollection peakFeatures, MSDecResultCollection msdecResults)> LoadPeaksAndScans(AnalysisFileBean file, IDataProvider provider, CancellationToken token) {
@@ -73,7 +75,7 @@ public sealed class ProcessFile : IFileProcessor {
         return (peakFeatures, msdecResults);
     }
 
-    private async Task<(ChromatogramPeakFeatureCollection PeakFeatures, MSDecResultCollection MsdecResults)> FindPeaksAndScans(AnalysisFileBean file, MsdialDimsParameter param, Action<int> report, IDataProvider provider, CancellationToken token) {
+    private async Task<(ChromatogramPeakFeatureCollection PeakFeatures, MSDecResultCollection MsdecResults)> FindPeaksAndScans(AnalysisFileBean file, MsdialDimsParameter param, IDataProvider provider, IProgress<int> progress, CancellationToken token) {
         // faeture detections
         Console.WriteLine("Peak picking started");
         var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
@@ -93,11 +95,10 @@ public sealed class ProcessFile : IFileProcessor {
         // chrom deconvolutions
         Console.WriteLine("Deconvolution started");
         var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, peakFeatures.Items);
-        var initial_msdec = 30.0;
-        var max_msdec = 30.0;
-        var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
+        var msdecProcess = new Algorithm.Ms2Dec();
         var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
-        var msdecResults_ = msdecProcess.GetMS2DecResults(provider, peakFeatures_, param, summary, targetCE, report);
+        ReportProgress reporter = ReportProgress.FromLength(progress, initialProgress: 30d, progressLength: 30d);
+        var msdecResults_ = msdecProcess.GetMS2DecResults(provider, peakFeatures_, param, summary, reporter, targetCE);
         var msdecResults = new MSDecResultCollection(msdecResults_, targetCE);
         await msdecResults.SerializeAsync(file, token).ConfigureAwait(false);
         return (peakFeatures, msdecResults);

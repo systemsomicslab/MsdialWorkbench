@@ -43,23 +43,22 @@ public sealed class FileProcess : IFileProcessor {
             return;
         }
 
-        var reportAction = progress is not null ? progress.Report : (Action<int>)null;
         var provider = _factory.Create(analysisFile);
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
-            ? FindPeakAndScans(analysisFile, reportAction, provider, token)
+            ? FindPeakAndScans(analysisFile, provider, progress, token)
             : await LoadPeakAndScans(analysisFile, token).ConfigureAwait(false);
 
         if (option.HasFlag(ProcessOption.Identification)) {
             // annotations
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Annotation started");
-            await _peakAnnotationProcess.AnnotateAsync(analysisFile, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction).ConfigureAwait(false);
+            await _peakAnnotationProcess.AnnotateAsync(analysisFile, mSDecResultCollections, chromPeakFeatures.Items, provider, progress, token).ConfigureAwait(false);
         }
 
         // file save
         token.ThrowIfCancellationRequested();
         await SaveToFileAsync(analysisFile, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
-        reportAction?.Invoke(100);
+        progress?.Report(100);
     }
 
     private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> LoadPeakAndScans(AnalysisFileBean analysisFile, CancellationToken token) {
@@ -72,11 +71,11 @@ public sealed class FileProcess : IFileProcessor {
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) FindPeakAndScans(AnalysisFileBean analysisFile, Action<int> reportAction, IDataProvider provider, CancellationToken token) {
+    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) FindPeakAndScans(AnalysisFileBean analysisFile, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
         // feature detections
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, token, reportAction);
+        var chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, progress, token);
 
         var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
         analysisFile.ChromPeakFeaturesSummary = summaryDto;
@@ -84,7 +83,7 @@ public sealed class FileProcess : IFileProcessor {
         // chrom deconvolutions
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Deconvolution started");
-        var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, reportAction, token);
+        var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token);
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 

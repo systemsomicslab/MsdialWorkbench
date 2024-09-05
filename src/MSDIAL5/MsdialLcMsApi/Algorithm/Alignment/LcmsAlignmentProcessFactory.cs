@@ -6,44 +6,43 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 
-namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
+namespace CompMs.MsdialLcMsApi.Algorithm.Alignment;
+
+public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
 {
-    public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
-    {
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+    private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
-        public MsdialLcmsParameter LcmsParameter { get; }
-        public Action<int> ReportAction { get; set; }
+    public MsdialLcmsParameter LcmsParameter { get; }
+    public IProgress<int>? Progress { get; set; }
 
-        public LcmsAlignmentProcessFactory(
-            IMsdialDataStorage<MsdialLcmsParameter> storage, 
-            IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
-            LcmsParameter = storage.Parameter;
-            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
-        }
+    public LcmsAlignmentProcessFactory(
+        IMsdialDataStorage<MsdialLcmsParameter> storage, 
+        IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        LcmsParameter = storage.Parameter;
+        _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+    }
 
-        public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new LcmsAlignmentRefiner(LcmsParameter, Iupac, evaluator, ReportAction);
-        }
+    public override IAlignmentRefiner CreateAlignmentRefiner() {
+        return new LcmsAlignmentRefiner(LcmsParameter, Iupac, _evaluator, Progress);
+    }
 
-        public override DataAccessor CreateDataAccessor() {
-            return new LcmsDataAccessor(LcmsParameter);
-        }
+    public override DataAccessor CreateDataAccessor() {
+        return new LcmsDataAccessor(LcmsParameter);
+    }
 
-        public override GapFiller CreateGapFiller() {
-            return new LcmsGapFiller(LcmsParameter);
-        }
+    public override GapFiller CreateGapFiller() {
+        return new LcmsGapFiller(LcmsParameter);
+    }
 
-        public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this, ReportAction);
-        }
+    public override PeakAligner CreatePeakAligner() {
+        return new PeakAligner(this, Progress);
+    }
 
-        public override IPeakJoiner CreatePeakJoiner() {
-            return new LcmsPeakJoiner(
-                LcmsParameter.RetentionTimeAlignmentTolerance, LcmsParameter.RetentionTimeAlignmentFactor,
-                LcmsParameter.Ms1AlignmentTolerance, LcmsParameter.Ms1AlignmentFactor,
-                ReportAction
-                );
-        }
+    public override IPeakJoiner CreatePeakJoiner() {
+        return new LcmsPeakJoiner(
+            LcmsParameter.RetentionTimeAlignmentTolerance, LcmsParameter.RetentionTimeAlignmentFactor,
+            LcmsParameter.Ms1AlignmentTolerance, LcmsParameter.Ms1AlignmentFactor,
+            Progress
+        );
     }
 }

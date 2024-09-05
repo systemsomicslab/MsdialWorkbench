@@ -264,13 +264,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 async vm =>
                 {
                     var proteomicsAnnotator = new ProteomeDataAnnotator();
+                    var progress = new Progress<int>(v => vm.CurrentValue = v);
                     await Task.Run(() => proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
                         storage.AnalysisFiles,
                         storage.DataBaseMapper,
                         _matchResultEvaluator,
                         storage.DataBases,
                         storage.Parameter,
-                        v => vm.CurrentValue = v)).ConfigureAwait(false);
+                        progress)).ConfigureAwait(false);
                 });
             _broker.Publish(request);
             return request.Result ?? false;
@@ -282,7 +283,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 {
                     var factory = new LcmsAlignmentProcessFactory(storage, _matchResultEvaluator)
                     {
-                        ReportAction = v => vm.CurrentValue = v
+                        Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };
 
                     var aligner = factory.CreatePeakAligner();
