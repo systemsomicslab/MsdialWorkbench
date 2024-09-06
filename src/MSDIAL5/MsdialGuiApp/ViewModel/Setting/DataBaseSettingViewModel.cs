@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using Microsoft.Win32;
@@ -40,37 +39,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBasePath = Model.ToReactivePropertyAsSynchronized(m => m.DataBasePath)
                 .SetValidateAttribute(() => DataBasePath)
                 .AddTo(Disposables);
-            DataBaseID = new[]
-            {
-                Model.ObserveProperty(m => m.DataBaseID),
-                DataBasePath.Merge(Observable.Return(Model.DataBasePath)).Select(path => Path.GetFileNameWithoutExtension(path)),
-            }.Merge()
-            .ToReactiveProperty(string.Empty)
-            .SetValidateAttribute(() => DataBaseID)
-            .AddTo(Disposables);
-            DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);
+            DataBaseID = model.ToReactivePropertyAsSynchronized(m => m.DataBaseID).SetValidateAttribute(() => DataBaseID).AddTo(Disposables);
+            DataBasePath.Subscribe(path => DataBaseID.Value = Path.GetFileNameWithoutExtension(path)).AddTo(Disposables);
 
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EieioLipid, DataBaseSource.OadLipid, DataBaseSource.EidLipid }.AsReadOnly();
-            DBSource = DataBasePath
-                .Where(path => !string.IsNullOrEmpty(path))
-                .Select(path => Path.GetExtension(path))
-                .Select(ext => {
-                    if (Regex.IsMatch(ext, @"\.msp\d*")) {
-                        return DataBaseSource.Msp;
-                    }
-                    else if (Regex.IsMatch(ext, @"\.lbm\d*")) {
-                        return DataBaseSource.Lbm;
-                    }
-                    else if (Regex.IsMatch(ext, @"\.txt")) {
-                        return DataBaseSource.Text;
-                    }
-                    else if (Regex.IsMatch(ext, @"\.fa(sta)?")) {
-                        return DataBaseSource.Fasta;
-                    }
-                    return DataBaseSource.None;
-                })
-                .ToReactiveProperty(Model.DBSource)
-                .SetValidateNotifyError(src => DBSources.Contains(src) ? null : "Unknown database")
+            var validDBSources = DBSources.Where(src => src != DataBaseSource.None).ToArray();
+            DBSource = model.ToReactivePropertyAsSynchronized(m => m.DBSource)
+                .SetValidateNotifyError(src => validDBSources.Contains(src) ? null : "Unknown database")
                 .AddTo(Disposables);
             DBSource.Where(src => src == DataBaseSource.EieioLipid)
                 .Subscribe(_ => DataBaseID.Value = "EieioDatabase")
@@ -81,10 +55,30 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DBSource.Where(src => src == DataBaseSource.EidLipid)
                 .Subscribe(_ => DataBaseID.Value = "EidDatabase")
                 .AddTo(Disposables);
+            DBSource.Where(src => src == DataBaseSource.Lbm)
+                .Subscribe(_ => {
+                    if (string.IsNullOrEmpty(DataBasePath.Value)) {
+                        model.TrySetLbmLibrary();
+                    }
+                }).AddTo(Disposables);
             IsDataBasePathEnabled = DBSource.Select(src => (src != DataBaseSource.EieioLipid && src != DataBaseSource.OadLipid && src != DataBaseSource.EidLipid)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            DBSource.Where(_ => !DBSource.HasErrors)
-                .Subscribe(source => Model.DBSource = source)
-                .AddTo(Disposables);
+            DataBasePath
+                .Where(path => !string.IsNullOrEmpty(path))
+                .Select(path => Path.GetExtension(path))
+                .Subscribe(ext => {
+                    if (Regex.IsMatch(ext, @"\.msp\d*")) {
+                        model.DBSource = DataBaseSource.Msp;
+                    }
+                    else if (Regex.IsMatch(ext, @"\.lbm\d*")) {
+                        model.DBSource = DataBaseSource.Lbm;
+                    }
+                    else if (Regex.IsMatch(ext, @"\.txt")) {
+                        model.DBSource = DataBaseSource.Text;
+                    }
+                    else if (Regex.IsMatch(ext, @"\.fa(sta)?")) {
+                        model.DBSource = DataBaseSource.Fasta;
+                    }
+                }).AddTo(Disposables);
 
             ProteomicsParameterVM = new ProteomicsParameterVM(model.ProteomicsParameter);
 
@@ -163,7 +157,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveProperty<DataBaseSource> DBSource { get; }
 
-        public ReadOnlyCollection<DataBaseSource> DBSources { get; }
+        public ReadOnlyCollection<DataBaseSource> DBSources { get; } = new ReadOnlyCollection<DataBaseSource>([
+            DataBaseSource.None,
+            DataBaseSource.Msp,
+            DataBaseSource.Lbm,
+            DataBaseSource.Text,
+            DataBaseSource.Fasta,
+            DataBaseSource.EieioLipid,
+            DataBaseSource.OadLipid,
+            DataBaseSource.EidLipid
+        ]);
 
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
 

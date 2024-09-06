@@ -143,11 +143,11 @@
                          HorizontalContentAlignment="Left"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Lipid database:" Visibility="{Binding IsLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
-                <Button Content="Set"
+                <Button Content="Configure lipid class"
                         Command="{Binding LipidDBSetCommand, Mode=OneTime}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Width="64"/>
+                        Width="128"/>
             </ui:LabeledContent>
             <GroupBox Header="Peptide database setting"
                       BorderThickness="0"
