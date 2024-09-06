@@ -56,6 +56,26 @@ namespace CompMs.App.Msdial.Model.Search {
                 }
             }
         }
+        private FragmenterResult? _selectedStructure;
+        public FragmenterResult? SelectedStructure {
+            get => _selectedStructure;
+            set {
+                if (_selectedStructure != value) {
+                    _selectedStructure = value;
+                    OnPropertyChanged(nameof(SelectedStructure));
+                    OnSelectedStructureChanged();
+                }
+            }
+        }
+
+        private void OnSelectedStructureChanged() {
+            if (_selectedStructure != null) {
+                var molecule = new MoleculeProperty();
+                molecule.SMILES = _selectedStructure.Smiles;
+                MoleculeStructureModel.UpdateMolecule(molecule);
+            }
+        }
+
         public MsSpectrum ms1Spectrum { get; }
         public MsSpectrum ms2Spectrum { get; }
 
