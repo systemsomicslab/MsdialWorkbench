@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
@@ -78,6 +78,8 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public MsSpectrum ms1Spectrum { get; }
         public MsSpectrum ms2Spectrum { get; }
+        public MsSpectrumModel expSpectrum { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public InternalMsFinderSingleSpot(string tempDir, string filePath) {
             try {
@@ -98,14 +100,26 @@ namespace CompMs.App.Msdial.Model.Search {
                 spectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
                 
                 FindFormula();
+                MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
             }
         }
 
-        public SingleSpectrumModel spectrumModelMs1 { get; }
-        public SingleSpectrumModel spectrumModelMs2 { get; }
+        public SingleSpectrumModel spectrumModelMs1 { get; set; }
+        public SingleSpectrumModel spectrumModelMs2 { get; set; }
+        public SingleSpectrumModel experimentSpectrum { get; }
+        public SingleSpectrumModel referenceSpectrum {
+            get => _referenceSpectrum;
+            set {
+                if (_referenceSpectrum != value) {
+                    _referenceSpectrum = value;
+                    OnPropertyChanged(nameof(referenceSpectrum));
+                }
+            }
+        }
+        private SingleSpectrumModel _referenceSpectrum;
 
         private void FindFormula() {
             try { 

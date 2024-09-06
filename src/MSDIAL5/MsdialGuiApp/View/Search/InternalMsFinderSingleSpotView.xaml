@@ -7,6 +7,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsFinderSingleSpotViewModel}}"
              d:DesignHeight="600" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
@@ -183,8 +184,8 @@
                 <TabItem Header="Spectrum" Margin="0,0,2,0" ContextMenu="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite}">
                     <chart:MsSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
                 </TabItem>
-                <TabItem Header="Structure" Name="TabItem_StructureImage">
-                    <Image Name="Image_Structure" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
+                    <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>
                 </TabItem>
                 <TabItem Header="Meta data">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
