@@ -1,6 +1,5 @@
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Properties;
-using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -120,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
                     Settings.Default.Save();
                 }
             } catch (Exception ex) {
-                MessageBox.Show($"An error occurred: {ex.Message}");
+                MessageBox.Show($"An error occurred on R: {ex.Message}");
             } finally {
                 if (Settings.Default.RHome != RDirectory) {
                     Settings.Default.RHome = RDirectory;
@@ -154,14 +153,9 @@ namespace CompMs.App.Msdial.Model.Statistics {
                             "install.packages(packages_to_install)}\r\n" +
                             "lapply(required_packages, library, character.only = TRUE)\r\n\r\n" +
                             "##########################################";
-            if (MessageBox.Show(msgtext, "Package installation (click OK to copy)",
-                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK) {
-                Clipboard.SetText(msgtext);
-            } else {
-                return false;
-            }
+            var result = CustomPackageDialog.ShowDialog(msgtext);
             if (MessageBox.Show("Click OK to run Notame (packages needed to be installed)", "Notame",
-                MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel) {
+                MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                 return false;
             } else {
                 return true;
@@ -184,6 +178,34 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.Evaluate(reportScript);
+        }
+    }
+    public class CustomPackageDialog : Form {
+        private TextBox txtMessage;
+        private string message;
+
+        public CustomPackageDialog(string message) {
+            this.message = message;
+            InitializeComponents();
+        }
+
+        private void InitializeComponents() {
+            this.Text = "Package Installation";
+            this.Size = new System.Drawing.Size(600, 400);
+
+            txtMessage = new TextBox();
+            txtMessage.Multiline = true;
+            txtMessage.ReadOnly = true;
+            txtMessage.Text = message;
+            txtMessage.Dock = DockStyle.Top;
+            txtMessage.Height = 350;
+            this.Controls.Add(txtMessage);
+        }
+
+        public static DialogResult ShowDialog(string message) {
+            using (var dialog = new CustomPackageDialog(message)) {
+                return dialog.ShowDialog();
+            }
         }
     }
 }
