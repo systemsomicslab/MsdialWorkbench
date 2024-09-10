@@ -39,6 +39,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
+        public virtual bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
+            return spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0;
+        }
+
         protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
         protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
@@ -56,7 +60,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 return;
             }
             var result = alignmentChromPeakFeature;
-            result.PeakID = -2;
+            if (result.MasterPeakID < 0) {
+                result.MasterPeakID = -2;
+                result.PeakID = -2;
+            }
 
             var centralAx = center.Value;
             (var candidates, var minId) = GetPeakTopCandidates(peaklist, centralAx, axTol);

@@ -67,7 +67,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     rtRight = spot.TimesCenter.Value + 2.5;
                 }
                 var chromatogramRange = new ChromatogramRange(rtLeft, rtRight, ChromXType.RT, ChromXUnit.Min);
-                var chromatogram = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
+                var chromatogram = ms1Spectra.GetMs1ExtractedChromatogram(spot.QuantMass, ms1MassTolerance, chromatogramRange);
                 return new ChromatogramPeakInfo(
                     peak.FileID, chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel).AsPeakArray(),
                     (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
@@ -100,7 +100,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var handler = _fileIdToHandler[peak.FileID];
                 
                 var chromatogramRange = ChromatogramRange.FromTimes(handler.ConvertBack(riLeft), handler.ConvertBack(riRight));
-                var chromatogram = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
+                var chromatogram = ms1Spectra.GetMs1ExtractedChromatogram(spot.QuantMass, ms1MassTolerance, chromatogramRange);
                 var smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel).AsPeakArray();
                 foreach (var p in smoothedChromatogram) {
                     p.ChromXs.RI = handler.Convert(p.ChromXs.RT);
