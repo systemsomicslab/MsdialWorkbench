@@ -18,19 +18,19 @@ namespace CompMs.App.Msdial.ViewModel.Search {
                 _model = model ?? throw new ArgumentNullException(nameof(model));
                 Disposables.Add(model);
                 _broker = broker;
+                SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1).AddTo(Disposables);
+                SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2).AddTo(Disposables);
 
-                spectrumMs1ViewModel = new SingleSpectrumViewModel(model.spectrumModelMs1).AddTo(Disposables);
-                spectrumMs2ViewModel = new SingleSpectrumViewModel(model.spectrumModelMs2).AddTo(Disposables);
-                if (model.MoleculeStructureModel != null) {
+                if (model.MoleculeStructureModel is not null) {
                     MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
                 }
             } catch (Exception ex) {
                 MessageBox.Show(ex.ToString());
             }
         }
-        public SingleSpectrumViewModel spectrumMs1ViewModel { get; }
-        public SingleSpectrumViewModel spectrumMs2ViewModel { get; }
-        public MsSpectrumViewModel msSpectrumViewModel { get; }
+        public SingleSpectrumViewModel SpectrumMs1ViewModel { get; }
+        public SingleSpectrumViewModel SpectrumMs2ViewModel { get; }
+        public MsSpectrumViewModel MsSpectrumViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
     }
 }

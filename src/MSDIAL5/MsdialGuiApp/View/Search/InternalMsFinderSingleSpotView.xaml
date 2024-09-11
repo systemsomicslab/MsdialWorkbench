@@ -49,7 +49,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=_model.formulaList}">
+                              ItemsSource="{Binding  Path=_model.FormulaList}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -127,14 +127,14 @@
                             <ColumnDefinition Width="40" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <chart:SingleSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                            <chart:SingleSpectrumView DataContext="{Binding SpectrumMs1ViewModel}"/>
                         </Grid>
                         <StackPanel Orientation="Vertical" Grid.Column="1">
-                            <RadioButton Name="Button_ShowMs1RawSpectrum"
+                            <RadioButton Name="Button_ShowMs1RawSpectrum" Command="{Binding _model.ShowRawMs1SpectrumCommand}"
                                          Content="/Resources/RawDataButton.ico"
                                          ToolTip="Show raw data spectrum" 
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowIsotopeSpectrum"
+                            <RadioButton Name="Button_ShowIsotopeSpectrum" Command="{Binding _model.ShowIsotopeSpectrumCommand}"
                                          Content="/Resources/IsotopeButton.ico"
                                          ToolTip="Show isotope spectrum"
                                          Style="{StaticResource IconRadioButton}"/>
@@ -158,7 +158,7 @@
                             <ColumnDefinition Width="40" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
-                            <chart:SingleSpectrumView DataContext="{Binding spectrumMs2ViewModel}"/>
+                            <chart:SingleSpectrumView DataContext="{Binding SpectrumMs2ViewModel}"/>
                         </Grid>
                         <StackPanel Grid.Column="1" Orientation="Vertical">
                             <RadioButton Name="Button_ShowMs2RawSpectrum"
@@ -207,7 +207,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                               ItemsSource="{Binding  Path=_model.structureList}" SelectedItem="{Binding Path=_model.SelectedStructure, Mode=TwoWay}">
+                               ItemsSource="{Binding  Path=_model.StructureList}" SelectedItem="{Binding Path=_model.SelectedStructure, Mode=TwoWay}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -243,7 +243,7 @@
             </Grid>
             <TabControl Grid.Row="1">
                 <TabItem Header="Spectrum">
-                    <chart:MsSpectrumView DataContext="{Binding msSpectrumViewModel}"/>
+                    <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel}"/>
                 </TabItem>
                 <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
                     <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>

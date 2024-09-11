@@ -1,8 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Information;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -14,12 +16,14 @@ using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,10 +31,14 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Search {
     internal class InternalMsFinderSingleSpot : DisposableModelBase {
-        private readonly AnalysisParamOfMsfinder _parameter;
-        private string folderPath;
-        private readonly RawData? rawData;
-        public List<FragmenterResult> _structureData;
+        private readonly AnalysisParamOfMsfinder? _parameter;
+        private string _folderPath;
+        private readonly RawData? _rawData;
+        public List<FragmenterResult?> _structureData;
+        private GraphLabels _msGraphLabels;
+        public MsScanMatchResultContainer _msScanMatchResultContainer;
+        private Subject<MsSpectrum> _ms1SpectrumSubject;
+        private Subject<MsSpectrum> _ms2SpectrumSubject;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -46,13 +54,13 @@ namespace CompMs.App.Msdial.Model.Search {
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
 
-        public List<FormulaResult>? formulaList { get; set; }
-        public List<FragmenterResult>? structureList {
+        public List<FormulaResult>? FormulaList { get; private set; }
+        public List<FragmenterResult>? StructureList {
             get => _structureData;
             set {
                 if (_structureData != value) {
                     _structureData = value;
-                    OnPropertyChanged(nameof(structureList));
+                    OnPropertyChanged(nameof(StructureList));
                 }
             }
         }
@@ -69,35 +77,30 @@ namespace CompMs.App.Msdial.Model.Search {
         }
 
         private void OnSelectedStructureChanged() {
-            if (_selectedStructure != null) {
+            if (SelectedStructure != null) {
                 var molecule = new MoleculeProperty();
-                molecule.SMILES = _selectedStructure.Smiles;
+                molecule.SMILES = SelectedStructure.Smiles;
                 MoleculeStructureModel.UpdateMolecule(molecule);
             }
         }
 
-        public MsSpectrum ms1Spectrum { get; }
-        public MsSpectrum ms2Spectrum { get; }
-        public MsSpectrumModel expSpectrum { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
-
         public InternalMsFinderSingleSpot(string tempDir, string filePath) {
             try {
                 _parameter = new AnalysisParamOfMsfinder();
-                folderPath = tempDir;
+                _folderPath = tempDir;
 
-                rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
-                ms1Spectrum = new MsSpectrum(rawData.Ms1Spectrum);
-                ms2Spectrum = new MsSpectrum(rawData.Ms2Spectrum);
-                var internalMsFinderMs1 = new ObservableMsSpectrum(this.ObserveProperty(m => m.ms1Spectrum), null, Observable.Return<ISpectraExporter?>(null));
-                var internalMsFinderMs2 = new ObservableMsSpectrum(this.ObserveProperty(m => m.ms2Spectrum), null, Observable.Return<ISpectraExporter?>(null));
+                _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
+                _ms1SpectrumSubject = new Subject<MsSpectrum>().AddTo(Disposables);
+                _ms2SpectrumSubject = new Subject<MsSpectrum>().AddTo(Disposables);
+                var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
+                var internalMsFinderMs2 = new ObservableMsSpectrum(_ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms1VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-                var ms2HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
+                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
                 var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-                var msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                spectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
-                spectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
+                _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
+                SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 
                 FindFormula();
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
@@ -112,22 +115,28 @@ namespace CompMs.App.Msdial.Model.Search {
         public SingleSpectrumModel experimentSpectrum { get; }
         public SingleSpectrumModel referenceSpectrum {
             get => _referenceSpectrum;
+
+        public SingleSpectrumModel SpectrumModelMs1 { get; }
+        public SingleSpectrumModel SpectrumModelMs2 { get; }
+        public MsSpectrumModel RefMs2SpectrumModel {
+            get => _refMs2SpectrumModel;
             set {
-                if (_referenceSpectrum != value) {
-                    _referenceSpectrum = value;
-                    OnPropertyChanged(nameof(referenceSpectrum));
+                if (_refMs2SpectrumModel != value) {
+                    _refMs2SpectrumModel = value;
+                    OnPropertyChanged(nameof(RefMs2SpectrumModel));
                 }
             }
         }
-        private SingleSpectrumModel _referenceSpectrum;
+        private MsSpectrumModel? _refMs2SpectrumModel;
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         private void FindFormula() {
             try { 
                 var error = string.Empty;
-                var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, rawData, _parameter);
-                formulaList = formulaResults;
+                var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
+                FormulaList = formulaResults;
                 foreach (var formulaResult in formulaResults) { 
-                    var formulaFileName = Path.Combine(folderPath, formulaResult.Formula.FormulaString);
+                    var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
                     var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
                     FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
                 }
@@ -143,8 +152,8 @@ namespace CompMs.App.Msdial.Model.Search {
         private void FindStructure() {
             try {
                 var process = new StructureFinderBatchProcess();
-                process.DirectSingleSearchOfStructureFinder(rawData, formulaList, _parameter, folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
-                var structureFilePath = Directory.GetFiles(folderPath, "*.sfd");
+                process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+                var structureFilePath = Directory.GetFiles(_folderPath, "*.sfd");
                 var updatedStructureList = new List<FragmenterResult>();
                 foreach (var file in structureFilePath) {
                     var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
@@ -152,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Search {
                         updatedStructureList.AddRange(fragmenterResults);
                     }
                 }
-                structureList = updatedStructureList;
+                StructureList = updatedStructureList;
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
