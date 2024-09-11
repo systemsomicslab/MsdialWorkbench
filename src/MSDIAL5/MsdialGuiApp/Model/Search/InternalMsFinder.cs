@@ -10,9 +10,8 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Search {
     internal sealed class InternalMsFinder : DisposableModelBase {
-        public AlignmentFileBeanModel File { get; }
-        public AnalysisParamOfMsfinder Parameter { get; }
-        private AlignmentSpotPropertyModelCollection spots { get; }
+        public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
+        public InternalMsfinderSettingModel SettingModel;
 
         public InternalMsFinder(InternalMsFinderMetaboliteList metaboliteList) {
             InternalMsFinderMetaboliteList = metaboliteList;
@@ -26,8 +25,6 @@ namespace CompMs.App.Msdial.Model.Search {
             spectrumModelMs2 = new SingleSpectrumModel(metaboliteList.internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
         }
 
-        public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
-        public InternalMsfinderSettingModel SettingModel;
         public SingleSpectrumModel spectrumModelMs1 { get; }
         public SingleSpectrumModel spectrumModelMs2 { get; }
     }

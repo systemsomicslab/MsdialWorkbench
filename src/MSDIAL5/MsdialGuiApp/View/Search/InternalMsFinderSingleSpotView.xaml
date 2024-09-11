@@ -9,7 +9,7 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsFinderSingleSpotViewModel}}"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="700">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -43,6 +43,9 @@
                            Foreground="Black" Background="{StaticResource MainThemeColor}"
                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                            Height="25"/>
+                    <Button Content="Search structure" Command="{Binding _model.RunFindStructure}" 
+                            Background="AliceBlue" BorderThickness="2" 
+                            Height="25" Width="100" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
@@ -110,19 +113,77 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <Label Content="MS spectrum" 
-                            Foreground="Black" Background="{StaticResource MainThemeColor}"
-                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
-                            Height="25" Grid.Row="0"/>
-                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                        Foreground="Black" Background="{StaticResource MainThemeColor}"
+                        VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                        Height="25" Grid.Row="0"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <chart:SingleSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                        </Grid>
+                        <StackPanel Orientation="Vertical" Grid.Column="1">
+                            <RadioButton Name="Button_ShowMs1RawSpectrum"
+                                         Content="/Resources/RawDataButton.ico"
+                                         ToolTip="Show raw data spectrum" 
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowIsotopeSpectrum"
+                                         Content="/Resources/IsotopeButton.ico"
+                                         ToolTip="Show isotope spectrum"
+                                         Style="{StaticResource IconRadioButton}"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+                
                 <GridSplitter Height="2" Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
                 <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <Label Content="MS/MS spectrum" 
-                               Foreground="Black" Background="{StaticResource MainThemeColor}"
-                               VerticalAlignment="Top" HorizontalContentAlignment="Center" 
-                               Height="25" Grid.Row="0" />
-                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs2ViewModel}"/>
+                           Foreground="Black" Background="{StaticResource MainThemeColor}"
+                           VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                           Height="25" Grid.Row="0" />
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <chart:SingleSpectrumView DataContext="{Binding spectrumMs2ViewModel}"/>
+                        </Grid>
+                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <RadioButton Name="Button_ShowMs2RawSpectrum"
+                                         DataContext="{Binding }"
+                                         Content="/Resources/RawDataButton.ico"
+                                         ToolTip="Show raw data spectrum"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowProductIonSpectrum"
+                                         Content="/Resources/ProductIonButton.ico"
+                                         ToolTip="Show product ions"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowNeutralLossSpectrum"
+                                         Content="/Resources/NeutralLossButton.ico"
+                                         ToolTip="Show neutral loss ions"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_FseaResultViewer"
+                                         Content="/Resources/FseaResultViewer.ico"
+                                         ToolTip="Show the result of fragment set enrichment analysis (FSEA): manuscript preparation"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowSubstructureViewer"
+                                         Content="/Resources/SubstructureViewer.ico"
+                                         ToolTip="Show assigned substructures"
+                                         Style="{StaticResource IconRadioButton}"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </Grid>
             <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
@@ -139,50 +200,50 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-                <Button Content="Search structure" Command="{Binding _model.RunFindStructure}" 
-                        Background="AliceBlue" BorderThickness="2" 
-                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                    <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
+                    <Button Content="Reflect to MS-DIAL" Command="{Binding _model.ReflectToMsdial}" 
+                            Background="IndianRed" BorderThickness="2" FontWeight="Bold"
+                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                ItemsSource="{Binding  Path=_model.structureList}" SelectedItem="{Binding Path=_model.SelectedStructure, Mode=TwoWay}">
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="DataGridColumnHeader" >
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn SortMemberPath="Name" Width="*" Header="Name" IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Path=Title, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" >
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn SortMemberPath="Name" Width="*" Header="Name" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Path=Title, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="Score (max=10)" Width="*" Binding="{Binding Path=TotalScore, StringFormat=0.00, Mode=OneWay}" IsReadOnly="True"/>
-                        <DataGridTemplateColumn SortMemberPath="Ontology" Width="1.5*" Header="Ontology" IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Path=Ontology, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
+                            <DataGridTextColumn Header="Score (max=10)" Width="*" Binding="{Binding Path=TotalScore, StringFormat=0.00, Mode=OneWay}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn SortMemberPath="Ontology" Width="1.5*" Header="Ontology" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Path=Ontology, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </Grid>
             <TabControl Grid.Row="1">
-                <TabItem Header="Spectrum" Margin="0,0,2,0" ContextMenu="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite}">
-                    <chart:MsSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                <TabItem Header="Spectrum">
+                    <chart:MsSpectrumView DataContext="{Binding msSpectrumViewModel}"/>
                 </TabItem>
                 <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
                     <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>

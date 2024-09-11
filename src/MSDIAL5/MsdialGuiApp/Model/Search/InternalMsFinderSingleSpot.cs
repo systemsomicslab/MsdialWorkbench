@@ -162,9 +162,17 @@ namespace CompMs.App.Msdial.Model.Search {
         public Task ClearAsync(CancellationToken token = default) {
             throw new NotImplementedException();
         }
-
-        public Task ReflectToMsdialAsync(CancellationToken token = default) {
-            throw new NotImplementedException();
+        public DelegateCommand ReflectToMsdial => _reflectToMsdial ??= new DelegateCommand(ReflectToMsdialAsync);
+        private DelegateCommand? _reflectToMsdial;
+        public void ReflectToMsdialAsync() {
+            if (SelectedStructure is not null) {
+                var msScanMatchResult = new MsScanMatchResult();
+                msScanMatchResult.Name = SelectedStructure.Title;
+                msScanMatchResult.InChIKey = SelectedStructure.Inchikey;
+                msScanMatchResult.TotalScore = ((float)SelectedStructure.TotalScore);
+                _msScanMatchResultContainer = new MsScanMatchResultContainer();
+                _msScanMatchResultContainer.AddResult(msScanMatchResult);
+            }
         }
     }
 }

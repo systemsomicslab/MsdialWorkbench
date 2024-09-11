@@ -43,14 +43,26 @@
 		<None Remove="Resources\BinVestigate.ico" />
 		<None Remove="Resources\CompoundSearchIcon.ico" />
 		<None Remove="Resources\Deconvoluted.ico" />
+		<None Remove="Resources\FseaResultViewer.ico" />
+		<None Remove="Resources\IsotopeButton.ico" />
 		<None Remove="Resources\Lipoquality.ico" />
 		<None Remove="Resources\MolecularNetworking.ico" />
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
+		<None Remove="Resources\NeutralLossButton.ico" />
+		<None Remove="Resources\ProductIonButton.ico" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
+		<None Remove="Resources\RawDataButton.ico" />
 		<None Remove="Resources\SplashLipids.xml" />
+		<None Remove="Resources\SubstructureViewer.ico" />
 		<None Remove="Resources\Table.png" />
+		<Resource Include="Resources\FseaResultViewer.ico">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\IsotopeButton.ico">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
@@ -95,10 +107,22 @@
 	  <Resource Include="Resources\msfinder_icon.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="Resources\NeutralLossButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\ProductIonButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
 	  <Resource Include="Resources\RawAndDeconvo.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="Resources\RawChromatogram.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\RawDataButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\SubstructureViewer.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="Resources\Table.png">
