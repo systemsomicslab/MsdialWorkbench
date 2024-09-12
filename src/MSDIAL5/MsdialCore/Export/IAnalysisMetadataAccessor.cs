@@ -138,7 +138,7 @@ namespace CompMs.MsdialCore.Export
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            return string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
         private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile) {
@@ -146,7 +146,7 @@ namespace CompMs.MsdialCore.Export
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            var strSpectrum = string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            var strSpectrum = string.Join(" ", spectrum.Select(peak => string.Format("{0:F5}:{1:F0}", peak.Mass, peak.Intensity)));
             if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
                 return strSpectrum;
             }
