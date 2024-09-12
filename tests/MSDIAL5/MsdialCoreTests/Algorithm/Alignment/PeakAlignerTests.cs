@@ -1,21 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialCore.Algorithm.Alignment;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj;
-using CompMs.Common.Enum;
-using CompMs.MsdialCore.Parameter;
 using System.Linq;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.Common.DataObj.Database;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
