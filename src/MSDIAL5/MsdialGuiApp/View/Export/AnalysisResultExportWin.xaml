@@ -154,6 +154,11 @@
                                          Width="40"/>
                             </ui:LabeledContent>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" IsEnabled="{Binding ShouldExport.Value}">
+                            <CheckBox Content="Trim content for excel"
+                                      IsChecked="{Binding TrimToExcelLimit.Value, Mode=TwoWay}"
+                                      ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
+                        </StackPanel>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.Resources>
