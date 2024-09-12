@@ -122,8 +122,8 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("0.90", content["Matched peaks percentage"]);
             Assert.AreEqual("0.64", content["Total score"]);
             Assert.AreEqual("6.78", content["S/N"]);
-            Assert.AreEqual("700.00000 1000;701.00001 100", content["MS1 isotopes"]);
-            Assert.AreEqual("700.00001 1000;500.00002 200;200.00003 50", content["MSMS spectrum"]);
+            Assert.AreEqual("700.00000:1000 701.00001:100", content["MS1 isotopes"]);
+            Assert.AreEqual("700.00001:1000 500.00002:200 200.00003:50", content["MSMS spectrum"]);
         }
 
         class TestAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
