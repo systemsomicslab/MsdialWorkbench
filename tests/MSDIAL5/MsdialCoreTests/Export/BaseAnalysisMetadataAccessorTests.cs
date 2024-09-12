@@ -99,7 +99,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 },
             };
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider, stubFile);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
 
             Assert.AreEqual("100", content["Peak ID"]);
             Assert.AreEqual("Metabolite", content["Name"]);

@@ -196,7 +196,7 @@ namespace CompMs.App.MsdialConsole.Process
 
                 var sfs = file.LoadSpectrumFeatures();
                 using (var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read)) {
-                    scanExporter.Export(stream, file, sfs.Items);
+                    scanExporter.Export(stream, file, sfs.Items, new ExportStyle());
                 }
             }
             if (storage.MsdialGcmsParameter.TogetherWithAlignment)
