@@ -62,7 +62,7 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
                 });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider, stubFile);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
 
             Assert.AreEqual("100.991", content["RT left(min)"]);
             Assert.AreEqual("101.001", content["RT (min)"]);

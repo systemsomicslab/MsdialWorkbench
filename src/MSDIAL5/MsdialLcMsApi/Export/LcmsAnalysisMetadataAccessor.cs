@@ -65,9 +65,10 @@ namespace CompMs.MsdialLcMsApi.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
             content["RT left(min)"] = string.Format("{0:F3}", feature.ChromXsLeft.RT.Value);
             content["RT (min)"] = string.Format("{0:F3}", feature.ChromXsTop.RT.Value);
             content["RT right (min)"] = string.Format("{0:F3}", feature.ChromXsRight.RT.Value);
