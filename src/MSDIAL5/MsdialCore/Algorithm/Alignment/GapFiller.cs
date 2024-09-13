@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var target = peaks.First(peak => peak?.FileID == fileID);
             target.PeakShape.EstimatedNoise = GetEstimatedNoise(detected);
 
-            var chromXCenter = GetCenter(detected);
+            var chromXCenter = GetCenter(spot, detected);
             var peakWidth = GetPeakWidth(detected);
             var peaklist = GetPeaks(ms1Spectra, rawSpectra, spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
             GapFillCore(peaklist, chromXCenter, AxTol, target);
@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0;
         }
 
-        protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
+        protected abstract ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
         protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
             return peaks.Max(n => n.PeakShape.EstimatedNoise);
@@ -180,7 +180,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);
             System.Diagnostics.Debug.Assert(sPeaklist[rightId].ChromXs != null);
 
-            result.Mass = center.Mz.Value;
+            if (result.MasterPeakID < 0) {
+                result.Mass = center.Mz.Value;
+            }
             result.ChromScanIdTop = id;
             result.ChromScanIdLeft = leftId;
             result.ChromScanIdRight = rightId;

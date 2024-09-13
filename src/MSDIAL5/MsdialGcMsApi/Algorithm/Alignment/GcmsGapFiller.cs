@@ -5,10 +5,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,54 +36,8 @@ public abstract class GcmsGapFiller : GapFiller
         return peak.Mass != spot.QuantMass;
     }
 
-    protected double GetQuantmass(AlignmentChromPeakFeature[] peaks) {
-        var repFileID = DataObjConverter.GetRepresentativeFileID(peaks);
-        var repPeak = peaks.FirstOrDefault(peak => peak.FileID == repFileID);
-        var mspId = repPeak.MspID();
-        
-        if (IsReplaceMode && repFileID >= 0 && mspId >= 0) {
-            var refQuantMass = _mspDB[mspId].QuantMass;
-            if (_param.MassRangeBegin <= refQuantMass && refQuantMass <= _param.MassRangeEnd) {
-                return refQuantMass;
-            }
-        }
-
-        var dclFile = _files[repFileID].DeconvolutionFilePath;
-        var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, repPeak.SeekPointToDCLFile);
-        var spectrum = msdecResult.Spectrum;
-        var basepeak = GetBasePeak(spectrum);
-        if (_isRepresentativeQuantMassBasedOnBasePeakMz) {
-            return basepeak.Mass;
-        }
-
-        var bin = Bin;
-        var maxPeakHeight = peaks.Max(peak => peak.PeakHeightTop);
-        var quantMassGroup = peaks.Where(peak => peak.PeakHeightTop > maxPeakHeight * 0.1)
-                                  .GroupBy(peak => Math.Round(peak.Mass, bin));
-        var quantMassCandidate = quantMassGroup.Argmax(group => group.Count()).Average(peak => peak.Mass);
-        var isQuantMassExist = SuitableQuantMassExists(quantMassCandidate, basepeak.Intensity, spectrum, _param.CentroidMs1Tolerance, 10.0F * 0.01);
-        if (isQuantMassExist) {
-            return quantMassCandidate;
-        }
-
-        var repQuantMass = repPeak.Mass;
-        var isSuitableQuantMassExist = SuitableQuantMassExists(repQuantMass, basepeak.Intensity, spectrum, bin, 10.0 * 0.01);
-        if (isSuitableQuantMassExist)
-            return repQuantMass;
-
-        return basepeak.Mass;
-    }
-
     protected static SpectrumPeak GetBasePeak(List<SpectrumPeak> spectrum) {
         return spectrum.Argmax(peak => peak.Intensity);
-    }
-
-    // spectrum should be ordered by m/z value
-    protected static bool SuitableQuantMassExists(double mass, double intensity, List<SpectrumPeak> spectrum, double bin, double threshold) {
-        return spectrum.Where(peak => mass - bin <= peak.Mass)
-                       .TakeWhile(peak => peak.Mass <= mass + bin)
-                       .Any(peak => Math.Abs(peak.Mass - mass) <= bin
-                                 && peak.Intensity > intensity * threshold);
     }
 }
 
@@ -103,12 +54,12 @@ public class GcmsRTGapFiller : GcmsGapFiller
         rtTol = parameter.RetentionTimeAlignmentTolerance;
     }
 
-    protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+    protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
         var peaklist = peaks as AlignmentChromPeakFeature[] ?? peaks.ToArray();
         return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
         {
             RI = new RetentionIndex(peaklist.Average(peak => peak.ChromXsTop.RI.Value)),
-            Mz = new MzValue(GetQuantmass(peaklist)),
+            Mz = new MzValue(spot.QuantMass),
         };
     }
 
@@ -154,12 +105,12 @@ public class GcmsRIGapFiller : GcmsGapFiller
         _fileIdToHandler = parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(parameter.RiCompoundType, kvp.Value.RiDictionary));
     }
 
-    protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+    protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
         var peaklist = peaks as AlignmentChromPeakFeature[] ?? peaks.ToArray();
         return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RI.Value), ChromXType.RI, ChromXUnit.None)
         {
             RT = new RetentionTime(peaklist.Average(peak => peak.ChromXsTop.RT.Value)),
-            Mz = new MzValue(GetQuantmass(peaklist)),
+            Mz = new MzValue(spot.QuantMass),
         };
     }
 
