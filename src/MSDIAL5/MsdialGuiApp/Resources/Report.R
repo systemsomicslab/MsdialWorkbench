@@ -48,7 +48,7 @@ if(report){
   
     cat(descr, file = rnwFile, append = TRUE, sep = "\n")
     if(file.exists("drift_cor_report.png")){
-    fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
+    fig <- c("\\begin{figure}[htbp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
                                                                 "drift_cor_report.png", "}", sep = ""), "\\caption{Most signigicant features}", 
                 "\\end{center}", paste("\\label{", "drift_cor_report.png", 
                                     "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
@@ -91,7 +91,7 @@ if(report){
                 "PCA can give brief overview of the data.")
     cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-    fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
+    fig <- c("\\begin{figure}[htbp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
                                                             "PCA_for_report.png", "}", sep = ""), "\\caption{PCA plot of classes in data}", 
             "\\end{center}", paste("\\label{", "PCA_for_report.png", 
                                     "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
@@ -117,7 +117,7 @@ if(report){
   
     cat(descr, file = rnwFile, append = TRUE, sep = "\n")
   
-    fig <- c("\\begin{figure}[htp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
+    fig <- c("\\begin{figure}[htbp]", "\\begin{center}", paste("\\includegraphics[width=1.0\\textwidth]{", 
                                                             "box_plotdpi72.png", "}", sep = ""), "\\caption{12 most signigicant features}", 
             "\\end{center}", paste("\\label{", "box_plotdpi72.png", 
                                     "}", sep = ""), "\\end{figure}", "\\clearpage\n\n")
