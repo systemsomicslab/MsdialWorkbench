@@ -14,7 +14,7 @@ or
 https://github.com/systemsomicslab/MsdialWorkbench/discussions
 (instead of e-mail).
 
-However, if the discussion is something that cannot be done openly by any means, please email htsugawa@go.tuat.ac.jp.
+However, if the discussion is something that cannot be done openly by any means, please email msdial-jp-groups@go.tuat.ac.jp.
 
 # How to build MS-DIAL5 Desktop Application (for Windows)
 
