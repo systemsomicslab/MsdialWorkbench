@@ -13,6 +13,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -23,6 +24,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialGcMsApi.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -73,6 +75,10 @@ namespace CompMs.App.Msdial.Model.Gcms
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    if (chromatogramSpotSerializer is not null) {
+                        var handler = parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(parameter.RiCompoundType, kvp.Value.RiDictionary));
+                        chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(chromatogramSpotSerializer, handler);
+                    }
                     break;
                 case AlignmentIndexType.RT:
                 default:
