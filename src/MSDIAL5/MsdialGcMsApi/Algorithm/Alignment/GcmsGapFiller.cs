@@ -102,7 +102,7 @@ public class GcmsRIGapFiller : GcmsGapFiller
     public GcmsRIGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) : base(files, mspDB, parameter) {
         _parameter = parameter;
         _riTol = parameter.RetentionIndexAlignmentTolerance;
-        _fileIdToHandler = parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(parameter.RiCompoundType, kvp.Value.RiDictionary));
+        _fileIdToHandler = parameter.GetRIHandlers();
     }
 
     protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {

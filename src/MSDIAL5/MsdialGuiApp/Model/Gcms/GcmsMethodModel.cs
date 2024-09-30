@@ -66,8 +66,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 case AlignmentIndexType.RI:
                     _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
                     if (_chromatogramSpotSerializer is not null) {
-                        var handler = storage.Parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(storage.Parameter.RiCompoundType, kvp.Value.RiDictionary));
-                        _chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(_chromatogramSpotSerializer, handler);
+                        _chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(_chromatogramSpotSerializer, storage.Parameter.GetRIHandlers());
                     }
                     break;
                 case AlignmentIndexType.RT:

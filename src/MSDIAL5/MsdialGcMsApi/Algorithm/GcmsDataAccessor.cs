@@ -81,7 +81,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
             public RiGcmsDataAccessorImpl(MsdialGcmsParameter parameter) {
                 _parameter = parameter;
-                _fileIdToHandler = parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(parameter.RiCompoundType, kvp.Value.RiDictionary));
+                _fileIdToHandler = parameter.GetRIHandlers();
             }
 
             public List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
