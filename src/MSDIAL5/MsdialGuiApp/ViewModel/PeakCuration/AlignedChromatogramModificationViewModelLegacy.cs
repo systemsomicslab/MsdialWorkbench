@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
@@ -134,6 +135,8 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
     }
 
     public class PeakPropertyLegacy {
+        private readonly RetentionIndexHandler? _riHandler;
+
         public AlignmentChromPeakFeatureModel Model { get; set; }
         //public ChromatogramPeakInfo PeakSpotInfo { get; set; }
         public Brush Brush { get; set; }
@@ -145,17 +148,11 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public float PeakHeight { get; set; }
         public Accessory? Accessory { get; set; }
 
-        //public PeakPropertyLegacy(AlignmentChromPeakFeature bean, ChromatogramPeakInfo info, Brush brush, List<ChromatogramPeak> speaks) {
-        //    Model = bean;
-        //    PeakSpotInfo = info;
-        //    Brush = brush;
-        //    SmoothedPeakList = speaks;
-        //}
-
-        public PeakPropertyLegacy(AlignmentChromPeakFeatureModel bean, Brush brush, List<ChromatogramPeak> speaks) {
+        public PeakPropertyLegacy(AlignmentChromPeakFeatureModel bean, Brush brush, List<ChromatogramPeak> speaks, RetentionIndexHandler? riHandler) {
             Model = bean;
             Brush = brush;
             SmoothedPeakList = speaks;
+            _riHandler = riHandler;
             AlignedPeakList = new List<ChromatogramPeak>(0);
         }
 
@@ -163,7 +160,10 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             AlignOffset = val;
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
-                var nChromXs = new ChromXs(p.ChromXs.Value - AlignOffset, p.ChromXs.Type, p.ChromXs.Unit);
+                var nChromXs = new ChromXs(p.ChromXs.GetRepresentativeXAxis().Add(-AlignOffset));
+                if (nChromXs.MainType == ChromXType.RI && _riHandler is { }) {
+                    nChromXs.RT = _riHandler.ConvertBack(nChromXs.RI);
+                }
                 AlignedPeakList.Add(new ChromatogramPeak(p.ID, 0d, p.Intensity, nChromXs));
             }
         }
@@ -171,13 +171,55 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public void ClearAlignedPeakList() {
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
+                if (p.ChromXs.MainType == ChromXType.RI && _riHandler is { }) {
+                    p.ChromXs.RT = _riHandler.ConvertBack(p.ChromXs.RI);
+                }
                 AlignedPeakList.Add(new ChromatogramPeak(p.ID, 0d, p.Intensity, p.ChromXs));
             }
         }
 
+        public void ModifyPeakEdge(double minChromXValue, double maxChromXValue) {
+            var maxInt = 0.0;
+            var maxIntChromXValue = 0.0;
+            var sPeaklist = this.AlignedPeakList;
+            var peakAreaAboveZero = 0.0;
+            var areatype = Model.ChromXsTop.MainType;
+            if (areatype == ChromXType.RI && _riHandler is { }) {
+                areatype = ChromXType.RT;
+            }
+            for (var i = 0; i < sPeaklist.Count; i++) {
+                if (sPeaklist[i].ChromXs.GetRepresentativeXAxis().Value < minChromXValue) continue;
+                if (sPeaklist[i].ChromXs.GetRepresentativeXAxis().Value > maxChromXValue) break;
+                if (maxInt < sPeaklist[i].Intensity) {
+                    maxInt = sPeaklist[i].Intensity;
+                    maxIntChromXValue = sPeaklist[i].ChromXs.GetRepresentativeXAxis().Value;
+                }
+                if (i + 1 < sPeaklist.Count) {
+                    peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) * (sPeaklist[i + 1].ChromXs.GetChromByType(areatype).Value - sPeaklist[i].ChromXs.GetChromByType(areatype).Value) * 0.5;
+                }
+            }
+            if (maxIntChromXValue == 0.0) {
+                maxIntChromXValue = (minChromXValue + maxChromXValue) * 0.5;
+            }
+            var peakHeightFromBaseline = maxInt - Math.Min(sPeaklist[0].Intensity, sPeaklist[sPeaklist.Count - 1].Intensity);
+            var noise = this.Model.EstimatedNoise;
+            var sn = peakHeightFromBaseline / noise;
+
+            this.PeakAreaAboveZero = (float)peakAreaAboveZero;
+            if (areatype == ChromXType.RT) {
+                this.PeakAreaAboveZero *= 60f;
+            }
+            this.PeakHeight = (float)maxInt;
+            this.Accessory = new Accessory();
+            this.Accessory.SetChromatogram(
+                maxIntChromXValue + this.AlignOffset,
+                minChromXValue + this.AlignOffset,
+                maxChromXValue + this.AlignOffset,
+                noise, (float)sn);
+        }
     }
 
-    public class UtilityLegacy {
+    public static class UtilityLegacy {
         public static void ChangeAlignedRtProperty(List<PeakPropertyLegacy> peakProperties, double minX, double maxX) {
             var rtList = new List<double>();
             if (maxX - minX < 0.01) return;
@@ -202,37 +244,6 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                     peakProperties[i].SetAlignOffSet((float)(rtList[i] - aveRt));
                 else
                     peakProperties[i].SetAlignOffSet(0f);
-            }
-        }
-
-        public static void ModifyPeakEdge(List<PeakPropertyLegacy> peakProperties, double minX, double maxX) {
-            foreach (var sample in peakProperties) {
-                var maxInt = 0.0;
-                var maxRt = 0.0;
-                var sPeaklist = sample.AlignedPeakList;
-                var peakAreaAboveZero = 0.0;
-                for (var i = 0; i < sPeaklist.Count; i++) {
-                    if (sPeaklist[i].ChromXs.Value < minX) continue;
-                    if (sPeaklist[i].ChromXs.Value > maxX) break;
-                    if (maxInt < sPeaklist[i].Intensity) {
-                        maxInt = sPeaklist[i].Intensity;
-                        maxRt = sPeaklist[i].ChromXs.Value;
-                    }
-                    if (i + 1 < sPeaklist.Count)
-                        peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value) * 0.5;
-                }
-                if (maxRt == 0.0) {
-                    maxRt = (minX + maxX) * 0.5;
-                }
-                var peakHeightFromBaseline = maxInt - Math.Min(sPeaklist[0].Intensity, sPeaklist[sPeaklist.Count - 1].Intensity);
-                var noise = sample.Model.EstimatedNoise;
-                var sn = peakHeightFromBaseline / noise;
-
-                sample.PeakAreaAboveZero = (float)peakAreaAboveZero * 60.0f;
-                sample.PeakHeight = (float)maxInt;
-                sample.Accessory = new Accessory();
-                sample.Accessory.SetChromatogram((float)(maxRt + sample.AlignOffset), (float)(minX + sample.AlignOffset), (float)(maxX + sample.AlignOffset),
-                    noise, (float)sn);
             }
         }
 

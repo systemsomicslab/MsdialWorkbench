@@ -7,6 +7,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -63,6 +64,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public static IObservable<PeakPropertiesLegacy?> LoadPeakProperty(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
+            var handlers = (parameter as MsdialGcmsParameter)?.GetRIHandlers();
             return spotChromatograms.DefaultIfNull(s => s.Chromatograms.CombineLatest(s.Spot.AlignedPeakPropertiesModelProperty, (chromatograms, peaks) => {
                 if (peaks is null) {
                     return null;
@@ -70,8 +72,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 var peakPropArr = files.Zip(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
                         var brush = classnameToBrushes.TryGetValue(pair.Item1.AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId);
-                        var speaks = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel).AsPeakArray();
-                        var peakProp = new PeakPropertyLegacy(pair.Item2, brush, speaks);
+                        using var smoothed = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                        var handler = (handlers?.TryGetValue(pair.Item1.AnalysisFileId, out var h) ?? false) ? h : null;
+                        var peakProp = new PeakPropertyLegacy(pair.Item2, brush, smoothed.AsPeakArray(), handler);
                         var offset = pair.Item2.ChromXsTop.Value - s.Spot.TimesCenter;
                         peakProp.SetAlignOffSet((float)offset);
                         peakProp.AverageRt = (float)s.Spot.TimesCenter;
