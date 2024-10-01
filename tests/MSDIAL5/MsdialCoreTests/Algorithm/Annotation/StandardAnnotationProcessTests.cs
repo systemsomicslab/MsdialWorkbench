@@ -29,13 +29,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new ChromatogramPeakFeature { },
             };
             foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
-            var msdecResults = new[]
-            {
+            var msdecResults = new MSDecResultCollection([
                 new MSDecResult { },
                 new MSDecResult { },
                 new MSDecResult { },
                 new MSDecResult { },
-            };
+            ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
@@ -56,13 +55,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new ChromatogramPeakFeature { },
             };
             foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
-            var msdecResults = new[]
-            {
+            var msdecResults = new MSDecResultCollection([
                 new MSDecResult { },
                 new MSDecResult { },
                 new MSDecResult { },
                 new MSDecResult { },
-            };
+            ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
@@ -80,10 +78,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new ChromatogramPeakFeature { },
             };
             foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
-            var msdecResults = new[]
-            {
+            var msdecResults = new MSDecResultCollection([
                 new MSDecResult { },
-            };
+            ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);

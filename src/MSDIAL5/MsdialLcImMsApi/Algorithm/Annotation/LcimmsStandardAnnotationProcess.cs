@@ -29,7 +29,7 @@ public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
     private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
     private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
-    public Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResult, IDataProvider provider, int numThread = 1, Action<double>? reportAction = null, CancellationToken token = default) {
+    public Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MSDecResultCollection msdecResult, IDataProvider provider, int numThread = 1, Action<double>? reportAction = null, CancellationToken token = default) {
         var reporter = ReportProgress.FromRange(reportAction, 0d, 1d);
         var queue = new ConcurrentQueue<ChromatogramPeakFeature>(chromPeakFeatures);
         var tasks = new Task[Math.Max(numThread, 1)];
@@ -39,7 +39,7 @@ public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
         return Task.WhenAll(tasks);
     }
 
-    private async Task ConsumeTasksAsync(ConcurrentQueue<ChromatogramPeakFeature> queue, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, CancellationToken token, ReportProgress reporter, int totalNumber) {
+    private async Task ConsumeTasksAsync(ConcurrentQueue<ChromatogramPeakFeature> queue, MSDecResultCollection msdecResults, IDataProvider provider, CancellationToken token, ReportProgress reporter, int totalNumber) {
         while (queue.TryDequeue(out var peak)) {
             token.ThrowIfCancellationRequested();
             await Task.Run(() => RunAnnotationCore(peak, msdecResults, provider), token).ConfigureAwait(false);
@@ -47,24 +47,28 @@ public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
         }
     }
 
-    private void RunAnnotationCore(ChromatogramPeakFeature chromatogramPeakFeature, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider) {
+    private void RunAnnotationCore(ChromatogramPeakFeature chromatogramPeakFeature, MSDecResultCollection msdecResults, IDataProvider provider) {
         foreach (var dpeak in chromatogramPeakFeature.DriftChromFeatures) {
-            var msdecResult = msdecResults[dpeak.MasterPeakID]; 
+            var msdecResult = msdecResults.MSDecResults[dpeak.MasterPeakID]; 
             if (!msdecResult.Spectrum.IsEmptyOrNull()) {
                 dpeak.MSDecResultIdUsed = dpeak.MasterPeakID;
             }
-            RunInnerAnnotationCore(chromatogramPeakFeature, dpeak, msdecResult, provider);
+            RunInnerAnnotationCore(chromatogramPeakFeature, dpeak, msdecResult, provider, msdecResults.CollisionEnergy);
         }
         chromatogramPeakFeature.SetMatchResultProperty(_refer, _evaluator);
     }
 
-    private void RunInnerAnnotationCore(ChromatogramPeakFeature parentChromatogramPeakFeature, ChromatogramPeakFeature chromatogramPeakFeature, MSDecResult msdecResult, IDataProvider provider) {
+    private void RunInnerAnnotationCore(ChromatogramPeakFeature parentChromatogramPeakFeature, ChromatogramPeakFeature chromatogramPeakFeature, MSDecResult msdecResult, IDataProvider provider, double collisionEnergy) {
         var spectrum = provider.LoadMsSpectrumFromIndex(chromatogramPeakFeature.MS1RawSpectrumIdTop).Spectrum;
         foreach (var factory in _queryFacotries) {
             var query = factory.Create(chromatogramPeakFeature, msdecResult, spectrum, chromatogramPeakFeature.PeakCharacter, factory.PrepareParameter());
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
-            var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).ToArray();
+            var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).Select(r => {
+                r.SpectrumID = msdecResult.RawSpectrumID;
+                r.CollisionEnergy = collisionEnergy;
+                return r;
+            }).ToArray();
             chromatogramPeakFeature.MatchResults.AddResults(topResults);
             parentChromatogramPeakFeature.MatchResults.AddResults(topResults);
         }

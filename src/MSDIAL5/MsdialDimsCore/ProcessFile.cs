@@ -53,7 +53,7 @@ public sealed class ProcessFile : IFileProcessor {
         if (option.HasFlag(ProcessOption.Identification)) {
             Console.WriteLine("Annotation started");
             var reporter = ReportProgress.FromRange(progress, 60d, 90d);
-            await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults.MSDecResults, provider, parameter.NumThreads, reporter.Report, token).ConfigureAwait(false);
+            await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults, provider, parameter.NumThreads, reporter.Report, token).ConfigureAwait(false);
         }
         var characterEstimator = new Algorithm.PeakCharacterEstimator();
         characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, parameter, provider, ReportProgress.FromLength(progress, initialProgress: 90d, progressLength: 10d));
