@@ -12,22 +12,24 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     {
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
         public MsdialGcmsParameter GcmsParameter { get; }
         public List<AnalysisFileBean> Files { get; }
         public List<MoleculeMsReference> MspDB { get; }
         public Action<int> ReportAction { get; set; }
 
-        public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage) : base(storage.Parameter, storage.IupacDatabase) {
             Files = files;
             GcmsParameter = storage.Parameter;
-            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            _refer = storage.DataBases.CreateDataBaseMapper();
             MspDB = storage.MspDB;
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new GcmsAlignmentRefiner(GcmsParameter, Iupac, evaluator);
+            return new GcmsAlignmentRefiner(GcmsParameter, Iupac, _evaluator);
         }
 
         public override DataAccessor CreateDataAccessor() {
@@ -52,16 +54,18 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             switch (GcmsParameter.AlignmentIndexType) {
                 case Common.Enum.AlignmentIndexType.RT:
                     return GcmsPeakJoiner.CreateRTJoiner(
-                        GcmsParameter.RiCompoundType,
                         GcmsParameter.MspSearchParam,
-                        GcmsParameter.AlignmentBaseParam);
+                        GcmsParameter,
+                        _evaluator,
+                        _refer);
                 case Common.Enum.AlignmentIndexType.RI:
                 default:
                     return GcmsPeakJoiner.CreateRIJoiner(
-                        GcmsParameter.RiCompoundType,
                         GcmsParameter.MspSearchParam,
                         GcmsParameter.RetentionIndexAlignmentTolerance,
-                        GcmsParameter.AlignmentBaseParam);
+                        GcmsParameter,
+                        _evaluator,
+                        _refer);
             }
         }
     }

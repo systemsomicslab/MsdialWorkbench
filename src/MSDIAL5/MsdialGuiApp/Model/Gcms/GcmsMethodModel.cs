@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -15,6 +16,7 @@ using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -40,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private readonly List<CalculateMatchScore> _calculateMatchScores;
-        private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
+        private readonly ChromatogramSerializer<ChromatogramSpotInfo>? _chromatogramSpotSerializer;
 
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -62,11 +64,14 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
             switch (storage.Parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
-                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    if (_chromatogramSpotSerializer is not null) {
+                        _chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(_chromatogramSpotSerializer, storage.Parameter.GetRIHandlers());
+                    }
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
                     break;
             }
 
@@ -219,7 +224,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunAlignment() {
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm => {
-                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage, _evaluator)
+                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage)
                     {
                         ReportAction = v => vm.CurrentValue = v
                     };

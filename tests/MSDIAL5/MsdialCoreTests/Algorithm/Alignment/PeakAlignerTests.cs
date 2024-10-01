@@ -204,7 +204,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             return peaks.Average(peak => peak.PeakWidth(ChromXType.RT));
         }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Value))
             {
                 Mz = new MzValue(peaks.Average(peak => peak.Mass)),

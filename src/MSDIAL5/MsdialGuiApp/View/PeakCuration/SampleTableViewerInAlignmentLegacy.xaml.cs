@@ -369,10 +369,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             BackgroundColInt?.Freeze();
             BackgroundColArea?.Freeze();
 
-            Task.Run(() =>
-            {
-                Drawing = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).GetChromatogramDrawing(chromatogramXicVM);
-            });
+            Task.Run(UpdateDrawing);
         }
 
         public void UpdateDrawing() {

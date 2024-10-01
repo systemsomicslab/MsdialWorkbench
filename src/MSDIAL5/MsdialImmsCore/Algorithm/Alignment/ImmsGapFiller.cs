@@ -23,7 +23,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             this.ionMode = ionMode;
         }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Drift.Value), ChromXType.Drift, ChromXUnit.Msec)
             {
                 Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),

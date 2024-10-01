@@ -161,7 +161,6 @@ namespace CompMs.MsdialCore.Utility
             spot.MassCenter = alignedPeaks.Argmax(peak => peak.PeakHeightTop).Mass;
             spot.MassMin = (float)alignedPeaks.Min(peak => peak.Mass);
             spot.MassMax = (float)alignedPeaks.Max(peak => peak.Mass);
-            spot.QuantMass = representative.Mass;
 
             spot.FillParcentage = (float)alignedPeaks.Length / alignment.Count;
             spot.MonoIsotopicPercentage = alignedPeaks.Count(peak => peak.PeakCharacter.IsotopeWeightNumber == 0) / (float)alignedPeaks.Length;
@@ -174,19 +173,23 @@ namespace CompMs.MsdialCore.Utility
             };
         }
 
-        public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
-            if (alignment.Count == 0) return -1;
+        public static AlignmentChromPeakFeature? GetRepresentativePeak(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
+            if (alignment.Count == 0) return null;
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray(); // ms2 contained
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Argmax(peak =>
                     // highest total score then highest intensity
                     (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
-                ).FileID;
+                );
             }
             return alignment.Argmax(peak =>
                 // highest total score then highest intensity
                 (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
-            ).FileID;
+            );
+        }
+
+        public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
+            return GetRepresentativePeak(alignment)?.FileID ?? -1;
         }
     }
 }
