@@ -121,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }
 
             if (rtList.Max() > 0) {
-                Properties[0].AverageRt = (float)rtList.Average();
+                Properties[0].AverageRt = rtList.Average();
             }
             _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value?.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
             _spot.IsManuallyModifiedForQuant = true;
@@ -142,10 +142,10 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public Brush Brush { get; set; }
         public List<ChromatogramPeak> SmoothedPeakList { get; set; }
         public List<ChromatogramPeak> AlignedPeakList { get; set; }
-        public float AlignOffset { get; set; }
-        public float AverageRt { get; set; }
-        public float PeakAreaAboveZero { get; set; }
-        public float PeakHeight { get; set; }
+        public double AlignOffset { get; set; }
+        public double AverageRt { get; set; }
+        public double PeakAreaAboveZero { get; set; }
+        public double PeakHeight { get; set; }
         public Accessory? Accessory { get; set; }
 
         public PeakPropertyLegacy(AlignmentChromPeakFeatureModel bean, Brush brush, List<ChromatogramPeak> speaks, RetentionIndexHandler? riHandler) {
@@ -156,7 +156,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             AlignedPeakList = new List<ChromatogramPeak>(0);
         }
 
-        public void SetAlignOffSet(float val) {
+        public void SetAlignOffSet(double val) {
             AlignOffset = val;
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
@@ -205,17 +205,17 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             var noise = this.Model.EstimatedNoise;
             var sn = peakHeightFromBaseline / noise;
 
-            this.PeakAreaAboveZero = (float)peakAreaAboveZero;
+            this.PeakAreaAboveZero = peakAreaAboveZero;
             if (areatype == ChromXType.RT) {
-                this.PeakAreaAboveZero *= 60f;
+                this.PeakAreaAboveZero *= 60d;
             }
-            this.PeakHeight = (float)maxInt;
+            this.PeakHeight = maxInt;
             this.Accessory = new Accessory();
             this.Accessory.SetChromatogram(
                 maxIntChromXValue + this.AlignOffset,
                 minChromXValue + this.AlignOffset,
                 maxChromXValue + this.AlignOffset,
-                noise, (float)sn);
+                noise, sn);
         }
     }
 
@@ -238,12 +238,12 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }
             if (rtList.Max() <= 0) return;
             var aveRt = rtList.Where(x => x > 0).Average();
-            peakProperties[0].AverageRt = (float)aveRt;
+            peakProperties[0].AverageRt = aveRt;
             for (var i = 0; i < peakProperties.Count; i++) {
                 if (rtList[i] > 0)
-                    peakProperties[i].SetAlignOffSet((float)(rtList[i] - aveRt));
+                    peakProperties[i].SetAlignOffSet((rtList[i] - aveRt));
                 else
-                    peakProperties[i].SetAlignOffSet(0f);
+                    peakProperties[i].SetAlignOffSet(0d);
             }
         }
 

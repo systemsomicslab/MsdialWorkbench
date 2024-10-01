@@ -76,8 +76,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
                         var handler = (handlers?.TryGetValue(pair.Item1.AnalysisFileId, out var h) ?? false) ? h : null;
                         var peakProp = new PeakPropertyLegacy(pair.Item2, brush, smoothed.AsPeakArray(), handler);
                         var offset = pair.Item2.ChromXsTop.Value - s.Spot.TimesCenter;
-                        peakProp.SetAlignOffSet((float)offset);
-                        peakProp.AverageRt = (float)s.Spot.TimesCenter;
+                        peakProp.SetAlignOffSet(offset);
+                        peakProp.AverageRt = s.Spot.TimesCenter;
                         return peakProp;
                     }).ToArray();
                 return new PeakPropertiesLegacy(s.Spot, peakPropArr);
