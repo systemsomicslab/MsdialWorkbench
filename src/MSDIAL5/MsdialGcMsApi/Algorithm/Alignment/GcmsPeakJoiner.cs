@@ -55,7 +55,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
         var master = GetMasterList(analysisFiles, referenceId);
         var spots = JoinAll(master, analysisFiles);
-        var loaders = analysisFiles.ToDictionary(f => f.AnalysisFileId, f => new MSDecLoader(f.DeconvolutionFilePath));
+        var loaders = analysisFiles.ToDictionary(f => f.AnalysisFileId, f => new MSDecLoader(f.DeconvolutionFilePath, f.DeconvolutionFilePathList));
         try {
             return ResetQuantMasses(spots, loaders);
         }

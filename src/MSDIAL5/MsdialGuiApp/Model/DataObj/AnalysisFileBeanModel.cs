@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
         public MSDecLoader MSDecLoader {
-            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables);
+            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath, _file.DeconvolutionFilePathList).AddTo(Disposables);
         }
         private MSDecLoader? _mSDecLoader;
 
