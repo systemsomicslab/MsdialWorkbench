@@ -4,6 +4,13 @@ using System.Windows.Media;
 
 namespace CompMs.Graphics.Core.Adorner;
 
+internal enum RubberShape {
+    None,
+    Rectangle,
+    Horizontal,
+    Vertical,
+}
+
 internal class RubberAdorner : System.Windows.Documents.Adorner
 {
     public RubberAdorner(UIElement adornedElement, Point point) : base(adornedElement)
@@ -81,6 +88,8 @@ internal class RubberAdorner : System.Windows.Documents.Adorner
 
     public bool Invert { get; set; } = false;
 
+    public RubberShape Shape { get; set; } = RubberShape.Rectangle;
+
     public void Attach()
     {
         if (layer != null)
@@ -95,19 +104,41 @@ internal class RubberAdorner : System.Windows.Documents.Adorner
 
     protected override void OnRender(DrawingContext drawingContext)
     {
+        Rect area = default;
+        switch (Shape) {
+            case RubberShape.Rectangle:
+                area = new Rect(GetInitialPoint(AdornedElement), Offset);
+                break;
+            case RubberShape.Horizontal:
+                if (Offset.X < 0d) {
+                    area = new Rect(GetInitialPoint(AdornedElement).X + Offset.X, 0d, -Offset.X, AdornedElement.RenderSize.Height);
+                }
+                else {
+                    area = new Rect(GetInitialPoint(AdornedElement).X, 0d, Offset.X, AdornedElement.RenderSize.Height);
+                }
+                break;
+            case RubberShape.Vertical:
+                if (Offset.Y < 0d) {
+                    area = new Rect(0d, GetInitialPoint(AdornedElement).Y + Offset.Y, AdornedElement.RenderSize.Width, -Offset.Y);
+                }
+                else {
+                    area = new Rect(0d, GetInitialPoint(AdornedElement).Y, AdornedElement.RenderSize.Width, Offset.Y);
+                }
+                break;
+        }
         if (Invert) {
             drawingContext.DrawGeometry(
                 GetRubberBrush(AdornedElement),
                 GetBorderPen(AdornedElement),
                 new CombinedGeometry(GeometryCombineMode.Exclude,
                     new RectangleGeometry(new Rect(AdornedElement.RenderSize)),
-                    new RectangleGeometry(new Rect(GetInitialPoint(AdornedElement), Offset))));
+                    new RectangleGeometry(area)));
         }
         else {
             drawingContext.DrawRectangle(
                 GetRubberBrush(AdornedElement),
                 GetBorderPen(AdornedElement),
-                new Rect(GetInitialPoint(AdornedElement), Offset));
+                area);
         }
     }
 
