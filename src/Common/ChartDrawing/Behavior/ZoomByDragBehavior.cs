@@ -88,7 +88,7 @@ namespace CompMs.Graphics.Behavior
             if (sender is FrameworkElement fe) {
                 var initial = e.GetPosition(fe);
                 SetInitialPoint(fe, initial);
-                var adorner = new RubberAdorner(fe, initial);
+                var adorner = new RubberAdorner(fe, initial) { Invert = true, };
                 adorner.Attach();
                 SetAdorner(fe, adorner);
                 fe.CaptureMouse();
