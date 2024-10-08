@@ -56,9 +56,9 @@ namespace CompMs.App.MsdialConsole.Process
             }
             if (File.Exists(param.LbmFilePath)) {
                 MoleculeDataBase lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
-                var lbmAnnotator = new LcmsMspAnnotator(lbmDatabase, param.MspSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+                var lbmAnnotator = new LcmsMspAnnotator(lbmDatabase, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
                 dbStorage.AddMoleculeDataBase(lbmDatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
+                new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
                 });
             }
             if (File.Exists(param.TextDBFilePath)) {
@@ -81,7 +81,7 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
             var tasks = new Task[files.Count];
-            var evaluator = new MsScanMatchResultEvaluator(storage.Parameter.MspSearchParam);
+            var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
             //new EadLipidomicsAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories)
             var providerFactory = new StandardDataProviderFactory(5, false);
