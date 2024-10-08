@@ -46,38 +46,37 @@ public sealed class LcimmsProcess {
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (File.Exists(param.MspFilePath)) {
-            MoleculeDataBase database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
+        if (mspDB.Count > 0) {
+            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new LcimmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
-            dbStorage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-            new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-            });
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
+            ]);
         }
-        if (File.Exists(param.LbmFilePath)) {
-            MoleculeDataBase lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
+        if (lbmDB.Count > 0) {
+            var lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
             var lbmAnnotator = new LcimmsMspAnnotator(lbmDatabase, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
-            dbStorage.AddMoleculeDataBase(lbmDatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-            new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
-            });
+            dbStorage.AddMoleculeDataBase(lbmDatabase, [
+                new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
+            ]);
         }
-        if (File.Exists(param.TextDBFilePath)) {
+        if (txtDB.Count > 0) {
             var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
             var textannotator = new LcimmsTextDBAnnotator(textdatabase, param.TextDbSearchParam, param.TextDBFilePath, 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-            new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
-            });
+            dbStorage.AddMoleculeDataBase(textdatabase, [
+                new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
+            ]);
         }
         container.DataBases = dbStorage;
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
-        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, param.ProjectParam.ProjectFileName + ".mdproject"));
-        projectDataStorage.AddStorage(container);
-
         Console.WriteLine("Start processing..");
-        return Execute(projectDataStorage, container, outputFolder, isProjectSaved);
+        return Execute(container, outputFolder, isProjectSaved);
     }
 
-    private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcImMsParameter> storage, string outputFolder, bool isProjectSaved) {
+    private int Execute(IMsdialDataStorage<MsdialLcImMsParameter> storage, string outputFolder, bool isProjectSaved) {
+        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
+        projectDataStorage.AddStorage(storage);
 
         var files = storage.AnalysisFiles;
         var tasks = new Task[files.Count];

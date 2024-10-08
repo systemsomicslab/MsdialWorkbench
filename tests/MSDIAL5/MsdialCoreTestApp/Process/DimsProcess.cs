@@ -5,6 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
@@ -12,6 +13,7 @@ using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.DataObj;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Process;
@@ -36,26 +38,46 @@ public sealed class DimsProcess {
             MsdialDimsParameter = param
         };
 
+        var dbStorage = DataBaseStorage.CreateEmpty();
+        if (mspDB.Count > 0) {
+            var database = new MoleculeDataBase(mspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+            var mspAnnotator = new DimsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, "MspDB", 1);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(mspAnnotator.Save(), new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, param.MspSearchParam)),
+            ]);
+        }
+        if (lbmDB.Count > 0) {
+            var database = new MoleculeDataBase(lbmDB, "LbmDB", DataBaseSource.Lbm, SourceType.MspDB);
+            var annotator = new DimsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, "LbmDB", 1);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.LbmSearchParam)),
+            ]);
+        }
+        if (txtDB.Count > 0) {
+            var database = new MoleculeDataBase(txtDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var textAnnotator = new DimsTextDBAnnotator(database, param.TextDbSearchParam, "TextDB", 2);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(textAnnotator.Save(), new AnnotationQueryWithoutIsotopeFactory(textAnnotator, param.TextDbSearchParam)),
+            ]);
+        }
+        container.DataBases = dbStorage;
+        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+
         var providerFactory = new StandardDataProviderFactory();
         Console.WriteLine("Start processing..");
         return Execute(container, providerFactory, outputFolder, isProjectSaved);
     }
 
     private int Execute(MsdialDimsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
+        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.MsdialDimsParameter.ProjectParam.ProjectFileName, ".mdproject")));
+        projectDataStorage.AddStorage(storage);
+
         var files = storage.AnalysisFiles;
-        var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.MsdialDimsParameter.MspSearchParam, storage.MsdialDimsParameter.TargetOmics, "MspDB", -1);
-        var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
-        var mapper = new DataBaseMapper();
-        mapper.Add(mspAnnotator);
-        mapper.Add(textAnnotator);
+        var mapper = storage.DataBases.CreateDataBaseMapper();
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
         var annotationProcess = new StandardAnnotationProcess(
-            new[]
-            {
-                new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam),
-                new AnnotationQueryWithoutIsotopeFactory(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam)
-            },
+            storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories,
             evaluator,
             mapper);
         foreach (var file in files) {

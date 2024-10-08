@@ -86,31 +86,29 @@ public sealed class GcmsProcess
             MsdialGcmsParameter = param
         };
 
-
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (File.Exists(param.MspFilePath))
+        if (mspDB.Count > 0)
         {
             MoleculeDataBase database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new MassAnnotator(database, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
-            dbStorage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-            new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-        });
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
+            ]);
         }
-        if (File.Exists(param.TextDBFilePath))
+        if (txtDB.Count > 0)
         {
             var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
             var textannotator = new MassAnnotator(textdatabase, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB", 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-            new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
-        });
+            dbStorage.AddMoleculeDataBase(textdatabase, [
+                new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
+            ]);
         }
         container.DataBases = dbStorage;
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
-        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, param.ProjectParam.ProjectFolderPath, Path.ChangeExtension(param.ProjectParam.ProjectFileName, ".mdproject")));
-        projectDataStorage.AddStorage(container);
+
         Console.WriteLine("Start processing..");
-			return Execute(projectDataStorage, container, outputFolder, isProjectStore);
-		}
+        return Execute(container, outputFolder, isProjectStore);
+    }
 
     private bool isFamesContanesMatch(Dictionary<int, float> riDictionary)
     {
@@ -169,8 +167,10 @@ public sealed class GcmsProcess
         }
     }
 
-    private int Execute(ProjectDataStorage projectDataStorage, MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved)
-    {
+    private int Execute(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
+        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, storage.MsdialGcmsParameter.ProjectParam.ProjectFolderPath, Path.ChangeExtension(storage.MsdialGcmsParameter.ProjectParam.ProjectFileName, ".mdproject")));
+        projectDataStorage.AddStorage(storage);
+
         var files = storage.AnalysisFiles;
         var exporterFactory = new AnalysisCSVExporterFactory("\t");
         var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));

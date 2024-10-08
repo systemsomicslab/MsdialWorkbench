@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
@@ -11,6 +12,7 @@ using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Process;
@@ -37,30 +39,50 @@ public sealed class ImmsProcess
             MsdialImmsParameter = param,
         };
 
+        var dbStorage = DataBaseStorage.CreateEmpty();
+        if (mspDB.Count > 0) {
+            var database = new MoleculeDataBase(mspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+            var mspAnnotator = new ImmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, "MspDB", 1);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(mspAnnotator.Save(), new AnnotationQueryFactory(mspAnnotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
+            ]);
+        }
+        if (lbmDB.Count > 0) {
+            var database = new MoleculeDataBase(lbmDB, "LbmDB", DataBaseSource.Lbm, SourceType.MspDB);
+            var annotator = new ImmsMspAnnotator(database, param.LbmSearchParam, param.TargetOmics, "LbmDB", 1);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
+            ]);
+        }
+        if (txtDB.Count > 0) {
+            var database = new MoleculeDataBase(txtDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var textDBAnnotator = new ImmsTextDBAnnotator(database, param.TextDbSearchParam, "TextDB", 2);
+            dbStorage.AddMoleculeDataBase(database, [
+                new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
+            ]);
+        }
+        container.DataBases = dbStorage;
+        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+
         Console.WriteLine("Start processing..");
         return Execute(container, outputFolder, isProjectSaved);
     }
 
     private int Execute(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
+        var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
+        projectDataStorage.AddStorage(storage);
+
         var files = storage.AnalysisFiles;
-        var db = DataBaseStorage.CreateEmpty();
-        var mdb = new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-        var mspAnnotator = new ImmsMspAnnotator(mdb, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
-        db.AddMoleculeDataBase(
-            mdb,
-            new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                new MetabolomicsAnnotatorParameterPair(mspAnnotator.Save(), new AnnotationQueryFactory(mspAnnotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam, ignoreIsotopicPeak: true))
-            });
-        var tdb = new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-        var textDBAnnotator = new ImmsTextDBAnnotator(tdb, storage.Parameter.TextDbSearchParam, "TextDB", -1);
-        db.AddMoleculeDataBase(
-            tdb,
-            new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam, ignoreIsotopicPeak: false))
-            });
-        var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
-        storage.DataBases = db;
+        var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
+        var factories = storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories;
+
+        // temporary
+        var msppair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Msp);
+        var mspAnnotator = new ImmsMspAnnotator(msppair?.DataBase, msppair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), storage.Parameter.TargetOmics, "MspDB", 1);
+        var txtpair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Text);
+        var textDBAnnotator = new ImmsTextDBAnnotator(txtpair?.DataBase, txtpair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), "TextDB", 2);
+
         var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
         processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
 
