@@ -32,9 +32,10 @@ public sealed class LcmsProcess
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
-        if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
-        if (!isCorrectlyImported) return -1;
+        if (!isCorrectlyImported) {
+            return -1;
+        }
 
         CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
             out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, 
@@ -42,8 +43,11 @@ public sealed class LcmsProcess
             out List<MoleculeMsReference> lbmDB);
 
         var container = new MsdialLcmsDataStorage() {
-            AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-            IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialLcmsParameter = param
+            AnalysisFiles = analysisFiles,
+            AlignmentFiles = [alignmentFile],
+            IsotopeTextDB = isotopeTextDB,
+            IupacDatabase = iupacDB,
+            MsdialLcmsParameter = param
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();

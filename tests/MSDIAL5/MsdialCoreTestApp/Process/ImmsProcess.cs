@@ -20,13 +20,21 @@ public sealed class ImmsProcess
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
         var param = ConfigParser.ReadForImmsParameter(methodFile);
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out var analysisFiles, out var alignmentFile);
-        if (!isCorrectlyImported) return -1;
+        if (!isCorrectlyImported) {
+            return -1;
+        }
+
         CommonProcess.ParseLibraries(param, targetMz, out var iupacDB, out var mspDB, out var txtDB, out var isotopeTextDB, out var compoundsInTargetMode, out var lbmDB);
 
         var container = new MsdialImmsDataStorage
         {
-            AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean> { alignmentFile },
-            MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param,
+            AnalysisFiles = analysisFiles,
+            AlignmentFiles = [alignmentFile],
+            MspDB = mspDB,
+            TextDB = txtDB,
+            IsotopeTextDB = isotopeTextDB,
+            IupacDatabase = iupacDB,
+            MsdialImmsParameter = param,
         };
 
         Console.WriteLine("Start processing..");

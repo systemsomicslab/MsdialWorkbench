@@ -27,27 +27,14 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public sealed class GcmsProcess
 {
-    public void ConvertRtToKovatRi(string alkaneDictPath, string rtListPath, string outputFilePath)
-    {
-        var alkaneDict = RetentionIndexHandler.GetRiDictionary(alkaneDictPath);
-
-        using (StreamWriter sw = new StreamWriter(outputFilePath, false, Encoding.ASCII)) {
-        using (var sr = new StreamReader(rtListPath, Encoding.ASCII))
-            while (sr.Peek() > -1) {
-                var line = sr.ReadLine();
-                if (line == string.Empty) continue;
-                var ri = RetentionIndexHandler.GetRetentionIndexByAlkanes(alkaneDict, float.Parse(line));
-
-                sw.WriteLine(ri);
-            }
-        }
-    }
-
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectStore)
     {
         var param = ConfigParser.ReadForGcms(methodFile);
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
-        if (!isCorrectlyImported) return -1;
+        if (!isCorrectlyImported) {
+            return -1;
+        }
+
         if (param.RiDictionaryFilePath != string.Empty)
         {
             var errorMessage = string.Empty;
@@ -82,17 +69,6 @@ public sealed class GcmsProcess
             }
         }
 
-     
-
-        //CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _, out var lbmDB);
-
-        
-
-        //var param = ConfigParser.ReadForLcmsParameter(methodFile);
-        //if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
-        //var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
-        //if (!isCorrectlyImported) return -1;
-
         CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB,
             out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
@@ -102,7 +78,9 @@ public sealed class GcmsProcess
         var container = new MsdialGcmsDataStorage()
         {
             AnalysisFiles = analysisFiles,
-            AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
+            AlignmentFiles = [alignmentFile],
+            MspDB = mspDB,
+            TextDB = txtDB,
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
             MsdialGcmsParameter = param
