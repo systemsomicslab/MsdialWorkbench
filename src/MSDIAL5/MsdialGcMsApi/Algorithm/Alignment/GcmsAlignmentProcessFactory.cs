@@ -49,23 +49,22 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
         return new PeakAligner(this, Progress);
     }
 
-        public override IPeakJoiner CreatePeakJoiner() {
-            switch (GcmsParameter.AlignmentIndexType) {
-                case Common.Enum.AlignmentIndexType.RT:
-                    return GcmsPeakJoiner.CreateRTJoiner(
-                        GcmsParameter.MspSearchParam,
-                        GcmsParameter,
-                        _evaluator,
-                        _refer);
-                case Common.Enum.AlignmentIndexType.RI:
-                default:
-                    return GcmsPeakJoiner.CreateRIJoiner(
-                        GcmsParameter.MspSearchParam,
-                        GcmsParameter.RetentionIndexAlignmentTolerance,
-                        GcmsParameter,
-                        _evaluator,
-                        _refer);
-            }
+    public override IPeakJoiner CreatePeakJoiner() {
+        switch (GcmsParameter.AlignmentIndexType) {
+            case Common.Enum.AlignmentIndexType.RT:
+                return GcmsPeakJoiner.CreateRTJoiner(
+                    GcmsParameter.MspSearchParam,
+                    GcmsParameter,
+                    _evaluator,
+                    _refer);
+            case Common.Enum.AlignmentIndexType.RI:
+            default:
+                return GcmsPeakJoiner.CreateRIJoiner(
+                    GcmsParameter.MspSearchParam,
+                    GcmsParameter.RetentionIndexAlignmentTolerance,
+                    GcmsParameter,
+                    _evaluator,
+                    _refer);
         }
     }
 }
