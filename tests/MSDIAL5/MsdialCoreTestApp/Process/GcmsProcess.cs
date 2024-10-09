@@ -5,16 +5,19 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialIntegrate.Parser;
 using System;
@@ -22,6 +25,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -37,17 +42,19 @@ public sealed class GcmsProcess
 
         if (param.RiDictionaryFilePath != string.Empty)
         {
-            var errorMessage = string.Empty;
-            if (!File.Exists(param.RiDictionaryFilePath))
-                throw new FileNotFoundException(String.Format("File '{0}' does not exist.", param.RiDictionaryFilePath));
-            if (!checkRiDicionaryFiles(analysisFiles, param.RiDictionaryFilePath, out errorMessage))
-                throw new FileNotFoundException(String.Format(errorMessage, param.RiDictionaryFilePath));
+            if (!File.Exists(param.RiDictionaryFilePath)) {
+                throw new FileNotFoundException(string.Format("File '{0}' does not exist.", param.RiDictionaryFilePath));
+            }
+
+            if (!CheckRiDicionaryFiles(analysisFiles, param.RiDictionaryFilePath, out var errorMessage)) {
+                throw new FileNotFoundException(string.Format(errorMessage, param.RiDictionaryFilePath));
+            }
 
             //probably, at least in fiehn lab, this has to be automatically set from GCMS raw data.
-            var flgIncorrectFormat = false;
-            var flgIncorrectFiehnFormat = false;
+            var isIncorrectFormat = false;
+            var isIncorrectFiehnFormat = false;
 
-            param.FileIdRiInfoDictionary = new Dictionary<int, RiDictionaryInfo>();
+            param.FileIdRiInfoDictionary = [];
             foreach (var file in analysisFiles) {
                 param.FileIdRiInfoDictionary[file.AnalysisFileId] = new RiDictionaryInfo() {
                     DictionaryFilePath = file.RiDictionaryFilePath,
@@ -55,17 +62,19 @@ public sealed class GcmsProcess
                 };
 
                 var dictionary = param.FileIdRiInfoDictionary[file.AnalysisFileId].RiDictionary;
-                if (dictionary == null || dictionary.Count == 0) flgIncorrectFormat = true;
+                if (dictionary == null || dictionary.Count == 0) isIncorrectFormat = true;
 
                 if (param.RiCompoundType == RiCompoundType.Fames) {
-                    if (!isFamesContanesMatch(dictionary)) flgIncorrectFiehnFormat = true;
+                    if (!IsFamesContanesMatch(dictionary)) isIncorrectFiehnFormat = true;
                 }
             }
-            if (flgIncorrectFormat == true) {
-                return ridictionaryError();
+            if (isIncorrectFormat) {
+                Console.WriteLine(_riDictionaryErrorMessage);
+                return -1;
             }
-            if (flgIncorrectFiehnFormat == true) {
-                return famesIndexError();
+            if (isIncorrectFiehnFormat) {
+                Console.WriteLine(_famesIndexErrorMessage);
+                return -1;
             }
         }
 
@@ -89,7 +98,7 @@ public sealed class GcmsProcess
         var dbStorage = DataBaseStorage.CreateEmpty();
         if (mspDB.Count > 0)
         {
-            MoleculeDataBase database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
+            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new MassAnnotator(database, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
             dbStorage.AddMoleculeDataBase(database, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
@@ -107,10 +116,10 @@ public sealed class GcmsProcess
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
         Console.WriteLine("Start processing..");
-        return Execute(container, outputFolder, isProjectStore);
+        return ExecuteAsync(container, outputFolder, isProjectStore).Result;
     }
 
-    private bool isFamesContanesMatch(Dictionary<int, float> riDictionary)
+    private bool IsFamesContanesMatch(Dictionary<int, float> riDictionary)
     {
         var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
 
@@ -130,7 +139,7 @@ public sealed class GcmsProcess
     }
 
 
-    private bool checkRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
+    private bool CheckRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
     {
         errorMessage = string.Empty;
         using (var sr = new StreamReader(riDictionaryFile, Encoding.ASCII)) {
@@ -167,51 +176,72 @@ public sealed class GcmsProcess
         }
     }
 
-    private int Execute(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
+    private async Task<int> ExecuteAsync(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, storage.MsdialGcmsParameter.ProjectParam.ProjectFolderPath, Path.ChangeExtension(storage.MsdialGcmsParameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
         var files = storage.AnalysisFiles;
-        var exporterFactory = new AnalysisCSVExporterFactory("\t");
         var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));
-        var scanExporter = exporterFactory.CreateExporter(metaAccessor);
-        foreach (var file in files)
-        {
-            FileProcess.Run(file, storage);
+        var providerFactory = new StandardDataProviderFactory(isGuiProcess: false);
+        var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType));
+        var runner = new ProcessRunner(process);
+        await runner.RunAllAsync(files, Enumerable.Repeat(default(Action<int>), files.Count), Environment.ProcessorCount / 2, null, default).ConfigureAwait(false);
 
-            var sfs = file.LoadSpectrumFeatures();
-            using (var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read)) {
+        var tasks = new Task[files.Count];
+        using var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
+        var exporterFactory = new AnalysisCSVExporterFactory("\t");
+        var scanExporter = exporterFactory.CreateExporter(metaAccessor);
+        for (int i = 0; i < files.Count; i++) {
+            var file = files[i];
+            tasks[i] = Task.Run(() => {
+                var sfs = file.LoadSpectrumFeatures();
+                using var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read);
                 scanExporter.Export(stream, file, sfs.Items, new ExportStyle());
-            }
+            });
         }
+        await Task.WhenAll(tasks);
+
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
+            ChromatogramSerializer<ChromatogramSpotInfo> serializer;
+            switch (storage.MsdialGcmsParameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    if (serializer is not null) {
+                        serializer = new RIChromatogramSerializerDecorator(serializer, storage.MsdialGcmsParameter.GetRIHandlers());
+                    }
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    break;
+            }
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new GcmsAlignmentProcessFactory(files, storage);
             var aligner = factory.CreatePeakAligner();
-            var result = aligner.Alignment(files, alignmentFile, null);
+            var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-
             var decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties);
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, decResults);
+
             var accessor = new GcmsAlignmentMetadataAccessor(storage.DataBaseMapper, storage.MsdialGcmsParameter, false);
             var quantAccessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
             var stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var spotExporter = new AlignmentCSVExporter("\t");
-            using (var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read)) {
-                spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
-            }
+            using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
+            spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
         }
+
         if (isProjectSaved)
         {
             storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = "console";
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
-            using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create))
-            {
-                projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-                ((IStreamManager)streamManager).Complete();
-            }
+            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
+            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
+            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+            streamManager.Complete();
         }
+
         return 0;
     }
 
@@ -244,35 +274,25 @@ public sealed class GcmsProcess
     }
 
 #region // error code
-    private int ridictionaryError()
-    {
-        string error = "Invalid RI information. Please check that your file follows the following format.\r\n";
-        error += "Carbon number\tRT(min)\r\n";
-        error += "10\t4.72\r\n";
-        error += "11\t5.63\r\n";
-        error += "12\t6.81\r\n";
-        error += "13\t8.08\r\n";
-        error += "14\t9.12\r\n";
-        error += "15\t10.33\r\n";
-        error += "16\t11.91\r\n";
-        error += "18\t14.01\r\n";
-        error += "20\t16.15\r\n";
-        error += "22\t18.28\r\n";
-        error += "24\t20.33\r\n";
-        error += "26\t22.17\r\n";
-        error += "\r\n";
-        error += "This information is required for RI calculation.";
+    private static readonly string _riDictionaryErrorMessage = """
+Invalid RI information. Please check that your file follows the following format.
+Carbon number\tRT(min)
+10\t4.72
+11\t5.63
+12\t6.81
+13\t8.08
+14\t9.12
+15\t10.33
+16\t11.91
+18\t14.01
+20\t16.15
+22\t18.28
+24\t20.33
+26\t22.17
 
-        Console.WriteLine(error);
-        return -1;
-    }
+This information is required for RI calculation.
+""";
 
-    private int famesIndexError()
-    {
-        var error = "If you use the FAMEs RI, you have to decide the retention times as minute for \r\n"
-                        + "C8, C9, C10, C12, C14, C16, C18, C20, C22, C24, C26, C28, C30.";
-        Console.WriteLine(error);
-        return -1;
-    }
+    private static readonly string _famesIndexErrorMessage = "If you use the FAMEs RI, you have to decide the retention times as minute for C8, C9, C10, C12, C14, C16, C18, C20, C22, C24, C26, C28, C30."; 
 #endregion
 }

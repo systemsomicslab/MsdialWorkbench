@@ -1,19 +1,26 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
+using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using CompMs.MsdialIntegrate.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -65,10 +72,10 @@ public sealed class ImmsProcess
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
         Console.WriteLine("Start processing..");
-        return Execute(container, outputFolder, isProjectSaved);
+        return ExecuteAsync(container, outputFolder, isProjectSaved).Result;
     }
 
-    private int Execute(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
+    private async Task<int> ExecuteAsync(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -84,31 +91,94 @@ public sealed class ImmsProcess
         var textDBAnnotator = new ImmsTextDBAnnotator(txtpair?.DataBase, txtpair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), "TextDB", 2);
 
         var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
-        processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
+        await processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).ConfigureAwait(false);
+
+        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
+        var peak_accessor = new ImmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, Common.Enum.ExportspectraType.deconvoluted);
+        var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
+        var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
+        var tasks = new Task[files.Count];
+        foreach ((var file, var idx) in files.WithIndex()) {
+            tasks[idx] = Task.Run(async () => {
+                await sem.WaitAsync();
+                try {
+                    var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
+
+                    var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+                    using var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write);
+                    peakExporterFactory.CreateExporter(providerFactory, peak_accessor).Export(stream, file, peak_container, new ExportStyle());
+
+                    var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
+                    using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
+                    peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
+                }
+                finally {
+                    sem.Release();
+                }
+            });
+        }
+        await Task.WhenAll(tasks);
 
         if (storage.Parameter.TogetherWithAlignment) {
+            var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
             result.Save(alignmentFile);
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
-            foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {
-                Console.WriteLine(group.Key);
-                foreach (var spot in group.OrderBy(s => s.MassCenter)) {
-                    Console.WriteLine($"\t{spot.Name}\t{spot.AdductType.AdductIonName}\t{spot.MassCenter}\t{spot.TimesCenter.Drift.Value}");
-                }
-            }
+            var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
+            var align_exporter = new AlignmentCSVExporter();
+            var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
+            var align_accessor = new ImmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
+            var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
+            using FileStream stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
+            align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+
+            var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
+            IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
+            using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
+            align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
         }
 
         if (isProjectSaved) {
-            using (var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath)) {
-                storage.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
-                ((IStreamManager)streamManager).Complete();
-            }
+            storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
+            storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
+            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
+            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
+            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+            streamManager.Complete();
         }
 
         return 0;
+    }
+
+    private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialImmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        var files = storage.AnalysisFiles;
+
+        var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
+        foreach (var file in files) {
+            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+            pointerss.Add((version, pointers, isAnnotationInfo));
+        }
+
+        var streams = new List<FileStream>();
+        try {
+            streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+            foreach (var spot in spots.OrEmptyIfNull()) {
+                var repID = spot.RepresentativeFileID;
+                var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                var decResult = MsdecResultsReader.ReadMSDecResult(
+                    streams[repID], pointerss[repID].pointers[peakID],
+                    pointerss[repID].version, pointerss[repID].isAnnotationInfo);
+                yield return decResult;
+            }
+        }
+        finally {
+            streams.ForEach(stream => stream.Close());
+        }
     }
 }

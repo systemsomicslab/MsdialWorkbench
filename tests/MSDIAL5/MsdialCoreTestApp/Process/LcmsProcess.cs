@@ -76,83 +76,80 @@ public sealed class LcmsProcess
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
         Console.WriteLine("Start processing..");
-        return Execute(container, outputFolder, isProjectSaved);
+        return ExecuteAsync(container, outputFolder, isProjectSaved).Result;
     }
 
-    private int Execute(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
+    private async Task<int> ExecuteAsync(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
         var files = storage.AnalysisFiles;
-        var tasks = new Task[files.Count];
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
-        //new EadLipidomicsAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories)
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
+        var runner = new ProcessRunner(process);
+        await runner.RunAllAsync(files, Enumerable.Repeat(default(Action<int>), files.Count), Environment.ProcessorCount / 2, null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
+        var tasks = new Task[files.Count];
         foreach ((var file, var idx) in files.WithIndex()) {
             tasks[idx] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
-                    var provider = providerFactory.Create(file);
-                    await process.RunAsync(file, provider, null).ConfigureAwait(false);
+                    var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
 
                     var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+                    using var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write);
+                    peakExporterFactory.CreateExporter(providerFactory, peak_accessor).Export(stream, file, peak_container, new ExportStyle());
+
                     var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
-                    using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write))
-                    using (var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write)) { 
-                        var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
-                        var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-                        peakExporterFactory.CreateExporter(provider.AsFactory(), peak_accessor).Export(stream, file, peak_container, new ExportStyle());
-                        peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
-                    }
+                    using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
+                    peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
                 }
                 finally {
                     sem.Release();
                 }
             });
         }
-        Task.WaitAll(tasks);
-        if (!storage.Parameter.TogetherWithAlignment) return 0;
+        await Task.WhenAll(tasks);
 
-        var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
-        var alignmentFile = storage.AlignmentFiles.First();
-        var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
-        var aligner = factory.CreatePeakAligner();
-        var result = aligner.Alignment(files, alignmentFile, serializer);
+        if (storage.Parameter.TogetherWithAlignment) {
+            var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+            var alignmentFile = storage.AlignmentFiles.First();
+            var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, serializer);
+            result.Save(alignmentFile);
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
-        Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-
-        var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
-        var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
-        var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
-        var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
-        var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
-        var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
-        var align_exporter = new AlignmentCSVExporter();
-        using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write))
-        using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
+            var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
+            var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
+            var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
+            var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
+            var align_exporter = new AlignmentCSVExporter();
+            using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+
+            var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
+            using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
             align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
         }
 
-        MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
-
         if (isProjectSaved) {
             storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
-            using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create)) {
-                projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-                ((IStreamManager)streamManager).Complete();
-            }
+            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
+            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
+            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+            streamManager.Complete();
         }
+
         return 0;
     }
 
