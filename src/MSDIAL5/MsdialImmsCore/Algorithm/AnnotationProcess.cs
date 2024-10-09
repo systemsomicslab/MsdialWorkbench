@@ -32,12 +32,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             MsdialImmsParameter parameter,
-            Action<int> reportAction, int numThreads, System.Threading.CancellationToken token) {
+            Action<int>? reportAction, int numThreads, System.Threading.CancellationToken token) {
 
             if (chromPeakFeatures.Count != msdecResults.Count)
                 throw new ArgumentException("Number of ChromatogramPeakFeature and MSDecResult are different.");

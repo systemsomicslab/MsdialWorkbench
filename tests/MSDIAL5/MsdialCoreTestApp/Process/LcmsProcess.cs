@@ -96,11 +96,12 @@ public sealed class LcmsProcess
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
         var tasks = new Task[files.Count];
-        foreach ((var file, var idx) in files.WithIndex()) {
-            tasks[idx] = Task.Run(async () => {
+        for (int i = 0; i < files.Count; i++) {
+            var file = files[i];
+            tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
-                    var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
+                    var peak_container = await file.LoadChromatogramPeakFeatureCollectionAsync().ConfigureAwait(false);
 
                     var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
                     using var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write);
@@ -124,7 +125,7 @@ public sealed class LcmsProcess
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
@@ -153,7 +154,7 @@ public sealed class LcmsProcess
         return 0;
     }
 
-    private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+    private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
         var files = storage.AnalysisFiles;
 
         var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
@@ -162,9 +163,9 @@ public sealed class LcmsProcess
             pointerss.Add((version, pointers, isAnnotationInfo));
         }
 
-        var streams = new List<System.IO.FileStream>();
+        var streams = new List<FileStream>();
         try {
-            streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
             foreach (var spot in spots.OrEmptyIfNull()) {
                 var repID = spot.RepresentativeFileID;
                 var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;

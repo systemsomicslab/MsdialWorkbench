@@ -125,7 +125,7 @@ public sealed class DimsProcess {
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_accessor = new DimsMetadataAccessor(storage.DataBaseMapper, storage.MsdialDimsParameter, false);

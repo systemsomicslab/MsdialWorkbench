@@ -85,13 +85,14 @@ public sealed class ImmsProcess
         var factories = storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories;
 
         // temporary
+        storage.DataBases.MetabolomicsDataBases.Load
         var msppair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Msp);
         var mspAnnotator = new ImmsMspAnnotator(msppair?.DataBase, msppair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), storage.Parameter.TargetOmics, "MspDB", 1);
         var txtpair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Text);
         var textDBAnnotator = new ImmsTextDBAnnotator(txtpair?.DataBase, txtpair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), "TextDB", 2);
 
         var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
-        await processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).ConfigureAwait(false);
+        await processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>?)null), storage.Parameter.NumThreads, () => { }).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new ImmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, Common.Enum.ExportspectraType.deconvoluted);

@@ -96,8 +96,9 @@ public sealed class LcimmsProcess {
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
         var tasks = new Task[files.Count];
-        foreach ((var file, var idx) in files.WithIndex()) {
-            tasks[idx] = Task.Run(async () => {
+        for (int i = 0; i < files.Count; i++) {
+            var file = files[i];
+            tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
                     var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
@@ -124,7 +125,7 @@ public sealed class LcimmsProcess {
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_accessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
@@ -162,9 +163,9 @@ public sealed class LcimmsProcess {
             pointerss.Add((version, pointers, isAnnotationInfo));
         }
 
-        var streams = new List<System.IO.FileStream>();
+        var streams = new List<FileStream>();
         try {
-            streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
             foreach (var spot in spots.OrEmptyIfNull()) {
                 var repID = spot.RepresentativeFileID;
                 var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
