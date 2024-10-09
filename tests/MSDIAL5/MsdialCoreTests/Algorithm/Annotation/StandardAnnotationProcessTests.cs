@@ -20,60 +20,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
     public class StandardAnnotationProcessTests
     {
         [TestMethod()]
-        public void RunAnnotationSingleThreadTest() {
-            var chromPeaks = new[]
-            {
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-            };
-            foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
-            var msdecResults = new[]
-            {
-                new MSDecResult { },
-                new MSDecResult { },
-                new MSDecResult { },
-                new MSDecResult { },
-            };
-            var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
-            process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 1);
-
-            Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[1].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[2].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[3].MatchResults.Representative);
-        }
-
-        [TestMethod()]
-        public void RunAnnotationMultiThreadTest() {
-            var chromPeaks = new[]
-            {
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-                new ChromatogramPeakFeature { },
-            };
-            foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
-            var msdecResults = new[]
-            {
-                new MSDecResult { },
-                new MSDecResult { },
-                new MSDecResult { },
-                new MSDecResult { },
-            };
-            var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
-            process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 4);
-
-            Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[1].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[2].MatchResults.Representative);
-            Assert.AreEqual(annotator.Dummy, chromPeaks[3].MatchResults.Representative);
-        }
-
-        [TestMethod()]
         public async Task RunAnnotationAsyncSingleThreadTest() {
             var chromPeaks = new[]
             {

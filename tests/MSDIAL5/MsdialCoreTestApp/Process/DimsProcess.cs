@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -51,8 +52,9 @@ namespace CompMs.App.MsdialConsole.Process
                 },
                 evaluator,
                 mapper);
+            var processor = new ProcessFile(providerFactory, storage, annotationProcess, evaluator);
             foreach (var file in files) {
-                ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
+                processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
             }
 
             if (storage.MsdialDimsParameter.TogetherWithAlignment) {

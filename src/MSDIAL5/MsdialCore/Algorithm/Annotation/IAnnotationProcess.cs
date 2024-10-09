@@ -9,20 +9,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IAnnotationProcess
     {
-        void RunAnnotation(
-            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<MSDecResult> msdecResult,
-            IDataProvider provider,
-            int numThread = 1,
-            CancellationToken token = default,
-            Action<double> reportAction = null);
-
         Task RunAnnotationAsync(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResult,
             IDataProvider provider,
             int numThread = 1,
-            CancellationToken token = default,
-            Action<double> reportAction = null);
+            Action<double>? reportAction = null,
+            CancellationToken token = default);
     }
 }

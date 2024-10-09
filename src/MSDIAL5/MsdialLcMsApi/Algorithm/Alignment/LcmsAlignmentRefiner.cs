@@ -19,36 +19,37 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        private Action<int> reportAction { get; set; }
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator, Action<int> report) : base(param, iupac, evaluator) {
-            reportAction = report;
+        private IProgress<int>? _progress;
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator, IProgress<int>? progress) : base(param, iupac, evaluator) {
+            _progress = progress;
         }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
             var donelist = new HashSet<int>();
 
+            var reporter = ReportProgress.FromRange(_progress, 80.0, 100.0);
             foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
-            ReportProgress.Show(80.0, 5.0, 1, 1, reportAction);
+            reporter.Report(1d, 4d);
 
             foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(evaluator)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
-            ReportProgress.Show(85.0, 5.0, 1, 1, reportAction);
+            reporter.Report(2d, 4d);
 
             foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
-            ReportProgress.Show(90.0, 5.0, 1, 1, reportAction);
+            reporter.Report(3d, 4d);
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
                 if (spot.IsReferenceMatched(evaluator)) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
-            ReportProgress.Show(95.0, 5.0, 1, 1, reportAction);
+            reporter.Report(4d, 4d);
 
             return cSpots;
         }

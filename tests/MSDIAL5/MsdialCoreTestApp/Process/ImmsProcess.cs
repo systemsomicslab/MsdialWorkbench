@@ -1,5 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
@@ -53,8 +55,9 @@ namespace CompMs.App.MsdialConsole.Process
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
             storage.DataBases = db;
             var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
-            var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
-            processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
+            var processor = new FileProcess(storage, providerFactory, mspAnnotator, textDBAnnotator, evaluator);
+            var runner = new ProcessRunner(processor, storage.Parameter.NumThreads);
+            runner.RunAllAsync(files, ProcessOption.PeakSpotting | ProcessOption.Identification, files.Select(_ => (IProgress<int>)null), () => { }, default).Wait();
 
             if (storage.Parameter.TogetherWithAlignment) {
                 var alignmentFile = storage.AlignmentFiles.First();

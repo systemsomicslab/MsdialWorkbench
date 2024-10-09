@@ -16,7 +16,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ReportProgress reporter) {
-            return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter.ReportAction, reporter.InitialProgress, reporter.ProgressMax);
+            return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter);
         }
 
         public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {

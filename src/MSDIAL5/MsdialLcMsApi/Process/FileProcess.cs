@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -10,96 +11,95 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialLcMsApi.Process
-{
-    public sealed class FileProcess : IFileProcessor {
-        private readonly IDataProviderFactory<AnalysisFileBean> _factory;
-        private readonly PeakPickProcess _peakPickProcess;
-        private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
-        private readonly PeakAnnotationProcess _peakAnnotationProcess;
+namespace CompMs.MsdialLcMsApi.Process;
 
-        public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            if (storage is null) {
-                throw new ArgumentNullException(nameof(storage));
-            }
+public sealed class FileProcess : IFileProcessor {
+    private readonly IDataProviderFactory<AnalysisFileBean> _factory;
+    private readonly PeakPickProcess _peakPickProcess;
+    private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
+    private readonly PeakAnnotationProcess _peakAnnotationProcess;
 
-            if (annotationProcess is null) {
-                throw new ArgumentNullException(nameof(annotationProcess));
-            }
-
-            if (evaluator is null) {
-                throw new ArgumentNullException(nameof(evaluator));
-            }
-
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _peakPickProcess = new PeakPickProcess(storage);
-            _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
-            _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
-        }       
-
-        public Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var provider = _factory.Create(file);
-            return RunAsync(file, provider, reportAction, token);
+    public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        if (storage is null) {
+            throw new ArgumentNullException(nameof(storage));
         }
 
-        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction, CancellationToken token = default) {
-            // feature detections
-            token.ThrowIfCancellationRequested();
-            Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = _peakPickProcess.Pick(file, provider, token, reportAction);
+        if (annotationProcess is null) {
+            throw new ArgumentNullException(nameof(annotationProcess));
+        }
 
-            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
-            file.ChromPeakFeaturesSummary = summaryDto;
+        if (evaluator is null) {
+            throw new ArgumentNullException(nameof(evaluator));
+        }
 
-            // chrom deconvolutions
-            token.ThrowIfCancellationRequested();
-            Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, file, summaryDto, reportAction, token);
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        _peakPickProcess = new PeakPickProcess(storage);
+        _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
+        _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
+    }
 
+    public async Task RunAsync(AnalysisFileBean analysisFile, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
+        if (!option.HasFlag(ProcessOption.PeakSpotting) && !option.HasFlag(ProcessOption.Identification)) {
+            return;
+        }
+
+        var provider = _factory.Create(analysisFile);
+        var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
+            ? FindPeakAndScans(analysisFile, provider, progress, token)
+            : await LoadPeakAndScans(analysisFile, token).ConfigureAwait(false);
+
+        if (option.HasFlag(ProcessOption.Identification)) {
             // annotations
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
-
-            // file save
-            token.ThrowIfCancellationRequested();
-            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
-            reportAction?.Invoke(100);
+            await _peakAnnotationProcess.AnnotateAsync(analysisFile, mSDecResultCollections, chromPeakFeatures.Items, provider, progress, token).ConfigureAwait(false);
         }
 
-        public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
-            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
-            var provider = _factory.Create(file);
+        // file save
+        token.ThrowIfCancellationRequested();
+        await SaveToFileAsync(analysisFile, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+        progress?.Report(100);
+    }
 
-            // annotations
-            token.ThrowIfCancellationRequested();
-            Console.WriteLine("Annotation started");
-            var chromPeakFeatures = await peakTask.ConfigureAwait(false);
-            chromPeakFeatures.ClearMatchResultProperties();
-            var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
-            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+    private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> LoadPeakAndScans(AnalysisFileBean analysisFile, CancellationToken token) {
+        var peakTask = analysisFile.LoadChromatogramPeakFeatureCollectionAsync(token);
+        var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(analysisFile, token));
 
-            // file save
-            token.ThrowIfCancellationRequested();
-            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
-            reportAction?.Invoke(100);
+        var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+        chromPeakFeatures.ClearMatchResultProperties();
+        var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
+        return (chromPeakFeatures, mSDecResultCollections);
+    }
+
+    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) FindPeakAndScans(AnalysisFileBean analysisFile, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
+        // feature detections
+        token.ThrowIfCancellationRequested();
+        Console.WriteLine("Peak picking started");
+        var chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, progress, token);
+
+        var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
+        analysisFile.ChromPeakFeaturesSummary = summaryDto;
+
+        // chrom deconvolutions
+        token.ThrowIfCancellationRequested();
+        Console.WriteLine("Deconvolution started");
+        var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token);
+        return (chromPeakFeatures, mSDecResultCollections.ToArray());
+    }
+
+    private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+        Task t1, t2;
+
+        t1 = chromPeakFeatures.SerializeAsync(file);
+
+        if (mSDecResultCollections.Count == 1) {
+            t2 = mSDecResultCollections[0].SerializeAsync(file);
+        }
+        else {
+            file.DeconvolutionFilePathList.Clear();
+            t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
         }
 
-        private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
-            Task t1, t2;
-
-            t1 = chromPeakFeatures.SerializeAsync(file);
-
-            if (mSDecResultCollections.Count == 1) {
-                t2 = mSDecResultCollections[0].SerializeAsync(file);
-            }
-            else {
-                file.DeconvolutionFilePathList.Clear();
-                t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
-            }
-
-            return Task.WhenAll(t1, t2);
-        }
+        return Task.WhenAll(t1, t2);
     }
 }

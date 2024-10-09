@@ -26,16 +26,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
        
         public List<MSDecResult> GetMS2DecResults(AnalysisFileBean file, IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
-            IupacDatabase iupac, Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
+            IupacDatabase iupac, IProgress<int>? progress, CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             var numThreads = param.NumThreads == 1 ? 1 : 2;
+            ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
             if (numThreads == 1) {
                 foreach (var spot in chromPeakFeatures) {
                     var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
                     result.ScanID = spot.PeakID;
                     msdecResults.Add(result);
-                    ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count, reportAction);
+                    reporter.Report(result.ScanID, chromPeakFeatures.Count);
                 }
                 return msdecResults;
             }
@@ -51,8 +52,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                             var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
                             result.ScanID = spot.PeakID;
                             msdecResultArray[index] = result;
-                            Interlocked.Increment(ref counter);
-                            ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count, reportAction);
+                            reporter.Report(Interlocked.Increment(ref counter), chromPeakFeatures.Count);
                         }
                     });
                 }
