@@ -140,7 +140,7 @@ public class PeakAligner {
             .Select(peakAndSpot => {
                 (var peak, var spot) = peakAndSpot;
 
-                if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
+                if (Filler.NeedsGapFill(spot, analysisFile)) {
                     Filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, analysisFile.AnalysisFileId);
                 }
                 if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
@@ -154,7 +154,7 @@ public class PeakAligner {
                 }
 
                 // UNDONE: retrieve spectrum data
-                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.CentroidMs1Tolerance);
+                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.PeakPickBaseParam.MassSliceWidth);
             }).ToList();
 
         serializer?.SerializeAllToFile(tempFile, peakInfos);

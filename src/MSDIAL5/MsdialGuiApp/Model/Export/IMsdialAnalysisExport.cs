@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Export
             var filename = Path.Combine(destinationFolder, $"{FilePrefix}_{fileBeanModel.AnalysisFileName}.{FileSuffix}");
             using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
                 var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
-                _exporter.Export(stream, fileBeanModel.File, features);
+                _exporter.Export(stream, fileBeanModel.File, features, new());
             }
         }
     }
@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Export
             using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
                 var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
                 features = features.Flatten();
-                _exporters[SelectedType].Export(stream, fileBeanModel.File, features);
+                _exporters[SelectedType].Export(stream, fileBeanModel.File, features, new());
             }
         }
     }

@@ -60,7 +60,7 @@ namespace CompMs.App.MsdialConsole.Process
                     var features = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
                     var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
                     using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {
-                        exporterFactory.CreateExporter(spectrumProviderFactory, metadata).Export(stream, file, features);
+                        exporterFactory.CreateExporter(spectrumProviderFactory, metadata).Export(stream, file, features, new ExportStyle());
                     }
     #if DEBUG
                     Console.WriteLine($"Test: {features.Items.SelectMany(feature => feature.DriftChromFeatures, (feature, drift) => (feature.Mass, feature.PeakHeightTop, drift.Mass, drift.PeakHeightTop).GetHashCode()).Aggregate((a, b) => a ^ b)}");

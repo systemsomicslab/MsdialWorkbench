@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.Export
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
         }
 
-        void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
+        void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection, ExportStyle exportStyle) {
             var loader = _loaderFactory(analysisFile);
             foreach (var peak in peakFeatureCollection.Items) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, peak, loader.Load(peak).Spectrum, _refer, _parameter);

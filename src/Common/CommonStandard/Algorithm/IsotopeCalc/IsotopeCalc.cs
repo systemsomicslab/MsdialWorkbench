@@ -19,16 +19,16 @@ namespace CompMs.Common.Algorithm.IsotopeCalc {
         /// <param name="massFilter">Put the integar value that you want ot calculate until the isotopic value. Ex. if you put 3, this method calculate the isotopic abundances until M+3. </param>
         /// <param name="iupacReferenceBean">Put the iupac bean which can be retrived with IupacParcer.cs.</param>
         /// <returns>This program returns the theoretical isotopic abundances with the exact m/z values.</returns>
-        public static IsotopeProperty GetAccurateIsotopeProperty(string elementName, int massFilter, IupacDatabase iupacReferenceBean) {
+        public static IsotopeProperty? GetAccurateIsotopeProperty(string elementName, int massFilter, IupacDatabase iupacReferenceBean) {
             IsotopeProperty compoundPropertyBean = new IsotopeProperty();
             compoundPropertyBean.Formula = FormulaStringParcer.Convert2FormulaObjV2(elementName);
             compoundPropertyBean.ElementProfile = GetBasicCompoundElementProfile(elementName);
 
-            if (compoundPropertyBean.ElementProfile == null) return null;
+            if (compoundPropertyBean.ElementProfile is null) return null;
 
             setIupacReferenceInformation(compoundPropertyBean, iupacReferenceBean);
 
-            if (compoundPropertyBean.ElementProfile == null) return null;
+            if (compoundPropertyBean.ElementProfile is null) return null;
 
             setAccurateIsotopePropertyInformation(compoundPropertyBean, massFilter);
             setFinalAccurateIsotopeProfile(compoundPropertyBean, massFilter);

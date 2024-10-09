@@ -28,7 +28,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             : this(param.RetentionTimeAlignmentTolerance, param.CentroidMs1Tolerance, param.IonMode,
                   param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
             {
                 Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),

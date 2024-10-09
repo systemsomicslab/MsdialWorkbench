@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.Export.Tests
             var file = new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, };
 
             var memory = new MemoryStream();
-            exporterFactory.CreateExporter(new FakeMetaAccessor()).Export(memory, file, spots.Items);
+            exporterFactory.CreateExporter(new FakeMetaAccessor()).Export(memory, file, spots.Items, new ExportStyle());
 
             var newline = Environment.NewLine;
             Assert.AreEqual(
@@ -72,7 +72,7 @@ namespace CompMs.MsdialCore.Export.Tests
 
         class FakeMetaAccessor : IAnalysisMetadataAccessor, IAnalysisMetadataAccessor<ChromatogramPeakFeature>
         {
-            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
+            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
                 return new Dictionary<string, string>
                 {
                     ["Id"] = feature.MasterPeakID.ToString(),

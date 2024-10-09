@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Parser
          *         Intensity: 4 byte
          */
 
-        public static ChromatogramSerializer<ChromatogramSpotInfo> CreateSpotSerializer(string version, ChromXType mainType = ChromXType.RT) {
+        public static ChromatogramSerializer<ChromatogramSpotInfo>? CreateSpotSerializer(string version, ChromXType mainType = ChromXType.RT) {
             ChromatogramSerializer<ChromatogramSpotInfo> result = null;
             if (version == "CSS1") {
                 var ps = new PeakInfoSerializer(mainType);
@@ -85,7 +85,7 @@ namespace CompMs.MsdialCore.Parser
          *     Intensity: 4 byte
          */
 
-        public static ChromatogramSerializer<ChromatogramPeakInfo> CreatePeakSerializer(string version, ChromXType mainType = ChromXType.RT) {
+        public static ChromatogramSerializer<ChromatogramPeakInfo>? CreatePeakSerializer(string version, ChromXType mainType = ChromXType.RT) {
             if (version == "CPS1") {
                 var ps = new PeakInfoSerializer(mainType);
                 var ads = new ChromatogramAccessDecorator<ChromatogramPeakInfo>(ps);
