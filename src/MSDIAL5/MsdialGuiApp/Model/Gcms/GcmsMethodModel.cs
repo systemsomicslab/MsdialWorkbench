@@ -161,13 +161,10 @@ namespace CompMs.App.Msdial.Model.Gcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
-                if (!RunFromPeakSpotting()) {
-                    return;
-                }
-            }
-            else if (option.HasFlag(ProcessOption.Identification)) {
-                if (!RunFromIdentification()) {
+            if (option.HasFlag(ProcessOption.Identification)) {
+                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
+                var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
+                if (!RunFileProcess(runner, option)) {
                     return;
                 }
             }
@@ -185,37 +182,14 @@ namespace CompMs.App.Msdial.Model.Gcms
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunFromPeakSpotting() {
+        private bool RunFileProcess(ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.RunAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
-                _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool RunFromIdentification() {
-            var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.AnnotateAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
+                vm_ => runner.RunAllAsync(
+                    _storage.AnalysisFiles,
+                    processOption,
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
+                    vm_.Increment,
+                    default),
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
@@ -226,7 +200,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 async vm => {
                     var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage)
                     {
-                        ReportAction = v => vm.CurrentValue = v
+                        Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.

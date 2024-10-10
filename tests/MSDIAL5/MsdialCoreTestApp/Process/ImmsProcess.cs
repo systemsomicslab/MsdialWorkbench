@@ -1,5 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;

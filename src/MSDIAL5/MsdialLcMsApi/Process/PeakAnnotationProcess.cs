@@ -4,11 +4,13 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
@@ -24,25 +26,26 @@ namespace CompMs.MsdialLcMsApi.Process
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
 
-        public void Annotate(AnalysisFileBean file, IReadOnlyList<MSDecResultCollection> mSDecResultCollections, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
+        public async Task AnnotateAsync(AnalysisFileBean file, IReadOnlyList<MSDecResultCollection> mSDecResultCollections, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
+            var max_annotation_local = max_annotation / mSDecResultCollections.Count;
             foreach (var (ce2msdecs, index) in mSDecResultCollections.WithIndex()) {
                 var targetCE = ce2msdecs.CollisionEnergy;
                 var msdecResults = ce2msdecs.MSDecResults;
-                var max_annotation_local = max_annotation / mSDecResultCollections.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-            _annotationProcess.RunAnnotation(
-                    chromPeakFeatures,
-                    msdecResults,
-                    provider,
-                    _storage.Parameter.NumThreads == 1 ? 1 : 2,
-                    token,
-                    v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
+                var reporter = ReportProgress.FromLength(progress, initial_annotation_local, max_annotation_local);
+                await _annotationProcess.RunAnnotationAsync(
+                        chromPeakFeatures,
+                        msdecResults,
+                        provider,
+                        _storage.Parameter.NumThreads == 1 ? 1 : 2,
+                        reporter.Report,
+                        token).ConfigureAwait(false);
             }
 
             // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, progress);
         }
     }
 }
