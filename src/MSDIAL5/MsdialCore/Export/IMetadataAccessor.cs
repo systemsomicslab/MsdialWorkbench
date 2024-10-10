@@ -20,11 +20,11 @@ namespace CompMs.MsdialCore.Export
     }
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? _refer;
         private readonly ParameterBase _parameter;
         private readonly bool _trimSpectrumToExcelLimit;
 
-        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) {
+        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) {
             _refer = refer;
             _parameter = parameter;
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;

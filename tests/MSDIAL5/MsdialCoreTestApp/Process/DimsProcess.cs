@@ -90,11 +90,11 @@ public sealed class DimsProcess {
             evaluator,
             mapper);
         var process = new ProcessFile(providerFactory, storage, annotationProcess, evaluator);
-        var runner = new ProcessRunner(process);
-        await runner.RunAllAsync(files, Enumerable.Repeat(default(Action<int>), files.Count), Environment.ProcessorCount / 2, null, default).ConfigureAwait(false);
+        var runner = new ProcessRunner(process, storage.MsdialDimsParameter.NumThreads / 2);
+        await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.MsdialDimsParameter);
-        var peak_accessor = new DimsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.MsdialDimsParameter, Common.Enum.ExportspectraType.deconvoluted);
+        var peak_accessor = new DimsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.MsdialDimsParameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
         var tasks = new Task[files.Count];

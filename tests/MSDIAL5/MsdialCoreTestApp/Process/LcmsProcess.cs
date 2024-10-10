@@ -88,8 +88,8 @@ public sealed class LcmsProcess
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
-        var runner = new ProcessRunner(process);
-        await runner.RunAllAsync(files, Enumerable.Repeat(default(Action<int>), files.Count), Environment.ProcessorCount / 2, null, default).ConfigureAwait(false);
+        var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);
+        await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);

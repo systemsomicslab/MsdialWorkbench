@@ -12,7 +12,7 @@ namespace CompMs.MsdialGcMsApi.Export
 {
     public sealed class GcmsAlignmentMetadataAccessor : BaseMetadataAccessor
     {
-        public GcmsAlignmentMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) : base(refer, parameter, trimSpectrumToExcelLimit) {
+        public GcmsAlignmentMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) : base(refer, parameter, trimSpectrumToExcelLimit) {
 
         }
 

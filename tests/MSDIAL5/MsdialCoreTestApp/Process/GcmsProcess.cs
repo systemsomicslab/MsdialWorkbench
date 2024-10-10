@@ -62,7 +62,7 @@ public sealed class GcmsProcess
                 };
 
                 var dictionary = param.FileIdRiInfoDictionary[file.AnalysisFileId].RiDictionary;
-                if (dictionary == null || dictionary.Count == 0) isIncorrectFormat = true;
+                if (dictionary is null || dictionary.Count == 0) isIncorrectFormat = true;
 
                 if (param.RiCompoundType == RiCompoundType.Fames) {
                     if (!IsFamesContanesMatch(dictionary)) isIncorrectFiehnFormat = true;
@@ -119,8 +119,11 @@ public sealed class GcmsProcess
         return ExecuteAsync(container, outputFolder, isProjectStore).Result;
     }
 
-    private bool IsFamesContanesMatch(Dictionary<int, float> riDictionary)
+    private bool IsFamesContanesMatch(Dictionary<int, float>? riDictionary)
     {
+        if (riDictionary is null) {
+            return false;
+        }
         var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
 
         if (fiehnFamesDictionary.Count != riDictionary.Count) return false;
@@ -145,7 +148,7 @@ public sealed class GcmsProcess
         using (var sr = new StreamReader(riDictionaryFile, Encoding.ASCII)) {
             while (sr.Peek() > -1) {
                 var line = sr.ReadLine();
-                if (line == string.Empty) continue;
+                if (string.IsNullOrEmpty(line)) continue;
                 var lineArray = line.Split('\t');
                 if (lineArray.Length < 2) continue;
 
@@ -184,8 +187,8 @@ public sealed class GcmsProcess
         var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));
         var providerFactory = new StandardDataProviderFactory(isGuiProcess: false);
         var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType));
-        var runner = new ProcessRunner(process);
-        await runner.RunAllAsync(files, Enumerable.Repeat(default(Action<int>), files.Count), Environment.ProcessorCount / 2, null, default).ConfigureAwait(false);
+        var runner = new ProcessRunner(process, storage.MsdialGcmsParameter.NumThreads / 2);
+        await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         var tasks = new Task[files.Count];
         using var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
@@ -203,7 +206,7 @@ public sealed class GcmsProcess
 
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
-            ChromatogramSerializer<ChromatogramSpotInfo> serializer;
+            ChromatogramSerializer<ChromatogramSpotInfo>? serializer;
             switch (storage.MsdialGcmsParameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
@@ -221,7 +224,7 @@ public sealed class GcmsProcess
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties);
+            var decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, decResults);
 
             var accessor = new GcmsAlignmentMetadataAccessor(storage.DataBaseMapper, storage.MsdialGcmsParameter, false);

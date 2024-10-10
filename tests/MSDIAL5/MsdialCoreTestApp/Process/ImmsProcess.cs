@@ -87,17 +87,23 @@ public sealed class ImmsProcess
         var factories = storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories;
 
         // temporary
-        storage.DataBases.MetabolomicsDataBases.Load
-        var msppair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Msp);
-        var mspAnnotator = new ImmsMspAnnotator(msppair?.DataBase, msppair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), storage.Parameter.TargetOmics, "MspDB", 1);
-        var txtpair = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Text);
-        var textDBAnnotator = new ImmsTextDBAnnotator(txtpair?.DataBase, txtpair?.Pairs.FirstOrDefault()?.AnnotationQueryFactory.PrepareParameter(), "TextDB", 2);
+        ImmsMspAnnotator? mspAnnotator = null;
+        var mspdb = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Msp);
+        if (mspdb is { } && mspdb.Pairs.FirstOrDefault() is { } msppair) {
+            mspAnnotator = new ImmsMspAnnotator(mspdb.DataBase, msppair.AnnotationQueryFactory.PrepareParameter(), storage.Parameter.TargetOmics, "MspDB", 1);
+        }
+        ImmsTextDBAnnotator? txtDBAnnotator = null;
+        var txtdb = storage.DataBases.MetabolomicsDataBases.FirstOrDefault(d => d.DataBase.DataBaseSource == DataBaseSource.Text);
+        if (txtdb is { } && txtdb.Pairs.FirstOrDefault() is { } txtpair) {
+            txtDBAnnotator = new ImmsTextDBAnnotator(txtdb.DataBase, txtpair.AnnotationQueryFactory.PrepareParameter(), "TextDB", 2);
+        }
 
-        var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
-        await processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>?)null), storage.Parameter.NumThreads, () => { }).ConfigureAwait(false);
+        var processor = new FileProcess(storage, providerFactory, mspAnnotator, txtDBAnnotator, evaluator);
+        var runner = new ProcessRunner(processor, storage.Parameter.NumThreads / 2);
+        await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
-        var peak_accessor = new ImmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, Common.Enum.ExportspectraType.deconvoluted);
+        var peak_accessor = new ImmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
         var tasks = new Task[files.Count];
@@ -130,7 +136,7 @@ public sealed class ImmsProcess
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
