@@ -19,7 +19,7 @@ public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
 {
     private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
 
-    public LcimmsStandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+    public LcimmsStandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
         _queryFacotries = queryFactories ?? throw new ArgumentNullException(nameof(queryFactories));
         _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         _refer = refer ?? throw new ArgumentNullException(nameof(refer));

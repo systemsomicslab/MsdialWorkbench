@@ -183,9 +183,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
                 this.carbonRtDict = Param.FileIdRiInfoDictionary[fileID].RiDictionary;
 
-                if (isRI && Param.MachineCategory == CompMs.Common.Enum.MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames) {
-                    this.fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDictionary, Param.FileIdRiInfoDictionary[fileID].RiDictionary);
-                    this.revFiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(Param.FileIdRiInfoDictionary[fileID].RiDictionary, fiehnRiDictionary);
+                if (isRI && Param.MachineCategory == MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames && Param.FileIdRiInfoDictionary[fileID].RiDictionary is { } ridict) {
+                    this.fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDictionary, ridict);
+                    this.revFiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(ridict, fiehnRiDictionary);
                 }
             }
             else if (this.IsIonMobility) {

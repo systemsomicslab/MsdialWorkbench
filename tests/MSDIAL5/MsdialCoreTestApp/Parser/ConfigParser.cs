@@ -127,7 +127,7 @@ namespace CompMs.App.MsdialConsole.Parser
         private static void readFieldValues(string? line, out string method, out string value, out bool isReadable) {
             method = string.Empty; value = string.Empty; isReadable = false;
             if (string.IsNullOrEmpty(line)) return;
-            if (line.Length < 2) return;
+            if (line!.Length < 2) return;
             if (line[0] == '#') return;
 
             var lineArray = line.Split(':');
