@@ -93,7 +93,21 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         for (int i = 0; i < chromPeakFeatures.Count; i++) {
             var chromPeakFeature = chromPeakFeatures[i];
             var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults.MSDecResults, parentID2IsotopePeakIDs);
+
+/* Unmerged change from project 'MsdialCore (net6.0)'
+Before:
             await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
+After:
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, TODO, spectrums, msdecResults.CollisionEnergy, token);
+*/
+
+/* Unmerged change from project 'MsdialCore (netstandard2.0)'
+Before:
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
+After:
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, TODO, spectrums, msdecResults.CollisionEnergy, token);
+*/
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
             reporter.Report(i + 1, chromPeakFeatures.Count);
         };
     }
@@ -105,7 +119,6 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         int numThreads,
         CancellationToken token,
         ReportProgress reporter) {
-        var spectrums = provider.LoadMsSpectrums();
         var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
         using var sem = new SemaphoreSlim(numThreads);
         var annotationTasks = new List<Task>();
@@ -116,7 +129,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
                 try {
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults.MSDecResults, parentID2IsotopePeakIDs);
-                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
+                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
                 }
                 finally {
                     sem.Release();
@@ -131,7 +144,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
     private async Task RunAnnotationCoreAsync(
         ChromatogramPeakFeature chromPeakFeature,
         MSDecResult msdecResult,
-        IReadOnlyList<RawSpectrum> msSpectrums,
+        IDataProvider provider,
         double collisionEnergy,
         CancellationToken token = default) {
 
@@ -139,7 +152,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
             var pepQuery = factory.Create(
                 chromPeakFeature,
                 msdecResult,
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
             token.ThrowIfCancellationRequested();
@@ -151,7 +164,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
             var query = factory.Create(
                 chromPeakFeature,
                 msdecResult,
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
             token.ThrowIfCancellationRequested();
