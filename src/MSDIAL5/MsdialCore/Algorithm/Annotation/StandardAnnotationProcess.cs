@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
@@ -58,11 +57,10 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
         IDataProvider provider,
         CancellationToken token,
         ReportProgress reporter) {
-        var spectrums = provider.LoadMs1Spectrums();
         for (int i = 0; i < chromPeakFeatures.Count; i++) {
             var chromPeakFeature = chromPeakFeatures[i];
             var msdecResult = msdecResults.MSDecResults[i];
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token).ConfigureAwait(false);
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token).ConfigureAwait(false);
             reporter.Report(i + 1, chromPeakFeatures.Count);
         };
     }
@@ -74,7 +72,6 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
         int numThreads,
         CancellationToken token,
         ReportProgress reporter) {
-        var spectrums = provider.LoadMs1Spectrums();
         using var sem = new SemaphoreSlim(numThreads);
         var annotationTasks = chromPeakFeatures.Zip(msdecResults.MSDecResults, Tuple.Create)
             .Select(async (pair, i) => {
@@ -83,7 +80,7 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
                 try {
                     var chromPeakFeature = pair.Item1;
                     var msdecResult = pair.Item2;
-                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
+                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
                 }
                 finally {
                     sem.Release();
@@ -96,7 +93,7 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
     private async Task RunAnnotationCoreAsync(
         ChromatogramPeakFeature chromPeakFeature,
         MSDecResult msdecResult,
-        IReadOnlyList<RawSpectrum> msSpectrums,
+        IDataProvider provider,
         double collisionEnergy,
         CancellationToken token = default) {
 
@@ -107,7 +104,7 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
             var query = factory.Create(
                 chromPeakFeature,
                 msdecResult,
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
             token.ThrowIfCancellationRequested();
