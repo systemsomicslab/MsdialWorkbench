@@ -130,7 +130,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var rawSpectrumLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             _rawSpectrumLoader = rawSpectrumLoader;
-            var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
 
             // Ms2 spectrum
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
@@ -146,9 +145,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             ObservableMsSpectrum rawObservableMsSpectrum = ObservableMsSpectrum.Create(Target, rawSpectrumLoader, spectraExporter).AddTo(Disposables);
             SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawObservableMsSpectrum, rawObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), rawObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredHueItem, rawGraphLabels).AddTo(Disposables);
 
-            var decLoader_ = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
+            var decLoader = new MsDecSpectrumFromFileLoader(analysisFileModel);
             var decGraphLabels = new GraphLabels("Deconvoluted spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            ObservableMsSpectrum decObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decLoader_, spectraExporter).AddTo(Disposables);
+            ObservableMsSpectrum decObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decLoader, spectraExporter).AddTo(Disposables);
             SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decObservableMsSpectrum, decObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), decObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredHueItem, decGraphLabels).AddTo(Disposables);
 
             var refGraphLabels = new GraphLabels("Reference spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -283,11 +282,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             return compoundSearch;
         }
 
-        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public IObservable<bool> CanSetUnknown => Target.Select(t => t is not null);
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), AnalysisFileModel.MSDecLoader, _parameter);
         }
 
         public void SaveSpectra(string filename) {

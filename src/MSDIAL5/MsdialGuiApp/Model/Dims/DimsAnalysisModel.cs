@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Dims
             ObservableMsSpectrum rawObservableMsSpectrum = ObservableMsSpectrum.Create(Target, rawLoader, spectraExporter).AddTo(Disposables);
             SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawObservableMsSpectrum, rawObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), rawObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredSpectrumHueItem, rawGraphLabels).AddTo(Disposables);
 
-            var decLoader_ = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
+            var decLoader_ = new MsDecSpectrumFromFileLoader(analysisFileModel);
             var decGraphLabels = new GraphLabels("Deconvoluted spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ObservableMsSpectrum decObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decLoader_, spectraExporter).AddTo(Disposables);
             SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decObservableMsSpectrum, decObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), decObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredSpectrumHueItem, decGraphLabels).AddTo(Disposables);
@@ -195,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Dims
             return compoundSearchModel;
         }
 
-        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public IObservable<bool> CanSetUnknown => Target.Select(t => t is not null);
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public override void SearchFragment() {
-            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), AnalysisFileModel.MSDecLoader, _parameter);
         }
 
         public override void InvokeMsfinder() {
