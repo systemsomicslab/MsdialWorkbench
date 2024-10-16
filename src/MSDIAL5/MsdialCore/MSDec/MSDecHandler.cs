@@ -270,11 +270,12 @@ namespace CompMs.MsdialCore.MSDec {
             var offset = 0.1;
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             //targetMz = (int)targetMz;
-            var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.MassSliceWidth), chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
-            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
-            var peak = peakResult.ConvertToPeakFeature(chrom, targetMz);
+            using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.MassSliceWidth), chromatogramRange);
+            using var smoothedchrom = chrom.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var peakResult = smoothedchrom.GetPeakDetectionResultFromRange(startID, endID);
+            var peak = peakResult.ConvertToPeakFeature(smoothedchrom, targetMz);
             var peakShape = new ChromatogramPeakShape(peakResult);
-            return new QuantifiedChromatogramPeak(peak, peakShape, peakResult, chrom);
+            return QuantifiedChromatogramPeak.RecalculatedFromChromatogram(peak, peakShape, peakResult, smoothedchrom);
         }
 
         private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {
