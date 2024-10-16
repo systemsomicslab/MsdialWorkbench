@@ -270,7 +270,7 @@ namespace CompMs.MsdialCore.MSDec {
             var offset = 0.1;
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             //targetMz = (int)targetMz;
-            using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.MassSliceWidth), chromatogramRange);
+            using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange);
             using var smoothedchrom = chrom.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var peakResult = smoothedchrom.GetPeakDetectionResultFromRange(startID, endID);
             var peak = peakResult.ConvertToPeakFeature(smoothedchrom, targetMz);
