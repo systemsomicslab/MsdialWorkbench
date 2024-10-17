@@ -258,7 +258,7 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecResults;
         }
 
-        public static QuantifiedChromatogramPeak GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
+        public static QuantifiedChromatogramPeak? GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
             var model = result.ModelPeakChromatogram;
             System.Diagnostics.Debug.Assert(model is null || model.Count > 0, "No model peak chromatogram");
             var startID = model[0].ID;
@@ -271,6 +271,10 @@ namespace CompMs.MsdialCore.MSDec {
             using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange);
             using var smoothedchrom = chrom.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var peakResult = smoothedchrom.GetPeakDetectionResultFromRange(startID, endID);
+            System.Diagnostics.Debug.Assert(peakResult is not null);
+            if (peakResult is null) {
+                return null;
+            }
             var peak = peakResult.ConvertToPeakFeature(smoothedchrom, targetMz);
             var peakShape = new ChromatogramPeakShape(peakResult);
             return QuantifiedChromatogramPeak.RecalculatedFromChromatogram(peak, peakShape, peakResult, smoothedchrom);
