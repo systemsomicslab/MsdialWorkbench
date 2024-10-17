@@ -78,7 +78,7 @@ public sealed class PeakDetection {
     };
 
     public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram chromatogram) {
-        using var chroChroChromatogram = chromatogram.GetChroChroChromatogram(GlobalNoiseParameter);
+        using var chroChroChromatogram = ChroChroChromatogram.CreateFromChromatogram(chromatogram, GlobalNoiseParameter);
 
         var averagePeakWidth = 20;
         var amplitudeNoiseFoldCriteria = 4d;

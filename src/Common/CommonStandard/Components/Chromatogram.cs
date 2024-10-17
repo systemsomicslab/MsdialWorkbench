@@ -682,19 +682,6 @@ namespace CompMs.Common.Components
             return (newStart, peakTopId, newEnd);
         }
 
-        internal ChroChroChromatogram GetChroChroChromatogram(NoiseEstimateParameter noiseParameter) {
-            // 'chromatogram' properties
-            var globalProperty = GetProperty(noiseParameter);
-
-            // differential factors
-            var differencialCoefficients = globalProperty.GenerateDifferencialCoefficients();
-
-            // slope noises
-            var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
-
-            return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
-        }
-
         /// <summary>
         /// Determines the index of the peak with the highest intensity within a specified range.
         /// </summary>
