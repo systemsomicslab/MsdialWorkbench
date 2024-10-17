@@ -32,4 +32,11 @@ public sealed class NoiseEstimateParameter {
     /// This parameter can help fine-tune the noise estimation algorithm to be more or less sensitive to intensity variations.
     /// </summary>
     public double NoiseFactor { get; set; }
+
+    internal readonly static NoiseEstimateParameter GlobalParameter = new() {
+        MinimumNoiseLevel = 0d,
+        MinimumNoiseWindowSize = 10,
+        NoiseEstimateBin = 50,
+        NoiseFactor = 3d,
+    };
 }

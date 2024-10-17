@@ -181,6 +181,14 @@ namespace CompMs.Common.Components
                 }
             }
             var result = PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
+            using var sChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            using var ssChromatogram = sChromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            using var baselineChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 20);
+            using var baselineCorrectedChromatogram = ssChromatogram.Difference(baselineChromatogram);
+            var parameter = NoiseEstimateParameter.GlobalParameter;
+            var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(parameter);
+            result.EstimatedNoise = Math.Max(1f, (float)noise);
+            result.SignalToNoise = (float)(result.IntensityAtPeakTop / result.EstimatedNoise);
             return result;
         }
     }

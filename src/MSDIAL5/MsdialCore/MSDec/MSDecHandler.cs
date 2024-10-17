@@ -258,8 +258,6 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecResults;
         }
 
-        
-
         public static QuantifiedChromatogramPeak GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
             var model = result.ModelPeakChromatogram;
             System.Diagnostics.Debug.Assert(model is null || model.Count > 0, "No model peak chromatogram");
@@ -267,7 +265,7 @@ namespace CompMs.MsdialCore.MSDec {
             var endID = model[model.Count - 1].ID;
             var startRt = model[0].ChromXs.RT.Value;
             var endRt = model[model.Count - 1].ChromXs.RT.Value;
-            var offset = 0.1;
+            var offset = .5d;
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             //targetMz = (int)targetMz;
             using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange);

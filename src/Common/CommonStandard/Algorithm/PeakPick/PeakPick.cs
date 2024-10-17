@@ -70,20 +70,13 @@ public sealed class PeakDetection {
         _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
     }
 
-    internal readonly static NoiseEstimateParameter GlobalNoiseParameter = new() {
-        MinimumNoiseLevel = 0d,
-        MinimumNoiseWindowSize = 10,
-        NoiseEstimateBin = 50,
-        NoiseFactor = 3d,
-    };
-
     public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram chromatogram) {
-        using var chroChroChromatogram = ChroChroChromatogram.CreateFromChromatogram(chromatogram, GlobalNoiseParameter);
+        using var chroChroChromatogram = ChroChroChromatogram.CreateFromChromatogram(chromatogram, NoiseEstimateParameter.GlobalParameter);
 
         var averagePeakWidth = 20;
         var amplitudeNoiseFoldCriteria = 4d;
         var slopeNoiseFoldCriteria = 2d;
-        return chroChroChromatogram.DetectPeaks(GlobalNoiseParameter.NoiseFactor, averagePeakWidth, amplitudeNoiseFoldCriteria, slopeNoiseFoldCriteria, _minimumDatapointCriteria, _minimumAmplitudeCriteria);
+        return chroChroChromatogram.DetectPeaks(NoiseEstimateParameter.GlobalParameter.NoiseFactor, averagePeakWidth, amplitudeNoiseFoldCriteria, slopeNoiseFoldCriteria, _minimumDatapointCriteria, _minimumAmplitudeCriteria);
     }
 
     // below is a global peak detection method for gcms/lcms data preprocessing
@@ -91,10 +84,10 @@ public sealed class PeakDetection {
         var results = new List<PeakDetectionResult>();
         #region
         // global parameter
-        var noiseEstimateBin = GlobalNoiseParameter.NoiseEstimateBin;
-        var minNoiseWindowSize = GlobalNoiseParameter.MinimumNoiseWindowSize;
-        var minNoiseLevel = GlobalNoiseParameter.MinimumNoiseLevel;
-        var noiseFactor = GlobalNoiseParameter.NoiseFactor;
+        var noiseEstimateBin = NoiseEstimateParameter.GlobalParameter.NoiseEstimateBin;
+        var minNoiseWindowSize = NoiseEstimateParameter.GlobalParameter.MinimumNoiseWindowSize;
+        var minNoiseLevel = NoiseEstimateParameter.GlobalParameter.MinimumNoiseLevel;
+        var noiseFactor = NoiseEstimateParameter.GlobalParameter.NoiseFactor;
 
         // 'chromatogram' properties
         var globalProperty = FindChromatogramGlobalProperties(peaklist, noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
