@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Buffers;
@@ -1107,15 +1108,18 @@ namespace CompMs.Common.Components.Tests
             var peaks = Enumerable.Range(1, 100).Select(i =>
                 new ValuePeak(i, i, 100.0, 10.0 + (i % 10))).ToArray(); // Simulated data with a patterned variation
             var eic = new ExtractedIonChromatogram(peaks, ChromXType.RT, ChromXUnit.Min, 100.0);
-            int binSize = 10; // Grouping size for noise estimation
-            int minWindowSize = 5; // Minimum window size to perform estimation
-            double minNoiseLevel = 0.5; // Default minimum noise level
+            var parameter = new NoiseEstimateParameter
+            {
+                NoiseEstimateBin = 10, // Grouping size for noise estimation
+                MinimumNoiseWindowSize = 5, // Minimum window size to perform estimation
+                MinimumNoiseLevel = 0.5, // Default minimum noise level
+            };
 
             // Act
-            double noiseLevel = eic.GetMinimumNoiseLevel(binSize, minWindowSize, minNoiseLevel);
+            double noiseLevel = eic.GetMinimumNoiseLevel(parameter);
 
             // Assert
-            Assert.IsTrue(noiseLevel > minNoiseLevel, "Estimated noise should be greater than the minimum specified noise level.");
+            Assert.IsTrue(noiseLevel > parameter.MinimumNoiseLevel, "Estimated noise should be greater than the minimum specified noise level.");
         }
 
         [TestMethod]
@@ -1124,15 +1128,18 @@ namespace CompMs.Common.Components.Tests
             var peaks = Enumerable.Range(1, 10).Select(i =>
                 new ValuePeak(i, i, 100.0, 10.0 + (i % 2))).ToArray(); // Limited data points
             var eic = new ExtractedIonChromatogram(peaks, ChromXType.RT, ChromXUnit.Min, 100.0);
-            int binSize = 10; // Large bin size considering the data
-            int minWindowSize = 10; // Unattainable window size given the data
-            double minNoiseLevel = 1.0; // Specified minimum noise level
+            var parameter = new NoiseEstimateParameter
+            {
+                NoiseEstimateBin = 10, // Large bin size considering the data
+                MinimumNoiseWindowSize = 10, // Unattainable window size given the data
+                MinimumNoiseLevel = 1.0, // Specified minimum noise level
+            };
 
             // Act
-            double noiseLevel = eic.GetMinimumNoiseLevel(binSize, minWindowSize, minNoiseLevel);
+            double noiseLevel = eic.GetMinimumNoiseLevel(parameter);
 
             // Assert
-            Assert.AreEqual(minNoiseLevel, noiseLevel, "With insufficient data, should default to the specified minimum noise level.");
+            Assert.AreEqual(parameter.MinimumNoiseLevel, noiseLevel, "With insufficient data, should default to the specified minimum noise level.");
         }
 
         [TestMethod]

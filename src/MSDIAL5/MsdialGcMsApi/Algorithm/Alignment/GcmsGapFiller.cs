@@ -83,7 +83,7 @@ public class GcmsRTGapFiller : GcmsGapFiller
         var minRt = centralRT - peakWidth * 2d; // temp
 
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
-        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.MassSliceWidth), range))
+        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
         using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
             return smoothed.AsPeakArray();
         }
@@ -140,7 +140,7 @@ public class GcmsRIGapFiller : GcmsGapFiller
         var rtTol = maxRt.Value - minRt.Value;
 
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
-        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.MassSliceWidth), range))
+        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
         using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
             var peaks = smoothed.AsPeakArray();
             foreach (var peak in peaks) {

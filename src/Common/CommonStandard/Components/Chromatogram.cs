@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Mathematics.Basic;
@@ -375,14 +376,16 @@ namespace CompMs.Common.Components
         /// <summary>
         /// Estimates the minimum noise level within a specified range of the chromatogram by analyzing the intensity variations across the peaks.
         /// </summary>
-        /// <param name="binSize">The size of the bin to group peaks for noise calculation. Larger bins provide a broader analysis at the risk of smoothing over smaller noise variations.</param>
-        /// <param name="minWindowSize">The minimum window size required to consider the analysis valid. If the number of bins calculated is less than this, the method returns a default or specified minimum noise level.</param>
-        /// <param name="minNoiseLevel">The minimum noise level to return if the calculated noise level is below this value or if there are not enough bins to make a valid estimation.</param>
+        /// <param name="noiseParameter">An instance of <see cref="NoiseEstimateParameter"/> containing configuration values such as bin size, minimum window size, and minimum noise level for the calculation.</param>
         /// <returns>The estimated minimum noise level as a <see cref="double"/>.</returns>
         /// <remarks>
-        /// This method provides a basic mechanism for estimating the background noise level in chromatographic data by analyzing the variation in peak intensities across different sections of the chromatogram. It's useful for setting baseline intensity thresholds, distinguishing between true signal and noise, and improving the accuracy of peak detection algorithms.
+        /// This method provides a mechanism for estimating the background noise level in chromatographic data by analyzing the variation in peak intensities across different sections of the chromatogram.
+        /// The method utilizes a binning approach, grouping peaks based on intensity to evaluate noise across the chromatogram. If the number of valid bins is smaller than the specified minimum window size, a default minimum noise level is returned. This is useful for distinguishing true signals from noise, improving peak detection algorithms, and setting baseline intensity thresholds.
         /// </remarks>
-        public double GetMinimumNoiseLevel(int binSize, int minWindowSize, double minNoiseLevel) {
+        public double GetMinimumNoiseLevel(NoiseEstimateParameter noiseParameter) {
+            var binSize = noiseParameter.NoiseEstimateBin;
+            var minWindowSize = noiseParameter.MinimumNoiseWindowSize;
+            var minNoiseLevel = noiseParameter.MinimumNoiseLevel;
             var buffer = ArrayPool<double>.Shared.Rent((_size + binSize - 1) / binSize);
             try {
                 var size = 0;
@@ -556,12 +559,12 @@ namespace CompMs.Common.Components
             return _peaks[i].Intensity - _peaks[j].Intensity;
         }
 
-        public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
+        public ChromatogramGlobalProperty_temp2 GetProperty(NoiseEstimateParameter parameter) {
             using var sChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
             var ssChromatogram = sChromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
             var baselineChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 20);
             var baselineCorrectedChromatogram = ssChromatogram.Difference(baselineChromatogram);
-            var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel) * noiseFactor;
+            var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(parameter) * parameter.NoiseFactor;
 
             // checking chromatogram properties
             var baselineMedian = GetIntensityMedian();
@@ -677,19 +680,6 @@ namespace CompMs.Common.Components
             }
 
             return (newStart, peakTopId, newEnd);
-        }
-
-        internal ChroChroChromatogram GetChroChroChromatogram(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
-            // 'chromatogram' properties
-            var globalProperty = GetProperty(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
-
-            // differential factors
-            var differencialCoefficients = globalProperty.GenerateDifferencialCoefficients();
-
-            // slope noises
-            var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
-
-            return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
         }
 
         /// <summary>
