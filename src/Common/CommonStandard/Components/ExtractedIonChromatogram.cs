@@ -180,7 +180,8 @@ namespace CompMs.Common.Components
                     }
                 }
             }
-            return PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
+            var result = PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
+            return result;
         }
     }
 }
