@@ -20,12 +20,14 @@ namespace CompMs.App.Msdial.Model.Information
 
         public void SetConfidence(ICompoundResult compoundResult) {
             DataAccess.SetMoleculeMsPropertyAsConfidence(_molecule, compoundResult.MsReference);
+            compoundResult.MatchResult.IsReferenceMatched = true;
             _results.RemoveManuallyResults();
             _results.AddResult(compoundResult.MatchResult);
         }
 
         public void SetUnsettled(ICompoundResult compoundResult) {
             DataAccess.SetMoleculeMsPropertyAsUnsettled(_molecule, compoundResult.MsReference);
+            compoundResult.MatchResult.IsReferenceMatched = true;
             _results.RemoveManuallyResults();
             _results.AddResult(compoundResult.MatchResult);
         }
