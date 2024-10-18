@@ -154,7 +154,7 @@ public class PeakAligner {
                 }
 
                 // UNDONE: retrieve spectrum data
-                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.PeakPickBaseParam.MassSliceWidth);
+                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.PeakPickBaseParam.CentroidMs1Tolerance);
             }).ToList();
 
         serializer?.SerializeAllToFile(tempFile, peakInfos);

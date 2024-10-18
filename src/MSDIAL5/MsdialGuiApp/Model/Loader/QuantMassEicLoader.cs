@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
-        public double MzTolerance => _peakPickParameter.MassSliceWidth;
+        public double MzTolerance => _peakPickParameter.CentroidMs1Tolerance;
 
         async Task<PeakChromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature?>.LoadChromatogramAsync(Ms1BasedSpectrumFeature? target, CancellationToken token) {
             if (target is not null) {
@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private async Task<Chromatogram> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
-            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peakFeature.Mass, _peakPickParameter.MassSliceWidth), GetChromatogramRange(peakFeature));
+            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peakFeature.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(peakFeature));
         }
 
         PeakChromatogram IChromatogramLoader<Ms1BasedSpectrumFeature?>.EmptyChromatogram  => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromXType, _chromXUnit), null, string.Empty, Colors.Black);

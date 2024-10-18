@@ -25,6 +25,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
             foreach (var annotatedMSDecResult in msdecResults) {
                 var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, annotatedMSDecResult.MSDecResult, annotatedMSDecResult.QuantMass, _parameter);
+                if (quantifiedChromatogramPeak is null) {
+                    continue;
+                }
                 spectrumFeatures.Add(new SpectrumFeature(annotatedMSDecResult, quantifiedChromatogramPeak));
             }
             var order = 0;
