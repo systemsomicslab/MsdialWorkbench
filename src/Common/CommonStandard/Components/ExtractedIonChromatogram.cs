@@ -144,12 +144,19 @@ namespace CompMs.Common.Components
                     return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LoessFilter:
                     return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit, ExtractedMz);
+                case SmoothingMethod.TimeBasedLinearWeightedMovingAverage: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        _smoother.TimeBasedLinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                    }
                 case SmoothingMethod.LinearWeightedMovingAverage:
-                default:
-                    var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
-                    var smoothed = arrayPool.Rent(_size);
-                    _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
-                    return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                default: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                    }
             }
         }
 
