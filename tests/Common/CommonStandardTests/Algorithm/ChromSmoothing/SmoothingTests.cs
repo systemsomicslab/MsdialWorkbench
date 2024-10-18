@@ -211,7 +211,7 @@ public class SmoothingTests
             new(1, 0.0, 100.0, 10.0),
             new(2, 1.0, 100.0, 20.0),
             new(3, 2.0, 100.0, 30.0),
-            new(4, 3.0, 100.0, 40.0)
+            new(4, 3.0, 100.0, 40.0),
         };
         int smoothingLevel = 1;
 
@@ -222,8 +222,8 @@ public class SmoothingTests
         Assert.AreEqual(4, result.Length, "The number of elements in the result does not match the input.");
 
         // Check that smoothing results match expectations (adjust based on your expected output)
-        Assert.IsTrue(result[1].Intensity > peaklist[1].Intensity, "The smoothed intensity is incorrect.");
-        Assert.IsTrue(result[2].Intensity < peaklist[2].Intensity, "The smoothed intensity is incorrect.");
+        Assert.IsTrue(result[0].Intensity > peaklist[0].Intensity, "The smoothed intensity is incorrect.");
+        Assert.IsTrue(result[3].Intensity < peaklist[3].Intensity, "The smoothed intensity is incorrect.");
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ public class SmoothingTests
 
         // Assert
         Assert.AreEqual(1, result.Length, "The result length should match the input when there is only one element.");
-        Assert.AreEqual(peaklist[0], result[0], "The smoothed result should match the input for a single element.");
+        Assert.AreEqual(peaklist[0].Intensity, result[0].Intensity, "The smoothed result should match the input for a single element.");
     }
 
     /// <summary>
@@ -292,7 +292,7 @@ public class SmoothingTests
         Assert.AreEqual(4, resultHighSmoothing.Length, "The result length with smoothingLevel=5 is incorrect.");
 
         // Verify that higher smoothing levels result in more smoothing
-        Assert.IsTrue(resultHighSmoothing[1].Intensity < resultLowSmoothing[1].Intensity, "High smoothing level should result in a more smoothed value.");
+        Assert.IsTrue(resultHighSmoothing[3].Intensity < resultLowSmoothing[3].Intensity, "High smoothing level should result in a more smoothed value.");
     }
 
     /// <summary>
@@ -308,7 +308,8 @@ public class SmoothingTests
             new(1, 0.0, 100.0, 10.0),
             new(2, 1.5, 100.0, 20.0),  // Non-uniform time interval
             new(3, 3.0, 100.0, 30.0),
-            new(4, 10.0, 100.0, 40.0)  // Large time gap
+            new(4, 4.0, 100.0, 40.0),
+            new(5, 10.0, 100.0, 50.0)  // Large time gap
         };
         int smoothingLevel = 2;
 
@@ -316,10 +317,10 @@ public class SmoothingTests
         var result = new Smoothing().TimeBasedLinearWeightedMovingAverage(peaklist, smoothingLevel);
 
         // Assert
-        Assert.AreEqual(4, result.Length, "The result length does not match the input for non-uniform time intervals.");
+        Assert.AreEqual(5, result.Length, "The result length does not match the input for non-uniform time intervals.");
 
         // Check if smoothing is correctly applied to non-uniform time data (customize expected results)
-        Assert.IsTrue(result[0].Intensity < peaklist[0].Intensity, "Smoothing not applied correctly for non-uniform intervals.");
-        Assert.IsTrue(result[3].Intensity < peaklist[3].Intensity, "Smoothing not applied correctly for large time gap.");
+        Assert.AreEqual((10.0 * 3 + 20.0 * 2.4 + 30.0 * 1.8 + 40.0 * 1.4) / (3 + 2.4 + 1.8 + 1.4), result[0].Intensity, "Smoothing not applied correctly for non-uniform intervals.");
+        Assert.AreEqual((50.0 * 3 + 40.0 * .6 + 30.0 * .2) / (3 + .6 + .2), result[4].Intensity, "Smoothing not applied correctly for large time gap.");
     }
 }

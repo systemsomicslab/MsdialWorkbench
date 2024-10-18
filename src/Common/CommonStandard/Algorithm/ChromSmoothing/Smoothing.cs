@@ -670,6 +670,9 @@ public sealed class Smoothing {
     /// </remarks>
     public ValuePeak[] TimeBasedLinearWeightedMovingAverage(IReadOnlyList<ValuePeak> peaklist, int smoothingLevel) {
         var peaklist_ = peaklist as ValuePeak[] ?? peaklist.ToArray();
+        if (peaklist_.Length == 0) {
+            return [];
+        }
         var smoothedPeaklist = new ValuePeak[peaklist_.Length];
         TimeBasedLinearWeightedMovingAverage(peaklist_, smoothedPeaklist, peaklist_.Length, smoothingLevel);
         return smoothedPeaklist;
@@ -687,6 +690,14 @@ public sealed class Smoothing {
     /// the proximity of neighboring peaks to the current peak being smoothed, with closer peaks contributing more to the average.
     /// </remarks>
     public void TimeBasedLinearWeightedMovingAverage(ValuePeak[] peaklist, ValuePeak[] dest, int datasize, int smoothingLevel) {
+        if (datasize == 0 || peaklist.Length < datasize || dest.Length < datasize) {
+            return;
+        }
+        if (datasize == 1) {
+            dest[0] = peaklist[0];
+            return;
+        }
+
         double te = (peaklist.Take(datasize).Max(p => p.Time) - peaklist.Take(datasize).Min(p => p.Time)) / (datasize - 1);
         var j = 0;
         var d = smoothingLevel + 1;
