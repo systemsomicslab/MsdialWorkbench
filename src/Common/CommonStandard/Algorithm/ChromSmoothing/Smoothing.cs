@@ -657,4 +657,58 @@ public sealed class Smoothing {
 
         return smoothedPeaklist;
     }
+
+    /// <summary>
+    /// Applies a time-based linear weighted moving average smoothing to a list of <see cref="ValuePeak"/> objects.
+    /// </summary>
+    /// <param name="peaklist">The input list of <see cref="ValuePeak"/> objects that represent peak values.</param>
+    /// <param name="smoothingLevel">The smoothing factor that determines the range of neighboring peaks to consider when calculating the weighted average.</param>
+    /// <returns>A new array of <see cref="ValuePeak"/> objects where each peak has been smoothed according to the time-based linear weighted moving average.</returns>
+    /// <remarks>
+    /// This method creates a new array to hold the smoothed peak values and calls the overloaded method 
+    /// <see cref="TimeBasedLinearWeightedMovingAverage(ValuePeak[], ValuePeak[], int, int)"/> to perform the actual smoothing.
+    /// </remarks>
+    public ValuePeak[] TimeBasedLinearWeightedMovingAverage(IReadOnlyList<ValuePeak> peaklist, int smoothingLevel) {
+        var peaklist_ = peaklist as ValuePeak[] ?? peaklist.ToArray();
+        var smoothedPeaklist = new ValuePeak[peaklist_.Length];
+        TimeBasedLinearWeightedMovingAverage(peaklist_, smoothedPeaklist, peaklist_.Length, smoothingLevel);
+        return smoothedPeaklist;
+    }
+
+    /// <summary>
+    /// Performs a time-based linear weighted moving average smoothing operation on the given peak data, storing the results in the destination array.
+    /// </summary>
+    /// <param name="peaklist">An array of <see cref="ValuePeak"/> objects representing the input peak values.</param>
+    /// <param name="dest">The destination array where the smoothed peak values will be stored.</param>
+    /// <param name="datasize">The number of data points to process in the <paramref name="peaklist"/>.</param>
+    /// <param name="smoothingLevel">The smoothing factor that defines the range of neighboring peaks to consider when calculating the weighted average.</param>
+    /// <remarks>
+    /// The smoothing is performed by calculating a weighted average of peaks within a time window defined by the smoothing level. The weights are determined by 
+    /// the proximity of neighboring peaks to the current peak being smoothed, with closer peaks contributing more to the average.
+    /// </remarks>
+    public void TimeBasedLinearWeightedMovingAverage(ValuePeak[] peaklist, ValuePeak[] dest, int datasize, int smoothingLevel) {
+        double te = (peaklist.Take(datasize).Max(p => p.Time) - peaklist.Take(datasize).Min(p => p.Time)) / (datasize - 1);
+        var j = 0;
+        var d = smoothingLevel + 1;
+        for (int i = 0; i < datasize; i++) {
+            var t = peaklist[i].Time;
+            var lo = t - te * d;
+            var hi = t + te * d;
+            while (j < datasize && peaklist[j].Time <= lo) {
+                j++;
+            }
+
+            double x = 0d, y = 0d;
+            for (int k = j; k < datasize; k++) {
+                if (peaklist[k].Time >= hi) {
+                    break;
+                }
+                var f = d - Math.Abs(t - peaklist[k].Time) / te;
+                x += peaklist[k].Intensity * f;
+                y += f;
+            }
+
+            dest[i] = new ValuePeak(peaklist[i].Id, peaklist[i].Time, peaklist[i].Mz, x / y);
+        }
+    }
 }
