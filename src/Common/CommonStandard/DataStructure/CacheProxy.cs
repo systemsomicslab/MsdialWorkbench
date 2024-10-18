@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace CompMs.Common.DataStructure
@@ -11,6 +12,12 @@ namespace CompMs.Common.DataStructure
 
         public CacheProxy(int capacity, Func<T, U> factory) {
             _cache = new LruCache<T, U>(capacity);
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _locker = new ReaderWriterLockSlim();
+        }
+
+        public CacheProxy(int capacity, Func<T, U> factory, IEqualityComparer<T> comparer) {
+            _cache = new LruCache<T, U>(capacity, comparer);
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
             _locker = new ReaderWriterLockSlim();
         }
