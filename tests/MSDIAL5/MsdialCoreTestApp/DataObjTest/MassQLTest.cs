@@ -89,10 +89,10 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
                 param.AndOrAtFragmentSearch = Common.Enum.AndOr.AND;
             }
             if (isAlignmentResultTargeted) {
-                FragmentSearcher.Search(alignSpotFeatures.ToList(), new MsdialCore.MSDec.MSDecLoader(alignmentFile.SpectraFilePath), param);
+                FragmentSearcher.Search(alignSpotFeatures.ToList(), new MsdialCore.MSDec.MSDecLoader(alignmentFile.SpectraFilePath, new List<string>(0)), param);
             }
             else {
-                FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
+                FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath, new List<string>(0)), param);
             }
 
         }
