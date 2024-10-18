@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is null) {
                 return Task.FromResult(files.Select(_ => new List<SpectrumPeak>(0)).ToArray());
             }
-            return Task.WhenAll(files.Select(f => _loaders[f].LoadScanAsObservable(target).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0)).FirstAsync().ToTask()).ToArray());
+            return Task.WhenAll(files.Select(f => _loaders[f].LoadScanAsObservable(target).Select(scan => scan?.Spectrum ?? []).FirstAsync().ToTask()).ToArray());
         }
     }
 }

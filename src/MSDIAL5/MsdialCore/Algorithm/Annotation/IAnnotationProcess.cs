@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     {
         Task RunAnnotationAsync(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<MSDecResult> msdecResult,
+            MSDecResultCollection msdecResult,
             IDataProvider provider,
             int numThread = 1,
             Action<double>? reportAction = null,

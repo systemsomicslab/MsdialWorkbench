@@ -48,7 +48,7 @@ public sealed class AnnotationProcess
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
                 //Console.WriteLine("mass {0}, isotope {1}", chromPeakFeature.Mass, chromPeakFeature.PeakCharacter.IsotopeWeightNumber);
-                ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
+                ImmsMatchMethod(chromPeakFeature, msdecResult, provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
                 reporter.Report(i + 1, chromPeakFeatures.Count);
             });
     }

@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
@@ -19,7 +18,7 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
 
     public async Task RunAnnotationAsync(
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-        IReadOnlyList<MSDecResult> msdecResults,
+        MSDecResultCollection msdecResults,
         IDataProvider provider,
         int numThreads = 1,
         Action<double>? reportAction = null,
@@ -54,36 +53,34 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
 
     private async Task RunBySingleThreadAsync(
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-        IReadOnlyList<MSDecResult> msdecResults,
+        MSDecResultCollection msdecResults,
         IDataProvider provider,
         CancellationToken token,
         ReportProgress reporter) {
-        var spectrums = provider.LoadMs1Spectrums();
         for (int i = 0; i < chromPeakFeatures.Count; i++) {
             var chromPeakFeature = chromPeakFeatures[i];
-            var msdecResult = msdecResults[i];
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token).ConfigureAwait(false);
+            var msdecResult = msdecResults.MSDecResults[i];
+            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token).ConfigureAwait(false);
             reporter.Report(i + 1, chromPeakFeatures.Count);
         };
     }
 
     private async Task RunByMultiThreadAsync(
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-        IReadOnlyList<MSDecResult> msdecResults,
+        MSDecResultCollection msdecResults,
         IDataProvider provider,
         int numThreads,
         CancellationToken token,
         ReportProgress reporter) {
-        var spectrums = provider.LoadMs1Spectrums();
         using var sem = new SemaphoreSlim(numThreads);
-        var annotationTasks = chromPeakFeatures.Zip(msdecResults, Tuple.Create)
+        var annotationTasks = chromPeakFeatures.Zip(msdecResults.MSDecResults, Tuple.Create)
             .Select(async (pair, i) => {
                 await sem.WaitAsync(token).ConfigureAwait(false);
 
                 try {
                     var chromPeakFeature = pair.Item1;
                     var msdecResult = pair.Item2;
-                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
+                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
                 }
                 finally {
                     sem.Release();
@@ -96,7 +93,8 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
     private async Task RunAnnotationCoreAsync(
         ChromatogramPeakFeature chromPeakFeature,
         MSDecResult msdecResult,
-        IReadOnlyList<RawSpectrum> msSpectrums,
+        IDataProvider provider,
+        double collisionEnergy,
         CancellationToken token = default) {
 
         if (!msdecResult.Spectrum.IsEmptyOrNull()) {
@@ -106,20 +104,24 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
             var query = factory.Create(
                 chromPeakFeature,
                 msdecResult,
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
             token.ThrowIfCancellationRequested();
-            await Task.Run(() => SetAnnotationResult(chromPeakFeature, query), token).ConfigureAwait(false);
+            await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, msdecResult, collisionEnergy), token).ConfigureAwait(false);
         }
         token.ThrowIfCancellationRequested();
         SetRepresentativeProperty(chromPeakFeature);
     }
 
-    private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query) {
+    private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, MSDecResult msdecResult, double collisionEnergy) {
         var candidates = query.FindCandidates();
         var results = _evaluator.FilterByThreshold(candidates);
-        var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS);
+        var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).Select(r => {
+            r.CollisionEnergy = collisionEnergy;
+            r.SpectrumID = msdecResult.RawSpectrumID;
+            return r;
+        });
         chromPeakFeature.MatchResults.AddResults(topResults);
     }
 

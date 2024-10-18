@@ -2,10 +2,11 @@
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
@@ -127,14 +128,24 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
-        [Obsolete("Use MSDecLoader property directly.")]
-        public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
         public MSDecLoader MSDecLoader {
-            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables);
+            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath, _file.DeconvolutionFilePathList).AddTo(Disposables);
         }
         private MSDecLoader? _mSDecLoader;
+
+        public MSDecLoader? GetMSDecLoader(double collisionEnergy) {
+            if (_mSDecLoaders.TryGetValue(Math.Round(collisionEnergy, 2), out var loader)) {
+                return loader;
+            }
+            var suffix = $"_{Math.Round(collisionEnergy * 100d)}";
+            if (_file.DeconvolutionFilePathList.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f).EndsWith(suffix)) is not { } f) {
+                return null;
+            }
+            return _mSDecLoaders[Math.Round(collisionEnergy, 2)] = new MSDecLoader(f, []).AddTo(Disposables);
+        }
+        private readonly Dictionary<double, MSDecLoader> _mSDecLoaders = [];
 
         public void ReleaseMSDecLoader() {
             var loader = _mSDecLoader;
@@ -143,6 +154,14 @@ namespace CompMs.App.Msdial.Model.DataObj
             if (loader is not null && Disposables.Contains(loader)) {
                 Disposables.Remove(loader);
             }
+
+            foreach (var l in _mSDecLoaders.Values) {
+                l.Dispose();
+                if (l is not null && Disposables.Contains(l)) {
+                    Disposables.Remove(l);
+                }
+            }
+            _mSDecLoaders.Clear();
         }
 
         public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {
