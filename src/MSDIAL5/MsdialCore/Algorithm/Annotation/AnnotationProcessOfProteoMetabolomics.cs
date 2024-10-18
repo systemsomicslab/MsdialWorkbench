@@ -93,20 +93,6 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         for (int i = 0; i < chromPeakFeatures.Count; i++) {
             var chromPeakFeature = chromPeakFeatures[i];
             var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults.MSDecResults, parentID2IsotopePeakIDs);
-
-/* Unmerged change from project 'MsdialCore (net6.0)'
-Before:
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
-After:
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, TODO, spectrums, msdecResults.CollisionEnergy, token);
-*/
-
-/* Unmerged change from project 'MsdialCore (netstandard2.0)'
-Before:
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, msdecResults.CollisionEnergy, token);
-After:
-            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, TODO, spectrums, msdecResults.CollisionEnergy, token);
-*/
             await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
             reporter.Report(i + 1, chromPeakFeatures.Count);
         };
