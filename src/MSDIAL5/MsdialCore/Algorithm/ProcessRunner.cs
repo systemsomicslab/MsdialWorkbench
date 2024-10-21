@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,50 +10,38 @@ using System.Threading.Tasks;
 namespace CompMs.MsdialCore.Algorithm
 {
     public interface IFileProcessor {
-        Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token);
-        Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token);
+        Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int> reportAction, CancellationToken token);
     }
 
-    public sealed class ProcessRunner
+    public sealed class ProcessRunner(IFileProcessor processor, int numParallel)
     {
-        private readonly IFileProcessor _processor;
+        private readonly IFileProcessor _processor = processor ?? throw new ArgumentNullException(nameof(processor));
+        private readonly int _numParallel = numParallel;
 
-        public ProcessRunner(IFileProcessor processor) {
-            _processor = processor ?? throw new ArgumentNullException(nameof(processor));
+        public Task RunAllAsync(IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption option, IEnumerable<IProgress<int>> reportActions, Action afterEachRun, CancellationToken token) {
+            var consumer = new Consumer(_processor, _numParallel, analysisFiles, reportActions, afterEachRun);
+            return Task.WhenAll(consumer.ConsumeAllAsync(option, token));
         }
 
-        public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
-            return Task.WhenAll(consumer.ConsumeAllAsync(_processor.RunAsync, numParallel));
-        }
+        sealed class Consumer(IFileProcessor processor, int numParallel, IEnumerable<AnalysisFileBean> files, IEnumerable<IProgress<int>> reportActions, Action afterEachRun)
+        {
+            private readonly IFileProcessor _processor = processor;
+            private readonly ConcurrentQueue<(AnalysisFileBean File, IProgress<int> Progress)> _queue = new(files.Zip(reportActions, (file, report) => (file, report)));
+            private readonly Action _afterEachRun = afterEachRun;
+            private readonly int _numParallel = numParallel;
 
-        public Task AnnotateAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
-            return Task.WhenAll(consumer.ConsumeAllAsync(_processor.AnnotateAsync, numParallel));
-        }
-
-        sealed class Consumer {
-            private readonly ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)> _queue;
-            private readonly Action _afterEachRun;
-            private readonly CancellationToken _token;
-
-            public Consumer(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, Action afterEachRun, CancellationToken token) {
-                _queue = new ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)>(files.Zip(reportActions, (file, report) => (file, report)));
-                _afterEachRun = afterEachRun;
-                _token = token;
-            }
-
-            private async Task ConsumeAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process) {
+            private async Task ConsumeAsync(ProcessOption option, CancellationToken token) {
                 while (_queue.TryDequeue(out var pair)) {
-                    await process(pair.File, pair.Report, _token).ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
+                    await _processor.RunAsync(pair.File, option, pair.Progress, token).ConfigureAwait(false);
                     _afterEachRun?.Invoke();
                 }
             }
 
-            public Task[] ConsumeAllAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process, int parallel) {
-                var tasks = new Task[parallel];
-                for (int i = 0; i < parallel; i++) {
-                    tasks[i] = Task.Run(() => ConsumeAsync(process), _token);
+            public Task[] ConsumeAllAsync(ProcessOption option, CancellationToken token) {
+                var tasks = new Task[_numParallel];
+                for (int i = 0; i < _numParallel; i++) {
+                    tasks[i] = Task.Run(() => ConsumeAsync(option, token), token);
                 }
                 return tasks;
             }

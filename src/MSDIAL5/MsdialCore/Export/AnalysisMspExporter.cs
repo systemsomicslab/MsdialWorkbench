@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Export
         public AnalysisMspExporter(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _loaderFactory = file => new MSDecLoader(file.DeconvolutionFilePath);
+            _loaderFactory = file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList);
         }
 
         public AnalysisMspExporter(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> loaderFuctory) {

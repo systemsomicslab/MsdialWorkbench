@@ -43,7 +43,7 @@ internal sealed class InternalAnalysisCSVExporter : IAnalysisExporter<Chromatogr
     public string Separator { get; set; }
 
     public void Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection data, ExportStyle exportStyle) {
-        using var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath);
+        using var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath, analysisFile.DeconvolutionFilePathList);
         var msdecResults = loader.LoadMSDecResults();
         var provider = _providerFactory.Create(analysisFile);
 

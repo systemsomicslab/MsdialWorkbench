@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -53,8 +54,9 @@ namespace CompMs.App.MsdialConsole.Process
             var exporterFactory = new AnalysisCSVExporterFactory("\t");
             var metadata = new LcmsAnalysisMetadataAccessor(annotator, container.MsdialLcImMsParameter);
             using (var streamManager = new DirectoryTreeStreamManager(outputFolder)) {
+                var processor = new FileProcess(spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container, isGuiProcess: false);
                 foreach (var file in files) {
-                    FileProcess.Run(file, spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container);
+                    processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification).Wait();
                     var features = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
                     var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
                     using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {

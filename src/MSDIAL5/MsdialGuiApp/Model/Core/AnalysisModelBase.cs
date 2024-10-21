@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -44,9 +45,9 @@ namespace CompMs.App.Msdial.Model.Core {
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
 
-            decLoader = analysisFileModel.MSDecLoader;
+            var loader = new MsDecSpectrumFromFileLoader(analysisFileModel);
             MsdecResult = Target
-                .DefaultIfNull(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+                .DefaultIfNull(loader.LoadMSDecResult)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -58,8 +59,6 @@ namespace CompMs.App.Msdial.Model.Core {
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
-
-        protected readonly MSDecLoader decLoader;
 
         public AnalysisFileBeanModel AnalysisFileModel { get; }
 

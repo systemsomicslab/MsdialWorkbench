@@ -183,7 +183,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 if (maxPeakMz is null) {
                     return;
                 }
-                var eic = _eicLoader.LoadChromatogram((maxPeakMz.Value, _peakPickParameter.MassSliceWidth));
+                var eic = _eicLoader.LoadChromatogram((maxPeakMz.Value, _peakPickParameter.CentroidMs1Tolerance));
                 var pen = eic.LinePen = new Pen(Brushes.Blue, 1.0);
                 pen.Freeze();
                 eic.Name = "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString();
