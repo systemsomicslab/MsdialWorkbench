@@ -140,12 +140,19 @@ namespace CompMs.Common.Components
                     return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LoessFilter:
                     return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit);
+                case SmoothingMethod.TimeBasedLinearWeightedMovingAverage: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        new Algorithm.ChromSmoothing.Smoothing().TimeBasedLinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new Chromatogram(smoothed, _size, _type, _unit, arrayPool);
+                    }
                 case SmoothingMethod.LinearWeightedMovingAverage:
-                default:
-                    var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
-                    var smoothed = arrayPool.Rent(_size);
-                    new Algorithm.ChromSmoothing.Smoothing().LinearWeightedMovingAverage(peaks, smoothed, _size, level);
-                    return new Chromatogram(smoothed, _size, _type, _unit, arrayPool);
+                default: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        new Algorithm.ChromSmoothing.Smoothing().LinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new Chromatogram(smoothed, _size, _type, _unit, arrayPool);
+                    }
             }
         }
 
