@@ -67,8 +67,10 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public bool Equals(AxisRange other) {
-            return !(other is null) && Maximum == other.Maximum && Minimum == other.Minimum;
+            return other is not null && Maximum == other.Maximum && Minimum == other.Minimum;
         }
+
+        public static AxisRange Unit { get; } = new(0d, 1d);
     }
 
     public sealed class AxisRangeTypeConverter : TypeConverter
