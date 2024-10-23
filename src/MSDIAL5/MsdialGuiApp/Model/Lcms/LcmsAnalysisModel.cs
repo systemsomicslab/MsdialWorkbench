@@ -310,7 +310,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         DataBaseMapper,
                         _parameter);
                 }
-                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath);
+                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath, peak);
                 return msfinder;
             }
             catch (Exception ex) {

@@ -20,10 +20,14 @@ namespace CompMs.App.Msdial.ViewModel.Search {
                 _broker = broker;
                 SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1).AddTo(Disposables);
                 SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2).AddTo(Disposables);
-
+                
                 if (model.MoleculeStructureModel is not null) {
                     MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
                 }
+                if (model.RefMs2SpectrumModel is not null) {
+                    MsSpectrumViewModel = new MsSpectrumViewModel(model.RefMs2SpectrumModel).AddTo(Disposables);
+                }
+                InternalMsfinderUtility = new InternalMsfinderUtility();
             } catch (Exception ex) {
                 MessageBox.Show(ex.ToString());
             }
@@ -32,5 +36,6 @@ namespace CompMs.App.Msdial.ViewModel.Search {
         public SingleSpectrumViewModel SpectrumMs2ViewModel { get; }
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public InternalMsfinderUtility InternalMsfinderUtility { get; }
     }
 }

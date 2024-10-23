@@ -161,24 +161,23 @@
                             <chart:SingleSpectrumView DataContext="{Binding SpectrumMs2ViewModel}"/>
                         </Grid>
                         <StackPanel Grid.Column="1" Orientation="Vertical">
-                            <RadioButton Name="Button_ShowMs2RawSpectrum"
-                                         DataContext="{Binding }"
+                            <RadioButton Name="Button_ShowMs2RawSpectrum" Command="{Binding _model.ShowRawMs2SpectrumCommand}"
                                          Content="/Resources/RawDataButton.ico"
                                          ToolTip="Show raw data spectrum"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowProductIonSpectrum"
+                            <RadioButton Name="Button_ShowProductIonSpectrum" Command="{Binding _model.ShowProductIonSpectrumCommand}"
                                          Content="/Resources/ProductIonButton.ico"
                                          ToolTip="Show product ions"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowNeutralLossSpectrum"
+                            <RadioButton Name="Button_ShowNeutralLossSpectrum" Command="{Binding _model.ShowNeutralLossSpectrumCommand}"
                                          Content="/Resources/NeutralLossButton.ico"
                                          ToolTip="Show neutral loss ions"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_FseaResultViewer"
+                            <RadioButton Name="Button_FseaResultViewer" Command="{Binding _model.ShowFseaResultViewerCommand}"
                                          Content="/Resources/FseaResultViewer.ico"
                                          ToolTip="Show the result of fragment set enrichment analysis (FSEA): manuscript preparation"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowSubstructureViewer"
+                            <RadioButton Name="Button_ShowSubstructureViewer" Command="{Binding _model.ShowSubstructureCommand}"
                                          Content="/Resources/SubstructureViewer.ico"
                                          ToolTip="Show assigned substructures"
                                          Style="{StaticResource IconRadioButton}"/>
@@ -284,7 +283,7 @@
                             <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=_model.SelectedStructure.BondEnergyOfUnfragmentedMolecule, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=_model.SelectedStructure.RetentionTime, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
                             <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=_model.SelectedStructure.Ccs, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
-                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=_model.SelectedStructure.TotalScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=_model.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=_model.SelectedStructure.DatabaseScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=_model.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=_model.SelectedStructure.Resources, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
