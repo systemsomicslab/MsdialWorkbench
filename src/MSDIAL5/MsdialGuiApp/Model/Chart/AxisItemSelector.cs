@@ -1,4 +1,5 @@
 ﻿using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -30,6 +31,10 @@ namespace CompMs.App.Msdial.Model.Chart
             set => SetProperty(ref _selectedAxisItem, value);
         }
         private AxisItemModel<T> _selectedAxisItem;
+
+        public void Add(IAxisManager<T> axis, string label, string title) {
+            AxisItems.Add(new(label, axis, title));
+        }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs args) {
             base.OnPropertyChanged(args);
