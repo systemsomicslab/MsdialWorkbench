@@ -1,13 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
-using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Search;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -17,14 +17,16 @@ using CompMs.Common.StructureFinder.Parser;
 using CompMs.Common.StructureFinder.Result;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using MessagePack;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -37,7 +39,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Search {
+namespace CompMs.App.Msdial.Model.Search
+{
     internal class InternalMsFinderSingleSpot : DisposableModelBase {
         private readonly AnalysisParamOfMsfinder? _parameter;
         private string _folderPath;
@@ -48,6 +51,8 @@ namespace CompMs.App.Msdial.Model.Search {
         public ChromatogramPeakFeatureModel _chromatogram;
         private Subject<MsSpectrum> _ms1SpectrumSubject;
         private Subject<MsSpectrum> _ms2SpectrumSubject;
+        private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
+        private readonly BehaviorSubject<AxisRange?> _spectrumRange;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -66,64 +71,49 @@ namespace CompMs.App.Msdial.Model.Search {
         public List<FormulaResult>? FormulaList { get; private set; }
         public List<FragmenterResult>? StructureList {
             get => _structureList;
-            set {
-                if (_structureList != value) {
-                    _structureList = value;
-                    OnPropertyChanged(nameof(StructureList));
-                }
-            }
+            set => SetProperty(ref _structureList, value);
         }
         private FragmenterResult? _selectedStructure;
         public FragmenterResult? SelectedStructure {
             get => _selectedStructure;
             set {
-                if (_selectedStructure != value) {
-                    _selectedStructure = value;
-                    OnPropertyChanged(nameof(SelectedStructure));
+                if (SetProperty(ref _selectedStructure, value)) {
                     OnSelectedStructureChanged();
-                }
-            }
-        }
-
-        private List<SpectrumPeak> _refMs2;
-        private List<SpectrumPeak> RefMs2 {
-            get => _refMs2;
-            set {
-                if (_refMs2 != value) {
-                    _refMs2 = value;
-                    OnPropertyChanged(nameof(RefMs2));
-                }
-            }
-        }
-
-        private List<SpectrumPeak> _spectrumPeaks;
-        private List<SpectrumPeak> SpectrumPeaks {
-            get => _spectrumPeaks;
-            set {
-                if (_spectrumPeaks != value) {
-                    _spectrumPeaks = value;
-                    OnPropertyChanged(nameof(SpectrumPeaks));
                 }
             }
         }
 
         private void OnSelectedStructureChanged() {
             if (SelectedStructure is not null) {
-                var molecule = new MoleculeProperty();
-                molecule.SMILES = SelectedStructure.Smiles;
+                var molecule = new MoleculeProperty
+                {
+                    SMILES = SelectedStructure.Smiles
+                };
                 MoleculeStructureModel.UpdateMolecule(molecule);
                 
                 if (SelectedStructure.FragmentPics is not null) {
-                    foreach (var fragment in SelectedStructure.FragmentPics) {
-                        SpectrumPeaks.Add(fragment.Peak);
-                    }
+                    var msSpectrum = new MsSpectrum(SelectedStructure.FragmentPics.Select(p => p.Peak).ToList());
+                    _refSpectrum.Value = msSpectrum;
+                    var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
+                    _spectrumRange.OnNext(new AxisRange(min, max));
                 }
-                if (SelectedStructure.ReferenceSpectrum is not null) {
-                    SpectrumPeaks = SelectedStructure.ReferenceSpectrum;
+                else if (SelectedStructure.ReferenceSpectrum is not null) {
+                    var msSpectrum = new MsSpectrum(SelectedStructure.ReferenceSpectrum);
+                    _refSpectrum.Value = msSpectrum;
+                    var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
+                    _spectrumRange.OnNext(new AxisRange(min, max));
                 }
-                foreach (var peak in SpectrumPeaks) {
-                    RefMs2.Add(peak);
+                else
+                {
+                    System.Diagnostics.Debug.Fail("Should not reach here.");
+                    _refSpectrum.Value = null;
+                    _spectrumRange.OnNext(null);
                 }
+            }
+            else
+            {
+                _refSpectrum.Value = null;
+                _spectrumRange.OnNext(null);
             }
         }
 
@@ -149,17 +139,20 @@ namespace CompMs.App.Msdial.Model.Search {
                 var ms2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_rawData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
                 var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
 
-                RefMs2 = new List<SpectrumPeak>();
-                SpectrumPeaks = new List<SpectrumPeak>();
-                foreach (var peak in _rawData.Ms2Spectrum) {
-                    RefMs2.Add(peak);
-                }
+                var rawMs2Range = _rawData.Ms2Spectrum.IsEmptyOrNull()
+                    ? null
+                    : new AxisRange(_rawData.Ms2Spectrum.Min(p => p.Mass), _rawData.Ms2Spectrum.Max(p => p.Mass));
 
-                var observableRefSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(SpectrumPeaks)), null, Observable.Return<ISpectraExporter?>(null));
+                _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null).AddTo(Disposables);
+                var observableRefSpectrum = new ObservableMsSpectrum(_refSpectrum, null, Observable.Return<ISpectraExporter?>(null));
                 var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
 
-                var refMs2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(RefMs2)), null, Observable.Return<ISpectraExporter?>(null));
-                var refMs2HorizontalAxis = refMs2Spectrum.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
+                _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d)).AddTo(Disposables);
+                var horizontalAxis = _spectrumRange.Select(range => AxisRange.Union(range, rawMs2Range) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
+                var itemSelector = new AxisItemSelector<double>(new AxisItemModel<double>("m/z", horizontalAxis, "m/z")).AddTo(Disposables);
+                var propertySelectors = new AxisPropertySelectors<double>(itemSelector);
+                propertySelectors.Register(new PropertySelector<SpectrumPeak, double>(p => p.Mass));
+                var refMs2HorizontalAxis = propertySelectors;
 
                 FindFormula();
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
@@ -176,6 +169,7 @@ namespace CompMs.App.Msdial.Model.Search {
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
+                throw;
             }
         }
 
@@ -325,7 +319,7 @@ namespace CompMs.App.Msdial.Model.Search {
                 var moleculeMsList = new List<MoleculeMsReference>();
                 var moleculeMs = new MoleculeMsReference() {
                     ChromXs = _chromatogram.ChromXs, 
-                    Spectrum = SpectrumPeaks, 
+                    Spectrum = _refSpectrum.Value?.Spectrum ?? [], 
                     Formula = new CompMs.Common.DataObj.Property.Formula() { FormulaString = SelectedStructure.Formula }, 
                     AdductType = _chromatogram.AdductType
                 };
