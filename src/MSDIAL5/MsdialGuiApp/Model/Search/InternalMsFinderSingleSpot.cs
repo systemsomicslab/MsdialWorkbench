@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly AnalysisParamOfMsfinder? _parameter;
         private string _folderPath;
         private readonly RawData? _rawData;
-        public List<FragmenterResult?> _structureData;
+        public List<FragmenterResult?> _structureList;
         private GraphLabels _msGraphLabels;
         public MsScanMatchResultContainerModel _msScanMatchResultContainer;
         public ChromatogramPeakFeatureModel _chromatogram;
@@ -65,10 +65,10 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public List<FormulaResult>? FormulaList { get; private set; }
         public List<FragmenterResult>? StructureList {
-            get => _structureData;
+            get => _structureList;
             set {
-                if (_structureData != value) {
-                    _structureData = value;
+                if (_structureList != value) {
+                    _structureList = value;
                     OnPropertyChanged(nameof(StructureList));
                 }
             }

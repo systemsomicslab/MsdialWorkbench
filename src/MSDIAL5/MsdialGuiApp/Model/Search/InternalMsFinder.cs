@@ -1,17 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
 using Reactive.Bindings.Extensions;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Search {
+namespace CompMs.App.Msdial.Model.Search
+{
     internal sealed class InternalMsFinder : DisposableModelBase {
         public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
-        public InternalMsfinderSettingModel SettingModel;
 
         public InternalMsFinder(InternalMsFinderMetaboliteList metaboliteList) {
             InternalMsFinderMetaboliteList = metaboliteList;
