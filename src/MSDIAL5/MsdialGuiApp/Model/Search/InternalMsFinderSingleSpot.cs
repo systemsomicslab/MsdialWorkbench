@@ -45,12 +45,11 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly AnalysisParamOfMsfinder? _parameter;
         private string _folderPath;
         private readonly RawData? _rawData;
-        public List<FragmenterResult?> _structureList;
         private GraphLabels _msGraphLabels;
         public MsScanMatchResultContainerModel _msScanMatchResultContainer;
         public ChromatogramPeakFeatureModel _chromatogram;
-        private Subject<MsSpectrum> _ms1SpectrumSubject;
-        private Subject<MsSpectrum> _ms2SpectrumSubject;
+        private BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
+        private BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
         private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
 
@@ -64,12 +63,14 @@ namespace CompMs.App.Msdial.Model.Search
         private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
         private static List<MoleculeMsReference> mspDB = new List<MoleculeMsReference>();
-        private List<ExistStructureQuery> userDefinedStructureDB;
+        private List<ExistStructureQuery?> userDefinedStructureDB = new List<ExistStructureQuery?>();
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
 
         public List<FormulaResult>? FormulaList { get; private set; }
-        public List<FragmenterResult>? StructureList {
+
+        private List<FragmenterResult?> _structureList;
+        public List<FragmenterResult?> StructureList {
             get => _structureList;
             set => SetProperty(ref _structureList, value);
         }
@@ -85,8 +86,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         private void OnSelectedStructureChanged() {
             if (SelectedStructure is not null) {
-                var molecule = new MoleculeProperty
-                {
+                var molecule = new MoleculeProperty {
                     SMILES = SelectedStructure.Smiles
                 };
                 MoleculeStructureModel.UpdateMolecule(molecule);
@@ -102,9 +102,7 @@ namespace CompMs.App.Msdial.Model.Search
                     _refSpectrum.Value = msSpectrum;
                     var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
                     _spectrumRange.OnNext(new AxisRange(min, max));
-                }
-                else
-                {
+                } else {
                     System.Diagnostics.Debug.Fail("Should not reach here.");
                     _refSpectrum.Value = null;
                     _spectrumRange.OnNext(null);
@@ -125,8 +123,8 @@ namespace CompMs.App.Msdial.Model.Search
                 _chromatogram = chromatogram;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
-                _ms1SpectrumSubject = new Subject<MsSpectrum>().AddTo(Disposables);
-                _ms2SpectrumSubject = new Subject<MsSpectrum>().AddTo(Disposables);
+                _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
+                _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
                 var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
@@ -163,9 +161,6 @@ namespace CompMs.App.Msdial.Model.Search
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var refSpectrumModel = new SingleSpectrumModel(observableRefSpectrum, refMs2HorizontalAxis, refVerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 RefMs2SpectrumModel = new MsSpectrumModel(ms2SpectrumModel, refSpectrumModel, Observable.Return<Ms2ScanMatching?>(null)).AddTo(Disposables);
-
-                _ms1SpectrumSubject.OnNext(new MsSpectrum(_rawData.Ms1Spectrum));
-                _ms2SpectrumSubject.OnNext(new MsSpectrum(_rawData.Ms2Spectrum));
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);
@@ -179,51 +174,47 @@ namespace CompMs.App.Msdial.Model.Search
         public MoleculeStructureModel MoleculeStructureModel { get; }
 
         private void FindFormula() {
-            try {
-                var error = string.Empty;
-                var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
-                FormulaList = formulaResults;
-                foreach (var formulaResult in formulaResults) {
-                    var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
-                    var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
-                    FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
+            if (_rawData is null || _parameter is null) return;
+            var error = string.Empty;
+            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
+            FormulaList = formulaResults;
+            foreach (var formulaResult in formulaResults) {
+                var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
+                var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
+                FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
                 }
-            } catch (Exception ex) {
-                MessageBox.Show($"Error occurred in formula finder:{ex.Message}");
-            }
         }
 
         public DelegateCommand RunFindStructure => _runFindStructure ??= new DelegateCommand(FindStructure);
         private DelegateCommand? _runFindStructure;
 
         private void FindStructure() {
-            try {
-                var process = new StructureFinderBatchProcess();
-                process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
-                var structureFilePath = Directory.GetFiles(_folderPath, "*.sfd");
-                var updatedStructureList = new List<FragmenterResult>();
-                foreach (var file in structureFilePath) {
-                    var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
-                    if (fragmenterResults != null) {
-                        updatedStructureList.AddRange(fragmenterResults);
-                    }
+            if (_rawData is null || _parameter is null || FormulaList is null) return;
+            var process = new StructureFinderBatchProcess();
+            process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+            var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
+            var updatedStructureList = new List<FragmenterResult?>();
+            foreach (var file in structureFilePaths) {
+                var formula = Path.GetFileName(file);
+                var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
+                foreach (var result in fragmenterResults.Where(r => !string.IsNullOrEmpty(r.Title))) {
+                    result.Formula = formula;
+                    updatedStructureList.Add(result);
                 }
-                StructureList = updatedStructureList;
-            } catch (Exception ex) {
-                MessageBox.Show($"Error occurred in structure finder:{ex.Message}");
             }
+            StructureList = updatedStructureList;
         }
         public DelegateCommand ShowRawMs1SpectrumCommand => _showRawMs1SpectrumCommand ??= new DelegateCommand(ShowRawMs1Spectrum);
         private DelegateCommand? _showRawMs1SpectrumCommand;
         public void ShowRawMs1Spectrum() {
-            if (_rawData.Ms1Spectrum is null) {  return; }
+            if (_rawData?.Ms1Spectrum is null) {  return; }
             _ms1SpectrumSubject.OnNext(new MsSpectrum(_rawData.Ms1Spectrum));
         }
 
         public DelegateCommand ShowIsotopeSpectrumCommand => _showIsotopeSpectrumCommand ??= new DelegateCommand(ShowIsotopeSpectrum);
         private DelegateCommand? _showIsotopeSpectrumCommand;
         public void ShowIsotopeSpectrum() {
-            if (_rawData.NominalIsotopicPeakList is null) { return; }
+            if (_rawData?.NominalIsotopicPeakList is null) { return; }
             var isotopeList = _rawData.NominalIsotopicPeakList;
             var peakList = new List<SpectrumPeak>();
             foreach (var isotope in isotopeList) {
@@ -240,7 +231,7 @@ namespace CompMs.App.Msdial.Model.Search
         public DelegateCommand ShowRawMs2SpectrumCommand => _showRawMs2SpectrumCommand ??= new DelegateCommand(ShowRawMs2Spectrum);
         private DelegateCommand? _showRawMs2SpectrumCommand;
         public void ShowRawMs2Spectrum() {
-            if (_rawData.Ms2Spectrum is null) { return; }
+            if (_rawData?.Ms2Spectrum is null) { return; }
             _ms2SpectrumSubject.OnNext(new MsSpectrum(_rawData.Ms2Spectrum));
         }
 
@@ -289,6 +280,7 @@ namespace CompMs.App.Msdial.Model.Search
         public DelegateCommand ShowFseaResultViewerCommand => _showFseaResultViewerCommand ??= new DelegateCommand(ShowFseaResultViewer);
         private DelegateCommand? _showFseaResultViewerCommand;
         public void ShowFseaResultViewer() {
+            if (_rawData?.Ms2Spectrum is null) { return; }
             var ms2Spectrum = new MsSpectrum(_rawData.Ms2Spectrum);
             _ms2SpectrumSubject.OnNext(ms2Spectrum);
         }
@@ -297,7 +289,8 @@ namespace CompMs.App.Msdial.Model.Search
         private DelegateCommand? _showSubstructureCommand;
         public void ShowSubstructure() {
             Mouse.OverrideCursor = Cursors.Wait;
-            foreach(var formula in FormulaList) {
+            if (_rawData is null || FormulaList is null) return;
+            foreach (var formula in FormulaList) {
                 if (formula.IsSelected) {
                     var window = new InternalMsfinderSubstructureView(_rawData, formula, fragmentOntologyDB);
                     window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
