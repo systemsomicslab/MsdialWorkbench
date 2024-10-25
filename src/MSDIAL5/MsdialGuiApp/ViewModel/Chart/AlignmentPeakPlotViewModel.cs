@@ -41,14 +41,6 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-        HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
-        VerticalTitle = model.ObserveProperty(m => m.VerticalTitle)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
         HorizontalProperty = model.ObserveProperty(m => m.HorizontalProperty)
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -87,9 +79,9 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
 
     public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-    public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
+    public AxisPropertySelectors<double> HorizontalAxisPropertySelectors => _model.HorizontalPropertySelectors;
 
-    public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
+    public AxisPropertySelectors<double> VerticalAxisPropertySelectors => _model.VerticalPropertySelectors;
 
     public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 

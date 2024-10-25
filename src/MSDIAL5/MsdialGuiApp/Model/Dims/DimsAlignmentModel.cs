@@ -14,7 +14,9 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -105,13 +107,21 @@ namespace CompMs.App.Msdial.Model.Dims
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
+            var horizontalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var horizontalAxis = spotsSource.ObserveRange(horizontalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var horizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(horizontalAxis, "m/z", "m/z")
+                .Register(horizontalProperty)
+                .Build();
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.KMD);
+            var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Register(verticalProperty)
+                .Add(verticalAxis, "mass defect", "Kendric mass defect")
+                .Build();
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
-                GraphTitle = ((IFileBean)_alignmentFile).FileName,
-                HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.KMD),
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Kendrick mass defect"
+                GraphTitle = _alignmentFile.FileName,
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);

@@ -6,28 +6,35 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AxisPropertySelectors<T>(AxisItemSelector<T> axisItemSelector)
     {
-        private readonly Dictionary<Type, IPropertySelector<T>> _selectors = [];
+        private readonly Dictionary<Type, PropertySelectorCollection<T>> _selectors = [];
 
         public AxisItemSelector<T> AxisItemSelector { get; } = axisItemSelector;
 
         public void Register<TSubject>(PropertySelector<TSubject, T> selector) {
-            _selectors[typeof(TSubject)] = selector;
+            Register(typeof(TSubject), selector);
         }
 
         private void Register(Type subject, IPropertySelector<T> selector) {
-            _selectors[subject] = selector;
+            if (!_selectors.TryGetValue(subject, out var collection)) {
+                _selectors[subject] = collection = new();
+            }
+            collection.Add(selector);
         }
 
         public T? Select<TSubject>(TSubject subject) {
-            return _selectors.TryGetValue(typeof(TSubject), out var selector) ? selector.Select(subject) : default;
+            var selector = GetSelector<TSubject>();
+            return selector is not null ? selector.Select(subject) : default;
         }
 
         public IPropertySelector<T>? GetSelector(Type subjectType) {
-            return _selectors.TryGetValue(subjectType, out var selector) ? selector : null;
+            if (_selectors.TryGetValue(subjectType, out var collection)) {
+                return collection.SelectedSelector;
+            }
+            return default;
         }
 
         public IPropertySelector<T>? GetSelector<TSubject>() {
-            return _selectors.TryGetValue(typeof(TSubject), out var selector) ? selector : null;
+            return GetSelector(typeof(TSubject));
         }
 
         public static Builder CreateBuilder() {
@@ -36,13 +43,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public class Builder
         {
-            private readonly Dictionary<Type, IPropertySelector<T>> _selectors = [];
+            private readonly List<(Type, IPropertySelector<T>)> _selectors = [];
             private readonly List<AxisItemModel<T>> _axisItems = [];
 
             public AxisPropertySelectors<T> Build() {
                 var result = new AxisPropertySelectors<T>(new AxisItemSelector<T>(_axisItems.ToArray()));
-                foreach (var kvp in _selectors) {
-                    result.Register(kvp.Key, kvp.Value);
+                foreach (var (type, selector) in _selectors) {
+                    result.Register(type, selector);
                 }
                 return result;
             }
@@ -58,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             public Builder Register<TSubject>(PropertySelector<TSubject, T> selector) {
-                _selectors[typeof(TSubject)] = selector;
+                _selectors.Add((typeof(TSubject), selector));
                 return this;
             }
         }

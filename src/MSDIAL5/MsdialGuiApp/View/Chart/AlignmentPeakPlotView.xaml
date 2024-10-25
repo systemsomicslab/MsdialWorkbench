@@ -26,8 +26,8 @@
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
                           VerticalAxis="{Binding VerticalAxis.Value, Mode=OneWay}"
                           GraphTitle="{Binding GraphTitle.Value, Mode=OneTime}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneTime}"
-                          VerticalTitle="{Binding VerticalTitle.Value, Mode=OneTime}"
+                          HorizontalTitle="{Binding Path=HorizontalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel, Mode=OneWay}"
+                          VerticalTitle="{Binding Path=VerticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel, Mode=OneWay}"
                           Style="{StaticResource OverlapChart}"
                           Background="WhiteSmoke"
                           BorderBrush="Black">
@@ -65,8 +65,8 @@
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="alignmentScatter"
                                       ItemsSource="{Binding Spots}"
-                                      HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                                      VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                      HorizontalProperty="{Binding Path=HorizontalProperty.Value, Mode=OneWay}"
+                                      VerticalProperty="{Binding Path=VerticalProperty.Value, Mode=OneWay}"
                                       PointBrush="{Binding Brush.Value, Mode=OneWay}"
                                       DataType="{x:Type do:AlignmentSpotPropertyModel}"
                                       Radius="5.5"
@@ -86,8 +86,8 @@
                 </chart:ScatterControlSlim.ToolTip>
             </chart:ScatterControlSlim>
             <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
-                             HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                             VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
+                             HorizontalPropertyName="{Binding Path=HorizontalProperty.Value, Mode=OneWay}"
+                             VerticalPropertyName="{Binding Path=VerticalProperty.Value, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
             <chart:SpotLinkedAnnotator Spots="{Binding Spots, Mode=OneWay}"
                                        Links="{Binding PeakLinks.Links, Mode=OneWay}"

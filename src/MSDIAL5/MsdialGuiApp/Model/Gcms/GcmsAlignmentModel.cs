@@ -13,8 +13,9 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Utility;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -107,27 +108,33 @@ namespace CompMs.App.Msdial.Model.Gcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
-            {
-                GraphTitle = alignmentFileBean.FileName,
-                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                VerticalTitle = "m/z",
-            }.AddTo(Disposables);
+            var horizontalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.TimesCenter);
+            var horizontalAxis = spotsSource.ObserveRange(horizontalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var builder = AxisPropertySelectors<double>.CreateBuilder().Register(horizontalProperty); 
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
-                    PlotModel.HorizontalTitle = "Retention index";
+                    builder.Add(horizontalAxis, "Retention index", "RI");
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    PlotModel.HorizontalTitle = "Retention time (min)";
+                    builder.Add(horizontalAxis, "Retention time (min)", "RT");
                     break;
             }
-            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()), PlotModel.HorizontalAxis)
+            var horizontalPropertySelectors = builder.Build();
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(verticalAxis, "m/z", "m/z")
+                .Register(verticalProperty)
+                .Build();
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = alignmentFileBean.FileName,
-                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.RT),
+            }.AddTo(Disposables);
+            var verticalProperty2 = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.RT);
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, horizontalProperty, verticalProperty2, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()), horizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager)
+            {
+                GraphTitle = alignmentFileBean.FileName,
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "2nd column retention time (min)",
             }.AddTo(Disposables);

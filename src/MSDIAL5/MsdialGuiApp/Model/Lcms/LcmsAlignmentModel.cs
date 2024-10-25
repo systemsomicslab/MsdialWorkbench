@@ -18,7 +18,9 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -131,13 +133,22 @@ namespace CompMs.App.Msdial.Model.Lcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
+
+            var horizontalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.TimesCenter);
+            var horizontalAxis = spotsSource.ObserveRange(horizontalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var horizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(horizontalAxis, "RT", "Retention time [min]")
+                .Register(horizontalProperty)
+                .Build();
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(verticalAxis, "m/z", "m/z")
+                .Register(verticalProperty)
+                .Build();
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
-                GraphTitle = ((IFileBean)_alignmentFile).FileName,
-                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                HorizontalTitle = "Retention time [min]",
-                VerticalTitle = "m/z",
+                GraphTitle = _alignmentFile.FileName,
             }.AddTo(Disposables);
             var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
             var usecase = new AlignmentSpotExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, spotsSource, alignmentFileBean, _compoundSearchers, mrmprobsExporter, Target, messageBroker);

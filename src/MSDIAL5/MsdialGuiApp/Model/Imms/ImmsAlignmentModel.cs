@@ -14,7 +14,9 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -92,13 +94,21 @@ namespace CompMs.App.Msdial.Model.Imms
             filterRegistrationManager.AttachFilter(spotsSource.Spots!.Items, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
+            var horizontalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.TimesCenter);
+            var horizontalAxis = spotsSource.ObserveRange(horizontalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var horizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(horizontalAxis, "Ion mobility", "Mobility [1/k0]")
+                .Register(horizontalProperty)
+                .Build();
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(verticalAxis, "m/z", "m/z")
+                .Register(verticalProperty)
+                .Build();
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, Target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
-                GraphTitle = ((IFileBean)alignmentFileModel).FileName,
-                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                HorizontalTitle = "Mobility [1/k0]",
-                VerticalTitle = "m/z",
+                GraphTitle = alignmentFileModel.FileName,
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);

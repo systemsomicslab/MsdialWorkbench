@@ -21,8 +21,36 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
 
     public AlignmentPeakPlotModel(
         AlignmentSpotSource spotsSource,
-        Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-        Func<AlignmentSpotPropertyModel, double> verticalSelector,
+        AxisPropertySelectors<double> horizontalAxisPropertySelectors,
+        AxisPropertySelectors<double> verticalAxisPropertySelectors,
+        IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
+        IObservable<string?> labelSource,
+        BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
+        IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
+        PeakLinkModel peakLinkModel) {
+
+        _spotsSource = spotsSource;
+        Spots = spotsSource.Spots?.Items ?? throw new ArgumentNullException(nameof(spotsSource));
+        TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
+        PeakLinkModel = peakLinkModel;
+        LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
+        _selectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+        Brushes = new ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>>(brushes);
+        HorizontalPropertySelectors = horizontalAxisPropertySelectors;
+        VerticalPropertySelectors = verticalAxisPropertySelectors;
+
+        HorizontalTitle = horizontalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel;
+        VerticalTitle = verticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel;
+        HorizontalProperty = horizontalAxisPropertySelectors.GetSelector<AlignmentSpotPropertyModel>()?.Property ?? string.Empty;
+        VerticalProperty = verticalAxisPropertySelectors.GetSelector<AlignmentSpotPropertyModel>()?.Property ?? string.Empty;
+        HorizontalAxis = horizontalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
+        _verticalAxis = verticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
+    }
+
+    public AlignmentPeakPlotModel(
+        AlignmentSpotSource spotsSource,
+        PropertySelector<AlignmentSpotPropertyModel, double> horizontalSelector,
+        PropertySelector<AlignmentSpotPropertyModel, double> verticalSelector,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
@@ -36,8 +64,8 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
 
     public AlignmentPeakPlotModel(
         ReadOnlyObservableCollection<AlignmentSpotPropertyModel>? spots,
-        Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-        Func<AlignmentSpotPropertyModel, double> verticalSelector,
+        PropertySelector<AlignmentSpotPropertyModel, double> horizontalSelector,
+        PropertySelector<AlignmentSpotPropertyModel, double> verticalSelector,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
@@ -66,25 +94,37 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
         GraphTitle = string.Empty;
         HorizontalTitle = string.Empty;
         VerticalTitle = string.Empty;
-        HorizontalProperty = string.Empty;
-        VerticalProperty = string.Empty;
+        HorizontalProperty = horizontalSelector.Property;
+        VerticalProperty = verticalSelector.Property;
 
         var unitRange = new AxisRange(0d, 1d);
         var collectionChanged = spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Publish();
         HorizontalAxis = horizontalAxis ?? collectionChanged
-            .Select(_ => spots.Any() ? new AxisRange(spots.Min(horizontalSelector), spots.Max(horizontalSelector)) : unitRange)
+            .Select(_ => spots.Any() ? new AxisRange(spots.Min(horizontalSelector.Selector), spots.Max(horizontalSelector.Selector)) : unitRange)
             .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
             .AddTo(Disposables);
         _verticalAxis = collectionChanged
-            .Select(_ => spots.Any() ? new AxisRange(spots.Min(verticalSelector), spots.Max(verticalSelector)) : unitRange)
+            .Select(_ => spots.Any() ? new AxisRange(spots.Min(verticalSelector.Selector), spots.Max(verticalSelector.Selector)) : unitRange)
             .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
             .AddTo(Disposables);
         Disposables.Add(collectionChanged.Connect());
+
+        HorizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+            .Add(HorizontalAxis, HorizontalTitle, HorizontalTitle)
+            .Register(horizontalSelector)
+            .Build();
+        VerticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+            .Add(HorizontalAxis, HorizontalTitle, HorizontalTitle)
+            .Register(horizontalSelector)
+            .Build();
     }
 
     public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
     public IReactiveProperty<AlignmentSpotPropertyModel?> TargetSource { get; }
+
+    public AxisPropertySelectors<double> HorizontalPropertySelectors { get; }
+    public AxisPropertySelectors<double> VerticalPropertySelectors { get; }
 
     public IAxisManager<double> HorizontalAxis { get; }
     public IAxisManager<double> VerticalAxis {

@@ -15,8 +15,8 @@ internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
 
     public GcgcAlignmentPeakPlotModel(
         AlignmentSpotSource spots,
-        Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-        Func<AlignmentSpotPropertyModel, double> verticalSelector,
+        PropertySelector<AlignmentSpotPropertyModel, double> horizontalSelector,
+        PropertySelector<AlignmentSpotPropertyModel, double> verticalSelector,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
@@ -37,7 +37,9 @@ internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
         set {
             if (SetProperty(ref _timeStep, value)) {
                 if (_timeStep > 0d) {
-                    VerticalAxis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
+                    var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
+                    VerticalAxis = axis;
+                    _serialDisposable.Disposable = axis;
                 }
             }
         }
