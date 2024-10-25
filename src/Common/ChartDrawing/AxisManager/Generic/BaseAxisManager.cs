@@ -107,6 +107,12 @@ namespace CompMs.Graphics.AxisManager.Generic
             InitialRangeChanged?.Invoke(this, args);
         }
 
+        public event EventHandler AxisValueMappingChanged;
+
+        protected virtual void OnAxisValueMappingChanged() {
+            AxisValueMappingChanged?.Invoke(this, args);
+        }
+
         public void UpdateInitialRange(AxisRange range) {
             InitialRangeCore = range;
             InitialRange = CoerceRange(range, Bounds);
