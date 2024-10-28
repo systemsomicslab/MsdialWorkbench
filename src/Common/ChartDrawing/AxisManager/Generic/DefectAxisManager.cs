@@ -75,9 +75,26 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
         private ILabelGenerator _labelGenerator;
 
-        public double Divisor { get; }
+        public double Divisor {
+            get => _divisor;
+            set {
+                if (SetProperty(ref _divisor, value)) {
+                    OnAxisValueMappingChanged();
+                }
+            }
+        }
+        private double _divisor;
 
-        public double Factor { get; } = 0d;
+        public double Factor {
+            get => _factor;
+            set {
+                if (SetProperty(ref _factor, value)) {
+                    OnAxisValueMappingChanged();
+                    UpdateInitialRange((DEFECT_RANGE + .5d) * Factor);
+                }
+            }
+        }
+        private double _factor = 0d;
 
         protected override void OnRangeChanged() {
             labelTicks = null;
