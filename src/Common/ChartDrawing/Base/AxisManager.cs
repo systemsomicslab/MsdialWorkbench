@@ -21,8 +21,8 @@ namespace CompMs.Graphics.Core.Base
         AxisRange Range { get; }
 
         event EventHandler RangeChanged;
-
         event EventHandler InitialRangeChanged;
+        event EventHandler AxisValueMappingChanged;
 
         AxisValue TranslateToAxisValue(object value);
         double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
