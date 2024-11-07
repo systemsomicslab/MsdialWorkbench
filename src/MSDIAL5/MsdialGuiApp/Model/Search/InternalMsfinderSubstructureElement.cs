@@ -4,9 +4,11 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.FormulaGenerator.DataObj;
+using CompMs.CommonMVVM;
+using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.Model.Search {
-    public class InternalMsfinderSubstructureElement {
+    internal class InternalMsfinderSubstructureElement : DisposableModelBase {
         private string id;
 
         private string mass;
@@ -16,14 +18,13 @@ namespace CompMs.App.Msdial.Model.Search {
         private string comment;
         private string inchikey;
         private string smiles;
-        private System.Windows.Media.Imaging.BitmapImage image;
 
-        public InternalMsfinderSubstructureElement(int id, ProductIon productIon, int candidateNumber,
-            List<FragmentOntology> uniqueFragmentDB) {
+        public InternalMsfinderSubstructureElement(int id, ProductIon productIon, int candidateNumber, List<FragmentOntology> uniqueFragmentDB) {
             this.id = id.ToString();
             this.mass = Math.Round(productIon.Mass, 5).ToString();
             this.formula = productIon.Formula.FormulaString + "\r\n" + "(" + Math.Round(productIon.Formula.Mass, 5) + ")";
             this.assignedType = "Product ion";
+            MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
             if (candidateNumber < 0)
                 setDefaultInformation();
@@ -32,21 +33,21 @@ namespace CompMs.App.Msdial.Model.Search {
                 setSubstructureInformation(candidateNumber, candidateInChIKey, uniqueFragmentDB);
             }
         }
-
         private void setSubstructureInformation(int candidateNumber, string candidateInChIKey, List<FragmentOntology> uniqueFragmentDB) {
             var fragmentInfo = getMatchedUniqueFragment(candidateInChIKey, uniqueFragmentDB);
             if (fragmentInfo == null)
                 setDefaultInformation();
             else {
                 this.comment = "Candidate " + (candidateNumber + 1).ToString() + "\r\n" + fragmentInfo.Comment;
+                this.smiles = fragmentInfo.Smiles;
+                this.inchikey = fragmentInfo.ShortInChIKey;
                 var molecule = new MoleculeProperty();
                 molecule.SMILES = fragmentInfo.Smiles;
                 MoleculeStructureModel.UpdateMolecule(molecule);
             }
         }
-        private MoleculeStructureModel MoleculeStructureModel { get; }
 
-        private FragmentOntology getMatchedUniqueFragment(string shortInChIKey, List<FragmentOntology> fragmentDB) {
+        private FragmentOntology? getMatchedUniqueFragment(string shortInChIKey, List<FragmentOntology> fragmentDB) {
             foreach (var frag in fragmentDB) {
                 if (shortInChIKey == frag.ShortInChIKey)
                     return frag;
@@ -62,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Search {
 
             this.formula = neutralLoss.Formula.FormulaString + "\r\n" + "(" + Math.Round(neutralLoss.Formula.Mass, 5) + ")";
             this.assignedType = "Neutral loss";
+            MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
             if (candidateNumber < 0)
                 setDefaultInformation();
@@ -71,13 +73,11 @@ namespace CompMs.App.Msdial.Model.Search {
             }
         }
 
+        public MoleculeStructureModel MoleculeStructureModel { get; }
         private void setDefaultInformation() {
             this.comment = "NA";
             this.inchikey = "NA";
             this.smiles = "NA";
-
-            var fileUri = new Uri("/Resources/NoStructureAssigned.png", UriKind.Relative);
-            this.image = new System.Windows.Media.Imaging.BitmapImage(fileUri);
         }
 
         public string Id {
@@ -106,10 +106,6 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public string Smiles {
             get { return smiles; }
-        }
-
-        public System.Windows.Media.Imaging.BitmapImage Image {
-            get { return image; }
         }
     }
 }

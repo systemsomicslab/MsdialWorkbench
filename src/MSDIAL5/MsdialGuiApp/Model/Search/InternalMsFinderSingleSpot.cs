@@ -262,16 +262,13 @@ namespace CompMs.App.Msdial.Model.Search
                 var neutralLossSpectrum = new List<SpectrumPeak>();
                 var neutralLossList = formula.NeutralLossResult;
                 foreach (var ion in neutralLossList) {
-                    var spec = new SpectrumPeak() {
-                        Mass = ion.PrecursorMz,
-                        Intensity = ion.PrecursorIntensity,
-                    };
-                    var spec2 = new SpectrumPeak() {
-                        Mass = ion.ProductMz,
-                        Intensity = ion.ProductIntensity,
-                    };
-                    neutralLossSpectrum.Add(spec);
-                    neutralLossSpectrum.Add(spec2);
+                    for (var i = 0; i < neutralLossList.Count; i++) {
+                        SpectrumPeak spectrumPeak = new SpectrumPeak() {
+                            Mass = ion.PrecursorMz,
+                            Intensity = ion.PrecursorIntensity,
+                        };
+                        neutralLossSpectrum.Add(spectrumPeak);
+                    }
                 }
                 _ms2SpectrumSubject.OnNext(new MsSpectrum(neutralLossSpectrum));
             }
@@ -290,13 +287,12 @@ namespace CompMs.App.Msdial.Model.Search
         public void ShowSubstructure() {
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || FormulaList is null) return;
-            foreach (var formula in FormulaList) {
-                if (formula.IsSelected) {
-                    var window = new InternalMsfinderSubstructureView(_rawData, formula, fragmentOntologyDB);
-                    window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
-                    window.Show();
-                }
-            }
+            var vm = new InternalMsfinderSubstructure(_rawData, FormulaList, fragmentOntologyDB);
+            var substructure = new SubstructureView() {
+                DataContext = vm
+            };
+            substructure.Closed += (s, e) => vm.Dispose();
+            substructure.Show();
             Mouse.OverrideCursor = null;
         }
 
