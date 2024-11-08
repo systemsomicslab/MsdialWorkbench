@@ -66,7 +66,8 @@ namespace CompMs.App.Msdial.Model.Search
         private List<ExistStructureQuery?> userDefinedStructureDB = new List<ExistStructureQuery?>();
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
-
+        private static readonly List<ChemicalOntology> chemicalOntologies = FileStorageUtility.GetChemicalOntologyDB();
+        
         public List<FormulaResult>? FormulaList { get; private set; }
 
         private List<FragmenterResult?> _structureList;
@@ -277,9 +278,15 @@ namespace CompMs.App.Msdial.Model.Search
         public DelegateCommand ShowFseaResultViewerCommand => _showFseaResultViewerCommand ??= new DelegateCommand(ShowFseaResultViewer);
         private DelegateCommand? _showFseaResultViewerCommand;
         public void ShowFseaResultViewer() {
-            if (_rawData?.Ms2Spectrum is null) { return; }
-            var ms2Spectrum = new MsSpectrum(_rawData.Ms2Spectrum);
-            _ms2SpectrumSubject.OnNext(ms2Spectrum);
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (_rawData is null || FormulaList is null) return;
+            var vm = new FseaResultViewModel(FormulaList, chemicalOntologies, fragmentOntologyDB, _rawData.IonMode);
+            var substructure = new FseaResultView() {
+                DataContext = vm
+            };
+            substructure.Closed += (s, e) => vm.Dispose();
+            substructure.Show();
+            Mouse.OverrideCursor = null;
         }
 
         public DelegateCommand ShowSubstructureCommand => _showSubstructureCommand ??= new DelegateCommand(ShowSubstructure);

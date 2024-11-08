@@ -383,6 +383,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
@@ -426,6 +427,25 @@
                                                    Style="{StaticResource AlignedContent}"
                                                    ToolTip="Cut off setting">
                                     <TextBox Text="{Binding ScoreCutOffForSpectralMatch.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,8,0,0">
+                            <GroupBox.Header>
+                                <Label Content="FSEA setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%] (significant peak):"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the cut off value for removing noise effects.">
+                                    <TextBox Text="{Binding FseaRelativeAbundanceCutOff.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Fisher's exact test P-value cut off [%]:"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the cut off of P value.">
+                                    <TextBox Text="{Binding FseaPvalueCutOff.Value}"/>
                                 </ui:LabeledContent>
                             </StackPanel>
                         </GroupBox>

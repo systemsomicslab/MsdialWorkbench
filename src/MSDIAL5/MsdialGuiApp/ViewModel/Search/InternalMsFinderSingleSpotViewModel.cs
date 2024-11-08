@@ -27,7 +27,6 @@ namespace CompMs.App.Msdial.ViewModel.Search {
                 if (model.RefMs2SpectrumModel is not null) {
                     MsSpectrumViewModel = new MsSpectrumViewModel(model.RefMs2SpectrumModel).AddTo(Disposables);
                 }
-                InternalMsfinderUtility = new InternalMsfinderUtility();
             } catch (Exception ex) {
                 MessageBox.Show(ex.ToString());
             }
@@ -36,6 +35,5 @@ namespace CompMs.App.Msdial.ViewModel.Search {
         public SingleSpectrumViewModel SpectrumMs2ViewModel { get; }
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
-        public InternalMsfinderUtility InternalMsfinderUtility { get; }
     }
 }

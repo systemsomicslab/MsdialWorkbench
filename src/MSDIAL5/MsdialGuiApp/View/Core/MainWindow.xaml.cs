@@ -135,6 +135,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<InternalMsFinderSingleSpotView>("MS-FINDER", height: 1000, width: 1500));
             broker.ToObservable<InternalMsfinderSubstructure>()
                 .Subscribe(ShowChildContent<SubstructureView>("Substructure Viewer", height: 600, width: 1000));
+            broker.ToObservable<FseaResultViewModel>()
+                .Subscribe(ShowChildContent<FseaResultView>("FSEA Result Viewer", height: 600, width: 1000));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
