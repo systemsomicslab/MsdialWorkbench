@@ -32,12 +32,12 @@ namespace CompMs.Common.Lipidomics {
             } else {
                 bs = EnumerateDoubleBondInEther(chain.CarbonCount, chain.DoubleBond);
             }
-            return bs.Select(b => new AcylChain(chain.CarbonCount, b, chain.Oxidized));
+            return bs.Select(b => new AlkylChain(chain.CarbonCount, b, chain.Oxidized));
         }
 
         public IEnumerable<IChain> Generate(SphingoChain chain) {
             var bs = EnumerateDoubleBondInSphingosine(chain.CarbonCount, chain.DoubleBond);
-            return bs.Select(b => new AcylChain(chain.CarbonCount, b, chain.Oxidized));
+            return bs.Select(b => new SphingoChain(chain.CarbonCount, b, chain.Oxidized));
         }
 
         private IEnumerable<IDoubleBond> EnumerateDoubleBond(int carbon, IDoubleBond doubleBond) {
