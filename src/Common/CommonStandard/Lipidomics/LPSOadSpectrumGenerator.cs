@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
-    public class LPSd5OadSpectrumGenerator : ILipidSpectrumGenerator {
+    internal class LPSOadSpectrumGenerator : ILipidSpectrumGenerator {
 
         private static readonly double C3H8NO6P = new[] {
             MassDiffDictionary.CarbonMass * 3,
@@ -30,12 +30,11 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.OxygenMass * 2,
         }.Sum();
 
-        private static readonly double C3H4D5O6P = new[] {
+        private static readonly double C3H9O6P = new[] {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.HydrogenMass * 9,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double H2O = new[] {
@@ -43,11 +42,11 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
-        public LPSd5OadSpectrumGenerator() {
+        public LPSOadSpectrumGenerator() {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public LPSd5OadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
+        public LPSOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
 
@@ -62,7 +61,7 @@ namespace CompMs.Common.Lipidomics {
             var abundance = 30;
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetLPSd5OadSpectrum(lipid, adduct));
+            spectrum.AddRange(GetLPSOadSpectrum(lipid, adduct));
             string[] oadId =
                 new string[] {
                 "OAD01",
@@ -101,7 +100,7 @@ namespace CompMs.Common.Lipidomics {
             return CreateReference(lipid, adduct, spectrum, molecule);
         }
 
-        private static SpectrumPeak[] GetLPSd5OadSpectrum(ILipid lipid, AdductIon adduct) {
+        private static SpectrumPeak[] GetLPSOadSpectrum(ILipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>();
             if (adduct.AdductIonName == "[M+H]+") {
                 spectrum.AddRange(
@@ -110,8 +109,8 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(C3H8NO6P), 100d, "Header"){ SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H8NO6P), 500d, "Precursor -C3H8NO6P"){ SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 100d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(C3H4D5O6P), 100d, "C3H4D5O6P"){ SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(C3H4D5O6P- H2O), 100d, "C3H4D5O6P - H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(C3H9O6P), 100d, "Phosphoglycerol"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(C3H9O6P- H2O), 100d, "Phosphoglycerol - H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {
@@ -130,8 +129,8 @@ namespace CompMs.Common.Lipidomics {
                      new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 500d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H5NO2), 999d, "Precursor -C3H5NO2") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(C3H4D5O6P), 100d, "C3H4D5O6P"){ SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(C3H4D5O6P- H2O), 500d, "C3H4D5O6P - H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(C3H9O6P), 100d, "Phosphoglycerol"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(C3H9O6P- H2O), 500d, "Phosphoglycerol - H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }
