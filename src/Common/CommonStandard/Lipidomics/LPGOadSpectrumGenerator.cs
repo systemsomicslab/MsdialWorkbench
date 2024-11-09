@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
-    public class LPGd5OadSpectrumGenerator : ILipidSpectrumGenerator {
+    internal class LPGOadSpectrumGenerator : ILipidSpectrumGenerator {
 
         private static readonly double C3H9O6P = new[] {
             MassDiffDictionary.CarbonMass * 3,
@@ -36,11 +36,11 @@ namespace CompMs.Common.Lipidomics {
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
-        public LPGd5OadSpectrumGenerator() {
+        public LPGOadSpectrumGenerator() {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public LPGd5OadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
+        public LPGOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
 
@@ -80,7 +80,7 @@ namespace CompMs.Common.Lipidomics {
                 "OAD12+O",
                 "OAD12+O+H",
                 //"OAD12+O+2H",
-                "OAD01+H" 
+                "OAD01+H"
                 };
 
             if (lipid.Chains is MolecularSpeciesLevelChains) {
@@ -118,13 +118,13 @@ namespace CompMs.Common.Lipidomics {
                         }
                     }
                 }
-            } 
-            if (adduct.AdductIonName == "[M+NH4]+") {
+            }
+            else if (adduct.AdductIonName == "[M+NH4]+") {
                 spectrum.AddRange(
                     new[] {
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 100d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                             new SpectrumPeak(lipid.Mass, 100d, "[M+H]+") { SpectrumComment = SpectrumComment.precursor },
-                            new SpectrumPeak(lipid.Mass - C3H9O6P+MassDiffDictionary.ProtonMass, 999d, "[M+H]+ -C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
+                            new SpectrumPeak(lipid.Mass - C3H9O6P+MassDiffDictionary.ProtonMass, 999d, "Precursor -C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {
@@ -184,4 +184,3 @@ namespace CompMs.Common.Lipidomics {
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
     }
 }
-
