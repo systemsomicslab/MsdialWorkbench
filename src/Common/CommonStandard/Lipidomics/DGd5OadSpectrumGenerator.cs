@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
@@ -9,10 +8,6 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
     public class DGd5OadSpectrumGenerator : ILipidSpectrumGenerator {
-        private static readonly double NH3 = new[] {
-            MassDiffDictionary.HydrogenMass * 3,
-            MassDiffDictionary.NitrogenMass,
-        }.Sum();
         private static readonly double H2O = new[] {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
@@ -36,7 +31,7 @@ namespace CompMs.Common.Lipidomics {
             var abundance = 30;
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetDGOadSpectrum(lipid, adduct, nlMass));
+            spectrum.AddRange(GetDGOadSpectrum(lipid, adduct));
             string[] oadId =
                 new string[] {
                 "OAD01",
@@ -89,7 +84,7 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD01+H"
                 };
 
-            if (lipid.Chains is MolecularSpeciesLevelChains plChains) {
+            if (lipid.Chains is MolecularSpeciesLevelChains) {
                 var chains = lipid.Chains.GetDeterminedChains().ToArray();
                 for (int i = 0; i < chains.Length; i++) {
                     var chain = new AcylChain(chains[i].CarbonCount, chains[i].DoubleBond, chains[i].Oxidized);
@@ -104,12 +99,11 @@ namespace CompMs.Common.Lipidomics {
             return CreateReference(lipid, adduct, spectrum, molecule);
         }
 
-        private SpectrumPeak[] GetDGOadSpectrum(Lipid lipid, AdductIon adduct, double nlMass) {
+        private static SpectrumPeak[] GetDGOadSpectrum(Lipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>();
 
             if (adduct.AdductIonName == "[M+NH4]+") {
-                spectrum.AddRange
-                (
+                spectrum.AddRange(
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                         new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 50d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
@@ -118,8 +112,7 @@ namespace CompMs.Common.Lipidomics {
                 );
                 if (lipid.Chains is SeparatedChains Chains) {
                     foreach (AcylChain chain in Chains.GetDeterminedChains()) {
-                        spectrum.AddRange
-                        (
+                        spectrum.AddRange(
                             new[] {
                                 new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 500d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
                                 new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron + MassDiffDictionary.HydrogenMass, 200d, $"-{chain}+H") { SpectrumComment = SpectrumComment.acylchain },
@@ -128,8 +121,7 @@ namespace CompMs.Common.Lipidomics {
                     }
                 }
             } else {
-                spectrum.AddRange
-                (
+                spectrum.AddRange(
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                     }
@@ -138,7 +130,7 @@ namespace CompMs.Common.Lipidomics {
             return spectrum.ToArray();
         }
 
-        private MoleculeMsReference CreateReference(ILipid lipid, AdductIon adduct, List<SpectrumPeak> spectrum, IMoleculeProperty molecule) {
+        private static MoleculeMsReference CreateReference(ILipid lipid, AdductIon adduct, List<SpectrumPeak> spectrum, IMoleculeProperty molecule) {
             return new MoleculeMsReference {
                 PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
