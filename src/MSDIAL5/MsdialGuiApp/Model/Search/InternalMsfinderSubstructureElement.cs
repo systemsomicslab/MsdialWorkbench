@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.FormulaGenerator.DataObj;
@@ -25,6 +26,7 @@ namespace CompMs.App.Msdial.Model.Search {
             this.formula = productIon.Formula.FormulaString + "\r\n" + "(" + Math.Round(productIon.Formula.Mass, 5) + ")";
             this.assignedType = "Product ion";
             MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(MoleculeStructureModel).AddTo(Disposables);
 
             if (candidateNumber < 0)
                 setDefaultInformation();
@@ -74,6 +76,7 @@ namespace CompMs.App.Msdial.Model.Search {
         }
 
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         private void setDefaultInformation() {
             this.comment = "NA";
             this.inchikey = "NA";

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.Common.DataObj;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,20 +24,20 @@ namespace CompMs.App.Msdial.View.Search {
         }
         public InternalMsfinderSubstructure(RawData rawData, List<FormulaResult> formulaList, List<FragmentOntology> uniqueFragmentDB) {
             if (formulaList == null) return;
+
+            var substructureElements = new ObservableCollection<InternalMsfinderSubstructureElement>();
+            var counter = 1;
             foreach (var formulaResult in formulaList) {
                 var productIons = formulaResult.ProductIonResult;
                 var neutralLosses = formulaResult.NeutralLossResult;
                 if (productIons == null && neutralLosses == null) return;
                 if (productIons.Count == 0 && neutralLosses.Count == 0) return;
 
-                var syncObj = new object();
-                var substructureElements = new ObservableCollection<InternalMsfinderSubstructureElement>();
-
-                var counter = 1;
                 foreach (var ion in productIons.Where(n => n.CandidateInChIKeys != null && n.CandidateInChIKeys.Count > 0 && n.CandidateInChIKeys[0] != "NA")) {
                     for (int i = 0; i < ion.CandidateInChIKeys.Count; i++) {
                         var element = new InternalMsfinderSubstructureElement(counter, ion, i, uniqueFragmentDB);
                         substructureElements.Add(element);
+                        MoleculeStructureViewModel = new MoleculeStructureViewModel(element.MoleculeStructureModel).AddTo(Disposables);
                     }
                     counter++;
                 }
@@ -45,6 +46,7 @@ namespace CompMs.App.Msdial.View.Search {
                     for (int i = 0; i < loss.CandidateInChIKeys.Count; i++) {
                         var element = new InternalMsfinderSubstructureElement(counter, loss, i, uniqueFragmentDB);
                         substructureElements.Add(element);
+                        MoleculeStructureViewModel = new MoleculeStructureViewModel(element.MoleculeStructureModel).AddTo(Disposables);
                     }
                     counter++;
                 }
@@ -52,13 +54,11 @@ namespace CompMs.App.Msdial.View.Search {
                 foreach (var ion in productIons.Where(n => n.CandidateInChIKeys != null && n.CandidateInChIKeys.Count == 1 && n.CandidateInChIKeys[0] == "NA")) {
                     var element = new InternalMsfinderSubstructureElement(counter, ion, -1, uniqueFragmentDB);
                     substructureElements.Add(element);
+                    MoleculeStructureViewModel = new MoleculeStructureViewModel(element.MoleculeStructureModel).AddTo(Disposables);
                     counter++;
                 }
 
                 this.substructureElements = substructureElements;
-                foreach (var substructureElement in substructureElements) {
-                    MoleculeStructureViewModel = new MoleculeStructureViewModel(substructureElement.MoleculeStructureModel);
-                }
             }
         }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
