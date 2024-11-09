@@ -51,7 +51,7 @@ namespace CompMs.Common.Lipidomics {
             result = _exChains.Append(carbon, doubleBond).Concat(result);
             return result;
         }
-        private IEnumerable<IDoubleBond> InnerEnumerateDoubleBond(int carbon, IDoubleBond doubleBond) {
+        private static IEnumerable<IDoubleBond> InnerEnumerateDoubleBond(int carbon, IDoubleBond doubleBond) {
             var set = new HashSet<int>(doubleBond.Bonds.Select(bond => bond.Position));
             for (var i = 0; i < doubleBond.UnDecidedCount; i++) {
                 set.Add(carbon - i * 3);
@@ -69,7 +69,7 @@ namespace CompMs.Common.Lipidomics {
             return InnerEnumerateDoubleBondInEther(carbon, doubleBond);
         }
 
-        private IEnumerable<IDoubleBond> InnerEnumerateDoubleBondInEther(int carbon, IDoubleBond doubleBond) {
+        private static IEnumerable<IDoubleBond> InnerEnumerateDoubleBondInEther(int carbon, IDoubleBond doubleBond) {
             var set = new HashSet<int>(doubleBond.Bonds.Select(bond => bond.Position));
             for (var i = 0; i < doubleBond.UnDecidedCount; i++) {
                 set.Add(carbon - i * 3);
@@ -98,7 +98,7 @@ namespace CompMs.Common.Lipidomics {
             return InnerEnumerateDoubleBondInPlasmalogen(carbon, doubleBond);
         }
 
-        private IEnumerable<IDoubleBond> InnerEnumerateDoubleBondInPlasmalogen(int carbon, IDoubleBond doubleBond) {
+        private static IEnumerable<IDoubleBond> InnerEnumerateDoubleBondInPlasmalogen(int carbon, IDoubleBond doubleBond) {
             var set = new HashSet<int>(doubleBond.Bonds.Select(bond => bond.Position));
             for (var i = 0; i < doubleBond.UnDecidedCount; i++) {
                 set.Add(carbon - i * 3);
@@ -106,14 +106,14 @@ namespace CompMs.Common.Lipidomics {
             return GenerateDoubleBonds(set, SetToBitArray(carbon, doubleBond), carbon - doubleBond.UnDecidedCount * 3, carbon);
         }
 
-        private IEnumerable<IDoubleBond> EnumerateDoubleBondInSphingosine(int carbon, IDoubleBond doubleBond) {
+        private static IEnumerable<IDoubleBond> EnumerateDoubleBondInSphingosine(int carbon, IDoubleBond doubleBond) {
             if (doubleBond.UnDecidedCount == 0) {
                 return new[] { doubleBond, };
             }
             return GenerateDoubleBondsForSphingosine(doubleBond, carbon);
         }
 
-        private IEnumerable<IDoubleBond> GenerateDoubleBonds(HashSet<int> set, HashSet<int> sup, int nextHead, int prevTail) {
+        private static IEnumerable<IDoubleBond> GenerateDoubleBonds(HashSet<int> set, HashSet<int> sup, int nextHead, int prevTail) {
             if (nextHead == prevTail) {
                 if (set.IsSupersetOf(sup)) {
                     yield return BitArrayToBond(set);
@@ -136,7 +136,7 @@ namespace CompMs.Common.Lipidomics {
             }
         }
 
-        private IEnumerable<IDoubleBond> GenerateDoubleBondsForSphingosine(IDoubleBond doubleBond, int length) {
+        private static IEnumerable<IDoubleBond> GenerateDoubleBondsForSphingosine(IDoubleBond doubleBond, int length) {
             var sets = new HashSet<int>(doubleBond.Bonds.Select(b => b.Position));
 
             var blank = 3;
@@ -180,7 +180,7 @@ namespace CompMs.Common.Lipidomics {
             return result;
         }
 
-        private HashSet<int> SetToBitArray(int length, IDoubleBond doubleBond) {
+        private static HashSet<int> SetToBitArray(int length, IDoubleBond doubleBond) {
             if (doubleBond.DecidedCount == 0) {
                 return new HashSet<int>();
             }
@@ -191,7 +191,7 @@ namespace CompMs.Common.Lipidomics {
             return result;
         }
 
-        private IDoubleBond BitArrayToBond(HashSet<int> arr) {
+        private static IDoubleBond BitArrayToBond(HashSet<int> arr) {
             var bonds = new List<IDoubleBondInfo>();
             foreach (var v in arr.OrderBy(v => v)) {
                 bonds.Add(DoubleBondInfo.Create(v));
