@@ -128,8 +128,11 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.EtherPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.EtherLPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PG, new PGOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPG, new LPGOadSpectrumGenerator());
                     generator.Add(LbmClass.PI, new PIOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPI, new LPIOadSpectrumGenerator());
                     generator.Add(LbmClass.PS, new PSOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPS, new LPSOadSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGOadSpectrumGenerator());
                     generator.Add(LbmClass.DG, new DGOadSpectrumGenerator());
                     generator.Add(LbmClass.SM, new SMOadSpectrumGenerator());
