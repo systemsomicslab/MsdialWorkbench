@@ -262,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
-        public InternalMsFinderSingleSpot InternalMsFinderSingleSpot { get; }
+        public InternalMsFinderSingleSpot? InternalMsFinderSingleSpot { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
@@ -286,7 +286,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return compoundSearch;
         }
 
-        public InternalMsFinderSingleSpot CreateSingleSearchMsfinderModel() {
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
             if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
@@ -310,7 +310,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         DataBaseMapper,
                         _parameter);
                 }
-                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath, peak);
+                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath, peak, DataBaseMapper);
                 return msfinder;
             }
             catch (Exception ex) {
