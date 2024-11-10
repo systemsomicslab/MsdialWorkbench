@@ -13,9 +13,9 @@ namespace CompMs.App.Msdial.View.Search {
     }
 
     internal sealed class FseaResultViewModel : ViewModelBase {
-        private List<FseaResult> fseaResultVMs;
-
+        
         public FseaResultViewModel(List<FormulaResult> formulaResults, List<ChemicalOntology> chemOntDB, List<FragmentOntology> fragmentOntDB, IonMode ionMode) {
+            fseaResultVMs ??= [];
             foreach (var formula in formulaResults) {
                 if (formula.ChemicalOntologyDescriptions == null || formula.ChemicalOntologyDescriptions.Count == 0) {
                     MessageBox.Show("No chemical ontology description found.");
@@ -34,18 +34,17 @@ namespace CompMs.App.Msdial.View.Search {
                 if (descriptCount != idCount || idCount != repInchiCount || repInchiCount != scoreCount || scoreCount != descriptCount)
                     return;
 
-                this.fseaResultVMs = new List<FseaResult>();
                 for (int i = 0; i < descriptCount; i++) {
                     var fseaResultVM = new FseaResult(formula, i, chemOntDB, fragmentOntDictionary, ionMode);
                     if (fseaResultVM.FragmentOntologies == null || fseaResultVM.FragmentOntologies == string.Empty) continue;
 
                     this.fseaResultVMs.Add(fseaResultVM);
                 }
-
                 OnPropertyChanged("FseaResultVMs");
             }
         }
 
+        private List<FseaResult> fseaResultVMs;
         public List<FseaResult> FseaResultVMs {
             get { return fseaResultVMs; }
             set { SetProperty(ref fseaResultVMs, value); }
@@ -53,11 +52,11 @@ namespace CompMs.App.Msdial.View.Search {
     }
     internal sealed class FseaResult : ViewModelBase {
 
-        private string chemicalOntology;
-        private string pvalue;
-        private string foundPerSpectrum;
-        private string foundPerOntologies;
-        private string fragmentOntologies;
+        private string? chemicalOntology;
+        private string? pvalue;
+        private string? foundPerSpectrum;
+        private string? foundPerOntologies;
+        private string? fragmentOntologies;
 
         public FseaResult(FormulaResult formulaResult, int id, List<ChemicalOntology> chemOntDB, Dictionary<string, string> fragOntDB, IonMode ionMode) {
             var resultChemOntDescript = formulaResult.ChemicalOntologyDescriptions[id];
@@ -95,8 +94,8 @@ namespace CompMs.App.Msdial.View.Search {
         public static void FitSignificantOntologiesToFragmentSet(FormulaResult result, ChemicalOntology chemOntology,
             out List<string> a11Ontologies, out List<string> a21Ontologies) {
 
-            a11Ontologies = new List<string>();
-            a21Ontologies = new List<string>();
+            a11Ontologies = [];
+            a21Ontologies = [];
             if (result.ProductIonResult != null && result.ProductIonResult.Count > 0) {
                 var maxIntensity = result.ProductIonResult.Max(n => n.Intensity);
                 foreach (var ion in result.ProductIonResult) {
@@ -167,27 +166,27 @@ namespace CompMs.App.Msdial.View.Search {
         }
 
         #region properties
-        public string ChemicalOntology {
+        public string? ChemicalOntology {
             get { return chemicalOntology; }
             set { SetProperty(ref chemicalOntology, value); }
         }
 
-        public string Pvalue {
+        public string? Pvalue {
             get { return pvalue; }
             set { SetProperty(ref pvalue, value); }
         }
 
-        public string FoundPerSpectrum {
+        public string? FoundPerSpectrum {
             get { return foundPerSpectrum; }
             set { SetProperty(ref foundPerSpectrum, value); }
         }
 
-        public string FoundPerOntologies {
+        public string? FoundPerOntologies {
             get { return foundPerOntologies; }
             set { SetProperty(ref foundPerOntologies, value); }
         }
 
-        public string FragmentOntologies {
+        public string? FragmentOntologies {
             get { return fragmentOntologies; }
             set { SetProperty(ref fragmentOntologies, value); }
         }

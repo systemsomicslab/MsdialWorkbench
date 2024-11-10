@@ -10,15 +10,15 @@ using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.Model.Search {
     internal class InternalMsfinderSubstructureElement : DisposableModelBase {
-        private string id;
+        private readonly string id;
 
-        private string mass;
-        private string formula;
-        private string assignedType; // product ion or neutral loss
+        private readonly string mass;
+        private readonly string formula;
+        private readonly string assignedType; // product ion or neutral loss
 
-        private string comment;
-        private string inchikey;
-        private string smiles;
+        private string? comment;
+        private string? inchikey;
+        private string? smiles;
 
         public InternalMsfinderSubstructureElement(int id, ProductIon productIon, int candidateNumber, List<FragmentOntology> uniqueFragmentDB) {
             this.id = id.ToString();
@@ -29,27 +29,28 @@ namespace CompMs.App.Msdial.Model.Search {
             MoleculeStructureViewModel = new MoleculeStructureViewModel(MoleculeStructureModel).AddTo(Disposables);
 
             if (candidateNumber < 0)
-                setDefaultInformation();
+                SetDefaultInformation();
             else {
                 var candidateInChIKey = productIon.CandidateInChIKeys[candidateNumber];
-                setSubstructureInformation(candidateNumber, candidateInChIKey, uniqueFragmentDB);
+                SetSubstructureInformation(candidateNumber, candidateInChIKey, uniqueFragmentDB);
             }
         }
-        private void setSubstructureInformation(int candidateNumber, string candidateInChIKey, List<FragmentOntology> uniqueFragmentDB) {
-            var fragmentInfo = getMatchedUniqueFragment(candidateInChIKey, uniqueFragmentDB);
+        private void SetSubstructureInformation(int candidateNumber, string candidateInChIKey, List<FragmentOntology> uniqueFragmentDB) {
+            var fragmentInfo = GetMatchedUniqueFragment(candidateInChIKey, uniqueFragmentDB);
             if (fragmentInfo == null)
-                setDefaultInformation();
+                SetDefaultInformation();
             else {
                 this.comment = "Candidate " + (candidateNumber + 1).ToString() + "\r\n" + fragmentInfo.Comment;
                 this.smiles = fragmentInfo.Smiles;
                 this.inchikey = fragmentInfo.ShortInChIKey;
-                var molecule = new MoleculeProperty();
-                molecule.SMILES = fragmentInfo.Smiles;
+                var molecule = new MoleculeProperty {
+                    SMILES = fragmentInfo.Smiles
+                };
                 MoleculeStructureModel.UpdateMolecule(molecule);
             }
         }
 
-        private FragmentOntology? getMatchedUniqueFragment(string shortInChIKey, List<FragmentOntology> fragmentDB) {
+        private FragmentOntology? GetMatchedUniqueFragment(string shortInChIKey, List<FragmentOntology> fragmentDB) {
             foreach (var frag in fragmentDB) {
                 if (shortInChIKey == frag.ShortInChIKey)
                     return frag;
@@ -68,16 +69,16 @@ namespace CompMs.App.Msdial.Model.Search {
             MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
             if (candidateNumber < 0)
-                setDefaultInformation();
+                SetDefaultInformation();
             else {
                 var candidateInChIKey = neutralLoss.CandidateInChIKeys[candidateNumber];
-                setSubstructureInformation(candidateNumber, candidateInChIKey, uniqueFragmentDB);
+                SetSubstructureInformation(candidateNumber, candidateInChIKey, uniqueFragmentDB);
             }
         }
 
         public MoleculeStructureModel MoleculeStructureModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
-        private void setDefaultInformation() {
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
+        private void SetDefaultInformation() {
             this.comment = "NA";
             this.inchikey = "NA";
             this.smiles = "NA";
@@ -99,15 +100,15 @@ namespace CompMs.App.Msdial.Model.Search {
             get { return assignedType; }
         }
 
-        public string Comment {
+        public string? Comment {
             get { return comment; }
         }
 
-        public string Inchikey {
+        public string? Inchikey {
             get { return inchikey; }
         }
 
-        public string Smiles {
+        public string? Smiles {
             get { return smiles; }
         }
     }

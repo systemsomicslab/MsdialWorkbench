@@ -10,8 +10,8 @@ using System.Windows;
 namespace CompMs.App.Msdial.ViewModel.Search {
     internal class InternalMsFinderSingleSpotViewModel : ViewModelBase {
 
-        public InternalMsFinderSingleSpot _model { get; }
-        private readonly IMessageBroker _broker;
+        public InternalMsFinderSingleSpot? _model { get; }
+        private readonly IMessageBroker? _broker;
 
         public InternalMsFinderSingleSpotViewModel(InternalMsFinderSingleSpot model, IMessageBroker broker) {
             try {
@@ -31,9 +31,9 @@ namespace CompMs.App.Msdial.ViewModel.Search {
                 MessageBox.Show(ex.ToString());
             }
         }
-        public SingleSpectrumViewModel SpectrumMs1ViewModel { get; }
-        public SingleSpectrumViewModel SpectrumMs2ViewModel { get; }
-        public MsSpectrumViewModel MsSpectrumViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public SingleSpectrumViewModel? SpectrumMs1ViewModel { get; }
+        public SingleSpectrumViewModel? SpectrumMs2ViewModel { get; }
+        public MsSpectrumViewModel? MsSpectrumViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
     }
 }
