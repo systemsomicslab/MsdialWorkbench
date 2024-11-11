@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
@@ -19,8 +18,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,10 +26,9 @@ namespace CompMs.App.Msdial.Model.Search
     internal sealed class MsfinderObservedMetabolite : BindableBase {
         private readonly MsfinderQueryFile _queryFile;
         private readonly AnalysisParamOfMsfinder _parameter;
-        private RawData? _spotData;
+        private RawData _spotData;
         public List<FormulaResult> _formulaList;
-        public List<FragmenterResult> _structureList;
-        public List<ExistStructureQuery> _userDefinedDB;
+        public List<FragmenterResult?> _structureList;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -43,182 +39,180 @@ namespace CompMs.App.Msdial.Model.Search
 
         private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
-        private static List<MoleculeMsReference> mspDB = new List<MoleculeMsReference>();
+        private static readonly List<MoleculeMsReference> mspDB = [];
+        public List<ExistStructureQuery> _userDefinedDB = [];
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
 
-        public string metaboliteName {
+        public string MetaboliteName {
             get => _spotData.Name;
             set {
                 if (_spotData.Name != value) {
                     _spotData.Name = value;
-                    OnPropertyChanged(nameof(metaboliteName));
+                    OnPropertyChanged(nameof(MetaboliteName));
                 }
             }
         }
-        public int alignmentID {
+        public int AlignmentID {
             get => _spotData.ScanNumber;
             set {
-                if (_spotData?.ScanNumber != value) {
+                if (_spotData.ScanNumber != value) {
                     _spotData.ScanNumber = value;
-                    OnPropertyChanged(nameof(alignmentID));
+                    OnPropertyChanged(nameof(AlignmentID));
                 }
             }
         }
-        public double retentionTime {
+        public double RetentionTime {
             get => _spotData.RetentionTime;
             set {
                 if (_spotData.RetentionTime != value) {
                     _spotData.RetentionTime = value;
-                    OnPropertyChanged(nameof(retentionTime));
+                    OnPropertyChanged(nameof(RetentionTime));
                 }
             }
         }
-        public double centralCcs {
+        public double CentralCcs {
             get => _spotData.Ccs;
             set {
                 if (_spotData.Ccs != value) {
                     _spotData.Ccs = value;
-                    OnPropertyChanged(nameof(centralCcs));
+                    OnPropertyChanged(nameof(CentralCcs));
                 }
             }
         }
-        public double mass {
+        public double Mass {
             get => _spotData.PrecursorMz;
             set {
                 if (_spotData.PrecursorMz != value) {
                     _spotData.PrecursorMz = value;
-                    OnPropertyChanged(nameof(mass));
+                    OnPropertyChanged(nameof(Mass));
                 }
             }
         }
-        public string adduct {
+        public string Adduct {
             get => _spotData.PrecursorType;
             set {
                 if (_spotData.PrecursorType != value) {
                     _spotData.PrecursorType = value;
-                    OnPropertyChanged(nameof(adduct));
+                    OnPropertyChanged(nameof(Adduct));
                 }
             }
         }
-        public string formula {
+        public string Formula {
             get => _spotData.Formula;
             set {
-                if (_spotData?.Formula != value) {
+                if (_spotData.Formula != value) {
                     _spotData.Formula = value;
-                    OnPropertyChanged(nameof(formula));
+                    OnPropertyChanged(nameof(Formula));
                 }
             }
         }
-        public string ontology {
+        public string Ontology {
             get => _spotData.Ontology;
             set {
                 if (_spotData.Ontology != value) {
                     _spotData.Ontology = value;
-                    OnPropertyChanged(nameof(ontology));
+                    OnPropertyChanged(nameof(Ontology));
                 }
             }
         }
-        public string smiles {
+        public string Smiles {
             get => _spotData.Smiles;
             set {
                 if (_spotData.Smiles != value) {
                     _spotData.Smiles = value;
-                    OnPropertyChanged(nameof(smiles));
+                    OnPropertyChanged(nameof(Smiles));
                 }
             }
         }
-        public string inchikey {
+        public string Inchikey {
             get => _spotData.InchiKey;
             set {
                 if (_spotData.InchiKey != value) {
                     _spotData.InchiKey = value;
-                    OnPropertyChanged(nameof(inchikey));
+                    OnPropertyChanged(nameof(Inchikey));
                 }
             }
         }
-        public string comment {
+        public string Comment {
             get => _spotData.Comment;
             set {
                 if (_spotData.Comment != value) {
                     _spotData.Comment = value;
-                    OnPropertyChanged(nameof(comment));
+                    OnPropertyChanged(nameof(Comment));
                 }
             }
         }
-        public IonMode ionMode {
+        public IonMode IonMode {
             get => _spotData.IonMode;
             set {
                 if (_spotData.IonMode != value) {
                     _spotData.IonMode = value;
-                    OnPropertyChanged(nameof(ionMode));
-                    OnPropertyChanged(nameof(adductIons));
+                    OnPropertyChanged(nameof(IonMode));
+                    OnPropertyChanged(nameof(AdductIons));
                 }
             }
         }
-        public List<AdductIon> adductIons {
+        public List<AdductIon> AdductIons {
             get {
-                if (ionMode == IonMode.Positive) {
+                if (IonMode == IonMode.Positive) {
                     return _parameter.MS1PositiveAdductIonList;
-                } if (ionMode == IonMode.Negative) {
+                } if (IonMode == IonMode.Negative) {
                     return _parameter.MS1NegativeAdductIonList;
                 } else {
-                    return _parameter.MS1PositiveAdductIonList.Concat(_parameter.MS1NegativeAdductIonList).ToList();
+                    return [.. _parameter.MS1PositiveAdductIonList, .. _parameter.MS1NegativeAdductIonList];
                 }
             }
         }
-        public MSDataType spectrumType {
+        public MSDataType SpectrumType {
             get => _spotData.SpectrumType;
             set {
                 if (_spotData.SpectrumType != value) {
                     _spotData.SpectrumType = value;
-                    OnPropertyChanged(nameof(spectrumType));
+                    OnPropertyChanged(nameof(SpectrumType));
                 }
             }
         }
 
-        public double collisionEnergy {
+        public double CollisionEnergy {
             get => _spotData.CollisionEnergy;
             set {
                 if (_spotData.CollisionEnergy != value) {
                     _spotData.CollisionEnergy = value;
-                    OnPropertyChanged(nameof(collisionEnergy));
+                    OnPropertyChanged(nameof(CollisionEnergy));
                 }
             }
         }
 
-        public int ms1Num {
+        public int Ms1Num {
             get => _spotData.Ms1PeakNumber;
         }
-        public int ms2Num {
+        public int Ms2Num {
             get => _spotData.Ms2PeakNumber;
         }
 
-        public List<FormulaResult>? formulaList {
+        public List<FormulaResult> FormulaList {
             get => _formulaList;
             set {
                 if (_formulaList != value) {
                     _formulaList = value;
-                    OnPropertyChanged(nameof(formulaList));
+                    OnPropertyChanged(nameof(FormulaList));
                 }
             }
         }
 
-        public List<FragmenterResult>? structureList {
+        public List<FragmenterResult?> StructureList {
             get => _structureList;
             set {
                 if (_structureList != value) {
                     _structureList = value;
-                    OnPropertyChanged(nameof(structureList));
+                    OnPropertyChanged(nameof(StructureList));
                 }
             }
         }
 
-        public MsSpectrum ms1Spectrum { get; private set; }
-        public MsSpectrum ms2Spectrum { get; private set; }
-
-        public MsSpectrum experimentSpectrum { get; private set; }
-        public MsSpectrum referenceSpectrum { get; private set; }
+        public MsSpectrum? Ms1Spectrum { get; private set; }
+        public MsSpectrum? Ms2Spectrum { get; private set; }
 
         public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries) {
             _queryFile = queryFile;
@@ -228,9 +222,6 @@ namespace CompMs.App.Msdial.Model.Search
             LoadExistingFiles();
         }
 
-        public AlignmentSpotPropertyModel Spot { get; private set; }
-        public StructureFinderBatchProcess StructureFinderBatchProcess { get; }
-
         public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
         private DelegateCommand? _runFindFormula;
 
@@ -238,9 +229,11 @@ namespace CompMs.App.Msdial.Model.Search
         private DelegateCommand? _runFindStructure;
 
         private void Load() {
-            _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
-            ms1Spectrum = new MsSpectrum(_spotData.Ms1Spectrum);
-            ms2Spectrum = new MsSpectrum(_spotData.Ms2Spectrum);
+            if (_queryFile is not null) {
+                _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
+                Ms1Spectrum = new MsSpectrum(_spotData.Ms1Spectrum);
+                Ms2Spectrum = new MsSpectrum(_spotData.Ms2Spectrum);
+            }
         }
 
         public void LoadExistingFiles() {

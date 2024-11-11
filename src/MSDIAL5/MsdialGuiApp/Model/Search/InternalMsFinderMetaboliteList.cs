@@ -11,28 +11,24 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.Model.Search
-{
+namespace CompMs.App.Msdial.Model.Search {
     internal class InternalMsFinderMetaboliteList : DisposableModelBase {
-        private readonly AlignmentSpotPropertyModelCollection _spots;
         public List<ExistStructureQuery> _structureQueries;
 
-        public InternalMsFinderMetaboliteList(List<MsfinderQueryFile> msfinderQueryFiles, AlignmentSpotPropertyModelCollection spots, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> structureQueries)
-        {
-            _spots = spots;
+        public InternalMsFinderMetaboliteList(List<MsfinderQueryFile> msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> structureQueries) {
             _structureQueries = structureQueries;
             var metabolites = LoadMetabolites(msfinderQueryFiles, parameter, structureQueries);
             _observedMetabolites = new ObservableCollection<MsfinderObservedMetabolite>(metabolites);
             ObservedMetabolites = new ReadOnlyObservableCollection<MsfinderObservedMetabolite>(_observedMetabolites);
             _selectedObservedMetabolite = ObservedMetabolites.FirstOrDefault();
-            var ms1 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.ms1Spectrum);
-            var ms2 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.ms2Spectrum);
-            internalMsFinderMs1 = new ObservableMsSpectrum(ms1, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
-            internalMsFinderMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            var ms1 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.Ms1Spectrum);
+            var ms2 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.Ms2Spectrum);
+            InternalMsFinderMs1 = new ObservableMsSpectrum(ms1, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            InternalMsFinderMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
         }
 
-        public ObservableMsSpectrum internalMsFinderMs1 { get; }
-        public ObservableMsSpectrum internalMsFinderMs2 { get; }
+        public ObservableMsSpectrum InternalMsFinderMs1 { get; }
+        public ObservableMsSpectrum InternalMsFinderMs2 { get; }
 
         private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile>msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery>queries) {
             var metaboliteList = new List<MsfinderObservedMetabolite>();
@@ -44,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public ReadOnlyObservableCollection<MsfinderObservedMetabolite> ObservedMetabolites { get; }
-        private ObservableCollection<MsfinderObservedMetabolite> _observedMetabolites;
+        private readonly ObservableCollection<MsfinderObservedMetabolite> _observedMetabolites;
 
         public MsfinderObservedMetabolite? SelectedObservedMetabolite {
             get => _selectedObservedMetabolite; 

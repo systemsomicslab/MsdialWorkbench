@@ -16,8 +16,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
             _broker = broker;
 
             InternalMsFinderMetaboliteList = model.InternalMsFinderMetaboliteList;
-            spectrumMs1ViewModel = new SingleSpectrumViewModel(model.spectrumModelMs1).AddTo(Disposables);
-            spectrumMs2ViewModel = new SingleSpectrumViewModel(model.spectrumModelMs2).AddTo(Disposables);
+            spectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1).AddTo(Disposables);
+            spectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2).AddTo(Disposables);
         }
 
         public InternalMsFinderMetaboliteList InternalMsFinderMetaboliteList { get; }
