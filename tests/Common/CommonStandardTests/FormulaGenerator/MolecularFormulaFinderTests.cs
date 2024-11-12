@@ -12,8 +12,13 @@ namespace CompMs.Common.FormulaGenerator.Tests
     {
         [TestMethod()]
         [DynamicData(nameof(testDatas), DynamicDataSourceType.Property)]
-        public void GetMolecularFormulaListTest(string rawDataPath, List<(string, double)> expectedResults)
+        [DeploymentItem(@"Resources\FormulaGenerator\test_data1.msp", @"Resources\FormulaGenerator\")]
+        [DeploymentItem(@"Resources\FormulaGenerator\ProductIonLib_vs1.pid", @"Resources\FormulaGenerator\")]
+        [DeploymentItem(@"Resources\FormulaGenerator\NeutralLossDB_vs2.ndb", @"Resources\FormulaGenerator\")]
+        [DeploymentItem(@"Resources\FormulaGenerator\MsfinderFormulaDB-VS13.efd", @"Resources\FormulaGenerator\")]
+        public void GetMolecularFormulaListTest(List<(string, double)> expectedResults)
         {
+            var rawDataPath = @"Resources\FormulaGenerator\test_data1.msp";
             var productIonDB = FragmentDbParser.GetProductIonDB(@"Resources\FormulaGenerator\ProductIonLib_vs1.pid", out string _);
             var neutralLossDB = FragmentDbParser.GetNeutralLossDB(@"Resources\FormulaGenerator\NeutralLossDB_vs2.ndb", out string _);
             var existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(@"Resources\FormulaGenerator\MsfinderFormulaDB-VS13.efd", out string _);
@@ -34,7 +39,6 @@ namespace CompMs.Common.FormulaGenerator.Tests
             {
                 yield return new object[]
                 {
-                    @"Resources\FormulaGenerator\test_data1.msp",
                     new List<(string, double)>{
                         ("C33H40N2O9", 4.29),
                         ("C17H50N6O11P2S", 3.28),
