@@ -19,8 +19,8 @@ namespace CompMs.App.RawDataViewer.Model
             NoiseMax = peaks.Where(peak => peak.PeakShape.SignalToNoise < 10d).OrderByDescending(item => item?.PeakFeature.PeakHeightTop).FirstOrDefault();
             PeakMin = peaks.Where(peak => peak.PeakShape.SignalToNoise >= 10d).OrderBy(item => item?.PeakFeature.PeakHeightTop).FirstOrDefault();
 
-            HorizontalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => (double)peak.PeakShape.SignalToNoise).ToArray(), new ConstantMargin(30), base_: 10).AddTo(Disposables);
-            VerticalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => peak.PeakFeature.PeakHeightTop).ToArray(), new ConstantMargin(30), base_: 10).AddTo(Disposables);
+            HorizontalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => (double)peak.PeakShape.SignalToNoise).ToArray(), new ConstantMargin(30)).AddTo(Disposables);
+            VerticalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => peak.PeakFeature.PeakHeightTop).ToArray(), new ConstantMargin(30)).AddTo(Disposables);
             Brush = new KeyBrushMapper<ChromatogramPeakFeature, bool>(new Dictionary<bool, Brush> { [false] = Brushes.Blue, [true] = Brushes.Red }, peak => peak.IsMsmsContained);
         }
 
