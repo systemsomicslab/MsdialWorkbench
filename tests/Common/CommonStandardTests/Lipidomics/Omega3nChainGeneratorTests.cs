@@ -1,4 +1,5 @@
-﻿#if NETSTANDARD || NETFRAMEWORK
+﻿using CompMs.Common.Lipidomics;
+#if NETSTANDARD || NETFRAMEWORK
 using CompMs.Common.Extension;
 #endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +19,8 @@ namespace CompMs.Common.Lipidomics.Tests
         [DataRow(20)]
         [DataRow(22)]
         [DataRow(100)]
-        public void CarbonIsValidTest(int carbon) {
+        public void CarbonIsValidTest(int carbon)
+        {
             var generator = new Omega3nChainGenerator();
             var actual = generator.CarbonIsValid(carbon);
             Assert.IsTrue(actual); // currently, it is always "true".
@@ -39,7 +41,8 @@ namespace CompMs.Common.Lipidomics.Tests
         [DataRow(false, 20, 6)]
         [DataRow(true, 22, 6)]
         [DataRow(false, 22, 7)]
-        public void DoubleBondIsValidTest(bool expected, int carbon, int doubleBond) {
+        public void DoubleBondIsValidTest(bool expected, int carbon, int doubleBond)
+        {
             var generator = new Omega3nChainGenerator();
             var actual = generator.DoubleBondIsValid(carbon, doubleBond);
             Assert.AreEqual(expected, actual);
@@ -47,19 +50,32 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         [DynamicData(nameof(GetAcylGenerateTestDatas), DynamicDataSourceType.Property)]
-        public void AcylGenerateTest(IChain[] expected, AcylChain chain) {
+        public void AcylGenerateTest(IChain[] expected, AcylChain chain)
+        {
             var generator = new Omega3nChainGenerator();
             var actual = generator.Generate(chain).ToArray();
             Console.WriteLine("source: {0}", chain);
             actual.ToList().ForEach(a => Console.WriteLine(a));
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual)) {
+            foreach ((var e, var a) in expected.Zip(actual))
+            {
                 Assert.That.AreChainsEqual(e, a);
             }
         }
 
-        public static IEnumerable<object[]> GetAcylGenerateTestDatas {
-            get {
+        [TestMethod()]
+        [DynamicData(nameof(GetAcylGenerateTestDatas), DynamicDataSourceType.Property)]
+        public void GenerateAcylChainFromAcylChainTest(IChain[] _, AcylChain chain)
+        {
+            var generator = new Omega3nChainGenerator();
+            var actual = generator.Generate(chain).ToArray();
+            CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(AcylChain));
+        }
+
+        public static IEnumerable<object[]> GetAcylGenerateTestDatas
+        {
+            get
+            {
                 yield return new object[] {
                     new IChain[] {
                         new AcylChain(18, new DoubleBond(0), new Oxidized(0)),
@@ -104,19 +120,32 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         [DynamicData(nameof(GetAlkylGenerateTestDatas), DynamicDataSourceType.Property)]
-        public void AlkylGenerateTest(IChain[] expected, AlkylChain chain) {
+        public void AlkylGenerateTest(IChain[] expected, AlkylChain chain)
+        {
             var generator = new Omega3nChainGenerator();
             var actual = generator.Generate(chain).ToArray();
             Console.WriteLine("source: {0}", chain);
             actual.ToList().ForEach(a => Console.WriteLine(a));
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual)) {
+            foreach ((var e, var a) in expected.Zip(actual))
+            {
                 Assert.That.AreChainsEqual(e, a);
             }
         }
 
-        public static IEnumerable<object[]> GetAlkylGenerateTestDatas {
-            get {
+        [TestMethod()]
+        [DynamicData(nameof(GetAlkylGenerateTestDatas), DynamicDataSourceType.Property)]
+        public void GenerateAlkylChainFromAlkylChainTest(IChain[] _, AlkylChain chain)
+        {
+            var generator = new Omega3nChainGenerator();
+            var actual = generator.Generate(chain).ToArray();
+            CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(AlkylChain));
+        }
+
+        public static IEnumerable<object[]> GetAlkylGenerateTestDatas
+        {
+            get
+            {
                 yield return new object[] {
                     new IChain[] {
                         new AlkylChain(18, new DoubleBond(0), new Oxidized(0)),
@@ -172,17 +201,30 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         [DynamicData(nameof(GetSphingosineGenerateTestDatas), DynamicDataSourceType.Property)]
-        public void SphingosineGenerateTest(IChain[] expected, SphingoChain chain) {
+        public void SphingosineGenerateTest(IChain[] expected, SphingoChain chain)
+        {
             var generator = new Omega3nChainGenerator();
             var actual = generator.Generate(chain).ToArray();
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual)) {
+            foreach ((var e, var a) in expected.Zip(actual))
+            {
                 Assert.That.AreChainsEqual(e, a);
             }
         }
 
-        public static IEnumerable<object[]> GetSphingosineGenerateTestDatas {
-            get {
+        [TestMethod()]
+        [DynamicData(nameof(GetSphingosineGenerateTestDatas), DynamicDataSourceType.Property)]
+        public void GenerateSphingosineFromSphingosineTest(IChain[] _, SphingoChain chain)
+        {
+            var generator = new Omega3nChainGenerator();
+            var actual = generator.Generate(chain).ToArray();
+            CollectionAssert.AllItemsAreInstancesOfType(actual, typeof(SphingoChain));
+        }
+
+        public static IEnumerable<object[]> GetSphingosineGenerateTestDatas
+        {
+            get
+            {
                 yield return new object[] {
                     new IChain[] {
                         new SphingoChain(18, new DoubleBond(0), new Oxidized(2, 1, 3)),

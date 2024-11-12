@@ -371,5 +371,27 @@ namespace CompMs.Common.Utility.Tests
                 CollectionAssert.AreEqual(exp, act);
             }
         }
+
+        [TestMethod]
+        public void CartesianProductSingleElementTest()
+        {
+            int[][] collection = [
+                [1,],
+                [ 2, 3, 4, 5, ],
+            ];
+
+            int[][] expects = [
+                [ 1, 2, ],
+                [ 1, 3, ],
+                [ 1, 4, ],
+                [ 1, 5, ],
+            ];
+            var actuals = SearchCollection.CartesianProduct(collection);
+
+            foreach ((var exp, var act) in expects.Zip(actuals))
+            {
+                CollectionAssert.AreEqual(exp, act);
+            }
+        }
     }
 }

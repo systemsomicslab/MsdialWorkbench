@@ -7,11 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics {
-    public class DGOadSpectrumGenerator : ILipidSpectrumGenerator {
-        private static readonly double NH3 = new[] {
-            MassDiffDictionary.HydrogenMass * 3,
-            MassDiffDictionary.NitrogenMass,
-        }.Sum();
+    public class DGd5OadSpectrumGenerator : ILipidSpectrumGenerator {
         private static readonly double H2O = new[] {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
@@ -19,11 +15,11 @@ namespace CompMs.Common.Lipidomics {
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
-        public DGOadSpectrumGenerator() {
+        public DGd5OadSpectrumGenerator() {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public DGOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
+        public DGd5OadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator) {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
 
@@ -33,7 +29,7 @@ namespace CompMs.Common.Lipidomics {
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var abundance = 30;
-            var nlMass =0.0;
+            var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetDGOadSpectrum(lipid, adduct));
             string[] oadId =
@@ -60,7 +56,7 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD12+O",
                 //"OAD12+O+H",
                 //"OAD12+O+2H",
-                "OAD01+H" } ;
+                "OAD01+H" };
             string[] oadIdLossH2O =
                 new string[] {
                 "OAD01",
@@ -118,7 +114,8 @@ namespace CompMs.Common.Lipidomics {
                     foreach (AcylChain chain in Chains.GetDeterminedChains()) {
                         spectrum.AddRange(
                             new[] {
-                                new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 50d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 500d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
+                                new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron + MassDiffDictionary.HydrogenMass, 200d, $"-{chain}+H") { SpectrumComment = SpectrumComment.acylchain },
                             }
                         );
                     }
