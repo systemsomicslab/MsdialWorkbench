@@ -4,6 +4,7 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:commonmmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
            mc:Ignorable="d" 
            Header="Processing" KeyTip="P"
            d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}" >

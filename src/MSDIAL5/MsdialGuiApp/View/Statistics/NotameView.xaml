@@ -1,0 +1,128 @@
+<UserControl x:Class="CompMs.App.Msdial.View.Statistics.NotameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
+             d:DesignWidth="450" d:DesignHeight="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="8" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">
+                    <Bold>NOTAME</Bold> ('NOn-TArgeted MEtabolomics') is an R-based tool to preprocess and clean metabolomics data. It will take 3-5 minutes.<LineBreak></LineBreak>
+                    In order to use Notame:<LineBreak></LineBreak>1. You need to have a class property with 2 analysis parameters connected with underbar (ex. Food_Age, HighFat_2year).
+                    <LineBreak></LineBreak>2. Quality control samples should be more than 3 (you can set QC's class as 'QC_QC' and blank's as just 'blank').<LineBreak></LineBreak>
+                    For further information: 
+                    <Hyperlink NavigateUri="https://github.com/antonvsdata/notame">https://github.com/antonvsdata/notame</Hyperlink>
+                </TextBlock>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Button Content="Package installation script" Command="{Binding ShowPackageScript}" Margin="10"/>
+            </Grid>
+        </Grid>
+
+        <Grid Margin="8" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Export directory:"
+                   VerticalAlignment="Center"
+                   Grid.Column="0">
+                <TextBlock.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Browse folder to save exported files."/>
+                    </ToolTip>
+                </TextBlock.ToolTip>
+            </TextBlock>
+            <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                 Margin="5,0"
+                 Grid.Column="1"/>
+            <Button Content="Browse"
+                Command="{Binding BrowseDirectoryCommand}"
+                Grid.Column="2"/>
+        </Grid>
+
+        <StackPanel Margin="8" Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="File:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding AlignmentFiles}"
+                      IsSynchronizedWithCurrentItem="True"
+                      DisplayMemberPath="FileName"
+                      SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource}"
+                      HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <CheckBox Content="Filtering by current parameter"
+                  IsChecked="{Binding UseFilter}"
+                  Margin="0,8,0,0"/>
+            <CheckBox Content="Export report of Notame processing"
+                  IsChecked="{Binding ExportReport}"
+                  Margin="0,8,0,0"/>
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding ExportTypes}"
+                      Margin="8" Grid.Row="3">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <RadioButton GroupName="QuantValue"
+                                 Content="{Binding Label}"
+                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                 IsEnabled="{Binding Enabled.Value}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Margin="8,8,0,0" Width="180"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Grid Margin="8" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="R directory:"
+                    VerticalAlignment="Center"
+                    Grid.Column="0">
+                <TextBlock.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Ex: C:\Program Files\R\R-4.4.1"/>
+                    </ToolTip>
+                </TextBlock.ToolTip>
+            </TextBlock>
+            <TextBox Text="{Binding RDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                    Margin="5,0"
+                    Grid.Column="1"/>
+            <Button Content="Browse"
+                    Command="{Binding BrowseRDirectoryCommand}"
+                    Grid.Column="2"/>
+        </Grid>
+    </Grid>
+</UserControl>

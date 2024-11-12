@@ -1889,7 +1889,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void normalizationMethod_Click(object sender, RoutedEventArgs e)
         {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
             var window = new NormalizationSetWin(this);
             window.Owner = this;
@@ -1910,7 +1910,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void principalComponentAnalysis_Click(object sender, RoutedEventArgs e)
         {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
             var window = new PcaSetWin(this);
             window.Owner = this;
@@ -1926,7 +1926,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         private void partialLeastSquares_Click(object sender, RoutedEventArgs e) {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
             var window = new PlsSetWin(this);
             window.Owner = this;
@@ -1943,7 +1943,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         private void hierarchicalclusteringanalysis_Click(object sender, RoutedEventArgs e) {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
             var window = new HcaSetWin(this);
             window.Owner = this;
@@ -1974,7 +1974,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void identificationSetting_Click(object sender, RoutedEventArgs e)
         {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
 
             if (this.projectProperty.Ionization == Ionization.ESI)
@@ -2025,7 +2025,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void alignmentResultPropertySetting_Click(object sender, RoutedEventArgs e)
         {
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
 
             if (this.projectProperty.Ionization == Ionization.ESI)
@@ -2079,7 +2079,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
 
             //var filePath = @"C:\Users\tipputa\Desktop\test.pdf";
 
@@ -2256,7 +2256,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             if (this.alignedDriftSpotBeanList != null && this.focusedAlignmentDriftID >= 0) {
 
                 var target = ((e.Source as MenuItem).Parent as ContextMenu).PlacementTarget;
@@ -2281,7 +2281,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             if (this.alignedDriftSpotBeanList != null && this.focusedAlignmentDriftID >= 0) {
                 var target = ((e.Source as MenuItem).Parent as ContextMenu).PlacementTarget;
                 var uiName = ((ChromatogramAlignedEicUI)target).Name;
@@ -2312,7 +2312,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             //new TableViewerHandler().StartUpAlignmentSpotTableViewer(this);
             // don't need to await;
             _ = new TableViewerTaskHandler().StartUpAlignmentSpotTableViewer(this);
@@ -2322,7 +2322,7 @@ namespace Rfx.Riken.OsakaUniv
         private void MenuItem_CorrelationBasedDeconvolution_ForAIF_SettingAndRun_Click(object sender, RoutedEventArgs e) {
 
             if (this.focusedAlignmentFileID < 0) {
-                MessageBox.Show("Chose an alignment file from the file navigator.",
+                MessageBox.Show("Choose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             if (this.AnalysisFiles.Count <= 3) {
@@ -2346,7 +2346,7 @@ namespace Rfx.Riken.OsakaUniv
 
             if (this.focusedAlignmentFileID < 0)
             {
-                MessageBox.Show("Chose an alignment file from the file navigator.",
+                MessageBox.Show("Choose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             if (this.AnalysisFiles.Count <= 3)
@@ -2370,7 +2370,7 @@ namespace Rfx.Riken.OsakaUniv
 
             if (this.focusedAlignmentFileID < 0)
             {
-                MessageBox.Show("Chose an alignment file from the file navigator.",
+                MessageBox.Show("Choose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             if (this.AnalysisFiles.Count <= 3)
@@ -2393,7 +2393,7 @@ namespace Rfx.Riken.OsakaUniv
 
             if (this.focusedAlignmentFileID < 0)
             {
-                MessageBox.Show("Chose an alignment file from the file navigator.",
+                MessageBox.Show("Choose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             if (this.AnalysisFiles.Count <= 3)
@@ -2506,7 +2506,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             var window = new ForAIF.ParticularAlignmentSpotExporterWindow(this);
             window.Owner = this;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -5993,7 +5993,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("You don't have any aligmnet result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (this.focusedAlignmentFileID < 0) { MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             if (this.alignmentSpotTableViewer != null) {
                 this.alignmentSpotTableViewer.Close();
                 this.alignmentSpotTableViewer = null;

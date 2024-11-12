@@ -108,7 +108,7 @@ namespace Lipidomics.Retentiontime.Manager {
         private void ShowRLocationSelectDialog(object obj) {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose a folder where to save the exported files.";
+            fbd.Description = "Choose a folder where to save the exported files.";
             fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -133,7 +133,7 @@ namespace Lipidomics.Retentiontime.Manager {
         private void ShowOutputFolderSelectDialog(object obj) {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose a folder where to save the exported files.";
+            fbd.Description = "Choose a folder where to save the exported files.";
             fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
