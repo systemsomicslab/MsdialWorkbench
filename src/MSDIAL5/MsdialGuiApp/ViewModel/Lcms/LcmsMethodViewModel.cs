@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -8,6 +9,7 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -33,6 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReadOnlyReactiveProperty<LcmsAnalysisViewModel?> analysisAsObservable,
             IReadOnlyReactiveProperty<LcmsAlignmentViewModel?> alignmentAsObservable,
             IMessageBroker broker,
+
             FocusControlManager focusControlManager)
             : base(
                   model, analysisAsObservable, alignmentAsObservable,
@@ -72,6 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.InternalMsfinderSettingModel, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
+
+            NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -130,6 +135,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
             return InnerShowChromatorams;
         }
+
+        public NotameViewModel NotameViewModel { get; set; }
 
         public ReactiveCommand ShowProteinGroupTableCommand { get; }
 

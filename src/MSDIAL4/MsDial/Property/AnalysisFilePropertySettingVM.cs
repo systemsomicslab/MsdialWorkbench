@@ -38,7 +38,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static ValidationResult ValidateAnalysisFile(ObservableCollection<AnalysisFilePropertyVM> test, ValidationContext context)
         {
-            if (test == null || test.Count == 0) return new ValidationResult("Chose the analysis files (abf, mzML, or netCDF format).");
+            if (test == null || test.Count == 0) return new ValidationResult("Choose the analysis files (abf, mzML, or netCDF format).");
             else return ValidationResult.Success;
         }
         #endregion

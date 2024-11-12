@@ -50,10 +50,13 @@
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
 		<None Remove="Resources\NeutralLossButton.ico" />
+		<None Remove="Resources\notame.png" />
+		<None Remove="Resources\Notame.R" />
 		<None Remove="Resources\ProductIonButton.ico" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
 		<None Remove="Resources\RawDataButton.ico" />
+		<None Remove="Resources\Report.R" />
 		<None Remove="Resources\SplashLipids.xml" />
 		<None Remove="Resources\SubstructureViewer.ico" />
 		<None Remove="Resources\Table.png" />
@@ -66,12 +69,19 @@
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Report.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\Notame.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="MessagePack" Version="1.7.3.7" />
 	  <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="R.NET" Version="1.9.0" />
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
 	</ItemGroup>
 	<ItemGroup>
@@ -113,6 +123,7 @@
 	  <Resource Include="Resources\ProductIonButton.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="Resources\notame.png" />
 	  <Resource Include="Resources\RawAndDeconvo.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
