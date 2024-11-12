@@ -207,7 +207,7 @@ namespace Rfx.Riken.OsakaUniv
             //var export_dir = mainWindow.ProjectProperty.ProjectFolderPath + "\\" + "Exported_Figures";
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose a save folder.";
+            fbd.Description = "Choose a save folder.";
             fbd.SelectedPath = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var export_dir = string.Empty;
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {

@@ -4,6 +4,7 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:stat="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
            xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
            xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
            mc:Ignorable="d"
@@ -45,5 +46,8 @@
         <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
                       IsEnabled="False"
                       KeyTip="W"/>
+        <RibbonButton Label="Notame (two-parameter processing tool)" LargeImageSource="/Resources/notame.png"
+                      Command="{Binding NotameViewModel.ShowSettingViewCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="B"/>
     </RibbonGroup>
 </RibbonTab>

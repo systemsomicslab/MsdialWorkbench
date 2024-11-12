@@ -34,7 +34,7 @@ namespace Rfx.Riken.OsakaUniv
             set { this.projectProperty.ProjectFolderPath = value; }
         }
 
-        [Required(ErrorMessage = "Chose a project folder path.")]
+        [Required(ErrorMessage = "Choose a project folder path.")]
         public string ProjectFilePath
         {
             get { return this.projectProperty.ProjectFilePath; }
