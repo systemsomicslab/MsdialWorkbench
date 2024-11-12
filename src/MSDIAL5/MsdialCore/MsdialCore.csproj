@@ -14,8 +14,8 @@
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
 	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
 	  <PackageReference Include="RawDataHandler" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug'" />
-	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.1.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
-	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.1.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
 	  <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>

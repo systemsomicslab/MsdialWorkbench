@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -11,14 +10,18 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
@@ -28,6 +31,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ImmsAnalysisModel _analysisModel;
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
+        private readonly AnalysisFileBeanModel _file;
+        private readonly MaldiFrames _maldiFrames;
+        private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
@@ -35,18 +41,18 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
-            var rawSpectraOnPixels = wholeRoi.RetrieveRawSpectraOnPixels(_elements);
-            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, rawSpectraOnPixels, analysisModel.Ms1Peaks, analysisModel.Target).AddTo(Disposables);
+            var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
             ImagingRoiModel.Select();
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<IntensityImageModel>(
-                analysisModel.Ms1Peaks.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
-                    (peak, pixelPeaks) => new IntensityImageModel(pixelPeaks, maldiFrames, peak, laserInfo)));
+            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
             Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
             analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .SkipNull()
                 .Subscribe(intensity => SelectedPeakIntensities = intensity)
                 .AddTo(Disposables);
+            _file = file;
+            _maldiFrames = maldiFrames;
+            _wholeRoi = wholeRoi;
         }
 
         public ImmsAnalysisModel AnalysisModel => _analysisModel;
@@ -63,17 +69,47 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
         private IntensityImageModel? _selectedPeakIntensities;
 
-        public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
+        public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
         {
-            var rawSpectraOnPixels = await Task.Run(() => roi.RetrieveRawSpectraOnPixels(_elements)).ConfigureAwait(false);
-            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, rawSpectraOnPixels, _analysisModel.Ms1Peaks, _analysisModel.Target);
+            var loader = roi.GetIntensityOnPixelsLoader(_elements);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
             result.Select();
             return result;
         }
+
+        public async Task SaveIntensitiesAsync(CancellationToken token = default) {
+            using var writer = File.Open("pixel_intensities.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
+            var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
+            writer.Write(encoded, 0, encoded.Length);
+            using var sem = new SemaphoreSlim(8, 8);
+            var tasks = new List<Task>(Intensities.Count);
+            foreach (var ints in Intensities) {
+                tasks.Add(Task.Run(async () => {
+                    await sem.WaitAsync().ConfigureAwait(false);
+                    try {
+                        await ints.SaveAsync(writer);
+                    }
+                    finally {
+                        sem.Release();
+                    }
+                }, token));
+            }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        public void ResetRawSpectraOnPixels() {
+            using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
+            rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
+        }
+
+        public MaldiFrames GetFramesFromPositions(HashSet<(int, int)> sets) {
+            return new MaldiFrames(_maldiFrames.Infos.Where(info => sets.Contains((info.XIndexPos, info.YIndexPos))), _maldiFrames);
+        }
+
         public Task SaveAsync()
         {
             return _analysisModel.SaveAsync(default);
         }
-
     }
 }
