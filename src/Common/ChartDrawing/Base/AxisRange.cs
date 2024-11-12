@@ -58,6 +58,10 @@ namespace CompMs.Graphics.Core.Base
             return lhs.Union(rhs);
         }
 
+        public static AxisRange operator +(AxisRange range, AxisValue value) => new(range.Minimum.Value + value.Value, range.Maximum.Value + value.Value);
+        public static AxisRange operator -(AxisRange range, AxisValue value) => new(range.Minimum.Value - value.Value, range.Maximum.Value - value.Value);
+        public static AxisRange operator *(AxisRange range, double value) => new(range.Minimum * value, range.Maximum * value);
+
         public override string ToString() {
             return $"{Minimum.Value}-{Maximum.Value}";
         }

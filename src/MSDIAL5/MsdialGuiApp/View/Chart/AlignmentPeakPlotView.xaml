@@ -24,7 +24,7 @@
     </UserControl.Resources>
     <Grid>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
-                          VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
+                          VerticalAxis="{Binding VerticalAxis.Value, Mode=OneWay}"
                           GraphTitle="{Binding GraphTitle.Value, Mode=OneTime}"
                           HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneTime}"
                           VerticalTitle="{Binding VerticalTitle.Value, Mode=OneTime}"

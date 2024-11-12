@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -33,6 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            GcgcPlotViewModel = new GcgcAlignmentPeakPlotViewModel(model.GcgcPlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.MsSpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
@@ -61,6 +63,20 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(NormalizationSetViewModel)).AddTo(Disposables);
+
+            MultivariateAnalysisSettingViewModel = new MultivariateAnalysisSettingViewModel(model.MultivariateAnalysisSettingModel, broker).AddTo(Disposables);
+            ShowMultivariateAnalysisSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand<MultivariateAnalysisOption>()
+                .WithSubscribe(option =>
+                {
+                    MultivariateAnalysisSettingViewModel.MultivariateAnalysisOption.Value = option;
+                    broker.Publish(MultivariateAnalysisSettingViewModel);
+                })
+                .AddTo(Disposables);
+
+            var notification = TaskNotification.Start("Loading alignment results...");
+            broker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
         public BarChartViewModel BarChartViewModel { get; }
@@ -83,7 +99,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public GcgcAlignmentPeakPlotViewModel GcgcPlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
+
+        public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
+        public ReactiveCommand<MultivariateAnalysisOption> ShowMultivariateAnalysisSettingCommand { get; }
 
         public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(SearchCompound);
         private DelegateCommand? _searchCompoundCommand;

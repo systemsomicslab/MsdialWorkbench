@@ -1,14 +1,10 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
-using CompMs.Common.Parser;
+﻿using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
     [TestClass()]
+    [DeploymentItem("x64/libinchi.dll", "x64")]
     public class SmilesInchikeyGeneratorTest
     {
         [TestMethod()]

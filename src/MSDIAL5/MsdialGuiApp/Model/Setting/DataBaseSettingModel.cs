@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
@@ -10,6 +11,8 @@ using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -86,6 +89,16 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";
+        }
+
+        public bool TrySetLbmLibrary() {
+            string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+            var lbmFile = lbmFiles.FirstOrDefault();
+            if (lbmFile is not null) {
+                DataBasePath = lbmFile;
+            }
+            return lbmFile is not null;
         }
 
         public IReferenceDataBase? Create() {

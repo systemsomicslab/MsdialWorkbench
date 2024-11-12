@@ -27,7 +27,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         public DimsGapFiller(MsdialDimsParameter param)
             : this(param.CentroidMs1Tolerance, param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Mz.Value), ChromXType.Mz, ChromXUnit.Mz);
         }
 

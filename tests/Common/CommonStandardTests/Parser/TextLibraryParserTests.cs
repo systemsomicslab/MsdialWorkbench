@@ -433,6 +433,19 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             Debug.WriteLine($"Error message: {error}");
             Debug.WriteLine($"Count: {results.Count}");
         }
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\txt_with_blank_end_line.txt", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\txt_with_blank_end_line.txt", 2)]
+        public void SuccessIfReadBlankLineInEnd(string library, int rowCnt)
+        {
+            var results = TextLibraryParser.TextLibraryReader(library, out var error);
+            Assert.AreEqual(string.Empty, error);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(rowCnt, results.Count);
+
+        }
+
     }
 
 }

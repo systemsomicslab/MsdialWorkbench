@@ -4,22 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>CompMs.MsdialLcImMsApi</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Algorithm\PeakSpot\**" />
-    <EmbeddedResource Remove="Algorithm\PeakSpot\**" />
-    <None Remove="Algorithm\PeakSpot\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Algorithm\Alignment\" />
   </ItemGroup>
 
 </Project>

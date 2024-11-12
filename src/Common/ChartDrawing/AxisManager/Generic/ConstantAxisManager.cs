@@ -19,6 +19,10 @@ namespace CompMs.Graphics.AxisManager.Generic
             add { }
             remove { }
         }
+        public event EventHandler AxisValueMappingChanged {
+            add { }
+            remove { }
+        }
 
         public bool Contains(AxisValue value) {
             return true;

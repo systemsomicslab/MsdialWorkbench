@@ -51,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Export
             var splash = new NSSplash.Splash();
             var handler = new MassBankRecordHandler(_parameter.IonMode, _studyContextModel.InstrumentType, scan => scan.Spectrum.IsEmptyOrNull() ? "NA" : splash.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", scan.Spectrum.Select(p => $"{p.Mass}:{p.Intensity}")))))
             {
+                Software = "MSDIAL",
                 Authors = _studyContextModel.Authors,
                 License = _studyContextModel.License,
                 Instrument = _studyContextModel.Instrument,

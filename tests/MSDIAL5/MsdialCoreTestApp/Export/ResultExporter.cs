@@ -7,18 +7,15 @@ using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace CompMs.App.MsdialConsole.Export
 {
-    public sealed class ResultExporter {
-        private ResultExporter() { }
-
+    public static class ResultExporter {
         public static void ExportChromPeakFeatures(AnalysisFileBean file, string outputFolder, IMsdialDataStorage<ParameterBase> container,
             List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults) {
            
-            var outputfile = outputFolder + "\\" + file.AnalysisFileName + ".msdial";
+            var outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".msdial");
             Console.WriteLine("Exporting peak list data: {0}", outputfile);
             var param = container.Parameter;
             var mspDB = container.MspDB;
@@ -51,7 +48,7 @@ namespace CompMs.App.MsdialConsole.Export
         public static void ExportAlignmentResult(AlignmentFileBean alignFile, string outputFolder, IMsdialDataStorage<ParameterBase> container,
             List<AlignmentSpotProperty> alignedSpots, List<MSDecResult> msdecResults) {
 
-            var outputfile = outputFolder + "\\" + alignFile.FileName + ".mdalign";
+            var outputfile = Path.Combine(outputFolder, alignFile.FileName + ".mdalign");
             Console.WriteLine("Exporting alignment result data: {0}", outputfile);
             var param = container.Parameter;
             var mspDB = container.MspDB;

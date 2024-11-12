@@ -89,7 +89,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var chromPeakFeatures = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
-                    reporter?.Show(focusedMass - startMass, endMass - startMass);
+                    reporter?.Report(focusedMass - startMass, endMass - startMass);
                     continue;
                 }
 
@@ -97,13 +97,13 @@ namespace CompMs.MsdialCore.Algorithm {
                 chromPeakFeatures = RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
-                    reporter?.Show(focusedMass - startMass, endMass - startMass);
+                    reporter?.Report(focusedMass - startMass, endMass - startMass);
                     continue;
                 }
 
                 chromPeakFeaturesList.Add(chromPeakFeatures);
                 focusedMass += massStep;
-                reporter?.Show(focusedMass - startMass, endMass - startMass);
+                reporter?.Report(focusedMass - startMass, endMass - startMass);
             }
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, file.AcquisitionType);
         }
@@ -131,7 +131,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 tasks[0] = ProduceChromatogramAsync(bc, rawSpectra, chromatogramRange, targetMasses, token);
                 for (int i = 1; i < numThreads; i++) {
                     var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-                    tasks[i] = ConsumeChromatogramAsync(bc, provider, detector, chromPeakFeaturesArray, file.AcquisitionType, () => reporter?.Show(Interlocked.Increment(ref counter), targetMasses.Count), token);
+                    tasks[i] = ConsumeChromatogramAsync(bc, provider, detector, chromPeakFeaturesArray, file.AcquisitionType, () => reporter?.Report(Interlocked.Increment(ref counter), targetMasses.Count), token);
                 }
                 Task.WaitAll(tasks);
             }
@@ -520,7 +520,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
                 // for tsugawa own research
-                //if (spec.ExperimentID != 6) continue;
+                // if (spec.ExperimentID != 3) continue;
 
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
                     if (IsInMassWindow(mass, spec, ms2Tol, type) && spec.Spectrum.Length > 0) {
@@ -902,8 +902,12 @@ namespace CompMs.MsdialCore.Algorithm {
                 peakAreaAboveBaseline = peakAreaAboveZero - (sPeaklist[minLeftId].Intensity + sPeaklist[minRightId].Intensity) *
                     (sPeaklist[minRightId].ChromXs.Value - sPeaklist[minLeftId].ChromXs.Value) / 2;
 
-                peak.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
-                peak.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
+                if (sPeaklist[maxID].ChromXs.MainType == ChromXType.RT) {
+                    peakAreaAboveBaseline *= 60.0;
+                    peakAreaAboveZero *= 60.0;
+                }
+                peak.PeakAreaAboveBaseline = peakAreaAboveBaseline;
+                peak.PeakAreaAboveZero = peakAreaAboveZero;
 
                 peak.ChromXsTop = sPeaklist[maxID].ChromXs;
                 peak.ChromXsLeft = sPeaklist[minLeftId].ChromXs;

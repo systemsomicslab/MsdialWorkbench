@@ -224,31 +224,24 @@ namespace CompMs.App.Msdial.Model.Setting
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
-                    if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
+                    if (parameter.CollistionType == CollisionType.EIEIO && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
-                    if (parameter.CollistionType == CollisionType.OAD
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                    if (parameter.CollistionType == CollisionType.OAD && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
                         var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.OadLipid;
                     }
 
-                    if (parameter.CollistionType == CollisionType.EID
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EidLipid)) {
+                    if (parameter.CollistionType == CollisionType.EID && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EidLipid)) {
                         var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EidLipid;
                     }
 
-                    string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                    var lbmFile = lbmFiles.FirstOrDefault();
-                    if (!(lbmFile is null)
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
+                    {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DataBasePath = lbmFile;
+                        databaseModel.TrySetLbmLibrary();
                     }
                 }
             }
@@ -369,6 +362,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
@@ -377,6 +371,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
         }
@@ -447,7 +442,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcimmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
+            return new LcimmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);
         }
     }
 

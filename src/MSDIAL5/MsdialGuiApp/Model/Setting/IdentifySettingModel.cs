@@ -149,6 +149,13 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
+        public void AddLbmDatabase() {
+            var db = new DataBaseSettingModel(parameter);
+            if (db.TrySetLbmLibrary()) {
+                DataBaseModels.Add(db);
+            }
+        }
+
         public bool IsCompleted {
             get => isCompleted;
             private set => SetProperty(ref isCompleted, value);

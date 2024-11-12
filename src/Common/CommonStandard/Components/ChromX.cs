@@ -16,6 +16,7 @@ namespace CompMs.Common.Components
         double Value { get; }
         ChromXType Type { get; } 
         ChromXUnit Unit { get; }
+        IChromX Add(double delta);
     }
 
     [MessagePackObject]
@@ -75,6 +76,10 @@ namespace CompMs.Common.Components
 
         public int CompareTo(RetentionTime other) {
             return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
         }
 
         public static RetentionTime operator+(RetentionTime left, double delta) {
@@ -147,6 +152,10 @@ namespace CompMs.Common.Components
             return Value.CompareTo(other.Value);
         }
 
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
         public static RetentionIndex operator+(RetentionIndex left, double delta) {
             return new RetentionIndex(left.Value + delta, left.Unit);
         }
@@ -216,6 +225,10 @@ namespace CompMs.Common.Components
             return Value.CompareTo(other.Value);
         }
 
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
         public static DriftTime operator+(DriftTime left, double delta) {
             return new DriftTime(left.Value + delta, left.Unit);
         }
@@ -282,6 +295,10 @@ namespace CompMs.Common.Components
 
         public int CompareTo(MzValue other) {
             return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
         }
 
         public static MzValue operator+(MzValue left, double delta) {

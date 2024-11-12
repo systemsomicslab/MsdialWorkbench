@@ -74,6 +74,10 @@ namespace CompMs.App.MsdialConsole.Process
             using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
                 rawobj = access.GetMeasurement();
             }
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+                return access.GetMeasurement();
+            });
             var provider = new StandardDataProviderFactory().Create(rawobj);
 
             var db = DataBaseStorage.CreateEmpty();
@@ -98,7 +102,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
 
-            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, matchResultEvaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, matchResultEvaluator);
             processor.RunAsyncTest(file, provider).Wait();
 
             using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
@@ -161,6 +165,10 @@ namespace CompMs.App.MsdialConsole.Process
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 rawobj = access.GetMeasurement();
             }
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+                return access.GetMeasurement();
+            });
             Console.WriteLine("Peak picking...");
             var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialImmsDataStorage {
@@ -180,7 +188,7 @@ namespace CompMs.App.MsdialConsole.Process
             storage.AddStorage(container);
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, evaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, evaluator);
             processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
@@ -265,7 +273,6 @@ namespace CompMs.App.MsdialConsole.Process
                 rawobj = access.GetMeasurement();
             }
             Console.WriteLine("Peak picking...");
-            var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialDimsDataStorage {
                 AnalysisFiles = new List<AnalysisFileBean>() { file },
                 AlignmentFiles = new List<AlignmentFileBean>(),
@@ -285,7 +292,8 @@ namespace CompMs.App.MsdialConsole.Process
 
             var annotationProcess = BuildAnnotationProcess(container.DataBases);
 
-            CompMs.MsdialDimsCore.ProcessFile.Run(file, provider, container, annotationProcess, evaluator);
+            MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
+            processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
             RawSpectraOnPixels pixelData = null;

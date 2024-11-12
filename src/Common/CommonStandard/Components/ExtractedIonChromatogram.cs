@@ -144,12 +144,19 @@ namespace CompMs.Common.Components
                     return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LoessFilter:
                     return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit, ExtractedMz);
+                case SmoothingMethod.TimeBasedLinearWeightedMovingAverage: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        _smoother.TimeBasedLinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                    }
                 case SmoothingMethod.LinearWeightedMovingAverage:
-                default:
-                    var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
-                    var smoothed = arrayPool.Rent(_size);
-                    _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
-                    return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                default: {
+                        var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                        var smoothed = arrayPool.Rent(_size);
+                        _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                        return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
+                    }
             }
         }
 
@@ -166,7 +173,7 @@ namespace CompMs.Common.Components
         /// <remarks>
         /// This method is designed to focus peak detection efforts on a specific segment of the chromatogram, allowing for targeted analysis of areas of interest.
         /// </remarks>
-        public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
+        public PeakDetectionResult? GetPeakDetectionResultFromRange(int startID, int endID) {
             var datapoints = new List<double[]>();
             var datapointsPeakTopIndex = 0;
             var peaktopIntensity = double.MinValue;
@@ -180,7 +187,19 @@ namespace CompMs.Common.Components
                     }
                 }
             }
-            return PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
+            var result = PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
+            if (result is null) {
+                return null;
+            }
+            using var sChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            using var ssChromatogram = sChromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            using var baselineChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 20);
+            using var baselineCorrectedChromatogram = ssChromatogram.Difference(baselineChromatogram);
+            var parameter = NoiseEstimateParameter.GlobalParameter;
+            var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(parameter);
+            result.EstimatedNoise = Math.Max(1f, (float)noise);
+            result.SignalToNoise = (float)(result.IntensityAtPeakTop / result.EstimatedNoise);
+            return result;
         }
     }
 }

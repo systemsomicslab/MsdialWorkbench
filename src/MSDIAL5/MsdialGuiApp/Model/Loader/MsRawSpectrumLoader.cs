@@ -3,10 +3,8 @@ using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +15,11 @@ namespace CompMs.App.Msdial.Model.Loader
     {
         private readonly IDataProvider _provider;
         private readonly MSDataType _dataType;
-        private readonly ChromDecBaseParameter _chromDecParameter;
 
-        public MsRawSpectrumLoader(IDataProvider provider, MSDataType dataType, ChromDecBaseParameter chromDecParameter) {
+        public MsRawSpectrumLoader(IDataProvider provider, MSDataType dataType)
+        {
             _provider = provider;
             _dataType = dataType;
-            _chromDecParameter = chromDecParameter;
         }
 
         private async Task<IMSScanProperty?> LoadMsPropertymCoreAsync(QuantifiedChromatogramPeak? target, CancellationToken token) {
@@ -31,9 +28,6 @@ namespace CompMs.App.Msdial.Model.Loader
             }
             var msSpectrum = await _provider.LoadMsSpectrumFromIndexAsync(target.MS1RawSpectrumIdTop, token).ConfigureAwait(false);
             var spectra = DataAccess.GetCentroidMassSpectra(msSpectrum, _dataType, 0f, float.MinValue, float.MaxValue);
-            if (_chromDecParameter.RemoveAfterPrecursor) {
-                spectra = spectra.Where(peak => peak.Mass <= target.PeakFeature.Mass + _chromDecParameter.KeptIsotopeRange).ToList();
-            }
             return new MSScanProperty(target.MS1RawSpectrumIdTop, 0d, target.PeakFeature.ChromXsTop.GetRepresentativeXAxis(), IonMode.Positive) { Spectrum = spectra };
         }
 

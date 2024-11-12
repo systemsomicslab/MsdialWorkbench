@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Export
     public interface IAnalysisMetadataAccessor
     {
         string[] GetHeaders();
-        Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile);
+        Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle);
     }
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
@@ -40,10 +40,24 @@ namespace CompMs.MsdialCore.Export
 
         public string[] GetHeaders() => GetHeadersCore();
 
-        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
+        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var matchResult = NullIfUnknown(feature.MatchResults.Representative);
             var reference = matchResult is null ? null : refer.Refer(matchResult);
+
+/* Unmerged change from project 'MsdialCore (netstandard2.0)'
+Before:
             return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile);
+After:
+            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, TODO);
+*/
+
+/* Unmerged change from project 'MsdialCore (net6.0)'
+Before:
+            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile);
+After:
+            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, TODO);
+*/
+            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, exportStyle);
         }
 
         protected virtual string[] GetHeadersCore() {
@@ -84,7 +98,8 @@ namespace CompMs.MsdialCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle) {
 
             IEnumerable<string> comments = Enumerable.Empty<string>();
             if (!string.IsNullOrEmpty(feature.Comment)) {
@@ -125,7 +140,7 @@ namespace CompMs.MsdialCore.Export
                 { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
                 { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile) }
+                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) }
             };
         }
 
@@ -138,16 +153,16 @@ namespace CompMs.MsdialCore.Export
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            return string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
-        private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile) {
+        private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, parameter, analysisFile.AcquisitionType);
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            var strSpectrum = string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
-            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+            var strSpectrum = string.Join(" ", spectrum.Select(peak => string.Format("{0:F5}:{1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !exportStyle.TrimToExcelLimit) {
                 return strSpectrum;
             }
             var builder = new System.Text.StringBuilder();
