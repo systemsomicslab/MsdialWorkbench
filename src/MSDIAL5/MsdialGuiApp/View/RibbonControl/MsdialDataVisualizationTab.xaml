@@ -48,6 +48,6 @@
                       KeyTip="W"/>
         <RibbonButton Label="Notame (two-parameter processing tool)" LargeImageSource="/Resources/notame.png"
                       Command="{Binding NotameViewModel.ShowSettingViewCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                      KeyTip="N"/>
+                      KeyTip="B"/>
     </RibbonGroup>
 </RibbonTab>
