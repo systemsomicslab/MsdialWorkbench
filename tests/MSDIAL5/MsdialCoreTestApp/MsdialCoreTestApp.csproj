@@ -6,6 +6,8 @@
     <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>

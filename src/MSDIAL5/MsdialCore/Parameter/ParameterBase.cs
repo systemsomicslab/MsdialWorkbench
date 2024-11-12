@@ -1132,6 +1132,8 @@ namespace CompMs.MsdialCore.Parameter
             }
             return false;
         }
+
+        public bool IsInMassRange(double mz) => Math.Abs(mz - MassRangeBegin) > 1e-6 && Math.Abs(MassRangeEnd - mz) > 1e-6;
     }
 
     [MessagePackObject]

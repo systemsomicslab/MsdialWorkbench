@@ -22,8 +22,8 @@ namespace CompMs.MsdialCore.Export
             _accessor = accessor;
         }
 
-        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
-            var contents = _accessor.GetContent(feature, msdec, provider, analysisFile);
+        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
+            var contents = _accessor.GetContent(feature, msdec, provider, analysisFile, exportStyle);
             var peakshape = feature.PeakShape;
             contents[AdditionalContents[0]] = peakshape.EstimatedNoise.ToString("F3");
             contents[AdditionalContents[1]] = peakshape.SignalToNoise.ToString("F5");

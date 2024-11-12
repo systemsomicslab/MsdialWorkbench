@@ -265,7 +265,7 @@ namespace CompMs.Common.Parser
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 
                         var isotopeProp = IsotopeCalculator.GetAccurateIsotopeProperty(mspObj.Formula.FormulaString, 2, IupacDatabase);
-                        mspObj.IsotopicPeaks = isotopeProp.IsotopeProfile;
+                        mspObj.IsotopicPeaks = isotopeProp?.IsotopeProfile ?? new List<IsotopicPeak>(0);
                     }
                     return false;
                 case "smiles": mspObj.SMILES = fieldValue;  return false;
@@ -293,6 +293,14 @@ namespace CompMs.Common.Parser
                         mspObj.ChromXs.RI = new RetentionIndex(ri);
                         if (isFiehnDB) {
                             mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
+                        }
+                    } else if (fieldValue.Contains("a=")) {
+                        var newFieldValue = fieldValue.Replace("a=", "");
+                        if (float.TryParse(newFieldValue, out ri)) {
+                            mspObj.ChromXs.RI = new RetentionIndex(ri);
+                            if (isFiehnDB) {
+                                mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
+                            }
                         }
                     }
                    

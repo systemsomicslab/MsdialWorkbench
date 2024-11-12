@@ -13,6 +13,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -23,6 +24,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialGcMsApi.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -73,6 +75,9 @@ namespace CompMs.App.Msdial.Model.Gcms
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    if (chromatogramSpotSerializer is not null) {
+                        chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(chromatogramSpotSerializer, parameter.GetRIHandlers());
+                    }
                     break;
                 case AlignmentIndexType.RT:
                 default:
@@ -114,9 +119,17 @@ namespace CompMs.App.Msdial.Model.Gcms
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    PlotModel.HorizontalTitle = "Retention time [min]";
+                    PlotModel.HorizontalTitle = "Retention time (min)";
                     break;
             }
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PlotModel.HorizontalAxis)
+            {
+                GraphTitle = alignmentFileBean.FileName,
+                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.RT),
+                HorizontalTitle = PlotModel.HorizontalTitle,
+                VerticalTitle = "2nd column retention time (min)",
+            }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
@@ -245,13 +258,17 @@ namespace CompMs.App.Msdial.Model.Gcms
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(timeSpotFocus, spot => spot.TimesCenter),
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
+
+            MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
+        public GcgcAlignmentPeakPlotModel GcgcPlotModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
+        public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }

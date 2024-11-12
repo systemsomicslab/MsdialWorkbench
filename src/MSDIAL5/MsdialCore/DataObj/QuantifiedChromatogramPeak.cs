@@ -18,11 +18,6 @@ namespace CompMs.MsdialCore.DataObj
             PeakShape = peakShape;
         }
 
-        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram)
-            : this(peakFeature, peakShape, chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop), chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge), chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge)) {
-            
-        }
-
         [Key("PeakFeature")]
         [MessagePackFormatter(typeof(ChromatogramPeakFeatureInterfaceFormatter))]
         public IChromatogramPeakFeature PeakFeature { get; }
@@ -41,6 +36,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public static QuantifiedChromatogramPeak Load(Stream stream) {
             return MessagePackDefaultHandler.LoadFromStream<QuantifiedChromatogramPeak>(stream);
+        }
+
+        public static QuantifiedChromatogramPeak RecalculatedFromChromatogram(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram) {
+            return new(peakFeature, peakShape, chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop), chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge), chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge));
         }
     }
 }

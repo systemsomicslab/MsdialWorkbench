@@ -1,28 +1,25 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
-using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
+using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcImMsApi.Algorithm;
+using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
+using CompMs.MsdialLcImMsApi.DataObj;
+using CompMs.MsdialLcImMsApi.Process;
+using CompMs.MsdialLcMsApi.Export;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using CompMs.MsdialLcImMsApi.DataObj;
-using CompMs.MsdialCore.Parser;
-using System.IO;
-using CompMs.MsdialLcImMsApi.Process;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialLcImMsApi.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Export;
-using CompMs.MsdialLcMsApi.Export;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public class LcimmsProcess {
         public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
             var param = ConfigParser.ReadForLcImMsParameter(methodFile);
@@ -57,12 +54,13 @@ namespace CompMs.App.MsdialConsole.Process {
             var exporterFactory = new AnalysisCSVExporterFactory("\t");
             var metadata = new LcmsAnalysisMetadataAccessor(annotator, container.MsdialLcImMsParameter);
             using (var streamManager = new DirectoryTreeStreamManager(outputFolder)) {
+                var processor = new FileProcess(spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container, isGuiProcess: false);
                 foreach (var file in files) {
-                    FileProcess.Run(file, spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container);
+                    processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification).Wait();
                     var features = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
                     var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
                     using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {
-                        exporterFactory.CreateExporter(spectrumProviderFactory, metadata).Export(stream, file, features);
+                        exporterFactory.CreateExporter(spectrumProviderFactory, metadata).Export(stream, file, features, new ExportStyle());
                     }
     #if DEBUG
                     Console.WriteLine($"Test: {features.Items.SelectMany(feature => feature.DriftChromFeatures, (feature, drift) => (feature.Mass, feature.PeakHeightTop, drift.Mass, drift.PeakHeightTop).GetHashCode()).Aggregate((a, b) => a ^ b)}");

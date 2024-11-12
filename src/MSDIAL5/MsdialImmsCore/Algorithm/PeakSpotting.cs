@@ -26,7 +26,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             _chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
         }
 
-        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, double initialProgress, double progressMax, Action<int> reportAction = null) {
+        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, ReportProgress reporter) {
             var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.PeakPickBaseParam.MinimumDatapoints, _parameter.PeakPickBaseParam.MinimumAmplitude);
             IEnumerable<ChromatogramPeakFeature> chromPeakFeatures;
@@ -34,7 +34,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 chromPeakFeatures = DetectChromatogramPeaksUsingTargetCompound(rawSpectra, detector);
             }
             else {
-                var reporter = ReportProgress.FromLength(reportAction, initialProgress, progressMax);
                 chromPeakFeatures = DetectChromatogramPeaks(provider, reporter, rawSpectra, detector);
             }
             var reevaluatedPeaks = ReevaluateChromPeakFeatures(chromPeakFeatures, provider, file);
@@ -61,7 +60,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var startMass = Math.Max(mzMin, _parameter.PeakPickBaseParam.MassRangeBegin);
             var endMass = Math.Min(mzMax, _parameter.PeakPickBaseParam.MassRangeEnd);
             for (var focusedMass = startMass; focusedMass < endMass; focusedMass += step) {
-                reporter.Show(focusedMass, endMass);
+                reporter.Report(focusedMass, endMass);
                 yield return focusedMass;
             }
         }

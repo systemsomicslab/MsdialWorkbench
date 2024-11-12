@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             get {
                 if (_mSDecLoader?.Result is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
                     try {
-                        var loader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
+                        var loader = new MSDecLoader(_alignmentFile.SpectraFilePath, []).AddTo(Disposables);
                         return _mSDecLoader = Task.FromResult((MSDecLoader?)loader);
                     }
                     catch (ArgumentException) {
@@ -123,22 +123,47 @@ namespace CompMs.App.Msdial.Model.DataObj
                 yield break;
             }
 
-            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-            foreach (var file in _analysisFiles) {
-                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-                pointerss.Add((version, pointers, isAnnotationInfo));
+            static double GetCollisionEnergy(string path) {
+                var ce = Path.GetFileNameWithoutExtension(path).Split('_').Last();
+                return double.Parse(ce) / 100d;
             }
-            using (var disposables = new CompositeDisposable()) {
-                var streams = _analysisFiles.Select(file => File.Open(file.DeconvolutionFilePath, FileMode.Open).AddTo(disposables)).ToList();
-                foreach (var spot in spots) {
-                    var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
-                    yield return MsdecResultsReader.ReadMSDecResult(streams[repID], pointerss[repID].pointers[peakID], pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
-                        var dRepID = dSpot.RepresentativeFileID;
-                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
-                        yield return MsdecResultsReader.ReadMSDecResult(streams[dRepID], pointerss[dRepID].pointers[dPeakID], pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
-                    }
+
+            var pointerss = new Dictionary<int, Dictionary<double, (int version, List<long> pointers, bool isAnnotationInfo)>>();
+            foreach (var file in _analysisFiles) {
+                pointerss[file.AnalysisFileId] = [];
+                if (File.Exists(file.DeconvolutionFilePath)) {
+                    MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+                    pointerss[file.AnalysisFileId][-1d] = (version, pointers, isAnnotationInfo);
+                }
+                foreach (var path in file.DeconvolutionFilePathList) {
+                    MsdecResultsReader.GetSeekPointers(path, out var version, out var pointers, out var isAnnotationInfo);
+                    pointerss[file.AnalysisFileId][GetCollisionEnergy(path)] = (version, pointers, isAnnotationInfo);
+                }
+            }
+
+            using var disposables = new CompositeDisposable();
+            var streams = _analysisFiles.Select<AnalysisFileBean, (int id, IEnumerable<(FileStream stream, double collisionEnergy)> streams)>(file => {
+                var ss = file.DeconvolutionFilePathList.Select(path => (File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read).AddTo(disposables), GetCollisionEnergy(path))).ToList();
+                if (File.Exists(file.DeconvolutionFilePath)) {
+                    var s = (File.Open(file.DeconvolutionFilePath, FileMode.Open, FileAccess.Read, FileShare.Read).AddTo(disposables), -1d);
+                    return (file.AnalysisFileId, ss.Prepend(s));
+                }
+                return (file.AnalysisFileId, ss);
+            }).ToDictionary(t => t.id, t => t.streams.ToDictionary(p => p.collisionEnergy, p => p.stream));
+            foreach (var spot in spots) {
+                var repID = spot.RepresentativeFileID;
+                var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
+                var ce = spot.AlignedPeakProperties[repID].MatchResults.Representative.CollisionEnergy;
+                var stream = streams[repID].TryGetValue(ce, out var s) ? s : streams[repID].Values.First();
+                var pointers = pointerss[repID].TryGetValue(ce, out var p) ? p : pointerss[repID].Values.First();
+                yield return MsdecResultsReader.ReadMSDecResult(stream, pointers.pointers[peakID], pointers.version, pointers.isAnnotationInfo);
+                foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
+                    var dRepID = dSpot.RepresentativeFileID;
+                    var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
+                    var dce = dSpot.AlignedPeakProperties[dRepID].MatchResults.Representative.CollisionEnergy;
+                    var dstream = streams[dRepID].TryGetValue(dce, out var ds) ? ds : streams[dRepID].Values.First();
+                    var dpointers = pointerss[dRepID].TryGetValue(dce, out var dp) ? dp : pointerss[dRepID].Values.First();
+                    yield return MsdecResultsReader.ReadMSDecResult(dstream, dpointers.pointers[dPeakID], dpointers.version, dpointers.isAnnotationInfo);
                 }
             }
         }

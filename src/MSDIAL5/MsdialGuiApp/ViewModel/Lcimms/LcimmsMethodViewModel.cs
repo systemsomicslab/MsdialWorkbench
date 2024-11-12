@@ -59,6 +59,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
+        private DelegateCommand? _exportAnalysisResultCommand;
+
+        private void ExportAnalysis()
+        {
+            var m = _model.ExportAnalysis();
+            using var vm = new AnalysisResultExportViewModel(m);
+            _broker.Publish(vm);
+        }
+
+
         public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
         private DelegateCommand? _exportAlignmentResultCommand;
 

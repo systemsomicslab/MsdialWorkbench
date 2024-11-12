@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" MaxHeight="600"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -48,23 +49,90 @@
             </StackPanel>
         </GroupBox>
 
+        <GroupBox BorderThickness="1" BorderBrush="LightGray"
+                  Margin="8" Grid.Row="2"
+                  d:Visibility="Visible">
+            <GroupBox.Header>
+                <Italic>Lowess conditions</Italic>
+            </GroupBox.Header>
+            <GroupBox.Style>
+                <Style TargetType="GroupBox">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsNormalizeLowess.Value, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsNormalizeIsLowess.Value, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </GroupBox.Style>
+            <UniformGrid Columns="3">
+                <UniformGrid.Resources>
+                    <ControlTemplate x:Key="FlagContent" TargetType="ContentControl">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="&#xEA39;"/>
+                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Tag, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                <Setter Property="Text" Value="&#xEA3B;"/>
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{TemplateBinding Content}" Margin="4,0"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </UniformGrid.Resources>
+                <ContentControl Content="Unique Analytical Order"
+                                Template="{StaticResource FlagContent}"
+                                Tag="{Binding FileCollection.IsAnalyticalOrderUnique.Value, Mode=OneWay}">
+                    <ContentControl.ToolTip>
+                        Each batch must have a unique Analytical order value for every sample.
+                        No two samples within the same batch should share the same Analytical order.
+                    </ContentControl.ToolTip>
+                </ContentControl>
+                <ContentControl Content="Minimum of Two QCs"
+                                Template="{StaticResource FlagContent}"
+                                Tag="{Binding FileCollection.ContainsQualityCheck.Value, Mode=OneWay}">
+                    <ContentControl.ToolTip>
+                        Each batch must contain at least two Quality Control (QC) samples to ensure proper validation of the batch's analytical results.
+                    </ContentControl.ToolTip>
+                </ContentControl>
+                <ContentControl Content="QC at Start and End"
+                                Template="{StaticResource FlagContent}"
+                                Tag="{Binding FileCollection.AreFirstAndLastQualityCheck.Value, Mode=OneWay}">
+                    <ContentControl.ToolTip>
+                        The first and last samples in each batch must be Quality Control (QC) samples to bracket the batch and validate the beginning and end of the run.
+                    </ContentControl.ToolTip>
+                </ContentControl>
+            </UniformGrid>
+        </GroupBox>
+
         <ContentControl Visibility="{Binding IsNormalizeSplash.Value, Converter={StaticResource BooleanToVisibility}}"
                         d:Visibility="Collapsed"
                         Margin="8"
-                        Grid.Row="2">
+                        Grid.Row="3">
             <local:SplashSetView DataContext="{Binding SplashViewModel, Mode=OneTime}"/>
         </ContentControl>
         <ContentControl Visibility="{Binding IsSetViewModelVisible.Value, Converter={StaticResource BooleanToVisibility}}"
                         d:Visibility="Visible"
                         Margin="8"
-                        Grid.Row="2">
+                        Grid.Row="3">
             <local:InternalStandardSetView DataContext="{Binding IsSetViewModel, Mode=OneTime}"/>
         </ContentControl>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Margin="8,4"
-                    Grid.Row="3">
+                    Grid.Row="4">
             <StackPanel.Resources>
                 <Style TargetType="Button">
                     <Setter Property="Margin" Value="8,4"/>

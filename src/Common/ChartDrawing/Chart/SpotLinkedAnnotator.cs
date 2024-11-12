@@ -477,10 +477,24 @@ namespace CompMs.Graphics.Chart
             CoerceNodes();
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            CoerceGraph();
+            CoerceNodes();
+            InvalidateVisual();
+        }
+
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
             CoerceGraph();
             CoerceNodes();
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            CoerceGraph();
+            CoerceNodes();
+            InvalidateVisual();
         }
 
         public static readonly DependencyProperty RadiusProperty =

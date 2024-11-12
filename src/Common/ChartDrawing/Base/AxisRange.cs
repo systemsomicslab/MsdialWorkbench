@@ -49,6 +49,10 @@ namespace CompMs.Graphics.Core.Base
             return new AxisRange(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
         }
 
+        public static AxisRange operator +(AxisRange range, AxisValue value) => new(range.Minimum.Value + value.Value, range.Maximum.Value + value.Value);
+        public static AxisRange operator -(AxisRange range, AxisValue value) => new(range.Minimum.Value - value.Value, range.Maximum.Value - value.Value);
+        public static AxisRange operator *(AxisRange range, double value) => new(range.Minimum * value, range.Maximum * value);
+
         public override string ToString() {
             return $"{Minimum.Value}-{Maximum.Value}";
         }

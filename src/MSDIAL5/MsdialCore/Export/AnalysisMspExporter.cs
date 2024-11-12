@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Export
         public AnalysisMspExporter(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _loaderFactory = file => new MSDecLoader(file.DeconvolutionFilePath);
+            _loaderFactory = file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList);
         }
 
         public AnalysisMspExporter(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> loaderFuctory) {
@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.Export
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
         }
 
-        void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
+        void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection, ExportStyle exportStyle) {
             var loader = _loaderFactory(analysisFile);
             foreach (var peak in peakFeatureCollection.Items) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, peak, loader.Load(peak).Spectrum, _refer, _parameter);

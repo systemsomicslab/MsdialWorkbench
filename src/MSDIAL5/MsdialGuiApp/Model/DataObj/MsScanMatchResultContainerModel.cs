@@ -5,6 +5,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -15,7 +16,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public MsScanMatchResultContainerModel(MsScanMatchResultContainer container) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
-            _matchResults = new ObservableCollection<MsScanMatchResult>(container.MatchResults);
+            _matchResults = new ObservableCollection<MsScanMatchResult>(container.MatchResults.Where(r => !r.IsUnknown));
             MatchResults = new ReadOnlyObservableCollection<MsScanMatchResult>(_matchResults);
             _matchResults.CollectionChangedAsObservable()
                 .Subscribe(_ => OnPropertyChanged(nameof(Representative)))

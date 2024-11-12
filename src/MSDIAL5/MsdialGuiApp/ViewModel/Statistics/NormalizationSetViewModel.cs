@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Statistics;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -50,6 +51,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public SplashSetViewModel SplashViewModel { get; }
         public InternalStandardSetViewModel IsSetViewModel { get; }
         public ReadOnlyReactivePropertySlim<bool> IsSetViewModelVisible { get; }
+
+        public AnalysisFileBeanModelCollection FileCollection => _model.FileCollection;
 
         public ReactiveCommand NormalizeCommand { get; }
         public ICommand CancelCommand { get; }

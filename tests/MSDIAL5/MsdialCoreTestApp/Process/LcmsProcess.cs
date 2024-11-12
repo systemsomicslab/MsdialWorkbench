@@ -4,7 +4,6 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -47,22 +46,28 @@ namespace CompMs.App.MsdialConsole.Process
                 IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialLcmsParameter = param
             };
 
-            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
-            var annotator = new LcmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
             var dbStorage = DataBaseStorage.CreateEmpty();
-            dbStorage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+            if (File.Exists(param.MspFilePath)) {
+                MoleculeDataBase database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
+                var annotator = new LcmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
+                dbStorage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-            });
-            MoleculeDataBase lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
-            var lbmAnnotator = new LcmsMspAnnotator(lbmDatabase, param.MspSearchParam, param.TargetOmics, param.LbmFilePath, 1);
-            dbStorage.AddMoleculeDataBase(lbmDatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                });
+            }
+            if (File.Exists(param.LbmFilePath)) {
+                MoleculeDataBase lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
+                var lbmAnnotator = new LcmsMspAnnotator(lbmDatabase, param.MspSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+                dbStorage.AddMoleculeDataBase(lbmDatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-            });
-            var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
-            var textannotator = new LcmsTextDBAnnotator(textdatabase, param.TextDbSearchParam, param.TextDBFilePath, 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                });
+            }
+            if (File.Exists(param.TextDBFilePath)) {
+                var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
+                var textannotator = new LcmsTextDBAnnotator(textdatabase, param.TextDbSearchParam, param.TextDBFilePath, 2);
+                dbStorage.AddMoleculeDataBase(textdatabase, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                 new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
-            });
+                });
+            }
             container.DataBases = dbStorage;
             container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
@@ -84,7 +89,6 @@ namespace CompMs.App.MsdialConsole.Process
 
             IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
             var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
-            var peak_Exporter = new AnalysisCSVExporter("\t");
             var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
@@ -92,7 +96,7 @@ namespace CompMs.App.MsdialConsole.Process
                     await sem.WaitAsync();
                     try {
                         var provider = providerFactory.Create(file);
-                        await process.RunAsync(file, provider, null).ConfigureAwait(false);
+                        await process.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).ConfigureAwait(false);
 
                         var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
                         var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
@@ -100,8 +104,8 @@ namespace CompMs.App.MsdialConsole.Process
                         using (var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write)) { 
                             var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
                             var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-                            peakExporterFactory.CreateExporter(provider.AsFactory(), peak_accessor).Export(stream, file, peak_container);
-                            peak_MspExporter.Export(mspstream, file, peak_container);
+                            peakExporterFactory.CreateExporter(provider.AsFactory(), peak_accessor).Export(stream, file, peak_container, new ExportStyle());
+                            peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
                         }
                     }
                     finally {
@@ -137,6 +141,8 @@ namespace CompMs.App.MsdialConsole.Process
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             if (isProjectSaved) {
+                storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
+                storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
                 using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create)) {
                     projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();

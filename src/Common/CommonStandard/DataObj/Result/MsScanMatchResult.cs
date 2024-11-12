@@ -108,6 +108,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsReferenceMatched { get; set; } = false;
         [Key(34)]
         public bool IsAnnotationSuggested { get; set; } = false;
+        [Key(36)]
+        public double CollisionEnergy { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

@@ -135,9 +135,10 @@ namespace CompMs.MsdialImmsCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
             content["Mobility left"] = string.Format("{0:F3}", feature.ChromXsLeft.Drift.Value);
             content["Mobility"] = string.Format("{0:F3}", feature.ChromXs.Drift.Value);
             content["Mobility right"] = string.Format("{0:F3}", feature.ChromXsRight.Drift.Value);

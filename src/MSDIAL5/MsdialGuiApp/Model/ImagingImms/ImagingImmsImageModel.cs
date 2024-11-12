@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly IMessageBroker _broker;
         private int _roiId = 0;
 
-        public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
+        public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _broker = broker;
             _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);

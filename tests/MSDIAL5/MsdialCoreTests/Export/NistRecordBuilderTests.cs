@@ -237,6 +237,16 @@ Num Peaks: 3
         Assert.AreEqual(expects, actual, "The exported NIST format data does not match the expected output.");
     }
 
+    [TestMethod]
+    public void SetMoleculeProperties_NullFormula()
+    {
+        var builder = new NistRecordBuilder();
+        var molecule = new MoleculeProperty(
+            name:string.Empty, formula:null, ontology:string.Empty, smiles:string.Empty, inchikey:string.Empty
+            );
+        builder.SetMoleculeProperties(molecule);
+    }
+
     class MockRefer(MoleculeMsReference reference) : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public string Key => "";
