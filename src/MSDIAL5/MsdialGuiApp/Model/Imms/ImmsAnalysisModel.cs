@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             var labelsource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(Ms1Peaks))
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(Ms1Peaks, Ms1Peaks.Select(p => p.InnerModel.PeakCharacter).ToList()))
             {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",

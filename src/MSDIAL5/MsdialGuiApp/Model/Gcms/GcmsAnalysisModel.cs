@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 Observable.Return((string?)null),
                 gcgcBrushes.First(),
                 gcgcBrushes,
-                new PeakLinkModel(_peaks),
+                PeakLinkModel.Build(_peaks, _peaks.Select(p => p.InnerModel.PeakCharacter).ToList()),
                 horizontalAxis: PeakPlotModel.HorizontalAxis)
             {
                 HorizontalTitle = "Retention time (min)",

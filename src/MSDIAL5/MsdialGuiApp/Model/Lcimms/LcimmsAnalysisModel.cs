@@ -155,7 +155,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(accumulatedPeakModels))
+            RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(accumulatedPeakModels, accumulatedPeakModels.Select(p => p.InnerModel.PeakCharacter).ToList()))
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
