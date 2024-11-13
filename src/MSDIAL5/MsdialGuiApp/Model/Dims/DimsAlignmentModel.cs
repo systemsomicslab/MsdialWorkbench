@@ -87,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
+            AlignmentSpotSource = spotsSource;
             Ms1Spots = spotsSource.Spots!.Items;
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Dims).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker).AddTo(Disposables);
@@ -222,6 +223,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public UndoManager UndoManager => _undoManager;
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+        public override AlignmentSpotSource AlignmentSpotSource { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }

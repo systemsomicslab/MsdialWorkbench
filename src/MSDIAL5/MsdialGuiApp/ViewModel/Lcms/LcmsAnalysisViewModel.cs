@@ -69,6 +69,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                var msfinder = model.CreateSingleSearchMsfinderModel();
+                if (msfinder is not null) {
+                    broker.Publish(InternalMsFinderSingleSpotViewModel = new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                }
+            }).AddTo(Disposables);
+
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ is not null)
                 .Select(model_ => new ExperimentSpectrumViewModel(model_!))
@@ -134,13 +142,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+                
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public InternalMsFinderSingleSpotViewModel InternalMsFinderSingleSpotViewModel { get; set; }
 
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);

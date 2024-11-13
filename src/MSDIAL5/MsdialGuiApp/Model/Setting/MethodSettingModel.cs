@@ -81,9 +81,8 @@ namespace CompMs.App.Msdial.Model.Setting
             if (Option.HasFlag(ProcessOption.Identification)) {
                 if (IdentifySettingModel != null) {
                     if (!IdentifySettingModel.IsReadOnly ) {
-                        Storage.DataBaseMapper = new DataBaseMapper();
                         Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
-                        Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
+                        Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
                     }
                 }
                 if (!(AdductIonSettingModel is null || AdductIonSettingModel.TryCommit())) {

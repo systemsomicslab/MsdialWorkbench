@@ -222,6 +222,7 @@ public sealed class GcmsProcess
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new GcmsAlignmentProcessFactory(files, storage);
             var aligner = factory.CreatePeakAligner();
+            aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
             var decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties);

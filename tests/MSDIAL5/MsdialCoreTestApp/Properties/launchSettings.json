@@ -2,7 +2,7 @@
   "profiles": {
     "MsdialCoreTestApp": {
       "commandName": "Project",
-      "commandLineArgs": "gcms -i D:\\MSDIALdemo\\gcms_nominal_metabolomics\\rawdata2 -o D:\\MSDIALdemo\\gcms_nominal_metabolomics\\output -m D:\\MSDIALdemo\\wine\\pramGC.txt -p\r\n"
+      "commandLineArgs": "gcms -i D:\\MSDIALdemo\\gcms_nominal_metabolomics\\rawdata4 -o D:\\MSDIALdemo\\wine\\output2 -m D:\\MSDIALdemo\\wine\\pramGC.txt -p\r\n"
     }
   }
 }

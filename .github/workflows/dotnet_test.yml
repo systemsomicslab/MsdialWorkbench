@@ -60,6 +60,41 @@ jobs:
           name: MSDIAL5
           path: artifact
 
+  publish-msdial5-console:
+    needs: test
+    runs-on: ${{ matrix.triple.os }}
+    strategy:
+      matrix:
+        triple: [
+            { os: windows-latest, framework: net48, runtime: win-x64 },
+            { os: ubuntu-latest, framework: net8, runtime: linux-x64 },
+            { os: macos-latest, framework: net8, runtime: osx-x64 }
+        ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Add package source
+        run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Debug vendor unsupported"
+      - name: Publish
+        run: dotnet publish tests/MSDIAL5/MsdialCoreTestApp/MsdialCoreTestApp.csproj -p:DebugSymbols=false -p:DebugType=None -p:ErrorOnDuplicatePublishOutputFiles=false -o artifact --configuration "Release vendor unsupported" --runtime ${{ matrix.triple.runtime }} --framework ${{ matrix.triple.framework }}  --self-contained
+      - name: Copy licenses
+        run: |
+            cp LGPL.txt artifact
+            cp THIRD-PARTY-LICENSE-README.md artifact
+            cp README.md artifact 
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSDIAL5-Console-${{ matrix.triple.os }}-${{ matrix.triple.framework }}
+          path: artifact
+
   publish-msdial4:
     needs: test
     runs-on: windows-latest

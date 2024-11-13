@@ -7,7 +7,7 @@ namespace CompMs.CommonMVVM
     {
         protected DisposableCollection Disposables { get; } = new DisposableCollection();
 
-        private bool disposedValue;
+        protected bool disposedValue;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {

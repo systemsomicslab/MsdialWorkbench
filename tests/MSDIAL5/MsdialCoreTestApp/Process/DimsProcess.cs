@@ -124,6 +124,7 @@ public sealed class DimsProcess {
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new DimsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
+            aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();

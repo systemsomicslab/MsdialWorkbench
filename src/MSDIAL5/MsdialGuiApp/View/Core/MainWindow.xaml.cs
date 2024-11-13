@@ -31,6 +31,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
@@ -124,6 +125,18 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<AccumulatedExtractedMs2SpectrumView>(height: 600, width: 800));
             broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
                 .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
+            broker.ToObservable<InternalMsfinderSettingViewModel>()
+                .Subscribe(ShowInternalMsfinderSettingView);
+            broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
+                .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
+            broker.ToObservable<InternalMsFinderViewModel>()
+                .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));
+            broker.ToObservable<InternalMsFinderSingleSpotViewModel>()
+                .Subscribe(ShowChildContent<InternalMsFinderSingleSpotView>("MS-FINDER", height: 1000, width: 1500, needDispose: true));
+            broker.ToObservable<InternalMsfinderSubstructure>()
+                .Subscribe(ShowChildContent<SubstructureView>("Substructure Viewer", height: 600, width: 1000));
+            broker.ToObservable<FseaResultViewModel>()
+                .Subscribe(ShowChildContent<FseaResultView>("FSEA Result Viewer", height: 600, width: 1000));
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
             /*
@@ -140,8 +153,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         public void CloseOwnedWindows() {
-            Dispatcher.Invoke(() =>
-            {
+            Dispatcher.Invoke(() => {
                 foreach (var child in OwnedWindows.OfType<Window>()) {
                     if (child.IsLoaded) {
                         child.Close();
@@ -151,8 +163,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildView<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView()
-            {
+            var view = new TView() {
                 DataContext = viewmodel,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -198,8 +209,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView()
-            {
+            var view = new TView() {
                 DataContext = viewmodel,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -210,8 +220,7 @@ namespace CompMs.App.Msdial.View.Core
         private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
-                var dialog = new SettingDialog
-                {
+                var dialog = new SettingDialog() {
                     Height = height, Width = width,
                     Title = title,
                     Owner = this,
@@ -229,14 +238,12 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
             using (var viewmodel = new ProgressBarMultiContainerVM(request)) {
-                var dialog = new ProgressBarMultiContainerWindow
-                {
+                var dialog = new ProgressBarMultiContainerWindow() {
                     DataContext = viewmodel,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
-                dialog.Loaded += async (s, e) =>
-                {
+                dialog.Loaded += async (s, e) => {
                     await viewmodel.RunAsync().ConfigureAwait(false);
                     request.Result = true;
                     dialog.Dispatcher.Invoke(dialog.Close);
@@ -247,14 +254,12 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowProgressBarWindow(ProgressBarRequest request) {
             using (var viewmodel = new ProgressBarVM(request)) {
-                var dialog = new ProgressBarWindow
-                {
+                var dialog = new ProgressBarWindow() {
                     DataContext = viewmodel,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
-                dialog.Loaded += async (s, e) =>
-                {
+                dialog.Loaded += async (s, e) => {
                     await request.AsyncAction.Invoke(viewmodel).ConfigureAwait(false);
                     request.Result = true;
                     dialog.Dispatcher.Invoke(dialog.Close);
@@ -265,8 +270,7 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
             Dispatcher.Invoke(() => {
-                var dialog = new ShortMessageWindow
-                {
+                var dialog = new ShortMessageWindow() {
                     DataContext = request.Content,
                     Text = request.Content,
                     Owner = this,
@@ -277,18 +281,15 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {
-            var dialog = new ShortMessageWindow
-            {
+            var dialog = new ShortMessageWindow() {
                 DataContext = request.Content,
                 Text = request.Content,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
-            dialog.Loaded += async (s, e) =>
-            {
+            dialog.Loaded += async (s, e) => {
                 await request.AsyncAction();
-                dialog.Dispatcher.Invoke(() =>
-                {
+                dialog.Dispatcher.Invoke(() => {
                     dialog.DialogResult = true;
                     dialog.Close();
                 });
@@ -297,8 +298,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
-            var dialog = new Window
-            {
+            var dialog = new Window() {
                 DataContext = viewmodel,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -308,8 +308,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void GetSaveFilePath(SaveFileNameRequest request) {
-            var sfd = new SaveFileDialog
-            {
+            var sfd = new SaveFileDialog() {
                 Title = request.Title,
                 Filter = request.Filter,
                 RestoreDirectory = request.RestoreDirectory,
@@ -323,8 +322,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            var ofd = new OpenFileDialog
-            {
+            var ofd = new OpenFileDialog() {
                 Title = request.Title,
                 Filter = request.Filter,
             };
@@ -335,8 +333,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void SelectFolderPath(SelectFolderRequest request) {
-            var sfd = new SelectFolderDialog
-            {
+            var sfd = new SelectFolderDialog() {
                 Title = request.Title,
                 SelectedPath = request.SelectedPath,
             };
@@ -347,8 +344,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
-            Dispatcher.Invoke(() =>
-            {
+            Dispatcher.Invoke(() => {
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
                 request.Result = result;
             });
@@ -356,8 +352,7 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowRiDictionarySettingDialog(RiDictionarySettingViewModel viewmodel) {
             Dispatcher.Invoke(() => {
-                var dialog = new SettingDialog
-                {
+                var dialog = new SettingDialog() {
                     DataContext = viewmodel,
                     Height = 600, Width = 800,
                     Title = "Retention index dictionary setting",
@@ -372,10 +367,8 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
-            Dispatcher.Invoke(() =>
-            {
-                var window = new AlignedPeakCorrectionWinLegacy()
-                {
+            Dispatcher.Invoke(() => {
+                var window = new AlignedPeakCorrectionWinLegacy() {
                     DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -394,6 +387,17 @@ namespace CompMs.App.Msdial.View.Core
                 };
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
+            });
+        }
+
+        private void ShowInternalMsfinderSettingView(InternalMsfinderSettingViewModel vm) {
+            Dispatcher.Invoke(() => {
+                var dialog = new InternalMsfinderSettingView() {
+                    DataContext = vm,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                var result = dialog.ShowDialog();
             });
         }
 

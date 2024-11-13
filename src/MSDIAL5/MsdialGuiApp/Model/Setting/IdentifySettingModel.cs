@@ -7,6 +7,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -49,10 +50,15 @@ namespace CompMs.App.Msdial.Model.Setting
             where TDataBase : IReferenceDataBase {
 
             foreach (var dataBase in items) {
-                var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
-                dataBaseModels.Add(dbModel);
-                foreach (var pair in dataBase.Pairs) {
-                    annotatorModels.Add((pair.AnnotationQueryFactory.Priority, annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.AnnotationQueryFactory.PrepareParameter())));
+                try {
+                    var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
+                    foreach (var pair in dataBase.Pairs) {
+                        annotatorModels.Add((pair.AnnotationQueryFactory.Priority, annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.AnnotationQueryFactory.PrepareParameter())));
+                    }
+                    dataBaseModels.Add(dbModel);
+                }
+                catch (NotSupportedException) {
+                    // Skip if unsupported database
                 }
             }
         }
@@ -113,7 +119,10 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IAnnotatorSettingModel? AddAnnotator(DataBaseSettingModel db) {
-            if (!(db is null)) {
+            if (db is not null) {
+                if (db.DBSource == DataBaseSource.MsFinder) {
+                    return null;
+                }
                 var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
                 lock (annotatorLock) {
                     AnnotatorModels.Add(annotatorModel);
