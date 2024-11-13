@@ -81,7 +81,7 @@ namespace Rfx.Riken.OsakaUniv
         private void Click_BrowseFolderPath(object sender, RoutedEventArgs e) {
             var fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose an export folder.";
+            fbd.Description = "Choose an export folder.";
             fbd.SelectedPath = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {

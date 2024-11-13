@@ -114,6 +114,8 @@ namespace CompMs.Graphics.AxisManager
             return value;
         }
 
+        public event EventHandler AxisValueMappingChanged;
+
         #endregion
 
         #region Property

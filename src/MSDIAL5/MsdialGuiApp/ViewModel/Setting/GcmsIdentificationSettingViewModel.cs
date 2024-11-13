@@ -19,8 +19,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.ComponentModel;
-using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {

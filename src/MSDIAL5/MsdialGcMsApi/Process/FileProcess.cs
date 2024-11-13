@@ -63,23 +63,25 @@ namespace CompMs.MsdialGcMsApi.Process
             var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
 
-            var (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults) = option.HasFlag(ProcessOption.PeakSpotting)
-                ? await DetectScans(analysisFile, riHandler, provider, progress, token).ConfigureAwait(false)
-                : await LoadScans(analysisFile, riHandler, provider, progress, token).ConfigureAwait(false);
+            var getTask = option.HasFlag(ProcessOption.PeakSpotting)
+                ? DetectScans(analysisFile, riHandler, provider, progress, token)
+                : LoadScans(analysisFile, riHandler, provider, token);
+            var (chromPeakFeatures, msdecResults, spectra) = await getTask.ConfigureAwait(false);
 
             token.ThrowIfCancellationRequested();
+            var annotatedMSDecResults = Identification(msdecResults, option, progress);
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
             await chromPeakFeatures.SerializeAsync(analysisFile, token);
-            analysisFile.SaveMsdecResultWithAnnotationInfo(msdecResults);
+            analysisFile.SaveMsdecResultWithAnnotationInfo(spectrumFeatureCollection.Items.Select(s => s.AnnotatedMSDecResult.MSDecResult).ToList());
             analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
 
             progress?.Report((int)PROCESS_END);
         }
 
-        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>, AnnotatedMSDecResult[])> LoadScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
+        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>)> LoadScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, CancellationToken token) {
             var spectraTask = provider.LoadMsSpectrumsAsync(token);
             var chromPeakFeatures = await analysisFile.LoadChromatogramPeakFeatureCollectionAsync();
             var msdecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
@@ -87,17 +89,11 @@ namespace CompMs.MsdialGcMsApi.Process
             SetRetentionIndex(chromPeakFeatures.Items, riHandler);
             SetRetentionIndex(msdecResults, riHandler);
 
-            // annotations
-            Console.WriteLine("Annotation started");
-            var reportAnnotation = ReportProgress.FromRange(progress, ANNOTATION_START, ANNOTATION_END);
-            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
-            token.ThrowIfCancellationRequested();
-
             var spectra = await spectraTask.ConfigureAwait(false);
-            return (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults);
+            return (chromPeakFeatures, msdecResults, spectra);
         }
 
-        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>, AnnotatedMSDecResult[])> DetectScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
+        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>)> DetectScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
             // feature detections
             Console.WriteLine("Peak picking started");
             var reportSpotting = ReportProgress.FromRange(progress, PEAKSPOTTING_START, PEAKSPOTTING_END);
@@ -115,16 +111,24 @@ namespace CompMs.MsdialGcMsApi.Process
             SetRetentionIndex(msdecResults, riHandler);
             token.ThrowIfCancellationRequested();
 
-            // annotations
-            Console.WriteLine("Annotation started");
-            var reportAnnotation = ReportProgress.FromRange(progress, ANNOTATION_START, ANNOTATION_END);
-            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
-            return (chromPeakFeatures, msdecResults, spectra, annotatedMSDecResults);
+            return (chromPeakFeatures, msdecResults, spectra);
+        }
+
+        private AnnotatedMSDecResult[] Identification(List<MSDecResult> msdecResults, ProcessOption option, IProgress<int> progress) {
+            if (option.HasFlag(ProcessOption.Identification)) {
+                // annotations
+                Console.WriteLine("Annotation started");
+                var reportAnnotation = ReportProgress.FromRange(progress, ANNOTATION_START, ANNOTATION_END);
+                return _annotation.MainProcess(msdecResults, reportAnnotation);
+            }
+            else {
+                return msdecResults.Select(r => new AnnotatedMSDecResult(r, new())).ToArray();
+            }
         }
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            FileProcess processor = new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType));
+            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType));
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token).Wait();
         }
 

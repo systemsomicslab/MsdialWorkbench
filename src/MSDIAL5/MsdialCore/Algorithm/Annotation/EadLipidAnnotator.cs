@@ -22,15 +22,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _scorer;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly MsRefSearchParameterBase _parameter;
+        private readonly LipidDescription _description;
 
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
             _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12)));
+            _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
+
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Priority = priority;
             _lipidDatabase = db ?? throw new ArgumentNullException(nameof(db));
 
             switch (db.Source) {
                 case DataBaseSource.OadLipid:
+                    _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainNoOxiVariationGenerator(), minLength: 12)));
+                    _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.DoubleBondPosition;
                     _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
                     break;
                 case DataBaseSource.EidLipid:
@@ -91,15 +96,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (lipid is null) {
                 return new List<MoleculeMsReference>(0);
             }
-            var description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
-            var lipids = GenerateLipid(lipid).Where(lipid_ => lipid_.Description.HasFlag(description));
+            var lipids = GenerateLipid(lipid).Where(lipid_ => lipid_.Description.HasFlag(_description));
             var references = _lipidDatabase.Generates(lipids, lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
             return references;
         }
 
         private IEnumerable<ILipid> GenerateLipid(ILipid lipid) {
             if (_lipidDatabase.Source == DataBaseSource.OadLipid) {
-                return _lipidGenerator.GenerateUntil(lipid, l => l.AnnotationLevel >= 2).Prepend(lipid);
+                return _lipidGenerator.GenerateUntil(lipid, l => l.AnnotationLevel >= 1).Prepend(lipid);
             }
             return _lipidGenerator.GenerateUntil(lipid, _ => true).Prepend(lipid);
         }

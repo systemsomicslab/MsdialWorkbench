@@ -211,6 +211,13 @@ namespace CompMs.Graphics.Chart
             CoerceValue(ItemsProperty);
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+            InvalidateVisual();
+        }
+
         public static readonly DependencyProperty VerticalPropertyProperty =
             DependencyProperty.Register(
                 nameof(VerticalProperty), typeof(string), typeof(ErrorBar),
@@ -240,6 +247,13 @@ namespace CompMs.Graphics.Chart
             base.OnVerticalRangeChanged(sender, e);
             ShouldCoerceItems = true;
             CoerceValue(ItemsProperty);
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+            InvalidateVisual();
         }
 
         public static readonly DependencyProperty LinePenProperty =

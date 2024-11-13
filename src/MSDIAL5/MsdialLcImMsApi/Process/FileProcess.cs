@@ -179,10 +179,9 @@ public sealed class FileProcess : IFileProcessor
         var max_annotation = 30.0;
         var max_annotation_local = max_annotation / mSDecResultCollections.Length;
         foreach (var (mSDecResultCollection, index) in mSDecResultCollections.WithIndex()) {
-            var msdecResults = mSDecResultCollection.MSDecResults;
             var initial_annotation_local = initial_annotation + max_annotation_local * index;
             var reporter = ReportProgress.FromLength(progress, initial_annotation_local, max_annotation_local);
-            await annotationProcess.RunAnnotationAsync(chromPeakFeatures, msdecResults, provider, parameter.NumThreads - 1, reporter.Report, token).ConfigureAwait(false);
+            await annotationProcess.RunAnnotationAsync(chromPeakFeatures, mSDecResultCollection, provider, parameter.NumThreads - 1, reporter.Report, token).ConfigureAwait(false);
         }
     }
 

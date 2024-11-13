@@ -16,7 +16,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using CompMs.Common.Extension;
 
 namespace CompMs.App.Msdial.Model.Core
 {

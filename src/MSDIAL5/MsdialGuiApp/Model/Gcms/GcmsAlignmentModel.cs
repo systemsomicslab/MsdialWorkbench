@@ -71,17 +71,15 @@ namespace CompMs.App.Msdial.Model.Gcms
             UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 
-            ChromatogramSerializer<ChromatogramSpotInfo>? chromatogramSpotSerializer = null;
+            ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer = default!;
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
-                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
-                    if (chromatogramSpotSerializer is not null) {
-                        chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(chromatogramSpotSerializer, parameter.GetRIHandlers());
-                    }
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI)!;
+                    chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(chromatogramSpotSerializer, parameter.GetRIHandlers());
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT)!;
                     break;
             }
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);

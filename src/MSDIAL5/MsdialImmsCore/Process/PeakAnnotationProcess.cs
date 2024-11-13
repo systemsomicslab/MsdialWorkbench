@@ -17,15 +17,15 @@ namespace CompMs.MsdialImmsCore.Process
     internal sealed class PeakAnnotationProcess
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
-        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _mspAnnotator;
-        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _textDBAnnotator;
+        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? _mspAnnotator;
+        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? _textDBAnnotator;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
         public PeakAnnotationProcess(
             IMsdialDataStorage<MsdialImmsParameter> storage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _mspAnnotator = mspAnnotator;
             _textDBAnnotator = textDBAnnotator;
@@ -52,8 +52,8 @@ namespace CompMs.MsdialImmsCore.Process
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             MsdialImmsParameter parameter,

@@ -6,13 +6,12 @@ using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class AnnotationQueryWithReference : IAnnotationQuery<MsScanMatchResult>
     {
-        private readonly MoleculeMsReference _reference;
+        private readonly MoleculeMsReference? _reference;
         private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _finder;
         private readonly AnnotationQuery _baseQuery;
         private readonly bool _ignoreIsotopicPeak;
@@ -20,7 +19,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public AnnotationQueryWithReference(
             IMSIonProperty property,
             IMSScanProperty scan,
-            MoleculeMsReference reference,
+            MoleculeMsReference? reference,
             IReadOnlyList<IsotopicPeak> isotopes,
             IonFeatureCharacter ionFeature,
             MsRefSearchParameterBase parameter,
@@ -52,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
             if (_finder is null || _reference is null || (!forceFind && _ignoreIsotopicPeak && !IonFeature.IsMonoIsotopicIon)) {
-                return Enumerable.Empty<MsScanMatchResult>();
+                return [];
             }
             else {
                 return _finder.FindCandidates((_baseQuery, _reference));

@@ -23,8 +23,8 @@ public sealed class AnnotationProcess
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
         IReadOnlyList<MSDecResult> msdecResults,
         IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
         MsdialImmsParameter parameter,
@@ -48,7 +48,7 @@ public sealed class AnnotationProcess
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
                 //Console.WriteLine("mass {0}, isotope {1}", chromPeakFeature.Mass, chromPeakFeature.PeakCharacter.IsotopeWeightNumber);
-                ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
+                ImmsMatchMethod(chromPeakFeature, msdecResult, provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
                 reporter.Report(i + 1, chromPeakFeatures.Count);
             });
     }
@@ -57,12 +57,11 @@ public sealed class AnnotationProcess
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult,
         IReadOnlyList<RawPeakElement> spectrum,
         IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, IMatchResultEvaluator<MsScanMatchResult> evaluator,
-        IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, MsdialImmsParameter parameter) {
-        //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
-        //    Console.WriteLine();
-        //}
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
+        IMatchResultEvaluator<MsScanMatchResult> evaluator,
+        IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+        MsdialImmsParameter parameter) {
         var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
         SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
@@ -82,9 +81,9 @@ public sealed class AnnotationProcess
 
     private static void SetMspAnnotationResult(
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
 
-        if (mspAnnotator == null)
+        if (mspAnnotator is null)
             return;
 
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator, ignoreIsotopicPeak: true).FindCandidates();
@@ -107,9 +106,9 @@ public sealed class AnnotationProcess
 
     private static void SetTextDBAnnotationResult(
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
 
-        if (textDBAnnotator == null)
+        if (textDBAnnotator is null)
             return;
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator, ignoreIsotopicPeak: false).FindCandidates();
         var results = textDBAnnotator.FilterByThreshold(candidates);

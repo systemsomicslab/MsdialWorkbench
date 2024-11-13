@@ -17,14 +17,14 @@ public class EadLipidomicsAnnotationProcess : IAnnotationProcess
 {
     private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
 
-    public async Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, Action<double>? reportAction = null, CancellationToken token = default) {
+    public async Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MSDecResultCollection msdecResults, IDataProvider provider, int numThread = 1, Action<double>? reportAction = null, CancellationToken token = default) {
         var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
         var reporter = ReportProgress.FromRange(reportAction, 0, 1);
         for (int i = 0; i < chromPeakFeatures.Count; i++) {
             var chromPeakFeature = chromPeakFeatures[i];
-            var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-            await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, token), token).ConfigureAwait(false);
+            var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults.MSDecResults, parentID2IsotopePeakIDs);
+            await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token), token).ConfigureAwait(false);
             reporter?.Report(i + 1, chromPeakFeatures.Count);
         };
     }
@@ -85,6 +85,7 @@ public class EadLipidomicsAnnotationProcess : IAnnotationProcess
          ChromatogramPeakFeature chromPeakFeature,
          MSDecResult msdecResult,
          IDataProvider provider,
+         double collisionEnergy,
          CancellationToken token = default) {
 
         foreach (var factory in _moleculeQueryFactries) {
@@ -96,19 +97,20 @@ public class EadLipidomicsAnnotationProcess : IAnnotationProcess
                 rawSpectrum.Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
-            SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum);
+            SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum, msdecResult, collisionEnergy);
         }
         token.ThrowIfCancellationRequested();
         SetRepresentativeProperty(chromPeakFeature);
         return Task.CompletedTask;
     }
 
-    private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, RawPeakElement[] spectrums) {
-        //if (Math.Abs(chromPeakFeature.PrecursorMz - 766.6764) < 0.001) {
-        //    Console.WriteLine();
-        //}
+    private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, RawPeakElement[] spectrums, MSDecResult msdecResult, double collisionEnergy) {
         var candidates = query.FindCandidates();
-        var results = _evaluator.FilterByThreshold(candidates);
+        var results = _evaluator.FilterByThreshold(candidates).Select(r => {
+            r.CollisionEnergy = collisionEnergy;
+            r.SpectrumID = msdecResult.RawSpectrumID;
+            return r;
+        }).ToList();
         if (results.Count > 0) {
             var matches = _evaluator.SelectReferenceMatchResults(results);
             var topResults = new List<MsScanMatchResult>();

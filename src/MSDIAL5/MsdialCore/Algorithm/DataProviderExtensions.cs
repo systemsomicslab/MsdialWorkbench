@@ -2,6 +2,7 @@
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Internal;
 using CompMs.RawDataHandler.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -75,6 +76,40 @@ public static class DataProviderExtensions {
             result[i] = spectra[i + lower];
         }
         return result;
+    }
+
+    /// <summary>
+    /// An extension method for IDataProvider to retrieve all MS2 spectra associated with the MS1 spectrum closest to the specified retention time (RT).
+    /// </summary>
+    /// <param name="provider">The data provider instance on which the extension method operates.</param>
+    /// <param name="rt">The target retention time (ScanStartTime) to find the nearest MS1 spectrum.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation and returns an array of <see cref="RawSpectrum"/> objects containing all MS2 spectra related to the closest MS1 spectrum.</returns>
+    public static async Task<RawSpectrum[]> LoadMs2SpectraByNearestMs1WithRtAsync(this IDataProvider provider, double rt, CancellationToken token) {
+        var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+        var lower = spectra.LowerBound(rt, (t, s) => t.ScanStartTime.CompareTo(s));
+        int next = lower, prev = lower - 1;
+        while (next < spectra.Count && spectra[next].MsLevel != 1) {
+            ++next;
+        }
+        while (prev >= 0 && spectra[prev].MsLevel != 1) {
+            --prev;
+        }
+        int? ms1 = null;
+        if (next < spectra.Count) {
+            ms1 = next;
+        }
+        if (prev >= 0 && (ms1 is null || Math.Abs(spectra[ms1.Value].ScanStartTime - rt) > Math.Abs(spectra[prev].ScanStartTime - rt))) {
+            ms1 = prev;
+        }
+        if (ms1 is null) {
+            return [];
+        }
+        var results = new List<RawSpectrum>();
+        for (var idx = ms1.Value + 1; idx < spectra.Count && spectra[idx].MsLevel == 2; ++idx) {
+            results.Add(spectra[idx]);
+        }
+        return [.. results];
     }
 
     public static double GetMinimumCollisionEnergy(this IDataProvider provider) {

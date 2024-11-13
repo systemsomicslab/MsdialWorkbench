@@ -31,13 +31,11 @@ namespace CompMs.MsdialLcMsApi.Process
             var max_annotation = 30.0;
             var max_annotation_local = max_annotation / mSDecResultCollections.Count;
             foreach (var (ce2msdecs, index) in mSDecResultCollections.WithIndex()) {
-                var targetCE = ce2msdecs.CollisionEnergy;
-                var msdecResults = ce2msdecs.MSDecResults;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
                 var reporter = ReportProgress.FromLength(progress, initial_annotation_local, max_annotation_local);
                 await _annotationProcess.RunAnnotationAsync(
                         chromPeakFeatures,
-                        msdecResults,
+                        ce2msdecs,
                         provider,
                         _storage.Parameter.NumThreads == 1 ? 1 : 2,
                         reporter.Report,
