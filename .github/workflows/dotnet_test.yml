@@ -62,7 +62,7 @@ jobs:
 
   publish-msdial5-console:
     needs: test
-    runs-on: ${{ matrix.pair.os }}
+    runs-on: ${{ matrix.triple.os }}
     strategy:
       matrix:
         triple: [
