@@ -13,6 +13,7 @@
     <HighEntropyVA>false</HighEntropyVA>
     <Product>MsdialConsoleApp</Product>
     <AssemblyName>MSDIALCUI</AssemblyName>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>
