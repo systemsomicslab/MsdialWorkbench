@@ -33,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -41,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProvider _provider;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ParameterBase _parameter;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly IMessageBroker _broker;
 
         public LcmsAnalysisModel(
@@ -52,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
             FilePropertiesModel projectBaseParameterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {
@@ -69,6 +72,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _parameter = parameter;
+            _msfinderSearcherFactory = msfinderSearcherFactory;
             _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -225,12 +229,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
+            analysisFile = analysisFileModel;
         }
 
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
         private readonly UndoManager _undoManager;
-
+        public AnalysisFileBeanModel analysisFile { get; }
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
@@ -259,6 +264,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
+        public InternalMsFinderSingleSpot? InternalMsFinderSingleSpot { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
@@ -282,7 +288,22 @@ namespace CompMs.App.Msdial.Model.Lcms
             return compoundSearch;
         }
 
-        public IObservable<bool> CanSetUnknown => Target.Select(t => t is not null);
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            try {
+                return _msfinderSearcherFactory.CreateModel(peak, msdec, _provider);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {

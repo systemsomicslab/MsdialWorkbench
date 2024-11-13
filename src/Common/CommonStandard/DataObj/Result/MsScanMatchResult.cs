@@ -15,7 +15,7 @@ namespace CompMs.Common.DataObj.Result {
         DataBases = FastaDB | MspDB | TextDB | GeneratedLipid,
     }
     public enum DataBaseSource {
-        None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid
+        None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid, MsFinder,
     }
 
     [MessagePackObject]

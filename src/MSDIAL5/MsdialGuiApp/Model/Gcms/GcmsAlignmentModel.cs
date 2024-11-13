@@ -86,6 +86,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _target = target;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
+            AlignmentSpotSource = spotsSource;
 
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
@@ -260,6 +261,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
         }
 
+        public override AlignmentSpotSource AlignmentSpotSource { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
         public GcgcAlignmentPeakPlotModel GcgcPlotModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }

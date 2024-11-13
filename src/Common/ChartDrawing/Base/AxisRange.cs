@@ -43,10 +43,19 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public AxisRange Union(AxisRange? other) {
-            if (other == null) {
+            if (other is null) {
                 return this;
             }
             return new AxisRange(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
+        }
+
+        public static AxisRange? Union(AxisRange? lhs, AxisRange? rhs)
+        {
+            if (lhs is null)
+            {
+                return rhs;
+            }
+            return lhs.Union(rhs);
         }
 
         public static AxisRange operator +(AxisRange range, AxisValue value) => new(range.Minimum.Value + value.Value, range.Maximum.Value + value.Value);

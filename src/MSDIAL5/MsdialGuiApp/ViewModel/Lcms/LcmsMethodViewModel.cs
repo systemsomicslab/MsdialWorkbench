@@ -73,6 +73,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
+            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.InternalMsfinderSettingModel, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
+
             NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }
 
@@ -157,6 +160,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 m.Search();
             }
         }
+
+        public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
+
+        public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 
         public DelegateCommand<Window> ShowMassqlSearchSettingCommand => _massqlSearchSettingCommand??= new DelegateCommand<Window>(MassqlSearchSettingMethod);
         private DelegateCommand<Window>? _massqlSearchSettingCommand;

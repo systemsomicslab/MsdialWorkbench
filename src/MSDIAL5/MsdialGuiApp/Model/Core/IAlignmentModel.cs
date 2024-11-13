@@ -9,6 +9,7 @@ namespace CompMs.App.Msdial.Model.Core
     {
         AlignmentFileBeanModel AlignmentFile { get; }
         AlignmentResultContainer AlignmentResult { get; }
+        AlignmentSpotSource AlignmentSpotSource { get; }
         Task SaveAsync();
     }
 }

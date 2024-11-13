@@ -18,6 +18,9 @@ namespace CompMs.Common.FormulaGenerator.DataObj {
 
         public double MatchedMass { get; set; }
         public double MassDiff { get; set; }
+        public double MassDiffPpm { 
+            get => MassDiff / Formula.Mass*1000000;
+        }
         public double M1IsotopicDiff { get; set; }
         public double M2IsotopicDiff { get; set; }
         public double M1IsotopicIntensity { get; set; }

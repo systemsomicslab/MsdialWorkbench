@@ -45,4 +45,25 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+	<None Update="Resources\FormulaGenerator\ProductIonLib_vs1.pid">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\NeutralLossDB_vs2.ndb">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\MsfinderFormulaDB-VS13.efd">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1.msp">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1_result.fgt">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1_parameters.ini">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
 </Project>

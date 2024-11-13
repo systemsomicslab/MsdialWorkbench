@@ -412,6 +412,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             double value;
 
             productIon.Formula = FormulaStringParcer.OrganicElementsReader(array[0]);
+            if (productIon.Formula == null) { productIon.Formula = new Formula(); }
             if (double.TryParse(array[1], out value)) productIon.Formula.Mass = value; else { error = errorValue(); return false; }
             if (double.TryParse(array[2], out value)) productIon.Mass = value; else { error = errorValue(); return false; }
             if (double.TryParse(array[3], out value)) productIon.Intensity = value; else { error = errorValue(); return false; }

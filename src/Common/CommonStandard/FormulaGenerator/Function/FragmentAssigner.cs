@@ -442,7 +442,8 @@ namespace CompMs.Common.FormulaGenerator.Function {
             double maxSPSiFONCHmass = maxPSiFONCHmass + AtomMass.sMass * formula.Snum;
             double maxClSPSiFONCHmass = maxSPSiFONCHmass + AtomMass.clMass * formula.Clnum;
             double maxBrClSPSiFONCHmass = maxClSPSiFONCHmass + AtomMass.brMass * formula.Brnum;
-           
+
+            int fhnum = formula.Hnum;
             for (int inum = 0; inum <= formula.Inum; inum++)
             {
                 if ((double)inum * AtomMass.iMass + maxBrClSPSiFONCHmass < mass - massTol) continue;
@@ -503,7 +504,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
                                                     if (uNmass + (double)cnum * AtomMass.cMass > mass + massTol) break;
                                                     var uCmass = uNmass + (double)cnum * AtomMass.cMass;
 
-                                                    for (int hnum = 0; hnum <= formula.Hnum + hydrogen; hnum++)
+                                                    for (int hnum = 0; hnum <= fhnum + hydrogen; hnum++)
                                                     {
                                                         if (uCmass + (double)hnum * AtomMass.hMass < mass - massTol) continue;
                                                         if (uCmass + (double)hnum * AtomMass.hMass > mass + massTol) break;

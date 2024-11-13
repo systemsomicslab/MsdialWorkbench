@@ -32,6 +32,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string FileName => _alignmentFile.FileName;
+        public string FilePath => _alignmentFile.FilePath;
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
 
         public int CountRawFiles => _analysisFiles.Count;

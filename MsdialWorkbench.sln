@@ -174,7 +174,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonSourceGeneratorTests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{26C4466E-49D5-404B-8777-8A92DDBBC35D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardBenchmark", "benchmark\CompMs\CommonStandardBenchmark\CommonStandardBenchmark.csproj", "{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandardBenchmark", "benchmark\CompMs\CommonStandardBenchmark\CommonStandardBenchmark.csproj", "{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DC2AD876-69E5-4D56-AD01-A871FA14CF04}"
 	ProjectSection(SolutionItems) = preProject
@@ -787,8 +787,8 @@ Global
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|x64.ActiveCfg = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|x64.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
@@ -807,8 +807,8 @@ Global
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|x64.ActiveCfg = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|x64.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
@@ -1844,7 +1844,7 @@ Global
 		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD} = {26C4466E-49D5-404B-8777-8A92DDBBC35D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal

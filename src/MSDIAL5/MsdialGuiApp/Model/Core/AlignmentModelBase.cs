@@ -39,6 +39,8 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private AlignmentResultContainer _container;
 
+        public abstract AlignmentSpotSource AlignmentSpotSource { get; }
+
         public virtual Task SaveAsync() {
             return _alignmentFileModel.SaveAlignmentResultAsync(Container);
         }
