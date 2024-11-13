@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net472;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>net472;net48;net8</TargetFrameworks>
     <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
