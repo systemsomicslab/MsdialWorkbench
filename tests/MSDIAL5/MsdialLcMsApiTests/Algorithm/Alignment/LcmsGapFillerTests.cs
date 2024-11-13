@@ -44,22 +44,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 // center 2.05, width 0.6
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
+                    new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1 },
                     new AlignmentChromPeakFeature {
-                        PeakID = -1 },
-                    new AlignmentChromPeakFeature {
-                        PeakID = 1, IonMode = Common.Enum.IonMode.Positive,
+                        MasterPeakID = 1, PeakID = 1, IonMode = Common.Enum.IonMode.Positive,
                         ChromXsLeft = new ChromXs(1.8), ChromXsTop = new ChromXs(2.0), ChromXsRight = new ChromXs(2.2),
                         PeakHeightTop = 100d, Mass = 100d + mzTol * 0.9, },
                     new AlignmentChromPeakFeature {
-                        PeakID = 2, IonMode = Common.Enum.IonMode.Positive ,
+                        MasterPeakID = 2, PeakID = 2, IonMode = Common.Enum.IonMode.Positive ,
                         ChromXsLeft = new ChromXs(1.9), ChromXsTop = new ChromXs(1.95), ChromXsRight = new ChromXs(2.1),
                         PeakHeightTop = 200d, Mass = 100d, },
                     new AlignmentChromPeakFeature {
-                        PeakID = -1 },
+                        MasterPeakID = -1, PeakID = -1 },
                     new AlignmentChromPeakFeature {
-                        PeakID = -1 },
+                        MasterPeakID = -1, PeakID = -1 },
                     new AlignmentChromPeakFeature {
-                        PeakID = 4, IonMode = Common.Enum.IonMode.Positive,
+                        MasterPeakID = 4, PeakID = 4, IonMode = Common.Enum.IonMode.Positive,
                         ChromXsLeft = new ChromXs(1.7), ChromXsTop = new ChromXs(2.2), ChromXsRight = new ChromXs(2.3),
                         PeakHeightTop = 150d, Mass = 100d + mzTol * 0.9, },
                 },

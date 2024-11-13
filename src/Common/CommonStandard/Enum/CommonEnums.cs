@@ -129,7 +129,8 @@ namespace CompMs.Common.Enum
         SavitzkyGolayFilter,
         BinomialFilter,
         LowessFilter,
-        LoessFilter
+        LoessFilter,
+        TimeBasedLinearWeightedMovingAverage,
     }
 
     public enum ScaleMethod {

@@ -4,20 +4,19 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
-using CompMs.Common.Query;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public static class CommonProcess {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
@@ -31,24 +30,28 @@ namespace CompMs.App.MsdialConsole.Process {
             }
 
             var dt = DateTime.Now;
-            var projectFileName = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + ".mtd2";
+            var projectFileName = $"Project-{dt:yyMMddhhmm}.mddata";
             var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
             param.ProjectFolderPath = inputfolder;
             param.ProjectFileName = projectFileName;
 
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
+            param.FileID_AnalysisFileType = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileType);
 
-            foreach (var analysisFile in analysisFiles) {
 #pragma warning disable CS0618 // Type or member is obsolete
+            if (param.ProjectParam.AcquisitionType == AcquisitionType.None) {
+                param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
+            }
+            foreach (var analysisFile in analysisFiles) {
                 // ProjectBaseParameter.AcquisitionType is obsolete, but is used because it is not possible to set the AcquisitionType of individual files in the Console application.
                 analysisFile.AcquisitionType = param.ProjectParam.AcquisitionType;
-#pragma warning restore CS0618 // Type or member is obsolete
             }
+#pragma warning restore CS0618 // Type or member is obsolete
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
-                param.Ionization = Common.Enum.Ionization.EI;
+                param.Ionization = Ionization.EI;
             }
             else {
-                param.Ionization = Common.Enum.Ionization.ESI;
+                param.Ionization = Ionization.ESI;
             }
             return true;
         }
@@ -104,10 +107,9 @@ namespace CompMs.App.MsdialConsole.Process {
         }
 
         public static void SetLipidQueries(ParameterBase param) {
-            var exeDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var exeDir = AppDomain.CurrentDomain.BaseDirectory;
             var iniLipidPath = exeDir + "LipidQueries.INI";
-            var solvent = param.LipidQueryContainer.SolventType;
-            if (!System.IO.File.Exists(iniLipidPath)) {
+            if (!File.Exists(iniLipidPath)) {
                 using (var sw = new StreamWriter(iniLipidPath, false, Encoding.ASCII)) {
                     sw.WriteLine("Class\tAdduct\tIon mode\tIsSelected");
                     var queries = param.LipidQueryContainer.LbmQueries;

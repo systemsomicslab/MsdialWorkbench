@@ -204,7 +204,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         #region properties
-        [Required(ErrorMessage = "Chose a folder path.")]
+        [Required(ErrorMessage = "Choose a folder path.")]
         public string ExportFolderPath
         {
             get { return exportFolderPath; }

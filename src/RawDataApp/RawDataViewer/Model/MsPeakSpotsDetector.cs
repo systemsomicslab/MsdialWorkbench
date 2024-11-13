@@ -21,13 +21,13 @@ namespace CompMs.App.RawDataViewer.Model
             switch (dataModel.MachineCategory) {
                 case MachineCategory.LCMS: {
                         var provider = await dataModel.CreateDataProvider(token).ConfigureAwait(false);
-                        var peaks = new MsdialLcMsApi.Algorithm.PeakSpotting(dataModel.AnalysisFile, 0, 100).Run(provider, new MsdialLcmsApi.Parameter.MsdialLcmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }, token, null);
+                        var peaks = new MsdialLcMsApi.Algorithm.PeakSpotting(dataModel.AnalysisFile, 0, 100).Run(provider, new MsdialLcmsApi.Parameter.MsdialLcmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }, null, token);
                         return (PeaksToSummary(peaks), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.IMMS: {
                         var providerFactory = new MsdialImmsCore.Algorithm.ImmsAverageDataProviderFactory(massTolerance: 0.001, driftTolerance: 0.002);
                         var provider = await dataModel.CreateDataProviderByFactory(providerFactory, token).ConfigureAwait(false);
-                        var peaks = new MsdialImmsCore.Algorithm.PeakSpotting(new MsdialImmsCore.Parameter.MsdialImmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }).Run(dataModel.AnalysisFile, provider, 0, 100);
+                        var peaks = new MsdialImmsCore.Algorithm.PeakSpotting(new MsdialImmsCore.Parameter.MsdialImmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }).Run(dataModel.AnalysisFile, provider, null);
                         return (PeaksToSummary(peaks.Items), new MsSnDistribution(peaks.Items));
                     }
                 case MachineCategory.IFMS: {
@@ -53,7 +53,7 @@ namespace CompMs.App.RawDataViewer.Model
                         var provider = providers[0];
                         var accProvider = providers[1];
                         var parameter = new MsdialLcImMsApi.Parameter.MsdialLcImMsParameter { MinimumAmplitude = 0d, IonMode = ionMode, };
-                        var peaks = new MsdialLcImMsApi.Algorithm.PeakSpotting(0, 100, parameter).Execute4DFeatureDetection(dataModel.AnalysisFile, provider, accProvider, parameter.NumThreads, token, null);
+                        var peaks = new MsdialLcImMsApi.Algorithm.PeakSpotting(0, 100, parameter).Execute4DFeatureDetection(dataModel.AnalysisFile, provider, accProvider, parameter.NumThreads, null, token);
                         var flatten = peaks.SelectMany(peak => peak.DriftChromFeatures).ToList();
                         return (PeaksToSummary(flatten), new MsSnDistribution(peaks));
                     }

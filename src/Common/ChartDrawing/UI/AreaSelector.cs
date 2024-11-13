@@ -46,6 +46,15 @@ namespace CompMs.Graphics.UI
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AreaSelector), new FrameworkPropertyMetadata(typeof(AreaSelector)));
         }
 
+        public static RoutedCommand UndoCommand { get; } = new(nameof(AreaSelector), typeof(AreaSelector));
+        public static RoutedCommand RedoCommand { get; } = new(nameof(AreaSelector), typeof(AreaSelector));
+
+        public AreaSelector()
+        {
+            CommandBindings.Add(new(UndoCommand, Undo, CanUndo));
+            CommandBindings.Add(new(RedoCommand, Redo, CanRedo));
+        }
+
         public static readonly DependencyProperty SelectedPointsProperty =
             DependencyProperty.Register(
                 nameof(SelectedPoints),
@@ -186,16 +195,22 @@ namespace CompMs.Graphics.UI
             if (_mode != AreaSelectorMode.Selecting) {
                 if (IsSelectable) {
                     StartSelecting(p);
+                    _unselectingStack.Clear();
+                    _cancelledLine = null;
+                    _cancelledVisuals.Clear();
+                    _cancelledPoints = null;
                 }
             }
             else {
                 var (i, r) = InteractPoint(p);
                 if (i >= 0) {
                     ContinueSelecting(r);
+                    _unselectingStack.Clear();
                     FinishSelecting(i);
                     return;
                 }
                 ContinueSelecting(p);
+                _unselectingStack.Clear();
             }
         }
 
@@ -215,15 +230,42 @@ namespace CompMs.Graphics.UI
             }
         }
 
+        private void Undo(object sender, ExecutedRoutedEventArgs args) {
+            switch (_mode) {
+                case AreaSelectorMode.Selecting:
+                    UndoSelecting();
+                    break;
+                case AreaSelectorMode.UnSelected:
+                case AreaSelectorMode.Selected:
+                    UndoCancelled();
+                    break;
+            }
+        }
+
+        private void CanUndo(object sender, CanExecuteRoutedEventArgs args) {
+            args.CanExecute = (_mode == AreaSelectorMode.Selecting && _selectingPoints.Count > 0)
+                || ((_mode == AreaSelectorMode.UnSelected || _mode == AreaSelectorMode.Selected) && _cancelledLine is not null && _cancelledVisuals.Count > 0 && _cancelledPoints is not null);
+        }
+
+        private void Redo(object sender, ExecutedRoutedEventArgs args) {
+            if (_mode == AreaSelectorMode.Selecting || _mode == AreaSelectorMode.UnSelected) {
+                RedoSelecting();
+            }
+        }
+
+        private void CanRedo(object sender, CanExecuteRoutedEventArgs args) {
+            args.CanExecute = (_mode == AreaSelectorMode.Selecting || _mode == AreaSelectorMode.UnSelected) && _unselectingStack.Count > 0;
+        }
+
         private AreaSelectorMode _mode = AreaSelectorMode.UnSelected;
         private AreaSelectorMode _previousMode = AreaSelectorMode.UnSelected;
-        private ObservableCollection<Point> _selectingPoints;
-        private Line _currentLine;
-        private readonly List<Shape> _visuals = new List<Shape>();
-        private readonly List<Shape> _previousVisuals = new List<Shape>();
+        private ObservableCollection<Point> _selectingPoints, _cancelledPoints;
+        private List<Point> _unselectingStack = [];
+        private Line? _currentLine, _cancelledLine;
+        private readonly List<Shape> _visuals = [], _previousVisuals = [], _cancelledVisuals = [];
 
         private void StartSelecting(Point p) {
-            _selectingPoints = new ObservableCollection<Point> { p, };
+            _selectingPoints = [p,];
             _currentLine = new Line()
             {
                 X1 = p.X,
@@ -321,12 +363,15 @@ namespace CompMs.Graphics.UI
 
         private void CancelSelecting() {
             ReleaseMouseCapture();
+            _cancelledPoints = _selectingPoints;
             _selectingPoints = null;
             foreach (var v in _visuals) {
                 Children.Remove(v);
             }
+            _cancelledVisuals.AddRange(_visuals);
             _visuals.Clear();
             Children.Remove(_currentLine);
+            _cancelledLine = _currentLine;
             _currentLine = null;
             _visuals.AddRange(_previousVisuals);
             foreach (var v in _previousVisuals) {
@@ -334,6 +379,68 @@ namespace CompMs.Graphics.UI
             }
             _previousVisuals.Clear();
             _mode = _previousMode;
+        }
+
+        private void UndoSelecting() {
+            if (_selectingPoints.Count == 0) {
+                return;
+            }
+            var p = _selectingPoints[_selectingPoints.Count - 1];
+            _selectingPoints.Remove(p);
+            _unselectingStack.Add(p);
+
+            var lastEllipse = (Ellipse)_visuals[_visuals.Count - 1]; // ... line (Pn-1, Pn), ellipse (Pn-1), current line (Pn, Pcurrent), last ellipse(Pn)
+            _visuals.Remove(lastEllipse);
+            Children.Remove(lastEllipse);
+
+            Children.Remove(_currentLine);
+            if (_visuals.Count >= 1) {
+                var prevLine = (Line)_visuals[_visuals.Count - 1];
+                prevLine.X2 = _currentLine.X2;
+                prevLine.Y2 = _currentLine.Y2;
+                _currentLine = prevLine;
+                _visuals.Remove(prevLine);
+            }
+            else {
+                ReleaseMouseCapture();
+                _currentLine = null;
+                _mode = AreaSelectorMode.UnSelected;
+            }
+        }
+
+        private void RedoSelecting() {
+            if (_unselectingStack.Count == 0) {
+                return;
+            }
+            if (_mode == AreaSelectorMode.Selecting) {
+                ContinueSelecting(_unselectingStack[_unselectingStack.Count - 1]);
+                _unselectingStack.RemoveAt(_unselectingStack.Count - 1);
+            }
+            else if (_mode == AreaSelectorMode.UnSelected) {
+                StartSelecting(_unselectingStack[_unselectingStack.Count - 1]);
+                _unselectingStack.RemoveAt(_unselectingStack.Count - 1);
+            }
+        }
+
+        private void UndoCancelled() {
+            if (_mode != AreaSelectorMode.UnSelected && _mode != AreaSelectorMode.Selected || _cancelledLine is null || _cancelledVisuals.Count == 0) {
+                return;
+            }
+            _selectingPoints = _cancelledPoints;
+            _cancelledPoints = null;
+            _currentLine = _cancelledLine;
+            Children.Add(_currentLine);
+            foreach (var visual in _visuals) {
+                Children.Remove(visual);
+            }
+            _previousVisuals.AddRange(_visuals);
+            _visuals.Clear();
+            _visuals.AddRange(_cancelledVisuals);
+            foreach (var visual in _cancelledVisuals) {
+                Children.Add(visual);
+            }
+            _cancelledVisuals.Clear();
+            _mode = AreaSelectorMode.Selecting;
         }
 
         enum AreaSelectorMode {

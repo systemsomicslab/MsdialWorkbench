@@ -151,14 +151,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public sealed class AnnotationQueryWithReferenceFactory : IAnnotationQueryFactory<MsScanMatchResult>
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _annotator;
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
         private readonly bool _ignoreIsotopicPeak;
 
         private AnnotationQueryWithReferenceFactory(
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             MsRefSearchParameterBase searchParameter,
             Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter,
@@ -172,7 +172,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public AnnotationQueryWithReferenceFactory(
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             PeakPickBaseParameter peakPickParameter,
             MsRefSearchParameterBase searchParameter,

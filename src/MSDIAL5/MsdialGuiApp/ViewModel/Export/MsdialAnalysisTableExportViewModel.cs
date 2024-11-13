@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
             model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
             ShouldExport = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldExport).AddTo(Disposables);
+            TrimToExcelLimit = model.ToReactivePropertySlimAsSynchronized(m => m.TrimToExcelLimit).AddTo(Disposables);
 
             _canExport = new[]{
                 ShouldExport,
@@ -32,6 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         }
 
         public ReactivePropertySlim<bool> ShouldExport { get; }
+        public ReactivePropertySlim<bool> TrimToExcelLimit { get; }
 
         public ReadOnlyObservableCollection<ISpectraType> ExportSpectraTypes { get; }
 

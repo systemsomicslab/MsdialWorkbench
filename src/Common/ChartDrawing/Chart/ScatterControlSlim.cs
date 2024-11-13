@@ -148,9 +148,21 @@ namespace CompMs.Graphics.Chart
             CoerceTree();
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            CoerceTree();
+            InvalidateVisual();
+        }
+
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
             CoerceTree();
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            CoerceTree();
+            InvalidateVisual();
         }
 
         private Lazy<KdTree<ScatterControlSlimItem>> tree;

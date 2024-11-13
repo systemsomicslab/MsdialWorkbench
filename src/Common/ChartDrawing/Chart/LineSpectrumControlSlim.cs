@@ -157,6 +157,12 @@ namespace CompMs.Graphics.Chart
             CoerceTree();
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            CoerceTree();
+            InvalidateVisual();
+        }
+
         private AxisValue yBase;
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
@@ -165,6 +171,16 @@ namespace CompMs.Graphics.Chart
                 yBase = new AxisValue(1e-20);
             }
             CoerceTree();
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            yBase = VerticalAxis?.TranslateToAxisValue(0d) ?? AxisValue.NaN;
+            if (double.IsNegativeInfinity(yBase.Value)) {
+                yBase = new AxisValue(1e-20);
+            }
+            CoerceTree();
+            InvalidateVisual();
         }
 
         private Lazy<List<LineSpectrumControlSlimItem>> tree;

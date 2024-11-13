@@ -72,6 +72,7 @@
                                 <ComboBoxItem Content="Linear weighted moving average" DataContext="{x:Static enum:SmoothingMethod.LinearWeightedMovingAverage}"/>
                                 <ComboBoxItem Content="Savitzky-Golay filter" DataContext="{x:Static enum:SmoothingMethod.SavitzkyGolayFilter}"/>
                                 <ComboBoxItem Content="Binomial filter" DataContext="{x:Static enum:SmoothingMethod.BinomialFilter}"/>
+                                <ComboBoxItem Content="Time-based linear weighted moving average" DataContext="{x:Static enum:SmoothingMethod.TimeBasedLinearWeightedMovingAverage}"/>
                             </ComboBox.Items>
                         </ComboBox>
                     </ui:LabeledContent>

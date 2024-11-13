@@ -128,11 +128,27 @@ namespace CompMs.Graphics.Chart
             CoerceLazyDatas();
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            WriteCleanFlag(PropertyClean.Horizontal, false);
+            ShouldCoerceDatas = true;
+            CoerceLazyDatas();
+            InvalidateVisual();
+        }
+
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
             WriteCleanFlag(PropertyClean.Vertical, false);
             ShouldCoerceDatas = true;
             CoerceLazyDatas();
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            WriteCleanFlag(PropertyClean.Vertical, false);
+            ShouldCoerceDatas = true;
+            CoerceLazyDatas();
+            InvalidateVisual();
         }
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty =

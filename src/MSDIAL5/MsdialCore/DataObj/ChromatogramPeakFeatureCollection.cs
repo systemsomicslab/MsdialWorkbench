@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -63,6 +62,13 @@ namespace CompMs.MsdialCore.DataObj
                     }
                 }
             }
+        }
+
+        public ChromatogramPeakFeatureCollection Flatten()
+        {
+
+            var flatten = _items.SelectMany(item => item.DriftChromFeatures?.Any() ?? false ? item.DriftChromFeatures : [item]).ToList();
+            return new ChromatogramPeakFeatureCollection(flatten);
         }
 
         public Task SerializeAsync(AnalysisFileBean file, CancellationToken token = default) {

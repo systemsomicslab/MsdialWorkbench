@@ -15,13 +15,33 @@ namespace CompMs.Graphics.AxisManager.Generic
         public DefectAxisManager(double divisor, AxisRange bounds) : base(DEFECT_RANGE, bounds) {
             Divisor = divisor;
         }
-
+        
         public DefectAxisManager(double divisor, IChartMargin margin) : base(DEFECT_RANGE, margin) {
             Divisor = divisor;
         }
 
         public DefectAxisManager(double divisor, IChartMargin margin, AxisRange bounds) : base(DEFECT_RANGE, margin, bounds) {
             Divisor = divisor;
+        }
+
+        public DefectAxisManager(double divisor, double factor) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, AxisRange bounds) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, bounds) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, IChartMargin margin) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, margin) {
+            Divisor = divisor;
+            Factor = factor;
+        }
+
+        public DefectAxisManager(double divisor, double factor, IChartMargin margin, AxisRange bounds) : base((DEFECT_RANGE + new AxisValue(.5d)) * factor, margin, bounds) {
+            Divisor = divisor;
+            Factor = factor;
         }
 
         public LabelType LabelType {
@@ -55,7 +75,26 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
         private ILabelGenerator _labelGenerator;
 
-        public double Divisor { get; }
+        public double Divisor {
+            get => _divisor;
+            set {
+                if (SetProperty(ref _divisor, value)) {
+                    OnAxisValueMappingChanged();
+                }
+            }
+        }
+        private double _divisor;
+
+        public double Factor {
+            get => _factor;
+            set {
+                if (SetProperty(ref _factor, value)) {
+                    OnAxisValueMappingChanged();
+                    UpdateInitialRange((DEFECT_RANGE + .5d) * Factor);
+                }
+            }
+        }
+        private double _factor = 0d;
 
         protected override void OnRangeChanged() {
             labelTicks = null;
@@ -71,7 +110,12 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public override AxisValue TranslateToAxisValue(double value) {
-            return new AxisValue(value / Divisor - Math.Round(value / Divisor));
+            if (Factor != 0d) {
+                return new AxisValue((value / Divisor - Math.Floor(value / Divisor)) * Factor);
+            }
+            else {
+                return new AxisValue(value / Divisor - Math.Round(value / Divisor));
+            }
         }
     }
 }
