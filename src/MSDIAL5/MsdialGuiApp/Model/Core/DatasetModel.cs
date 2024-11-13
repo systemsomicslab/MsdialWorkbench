@@ -13,10 +13,10 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using CompMs.Common.Extension;
 
 namespace CompMs.App.Msdial.Model.Core
 {
@@ -26,6 +26,7 @@ namespace CompMs.App.Msdial.Model.Core
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMessageBroker _broker;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly SerialDisposable _methodDisposable;
 
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) : this(storage, new AnalysisFileBeanModelCollection(storage.AnalysisFiles), broker) {
 
@@ -44,14 +45,14 @@ namespace CompMs.App.Msdial.Model.Core
             allProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
             identificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
             alignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            _methodDisposable = new SerialDisposable().AddTo(Disposables);
         }
 
         public IMethodModel? Method {
             get => method;
             private set {
-                var prev = method;
                 if (SetProperty(ref method, value)) {
-                    prev?.Dispose();
+                    _methodDisposable.Disposable = method;
                 }
             }
         }
