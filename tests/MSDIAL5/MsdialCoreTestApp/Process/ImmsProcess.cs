@@ -133,6 +133,7 @@ public sealed class ImmsProcess
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
+            aligner.ProviderFactory = providerFactory;
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
             result.Save(alignmentFile);
