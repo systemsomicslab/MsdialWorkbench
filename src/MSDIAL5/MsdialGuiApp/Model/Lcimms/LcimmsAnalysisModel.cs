@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(new ChromatogramPeakFeatureModel[0]), verticalAxis: RtMzPlotModel.VerticalAxis)
+            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build([], []), verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",

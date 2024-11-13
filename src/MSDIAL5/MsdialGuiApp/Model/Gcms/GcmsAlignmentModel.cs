@@ -105,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -121,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     PlotModel.HorizontalTitle = "Retention time (min)";
                     break;
             }
-            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PlotModel.HorizontalAxis)
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()), PlotModel.HorizontalAxis)
             {
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),

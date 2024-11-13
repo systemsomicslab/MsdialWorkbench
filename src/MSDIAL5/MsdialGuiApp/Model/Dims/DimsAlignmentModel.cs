@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList())
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
