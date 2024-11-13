@@ -22,7 +22,7 @@ namespace CompMs.MsdialLcImMsApi.Export
         /// <param name="refer">An object that provides references for MoleculeMsReference and MsScanMatchResult.</param>
         /// <param name="parameter">Parameters for the analysis.</param>
         /// <param name="type">The type of export spectra.</param>
-        public LcimmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
+        public LcimmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 

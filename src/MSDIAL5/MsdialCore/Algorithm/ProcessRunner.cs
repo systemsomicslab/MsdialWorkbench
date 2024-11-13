@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CompMs.MsdialCore.Algorithm
 {
     public interface IFileProcessor {
-        Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int> reportAction, CancellationToken token);
+        Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? reportAction, CancellationToken token);
     }
 
     public sealed class ProcessRunner(IFileProcessor processor, int numParallel)
@@ -18,16 +18,16 @@ namespace CompMs.MsdialCore.Algorithm
         private readonly IFileProcessor _processor = processor ?? throw new ArgumentNullException(nameof(processor));
         private readonly int _numParallel = numParallel;
 
-        public Task RunAllAsync(IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption option, IEnumerable<IProgress<int>> reportActions, Action afterEachRun, CancellationToken token) {
+        public Task RunAllAsync(IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption option, IEnumerable<IProgress<int>?> reportActions, Action? afterEachRun, CancellationToken token) {
             var consumer = new Consumer(_processor, _numParallel, analysisFiles, reportActions, afterEachRun);
             return Task.WhenAll(consumer.ConsumeAllAsync(option, token));
         }
 
-        sealed class Consumer(IFileProcessor processor, int numParallel, IEnumerable<AnalysisFileBean> files, IEnumerable<IProgress<int>> reportActions, Action afterEachRun)
+        sealed class Consumer(IFileProcessor processor, int numParallel, IEnumerable<AnalysisFileBean> files, IEnumerable<IProgress<int>?> reportActions, Action? afterEachRun)
         {
             private readonly IFileProcessor _processor = processor;
-            private readonly ConcurrentQueue<(AnalysisFileBean File, IProgress<int> Progress)> _queue = new(files.Zip(reportActions, (file, report) => (file, report)));
-            private readonly Action _afterEachRun = afterEachRun;
+            private readonly ConcurrentQueue<(AnalysisFileBean File, IProgress<int>? Progress)> _queue = new(files.Zip(reportActions, (file, report) => (file, report)));
+            private readonly Action? _afterEachRun = afterEachRun;
             private readonly int _numParallel = numParallel;
 
             private async Task ConsumeAsync(ProcessOption option, CancellationToken token) {

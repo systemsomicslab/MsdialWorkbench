@@ -7,7 +7,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>latest</LangVersion>
-    <Nullable>annotations</Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>

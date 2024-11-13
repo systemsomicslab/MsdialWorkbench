@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
         static LcmsMethodModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT)!;
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;

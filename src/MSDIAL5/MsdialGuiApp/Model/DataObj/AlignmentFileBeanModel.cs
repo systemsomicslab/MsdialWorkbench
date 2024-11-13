@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public int CountRawFiles => _analysisFiles.Count;
 
-        public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo> serializer) {
+        public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo>? serializer) {
             return aligner.Alignment(_analysisFiles, _alignmentFile, serializer);
         }
 
