@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
+using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Extension;
 using System;
 using System.IO;
@@ -97,9 +98,11 @@ namespace CompMs.App.MsdialConsole.Process
         /// </summary>
         /// <returns>error code -1</returns>
         private static int argsError() {
-            var error = @"Msdial Console App requires the following args:
+            var error = @$"Msdial Console App Version {Resources.VERSION}
+
+                        Msdial Console App requires the following args:
 						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-						Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+						Where: <analysisType>	is one of gcms, lcms	(required)
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
@@ -110,9 +113,11 @@ namespace CompMs.App.MsdialConsole.Process
             return -1;
         }
         private static int argsError2() {
-            var error = @"Msdial Console App requires the following args:
+            var error = @$"Msdial Console App Version {Resources.VERSION}
+
+                        Msdial Console App requires the following args:
 						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
-						Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+						Where: <analysisType>	is one of gcms, lcms	(required)
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
