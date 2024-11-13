@@ -23,18 +23,14 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using MessagePack;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -52,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
         private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
-        private readonly DataBaseMapper _dataBaseMapper;
+        private readonly MoleculeDataBase _molecules;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -68,7 +64,8 @@ namespace CompMs.App.Msdial.Model.Search
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
         private static readonly List<ChemicalOntology> chemicalOntologies = FileStorageUtility.GetChemicalOntologyDB();
-        
+        private readonly string _filePath;
+
         public List<FormulaResult>? FormulaList { get; private set; }
 
         private List<FragmenterResult> _structureList = [];
@@ -117,13 +114,13 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, ChromatogramPeakFeatureModel chromatogram, DataBaseMapper dataBaseMapper) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, ChromatogramPeakFeatureModel chromatogram, MoleculeDataBase molecules) {
             try {
                 _parameter = new AnalysisParamOfMsfinder();
                 _folderPath = tempDir;
                 _msScanMatchResultContainer = chromatogram.MatchResultsModel;
                 _chromatogram = chromatogram;
-                _dataBaseMapper = dataBaseMapper;
+                _molecules = molecules;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
@@ -169,6 +166,7 @@ namespace CompMs.App.Msdial.Model.Search
                 MessageBox.Show(ex.Message);
                 throw;
             }
+            _filePath = filePath;
         }
 
         public SingleSpectrumModel SpectrumModelMs1 { get; }
@@ -309,15 +307,16 @@ namespace CompMs.App.Msdial.Model.Search
         public void ReflectToMsdialAsync() {
             if (SelectedStructure is not null) {
                 var moleculeMsReference = new MoleculeMsReference() {
+                    ScanID = _molecules.Database.GetNextID(),
                     ChromXs = _chromatogram.ChromXs,
                     Spectrum = _refSpectrum.Value?.Spectrum ?? [],
                     Formula = new CompMs.Common.DataObj.Property.Formula() { FormulaString = SelectedStructure.Formula },
                     AdductType = _chromatogram.AdductType,
                 };
-                mspDB.Add(moleculeMsReference);
+                _molecules.Database.Add(moleculeMsReference);
                 var matchResult = new MsScanMatchResult {
-                    AnnotatorID = "MS-FINDER",
-                    Source = SourceType.Manual,
+                    AnnotatorID = _molecules.Id,
+                    Source = _molecules.SourceType | SourceType.Manual,
                     Name = SelectedStructure.Title,
                     InChIKey = SelectedStructure.Inchikey,
                     TotalScore = ((float)SelectedStructure.TotalScore),
@@ -327,28 +326,18 @@ namespace CompMs.App.Msdial.Model.Search
                     LibraryID = moleculeMsReference.ScanID,
                 };
                 _msScanMatchResultContainer.AddResult(matchResult);
-                var msfinderRefer = new MsfinderRefer(new ObservableCollection<MoleculeMsReference>(mspDB), "MS-FINDER");
-                _dataBaseMapper.Add(msfinderRefer);
             } else {
                 MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
             }
         }
-    }
-    class MsfinderRefer(IEnumerable<MoleculeMsReference> source, string id) : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> {
 
-        [IgnoreMember]
-        public MoleculeMsReferenceCollection Database { get; private set; } = new MoleculeMsReferenceCollection(source.ToList());
-
-        [Key(0)]
-        public string Id { get; } = id;
-
-        string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
-
-        MoleculeMsReference IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
-            if (result.LibraryID >= Database.Count || Database[result.LibraryID].ScanID != result.LibraryID) {
-                return Database.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+        protected override void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (File.Exists(_filePath)) {
+                    File.Delete(_filePath);
+                }
             }
-            return Database[result.LibraryID];
+            base.Dispose(disposing);
         }
     }
 }

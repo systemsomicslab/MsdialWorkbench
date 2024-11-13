@@ -42,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProvider _provider;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ParameterBase _parameter;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly IMessageBroker _broker;
 
         public LcmsAnalysisModel(
@@ -53,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
             FilePropertiesModel projectBaseParameterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {
@@ -70,6 +72,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _parameter = parameter;
+            _msfinderSearcherFactory = msfinderSearcherFactory;
             _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -291,26 +294,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
             try {
-                var tempDir = Path.Combine(Path.GetDirectoryName(analysisFile.AnalysisFilePath), "MSDIAL_TEMP");
-                if (!Directory.Exists(tempDir)) {
-                    Directory.CreateDirectory(tempDir);
-                }
-                var dt = DateTime.Now;
-                var nameString = "PeakID" + peak.InnerModel.PeakID + "_" + dt.Year.ToString() + "_" + dt.Month.ToString() + "_" + dt.Day.ToString() + "_" + dt.Hour.ToString() + "_" + dt.Minute.ToString();
-                var filePath = Path.Combine(tempDir, nameString + "." + ExportSpectraFileFormat.mat);
-
-                using (var file = File.Open(filePath, FileMode.Create)) {
-                    SpectraExport.SaveSpectraTable(
-                        ExportSpectraFileFormat.mat,
-                        file,
-                        peak.InnerModel,
-                        msdec,
-                        _provider.LoadMs1Spectrums(),
-                        DataBaseMapper,
-                        _parameter);
-                }
-                var msfinder = new InternalMsFinderSingleSpot(tempDir, filePath, peak, DataBaseMapper);
-                return msfinder;
+                return _msfinderSearcherFactory.CreateModel(peak, msdec, _provider);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

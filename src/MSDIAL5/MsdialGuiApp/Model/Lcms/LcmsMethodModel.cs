@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public LcmsMethodModel(
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
@@ -175,6 +176,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new[] { ExportspectraType.deconvoluted, },
                 peakSpotSupplyer);
             Notame = new Notame(alignmentFilesForExport, peakSpotSupplyer, notameExportModel, storage.Parameter.DataExportParam, storage.Parameter);
+
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
         }
 
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
@@ -213,6 +216,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _storage.Parameter,
                 PeakFilterModel,
                 _fileProperties,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }
