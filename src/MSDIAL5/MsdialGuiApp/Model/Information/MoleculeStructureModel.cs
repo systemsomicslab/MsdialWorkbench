@@ -111,7 +111,7 @@ internal sealed class MoleculeImage : DisposableModelBase {
         }
 
         int IEqualityComparer<IMoleculeProperty>.GetHashCode(IMoleculeProperty obj) {
-            return obj.SMILES.GetHashCode();
+            return obj.SMILES?.GetHashCode() ?? 0;
         }
     }
 }
