@@ -205,7 +205,7 @@ namespace CompMs.App.Msdial.Model.Search
             var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
             var updatedStructureList = new List<FragmenterResult>();
             foreach (var file in structureFilePaths) {
-                var formula = Path.GetFileName(file);
+                var formula = Path.GetFileNameWithoutExtension(file);
                 var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
                 foreach (var result in fragmenterResults.Where(r => !string.IsNullOrEmpty(r.Title))) {
                     result.Formula = formula;
