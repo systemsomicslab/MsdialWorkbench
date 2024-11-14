@@ -21,8 +21,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
     private readonly MoleculeDataBase _molecules;
     private readonly string _tempDir;
 
-    public MsfinderSearcherFactory(DataBaseStorage dataBases, DataBaseMapper dataBaseMapper, ParameterBase parameter, string dataBaseId)
-    {
+    public MsfinderSearcherFactory(DataBaseStorage dataBases, DataBaseMapper dataBaseMapper, ParameterBase parameter, string dataBaseId) {
         _parameter = parameter;
 
         var db = dataBases.MetabolomicsDataBases.Select(db => db.DataBase).FirstOrDefault(db => db.Id == dataBaseId);
@@ -43,7 +42,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
             Directory.CreateDirectory(_tempDir);
         }
         var dt = DateTime.Now;
-        var nameString = $"PeakID{peak.InnerModel.PeakID}_{dt:yyyy_MM_dd_hh_mm}";
+        var nameString = $"PeakID{peak.InnerModel.PeakID}_{dt:yyyy_MM_dd_hh_mm_ss}";
         var dir = Path.Combine(_tempDir, nameString);
         var filePath = Path.Combine(dir, $"{nameString}.{ExportSpectraFileFormat.mat}");
         if (!Directory.Exists(dir)) {
