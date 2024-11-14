@@ -190,6 +190,10 @@ namespace CompMs.App.Msdial.Model.Search
 
         private void FindStructure() {
             if (_rawData is null || _parameter is null || FormulaList is null) return;
+            var existingFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
+            foreach (var file in existingFilePaths) {
+                File.Delete(file);
+            }
             var process = new StructureFinderBatchProcess();
             process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
