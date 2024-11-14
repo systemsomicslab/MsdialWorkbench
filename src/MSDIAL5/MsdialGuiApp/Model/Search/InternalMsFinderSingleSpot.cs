@@ -306,9 +306,9 @@ namespace CompMs.App.Msdial.Model.Search
             Mouse.OverrideCursor = null;
         }
 
-        public DelegateCommand ReflectToMsdial => _reflectToMsdial ??= new DelegateCommand(ReflectToMsdialAsync);
-        private DelegateCommand? _reflectToMsdial;
-        public void ReflectToMsdialAsync() {
+        public DelegateCommand ReflectToMsdialCommand => _reflectToMsdialCommand ??= new DelegateCommand(ReflectToMsdial);
+        private DelegateCommand? _reflectToMsdialCommand;
+        public void ReflectToMsdial() {
             if (SelectedStructure is not null) {
                 var moleculeMsReference = new MoleculeMsReference() {
                     ScanID = _molecules.Database.GetNextID(),
