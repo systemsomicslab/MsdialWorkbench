@@ -18,19 +18,16 @@ namespace CompMs.Common.StructureFinder.Parser
         {
             if (fragmenterResults == null || fragmenterResults.Count == 0) return;
 
-            using (StreamWriter sw = new StreamWriter(outputFilePath, append, Encoding.ASCII))
-            {
+            using StreamWriter sw = new(outputFilePath, append, Encoding.ASCII);
                 foreach (var result in fragmenterResults)
                 {
-                    resultStreamWriter(sw, result);
+                ResultStreamWriter(sw, result);
                 }
             }
-        }
 
         public static void InsilicoFragmentResultWriter(string output, string inputSmiles, List<Fragment> fragments)
         {
-            using (StreamWriter sw = new StreamWriter(output, true, Encoding.ASCII))
-            {
+            using StreamWriter sw = new(output, true, Encoding.ASCII);
                 sw.WriteLine("Input SMILES\t" + inputSmiles);
                 sw.WriteLine("Tree depth\tSMILES\tExact mass");
                 if (fragments != null && fragments.Count > 0)
@@ -51,7 +48,7 @@ namespace CompMs.Common.StructureFinder.Parser
             }
         }
 
-        private static void resultStreamWriter(StreamWriter sw, FragmenterResult result)
+        private static void ResultStreamWriter(StreamWriter sw, FragmenterResult result)
         {
             // meta data
             sw.WriteLine("NAME: " + result.Title);
@@ -82,14 +79,14 @@ namespace CompMs.Common.StructureFinder.Parser
 
 
             if (result.IsSpectrumSearchResult == true)
-                writeSpectrumDbSearchResult(sw, result);
+                WriteSpectrumDbSearchResult(sw, result);
             else
-                writeInSilicoFragmenterSearchResult(sw, result);
+                WriteInSilicoFragmenterSearchResult(sw, result);
 
             sw.WriteLine();
         }
 
-        private static void writeSpectrumDbSearchResult(StreamWriter sw, FragmenterResult result)
+        private static void WriteSpectrumDbSearchResult(StreamWriter sw, FragmenterResult result)
         {
             sw.Write("Num Peaks: ");
             sw.WriteLine(result.ReferenceSpectrum.Count);
@@ -107,7 +104,7 @@ namespace CompMs.Common.StructureFinder.Parser
             }
         }
 
-        private static void writeInSilicoFragmenterSearchResult(StreamWriter sw, FragmenterResult result)
+        private static void WriteInSilicoFragmenterSearchResult(StreamWriter sw, FragmenterResult result)
         {
             // fragment
             var peakCount = 0;
@@ -123,7 +120,6 @@ namespace CompMs.Common.StructureFinder.Parser
 
             foreach (var frag in result.FragmentPics)
             {
-
                 var peak = frag.Peak;
                 var matchedInfo = frag.MatchedFragmentInfo;
 
@@ -220,8 +216,8 @@ namespace CompMs.Common.StructureFinder.Parser
                             fragmenterResults.Add(result);
 
                             title = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
-                            fragments = new List<PeakFragmentPair>();
-                            spectum = new List<SpectrumPeak>();
+                            fragments = [];
+                            spectum = [];
                         }
                     }
                     else if (Regex.IsMatch(wkstr, "^ID:", RegexOptions.IgnoreCase))
@@ -322,25 +318,21 @@ namespace CompMs.Common.StructureFinder.Parser
                     {
                         if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) ccsSimilarityScore = doubleValue; else ccsSimilarityScore = -1;
                     }
-                    else if (Regex.IsMatch(wkstr, "Num Fragment \\(", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "Num Fragment \\(", RegexOptions.IgnoreCase)) {
                         intValue = 0;
 
                         isSpectrumSearch = false;
                         spectum = null;
-                        fragments = new List<PeakFragmentPair>();
+                        fragments = [];
 
-                        if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue))
-                        {
+                        if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue)) {
                             if (intValue == 0) continue;
-                            for (int i = 0; i < intValue; i++)
-                            {
-                                if (!readFragmenterArray(fragments, sr.ReadLine())) { return null; }
+                            for (int i = 0; i < intValue; i++) {
+                                if (!ReadFragmenterArray(fragments, sr.ReadLine())) { return null; }
                             }
                         }
                     }
-                    else if (Regex.IsMatch(wkstr, "Num Fragment VS2 \\(", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "Num Fragment VS2 \\(", RegexOptions.IgnoreCase)) {
                         intValue = 0;
 
                         isSpectrumSearch = false;
@@ -348,20 +340,17 @@ namespace CompMs.Common.StructureFinder.Parser
                         spectum = null;
                         fragments = new List<PeakFragmentPair>();
 
-                        if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue))
-                        {
+                        if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue)) {
                             if (intValue == 0) continue;
-                            for (int i = 0; i < intValue; i++)
-                            {
-                                if (!readFragmenterArrayVS2(fragments, sr.ReadLine())) { return null; }
+                            for (int i = 0; i < intValue; i++) {
+                                if (!ReadFragmenterArrayVS2(fragments, sr.ReadLine())) { return null; }
                             }
                         }
                     }
-                    else if (Regex.IsMatch(wkstr, "Num Peaks:.*", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "Num Peaks:.*", RegexOptions.IgnoreCase)) {
 
                         isSpectrumSearch = true;
-                        spectum = new List<SpectrumPeak>();
+                        spectum = [];
                         fragments = null;
 
                         spectum = MspFileParser.ReadSpectrum(sr, wkstr);
@@ -387,8 +376,7 @@ namespace CompMs.Common.StructureFinder.Parser
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static List<FragmenterResult> FragmenterResultFastReader(string filePath)
-        {
+        public static List<FragmenterResult> FragmenterResultFastReader(string filePath) {
             var fragmenterResults = new List<FragmenterResult>();
             var fragments = new List<PeakFragmentPair>();
             var spectum = new List<SpectrumPeak>();
@@ -425,24 +413,17 @@ namespace CompMs.Common.StructureFinder.Parser
             var retentionIndex = -1.0;
             var ccs = -1.0;
 
-            using (var sr = new StreamReader(filePath, Encoding.ASCII))
-            {
-                while (sr.Peek() > -1)
-                {
+            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
                     wkstr = sr.ReadLine();
 
                     double doubleValue = 0;
 
-                    if (Regex.IsMatch(wkstr, "^NAME:", RegexOptions.IgnoreCase))
-                    {
-                        if (!firstFlg)
-                        {
+                    if (Regex.IsMatch(wkstr, "^NAME:", RegexOptions.IgnoreCase)) {
+                        if (!firstFlg) {
                             firstFlg = true;
                             title = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
-                        }
-                        else
-                        {
-
+                        } else {
                             result = new FragmenterResult(isSpectrumSearch, fragments, spectum,
                                 title, id, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
                                 resources, ontology, ontologyID,
@@ -453,34 +434,28 @@ namespace CompMs.Common.StructureFinder.Parser
                             fragmenterResults.Add(result);
 
                             title = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
-                            fragments = new List<PeakFragmentPair>();
-                            spectum = new List<SpectrumPeak>();
+                            fragments = [];
+                            spectum = [];
                         }
                     }
-                    else if (Regex.IsMatch(wkstr, "^ID:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "^ID:", RegexOptions.IgnoreCase)) {
                         id = wkstr.Split(':')[1].Trim();
                     }
-                    else if (Regex.IsMatch(wkstr, "IsSpectrumSearch:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "IsSpectrumSearch:", RegexOptions.IgnoreCase)) {
                         var isSpectrumString = wkstr.Split(':')[1].Trim();
                         if (isSpectrumString.Contains("T")) isSpectrumSearch = true;
                         else isSpectrumSearch = false;
                     }
-                    else if (Regex.IsMatch(wkstr, "INCHIKEY:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "INCHIKEY:", RegexOptions.IgnoreCase)) {
                         inchikey = wkstr.Split(':')[1].Trim();
                     }
-                    else if (Regex.IsMatch(wkstr, "SMILES:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "SMILES:", RegexOptions.IgnoreCase)) {
                         smiles = wkstr.Split(':')[1].Trim();
                     }
-                    else if (Regex.IsMatch(wkstr, "Ontology:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "Ontology:", RegexOptions.IgnoreCase)) {
                         ontology = wkstr.Split(':')[1].Trim();
                     }
-                    else if (Regex.IsMatch(wkstr, "TotalScore:", RegexOptions.IgnoreCase))
-                    {
+                    else if (Regex.IsMatch(wkstr, "TotalScore:", RegexOptions.IgnoreCase)) {
                         if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) totalScore = doubleValue; else totalScore = -1;
                     }
                 }
@@ -497,39 +472,35 @@ namespace CompMs.Common.StructureFinder.Parser
             return fragmenterResults.OrderByDescending(n => n.TotalScore).ToList();
         }
 
-        private static bool readFragmenterArrayVS2(List<PeakFragmentPair> fragments, string line)
-        {
+        private static bool ReadFragmenterArrayVS2(List<PeakFragmentPair> fragments, string line) {
             var array = line.Split('\t');
-            if (array.Length < 21) { errorFragmnetArray(); return false; }
+            if (array.Length < 21) { ErrorFragmnetArray(); return false; }
 
             var peak = new SpectrumPeak();
             var matchedInfo = new MatchedFragmentInfo();
 
-            double doubleValue;
-            int intValue;
-
-            if (double.TryParse(array[0], out doubleValue)) peak.Mass = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[1], out doubleValue)) peak.Intensity = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out doubleValue)) matchedInfo.MatchedMass = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[3], out doubleValue)) matchedInfo.SaturatedMass = doubleValue; else { errorValue(); return false; }
+            if (double.TryParse(array[0], out double doubleValue)) peak.Mass = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[1], out doubleValue)) peak.Intensity = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[2], out doubleValue)) matchedInfo.MatchedMass = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[3], out doubleValue)) matchedInfo.SaturatedMass = doubleValue; else { ErrorValue(); return false; }
             matchedInfo.Formula = array[4];
-            if (int.TryParse(array[5], out intValue)) matchedInfo.RearrangedHydrogen = intValue; else { errorValue(); return false; }
-            if (double.TryParse(array[6], out doubleValue)) matchedInfo.Ppm = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[7], out doubleValue)) matchedInfo.Massdiff = doubleValue * 0.001; else { errorValue(); return false; }
+            if (int.TryParse(array[5], out int intValue)) matchedInfo.RearrangedHydrogen = intValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[6], out doubleValue)) matchedInfo.Ppm = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[7], out doubleValue)) matchedInfo.Massdiff = doubleValue * 0.001; else { ErrorValue(); return false; }
             if (string.Compare(array[8], "True", true) == 0) matchedInfo.IsEeRule = true; else matchedInfo.IsEeRule = false;
             if (string.Compare(array[9], "True", true) == 0) matchedInfo.IsHrRule = true; else matchedInfo.IsHrRule = false;
             if (string.Compare(array[10], "True", true) == 0) matchedInfo.IsSolventAdductFragment = true; else matchedInfo.IsSolventAdductFragment = false;
-            if (double.TryParse(array[11], out doubleValue)) matchedInfo.AssignedAdductMass = doubleValue; else { errorValue(); return false; }
+            if (double.TryParse(array[11], out doubleValue)) matchedInfo.AssignedAdductMass = doubleValue; else { ErrorValue(); return false; }
             matchedInfo.AssignedAdductString = array[12];
-            if (double.TryParse(array[13], out doubleValue)) matchedInfo.BdEnergy = doubleValue; else { errorValue(); return false; }
-            if (int.TryParse(array[14], out intValue)) matchedInfo.TreeDepth = intValue; else { errorValue(); return false; }
+            if (double.TryParse(array[13], out doubleValue)) matchedInfo.BdEnergy = doubleValue; else { ErrorValue(); return false; }
+            if (int.TryParse(array[14], out intValue)) matchedInfo.TreeDepth = intValue; else { ErrorValue(); return false; }
             matchedInfo.Smiles = array[15];
-            if (double.TryParse(array[16], out doubleValue)) matchedInfo.TotalLikelihood = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[17], out doubleValue)) matchedInfo.HrLikelihood = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[18], out doubleValue)) matchedInfo.BcLikelihood = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[19], out doubleValue)) matchedInfo.MaLikelihood = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[20], out doubleValue)) matchedInfo.FlLikelihood = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[21], out doubleValue)) matchedInfo.BeLikelihood = doubleValue; else { errorValue(); return false; }
+            if (double.TryParse(array[16], out doubleValue)) matchedInfo.TotalLikelihood = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[17], out doubleValue)) matchedInfo.HrLikelihood = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[18], out doubleValue)) matchedInfo.BcLikelihood = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[19], out doubleValue)) matchedInfo.MaLikelihood = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[20], out doubleValue)) matchedInfo.FlLikelihood = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[21], out doubleValue)) matchedInfo.BeLikelihood = doubleValue; else { ErrorValue(); return false; }
 
             var peakFragPair = new PeakFragmentPair() { Peak = peak, MatchedFragmentInfo = matchedInfo };
             fragments.Add(peakFragPair);
@@ -537,38 +508,32 @@ namespace CompMs.Common.StructureFinder.Parser
             return true;
         }
 
-        private static bool readFragmenterArray(List<PeakFragmentPair> fragments, string line)
-        {
+        private static bool ReadFragmenterArray(List<PeakFragmentPair> fragments, string line) {
             string[] array = line.Split('\t');
-            if (array.Length < 13) { errorFragmnetArray(); return false; }
+            if (array.Length < 13) { ErrorFragmnetArray(); return false; }
 
             var peak = new SpectrumPeak();
             var matchedInfo = new MatchedFragmentInfo();
 
-            double doubleValue;
-            int intValue;
-
-            if (double.TryParse(array[0], out doubleValue)) peak.Mass = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[1], out doubleValue)) peak.Intensity = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out doubleValue)) matchedInfo.MatchedMass = doubleValue; else { errorValue(); return false; }
+            if (double.TryParse(array[0], out double doubleValue)) peak.Mass = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[1], out doubleValue)) peak.Intensity = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[2], out doubleValue)) matchedInfo.MatchedMass = doubleValue; else { ErrorValue(); return false; }
             matchedInfo.Formula = array[3];
-            if (double.TryParse(array[4], out doubleValue)) matchedInfo.Ppm = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[5], out doubleValue)) matchedInfo.Massdiff = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[6], out doubleValue)) matchedInfo.TotalLikelihood = doubleValue; else { errorValue(); return false; }
+            if (double.TryParse(array[4], out doubleValue)) matchedInfo.Ppm = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[5], out doubleValue)) matchedInfo.Massdiff = doubleValue; else { ErrorValue(); return false; }
+            if (double.TryParse(array[6], out doubleValue)) matchedInfo.TotalLikelihood = doubleValue; else { ErrorValue(); return false; }
             //if (double.TryParse(array[7], out doubleValue)) hydrogenPenalty = doubleValue; else { errorValue(); return false; }
-            if (double.TryParse(array[8], out doubleValue)) matchedInfo.BdEnergy = doubleValue; else { errorValue(); return false; }
-            if (int.TryParse(array[9], out intValue)) matchedInfo.TreeDepth = intValue; else { errorValue(); return false; }
+            if (double.TryParse(array[8], out doubleValue)) matchedInfo.BdEnergy = doubleValue; else { ErrorValue(); return false; }
+            if (int.TryParse(array[9], out int intValue)) matchedInfo.TreeDepth = intValue; else { ErrorValue(); return false; }
             //if (int.TryParse(array[10], out intValue)) parentID = intValue; else { errorValue(); return false; }
             //if (int.TryParse(array[11], out intValue)) fragmentID = intValue; else { errorValue(); return false; }
             matchedInfo.Smiles = array[12];
 
-            if (array.Length >= 14)
-            {
+            if (array.Length >= 14) {
                 matchedInfo.AssignedAdductString = array[13];
             }
 
-            if (array.Length >= 15)
-            {
+            if (array.Length >= 15) {
                 if (string.Compare(array[14], "True", true) == 0) matchedInfo.IsHrRule = true; else matchedInfo.IsHrRule = false;
             }
 
@@ -592,13 +557,12 @@ namespace CompMs.Common.StructureFinder.Parser
             return true;
         }
 
-        private static void errorValue()
-        {
+        private static void ErrorValue() {
             Console.WriteLine("Bad format: Empty value or non-figure value exist.");
             //MessageBox.Show("Bad format: Empty value or non-figure value exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private static void errorFragmnetArray()
+        private static void ErrorFragmnetArray() {
         {
             Console.WriteLine("Bad format: Fragment array.");
             //MessageBox.Show("Bad format: Fragment array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
