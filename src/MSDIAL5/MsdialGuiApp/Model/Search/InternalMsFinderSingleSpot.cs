@@ -283,6 +283,13 @@ namespace CompMs.App.Msdial.Model.Search
         public void ShowFseaResultViewer() {
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || FormulaList is null) return;
+            foreach (var formula in FormulaList) {
+                if (formula.ChemicalOntologyDescriptions == null || formula.ChemicalOntologyDescriptions.Count == 0) {
+                    MessageBox.Show("No chemical ontology description found.");
+                    Mouse.OverrideCursor = null;
+                    return;
+                }
+            }
             var vm = new FseaResultViewModel(FormulaList, chemicalOntologies, fragmentOntologyDB, _rawData.IonMode);
             var substructure = new FseaResultView() {
                 DataContext = vm
