@@ -19,33 +19,32 @@ namespace CompMs.Common.StructureFinder.Parser
             if (fragmenterResults == null || fragmenterResults.Count == 0) return;
 
             using StreamWriter sw = new(outputFilePath, append, Encoding.ASCII);
-                foreach (var result in fragmenterResults)
-                {
+            foreach (var result in fragmenterResults)
+            {
                 ResultStreamWriter(sw, result);
-                }
             }
+        }
 
         public static void InsilicoFragmentResultWriter(string output, string inputSmiles, List<Fragment> fragments)
         {
             using StreamWriter sw = new(output, true, Encoding.ASCII);
-                sw.WriteLine("Input SMILES\t" + inputSmiles);
+            sw.WriteLine("Input SMILES\t" + inputSmiles);
                 sw.WriteLine("Tree depth\tSMILES\tExact mass");
-                if (fragments != null && fragments.Count > 0)
+            if (fragments != null && fragments.Count > 0)
                     fragments = fragments.OrderBy(n => n.TreeDepth).ThenByDescending(n => n.ExactMass).ToList();
 
-                var smilesList = new List<string>();
-                foreach (var frag in fragments)
-                {
-                    var fragContainer = MoleculeConverter.DictionaryToAtomContainer(frag.AtomDictionary, frag.BondDictionary);
-                    var fragSmiles = MoleculeConverter.AtomContainerToSmiles(fragContainer);
+            var smilesList = new List<string>();
+            foreach (var frag in fragments)
+            {
+                var fragContainer = MoleculeConverter.DictionaryToAtomContainer(frag.AtomDictionary, frag.BondDictionary);
+                var fragSmiles = MoleculeConverter.AtomContainerToSmiles(fragContainer);
 
-                    if (smilesList.Contains(fragSmiles)) continue;
+                if (smilesList.Contains(fragSmiles)) continue;
 
-                    sw.WriteLine(frag.TreeDepth + "\t" + fragSmiles + "\t" + frag.ExactMass);
-                    smilesList.Add(fragSmiles);
-                }
-                sw.WriteLine();
+                sw.WriteLine(frag.TreeDepth + "\t" + fragSmiles + "\t" + frag.ExactMass);
+                smilesList.Add(fragSmiles);
             }
+            sw.WriteLine();
         }
 
         private static void ResultStreamWriter(StreamWriter sw, FragmenterResult result)
@@ -53,6 +52,7 @@ namespace CompMs.Common.StructureFinder.Parser
             // meta data
             sw.WriteLine("NAME: " + result.Title);
             sw.WriteLine("ID: " + result.ID);
+            sw.WriteLine("Precursor m/z: " + result.PrecursorMz);
             sw.WriteLine("IsSpectrumSearch: " + result.IsSpectrumSearchResult);
             sw.WriteLine("INCHIKEY: " + result.Inchikey);
             sw.WriteLine("SMILES: " + result.Smiles);
@@ -161,6 +161,7 @@ namespace CompMs.Common.StructureFinder.Parser
             var firstFlg = false;
 
             var id = string.Empty;
+            var precursorMz = -1.0;
             var title = string.Empty;
             var inchikey = string.Empty;
             var smiles = string.Empty;
@@ -205,9 +206,8 @@ namespace CompMs.Common.StructureFinder.Parser
                         }
                         else
                         {
-
                             result = new FragmenterResult(isSpectrumSearch, fragments, spectum,
-                                title, id, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
+                                title, id, precursorMz, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
                                 resources, ontology, ontologyID,
                                 retentionTime, retentionIndex, ccs,
                                 totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
@@ -223,6 +223,10 @@ namespace CompMs.Common.StructureFinder.Parser
                     else if (Regex.IsMatch(wkstr, "^ID:", RegexOptions.IgnoreCase))
                     {
                         id = wkstr.Split(':')[1].Trim();
+                    }
+                    else if (Regex.IsMatch(wkstr, "Precursor m/z: ", RegexOptions.IgnoreCase))
+                    {
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) precursorMz = doubleValue; else precursorMz = -1;
                     }
                     else if (Regex.IsMatch(wkstr, "IsSpectrumSearch:", RegexOptions.IgnoreCase))
                     {
@@ -314,7 +318,7 @@ namespace CompMs.Common.StructureFinder.Parser
                     {
                         if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) riSimilarityScore = doubleValue; else riSimilarityScore = -1;
                     }
-                    else if (Regex.IsMatch(wkstr, "CcsSimilarityScore:", RegexOptions.IgnoreCase))
+                    else if (Regex.IsMatch(wkstr, "CcsSimilarityScore:", RegexOptions.IgnoreCase)) 
                     {
                         if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) ccsSimilarityScore = doubleValue; else ccsSimilarityScore = -1;
                     }
@@ -359,7 +363,7 @@ namespace CompMs.Common.StructureFinder.Parser
                 }
                 //reminder
                 result = new FragmenterResult(isSpectrumSearch, fragments, spectum,
-                    title, id, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
+                    title, id, precursorMz, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
                     resources, ontology, ontologyID,
                     retentionTime, retentionIndex, ccs,
                     totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
@@ -388,6 +392,7 @@ namespace CompMs.Common.StructureFinder.Parser
             var firstFlg = false;
 
             var id = string.Empty;
+            var precursorMz = -1.0;
             var title = string.Empty;
             var inchikey = string.Empty;
             var smiles = string.Empty;
@@ -425,7 +430,7 @@ namespace CompMs.Common.StructureFinder.Parser
                             title = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
                         } else {
                             result = new FragmenterResult(isSpectrumSearch, fragments, spectum,
-                                title, id, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
+                                title, id, precursorMz, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
                                 resources, ontology, ontologyID,
                                 retentionTime, retentionIndex, ccs,
                                 totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
@@ -461,7 +466,7 @@ namespace CompMs.Common.StructureFinder.Parser
                 }
                 //reminder
                 result = new FragmenterResult(isSpectrumSearch, fragments, spectum,
-                    title, id, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
+                    title, id, precursorMz, bondEnergy, inchikey, smiles, substructureShortInChIKeys, substructureOntologies,
                     resources, ontology, ontologyID,
                     retentionTime, retentionIndex, ccs,
                     totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
@@ -563,7 +568,6 @@ namespace CompMs.Common.StructureFinder.Parser
         }
 
         private static void ErrorFragmnetArray() {
-        {
             Console.WriteLine("Bad format: Fragment array.");
             //MessageBox.Show("Bad format: Fragment array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
