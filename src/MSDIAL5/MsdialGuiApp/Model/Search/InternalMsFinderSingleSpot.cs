@@ -175,6 +175,7 @@ namespace CompMs.App.Msdial.Model.Search
         public MoleculeStructureModel MoleculeStructureModel { get; }
 
         private void FindFormula() {
+            Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || _parameter is null) return;
             var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
             FormulaList = formulaResults;
@@ -183,6 +184,7 @@ namespace CompMs.App.Msdial.Model.Search
                 var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
                 FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
                 }
+            Mouse.OverrideCursor = null;
             if (FormulaList.Count == 0) {
                 MessageBox.Show("No formula found");
             }
@@ -192,6 +194,7 @@ namespace CompMs.App.Msdial.Model.Search
         private DelegateCommand? _runFindStructure;
 
         private void FindStructure() {
+            Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || _parameter is null || FormulaList is null) return;
             var existingFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
             foreach (var file in existingFilePaths) {
@@ -210,6 +213,7 @@ namespace CompMs.App.Msdial.Model.Search
                 }
             }
             StructureList = updatedStructureList;
+            Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {
                 MessageBox.Show("No structure found");
             }
