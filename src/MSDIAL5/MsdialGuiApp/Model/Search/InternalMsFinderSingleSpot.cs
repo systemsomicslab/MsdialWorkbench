@@ -183,6 +183,9 @@ namespace CompMs.App.Msdial.Model.Search
                 var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
                 FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
                 }
+            if (FormulaList.Count == 0) {
+                MessageBox.Show("No formula found");
+            }
         }
 
         public DelegateCommand RunFindStructure => _runFindStructure ??= new DelegateCommand(FindStructure);
@@ -207,6 +210,9 @@ namespace CompMs.App.Msdial.Model.Search
                 }
             }
             StructureList = updatedStructureList;
+            if (StructureList.Count == 0) {
+                MessageBox.Show("No structure found");
+            }
         }
         public DelegateCommand ShowRawMs1SpectrumCommand => _showRawMs1SpectrumCommand ??= new DelegateCommand(ShowRawMs1Spectrum);
         private DelegateCommand? _showRawMs1SpectrumCommand;
