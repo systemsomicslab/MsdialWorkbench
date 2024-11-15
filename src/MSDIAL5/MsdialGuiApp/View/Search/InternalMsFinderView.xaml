@@ -98,38 +98,38 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,25,0,0">
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.metaboliteName}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.MetaboliteName}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.alignmentID}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.AlignmentID}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.retentionTime, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RetentionTime, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.centralCcs, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.CentralCcs, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.mass}" Height="25" Margin="0,0,5,0" />
-                        <ComboBox ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adductIons}" SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
-                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ionMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Mass}" Height="25" Margin="0,0,5,0" />
+                        <ComboBox ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Adduct}" SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
+                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.IonMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
                             <ComboBox.Items>
                                 <ComboBoxItem>Positive</ComboBoxItem>
                                 <ComboBoxItem>Negative</ComboBoxItem>
                             </ComboBox.Items>
                         </ComboBox>
-                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.spectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SpectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
                             <ComboBox.Items>
                                 <ComboBoxItem>Centroid</ComboBoxItem>
                                 <ComboBoxItem>Profile</ComboBoxItem>
                             </ComboBox.Items>
                         </ComboBox>
-                        <TextBox IsEnabled="False" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.collisionEnergy, UpdateSourceTrigger=Explicit}" 
+                        <TextBox IsEnabled="False" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.CollisionEnergy, UpdateSourceTrigger=Explicit}" 
                              VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.comment}" 
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Comment}" 
                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -156,7 +156,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.formulaList}">
+                              ItemsSource="{Binding  Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.FormulaList}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -252,7 +252,7 @@
                 <Button Content="Search structure" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindStructure}" 
                         Background="AliceBlue" BorderThickness="2" 
                         Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.structureList}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.StructureList}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" >
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
