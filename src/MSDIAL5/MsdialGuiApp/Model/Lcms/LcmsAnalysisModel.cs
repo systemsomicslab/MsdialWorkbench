@@ -264,7 +264,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
-        public InternalMsFinderSingleSpot? InternalMsFinderSingleSpot { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);

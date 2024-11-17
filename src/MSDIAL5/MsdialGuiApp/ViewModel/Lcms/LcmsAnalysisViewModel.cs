@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
                 
         public ReactiveCommand GoToMsfinderCommand { get; }
-        public InternalMsFinderSingleSpotViewModel InternalMsFinderSingleSpotViewModel { get; set; }
+        public InternalMsFinderSingleSpotViewModel? InternalMsFinderSingleSpotViewModel { get; set; }
 
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);
