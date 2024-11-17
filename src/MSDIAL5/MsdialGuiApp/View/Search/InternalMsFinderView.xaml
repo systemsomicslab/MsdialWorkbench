@@ -7,6 +7,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsFinderViewModel}}"
              d:DesignHeight="780" d:DesignWidth="1280">
 	<d:DesignerProperties.DesignStyle>
@@ -35,25 +36,35 @@
                 <RowDefinition Height="Auto" MinHeight="430" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Name="MetaboliteList" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                <Label Content="Metabolite List" 
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Label Content="Metabolite name" 
                        Foreground="Black" Background="{StaticResource MainThemeColor}"
                        VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                        Height="25" Grid.Row="0" />
-
-                <ListBox Name="ListBox_MetaboliteList"
-                         ItemsSource="{Binding InternalMsFinderMetaboliteList.ObservedMetabolites, Mode=OneTime}"
-                         SelectedItem="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite, Mode=TwoWay}"
-                         DisplayMemberPath="metaboliteName"
-                         IsSynchronizedWithCurrentItem="True"
-                         BorderThickness="0"
-                         Margin="0,28,0,2"
-                         ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                         ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                         Grid.Row="0">
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="Double click a file to show the result in peak viewer" />
-                    </ToolTipService.ToolTip>
-                </ListBox>
+                    <Button Content="Search formula" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindFormula}" 
+                            Background="AliceBlue" BorderThickness="2" 
+                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <ListBox Name="ListBox_MetaboliteList"
+                             ItemsSource="{Binding InternalMsFinderMetaboliteList.ObservedMetabolites}"
+                             SelectedItem="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite, Mode=TwoWay}"
+                             DisplayMemberPath="MetaboliteName"
+                             IsSynchronizedWithCurrentItem="True"
+                             BorderThickness="0"
+                             Margin="0,0,0,2"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                             Grid.Row="0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Double click a file to show the result in peak viewer" />
+                        </ToolTipService.ToolTip>
+                    </ListBox>
+                </Grid>
             </Grid>
             <GridSplitter Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             <Grid Grid.Column="0" Grid.Row="1">
@@ -150,7 +161,7 @@
                            Foreground="Black" Background="{StaticResource MainThemeColor}"
                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                            Height="25"/>
-                    <Button Content="Search formula" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindFormula}" 
+                    <Button Content="Search structure" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindStructure}" 
                             Background="AliceBlue" BorderThickness="2" 
                             Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
@@ -220,19 +231,75 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <Label Content="MS spectrum" 
-                            Foreground="Black" Background="{StaticResource MainThemeColor}"
-                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
-                            Height="25" Grid.Row="0"/>
-                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                           Foreground="Black" Background="{StaticResource MainThemeColor}"
+                           VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                           Height="25" Grid.Row="0"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <chart:SingleSpectrumView DataContext="{Binding SpectrumMs1ViewModel}"/>
+                        </Grid>
+                        <StackPanel Orientation="Vertical" Grid.Column="1">
+                            <RadioButton Name="Button_ShowMs1RawSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowRawMs1SpectrumCommand}"
+                                         Content="/Resources/RawDataButton.ico"
+                                         ToolTip="Show raw data spectrum" 
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowIsotopeSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowIsotopeSpectrumCommand}"
+                                         Content="/Resources/IsotopeButton.ico"
+                                         ToolTip="Show isotope spectrum"
+                                         Style="{StaticResource IconRadioButton}"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
                 <GridSplitter Height="2" Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
                 <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <Label Content="MS/MS spectrum" 
                                Foreground="Black" Background="{StaticResource MainThemeColor}"
                                VerticalAlignment="Top" HorizontalContentAlignment="Center" 
-                               Height="25" Grid.Row="0" />
-                    <chart:SingleSpectrumView DataContext="{Binding spectrumMs2ViewModel}"/>
+                               Height="25" Grid.Row="0"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <chart:SingleSpectrumView DataContext="{Binding SpectrumMs2ViewModel}"/>
+                        </Grid>
+                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <RadioButton Name="Button_ShowMs2RawSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowRawMs2SpectrumCommand}"
+                                         Content="/Resources/RawDataButton.ico"
+                                         ToolTip="Show raw data spectrum"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowProductIonSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowProductIonSpectrumCommand}"
+                                         Content="/Resources/ProductIonButton.ico"
+                                         ToolTip="Show product ions"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowNeutralLossSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowNeutralLossSpectrumCommand}"
+                                         Content="/Resources/NeutralLossButton.ico"
+                                         ToolTip="Show neutral loss ions"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_FseaResultViewer" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowFseaResultViewerCommand}"
+                                         Content="/Resources/FseaResultViewer.ico"
+                                         ToolTip="Show the result of fragment set enrichment analysis (FSEA): manuscript preparation"
+                                         Style="{StaticResource IconRadioButton}"/>
+                            <RadioButton Name="Button_ShowSubstructureViewer" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowSubstructureCommand}"
+                                         Content="/Resources/SubstructureViewer.ico"
+                                         ToolTip="Show assigned substructures"
+                                         Style="{StaticResource IconRadioButton}"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </Grid>
             <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
@@ -249,9 +316,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-                <Button Content="Search structure" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindStructure}" 
-                        Background="AliceBlue" BorderThickness="2" 
-                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                <Button Content="Reflect to MS-DIAL" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ReflectToMsdial}" 
+                        Background="IndianRed" BorderThickness="2" 
+                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result"/>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" >
@@ -285,13 +352,13 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-            
+
             <TabControl Grid.Row="1">
-                <TabItem Header="Spectrum" Margin="0,0,2,0" ContextMenu="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite}">
-                    <chart:MsSpectrumView DataContext="{Binding spectrumMs1ViewModel}"/>
+                <TabItem Header="Spectrum">
+                    <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel}"/>
                 </TabItem>
-                <TabItem Header="Structure" Name="TabItem_StructureImage">
-                    <Image Name="Image_Structure" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
+                    <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>
                 </TabItem>
                 <TabItem Header="Meta data">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

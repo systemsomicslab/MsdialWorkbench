@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.View.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
@@ -14,21 +15,30 @@ using CompMs.Common.StructureFinder.Parser;
 using CompMs.Common.StructureFinder.Result;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using System;
+using Reactive.Bindings;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Windows;
+using System.Windows.Input;
 
-namespace CompMs.App.Msdial.Model.Search
-{
+namespace CompMs.App.Msdial.Model.Search {
     internal sealed class MsfinderObservedMetabolite : BindableBase {
         private readonly MsfinderQueryFile _queryFile;
         private readonly AnalysisParamOfMsfinder _parameter;
-        private RawData _spotData;
-        public List<FormulaResult> _formulaList;
-        public List<FragmenterResult?> _structureList;
+        public readonly List<ExistStructureQuery> userDefinedDB;
+        public RawData _spotData;
+        public ReactivePropertySlim<MsSpectrum?> _refSpectrum;
+        public BehaviorSubject<AxisRange?> _spectrumRange;
+        public BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
+        public BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
+        //public MsScanMatchResultContainerModel _msScanMatchResultContainer;
+        //public ChromatogramPeakFeatureModel _chromatogram;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -40,9 +50,9 @@ namespace CompMs.App.Msdial.Model.Search
         private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
         private static readonly List<MoleculeMsReference> mspDB = [];
-        public List<ExistStructureQuery> _userDefinedDB = [];
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
+        public static readonly List<ChemicalOntology> chemicalOntologies = FileStorageUtility.GetChemicalOntologyDB();
 
         public string MetaboliteName {
             get => _spotData.Name;
@@ -157,7 +167,8 @@ namespace CompMs.App.Msdial.Model.Search
             get {
                 if (IonMode == IonMode.Positive) {
                     return _parameter.MS1PositiveAdductIonList;
-                } if (IonMode == IonMode.Negative) {
+                }
+                if (IonMode == IonMode.Negative) {
                     return _parameter.MS1NegativeAdductIonList;
                 } else {
                     return [.. _parameter.MS1PositiveAdductIonList, .. _parameter.MS1NegativeAdductIonList];
@@ -173,7 +184,6 @@ namespace CompMs.App.Msdial.Model.Search
                 }
             }
         }
-
         public double CollisionEnergy {
             get => _spotData.CollisionEnergy;
             set {
@@ -191,88 +201,259 @@ namespace CompMs.App.Msdial.Model.Search
             get => _spotData.Ms2PeakNumber;
         }
 
+        private List<FormulaResult> _formulaList;
         public List<FormulaResult> FormulaList {
             get => _formulaList;
-            set {
-                if (_formulaList != value) {
-                    _formulaList = value;
-                    OnPropertyChanged(nameof(FormulaList));
-                }
-            }
+            set => SetProperty(ref _formulaList, value);
         }
 
-        public List<FragmenterResult?> StructureList {
+        private List<FragmenterResult> _structureList;
+        public List<FragmenterResult> StructureList {
             get => _structureList;
+            set => SetProperty(ref _structureList, value);
+        }
+
+        private FragmenterResult? _selectedStructure;
+        public FragmenterResult? SelectedStructure {
+            get => _selectedStructure;
             set {
-                if (_structureList != value) {
-                    _structureList = value;
-                    OnPropertyChanged(nameof(StructureList));
+                if (SetProperty(ref _selectedStructure, value)) {
+                    OnSelectedStructureChanged();
                 }
             }
         }
 
-        public MsSpectrum? Ms1Spectrum { get; private set; }
-        public MsSpectrum? Ms2Spectrum { get; private set; }
+        private void OnSelectedStructureChanged() {
+            if (SelectedStructure is not null) {
+                var molecule = new MoleculeProperty {
+                    SMILES = SelectedStructure.Smiles
+                };
+                MoleculeStructureModel.UpdateMolecule(molecule);
+
+                if (SelectedStructure.FragmentPics is not null) {
+                    var msSpectrum = new MsSpectrum(SelectedStructure.FragmentPics.Select(p => p.Peak).ToList());
+                    _refSpectrum.Value = msSpectrum;
+                    var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
+                    _spectrumRange.OnNext(new AxisRange(min, max));
+                }
+                else if (SelectedStructure.ReferenceSpectrum is not null) {
+                    var msSpectrum = new MsSpectrum(SelectedStructure.ReferenceSpectrum);
+                    _refSpectrum.Value = msSpectrum;
+                    var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
+                    _spectrumRange.OnNext(new AxisRange(min, max));
+                } else {
+                    System.Diagnostics.Debug.Fail("Should not reach here.");
+                    _refSpectrum.Value = null;
+                    _spectrumRange.OnNext(null);
+                }
+            } else {
+                _refSpectrum.Value = null;
+                _spectrumRange.OnNext(null);
+            }
+        }
 
         public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries) {
             _queryFile = queryFile;
             _parameter = parameter;
-            _userDefinedDB = existStructureQueries;
-            Load();
-            LoadExistingFiles();
-        }
+            userDefinedDB = existStructureQueries;
+            _formulaList = [];
+            _structureList = [];
 
-        public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
-        private DelegateCommand? _runFindFormula;
+            MoleculeStructureModel = new MoleculeStructureModel();
 
-        public DelegateCommand RunFindStructure => _runFindStructure ??= new DelegateCommand(FindStructure);
-        private DelegateCommand? _runFindStructure;
+            _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
 
-        private void Load() {
-            if (_queryFile is not null) {
-                _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
-                Ms1Spectrum = new MsSpectrum(_spotData.Ms1Spectrum);
-                Ms2Spectrum = new MsSpectrum(_spotData.Ms2Spectrum);
-            }
-        }
+            _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms1Spectrum));
+            _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms2Spectrum));
 
-        public void LoadExistingFiles() {
+            _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null);
+            _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d));
+
             var error = string.Empty;
             if (_queryFile.FormulaFileExists) {
-                _formulaList =  FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
+                _formulaList = FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
             }
             if (_queryFile.StructureFileExists) {
-                var structureFilePath = System.IO.Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
+                var structureFilePath = Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
                 foreach (var file in structureFilePath) {
                     FragmenterResultParser.FragmenterResultReader(file);
                 }
             }
         }
 
-        public void FindFormula() {
-            var error = string.Empty;
-            var rawData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
-            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, rawData, _parameter);
-            FormulaResultParcer.FormulaResultsWriter(_queryFile.FormulaFilePath, formulaResults);
-            _formulaList = FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out error);
-        }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
-        private void FindStructure() {
-            var rawData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
-            var process = new StructureFinderBatchProcess();
-            process.SingleSearchOfStructureFinder(_queryFile, rawData, _parameter, existStructureDB, _userDefinedDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
-            var structureFilePath = System.IO.Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
-            foreach (var file in structureFilePath) { 
-                FragmenterResultParser.FragmenterResultReader(file);
+        public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
+        private DelegateCommand? _runFindFormula;
+        public void FindFormula() {
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (_spotData is null || _parameter is null) return;
+            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _spotData, _parameter);
+            FormulaList = formulaResults;
+            FormulaResultParcer.FormulaResultsWriter(_queryFile.FormulaFilePath, formulaResults);
+            Mouse.OverrideCursor = null;
+            if (FormulaList.Count == 0) {
+                MessageBox.Show("No formula found");
             }
         }
 
-        public Task ClearAsync(CancellationToken token = default) {
-            throw new NotImplementedException();
+        public DelegateCommand RunFindStructure => _runFindStructure ??= new DelegateCommand(FindStructure);
+        private DelegateCommand? _runFindStructure;
+        private void FindStructure() {
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (_spotData is null || _parameter is null || FormulaList is null) return;
+            var existingFilePaths = Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
+            foreach (var file in existingFilePaths) {
+                File.Delete(file);
+            }
+            var process = new StructureFinderBatchProcess();
+            process.DirectSingleSearchOfStructureFinder(_spotData, FormulaList, _parameter, _queryFile.StructureFolderPath, existStructureDB, userDefinedDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+            var structureFilePaths = Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
+            var updatedStructureList = new List<FragmenterResult>();
+            foreach (var file in structureFilePaths) {
+                var formula = Path.GetFileNameWithoutExtension(file);
+                var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
+                foreach (var result in fragmenterResults.Where(r => !string.IsNullOrEmpty(r.Title))) {
+                    result.Formula = formula;
+                    updatedStructureList.Add(result);
+                }
+            }
+            StructureList = updatedStructureList;
+            Mouse.OverrideCursor = null;
+            if (StructureList.Count == 0) {
+                MessageBox.Show("No structure found");
+            }
         }
 
-        public Task ReflectToMsdialAsync(CancellationToken token = default) {
-            throw new NotImplementedException();
+        public DelegateCommand ShowRawMs1SpectrumCommand => _showRawMs1SpectrumCommand ??= new DelegateCommand(ShowRawMs1Spectrum);
+        private DelegateCommand? _showRawMs1SpectrumCommand;
+        public void ShowRawMs1Spectrum() {
+            if (_spotData.Ms1Spectrum is null) { return; }
+            _ms1SpectrumSubject.OnNext(new MsSpectrum(_spotData.Ms1Spectrum));
         }
+
+        public DelegateCommand ShowIsotopeSpectrumCommand => _showIsotopeSpectrumCommand ??= new DelegateCommand(ShowIsotopeSpectrum);
+        private DelegateCommand? _showIsotopeSpectrumCommand;
+        public void ShowIsotopeSpectrum() {
+            if (_spotData?.NominalIsotopicPeakList is null) { return; }
+            var isotopeList = _spotData.NominalIsotopicPeakList;
+            var peakList = new List<SpectrumPeak>();
+            foreach (var isotope in isotopeList) {
+                var spec = new SpectrumPeak() {
+                    Mass = isotope.Mass,
+                    Intensity = isotope.RelativeAbundance,
+                    Comment = isotope.Comment,
+                };
+                peakList.Add(spec);
+            }
+            _ms1SpectrumSubject.OnNext(new MsSpectrum(peakList));
+        }
+
+        public DelegateCommand ShowRawMs2SpectrumCommand => _showRawMs2SpectrumCommand ??= new DelegateCommand(ShowRawMs2Spectrum);
+        private DelegateCommand? _showRawMs2SpectrumCommand;
+        public void ShowRawMs2Spectrum() {
+            if (_spotData?.Ms2Spectrum is null) { return; }
+            _ms2SpectrumSubject.OnNext(new MsSpectrum(_spotData.Ms2Spectrum));
+        }
+
+        public DelegateCommand ShowProductIonSpectrumCommand => _showProductIonSpectrumCommand ??= new DelegateCommand(ShowProductIonSpectrum);
+        private DelegateCommand? _showProductIonSpectrumCommand;
+        public void ShowProductIonSpectrum() {
+            if (FormulaList is null) { return; }
+            foreach (var formula in FormulaList) {
+                var productIonSpectrum = new List<SpectrumPeak>();
+                var productIonList = formula.ProductIonResult;
+                foreach (var ion in productIonList) {
+                    var spec = new SpectrumPeak() {
+                        Mass = ion.Mass,
+                        Intensity = ion.Intensity,
+                        Comment = ion.Comment,
+                    };
+                    productIonSpectrum.Add(spec);
+                }
+                _ms2SpectrumSubject.OnNext(new MsSpectrum(productIonSpectrum));
+            }
+        }
+
+        public DelegateCommand ShowNeutralLossSpectrumCommand => _showNeutralLossSpectrumCommand ??= new DelegateCommand(ShowNeutralLossSpectrum);
+        private DelegateCommand? _showNeutralLossSpectrumCommand;
+        public void ShowNeutralLossSpectrum() {
+            if (FormulaList is null) { return; }
+            foreach (var formula in FormulaList) {
+                var neutralLossSpectrum = new List<SpectrumPeak>();
+                var neutralLossList = formula.NeutralLossResult;
+                foreach (var ion in neutralLossList) {
+                    for (var i = 0; i < neutralLossList.Count; i++) {
+                        SpectrumPeak spectrumPeak = new() {
+                            Mass = ion.PrecursorMz,
+                            Intensity = ion.PrecursorIntensity,
+                        };
+                        neutralLossSpectrum.Add(spectrumPeak);
+                    }
+                }
+                _ms2SpectrumSubject.OnNext(new MsSpectrum(neutralLossSpectrum));
+            }
+        }
+
+        public DelegateCommand ShowFseaResultViewerCommand => _showFseaResultViewerCommand ??= new DelegateCommand(ShowFseaResultViewer);
+        private DelegateCommand? _showFseaResultViewerCommand;
+        public void ShowFseaResultViewer() {
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (_spotData is null || FormulaList is null) return;
+            var vm = new FseaResultViewModel(FormulaList, chemicalOntologies, fragmentOntologyDB, _spotData.IonMode);
+            var substructure = new FseaResultView() {
+                DataContext = vm
+            };
+            substructure.Closed += (s, e) => vm.Dispose();
+            substructure.Show();
+            Mouse.OverrideCursor = null;
+        }
+
+        public DelegateCommand ShowSubstructureCommand => _showSubstructureCommand ??= new DelegateCommand(ShowSubstructure);
+        private DelegateCommand? _showSubstructureCommand;
+        public void ShowSubstructure() {
+            Mouse.OverrideCursor = Cursors.Wait;
+            if (_spotData is null || FormulaList is null) return;
+            var vm = new InternalMsfinderSubstructure(FormulaList, fragmentOntologyDB);
+            var substructure = new SubstructureView() {
+                DataContext = vm
+            };
+            substructure.Closed += (s, e) => vm.Dispose();
+            substructure.Show();
+            Mouse.OverrideCursor = null;
+        }
+
+        //public DelegateCommand ReflectToMsdial => _reflectToMsdial ??= new DelegateCommand(ReflectToMsdialAsync);
+        //private DelegateCommand? _reflectToMsdial;
+        //public void ReflectToMsdialAsync() {
+        //    if (SelectedStructure is not null) {
+        //        var moleculeMsReference = new MoleculeMsReference() {
+        //            ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
+        //            Spectrum = _refSpectrum.Value?.Spectrum ?? [],
+        //            Formula = new Formula() { FormulaString = SelectedStructure.Formula },
+        //            AdductType = _chromatogram.AdductType,
+        //            PrecursorMz = SelectedStructure.PrecursorMz,
+        //            Name = SelectedStructure.Title,
+        //            InChIKey = SelectedStructure.Inchikey,
+        //            SMILES = SelectedStructure.Smiles,
+        //            Ontology = SelectedStructure.Ontology,
+        //        };
+        //        mspDB.Add(moleculeMsReference);
+        //        var matchResult = new MsScanMatchResult {
+        //            AnnotatorID = "MS-FINDER",
+        //            Source = SourceType.Manual,
+        //            Name = SelectedStructure.Title,
+        //            InChIKey = SelectedStructure.Inchikey,
+        //            TotalScore = ((float)SelectedStructure.TotalScore),
+        //            AcurateMassSimilarity = ((float)SelectedStructure.TotalMaLikelihood),
+        //            RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
+        //            RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
+        //            LibraryID = moleculeMsReference.ScanID,
+        //        };
+        //        _msScanMatchResultContainer.AddResult(matchResult);
+        //    } else {
+        //        MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
+        //    }
+        //}
     }
 }

@@ -1,8 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
+using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
 using CompMs.Common.StructureFinder.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
@@ -10,8 +16,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Search {
+namespace CompMs.App.Msdial.Model.Search
+{
     internal class InternalMsFinderMetaboliteList : DisposableModelBase {
         public List<ExistStructureQuery> _structureQueries;
 
@@ -21,14 +30,27 @@ namespace CompMs.App.Msdial.Model.Search {
             _observedMetabolites = new ObservableCollection<MsfinderObservedMetabolite>(metabolites);
             ObservedMetabolites = new ReadOnlyObservableCollection<MsfinderObservedMetabolite>(_observedMetabolites);
             _selectedObservedMetabolite = ObservedMetabolites.FirstOrDefault();
-            var ms1 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.Ms1Spectrum);
-            var ms2 = this.ObserveProperty(m => m.SelectedObservedMetabolite).Select(m => m?.Ms2Spectrum);
-            InternalMsFinderMs1 = new ObservableMsSpectrum(ms1, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
-            InternalMsFinderMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+
+            InternalMsFinderMs1 = new ObservableMsSpectrum(_selectedObservedMetabolite._ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            InternalMsFinderMs2 = new ObservableMsSpectrum(_selectedObservedMetabolite._ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+
+            StructureMs2 = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_selectedObservedMetabolite._spotData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            Ms2RefRange = _selectedObservedMetabolite._spotData.Ms2Spectrum.IsEmptyOrNull()
+                ? null
+                : new AxisRange(_selectedObservedMetabolite._spotData.Ms2Spectrum.Min(p => p.Mass), _selectedObservedMetabolite._spotData.Ms2Spectrum.Max(p => p.Mass));
+
+            StructureRef = new ObservableMsSpectrum(_selectedObservedMetabolite._refSpectrum, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            StructureMs2RefRange = _selectedObservedMetabolite._spectrumRange;
+            MoleculeStructureModel = _selectedObservedMetabolite.MoleculeStructureModel;
         }
 
         public ObservableMsSpectrum InternalMsFinderMs1 { get; }
         public ObservableMsSpectrum InternalMsFinderMs2 { get; }
+        public ObservableMsSpectrum StructureMs2 { get; }
+        public ObservableMsSpectrum StructureRef { get; }
+        public AxisRange? Ms2RefRange { get; }
+        public BehaviorSubject<AxisRange?> StructureMs2RefRange { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile>msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery>queries) {
             var metaboliteList = new List<MsfinderObservedMetabolite>();
@@ -43,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly ObservableCollection<MsfinderObservedMetabolite> _observedMetabolites;
 
         public MsfinderObservedMetabolite? SelectedObservedMetabolite {
-            get => _selectedObservedMetabolite; 
+            get => _selectedObservedMetabolite;
             set => SetProperty(ref _selectedObservedMetabolite, value);
         }
         private MsfinderObservedMetabolite? _selectedObservedMetabolite;

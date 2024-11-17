@@ -1248,9 +1248,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (CurrentAlignmentModel.Value.AlignmentSpotSource.Spots is null) {
                 return null;
             }
-            var metaboliteList = new InternalMsFinderMetaboliteList(msfinderQueryFiles, parameter, userDefinedStructureDB);
-            var internalMsFinderModel = new InternalMsFinder(metaboliteList);
-            return internalMsFinderModel;
+            return new InternalMsFinder(msfinderQueryFiles, parameter, userDefinedStructureDB); 
         }
 
         private void SetUserDefinedStructureDB() {
