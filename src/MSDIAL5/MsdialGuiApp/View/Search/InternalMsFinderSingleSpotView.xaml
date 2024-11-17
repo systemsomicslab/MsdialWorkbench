@@ -215,7 +215,7 @@
                     <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
                     <Button Content="Reflect to MS-DIAL" Command="{Binding _model.ReflectToMsdialCommand}" 
                             Background="IndianRed" BorderThickness="2" FontWeight="Bold"
-                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
