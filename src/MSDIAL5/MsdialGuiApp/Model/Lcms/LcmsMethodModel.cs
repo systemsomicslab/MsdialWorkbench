@@ -238,6 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _fileProperties,
                 _storage.AnalysisFiles,
                 AnalysisFileModelCollection,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }

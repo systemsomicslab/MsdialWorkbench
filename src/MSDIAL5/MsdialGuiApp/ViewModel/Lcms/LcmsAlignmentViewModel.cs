@@ -101,6 +101,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var findTargetCompoundsSpotViewModel = new FindTargetCompoundsSpotViewModel(model.FindTargetCompoundSpotModel, broker).AddTo(Disposables);
             ShowFindCompoundSpotViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(findTargetCompoundsSpotViewModel)).AddTo(Disposables);
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    if (msfinder is not null)
+                    {
+                        broker.Publish(InternalMsFinderSingleSpotViewModel = new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -147,12 +156,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+        public ReactiveCommand GoToMsfinderCommand {  get; }
+        public InternalMsFinderSingleSpotViewModel? InternalMsFinderSingleSpotViewModel { get; set; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;

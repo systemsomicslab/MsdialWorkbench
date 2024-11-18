@@ -61,6 +61,29 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         }
         return new InternalMsFinderSingleSpot(dir, filePath, peak, _molecules);
     }
+    public InternalMsFinderSingleSpot? CreateModel(AlignmentSpotPropertyModel spot, MSDecResult msdec) {
+        if (!Directory.Exists(_tempDir)) {
+            Directory.CreateDirectory(_tempDir);
+        }
+        var dt = DateTime.Now;
+        var nameString = $"PeakID{spot.innerModel.AlignmentID}_{dt:yyyy_MM_dd_hh_mm_ss}";
+        var dir = Path.Combine(_tempDir, nameString);
+        var filePath = Path.Combine(dir, $"{nameString}.{ExportSpectraFileFormat.mat}");
+        if (!Directory.Exists(dir)) {
+            Directory.CreateDirectory(dir);
+        }
+
+        using (var file = File.Open(filePath, FileMode.Create)) {
+            SpectraExport.SaveSpectraTable(
+                ExportSpectraFileFormat.mat,
+                file,
+                spot.innerModel,
+                msdec,
+                _dataBaseMapper,
+                _parameter);
+        }
+        return new InternalMsFinderSingleSpot(dir, filePath, spot, _molecules);
+    }
 
     protected override void Dispose(bool disposing) {
         if (!disposedValue) {

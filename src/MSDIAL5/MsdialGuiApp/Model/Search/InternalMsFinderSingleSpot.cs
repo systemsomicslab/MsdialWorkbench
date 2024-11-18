@@ -42,14 +42,15 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly AnalysisParamOfMsfinder? _parameter;
         private readonly string _folderPath;
         private readonly RawData? _rawData;
-        private readonly GraphLabels _msGraphLabels;
         public MsScanMatchResultContainerModel _msScanMatchResultContainer;
-        public ChromatogramPeakFeatureModel _chromatogram;
+        public ChromatogramPeakFeatureModel? _chromatogram;
+        public AlignmentSpotPropertyModel? _alignmentSpot;
         private readonly BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
         private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
         private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
         private readonly MoleculeDataBase _molecules;
+        private readonly string _filePath;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -65,7 +66,6 @@ namespace CompMs.App.Msdial.Model.Search
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
         private static readonly List<ChemicalOntology> chemicalOntologies = FileStorageUtility.GetChemicalOntologyDB();
-        private readonly string _filePath;
 
         public List<FormulaResult>? FormulaList { get; private set; }
 
@@ -120,6 +120,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _msScanMatchResultContainer = chromatogram.MatchResultsModel;
                 _chromatogram = chromatogram;
                 _molecules = molecules;
+                _filePath = filePath;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
@@ -154,7 +155,7 @@ namespace CompMs.App.Msdial.Model.Search
                 FindFormula();
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
-                _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
                 SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
@@ -165,7 +166,61 @@ namespace CompMs.App.Msdial.Model.Search
                 MessageBox.Show(ex.Message);
                 throw;
             }
-            _filePath = filePath;
+        }
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, AlignmentSpotPropertyModel alignmentSpot, MoleculeDataBase molecules) {
+            try {
+                _parameter = new AnalysisParamOfMsfinder();
+                _folderPath = tempDir;
+                _molecules = molecules;
+                _alignmentSpot = alignmentSpot;
+                _msScanMatchResultContainer = alignmentSpot.MatchResultsModel;
+                _filePath = filePath;
+
+                _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
+                _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
+                _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
+
+                var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
+                var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
+                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+
+                var internalMsFinderMs2 = new ObservableMsSpectrum(_ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
+                var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
+                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+
+                var ms2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_rawData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
+                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+
+                var rawMs2Range = _rawData.Ms2Spectrum.IsEmptyOrNull()
+                    ? null
+                    : new AxisRange(_rawData.Ms2Spectrum.Min(p => p.Mass), _rawData.Ms2Spectrum.Max(p => p.Mass));
+
+                _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null).AddTo(Disposables);
+                var observableRefSpectrum = new ObservableMsSpectrum(_refSpectrum, null, Observable.Return<ISpectraExporter?>(null));
+                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+
+                _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d)).AddTo(Disposables);
+                var horizontalAxis = _spectrumRange.Select(range => AxisRange.Union(range, rawMs2Range) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
+                var itemSelector = new AxisItemSelector<double>(new AxisItemModel<double>("m/z", horizontalAxis, "m/z")).AddTo(Disposables);
+                var propertySelectors = new AxisPropertySelectors<double>(itemSelector);
+                propertySelectors.Register(new PropertySelector<SpectrumPeak, double>(p => p.Mass));
+                var refMs2HorizontalAxis = propertySelectors;
+
+                FindFormula();
+                MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+
+                var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
+                SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
+                var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
+                var refSpectrumModel = new SingleSpectrumModel(observableRefSpectrum, refMs2HorizontalAxis, refVerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Red)), _msGraphLabels).AddTo(Disposables);
+                RefMs2SpectrumModel = new MsSpectrumModel(ms2SpectrumModel, refSpectrumModel, Observable.Return<Ms2ScanMatching?>(null)).AddTo(Disposables);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
         }
 
         public SingleSpectrumModel SpectrumModelMs1 { get; }
@@ -326,32 +381,63 @@ namespace CompMs.App.Msdial.Model.Search
         private DelegateCommand? _reflectToMsdialCommand;
         public void ReflectToMsdial() {
             if (SelectedStructure is not null) {
-                var moleculeMsReference = new MoleculeMsReference() {
-                    ScanID = _molecules.Database.Count + 1,
-                    ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
-                    Spectrum = _refSpectrum.Value?.Spectrum ?? [],
-                    Formula = new Formula() { FormulaString = SelectedStructure.Formula },
-                    AdductType = _chromatogram.AdductType,
-                    PrecursorMz = SelectedStructure.PrecursorMz,
-                    Name = SelectedStructure.Title,
-                    InChIKey = SelectedStructure.Inchikey,
-                    SMILES = SelectedStructure.Smiles,
-                    Ontology = SelectedStructure.Ontology,
-                };
-                _molecules.Database.Add(moleculeMsReference);
-                var matchResult = new MsScanMatchResult {
-                    AnnotatorID = _molecules.Id,
-                    Source = _molecules.SourceType | SourceType.Manual,
-                    Name = SelectedStructure.Title,
-                    InChIKey = SelectedStructure.Inchikey,
-                    TotalScore = ((float)SelectedStructure.TotalScore),
-                    RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
-                    RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
-                    LibraryID = moleculeMsReference.ScanID,
-                };
-                _msScanMatchResultContainer.AddResult(matchResult);
-                var _setAnnotation = new SetAnnotationUsecase(_chromatogram, _msScanMatchResultContainer, new Service.UndoManager());
-                _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
+                if (_chromatogram is not null) {
+                    var moleculeMsReference = new MoleculeMsReference() {
+                        ScanID = _molecules.Database.Count + 1,
+                        ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
+                        Spectrum = _refSpectrum.Value?.Spectrum ?? [],
+                        Formula = new Formula() { FormulaString = SelectedStructure.Formula },
+                        AdductType = _chromatogram.AdductType,
+                        PrecursorMz = SelectedStructure.PrecursorMz,
+                        Name = SelectedStructure.Title,
+                        InChIKey = SelectedStructure.Inchikey,
+                        SMILES = SelectedStructure.Smiles,
+                        Ontology = SelectedStructure.Ontology,
+                    };
+                    _molecules.Database.Add(moleculeMsReference);
+                    var matchResult = new MsScanMatchResult {
+                        AnnotatorID = _molecules.Id,
+                        Source = _molecules.SourceType | SourceType.Manual,
+                        Name = SelectedStructure.Title,
+                        InChIKey = SelectedStructure.Inchikey,
+                        TotalScore = ((float)SelectedStructure.TotalScore),
+                        RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
+                        RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
+                        LibraryID = moleculeMsReference.ScanID,
+                    };
+                    _msScanMatchResultContainer.AddResult(matchResult);
+                    var _setAnnotation = new SetAnnotationUsecase(_chromatogram, _msScanMatchResultContainer, new Service.UndoManager());
+                    _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
+                }
+                else if (_alignmentSpot is not null) {
+                    var moleculeMsReference = new MoleculeMsReference()
+                    {
+                        ScanID = _molecules.Database.Count + 1,
+                        ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
+                        Spectrum = _refSpectrum.Value?.Spectrum ?? [],
+                        Formula = new Formula() { FormulaString = SelectedStructure.Formula },
+                        AdductType = _alignmentSpot.AdductType,
+                        PrecursorMz = SelectedStructure.PrecursorMz,
+                        Name = SelectedStructure.Title,
+                        InChIKey = SelectedStructure.Inchikey,
+                        SMILES = SelectedStructure.Smiles,
+                        Ontology = SelectedStructure.Ontology,
+                    };
+                    _molecules.Database.Add(moleculeMsReference);
+                    var matchResult = new MsScanMatchResult {
+                        AnnotatorID = _molecules.Id,
+                        Source = _molecules.SourceType | SourceType.Manual,
+                        Name = SelectedStructure.Title,
+                        InChIKey = SelectedStructure.Inchikey,
+                        TotalScore = ((float)SelectedStructure.TotalScore),
+                        RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
+                        RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
+                        LibraryID = moleculeMsReference.ScanID,
+                    };
+                    _msScanMatchResultContainer.AddResult(matchResult);
+                    var _setAnnotation = new SetAnnotationUsecase(_alignmentSpot, _msScanMatchResultContainer, new Service.UndoManager());
+                    _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
+                }
             } else {
                 MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
             }
