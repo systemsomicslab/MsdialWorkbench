@@ -11,6 +11,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parameter;
 using CompMs.Common.StructureFinder.DataObj;
@@ -51,6 +52,7 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
         private readonly MoleculeDataBase _molecules;
         private readonly string _filePath;
+        private readonly AdductIon _adduct;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
             @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -119,6 +121,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _folderPath = tempDir;
                 _msScanMatchResultContainer = chromatogram.MatchResultsModel;
                 _chromatogram = chromatogram;
+                _adduct = chromatogram.AdductType;
                 _molecules = molecules;
                 _filePath = filePath;
 
@@ -174,6 +177,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _alignmentSpot = alignmentSpot;
                 _msScanMatchResultContainer = alignmentSpot.MatchResultsModel;
+                _adduct = alignmentSpot.AdductType;
                 _filePath = filePath;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
@@ -232,6 +236,7 @@ namespace CompMs.App.Msdial.Model.Search
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || _parameter is null) return;
             var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
+            ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _rawData.IonMode, _parameter, _adduct, productIonDB, neutralLossDB);
             FormulaList = formulaResults;
             foreach (var formulaResult in formulaResults) {
                 var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
@@ -348,7 +353,7 @@ namespace CompMs.App.Msdial.Model.Search
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || FormulaList is null) return;
             foreach (var formula in FormulaList) {
-                if (formula.ChemicalOntologyDescriptions == null || formula.ChemicalOntologyDescriptions.Count == 0) {
+                if (formula.ChemicalOntologyDescriptions is null || formula.ChemicalOntologyDescriptions.Count == 0) {
                     MessageBox.Show("No chemical ontology description found.");
                     Mouse.OverrideCursor = null;
                     return;
