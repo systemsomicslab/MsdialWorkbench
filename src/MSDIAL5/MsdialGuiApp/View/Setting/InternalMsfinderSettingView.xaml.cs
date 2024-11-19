@@ -96,6 +96,12 @@ namespace CompMs.App.Msdial.View.Setting
             }
         }
 
+        private void Click_Save(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
+
         private void Click_Cancel(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

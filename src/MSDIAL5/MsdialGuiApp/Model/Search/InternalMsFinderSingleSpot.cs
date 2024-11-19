@@ -40,7 +40,7 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Search
 {
     internal class InternalMsFinderSingleSpot : DisposableModelBase {
-        private readonly AnalysisParamOfMsfinder? _parameter;
+        private readonly MsfinderParameterSetting? _parameter;
         private readonly string _folderPath;
         private readonly RawData? _rawData;
         public MsScanMatchResultContainerModel _msScanMatchResultContainer;
@@ -115,9 +115,9 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, ChromatogramPeakFeatureModel chromatogram, MoleculeDataBase molecules) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, ChromatogramPeakFeatureModel chromatogram, MoleculeDataBase molecules, MsfinderParameterSetting parameter) {
             try {
-                _parameter = new AnalysisParamOfMsfinder();
+                _parameter = parameter;
                 _folderPath = tempDir;
                 _msScanMatchResultContainer = chromatogram.MatchResultsModel;
                 _chromatogram = chromatogram;
@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _filePath = filePath;
 
-                _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
+                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
@@ -170,9 +170,9 @@ namespace CompMs.App.Msdial.Model.Search
                 throw;
             }
         }
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, AlignmentSpotPropertyModel alignmentSpot, MoleculeDataBase molecules) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, AlignmentSpotPropertyModel alignmentSpot, MoleculeDataBase molecules, MsfinderParameterSetting parameter) {
             try {
-                _parameter = new AnalysisParamOfMsfinder();
+                _parameter = parameter;
                 _folderPath = tempDir;
                 _molecules = molecules;
                 _alignmentSpot = alignmentSpot;
@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _adduct = alignmentSpot.AdductType;
                 _filePath = filePath;
 
-                _rawData = RawDataParcer.RawDataFileReader(filePath, _parameter);
+                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
@@ -235,8 +235,8 @@ namespace CompMs.App.Msdial.Model.Search
         private void FindFormula() {
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || _parameter is null) return;
-            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter);
-            ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _rawData.IonMode, _parameter, _adduct, productIonDB, neutralLossDB);
+            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter.analysisParameter);
+            ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _rawData.IonMode, _parameter.analysisParameter, _adduct, productIonDB, neutralLossDB);
             FormulaList = formulaResults;
             foreach (var formulaResult in formulaResults) {
                 var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Search
                 File.Delete(file);
             }
             var process = new StructureFinderBatchProcess();
-            process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+            process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter.analysisParameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
             var updatedStructureList = new List<FragmenterResult>();
             foreach (var file in structureFilePaths) {

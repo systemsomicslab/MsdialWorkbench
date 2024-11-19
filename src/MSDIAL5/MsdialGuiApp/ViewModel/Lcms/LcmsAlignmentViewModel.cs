@@ -6,6 +6,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -105,11 +106,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             GoToMsfinderCommand = model.CanSearchCompound
                 .ToReactiveCommand().WithSubscribe(() => {
                     var msfinder = model.CreateSingleSearchMsfinderModel();
-                    if (msfinder is not null)
-                    {
-                        broker.Publish(InternalMsFinderSingleSpotViewModel = new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
                     }
                 }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -157,7 +164,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public ReactiveCommand GoToMsfinderCommand {  get; }
-        public InternalMsFinderSingleSpotViewModel? InternalMsFinderSingleSpotViewModel { get; set; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;

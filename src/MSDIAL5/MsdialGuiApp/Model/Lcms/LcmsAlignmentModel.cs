@@ -252,6 +252,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush).AddTo(Disposables);
 
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
+            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam).AddTo(Disposables);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -277,6 +278,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public ProteinResultContainerModel? ProteinResultContainerModel { get; }
         public override AlignmentSpotSource AlignmentSpotSource { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
@@ -337,7 +339,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _messageBroker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
-            return _msfinderSearcherFactory.CreateModel(Target.Value, result);
+            return _msfinderSearcherFactory.CreateModel(MsfinderParameterSetting, Target.Value, result);
         }
 
         private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {

@@ -37,7 +37,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         _tempDir = Path.Combine(parameter.ProjectFolderPath, "MSDIAL_TEMP");
     }
 
-    public InternalMsFinderSingleSpot? CreateModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider) {
+    public InternalMsFinderSingleSpot? CreateModel(MsfinderParameterSetting parameter, ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider) {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -59,9 +59,9 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 _dataBaseMapper,
                 _parameter);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, peak, _molecules);
+        return new InternalMsFinderSingleSpot(dir, filePath, peak, _molecules, parameter);
     }
-    public InternalMsFinderSingleSpot? CreateModel(AlignmentSpotPropertyModel spot, MSDecResult msdec) {
+    public InternalMsFinderSingleSpot? CreateModel(MsfinderParameterSetting parameter, AlignmentSpotPropertyModel spot, MSDecResult msdec) {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -82,7 +82,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 _dataBaseMapper,
                 _parameter);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, spot, _molecules);
+        return new InternalMsFinderSingleSpot(dir, filePath, spot, _molecules, parameter);
     }
 
     protected override void Dispose(bool disposing) {

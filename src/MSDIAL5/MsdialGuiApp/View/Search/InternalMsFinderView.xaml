@@ -318,7 +318,7 @@
                 <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
                 <Button Content="Reflect to MS-DIAL" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ReflectToMsdial}" 
                         Background="IndianRed" BorderThickness="2" 
-                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result"/>
+                        Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result" IsEnabled="False"/>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" >

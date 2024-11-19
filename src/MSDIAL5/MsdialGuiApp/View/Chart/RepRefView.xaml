@@ -61,6 +61,11 @@
                     ToolTip="MS-FINDER search"
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>
+            <Button Name="Button_MsFinderSettingViewer"
+                    Command="{Binding ShowMsfinderSettingCommand}"
+                    Height="30" Width="10"
+                    Content=">"
+                    ToolTip="MS-FINDER setting" Margin="0,0,3,0"/>
 
             <Button Name="Button_MolecularNetworkAlignmentViewer"
                     Content="/Resources/MolecularNetworking.ico"

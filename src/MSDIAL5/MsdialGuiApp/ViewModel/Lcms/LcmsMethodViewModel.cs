@@ -1,12 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
@@ -73,8 +74,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
-            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.InternalMsfinderSettingModel, broker).AddTo(Disposables);
+            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.MsfinderSettingParameter, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
+            InternalMsfinderSettingModel = model._internalMsfinderSettingModel;
 
             NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }
@@ -164,6 +166,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
 
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
+        private InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public DelegateCommand GoToMsfinderBatchCommand => _goToMsfinderBatchCommand ??= new DelegateCommand(GoToMsfinderBatchProcess);
+        private DelegateCommand _goToMsfinderBatchCommand;
+
+        private void GoToMsfinderBatchProcess() {
+            var msfinder = InternalMsfinderSettingModel.Process();
+            _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+        }
 
         public DelegateCommand<Window> ShowMassqlSearchSettingCommand => _massqlSearchSettingCommand??= new DelegateCommand<Window>(MassqlSearchSettingMethod);
         private DelegateCommand<Window>? _massqlSearchSettingCommand;

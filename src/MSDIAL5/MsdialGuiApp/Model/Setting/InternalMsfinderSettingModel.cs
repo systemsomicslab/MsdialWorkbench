@@ -31,11 +31,11 @@ namespace CompMs.App.Msdial.Model.Setting
         internal readonly AlignmentSpectraExportGroupModel exporter;
         internal readonly ReadOnlyReactivePropertySlim<IAlignmentModel?> CurrentAlignmentModel;
 
-        public InternalMsfinderSettingModel(MsfinderParameterSetting projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<IAlignmentModel?> currentAlignmentModel)
-        {
-            this.exporter = exporter;
-            this.CurrentAlignmentModel = currentAlignmentModel;
-            analysisParam = new AnalysisParamOfMsfinder();
+        public InternalMsfinderSettingModel(MsfinderParameterSetting projectParameter, AlignmentSpectraExportGroupModel alignmentExporter, ReadOnlyReactivePropertySlim<IAlignmentModel?> currentAlignmentModel) {
+            parameter = projectParameter;
+            exporter = alignmentExporter;
+            CurrentAlignmentModel = currentAlignmentModel;
+            analysisParam = projectParameter.analysisParameter;
         }
 
         private readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
@@ -48,8 +48,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
-        private List<MoleculeMsReference> mspDB = new List<MoleculeMsReference>();
-        private List<ExistStructureQuery> userDefinedStructureDB;
+        private readonly List<MoleculeMsReference> mspDB = [];
+        private List<ExistStructureQuery> userDefinedStructureDB = [];
         private readonly List<FragmentLibrary>  eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
 
 
@@ -78,7 +78,6 @@ namespace CompMs.App.Msdial.Model.Setting
                 fullpath = parameter.ExistProjectPath;
             }
 
-            parameter.Commit();
             var matFilePaths = Directory.GetFiles(fullpath, "*.mat");
             var msfinderQueryFiles = new List<MsfinderQueryFile>(matFilePaths.Length);
             foreach (var matFilePath in matFilePaths)
@@ -134,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 userDefinedStructureDB = userDefinedDb;
             }
             else
-                userDefinedStructureDB = null;
+                userDefinedStructureDB = [];
         }
 
     }

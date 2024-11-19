@@ -42,7 +42,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="8" Orientation="Horizontal">
+        <StackPanel Margin="8,4,0,4" Orientation="Horizontal">
 
             <RadioButton Name="Button_ShowCentroid"
                          Content="/Resources/RawChromatogram.ico"
@@ -64,8 +64,13 @@
             <Button Name="Button_MsFinderSearchPeakViewer"
                     Command="{Binding GoToMsfinderCommand}"
                     Content="/Resources/msfinder_icon.ico"
-                    ToolTip="MS-FINDER search"
+                    ToolTip="MS-FINDER search" Margin="0,0,0,0"
                     Style="{StaticResource IconButton}"/>
+            <Button x:Name="Button_MsFinderSettingViewer"
+                    Command="{Binding ShowMsfinderSettingCommand}"
+                    Height="30" Width="10"
+                    Content=">"  Margin="0,0,3,0"
+                    ToolTip="MS-FINDER setting"/>
 
             <Button Name="Button_MolecularNetworkPeakViewer"
                     Command="{Binding SearchAnalysisSpectrumByMoleculerNetworkingCommand}"

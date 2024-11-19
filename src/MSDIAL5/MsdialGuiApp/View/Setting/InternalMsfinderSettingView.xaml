@@ -11,7 +11,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Internal MSFINDER Setting" Height="575" Width="620">
+        Title="MS-FINDER Setting" Height="575" Width="620">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -72,80 +72,6 @@
                 <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" Grid.ColumnSpan="2">
-                <TabItem Name="TabItem_BatchProcess" Header="Batch" Height="20" VerticalAlignment="Bottom">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10,10,0,0">
-                            <CheckBox Content="Molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
-                            <CheckBox Content="Structure finder" IsChecked="{Binding IsStructureFinder.Value}" VerticalAlignment="Center" Margin="20,0,0,0" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="10,10,0,0">
-                            <Label Content="Top N hits:"  FontStyle="Italic" VerticalAlignment="Center" Height="25" Margin="5,0,0,0"/>
-                            <TextBox Text="{Binding TryTopNmolecularFormulaSearch.Value}" VerticalAlignment="Center" Width="90" Height="25" Margin="5,0,0,0"/>
-
-                            <Label Content="(automatically applied to structure finder program)" VerticalAlignment="Center" Height="25" Margin="0,0,0,0"/>
-                        </StackPanel>
-                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,20,0,0">
-                            <GroupBox.Header>
-                                <Label Content="Project path" FontStyle="Italic"/>
-                            </GroupBox.Header>
-                            <StackPanel Margin="8,0">
-                                <StackPanel Margin="8,0">
-                                    <RadioButton Content="Create a project"
-                                                 IsChecked="{Binding IsCreateNewProject.Value}"
-                                                 d:IsChecked="True"/>
-                                    <StackPanel Margin="20,8,0,0"
-                                                IsEnabled="{Binding IsCreateNewProject.Value}">
-                                        <CheckBox Content="Use automatically determined folder name"
-                                                  IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
-                                        <ui:LabeledContent PrependLabel="Folder name:"
-                                                           Margin="0,8,0,0"
-                                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
-                                            <TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
-                                        </ui:LabeledContent>
-                                    </StackPanel>
-                                </StackPanel>
-                                <StackPanel Margin="8,10,8,0">
-                                    <RadioButton Content="Load a project"
-                                                 IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
-                                    <Grid Margin="20,8,0,0"
-                                          IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="210"/>
-                                            <ColumnDefinition Width="274"/>
-                                            <ColumnDefinition Width="60"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0"
-                                                           Content="File path:"
-                                                           FontStyle="Italic"
-                                                           Margin="8,0,0,0"/>
-                                        <TextBox Grid.Column="1"
-                                                 Name="TextBox_ExistProjectPath"
-                                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                                 Height="18"
-                                                 VerticalAlignment="Center">
-                                            <TextBox.ToolTip>
-                                                <TextBlock></TextBlock>
-                                            </TextBox.ToolTip>
-                                        </TextBox>
-                                        <Button Grid.Column="2"
-                                                Name="Button_ExistProjectPath_Browse"
-                                                Content="Select"
-                                                Click="Button_ExistProjectPath_Browse_Click"
-                                                Margin="8,0,0,0"/>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-
-                        </GroupBox>
-                    </Grid>
-                </TabItem>
                 <TabItem Name="TabItem_MassSpectrum" Header="Basic">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -887,13 +813,87 @@
                         </GroupBox>
                     </Grid>
                 </TabItem>
+                <TabItem Name="TabItem_BatchProcess" Header="Batch" Height="20" VerticalAlignment="Bottom">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10,10,0,0">
+                            <CheckBox Content="Molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
+                            <CheckBox Content="Structure finder" IsChecked="{Binding IsStructureFinder.Value}" VerticalAlignment="Center" Margin="20,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="10,10,0,0">
+                            <Label Content="Top N hits:"  FontStyle="Italic" VerticalAlignment="Center" Height="25" Margin="5,0,0,0"/>
+                            <TextBox Text="{Binding TryTopNmolecularFormulaSearch.Value}" VerticalAlignment="Center" Width="90" Height="25" Margin="5,0,0,0"/>
+
+                            <Label Content="(automatically applied to structure finder program)" VerticalAlignment="Center" Height="25" Margin="0,0,0,0"/>
+                        </StackPanel>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,20,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Project path" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0">
+                                <StackPanel Margin="8,0">
+                                    <RadioButton Content="Create a project"
+                                 IsChecked="{Binding IsCreateNewProject.Value}"
+                                 d:IsChecked="True"/>
+                                    <StackPanel Margin="20,8,0,0"
+                                IsEnabled="{Binding IsCreateNewProject.Value}">
+                                        <CheckBox Content="Use automatically determined folder name"
+                                  IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
+                                        <ui:LabeledContent PrependLabel="Folder name:"
+                                           Margin="0,8,0,0"
+                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
+                                            <TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Margin="8,10,8,0">
+                                    <RadioButton Content="Load a project"
+                                 IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
+                                    <Grid Margin="20,8,0,0"
+                          IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="210"/>
+                                            <ColumnDefinition Width="274"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0"
+                                           Content="File path:"
+                                           FontStyle="Italic"
+                                           Margin="8,0,0,0"/>
+                                        <TextBox Grid.Column="1"
+                                 Name="TextBox_ExistProjectPath"
+                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                 Height="18"
+                                 VerticalAlignment="Center">
+                                            <TextBox.ToolTip>
+                                                <TextBlock></TextBlock>
+                                            </TextBox.ToolTip>
+                                        </TextBox>
+                                        <Button Grid.Column="2"
+                                Name="Button_ExistProjectPath_Browse"
+                                Content="Select"
+                                Click="Button_ExistProjectPath_Browse_Click"
+                                Margin="8,0,0,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
             </TabControl>
             <StackPanel Grid.Row="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Height="24"
                         Margin="0,0,10,0">
-                <Button Content="Run" Command="{Binding Run}" Width="64"/>
+                <Button Content="Save" Click="Click_Save" Command="{Binding Save}" Width="64"/>
                 <Button Content="Cancel" Click="Click_Cancel" Command="{Binding Cancel}" Width="64" Margin="10,0,0,0"/>
             </StackPanel>
         </Grid>

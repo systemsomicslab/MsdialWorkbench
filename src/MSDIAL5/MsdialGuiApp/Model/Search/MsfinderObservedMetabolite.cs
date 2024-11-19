@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.View.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
@@ -37,8 +39,8 @@ namespace CompMs.App.Msdial.Model.Search {
         public BehaviorSubject<AxisRange?> _spectrumRange;
         public BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
         public BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
-        //public MsScanMatchResultContainerModel _msScanMatchResultContainer;
-        //public ChromatogramPeakFeatureModel _chromatogram;
+        public MsScanMatchResultContainerModel _msScanMatchResultContainer;
+        public ChromatogramPeakFeatureModel _chromatogram;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -423,37 +425,39 @@ namespace CompMs.App.Msdial.Model.Search {
             Mouse.OverrideCursor = null;
         }
 
-        //public DelegateCommand ReflectToMsdial => _reflectToMsdial ??= new DelegateCommand(ReflectToMsdialAsync);
-        //private DelegateCommand? _reflectToMsdial;
-        //public void ReflectToMsdialAsync() {
-        //    if (SelectedStructure is not null) {
-        //        var moleculeMsReference = new MoleculeMsReference() {
-        //            ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
-        //            Spectrum = _refSpectrum.Value?.Spectrum ?? [],
-        //            Formula = new Formula() { FormulaString = SelectedStructure.Formula },
-        //            AdductType = _chromatogram.AdductType,
-        //            PrecursorMz = SelectedStructure.PrecursorMz,
-        //            Name = SelectedStructure.Title,
-        //            InChIKey = SelectedStructure.Inchikey,
-        //            SMILES = SelectedStructure.Smiles,
-        //            Ontology = SelectedStructure.Ontology,
-        //        };
-        //        mspDB.Add(moleculeMsReference);
-        //        var matchResult = new MsScanMatchResult {
-        //            AnnotatorID = "MS-FINDER",
-        //            Source = SourceType.Manual,
-        //            Name = SelectedStructure.Title,
-        //            InChIKey = SelectedStructure.Inchikey,
-        //            TotalScore = ((float)SelectedStructure.TotalScore),
-        //            AcurateMassSimilarity = ((float)SelectedStructure.TotalMaLikelihood),
-        //            RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
-        //            RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
-        //            LibraryID = moleculeMsReference.ScanID,
-        //        };
-        //        _msScanMatchResultContainer.AddResult(matchResult);
-        //    } else {
-        //        MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
-        //    }
-        //}
+        public DelegateCommand ReflectToMsdial => _reflectToMsdial ??= new DelegateCommand(ReflectToMsdialAsync);
+        private DelegateCommand? _reflectToMsdial;
+        public void ReflectToMsdialAsync() {
+            if (SelectedStructure is not null) {
+                var moleculeMsReference = new MoleculeMsReference() {
+                    ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
+                    Spectrum = _refSpectrum.Value?.Spectrum ?? [],
+                    Formula = new Formula() { FormulaString = SelectedStructure.Formula },
+                    AdductType = _chromatogram.AdductType,
+                    PrecursorMz = SelectedStructure.PrecursorMz,
+                    Name = SelectedStructure.Title,
+                    InChIKey = SelectedStructure.Inchikey,
+                    SMILES = SelectedStructure.Smiles,
+                    Ontology = SelectedStructure.Ontology,
+                };
+                mspDB.Add(moleculeMsReference);
+                var matchResult = new MsScanMatchResult {
+                    AnnotatorID = "MS-FINDER",
+                    Source = SourceType.Manual,
+                    Name = SelectedStructure.Title,
+                    InChIKey = SelectedStructure.Inchikey,
+                    TotalScore = ((float)SelectedStructure.TotalScore),
+                    AcurateMassSimilarity = ((float)SelectedStructure.TotalMaLikelihood),
+                    RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
+                    RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
+                    LibraryID = moleculeMsReference.ScanID,
+                };
+                _msScanMatchResultContainer.AddResult(matchResult);
+            }
+            else
+            {
+                MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
+            }
+        }
     }
 }

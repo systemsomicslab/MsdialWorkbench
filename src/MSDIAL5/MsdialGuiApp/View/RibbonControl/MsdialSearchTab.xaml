@@ -23,9 +23,10 @@
         <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
                       Command="{Binding ShowMassqlSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
-        <RibbonButton Label="Internal msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
-                      Command="{Binding ShowMsfinderSettingViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
+        <RibbonButton Label="MS-FINDER search" LargeImageSource="{StaticResource Msfinder_is}"
+                      Command="{Binding GoToMsfinderBatchCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="M"/>
+        <Button Name="Button_MsFinderSettingViewer" Command="{Binding ShowMsfinderSettingViewCommand}" Height="50" Width="10" Content=">" ToolTip="MS-FINDER setting" Margin="0,6,10,0"/>
         <RibbonButton Label="Find target compounds"
                       Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="C"/>
