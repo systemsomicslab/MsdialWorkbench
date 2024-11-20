@@ -45,14 +45,14 @@
                        Foreground="Black" Background="{StaticResource MainThemeColor}"
                        VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                        Height="25" Grid.Row="0" />
-                    <Button Content="Search formula" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindFormula}" 
+                    <Button Content="Search formula" Command="{Binding Model.SelectedObservedMetabolite.RunFindFormula}" 
                             Background="AliceBlue" BorderThickness="2" 
                             Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <ListBox Name="ListBox_MetaboliteList"
-                             ItemsSource="{Binding InternalMsFinderMetaboliteList.ObservedMetabolites}"
-                             SelectedItem="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite, Mode=TwoWay}"
+                             ItemsSource="{Binding Model.ObservedMetabolites}"
+                             SelectedItem="{Binding Model.SelectedObservedMetabolite, Mode=TwoWay}"
                              DisplayMemberPath="MetaboliteName"
                              IsSynchronizedWithCurrentItem="True"
                              BorderThickness="0"
@@ -109,38 +109,38 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,25,0,0">
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.MetaboliteName}" 
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.MetaboliteName}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.AlignmentID}" 
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.AlignmentID}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RetentionTime, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.RetentionTime, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.CentralCcs, StringFormat=0.00}" 
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.CentralCcs, StringFormat=0.00}" 
 						 VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Mass}" Height="25" Margin="0,0,5,0" />
-                        <ComboBox ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.AdductIons}" SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
-                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.IonMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Mass}" Height="25" Margin="0,0,5,0" />
+                        <ComboBox ItemsSource="{Binding Path=Model.SelectedObservedMetabolite.AdductIons}" SelectedValue="{Binding Path=Model.SelectedObservedMetabolite.Adduct}" SelectedValuePath="AdductIonName" Height="25" Margin="0,0,5,0" />
+                        <ComboBox SelectedValue="{Binding Path=Model.SelectedObservedMetabolite.IonMode}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
                             <ComboBox.Items>
                                 <ComboBoxItem>Positive</ComboBoxItem>
                                 <ComboBoxItem>Negative</ComboBoxItem>
                             </ComboBox.Items>
                         </ComboBox>
-                        <ComboBox SelectedValue="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SpectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
+                        <ComboBox SelectedValue="{Binding Path=Model.SelectedObservedMetabolite.SpectrumType}" SelectedValuePath="Content" Height="25" Margin="0,0,5,0" >
                             <ComboBox.Items>
                                 <ComboBoxItem>Centroid</ComboBoxItem>
                                 <ComboBoxItem>Profile</ComboBoxItem>
                             </ComboBox.Items>
                         </ComboBox>
-                        <TextBox IsEnabled="False" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.CollisionEnergy, UpdateSourceTrigger=Explicit}" 
+                        <TextBox IsEnabled="False" Text="{Binding Path=Model.SelectedObservedMetabolite.CollisionEnergy, UpdateSourceTrigger=Explicit}" 
                              VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Comment}" 
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Formula}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Ontology}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Smiles}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Inchikey}" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Comment}" 
                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
-                        <TextBox Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.Ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Ms1Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                        <TextBox Text="{Binding Path=Model.SelectedObservedMetabolite.Ms2Num, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -161,13 +161,13 @@
                            Foreground="Black" Background="{StaticResource MainThemeColor}"
                            VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                            Height="25"/>
-                    <Button Content="Search structure" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.RunFindStructure}" 
+                    <Button Content="Search structure" Command="{Binding Model.SelectedObservedMetabolite.RunFindStructure}" 
                             Background="AliceBlue" BorderThickness="2" 
                             Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.FormulaList}">
+                              ItemsSource="{Binding  Path=Model.SelectedObservedMetabolite.FormulaList}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -248,11 +248,11 @@
                             <chart:SingleSpectrumView DataContext="{Binding SpectrumMs1ViewModel}"/>
                         </Grid>
                         <StackPanel Orientation="Vertical" Grid.Column="1">
-                            <RadioButton Name="Button_ShowMs1RawSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowRawMs1SpectrumCommand}"
+                            <RadioButton Name="Button_ShowMs1RawSpectrum" Command="{Binding Model.SelectedObservedMetabolite.ShowRawMs1SpectrumCommand}"
                                          Content="/Resources/RawDataButton.ico"
                                          ToolTip="Show raw data spectrum" 
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowIsotopeSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowIsotopeSpectrumCommand}"
+                            <RadioButton Name="Button_ShowIsotopeSpectrum" Command="{Binding Model.SelectedObservedMetabolite.ShowIsotopeSpectrumCommand}"
                                          Content="/Resources/IsotopeButton.ico"
                                          ToolTip="Show isotope spectrum"
                                          Style="{StaticResource IconRadioButton}"/>
@@ -278,23 +278,23 @@
                             <chart:SingleSpectrumView DataContext="{Binding SpectrumMs2ViewModel}"/>
                         </Grid>
                         <StackPanel Grid.Column="1" Orientation="Vertical">
-                            <RadioButton Name="Button_ShowMs2RawSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowRawMs2SpectrumCommand}"
+                            <RadioButton Name="Button_ShowMs2RawSpectrum" Command="{Binding Model.SelectedObservedMetabolite.ShowRawMs2SpectrumCommand}"
                                          Content="/Resources/RawDataButton.ico"
                                          ToolTip="Show raw data spectrum"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowProductIonSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowProductIonSpectrumCommand}"
+                            <RadioButton Name="Button_ShowProductIonSpectrum" Command="{Binding Model.SelectedObservedMetabolite.ShowProductIonSpectrumCommand}"
                                          Content="/Resources/ProductIonButton.ico"
                                          ToolTip="Show product ions"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowNeutralLossSpectrum" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowNeutralLossSpectrumCommand}"
+                            <RadioButton Name="Button_ShowNeutralLossSpectrum" Command="{Binding Model.SelectedObservedMetabolite.ShowNeutralLossSpectrumCommand}"
                                          Content="/Resources/NeutralLossButton.ico"
                                          ToolTip="Show neutral loss ions"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_FseaResultViewer" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowFseaResultViewerCommand}"
+                            <RadioButton Name="Button_FseaResultViewer" Command="{Binding Model.SelectedObservedMetabolite.ShowFseaResultViewerCommand}"
                                          Content="/Resources/FseaResultViewer.ico"
                                          ToolTip="Show the result of fragment set enrichment analysis (FSEA): manuscript preparation"
                                          Style="{StaticResource IconRadioButton}"/>
-                            <RadioButton Name="Button_ShowSubstructureViewer" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ShowSubstructureCommand}"
+                            <RadioButton Name="Button_ShowSubstructureViewer" Command="{Binding Model.SelectedObservedMetabolite.ShowSubstructureCommand}"
                                          Content="/Resources/SubstructureViewer.ico"
                                          ToolTip="Show assigned substructures"
                                          Style="{StaticResource IconRadioButton}"/>
@@ -316,10 +316,10 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-                <Button Content="Reflect to MS-DIAL" Command="{Binding InternalMsFinderMetaboliteList.SelectedObservedMetabolite.ReflectToMsdial}" 
+                <Button Content="Reflect to MS-DIAL" Command="{Binding Model.SelectedObservedMetabolite.ReflectToMsdial}" 
                         Background="IndianRed" BorderThickness="2" 
                         Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result" IsEnabled="False"/>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Model.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" >
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -389,17 +389,17 @@
                             <Label Content="Resources: " Height="30" Margin="5,0,0,0" />
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Grid.Column="1">
-                            <TextBox Name="TextBox_Structure_Name" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.Title, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_InChIKey" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.Inchikey, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_SubstructureInChIKeys" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.SubstructureInChIKeys, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_Smiles" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.Smiles, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.BondEnergyOfUnfragmentedMolecule, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.RetentionTime, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
-                            <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.Ccs, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
-                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.DatabaseScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=InternalMsFinderMetaboliteList.SelectedObservedMetabolite.SelectedStructure.Resources, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_Name" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.Title, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_InChIKey" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.Inchikey, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureInChIKeys" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.SubstructureInChIKeys, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_Smiles" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.Smiles, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.BondEnergyOfUnfragmentedMolecule, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.RetentionTime, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.Ccs, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.DatabaseScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure.Resources, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
                         </StackPanel>
                     </Grid>
                 </TabItem>
