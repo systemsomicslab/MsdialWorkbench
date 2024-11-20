@@ -28,9 +28,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks, List<AlignmentSpotProperty> spots,
             string tempFile, ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
-            DataAccess.GetAllSpectraWithAccumulatedMS1(analysisFile.AnalysisFilePath, out var spectra, out var accumulated);
             var rawProvider = ProviderFactory.Create(analysisFile);
+            var spectra = rawProvider.LoadMsSpectrums();
             var accProvider = AccumulateDataProviderFactory.Create(analysisFile);
+            var accumulated = rawProvider.LoadMs1Spectrums();
             var rawSpectras = new Dictionary<IonMode, Lazy<RawSpectra>>
             {
                 { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Positive, analysisFile.AcquisitionType)) },

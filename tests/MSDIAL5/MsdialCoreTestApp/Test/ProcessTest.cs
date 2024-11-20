@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Lipidomics;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
@@ -275,7 +277,8 @@ namespace CompMs.App.MsdialConsole.Test {
         }
 
         private static void DumpN(string file, int n) {
-            var allspectra = DataAccess.GetAllSpectra(file);
+            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = file }, isImagingMs: false, isGuiProcess: false, 5);
+            var allspectra = provider.LoadMsSpectrums();
             Console.WriteLine($"Number of spectrum: {allspectra.Count}");
             Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}");
             Console.WriteLine($"Number of scan {allspectra.Where(spec => spec.MsLevel == 1).Select(spec => spec.ScanNumber).Distinct().Count()}");
@@ -286,7 +289,8 @@ namespace CompMs.App.MsdialConsole.Test {
         }
 
         private static void DumpSpectrum(string file, int scanNumber, double mz, double mztol) {
-            var allspectra = DataAccess.GetAllSpectra(file);
+            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = file }, isImagingMs: false, isGuiProcess: false, 5);
+            var allspectra = provider.LoadMsSpectrums();
             var spectra = allspectra.FirstOrDefault(spec => spec.ScanNumber == scanNumber);
             Console.WriteLine(
                 "Original index={0} ID={1}, Time={2}, Drift ID={3}, Drift time={4}, Polarity={5}, MS level={6}, Precursor mz={7}, CollisionEnergy={8}, SpecCount={9}",
@@ -319,7 +323,8 @@ namespace CompMs.App.MsdialConsole.Test {
         private RawDataDump() { }
 
         public static void Dump(string filepath) {
-            var allSpectra = DataAccess.GetAllSpectra(filepath);
+            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = filepath }, isImagingMs: false, isGuiProcess: false, 5);
+            var allSpectra = provider.LoadMsSpectrums();
             foreach (var spec in allSpectra) {
                 var precursorMz = spec.Precursor == null ? -1 : spec.Precursor.SelectedIonMz;
                 // var specString = Common.Utility.ComponentsConverter.GetSpectrumString(spec.Spectrum);

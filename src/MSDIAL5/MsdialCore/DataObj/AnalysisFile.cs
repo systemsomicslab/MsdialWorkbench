@@ -110,10 +110,6 @@ namespace CompMs.MsdialCore.DataObj {
             return MsdecResultsReader.ReadMSDecResults(DeconvolutionFilePath, out var _, out var _);
         }
 
-        public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);
-        }
-
         public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);

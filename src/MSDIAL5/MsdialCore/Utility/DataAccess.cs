@@ -44,26 +44,6 @@ namespace CompMs.MsdialCore.Utility {
             return false;
         }
 
-        // raw data access
-        public static List<RawSpectrum> GetAllSpectra(string filepath) {
-            List<RawSpectrum> rawSpectra = null;
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
-                var measurment = rawDataAccess.GetMeasurement();
-                rawSpectra = measurment.SpectrumList;
-            }
-            return rawSpectra;
-        }
-
-        public static void GetAllSpectraWithAccumulatedMS1(string filepath, out List<RawSpectrum> allSpectrumList, out List<RawSpectrum> accumulatedSpectrumList) {
-            allSpectrumList = new List<RawSpectrum>();
-            accumulatedSpectrumList = new List<RawSpectrum>();
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
-                var measurment = rawDataAccess.GetMeasurement();
-                allSpectrumList = measurment.SpectrumList;
-                accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
-            }
-        }
-
         public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds, bool isProfile = false) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
@@ -73,12 +53,6 @@ namespace CompMs.MsdialCore.Utility {
                     Thread.Sleep(sleepMilliSeconds);
                 }
                 throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
-            }
-        }
-
-        public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
-                return rawDataAccess.ReadIonmobilityCalibrationInfo();
             }
         }
 

@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
@@ -40,7 +41,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _projectBaseParameter = projectBaseParameter;
             StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
+            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => DataAccess.LoadMeasurement(file, isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
             Image = ImageModels.FirstOrDefault();
 
@@ -137,7 +138,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(file.LoadRawMeasurement(true, true, 5, 5000)), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(DataAccess.LoadMeasurement(file, isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000)), _storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Msp",
@@ -146,7 +147,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
-                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(file.LoadRawMeasurement(true, true, 5, 5000)), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(DataAccess.LoadMeasurement(file, isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000)), _storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Mgf",

@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -108,12 +109,18 @@ namespace CompMs.App.Msdial.Model.Setting
             var calibrationInfoCollection = new List<CcsCalibrationInfoVS>();
             foreach (var file in files) {
                 if (!fileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coef)) {
-                    var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
+                    var calinfo = ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
                     coef = fileID2CcsCoefficients[file.AnalysisFileId] = new CoefficientsForCcsCalculation(calinfo);
                 }
                 calibrationInfoCollection.Add(new CcsCalibrationInfoVS(file, coef));
             }
             return calibrationInfoCollection.AsReadOnly();
+        }
+
+        private static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
+                return rawDataAccess.ReadIonmobilityCalibrationInfo();
+            }
         }
     }
 }

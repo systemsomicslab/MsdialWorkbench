@@ -50,7 +50,7 @@ public sealed class FileProcess : IFileProcessor
             return;
         }
 
-        var rawObj = file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: isGuiProcess, retry: 5, sleepMilliSeconds: 500);
+        var rawObj = DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: isGuiProcess, retry: 5, sleepMilliSeconds: 500);
         var spectrumProvider = new Lazy<IDataProvider>(() => spectrumProviderFactory.Create(rawObj));
         var accSpectrumProvider = accSpectrumProviderFactory.Create(rawObj);
 

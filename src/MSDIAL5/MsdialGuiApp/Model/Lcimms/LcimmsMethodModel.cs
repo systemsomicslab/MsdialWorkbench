@@ -14,6 +14,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -148,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = analysisFile.File.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
+            var rawObj = DataAccess.LoadMeasurement(analysisFile.File, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 providerFactory.Create(rawObj),
@@ -234,7 +235,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 async _ =>
                 {
                     RawMeasurement map(AnalysisFileBean file) {
-                        return file.LoadRawMeasurement(false, true, 5, 1000);
+                        return DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
                     }
                     AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map), accProviderFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map));
                     var alignmentFile = Storage.AlignmentFiles.Last();
@@ -255,7 +256,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AnalysisResultExportModel ExportAnalysis()
         {
             static RawMeasurement map(AnalysisFileBean file) {
-                return file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
+                return DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
             }
             var factory = providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map);
 
