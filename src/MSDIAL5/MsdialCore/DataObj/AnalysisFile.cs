@@ -6,7 +6,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using MessagePack;
 using System.Collections.Generic;
 using System.IO;
@@ -113,14 +112,6 @@ namespace CompMs.MsdialCore.DataObj {
 
         public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
             return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);
-        }
-
-        public MaldiFrameLaserInfo GetMaldiFrameLaserInfo() {
-            return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrameLaserInfo();
-        }
-
-        public List<MaldiFrameInfo> GetMaldiFrames() {
-            return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrames();
         }
 
         public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {

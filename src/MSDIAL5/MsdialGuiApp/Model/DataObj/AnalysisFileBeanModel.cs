@@ -1,7 +1,9 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -174,6 +176,14 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Items.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
+        }
+
+        public MaldiFrameLaserInfo GetMaldiFrameLaserInfo() {
+            return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrameLaserInfo();
+        }
+
+        public List<MaldiFrameInfo> GetMaldiFrames() {
+            return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrames();
         }
 
         int IFileBean.FileID => AnalysisFileId;

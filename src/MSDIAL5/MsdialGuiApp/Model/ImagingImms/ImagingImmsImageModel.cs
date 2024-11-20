@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             File = file ?? throw new ArgumentNullException(nameof(file));
             _broker = broker;
             _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);
-            var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
+            var maldiFrames = new MaldiFrames(file.GetMaldiFrames());
             var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
             ++_roiId;
             var imageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory, projectBaseParameterModel, broker).AddTo(Disposables);
