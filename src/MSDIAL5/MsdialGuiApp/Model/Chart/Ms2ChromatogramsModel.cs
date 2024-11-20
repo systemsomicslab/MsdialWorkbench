@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;

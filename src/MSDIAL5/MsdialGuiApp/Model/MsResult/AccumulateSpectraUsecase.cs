@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

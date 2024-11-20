@@ -3,6 +3,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.Raw.Contract;
 using MessagePack;
 using System.Collections.Generic;
 using System.Linq;

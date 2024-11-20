@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Notifiers;
 using System;

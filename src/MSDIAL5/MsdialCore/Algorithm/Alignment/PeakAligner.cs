@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

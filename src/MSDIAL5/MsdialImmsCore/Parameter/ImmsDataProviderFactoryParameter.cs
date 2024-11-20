@@ -2,6 +2,7 @@
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Algorithm;
+using CompMs.Raw.Contract;
 using MessagePack;
 
 namespace CompMs.MsdialImmsCore.Parameter

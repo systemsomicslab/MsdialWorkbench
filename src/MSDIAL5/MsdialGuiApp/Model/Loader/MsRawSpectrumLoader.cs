@@ -4,6 +4,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using System;
 using System.Reactive.Linq;
 using System.Threading;

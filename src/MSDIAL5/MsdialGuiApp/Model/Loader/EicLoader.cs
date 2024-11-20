@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Contract;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

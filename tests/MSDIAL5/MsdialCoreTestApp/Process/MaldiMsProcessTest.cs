@@ -15,6 +15,7 @@ using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialIntegrate.Parser;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

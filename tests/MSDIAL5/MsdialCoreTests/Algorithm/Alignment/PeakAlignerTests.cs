@@ -14,6 +14,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using CompMs.Raw.Contract;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {

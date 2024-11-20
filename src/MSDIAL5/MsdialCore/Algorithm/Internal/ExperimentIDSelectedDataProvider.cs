@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Raw.Contract;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;

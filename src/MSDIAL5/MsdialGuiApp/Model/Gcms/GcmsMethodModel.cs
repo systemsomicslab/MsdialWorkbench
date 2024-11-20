@@ -18,6 +18,7 @@ using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
+using CompMs.Raw.Contract;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;

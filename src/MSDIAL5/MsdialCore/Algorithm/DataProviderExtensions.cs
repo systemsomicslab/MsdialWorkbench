@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Internal;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

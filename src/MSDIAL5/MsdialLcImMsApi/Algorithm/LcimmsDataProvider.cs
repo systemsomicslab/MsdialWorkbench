@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm

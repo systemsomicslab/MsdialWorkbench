@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Contract;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

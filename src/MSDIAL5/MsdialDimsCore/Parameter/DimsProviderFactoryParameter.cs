@@ -1,6 +1,7 @@
 ﻿using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Algorithm;
+using CompMs.Raw.Contract;
 using MessagePack;
 using System;
 

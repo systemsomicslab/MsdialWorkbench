@@ -10,6 +10,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

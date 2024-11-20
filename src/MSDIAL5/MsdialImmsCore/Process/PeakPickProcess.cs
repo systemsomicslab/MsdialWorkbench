@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.Raw.Contract;
 using System;
 
 namespace CompMs.MsdialImmsCore.Process;

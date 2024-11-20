@@ -23,6 +23,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;

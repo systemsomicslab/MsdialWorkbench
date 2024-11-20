@@ -10,6 +10,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.Raw.Contract;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

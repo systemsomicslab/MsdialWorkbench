@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.Raw.Contract;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

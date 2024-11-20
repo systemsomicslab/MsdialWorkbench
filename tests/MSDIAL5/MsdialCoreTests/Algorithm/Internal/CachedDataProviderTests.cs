@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Raw.Contract;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.Raw.Contract;
 using System;
 using System.Collections.Generic;
 using System.Threading;

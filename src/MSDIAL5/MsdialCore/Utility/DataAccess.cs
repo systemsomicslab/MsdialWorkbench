@@ -19,6 +19,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

@@ -5,6 +5,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.Raw.Contract;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;

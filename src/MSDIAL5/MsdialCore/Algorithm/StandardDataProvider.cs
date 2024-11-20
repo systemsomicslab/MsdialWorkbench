@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
+using CompMs.Raw.Contract;
 using System.Collections.Generic;
 using System.Threading;
 

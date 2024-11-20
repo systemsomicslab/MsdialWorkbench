@@ -1,5 +1,6 @@
 ﻿using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

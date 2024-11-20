@@ -14,6 +14,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.Raw.Contract;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;

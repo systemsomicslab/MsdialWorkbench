@@ -2,6 +2,7 @@
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;

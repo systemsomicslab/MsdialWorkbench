@@ -19,6 +19,7 @@ using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialIntegrate.Parser;
+using CompMs.Raw.Contract;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -27,6 +27,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
+using CompMs.Raw.Contract;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
