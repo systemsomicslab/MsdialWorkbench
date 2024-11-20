@@ -64,8 +64,8 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds, bool isProfile = false) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null)

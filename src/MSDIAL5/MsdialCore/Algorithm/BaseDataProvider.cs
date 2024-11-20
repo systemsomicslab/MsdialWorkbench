@@ -1,12 +1,11 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,30 +50,11 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         protected static async Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
-                for (var i = 0; i < retry; i++) {
-                    var rawObj = await Task.Run(() => access.GetMeasurement(), token).ConfigureAwait(false);
-                    if (rawObj != null) {
-                        return rawObj;
-                    }
-                    Thread.Sleep(5000);
-                    token.ThrowIfCancellationRequested();
-                }
-            }
-            throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
+            return await Task.Run(() => DataAccess.LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile), token);
         }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
-                for (var i = 0; i < retry; i++) {
-                    var rawObj = access.GetMeasurement();
-                    if (rawObj != null) {
-                        return rawObj;
-                    }
-                    Thread.Sleep(5000);
-                }
-            }
-            throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
+            return DataAccess.LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile);
         }
 
         protected static IEnumerable<RawSpectrum> FilterByScanTime(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd) {
