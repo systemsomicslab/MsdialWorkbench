@@ -19,9 +19,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected GapFiller3D Filler3d { get; }
         protected IDataProviderFactory<AnalysisFileBean> AccumulateDataProviderFactory { get; }
 
-        public PeakAligner3D(AlignmentProcessFactory factory, IDataProviderFactory<AnalysisFileBean> rawDataProviderFactory, IDataProviderFactory<AnalysisFileBean> accumulatedDataProviderFactory) : base(factory, null) {
+        public PeakAligner3D(AlignmentProcessFactory factory, IDataProviderFactory<AnalysisFileBean> rawDataProviderFactory, IDataProviderFactory<AnalysisFileBean> accumulatedDataProviderFactory) : base(factory, rawDataProviderFactory, null) {
             Filler3d = factory.CreateGapFiller() as GapFiller3D;
-            ProviderFactory = rawDataProviderFactory;
             AccumulateDataProviderFactory = accumulatedDataProviderFactory;
         }
 

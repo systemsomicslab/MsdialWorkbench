@@ -5,6 +5,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.Raw.Contract;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +20,7 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     public List<MoleculeMsReference> MspDB { get; }
     public IProgress<int>? Progress { get; set; }
 
-    public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage) : base(storage.Parameter, storage.IupacDatabase) {
+    public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage, IDataProviderFactory<AnalysisFileBean> providerFactory) : base(storage.Parameter, storage.IupacDatabase, providerFactory) {
         Files = files;
         GcmsParameter = storage.Parameter;
         _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -46,7 +47,7 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     }
 
     public override PeakAligner CreatePeakAligner() {
-        return new PeakAligner(this, Progress);
+        return new PeakAligner(this, ProviderFactory, Progress);
     }
 
     public override IPeakJoiner CreatePeakJoiner() {

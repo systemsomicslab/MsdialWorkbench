@@ -122,7 +122,7 @@ public sealed class LcmsProcess
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+            var factory = new LcmsAlignmentProcessFactory(storage, evaluator, providerFactory);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);

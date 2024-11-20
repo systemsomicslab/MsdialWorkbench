@@ -205,10 +205,9 @@ namespace CompMs.App.Msdial.Model.Dims
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
                 async _ =>
                 {
-                    AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage, _matchResultEvaluator);
+                    AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage, _matchResultEvaluator, ProviderFactory);
                     var alignmentFileModel = AlignmentFiles.Files.Last();
                     var aligner = aFactory.CreatePeakAligner();
-                    aligner.ProviderFactory = ProviderFactory;
                     var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
 
                     var tasks = new[]

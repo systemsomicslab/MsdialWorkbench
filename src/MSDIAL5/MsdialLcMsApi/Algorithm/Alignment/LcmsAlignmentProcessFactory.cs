@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.Raw.Contract;
 using System;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -15,9 +16,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     public MsdialLcmsParameter LcmsParameter { get; }
     public IProgress<int>? Progress { get; set; }
 
-    public LcmsAlignmentProcessFactory(
-        IMsdialDataStorage<MsdialLcmsParameter> storage, 
-        IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+    public LcmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory) : base(storage.Parameter, storage.IupacDatabase, providerFactory) {
         LcmsParameter = storage.Parameter;
         _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
     }
@@ -35,7 +34,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     }
 
     public override PeakAligner CreatePeakAligner() {
-        return new PeakAligner(this, Progress);
+        return new PeakAligner(this, ProviderFactory, Progress);
     }
 
     public override IPeakJoiner CreatePeakJoiner() {

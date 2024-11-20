@@ -61,7 +61,12 @@
   <ItemGroup>
     <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0"/>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0"/>
+	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj"/>
     <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj"/>

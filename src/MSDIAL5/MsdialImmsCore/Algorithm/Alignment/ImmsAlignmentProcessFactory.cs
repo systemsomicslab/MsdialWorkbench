@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.Raw.Contract;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 {
@@ -13,13 +14,13 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 
         public MsdialImmsParameter ImmsParameter { get; }
 
-        public ImmsAlignmentProcessFactory(IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        public ImmsAlignmentProcessFactory(IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory) : base(storage.Parameter, storage.IupacDatabase, providerFactory) {
             ImmsParameter = storage.Parameter;
             this.evaluator = evaluator;
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this, null);
+            return new PeakAligner(this, ProviderFactory, null);
         }
 
         public override DataAccessor CreateDataAccessor() {

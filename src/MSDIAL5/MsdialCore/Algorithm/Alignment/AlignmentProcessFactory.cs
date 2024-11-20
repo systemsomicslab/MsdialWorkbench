@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj.Database;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Contract;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
@@ -10,10 +9,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
     {
         public ParameterBase Parameter { get; }
         public IupacDatabase Iupac { get; }
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
-        public AlignmentProcessFactory(ParameterBase param, IupacDatabase iupac) {
+        public AlignmentProcessFactory(ParameterBase param, IupacDatabase iupac, IDataProviderFactory<AnalysisFileBean> providerFactory) {
             Parameter = param;
             Iupac = iupac;
+            ProviderFactory = providerFactory;
         }
 
         public abstract PeakAligner CreatePeakAligner();

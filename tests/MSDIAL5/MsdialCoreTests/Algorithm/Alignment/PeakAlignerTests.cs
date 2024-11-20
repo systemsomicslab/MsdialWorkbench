@@ -64,9 +64,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 },
             };
 
-            var aligner = CreateAligner(accessor, parameter);
-            aligner.ProviderFactory = new FakeDataProviderFactory();
-
+            var aligner = CreateAligner(accessor, parameter, new FakeDataProviderFactory());
             var container = aligner.Alignment(analysisFiles, alignmentFile, null);
 
             Assert.AreEqual(7, container.TotalAlignmentSpotCount);
@@ -88,12 +86,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             Assert.AreEqual(200, container.AlignmentSpotProperties[6].MassCenter);
         }
 
-        PeakAligner CreateAligner(DataAccessor accessor, ParameterBase parameter) {
+        PeakAligner CreateAligner(DataAccessor accessor, ParameterBase parameter, IDataProviderFactory<AnalysisFileBean> providerFactory) {
             var iupac = new IupacDatabase();
             var joiner = new MockJoiner();
             var filler = new MockFiller(parameter);
             var refiner = new MockRefiner(iupac, new FacadeMatchResultEvaluator());
-            var factory = new FakeFactory(parameter, iupac, joiner, filler, refiner, accessor);
+            var factory = new FakeFactory(parameter, iupac, joiner, filler, refiner, accessor, providerFactory);
             return factory.CreatePeakAligner();
         }
     }
@@ -105,7 +103,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         private readonly MockRefiner _refiner;
         private readonly DataAccessor _accessor;
 
-        public FakeFactory(ParameterBase param, IupacDatabase iupac, MockJoiner joiner, MockFiller filler, MockRefiner refiner, DataAccessor accessor) : base(param, iupac) {
+        public FakeFactory(ParameterBase param, IupacDatabase iupac, MockJoiner joiner, MockFiller filler, MockRefiner refiner, DataAccessor accessor, IDataProviderFactory<AnalysisFileBean> providerFactory) : base(param, iupac, providerFactory) {
             _joiner = joiner;
             _filler = filler;
             _refiner = refiner;
@@ -125,7 +123,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this, null);
+            return new PeakAligner(this, ProviderFactory, null);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {

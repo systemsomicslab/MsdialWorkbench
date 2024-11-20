@@ -8,7 +8,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,17 +24,17 @@ public class PeakAligner {
     protected IAlignmentRefiner Refiner { get; }
     protected ParameterBase Param { get; }
     protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();
-    public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
+    public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
     private IProgress<int>? Progress { get; set; }
 
-    public PeakAligner(AlignmentProcessFactory factory, IProgress<int>? progress) {
+    public PeakAligner(AlignmentProcessFactory factory, IDataProviderFactory<AnalysisFileBean> providerFactory, IProgress<int>? progress) {
         Accessor = factory.CreateDataAccessor();
         Joiner = factory.CreatePeakJoiner();
         Filler = factory.CreateGapFiller();
         Refiner = factory.CreateAlignmentRefiner();
         Param = factory.Parameter;
+        ProviderFactory = providerFactory;
         Progress = progress;
-            
     }
 
     public AlignmentResultContainer Alignment(
@@ -125,13 +124,8 @@ public class PeakAligner {
         string tempFile,
         ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
-        var provider = ProviderFactory?.Create(analysisFile);
-        IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
-        if (spectra == null) {
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
-                spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
-            }
-        }
+        var provider = ProviderFactory.Create(analysisFile);
+        IReadOnlyList<RawSpectrum> spectra = provider.LoadMs1Spectrums();
         var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
         var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
         var peakInfos = peaks.Zip(spots)

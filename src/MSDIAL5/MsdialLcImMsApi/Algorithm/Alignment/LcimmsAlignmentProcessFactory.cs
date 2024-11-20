@@ -16,7 +16,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 
         public MsdialLcImMsParameter LcimmsParameter { get; }
 
-        public LcimmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> rawDataProvider, IDataProviderFactory<AnalysisFileBean> accumulatedDataProvider) : base(storage.Parameter, storage.IupacDatabase) {
+        public LcimmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> rawDataProvider, IDataProviderFactory<AnalysisFileBean> accumulatedDataProvider) : base(storage.Parameter, storage.IupacDatabase, rawDataProvider) {
             LcimmsParameter = storage.Parameter;
             _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
             _rawDataProvider = rawDataProvider ?? throw new System.ArgumentNullException(nameof(rawDataProvider));

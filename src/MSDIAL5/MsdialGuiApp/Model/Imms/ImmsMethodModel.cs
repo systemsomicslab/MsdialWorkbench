@@ -196,9 +196,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
                 async _ =>
                 {
-                    var factory = new ImmsAlignmentProcessFactory(storage, _matchResultEvaluator);
+                    var factory = new ImmsAlignmentProcessFactory(storage, _matchResultEvaluator, ProviderFactory);
                     var aligner = factory.CreatePeakAligner();
-                    aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
                     var alignmentFileModel = AlignmentFiles.Files.Last();
                     var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
                     var tasks = new[]

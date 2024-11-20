@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.Raw.Contract;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 {
@@ -13,7 +14,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         public MsdialDimsParameter DimsParameter { get; }
 
-        public DimsAlignmentProcessFactory(IMsdialDataStorage<MsdialDimsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        public DimsAlignmentProcessFactory(IMsdialDataStorage<MsdialDimsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory) : base(storage.Parameter, storage.IupacDatabase, providerFactory) {
             DimsParameter = storage.Parameter;
             this.evaluator = evaluator;
         }
@@ -31,7 +32,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this, null);
+            return new PeakAligner(this, ProviderFactory, null);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {

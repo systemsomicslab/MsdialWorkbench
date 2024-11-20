@@ -2,7 +2,6 @@
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Internal;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -185,10 +184,6 @@ public static class DataProviderExtensions {
     /// </remarks>
     public static IDataProvider Cache(this IDataProvider provider) {
         return new CachedDataProvider(provider);
-    }
-
-    public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
-        return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
     }
 
     public static IDataProviderFactory<object> AsFactory(this IDataProvider provider) {

@@ -124,9 +124,8 @@ public sealed class DimsProcess {
         if (storage.MsdialDimsParameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(storage, evaluator);
+            var factory = new DimsAlignmentProcessFactory(storage, evaluator, providerFactory);
             var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
