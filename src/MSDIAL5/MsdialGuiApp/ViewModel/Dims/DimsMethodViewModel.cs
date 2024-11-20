@@ -27,6 +27,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -211,7 +212,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void GoToMsfinderBatchProcess() {
             var msfinder = InternalMsfinderSettingModel.Process();
-            _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+            if (msfinder is null) {
+                MessageBox.Show("Please select alignment result from alignment navigator to run MS-FINDER batch processing.");
+            } else {
+                _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+            }
         }
     }
 }

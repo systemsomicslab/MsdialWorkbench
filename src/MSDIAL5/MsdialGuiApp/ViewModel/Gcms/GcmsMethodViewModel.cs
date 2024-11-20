@@ -1,9 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Gcms;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -14,6 +17,7 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
 {
@@ -30,6 +34,25 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             _focusControl = focusControl;
             Disposables.Add(analysisFileViewModel);
             Disposables.Add(alignmentFileViewModel);
+
+            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.MsfinderSettingParameter, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
+            InternalMsfinderSettingModel = model.InternalMsfinderSettingModel;
+        }
+        public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
+
+        public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
+        private InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public DelegateCommand GoToMsfinderBatchCommand => _goToMsfinderBatchCommand ??= new DelegateCommand(GoToMsfinderBatchProcess);
+        private DelegateCommand _goToMsfinderBatchCommand;
+
+        private void GoToMsfinderBatchProcess() {
+            var msfinder = InternalMsfinderSettingModel.Process();
+            if (msfinder is null) {
+                MessageBox.Show("Please select alignment result from alignment navigator to run MS-FINDER batch processing.");
+            } else {
+                _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+            }
         }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {

@@ -172,7 +172,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void GoToMsfinderBatchProcess() {
             var msfinder = InternalMsfinderSettingModel.Process();
-            _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+            if (msfinder is null) {
+                MessageBox.Show("Please select alignment result from alignment navigator to run batch processing.");
+            } else {
+                _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
+            }
         }
 
         public DelegateCommand<Window> ShowMassqlSearchSettingCommand => _massqlSearchSettingCommand??= new DelegateCommand<Window>(MassqlSearchSettingMethod);
