@@ -339,7 +339,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _messageBroker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
-            return _msfinderSearcherFactory.CreateModel(MsfinderParameterSetting, Target.Value, result);
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result);
         }
 
         private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {

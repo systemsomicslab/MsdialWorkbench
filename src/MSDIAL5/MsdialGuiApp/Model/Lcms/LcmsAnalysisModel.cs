@@ -296,7 +296,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
             try {
-                return _msfinderSearcherFactory.CreateModel(MsfinderParameterSetting, peak, msdec, _provider);
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

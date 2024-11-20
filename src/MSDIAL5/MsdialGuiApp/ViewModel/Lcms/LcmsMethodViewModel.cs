@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.MsfinderSettingParameter, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
-            InternalMsfinderSettingModel = model._internalMsfinderSettingModel;
+            InternalMsfinderSettingModel = model.InternalMsfinderSettingModel;
 
             NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }

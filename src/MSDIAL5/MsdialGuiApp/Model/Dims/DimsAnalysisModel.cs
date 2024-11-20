@@ -221,7 +221,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             } try {
-                return _msfinderSearcherFactory.CreateModel(MsfinderParameterSetting, peak, msdec, _provider);
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

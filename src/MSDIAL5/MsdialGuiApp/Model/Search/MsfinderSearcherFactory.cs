@@ -37,7 +37,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         _tempDir = Path.Combine(parameter.ProjectFolderPath, "MSDIAL_TEMP");
     }
 
-    public InternalMsFinderSingleSpot? CreateModel(MsfinderParameterSetting parameter, ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider) {
+    public InternalMsFinderSingleSpot? CreateModelForAnalysisPeak(MsfinderParameterSetting parameter, ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider) {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -61,12 +61,12 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         }
         return new InternalMsFinderSingleSpot(dir, filePath, peak, _molecules, parameter);
     }
-    public InternalMsFinderSingleSpot? CreateModel(MsfinderParameterSetting parameter, AlignmentSpotPropertyModel spot, MSDecResult msdec) {
+    public InternalMsFinderSingleSpot? CreateModelForAlignmentSpot(MsfinderParameterSetting parameter, AlignmentSpotPropertyModel spot, MSDecResult msdec) {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
         var dt = DateTime.Now;
-        var nameString = $"PeakID{spot.innerModel.AlignmentID}_{dt:yyyy_MM_dd_hh_mm_ss}";
+        var nameString = $"AlignmentID{spot.innerModel.AlignmentID}_{dt:yyyy_MM_dd_hh_mm_ss}";
         var dir = Path.Combine(_tempDir, nameString);
         var filePath = Path.Combine(dir, $"{nameString}.{ExportSpectraFileFormat.mat}");
         if (!Directory.Exists(dir)) {
@@ -83,6 +83,29 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 _parameter);
         }
         return new InternalMsFinderSingleSpot(dir, filePath, spot, _molecules, parameter);
+    }
+
+    public InternalMsFinderSingleSpot? CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting parameter, SpectrumFeature spectrumFeature, Ms1BasedSpectrumFeature ms1BasedSpectrumFeature) {
+        if (!Directory.Exists(_tempDir)) {
+            Directory.CreateDirectory(_tempDir);
+        }
+        var dt = DateTime.Now;
+        var nameString = $"SpectrumID{spectrumFeature.AnnotatedMSDecResult.MatchResults.Representative.SpectrumID}_{dt:yyyy_MM_dd_hh_mm_ss}";
+        var dir = Path.Combine(_tempDir, nameString);
+        var filePath = Path.Combine(dir, $"{nameString}.{ExportSpectraFileFormat.mat}");
+        if (!Directory.Exists(dir)) {
+            Directory.CreateDirectory(dir);
+        }
+
+        using (var file = File.Open(filePath, FileMode.Create)) {
+            SpectraExport.SaveSpectraTableForGcmsAsMatFormat(
+                file,
+                spectrumFeature.AnnotatedMSDecResult.MSDecResult,
+                spectrumFeature.AnnotatedMSDecResult.Molecule,
+                spectrumFeature.QuantifiedChromatogramPeak.PeakFeature,
+                _parameter.ProjectParam);
+        }
+        return new InternalMsFinderSingleSpot(dir, filePath, spectrumFeature, ms1BasedSpectrumFeature, _molecules, parameter);
     }
 
     protected override void Dispose(bool disposing) {

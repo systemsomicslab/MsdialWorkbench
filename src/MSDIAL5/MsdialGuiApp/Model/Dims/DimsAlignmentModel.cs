@@ -318,7 +318,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
-            return _msfinderSearcherFactory.CreateModel(MsfinderParameterSetting, Target.Value, result);
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, Target.Value, result);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
