@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.Algorithm
+namespace CompMs.Raw.Contract
 {
     public interface IDataProvider {
         ReadOnlyCollection<RawSpectrum> LoadMsSpectrums();
