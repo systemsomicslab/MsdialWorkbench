@@ -10,7 +10,6 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -31,6 +30,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly RawSpectra _rawSpectra;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -56,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MsdialImmsParameter parameter,
             PeakFilterModel peakFilterModel,
             FilePropertiesModel projectBaseParameterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (evaluator is null) {
@@ -69,6 +71,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
             CompoundSearcher = new ImmsCompoundSearchUsecase(_compoundSearchers.Items);
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -175,6 +178,8 @@ namespace CompMs.App.Msdial.Model.Imms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
+
+            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -203,6 +208,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public ImmsCompoundSearchUsecase CompoundSearcher { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             ChromatogramRange chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
@@ -239,6 +245,19 @@ namespace CompMs.App.Msdial.Model.Imms
                 new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            } try {
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => t is not null);

@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public ImmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileModel,
@@ -60,6 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
             FilePropertiesModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(alignmentFileModel, broker) {
 
@@ -71,6 +73,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             AlignmentSpotSource = spotsSource;
@@ -200,6 +203,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+
+            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam).AddTo(Disposables);
         }
 
         static ImmsAlignmentModel() {
@@ -232,6 +237,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
+
         public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
@@ -247,6 +254,14 @@ namespace CompMs.App.Msdial.Model.Imms
                 new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || MsdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result);
         }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
