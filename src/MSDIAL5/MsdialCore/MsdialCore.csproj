@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\Common\CompMs.Raw.Contract\CompMs.Raw.Contract.csproj" />
     <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 

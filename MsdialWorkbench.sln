@@ -185,6 +185,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DC2AD876-6
 		THIRD-PARTY-LICENSE-README.md = THIRD-PARTY-LICENSE-README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompMs.Raw.Contract", "src\Common\CompMs.Raw.Contract\CompMs.Raw.Contract.csproj", "{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug vendor unsupported|Any CPU = Debug vendor unsupported|Any CPU
@@ -1819,6 +1821,26 @@ Global
 		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|x64.ActiveCfg = Release|Any CPU
 		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|x64.Build.0 = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug vendor unsupported|Any CPU.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug vendor unsupported|Any CPU.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug vendor unsupported|x64.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug vendor unsupported|x64.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug with args|x64.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug with args|x64.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Debug|x64.Build.0 = Debug|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release vendor unsupported|Any CPU.Build.0 = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release vendor unsupported|x64.ActiveCfg = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release vendor unsupported|x64.Build.0 = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release|x64.ActiveCfg = Release|Any CPU
+		{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1844,7 +1866,7 @@ Global
 		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD} = {26C4466E-49D5-404B-8777-8A92DDBBC35D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal
