@@ -132,8 +132,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private LcimmsAlignmentModel? alignmentModel;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<RawMeasurement> providerFactory;
-        private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IDataProviderFactory<AnalysisFileBean> accProviderFactory;
         private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
@@ -149,11 +149,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = DataAccess.LoadMeasurement(analysisFile.File, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
-                providerFactory.Create(rawObj),
-                accProviderFactory.Create(rawObj),
+                providerFactory.Create(analysisFile.File),
+                accProviderFactory.Create(analysisFile.File),
                 Storage.DataBases,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
@@ -198,7 +197,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 int usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
-                FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true);
+                FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage);
                 var runner = new ProcessRunner(processor, usable);
                 if (!RunFileProcess(Storage.AnalysisFiles, runner, processOption)) {
                     return;
@@ -234,10 +233,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
                 async _ =>
                 {
-                    RawMeasurement map(AnalysisFileBean file) {
-                        return DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
-                    }
-                    AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map), accProviderFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map));
+                    AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory, accProviderFactory);
                     var alignmentFile = Storage.AlignmentFiles.Last();
                     var alignmentFileModel = AlignmentFiles.Files.Last();
                     var aligner = aFactory.CreatePeakAligner();
@@ -255,17 +251,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public AnalysisResultExportModel ExportAnalysis()
         {
-            static RawMeasurement map(AnalysisFileBean file) {
-                return DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 1000);
-            }
-            var factory = providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map);
-
             var spectraTypes = new List<SpectraType>
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ChromatogramShapeMetadataAccessorDecorator(new LcimmsAnalysisMetadataAccessor(Storage.DataBaseMapper, Storage.Parameter, ExportspectraType.deconvoluted)),
-                    factory),
+                    (IDataProviderFactory<AnalysisFileBean>?)providerFactory),
             };
             var spectraFormats = new[]
             {
@@ -277,7 +268,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(Storage.DataBaseMapper, Storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(Storage.DataBaseMapper, Storage.Parameter, file => new CentroidMsScanPropertyLoader(factory.Create(file), Storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(Storage.DataBaseMapper, Storage.Parameter, file => new CentroidMsScanPropertyLoader(providerFactory.Create(file), Storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Msp",
@@ -286,7 +277,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
-                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(factory.Create(file), Storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(providerFactory.Create(file), Storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Mgf",

@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             GapFillCore(peaklist, chromXCenter, AxTolFirst, target);
         }
 
-        public void GapFillSecond(List<RawSpectrum> spectra, AlignmentSpotProperty spot, AlignmentSpotProperty parent, int fileID) {
+        public void GapFillSecond(IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, AlignmentSpotProperty parent, int fileID) {
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenterSecond(filtered, parent);

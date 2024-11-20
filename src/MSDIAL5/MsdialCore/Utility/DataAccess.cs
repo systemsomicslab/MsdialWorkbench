@@ -20,14 +20,12 @@ using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 
-namespace CompMs.MsdialCore.Utility {
+namespace CompMs.MsdialCore.Utility
+{
     public sealed class DataAccess {
         private DataAccess() { }
 
@@ -42,18 +40,6 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             return false;
-        }
-
-        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds, bool isProfile = false) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
-                for (var i = 0; i < retry; i++) {
-                    var rawObj = access.GetMeasurement();
-                    if (rawObj != null)
-                        return rawObj;
-                    Thread.Sleep(sleepMilliSeconds);
-                }
-                throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
-            }
         }
 
         public static bool IsSWATH(IReadOnlyList<RawSpectrum> spectra) {

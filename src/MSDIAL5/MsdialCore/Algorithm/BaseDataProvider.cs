@@ -50,11 +50,13 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         protected static async Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token) {
-            return await Task.Run(() => DataAccess.LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile), token);
+            throw new NotImplementedException();
+            //return await Task.Run(() => LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile), token);
         }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry) {
-            return DataAccess.LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile);
+            throw new NotImplementedException();
+            //return LoadMeasurement(file, isImagingMs, isGuiProcess, retry, 5000, isProfile);
         }
 
         protected static IEnumerable<RawSpectrum> FilterByScanTime(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd) {
@@ -98,6 +100,22 @@ namespace CompMs.MsdialCore.Algorithm
 
         public List<double> LoadCollisionEnergyTargets() {
             return LoadMsSpectrums().Select(s => s.CollisionEnergy).Distinct().ToList();
+        }
+
+        private static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds, bool isProfile = false) {
+            throw new NotImplementedException();
+
+            /*
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+                for (var i = 0; i < retry; i++) {
+                    var rawObj = access.GetMeasurement();
+                    if (rawObj != null)
+                        return rawObj;
+                    Thread.Sleep(sleepMilliSeconds);
+                }
+                throw new System.IO.FileLoadException($"Loading {file.AnalysisFilePath} failed.");
+            }
+            */
         }
     }
 }

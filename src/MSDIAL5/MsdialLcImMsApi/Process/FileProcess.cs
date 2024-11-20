@@ -23,26 +23,23 @@ namespace CompMs.MsdialLcImMsApi.Process;
 
 public sealed class FileProcess : IFileProcessor
 {
-    private readonly IDataProviderFactory<RawMeasurement> spectrumProviderFactory;
-    private readonly IDataProviderFactory<RawMeasurement> accSpectrumProviderFactory;
+    private readonly IDataProviderFactory<AnalysisFileBean> spectrumProviderFactory;
+    private readonly IDataProviderFactory<AnalysisFileBean> accSpectrumProviderFactory;
     private readonly IAnnotationProcess annotationProcess;
     private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
     private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
-    private readonly bool isGuiProcess;
 
     public FileProcess(
-        IDataProviderFactory<RawMeasurement> spectrumProviderFactory,
-        IDataProviderFactory<RawMeasurement> accSpectrumProviderFactory,
+        IDataProviderFactory<AnalysisFileBean> spectrumProviderFactory,
+        IDataProviderFactory<AnalysisFileBean> accSpectrumProviderFactory,
         IAnnotationProcess annotationProcess,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
-        IMsdialDataStorage<MsdialLcImMsParameter> storage,
-        bool isGuiProcess) {
+        IMsdialDataStorage<MsdialLcImMsParameter> storage) {
         this.spectrumProviderFactory = spectrumProviderFactory;
         this.accSpectrumProviderFactory = accSpectrumProviderFactory;
         this.annotationProcess = annotationProcess;
         this.evaluator = evaluator;
         this.storage = storage;
-        this.isGuiProcess = isGuiProcess;
     }
 
     public async Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? reporter = null, CancellationToken token = default) {
@@ -50,9 +47,8 @@ public sealed class FileProcess : IFileProcessor
             return;
         }
 
-        var rawObj = DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: isGuiProcess, retry: 5, sleepMilliSeconds: 500);
-        var spectrumProvider = new Lazy<IDataProvider>(() => spectrumProviderFactory.Create(rawObj));
-        var accSpectrumProvider = accSpectrumProviderFactory.Create(rawObj);
+        var spectrumProvider = new Lazy<IDataProvider>(() => spectrumProviderFactory.Create(file));
+        var accSpectrumProvider = accSpectrumProviderFactory.Create(file);
 
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
             ? FindPeakAndScans(file, spectrumProvider.Value, accSpectrumProvider, reporter, token)

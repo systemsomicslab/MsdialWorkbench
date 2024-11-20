@@ -151,8 +151,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public IDataProvider Create(AnalysisFileBean file) {
-            var measurement = DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: _isGuiProcess, retry: _retry, sleepMilliSeconds: 1000);
-            return new ImmsRepresentativeDataProvider(measurement, _timeBegin, _timeEnd);
+            return new ImmsRepresentativeDataProvider(file, _timeBegin, _timeEnd, _isGuiProcess, _retry);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
@@ -183,8 +182,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public IDataProvider Create(AnalysisFileBean file) {
-            var measurement = DataAccess.LoadMeasurement(file, isImagingMsData: false, isGuiProcess: _isGuiProcess, retry: _retry, sleepMilliSeconds: 1000);
-            return new ImmsAverageDataProvider(measurement, _massTolerance, _driftTolerance, _timeBegin, _timeEnd);
+            return new ImmsAverageDataProvider(file, _massTolerance, _driftTolerance, _timeBegin, _timeEnd, _isGuiProcess, _retry);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
