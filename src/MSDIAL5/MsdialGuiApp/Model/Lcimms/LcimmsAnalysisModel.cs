@@ -37,6 +37,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
@@ -58,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _accumulatedPeakModels;
         private readonly RawSpectra _rawSpectra;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public LcimmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -70,6 +72,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
             FilePropertiesModel projectBaseParameterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker) {
             if (analysisFileModel is null) {
                 throw new ArgumentNullException(nameof(analysisFileModel));
@@ -86,6 +89,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _parameter = parameter;
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
@@ -303,6 +307,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
+
+            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel => _analysisFileModel;
@@ -323,6 +329,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>?> CompoundSearchModel { get; }
         public LcimmsCompoundSearchUsecase CompoundSearcher { get; }
@@ -384,17 +391,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
             FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);
         }
 
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || _msdecResult.Value is not { } msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            } try {
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _spectrumProvider);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+
         public void InvokeMsfinder() {
             if (Target.Value is null || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
                 return;
             }
-            MsDialToExternalApps.SendToMsFinderProgram(
-                _analysisFileModel,
-                Target.Value.InnerModel,
-                result,
-                _spectrumProvider.LoadMs1Spectrums(),
-                _dataBaseMapper,
-                _parameter);
         }
 
         public Task SaveAsync(CancellationToken token) {
