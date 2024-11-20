@@ -112,4 +112,8 @@ internal sealed class CachedDataProvider: IDataProvider
     private async Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsyncCore(CancellationToken token) {
         return _msSpectraCache = await _provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
     }
+
+    public List<double> LoadCollisionEnergyTargets() {
+        return _provider.LoadCollisionEnergyTargets();
+    }
 }

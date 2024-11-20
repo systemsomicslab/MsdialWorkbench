@@ -164,6 +164,10 @@ public class PeakCharacterEstimatorTests
 
     class FakeProvider : IDataProvider
     {
+        public List<double> LoadCollisionEnergyTargets() {
+            throw new NotImplementedException();
+        }
+
         public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
             throw new NotImplementedException();
         }

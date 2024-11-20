@@ -93,6 +93,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class MockProvider : IDataProvider
         {
+            public List<double> LoadCollisionEnergyTargets() {
+                return [];
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
                 return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
             }

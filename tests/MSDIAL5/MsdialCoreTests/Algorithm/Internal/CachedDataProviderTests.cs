@@ -66,6 +66,10 @@ public class CachedDataProviderTests
 
     class StubDataProvider : IDataProvider
     {
+        public List<double> LoadCollisionEnergyTargets() {
+            return [];
+        }
+
         public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
             return new List<RawSpectrum>(0).AsReadOnly();
         }

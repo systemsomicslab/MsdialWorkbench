@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,4 +15,12 @@ public interface IDataProvider {
     Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token);
     Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token);
     Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token);
+
+    List<double> LoadCollisionEnergyTargets();
+    // TODO: Previous implementation was commented out
+    /*
+    public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
+        return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
+    }
+    */
 }

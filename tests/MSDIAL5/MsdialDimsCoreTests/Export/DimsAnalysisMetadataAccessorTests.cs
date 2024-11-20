@@ -95,6 +95,10 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         class MockDataProvider : IDataProvider
         {
+            public List<double> LoadCollisionEnergyTargets() {
+                return new List<double>(0);
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
                 return new List<RawSpectrum> { }.AsReadOnly();
             }

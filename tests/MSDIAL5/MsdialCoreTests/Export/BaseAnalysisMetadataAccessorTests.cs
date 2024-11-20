@@ -136,6 +136,10 @@ namespace CompMs.MsdialCore.Export.Tests
 
         class MockDataProvider : IDataProvider
         {
+            public List<double> LoadCollisionEnergyTargets() {
+                throw new System.NotImplementedException();
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
                 return new List<RawSpectrum>
                 { 

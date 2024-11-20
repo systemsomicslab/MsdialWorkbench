@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Raw.Contract;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -18,6 +19,11 @@ namespace CompMs.MsdialCore.Algorithm.Internal;
 /// </remarks>
 internal sealed class ExperimentIDSelectedDataProvider(IDataProvider other, int experimentID) : IDataProvider
 {
+    public List<double> LoadCollisionEnergyTargets() {
+        var spectra = other.LoadMsSpectrums();
+        return spectra.Where(s => s.ExperimentID == experimentID).Select(s => s.CollisionEnergy).Distinct().ToList();
+    }
+
     /// <summary>
     /// Synchronously loads and returns MS1 spectrums associated with the specified experiment ID.
     /// </summary>

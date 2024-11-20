@@ -2,6 +2,7 @@
 using CompMs.Raw.Contract;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -92,6 +93,10 @@ public class DataProviderExtensionsTests
 
         public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
             return Task.FromResult(MsSpectra);
+        }
+
+        public List<double> LoadCollisionEnergyTargets() {
+            throw new NotImplementedException();
         }
     }
 }

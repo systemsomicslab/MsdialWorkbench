@@ -28,6 +28,10 @@ namespace CompMs.MsdialCore.Algorithm.Internal.Tests
 
         class StubDataProvider : IDataProvider
         {
+            public List<double> LoadCollisionEnergyTargets() {
+                throw new NotImplementedException();
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
                 throw new System.NotImplementedException();
             }

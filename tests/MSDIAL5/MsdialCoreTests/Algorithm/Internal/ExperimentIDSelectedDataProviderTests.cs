@@ -97,6 +97,8 @@ public class ExperimentIDSelectedDataProviderTests
 
     private class StubDataProvider : IDataProvider
     {
+        public List<double> LoadCollisionEnergyTargets() => [];
+
         public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() =>
             LoadMsNSpectrums(1);
 

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Raw.Contract;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -19,6 +20,10 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
         _other = other;
         _mz = mz;
         _tolerance = tolerance;
+    }
+
+    public List<double> LoadCollisionEnergyTargets() {
+        return LoadMsSpectrums().Select(s => s.CollisionEnergy).Distinct().ToList();
     }
 
     public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => _other.LoadMs1Spectrums();

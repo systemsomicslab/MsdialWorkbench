@@ -115,5 +115,9 @@ namespace CompMs.MsdialCore.Algorithm
                     return spectra.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
                 })).Value;
         }
+
+        public List<double> LoadCollisionEnergyTargets() {
+            return LoadMsSpectrums().Select(s => s.CollisionEnergy).Distinct().ToList();
+        }
     }
 }
