@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.View.Search;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
@@ -11,6 +12,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.StructureFinder.DataObj;
 using CompMs.Common.StructureFinder.Parser;
@@ -21,6 +23,7 @@ using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,12 +38,12 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly AnalysisParamOfMsfinder _parameter;
         public readonly List<ExistStructureQuery> userDefinedDB;
         public RawData _spotData;
-        public ReactivePropertySlim<MsSpectrum?> _refSpectrum;
-        public BehaviorSubject<AxisRange?> _spectrumRange;
-        public BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
-        public BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
-        public MsScanMatchResultContainerModel _msScanMatchResultContainer;
-        public ChromatogramPeakFeatureModel _chromatogram;
+        private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
+        private readonly BehaviorSubject<AxisRange?> _spectrumRange;
+        private readonly BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
+        private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
+        private readonly MsScanMatchResultContainerModel _msScanMatchResultContainer;
+        private readonly ChromatogramPeakFeatureModel _chromatogram;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -202,6 +205,10 @@ namespace CompMs.App.Msdial.Model.Search {
         public int Ms2Num {
             get => _spotData.Ms2PeakNumber;
         }
+        public IObservable<MsSpectrum> Ms1Spectrum => _ms1SpectrumSubject.AsObservable();
+        public IObservable<MsSpectrum> Ms2Spectrum => _ms2SpectrumSubject.AsObservable();
+        public IObservable<MsSpectrum?> RefSpectrum => _refSpectrum.AsObservable();
+        public IObservable<AxisRange?> AxisRange => _spectrumRange.AsObservable();
 
         private List<FormulaResult> _formulaList;
         public List<FormulaResult> FormulaList {
@@ -262,7 +269,7 @@ namespace CompMs.App.Msdial.Model.Search {
             _structureList = [];
 
             MoleculeStructureModel = new MoleculeStructureModel();
-
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(MoleculeStructureModel);
             _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
 
             _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms1Spectrum));
@@ -284,6 +291,7 @@ namespace CompMs.App.Msdial.Model.Search {
         }
 
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
 
         public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
         private DelegateCommand? _runFindFormula;

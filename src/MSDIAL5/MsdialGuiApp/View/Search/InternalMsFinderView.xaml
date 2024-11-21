@@ -358,7 +358,7 @@
                     <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel}"/>
                 </TabItem>
                 <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
-                    <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>
+                    <infoview:MoleculeStructureView DataContext="{Binding Path=Model.SelectedObservedMetabolite.MoleculeStructureViewModel}"/>
                 </TabItem>
                 <TabItem Header="Meta data">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
