@@ -29,11 +29,11 @@ namespace CompMs.MsdialImmsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new ImmsRepresentativeDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
         }
 
         public IDataProviderFactory<RawMeasurement> Create() {
-            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
+            return new ImmsRepresentativeDataProviderFactory<RawMeasurement>(new StandardDataProviderFactory(), TimeBegin, TimeEnd);
         }
     }
 
@@ -57,11 +57,11 @@ namespace CompMs.MsdialImmsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new ImmsAverageDataProviderFactory(MassTolerance, DriftTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), MassTolerance, DriftTolerance, TimeBegin, TimeEnd);
         }
 
         public IDataProviderFactory<RawMeasurement> Create() {
-            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
+            return new ImmsAverageDataProviderFactory<RawMeasurement>(new StandardDataProviderFactory(), TimeBegin, TimeEnd);
         }
     }
 }

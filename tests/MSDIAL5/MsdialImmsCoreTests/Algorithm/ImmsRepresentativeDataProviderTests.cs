@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.MsdialCore.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
@@ -69,7 +70,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Tests
                 CreateRawSpectrum(10, 2, 52, 52, 0.7),
             };
 
-            var provider = new ImmsRepresentativeDataProvider(spectrums);
+            var provider = new ImmsRepresentativeDataProvider(new StandardDataProvider(spectrums));
 
             var expected = new[] { spectrums[26], spectrums[27], spectrums[28], spectrums[29], spectrums[30] };
             CollectionAssert.AreEquivalent(

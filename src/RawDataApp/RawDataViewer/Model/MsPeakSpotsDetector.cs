@@ -1,8 +1,10 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -25,7 +27,7 @@ namespace CompMs.App.RawDataViewer.Model
                         return (PeaksToSummary(peaks), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.IMMS: {
-                        var providerFactory = new MsdialImmsCore.Algorithm.ImmsAverageDataProviderFactory(massTolerance: 0.001, driftTolerance: 0.002);
+                        var providerFactory = new MsdialImmsCore.Algorithm.ImmsAverageDataProviderFactory<RawMeasurement>(new StandardDataProviderFactory(), mzTolerance: 0.001, driftTolerance: 0.002);
                         var provider = await dataModel.CreateDataProviderByFactory(providerFactory, token).ConfigureAwait(false);
                         var peaks = new MsdialImmsCore.Algorithm.PeakSpotting(new MsdialImmsCore.Parameter.MsdialImmsParameter { MinimumAmplitude = 0d, IonMode = ionMode, }).Run(dataModel.AnalysisFile, provider, null);
                         return (PeaksToSummary(peaks.Items), new MsSnDistribution(peaks.Items));
