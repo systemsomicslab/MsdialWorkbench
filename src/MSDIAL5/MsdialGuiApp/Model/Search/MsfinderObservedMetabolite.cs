@@ -39,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
         private readonly BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
         private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
+        private readonly MoleculeStructureModel _moleculeStructureModel;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
@@ -237,7 +238,7 @@ namespace CompMs.App.Msdial.Model.Search {
                 var molecule = new MoleculeProperty {
                     SMILES = SelectedStructure.Smiles
                 };
-                MoleculeStructureModel.UpdateMolecule(molecule);
+                _moleculeStructureModel.UpdateMolecule(molecule);
 
                 if (SelectedStructure.FragmentPics is not null) {
                     var msSpectrum = new MsSpectrum(SelectedStructure.FragmentPics.Select(p => p.Peak).ToList());
@@ -261,15 +262,13 @@ namespace CompMs.App.Msdial.Model.Search {
             }
         }
 
-        public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries) {
+        public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries, MoleculeStructureModel moleculeStructureModel) {
             _queryFile = queryFile;
             _parameter = parameter;
             userDefinedDB = existStructureQueries;
             _formulaList = [];
             _structureList = [];
-
-            MoleculeStructureModel = new MoleculeStructureModel();
-            MoleculeStructureViewModel = new MoleculeStructureViewModel(MoleculeStructureModel);
+            _moleculeStructureModel = moleculeStructureModel;
             _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
 
             _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms1Spectrum));
@@ -290,8 +289,6 @@ namespace CompMs.App.Msdial.Model.Search {
             }
         }
 
-        public MoleculeStructureModel MoleculeStructureModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
 
         public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
         private DelegateCommand? _runFindFormula;
@@ -394,15 +391,8 @@ namespace CompMs.App.Msdial.Model.Search {
                 return;
             }
             var neutralLossSpectrum = new List<SpectrumPeak>();
-            var neutralLossList = SelectedFormula.NeutralLossResult;
-            foreach (var ion in neutralLossList) {
-                for (var i = 0; i < neutralLossList.Count; i++) {
-                    SpectrumPeak spectrumPeak = new() {
-                        Mass = ion.PrecursorMz,
-                        Intensity = ion.PrecursorIntensity,
-                    };
-                    neutralLossSpectrum.Add(spectrumPeak);
-                }
+            foreach (var ion in SelectedFormula.NeutralLossResult) {                
+                neutralLossSpectrum.Add(new(){ Mass = ion.PrecursorMz, Intensity = ion.PrecursorIntensity });                
             }
             _ms2SpectrumSubject.OnNext(new MsSpectrum(neutralLossSpectrum));
         }

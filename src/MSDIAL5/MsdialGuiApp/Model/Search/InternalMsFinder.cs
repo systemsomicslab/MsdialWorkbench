@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
@@ -20,7 +21,9 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Search {
     internal sealed class InternalMsFinder : DisposableModelBase {
         public InternalMsFinder(List<MsfinderQueryFile> msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> structureQueries) {
-            var metabolites = LoadMetabolites(msfinderQueryFiles, parameter, structureQueries);
+            MoleculeStructureModel = new MoleculeStructureModel();
+
+            var metabolites = LoadMetabolites(msfinderQueryFiles, parameter, structureQueries, MoleculeStructureModel);
             _observedMetabolites = new ObservableCollection<MsfinderObservedMetabolite>(metabolites);
             ObservedMetabolites = new ReadOnlyObservableCollection<MsfinderObservedMetabolite>(_observedMetabolites);
             _selectedObservedMetabolite = ObservedMetabolites.FirstOrDefault();
@@ -65,11 +68,12 @@ namespace CompMs.App.Msdial.Model.Search {
         public SingleSpectrumModel SpectrumModelMs1 { get; }
         public SingleSpectrumModel SpectrumModelMs2 { get; }
         public MsSpectrumModel RefMs2SpectrumModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
-        private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile> msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> queries) {
+        private List<MsfinderObservedMetabolite> LoadMetabolites(List<MsfinderQueryFile> msfinderQueryFiles, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> queries, MoleculeStructureModel moleculeStructureModel) {
             var metaboliteList = new List<MsfinderObservedMetabolite>();
             foreach (var queryFile in msfinderQueryFiles) {
-                var metabolite = new MsfinderObservedMetabolite(queryFile, parameter, queries);
+                var metabolite = new MsfinderObservedMetabolite(queryFile, parameter, queries, moleculeStructureModel);
                 metaboliteList.Add(metabolite);
             }
             return metaboliteList;
