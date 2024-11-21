@@ -167,7 +167,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=Model.SelectedObservedMetabolite.FormulaList}">
+                              ItemsSource="{Binding  Path=Model.SelectedObservedMetabolite.FormulaList}" SelectedItem="{Binding Path=Model.SelectedObservedMetabolite.SelectedFormula, Mode=TwoWay}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -316,7 +316,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-                <Button Content="Reflect to MS-DIAL" Command="{Binding Model.SelectedObservedMetabolite.ReflectToMsdial}" 
+                <Button Content="Reflect to MS-DIAL"
                         Background="IndianRed" BorderThickness="2" 
                         Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result" IsEnabled="False"/>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Model.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">

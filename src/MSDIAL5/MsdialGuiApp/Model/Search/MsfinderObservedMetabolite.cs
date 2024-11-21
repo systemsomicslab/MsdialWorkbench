@@ -210,6 +210,11 @@ namespace CompMs.App.Msdial.Model.Search {
             get => _formulaList;
             set => SetProperty(ref _formulaList, value);
         }
+        private FormulaResult? _selectedFormula;
+        public FormulaResult? SelectedFormula {
+            get => _selectedFormula;
+            set => SetProperty(ref _selectedFormula, value);
+        }
 
         private List<FragmenterResult> _structureList;
         public List<FragmenterResult> StructureList {
@@ -364,40 +369,42 @@ namespace CompMs.App.Msdial.Model.Search {
         public DelegateCommand ShowProductIonSpectrumCommand => _showProductIonSpectrumCommand ??= new DelegateCommand(ShowProductIonSpectrum);
         private DelegateCommand? _showProductIonSpectrumCommand;
         public void ShowProductIonSpectrum() {
-            if (FormulaList is null) { return; }
-            foreach (var formula in FormulaList) {
-                var productIonSpectrum = new List<SpectrumPeak>();
-                var productIonList = formula.ProductIonResult;
-                foreach (var ion in productIonList) {
-                    var spec = new SpectrumPeak() {
-                        Mass = ion.Mass,
-                        Intensity = ion.Intensity,
-                        Comment = ion.Comment,
-                    };
-                    productIonSpectrum.Add(spec);
-                }
-                _ms2SpectrumSubject.OnNext(new MsSpectrum(productIonSpectrum));
+            if (SelectedFormula is null) {
+                MessageBox.Show("Please select formula from molecular formula finder");
+                return; 
             }
+            var productIonSpectrum = new List<SpectrumPeak>();
+            var productIonList = SelectedFormula.ProductIonResult;
+            foreach (var ion in productIonList) {
+                var spec = new SpectrumPeak() {
+                    Mass = ion.Mass,
+                    Intensity = ion.Intensity,
+                    Comment = ion.Comment,
+                };
+                productIonSpectrum.Add(spec);
+            }
+            _ms2SpectrumSubject.OnNext(new MsSpectrum(productIonSpectrum));
         }
 
         public DelegateCommand ShowNeutralLossSpectrumCommand => _showNeutralLossSpectrumCommand ??= new DelegateCommand(ShowNeutralLossSpectrum);
         private DelegateCommand? _showNeutralLossSpectrumCommand;
         public void ShowNeutralLossSpectrum() {
-            if (FormulaList is null) { return; }
-            foreach (var formula in FormulaList) {
-                var neutralLossSpectrum = new List<SpectrumPeak>();
-                var neutralLossList = formula.NeutralLossResult;
-                foreach (var ion in neutralLossList) {
-                    for (var i = 0; i < neutralLossList.Count; i++) {
-                        SpectrumPeak spectrumPeak = new() {
-                            Mass = ion.PrecursorMz,
-                            Intensity = ion.PrecursorIntensity,
-                        };
-                        neutralLossSpectrum.Add(spectrumPeak);
-                    }
-                }
-                _ms2SpectrumSubject.OnNext(new MsSpectrum(neutralLossSpectrum));
+            if (SelectedFormula is null) {
+                MessageBox.Show("Please select formula from molecular formula finder");
+                return;
             }
+            var neutralLossSpectrum = new List<SpectrumPeak>();
+            var neutralLossList = SelectedFormula.NeutralLossResult;
+            foreach (var ion in neutralLossList) {
+                for (var i = 0; i < neutralLossList.Count; i++) {
+                    SpectrumPeak spectrumPeak = new() {
+                        Mass = ion.PrecursorMz,
+                        Intensity = ion.PrecursorIntensity,
+                    };
+                    neutralLossSpectrum.Add(spectrumPeak);
+                }
+            }
+            _ms2SpectrumSubject.OnNext(new MsSpectrum(neutralLossSpectrum));
         }
 
         public DelegateCommand ShowFseaResultViewerCommand => _showFseaResultViewerCommand ??= new DelegateCommand(ShowFseaResultViewer);
