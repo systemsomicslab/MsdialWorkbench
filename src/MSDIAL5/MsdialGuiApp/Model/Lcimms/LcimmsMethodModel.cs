@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _studyContext = studyContext;
             _broker = broker;
             providerFactory = new StandardDataProviderFactory();
-            accProviderFactory = new LcimmsAccumulateDataProviderFactory();
+            accProviderFactory = new LcimmsAccumulateDataProviderFactory<AnalysisFileBean>(providerFactory);
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
             AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
