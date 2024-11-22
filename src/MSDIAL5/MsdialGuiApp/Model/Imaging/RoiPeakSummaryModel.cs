@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using System.Linq;
 
@@ -6,31 +7,17 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class RoiPeakSummaryModel : BindableBase
     {
-        private readonly RoiAccess _access;
-        private readonly RawIntensityOnPixelsLoader _intensitiesLoader;
-        private readonly int _peakIndex;
+        private readonly RoiModel _roi;
+        private readonly RawPixelFeatures _pixelFeatures;
 
-        public RoiPeakSummaryModel(RoiAccess access, ChromatogramPeakFeatureModel peak, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
-            _access = access ?? throw new System.ArgumentNullException(nameof(access));
+        public RoiPeakSummaryModel(RoiModel roi, RawPixelFeatures pixelFeatures, ChromatogramPeakFeatureModel peak) {
+            _roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
+            _pixelFeatures = pixelFeatures ?? throw new System.ArgumentNullException(nameof(pixelFeatures));
             Peak = peak;
-            _intensitiesLoader = intensitiesLoader;
-            _peakIndex = peakIndex;
         }
 
         public ChromatogramPeakFeatureModel Peak { get; }
-
-        public double AccumulatedIntensity {
-            get {
-                if (_accumulatedIntensity is null) {
-                    CalculateAccumulatedIntensity();
-                }
-                return _accumulatedIntensity ?? 0d;
-            }
-        }
+        public double AccumulatedIntensity => (_accumulatedIntensity ?? (_accumulatedIntensity = _pixelFeatures.IntensityArray.Average())).Value;
         private double? _accumulatedIntensity = null;
-
-        private void  CalculateAccumulatedIntensity() {
-            _accumulatedIntensity = _access.Access(_intensitiesLoader.Load(_peakIndex).PixelPeakFeaturesList[0].IntensityArray).Average();
-        }
     }
 }

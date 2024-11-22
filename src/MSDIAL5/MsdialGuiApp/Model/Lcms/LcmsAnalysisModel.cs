@@ -266,7 +266,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
-
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {

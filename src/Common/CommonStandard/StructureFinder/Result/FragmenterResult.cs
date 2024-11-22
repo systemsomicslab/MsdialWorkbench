@@ -3,7 +3,6 @@ using CompMs.Common.DataObj;
 using CompMs.Common.StructureFinder.Property;
 using System.Collections.Generic;
 
-
 namespace CompMs.Common.StructureFinder.Result
 {
     public class FragmenterResult
@@ -53,7 +52,6 @@ namespace CompMs.Common.StructureFinder.Result
             this.fragmentPics = fragmentPics;
             this.referenceSpectrum = null;
             this.precursorMz = precursorMz;
-
             this.title = structure.Title;
             this.id = structure.Id;
             this.totalBondEnergy = structure.TotalBondEnergy;
@@ -117,7 +115,6 @@ namespace CompMs.Common.StructureFinder.Result
             this.title = title;
             this.id = id;
             this.precursorMz = precursorMz;
-
             this.totalBondEnergy = totalBondEnergy;
             this.inchikey = inchikey;
             this.smiles = smiles;

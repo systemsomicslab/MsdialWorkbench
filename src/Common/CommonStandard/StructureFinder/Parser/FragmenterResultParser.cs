@@ -22,7 +22,6 @@ namespace CompMs.Common.StructureFinder.Parser
             foreach (var result in fragmenterResults)
             {
                 ResultStreamWriter(sw, result);
-
             }
         }
 
@@ -83,6 +82,7 @@ namespace CompMs.Common.StructureFinder.Parser
                 WriteSpectrumDbSearchResult(sw, result);
             else
                 WriteInSilicoFragmenterSearchResult(sw, result);
+
             sw.WriteLine();
         }
 
@@ -162,7 +162,6 @@ namespace CompMs.Common.StructureFinder.Parser
 
             var id = string.Empty;
             var precursorMz = -1.0;
-
             var title = string.Empty;
             var inchikey = string.Empty;
             var smiles = string.Empty;
@@ -381,7 +380,6 @@ namespace CompMs.Common.StructureFinder.Parser
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-
         public static List<FragmenterResult> FragmenterResultFastReader(string filePath) {
             var fragmenterResults = new List<FragmenterResult>();
             var fragments = new List<PeakFragmentPair>();
@@ -395,7 +393,6 @@ namespace CompMs.Common.StructureFinder.Parser
 
             var id = string.Empty;
             var precursorMz = -1.0;
-          
             var title = string.Empty;
             var inchikey = string.Empty;
             var smiles = string.Empty;
@@ -480,7 +477,6 @@ namespace CompMs.Common.StructureFinder.Parser
             return fragmenterResults.OrderByDescending(n => n.TotalScore).ToList();
         }
 
-
         private static bool ReadFragmenterArrayVS2(List<PeakFragmentPair> fragments, string line) {
             var array = line.Split('\t');
             if (array.Length < 21) { ErrorFragmnetArray(); return false; }
@@ -516,7 +512,7 @@ namespace CompMs.Common.StructureFinder.Parser
 
             return true;
         }
-      
+
         private static bool ReadFragmenterArray(List<PeakFragmentPair> fragments, string line) {
             string[] array = line.Split('\t');
             if (array.Length < 13) { ErrorFragmnetArray(); return false; }

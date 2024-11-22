@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Statistics.Kernels;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
@@ -104,18 +105,6 @@ namespace CompMs.MsdialCore.DataObj
             storage.Parameter.ProjectFolderPath = projectFolder;
             storage.Parameter.TextDBFilePath = ReplaceFolderPath(storage.Parameter.TextDBFilePath, previousFolder, projectFolder);
             storage.Parameter.IsotopeTextDBFilePath = ReplaceFolderPath(storage.Parameter.IsotopeTextDBFilePath, previousFolder, projectFolder);
-
-            foreach (var info in storage.Parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.Values) {
-                try {
-                    var newpath = ReplaceFolderPath(info.DictionaryFilePath, previousFolder, projectFolder);
-                    if (File.Exists(newpath) || !File.Exists(info.DictionaryFilePath)) {
-                        info.DictionaryFilePath = newpath;
-                    }
-                }
-                catch (ArgumentException) {
-                    // Do nothing
-                }
-            }
 
             foreach (var file in storage.AnalysisFiles) {
                 file.AnalysisFilePath = ReplaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);

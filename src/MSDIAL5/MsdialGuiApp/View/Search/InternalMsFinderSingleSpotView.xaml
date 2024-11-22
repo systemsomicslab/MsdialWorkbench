@@ -38,7 +38,6 @@
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="25"/>
-
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Label Content="Molecular formula finder" 

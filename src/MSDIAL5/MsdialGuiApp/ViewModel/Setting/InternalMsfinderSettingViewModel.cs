@@ -15,7 +15,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     internal sealed class InternalMsfinderSettingViewModel : ViewModelBase
     {
+
         public InternalMsfinderSettingViewModel(MsfinderParameterSetting model, IMessageBroker broker) {
+
             MassTolType = model.ToReactivePropertySlimAsSynchronized(m => m.MassTolType).AddTo(Disposables);
 
             Mass1Tolerance = model.ToReactivePropertyAsSynchronized(
@@ -476,6 +478,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             Save = new ReactiveCommand().WithSubscribe(() => {
                 model.Commit();
             }).AddTo(Disposables);
+            
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {
                 model.Cancel();

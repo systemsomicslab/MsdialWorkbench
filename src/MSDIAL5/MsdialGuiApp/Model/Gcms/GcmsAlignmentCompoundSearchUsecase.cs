@@ -18,9 +18,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
             SearchParameter = calculateMatchScore?.CopySearchParameter();
-            _calculateMatchScore = SearchParameter is { }
-                ? calculateMatchScore?.With(SearchParameter)
-                : default;
+            _calculateMatchScore = calculateMatchScore?.With(SearchParameter);
         }
 
         public IList SearchMethods => Array.Empty<object>();

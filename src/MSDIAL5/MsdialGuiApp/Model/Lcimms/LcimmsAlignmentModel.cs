@@ -43,8 +43,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly double RtTol = 0.5;
         private static readonly double DtTol = 0.01;
         private static readonly double MzTol = 20;
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> RT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT)!;
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift)!;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> RT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly DataBaseMapper _dataBaseMapper;

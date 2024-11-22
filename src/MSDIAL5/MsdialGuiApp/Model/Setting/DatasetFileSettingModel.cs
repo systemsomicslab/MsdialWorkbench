@@ -97,7 +97,9 @@ namespace CompMs.App.Msdial.Model.Setting
             var fileID_ClassName = parameter.FileID_ClassName;
             fileID_AnalysisFileType.Clear();
             fileID_ClassName.Clear();
+            var counter = 0;
             foreach (var analysisfile in IncludedFileModels) {
+                analysisfile.AnalysisFileId = counter++;
                 fileID_ClassName[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileClass;
                 fileID_AnalysisFileType[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileType;
             }

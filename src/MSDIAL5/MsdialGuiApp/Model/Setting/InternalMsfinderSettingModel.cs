@@ -25,6 +25,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal class InternalMsfinderSettingModel : BindableBase
     {
+
         internal readonly MsfinderParameterSetting parameter;
         internal readonly AnalysisParamOfMsfinder analysisParam;
         internal readonly AlignmentSpectraExportGroupModel exporter;

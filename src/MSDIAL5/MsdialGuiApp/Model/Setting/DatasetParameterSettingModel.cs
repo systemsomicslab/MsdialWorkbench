@@ -186,10 +186,6 @@ namespace CompMs.App.Msdial.Model.Setting
                 DatasetFileName += ".mddata";
             }
 
-            var fileID = 0;
-            foreach (var file in fileSettingModel.IncludedFileModels) {
-                file.AnalysisFileId = fileID++;
-            }
             var parameter = CreateParameter();
             var projectParameter = parameter.ProjectParam;
             fileSettingModel.CommitFileParameters(projectParameter);

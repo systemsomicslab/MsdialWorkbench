@@ -23,8 +23,8 @@ public sealed class AnnotationProcess
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
         IReadOnlyList<MSDecResult> msdecResults,
         IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
         MsdialImmsParameter parameter,
@@ -57,11 +57,12 @@ public sealed class AnnotationProcess
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult,
         IReadOnlyList<RawPeakElement> spectrum,
         IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
-        IMatchResultEvaluator<MsScanMatchResult> evaluator,
-        IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-        MsdialImmsParameter parameter) {
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, IMatchResultEvaluator<MsScanMatchResult> evaluator,
+        IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, MsdialImmsParameter parameter) {
+        //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
+        //    Console.WriteLine();
+        //}
         var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
         SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
@@ -81,9 +82,9 @@ public sealed class AnnotationProcess
 
     private static void SetMspAnnotationResult(
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
 
-        if (mspAnnotator is null)
+        if (mspAnnotator == null)
             return;
 
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator, ignoreIsotopicPeak: true).FindCandidates();
@@ -106,9 +107,9 @@ public sealed class AnnotationProcess
 
     private static void SetTextDBAnnotationResult(
         ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
 
-        if (textDBAnnotator is null)
+        if (textDBAnnotator == null)
             return;
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator, ignoreIsotopicPeak: false).FindCandidates();
         var results = textDBAnnotator.FilterByThreshold(candidates);

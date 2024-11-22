@@ -169,6 +169,7 @@ namespace CompMs.Common.StructureFinder
                     param.TreeDepth, param.Mass2Tolerance, param.MassTolType, adduct.IonMode, fragmentDB);
 
                 fragmenterResult = new FragmenterResult(structure, peakFragmentPairs, -1, -1, -1, adduct.ConvertToMz(structure.ExactMass));
+
                 FragmenterScoring.CalculateFragmenterScores(fragmenterResult, originalPeaks.Count);
                 fragmenterResult.DatabaseScore = FragmenterScoring.CalculateDatabaseScore(structure.ResourceNames, structure.ResourceNumber, structure.DatabaseQueries);
 
@@ -186,7 +187,6 @@ namespace CompMs.Common.StructureFinder
             }
             else
             {
-
                 fragmenterResult = new FragmenterResult(structure, null, -1, -1, -1, adduct.ConvertToMz(structure.ExactMass));
                 fragmenterResult.DatabaseScore = FragmenterScoring.CalculateDatabaseScore(structure.ResourceNames, structure.ResourceNumber, structure.DatabaseQueries);
                 fragmenterResult.RetentionTime = referenceRt;

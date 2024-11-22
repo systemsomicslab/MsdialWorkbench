@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Imaging;
-using CompMs.App.Msdial.Model.ImagingImms;
+﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -28,9 +27,6 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
             SaveImagesViewModel = new SaveImagesViewModel(model.SaveImagesModel, broker).AddTo(Disposables);
             AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
-            RemoveRoiCommand = new ReactiveCommand<ImagingRoiModel>().WithSubscribe(model.RemoveRoi).AddTo(Disposables);
-            SaveIntensitiesCommand = new AsyncReactiveCommand().WithSubscribe(() => model.SaveIntensitiesAsync()).AddTo(Disposables);
-            LoadRoiCommand = new ReactiveCommand().WithSubscribe(model.LoadRoi).AddTo(Disposables);
         }
 
         public string ImageTitle => _model.File.AnalysisFileName;
@@ -41,8 +37,5 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public SaveImagesViewModel SaveImagesViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels => ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels;
         public AsyncReactiveCommand AddRoiCommand { get; }
-        public ReactiveCommand<ImagingRoiModel> RemoveRoiCommand { get; }
-        public AsyncReactiveCommand SaveIntensitiesCommand { get; }
-        public ReactiveCommand LoadRoiCommand { get; }
     }
 }

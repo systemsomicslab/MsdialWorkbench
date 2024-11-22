@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
+﻿using Accord.Diagnostics;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
@@ -25,7 +26,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             _chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
         }
 
-        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, ReportProgress? reporter) {
+        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, ReportProgress reporter) {
             var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.PeakPickBaseParam.MinimumDatapoints, _parameter.PeakPickBaseParam.MinimumAmplitude);
             IEnumerable<ChromatogramPeakFeature> chromPeakFeatures;
@@ -42,7 +43,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return collection;
         }
 
-        private IEnumerable<ChromatogramPeakFeature> DetectChromatogramPeaks(IDataProvider provider, ReportProgress? reporter, RawSpectra rawSpectra, PeakDetection detector) {
+        private IEnumerable<ChromatogramPeakFeature> DetectChromatogramPeaks(IDataProvider provider, ReportProgress reporter, RawSpectra rawSpectra, PeakDetection detector) {
             var massStep = _parameter.ChromDecBaseParam.AccuracyType == AccuracyType.IsNominal ? 1f : _parameter.PeakPickBaseParam.MassSliceWidth;
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             foreach (var focusedMass in EnumerateMzToSearch(provider, massStep, reporter)) {
@@ -54,12 +55,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return chromPeakFeaturesList.SelectMany(features => features);
         }
 
-        private IEnumerable<float> EnumerateMzToSearch(IDataProvider provider, float step, ReportProgress? reporter) {
+        private IEnumerable<float> EnumerateMzToSearch(IDataProvider provider, float step, ReportProgress reporter) {
             var (mzMin, mzMax) = provider.GetMs1Range(_parameter.ProjectParam.IonMode);
             var startMass = Math.Max(mzMin, _parameter.PeakPickBaseParam.MassRangeBegin);
             var endMass = Math.Min(mzMax, _parameter.PeakPickBaseParam.MassRangeEnd);
             for (var focusedMass = startMass; focusedMass < endMass; focusedMass += step) {
-                reporter?.Report(focusedMass, endMass);
+                reporter.Report(focusedMass, endMass);
                 yield return focusedMass;
             }
         }

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.MessagePack;
+﻿using Accord.Statistics.Kernels;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
@@ -33,18 +34,18 @@ namespace CompMs.App.MsdialConsole.Export
 
         public async Task<IMsdialDataStorage<ParameterBase>> LoadProjectFromPathAsync(string projectfile) {
 
-            var projectDir = Path.GetDirectoryName(projectfile) ?? Path.Combine(projectfile, "../");
-            using (var fs = File.Open(projectfile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (IStreamManager streamManager = ZipStreamManager.OpenGet(fs)) {
+            var projectDir = Path.GetDirectoryName(projectfile);
+            using (var fs = File.Open(projectfile, FileMode.Open))
+            using (var streamManager = ZipStreamManager.OpenGet(fs)) {
                 var deserializer = new MsdialIntegrateSerializer();
                 var projectDataStorage = await ProjectDataStorage.LoadAsync(
                     streamManager,
                     deserializer,
                     path => new DirectoryTreeStreamManager(path),
-                    projectDir!,
+                    projectDir,
                     parameter =>
                     {
-                        string? result = null;
+                        string result = null;
                         //await Application.Current.Dispatcher.InvokeAsync(() => {
                         //    var newofd = new OpenFileDialog {
                         //        Filter = "MTD3 file(.mtd3)|*.mtd3|All(*)|*",
@@ -57,8 +58,8 @@ namespace CompMs.App.MsdialConsole.Export
                         //});
                         return Task.FromResult(result);
                     },
-                    _ => { });
-                streamManager.Complete();
+                    null);
+                ((IStreamManager)streamManager).Complete();
                 
                 projectDataStorage.FixProjectFolder(projectDir);
                 return projectDataStorage.Storages.FirstOrDefault();
@@ -78,11 +79,11 @@ namespace CompMs.App.MsdialConsole.Export
         }
 
         public IMsdialDataStorage<ParameterBase> LoadProjectFromPath(string projectfile) {
-            var projectFolder = Path.GetDirectoryName(projectfile) ?? Path.GetFullPath(Path.Combine(projectfile, "../"));
+            var projectFolder = Path.GetDirectoryName(projectfile);
 
             var serializer = new MsdialIntegrateSerializer();
             IMsdialDataStorage<ParameterBase> storage;
-            using (var streamManager = new DirectoryTreeStreamManager(projectFolder)) {
+            using (var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile))) {
                 storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), Path.GetDirectoryName(projectfile), string.Empty).Result;
                 storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
                 ((IStreamManager)streamManager).Complete();

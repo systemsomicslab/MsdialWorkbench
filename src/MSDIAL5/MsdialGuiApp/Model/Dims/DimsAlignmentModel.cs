@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Dims
     internal sealed class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz)!;
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
