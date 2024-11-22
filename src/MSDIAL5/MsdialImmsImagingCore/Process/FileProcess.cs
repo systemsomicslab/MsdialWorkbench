@@ -27,8 +27,8 @@ public sealed class FileProcess
     public FileProcess(
         IMsdialDataStorage<MsdialImmsParameter> storage,
         IDataProviderFactory<AnalysisFileBean> dataProviderFactory,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? mspAnnotator,
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>? textDBAnnotator,
         IMatchResultEvaluator<MsScanMatchResult> evaluator) {
         _processor = new MsdialImmsCore.Process.FileProcess(storage, dataProviderFactory, mspAnnotator, textDBAnnotator, evaluator);
     }

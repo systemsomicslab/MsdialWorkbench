@@ -6,33 +6,28 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class EtherPCLipidParserTests
     {
-        [TestMethod()]
-        public void ParseTest() {
-            var parser = new EtherPCLipidParser();
+        private EtherPCLipidParser _parser;
 
-            var lipid = parser.Parse("PC O-36:2");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
+        [TestInitialize]
+        public void Init()
+        {
+            _parser = new EtherPCLipidParser();
+        }
 
-            lipid = parser.Parse("PC O-18:0_18:2");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
+        [DataTestMethod]
+        [DataRow("PC O-36:2", 771.6141911)]
+        [DataRow("PC O-18:0_18:2", 771.6141911)]
+        [DataRow("PC O-18:0/18:2", 771.6141911)]
+        [DataRow("PC P-36:1", 771.6141911)]
+        [DataRow("PC P-18:0_18:1", 771.6141911)]
+        [DataRow("PC P-18:0/18:1", 771.6141911)]
+        public void ParseTest(string name, double mz)
+        {
+            var lipid = _parser.Parse(name);
+            Assert.AreEqual(mz, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
-
-            lipid = parser.Parse("PC O-18:0/18:2");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
-
-            lipid = parser.Parse("PC P-36:1");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
-
-            lipid = parser.Parse("PC P-18:0_18:1");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
-
-            lipid = parser.Parse("PC P-18:0/18:1");
-            Assert.AreEqual(771.6141911, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.EtherPC, lipid.LipidClass);
+            Assert.AreEqual(1, lipid.Chains.AcylChainCount);
+            Assert.AreEqual(1, lipid.Chains.AlkylChainCount);
         }
     }
 }

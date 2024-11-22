@@ -28,14 +28,14 @@ namespace CompMs.MsdialCore.Export
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
     {
-        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) {
+        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) {
             this.refer = refer;
             this.parameter = parameter;
             this.type = type;
         }
 
         protected readonly ParameterBase parameter;
-        protected readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+        protected readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer;
         private readonly ExportspectraType type;
 
         public string[] GetHeaders() => GetHeadersCore();
@@ -43,20 +43,6 @@ namespace CompMs.MsdialCore.Export
         public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var matchResult = NullIfUnknown(feature.MatchResults.Representative);
             var reference = matchResult is null ? null : refer.Refer(matchResult);
-
-/* Unmerged change from project 'MsdialCore (netstandard2.0)'
-Before:
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile);
-After:
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, TODO);
-*/
-
-/* Unmerged change from project 'MsdialCore (net6.0)'
-Before:
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile);
-After:
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, TODO);
-*/
             return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, exportStyle);
         }
 

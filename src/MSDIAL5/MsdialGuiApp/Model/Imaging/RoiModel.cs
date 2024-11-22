@@ -67,10 +67,13 @@ namespace CompMs.App.Msdial.Model.Imaging
         public BitmapImageModel RoiImage { get; }
 
         public RawSpectraOnPixels RetrieveRawSpectraOnPixels(List<Raw2DElement> targetElements) {
-            using (RawDataAccess rawDataAccess = new RawDataAccess(File.AnalysisFilePath, 0, true, true, true)) {
-                return rawDataAccess.GetRawPixelFeatures(targetElements, Frames.Infos.ToList(), false)
-                    ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
-            }
+            using RawDataAccess rawDataAccess = new RawDataAccess(File.AnalysisFilePath, 0, true, true, true);
+            return rawDataAccess.GetRawPixelFeatures(targetElements, [.. Frames.Infos], isNewProcess: false)
+                ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
+        }
+
+        public RawIntensityOnPixelsLoader GetIntensityOnPixelsLoader(List<Raw2DElement> targetElements) {
+            return new RawIntensityOnPixelsLoader(targetElements, File, Frames);
         }
     }
 }

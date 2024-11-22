@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Utility {
                 case ".lbm":
                 case ".lbm2":
                     return ReadLipidMsLibrary(filepath, param);
-                case ".text":
+                case ".txt":
                     return TextLibraryParser.TextLibraryReader(filepath, out error);
                 //case ".fasta":
                 default:

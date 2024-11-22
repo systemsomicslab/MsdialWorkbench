@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Imaging
                 var x = i + 1 / 2d;
                 var ys = edges.Where(edge => edge.Intersect(x)).Select(edge => edge.GetY(x)).OrderBy(y => y).ToArray();
                 for (int j = 0; j < ys.Length / 2; j++) {
-                    for (int k = ys[j * 2]; k <= ys[j * 2 + 1]; k++) {
+                    for (int k = Math.Max(0, ys[j * 2]); k <= Math.Min(ys[j * 2 + 1], height - 1); k++) {
                         board[i, k] = true;
                     }
                 }

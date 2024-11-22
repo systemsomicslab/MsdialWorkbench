@@ -580,6 +580,7 @@ namespace CompMs.Common.Lipidomics
             if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
+                System.Diagnostics.Debug.Assert(chains.AcylChainCount == 1 && chains.AlkylChainCount == 1);
                 return new Lipid(LbmClass.EtherPC, Skelton + chains.Mass, chains);
             }
             return null;

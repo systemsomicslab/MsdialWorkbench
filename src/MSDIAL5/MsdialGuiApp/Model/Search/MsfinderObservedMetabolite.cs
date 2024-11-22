@@ -40,7 +40,6 @@ namespace CompMs.App.Msdial.Model.Search {
         private readonly BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
         private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
         private readonly MoleculeStructureModel _moleculeStructureModel;
-
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
                 @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
         private static readonly List<NeutralLoss> neutralLossDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetNeutralLossDB(
@@ -185,6 +184,7 @@ namespace CompMs.App.Msdial.Model.Search {
                 }
             }
         }
+
         public double CollisionEnergy {
             get => _spotData.CollisionEnergy;
             set {
@@ -201,6 +201,7 @@ namespace CompMs.App.Msdial.Model.Search {
         public int Ms2Num {
             get => _spotData.Ms2PeakNumber;
         }
+
         public IObservable<MsSpectrum> Ms1Spectrum => _ms1SpectrumSubject.AsObservable();
         public IObservable<MsSpectrum> Ms2Spectrum => _ms2SpectrumSubject.AsObservable();
         public IObservable<MsSpectrum?> RefSpectrum => _refSpectrum.AsObservable();
@@ -288,7 +289,6 @@ namespace CompMs.App.Msdial.Model.Search {
                 }
             }
         }
-
 
         public DelegateCommand RunFindFormula => _runFindFormula ??= new DelegateCommand(FindFormula);
         private DelegateCommand? _runFindFormula;

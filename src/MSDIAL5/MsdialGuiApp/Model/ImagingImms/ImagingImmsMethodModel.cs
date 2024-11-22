@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _projectBaseParameter = projectBaseParameter;
             StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(true, true, 5, 5000));
+            _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
             Image = ImageModels.FirstOrDefault();
 
@@ -68,7 +69,11 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var runner = new ProcessRunner(processor, 2);
                 await runner.RunAllAsync(_storage.AnalysisFiles, option, Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
+                    var model = new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
+                    ImageModels.Add(model);
+                    if (option.HasFlag(ProcessOption.PeakSpotting)) {
+                        model.ImageResult.ResetRawSpectraOnPixels();
+                    }
                 }
             }
 

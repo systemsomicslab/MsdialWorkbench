@@ -17,7 +17,7 @@ namespace CompMs.Common.Lipidomics
             return false;
         }
 
-        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
+        public IMSScanProperty? Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             if (map.TryGetValue(lipid.LipidClass, out var generators)) {
                 var generator = generators.FirstOrDefault(gen => gen.CanGenerate(lipid, adduct));
                 return generator?.Generate(lipid, adduct, molecule);
@@ -128,14 +128,34 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.EtherPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.EtherLPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PG, new PGOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPG, new LPGOadSpectrumGenerator());
                     generator.Add(LbmClass.PI, new PIOadSpectrumGenerator());
-                    generator.Add(LbmClass.PS, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.LPI, new LPIOadSpectrumGenerator());
+                    generator.Add(LbmClass.PS, new PSOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPS, new LPSOadSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGOadSpectrumGenerator());
                     generator.Add(LbmClass.DG, new DGOadSpectrumGenerator());
                     generator.Add(LbmClass.SM, new SMOadSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NDS, new CeramideOadSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NS, new CeramideOadSpectrumGenerator());
                     generator.Add(LbmClass.DMEDFAHFA, new DMEDFAHFAOadSpectrumGenerator());
+
+                    generator.Add(LbmClass.PC_d5, new PCd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.PE_d5, new PEd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.PG_d5, new PGd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.PI_d5, new PId5OadSpectrumGenerator());
+                    generator.Add(LbmClass.PS_d5, new PSd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.LPC_d5, new LPCd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.LPE_d5, new LPEd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.LPG_d5, new LPGd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.LPI_d5, new LPId5OadSpectrumGenerator());
+                    generator.Add(LbmClass.LPS_d5, new LPSd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.DG_d5, new DGd5OadSpectrumGenerator());
+
+                    generator.Add(LbmClass.TG_d5, new TGd5OadSpectrumGenerator());
+                    generator.Add(LbmClass.CE_d7, new CEd7OadSpectrumGenerator());
+                    generator.Add(LbmClass.SM_d9, new SMd9OadSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NS_d7, new CerNSd7OadSpectrumGenerator());
                     @oadlipidgenerator = generator;
                 }
                 return @oadlipidgenerator;
