@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Components;
+using System;
+using System.Collections.Generic;
 
 namespace CompMs.Common.DataObj
 {
@@ -74,5 +76,61 @@ namespace CompMs.Common.DataObj
         public RawSpectrum ShallowCopy() {
             return (RawSpectrum)MemberwiseClone();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accumulatedMassBin">key: m/z * 100000, value [0] base peak m/z [1] summed intensity [2] base peak intensity</param>
+        /// <param name="needsSortMz"></param>
+        public void SetSpectrumProperties(Dictionary<int, double[]> accumulatedMassBin) {
+            var basepeakIntensity = 0.0;
+            var basepeakMz = 0.0;
+            var totalIonCurrnt = 0.0;
+            var lowestMz = double.MaxValue;
+            var highestMz = double.MinValue;
+            var minIntensity = double.MaxValue;
+
+            var spectrum = new RawPeakElement[accumulatedMassBin.Count];
+            var idx = 0;
+
+            foreach (var pair in accumulatedMassBin) {
+                var pBasepeakMz = pair.Value[0];
+                var pSummedIntensity = pair.Value[1];
+                var pBasepeakIntensity = pair.Value[2];
+
+                totalIonCurrnt += pSummedIntensity;
+
+                if (pSummedIntensity > basepeakIntensity) {
+                    basepeakIntensity = pSummedIntensity;
+                    basepeakMz = pBasepeakMz;
+                }
+                if (lowestMz > pBasepeakMz) lowestMz = pBasepeakMz;
+                if (highestMz < pBasepeakMz) highestMz = pBasepeakMz;
+                if (minIntensity > pSummedIntensity) minIntensity = pSummedIntensity;
+
+                var spec = new RawPeakElement() {
+                    Mz = Math.Round(pBasepeakMz, 5),
+                    Intensity = Math.Round(pSummedIntensity, 0)
+                };
+                spectrum[idx++] = spec;
+            }
+            Array.Sort(spectrum, MzComparer.Instance);
+
+            Spectrum = spectrum;
+            DefaultArrayLength = spectrum.Length;
+            BasePeakIntensity = basepeakIntensity;
+            BasePeakMz = basepeakMz;
+            TotalIonCurrent = totalIonCurrnt;
+            LowestObservedMz = lowestMz;
+            HighestObservedMz = highestMz;
+            MinIntensity = minIntensity;
+        }
+
+        class MzComparer : IComparer<RawPeakElement>
+        {
+            public static readonly MzComparer Instance = new();
+            public int Compare(RawPeakElement x, RawPeakElement y) => x.Mz.CompareTo(y.Mz);
+        }
+
     }
 }

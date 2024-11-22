@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -105,7 +104,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public DimsTicDataProvider(IDataProvider provider) {
             _provider = provider;
-            _spectra = TotalIonCurrentSelect(provider.LoadMsSpectrums()).ToList();
+            _spectra = TotalIonCurrentSelect(provider.LoadMsSpectrums());
             _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
@@ -184,10 +183,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 var peaks = group.ToList();
                 var accIntensity = peaks.Sum(peak => peak.Intensity) / ms1Spectrums.Count;
                 var basepeak = peaks.Argmax(peak => peak.Intensity);
-                massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
+                massBins[group.Key] = [basepeak.Mz, accIntensity, basepeak.Intensity];
             }
             var result = ms1Spectrums.First();
-            SpectrumParser.setSpectrumProperties(result, massBins);
+            result.SetSpectrumProperties(massBins);
             var results = new[] { result }.Concat(spectrums.Where(spectrum => spectrum.MsLevel != 1)).ToList();
             for (int i = 0; i < results.Count; i++) {
                 results[i].Index = i;
