@@ -73,10 +73,11 @@ namespace CompMs.App.MsdialConsole.Process
             using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
                 rawobj = access.GetMeasurement();
             }
-            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
-                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
-                return access.GetMeasurement();
-            });
+            IImagingDataProviderFactory<AnalysisFileBean> providerFactory = default!;
+            //var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+            //    using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+            //    return access.GetMeasurement();
+            //});
             var provider = new StandardDataProviderFactory().Create(rawobj);
 
             var db = DataBaseStorage.CreateEmpty();
@@ -102,7 +103,7 @@ namespace CompMs.App.MsdialConsole.Process
             var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
 
             var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, matchResultEvaluator);
-            processor.RunAsyncTest(file, provider).Wait();
+            processor.RunAsyncTest(file).Wait();
 
             using var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath);
             using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
@@ -164,10 +165,11 @@ namespace CompMs.App.MsdialConsole.Process
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 rawobj = access.GetMeasurement();
             }
-            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
-                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
-                return access.GetMeasurement();
-            });
+            IImagingDataProviderFactory<AnalysisFileBean> providerFactory = default!;
+            //var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+            //    using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+            //    return access.GetMeasurement();
+            //});
             Console.WriteLine("Peak picking...");
             var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialImmsDataStorage {
@@ -188,7 +190,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
             var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, evaluator);
-            processor.RunAsync(file, provider).Wait();
+            processor.RunAsync(file).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
