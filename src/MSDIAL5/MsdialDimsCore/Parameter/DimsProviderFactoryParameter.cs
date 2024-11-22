@@ -3,7 +3,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Algorithm;
 using CompMs.Raw.Contract;
 using MessagePack;
-using System;
 
 namespace CompMs.MsdialDimsCore.Parameter
 {
@@ -29,7 +28,7 @@ namespace CompMs.MsdialDimsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsBpiDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new DimsBpiDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
         }
     }
 
@@ -47,7 +46,7 @@ namespace CompMs.MsdialDimsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsTicDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new DimsTicDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
         }
     }
 
@@ -68,7 +67,7 @@ namespace CompMs.MsdialDimsCore.Parameter
         public double MassTolerance { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsAverageDataProviderFactory(MassTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new DimsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), MassTolerance, TimeBegin, TimeEnd);
         }
     }
 }

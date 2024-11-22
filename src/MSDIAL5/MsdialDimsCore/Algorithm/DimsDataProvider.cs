@@ -1,40 +1,95 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
 using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
-using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Algorithm
 {
-    public class DimsBpiDataProvider : BaseDataProvider
+    class DimsBaseDataProvider : IDataProvider
     {
-        public DimsBpiDataProvider(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd)
-            : base(BasePeakIntensitySelect(
-                spectrums
-                    .Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd)
-                    .Select(spec => spec.ShallowCopy())
-                    .ToArray()
-                )) {
+        private readonly IDataProvider _provider;
+        private readonly List<RawSpectrum> _spectra;
+        private readonly ConcurrentDictionary<int, ReadOnlyCollection<RawSpectrum>> _cache = [];
+
+        public DimsBaseDataProvider(IDataProvider provider, List<RawSpectrum> spectra) {
+            _provider = provider;
+            _spectra = spectra;
         }
 
-        public DimsBpiDataProvider(RawMeasurement rawObj, double timeBegin, double timeEnd)
-            : this(rawObj.SpectrumList, timeBegin, timeEnd) {
-
+        public virtual List<double> LoadCollisionEnergyTargets() {
+            return _provider.LoadCollisionEnergyTargets();
         }
 
-        public DimsBpiDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
-
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
+            if (_spectra.FirstOrDefault(s => s.MsLevel == 1) is not { } spectrum) {
+                return new ReadOnlyCollection<RawSpectrum>([]);
+            }
+            return new ReadOnlyCollection<RawSpectrum>([spectrum]);
         }
 
-        private static List<RawSpectrum> BasePeakIntensitySelect(RawSpectrum[] spectrums) {
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
+            return Task.FromResult(LoadMs1Spectrums());
+        }
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
+            return _cache.GetOrAdd(level, l => _spectra.Where(s => s.MsLevel == l).ToList().AsReadOnly());
+        }
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
+            return Task.FromResult(LoadMsNSpectrums(level));
+        }
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+            return _spectra.AsReadOnly();
+        }
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
+            return Task.FromResult(_spectra.AsReadOnly());
+        }
+    }
+
+    public sealed class DimsBpiDataProvider : IDataProvider
+    {
+        private readonly IDataProvider _provider;
+        private readonly List<RawSpectrum> _spectra;
+        private readonly DimsBaseDataProvider _baseProvider;
+
+        public DimsBpiDataProvider(IDataProvider provider) {
+            _provider = provider;
+            _spectra = BasePeakIntensitySelect(_provider.LoadMsSpectrums());
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
+        }
+
+        public DimsBpiDataProvider(IDataProvider provider, double timeBegin, double timeEnd) {
+            _provider = provider;
+            _spectra = BasePeakIntensitySelect(_provider.LoadMsSpectrums().Where(s => timeBegin <= s.ScanStartTime && s.ScanStartTime <= timeEnd).ToList());
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
+        }
+
+        public List<double> LoadCollisionEnergyTargets() => _baseProvider.LoadCollisionEnergyTargets();
+
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => _baseProvider.LoadMs1Spectrums();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => _baseProvider.LoadMs1SpectrumsAsync(token);
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => _baseProvider.LoadMsNSpectrums(level);
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => _baseProvider.LoadMsNSpectrumsAsync(level, token);
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() => _baseProvider.LoadMsSpectrums();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => _baseProvider.LoadMsSpectrumsAsync(token);
+
+        private static List<RawSpectrum> BasePeakIntensitySelect(IReadOnlyCollection<RawSpectrum> spectrums) {
             var ms1Spectrum = spectrums.Where(spectrum => spectrum.MsLevel == 1).Argmax(spectrum => spectrum.BasePeakIntensity);
             var msSpectrums = spectrums.Where(spectrum => spectrum.MsLevel != 1);
-            var result = new[] { ms1Spectrum }.Concat(msSpectrums).ToList();
+            var result = msSpectrums.Prepend(ms1Spectrum).ToList();
             for (int i = 0; i < result.Count; i++) {
                 result[i].Index = i;
             }
@@ -42,30 +97,41 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
     }
 
-    public class DimsTicDataProvider : BaseDataProvider
+    public sealed class DimsTicDataProvider : IDataProvider
     {
-        public DimsTicDataProvider(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd)
-            : base(TotalIonCurrentSelect(
-                spectrums
-                    .Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd)
-                    .Select(spec => spec.ShallowCopy())
-                    .ToArray()
-                )) {
+        private readonly IDataProvider _provider;
+        private readonly List<RawSpectrum> _spectra;
+        private readonly DimsBaseDataProvider _baseProvider;
+
+        public DimsTicDataProvider(IDataProvider provider) {
+            _provider = provider;
+            _spectra = TotalIonCurrentSelect(provider.LoadMsSpectrums()).ToList();
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
-        public DimsTicDataProvider(RawMeasurement rawObj, double timeBegin, double timeEnd)
-            : this(rawObj.SpectrumList, timeBegin, timeEnd) {
-
+        public DimsTicDataProvider(IDataProvider provider, double timeBegin, double timeEnd) {
+            _provider = provider;
+            _spectra = TotalIonCurrentSelect(provider.LoadMsSpectrums().Where(s => timeBegin <= s.ScanStartTime && s.ScanStartTime <= timeEnd).ToList());
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
-        public DimsTicDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+        public List<double> LoadCollisionEnergyTargets() => _baseProvider.LoadCollisionEnergyTargets();
 
-        }
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => _baseProvider.LoadMs1Spectrums();
 
-        private static List<RawSpectrum> TotalIonCurrentSelect(RawSpectrum[] spectrums) {
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => _baseProvider.LoadMs1SpectrumsAsync(token);
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => _baseProvider.LoadMsNSpectrums(level);
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => _baseProvider.LoadMsNSpectrumsAsync(level, token);
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() => _baseProvider.LoadMsSpectrums();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => _baseProvider.LoadMsSpectrumsAsync(token);
+
+        private static List<RawSpectrum> TotalIonCurrentSelect(IReadOnlyList<RawSpectrum> spectrums) {
             if (spectrums.IsEmptyOrNull()) return null;
-            var ms1Spectrum = spectrums.Length > 1 
+            var ms1Spectrum = spectrums.Count > 1 
                 ? spectrums.Where(spectrum => spectrum.MsLevel == 1).Argmax(spectrum => spectrum.TotalIonCurrent)
                 : spectrums[0];
             var msSpectrums = spectrums.Where(spectrum => spectrum.MsLevel != 1);
@@ -77,30 +143,39 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
     }
 
-    public class DimsAverageDataProvider : BaseDataProvider
+    public class DimsAverageDataProvider : IDataProvider
     {
-        public DimsAverageDataProvider(IEnumerable<RawSpectrum> spectrums, double massTolerance, double timeBegin, double timeEnd)
-            : base(AccumulateRawSpectrums(
-                spectrums
-                    .Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd)
-                    .Select(spec => spec.ShallowCopy())
-                    .ToArray(),
-                massTolerance)) {
+        private readonly IDataProvider _provider;
+        private readonly List<RawSpectrum> _spectra;
+        private readonly DimsBaseDataProvider _baseProvider;
 
+        public DimsAverageDataProvider(IDataProvider provider, double mzTolerance) {
+            _provider = provider;
+            _spectra = AccumulateRawSpectrums(provider.LoadMsSpectrums().Select(spec => spec.ShallowCopy()).ToList(), mzTolerance);
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
-        public DimsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double timeBegin, double timeEnd)
-            : this(rawObj.SpectrumList, massTolerance, timeBegin, timeEnd) {
-
+        public DimsAverageDataProvider(IDataProvider provider, double mzTolerance, double timeBegin, double timeEnd) {
+            _provider = provider;
+            _spectra = AccumulateRawSpectrums(provider.LoadMsSpectrums().Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd).Select(spec => spec.ShallowCopy()).ToList(), mzTolerance);
+            _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
-        public DimsAverageDataProvider(AnalysisFileBean file, double massTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
+        public List<double> LoadCollisionEnergyTargets() => _baseProvider.LoadCollisionEnergyTargets();
 
-        }
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => _baseProvider.LoadMs1Spectrums();
 
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => _baseProvider.LoadMs1SpectrumsAsync(token);
 
-        private static List<RawSpectrum> AccumulateRawSpectrums(RawSpectrum[] spectrums, double massTolerance) {
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => _baseProvider.LoadMsNSpectrums(level);
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => _baseProvider.LoadMsNSpectrumsAsync(level, token);
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() => _baseProvider.LoadMsSpectrums();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => _baseProvider.LoadMsSpectrumsAsync(token);
+
+        private static List<RawSpectrum> AccumulateRawSpectrums(IReadOnlyCollection<RawSpectrum> spectrums, double massTolerance) {
             var ms1Spectrums = spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
             var groups = ms1Spectrums.SelectMany(spectrum => spectrum.Spectrum)
                 .GroupBy(peak => (int)(peak.Mz / massTolerance));
@@ -121,90 +196,17 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
     }
 
-    public class DimsBpiDataProviderFactory
-        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    public sealed class DimsBpiDataProviderFactory<T>(IDataProviderFactory<T> factory, double timeBegin, double timeEnd) : IDataProviderFactory<T>
     {
-        private readonly double timeBegin;
-        private readonly double timeEnd;
-        private readonly int retry;
-        private readonly bool isGuiProcess;
-
-        public DimsBpiDataProviderFactory(
-            double timeBegin = double.MinValue,
-            double timeEnd = double.MaxValue,
-            int retry = 5,
-            bool isGuiProcess = false) {
-            this.timeBegin = timeBegin;
-            this.timeEnd = timeEnd;
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
-        }
-
-        public IDataProvider Create(AnalysisFileBean source) {
-            return new DimsBpiDataProvider(source, timeBegin, timeEnd, isGuiProcess, retry);
-        }
-
-        public IDataProvider Create(RawMeasurement source) {
-            return new DimsBpiDataProvider(source, timeBegin, timeEnd);
-        }
+        public IDataProvider Create(T source) => new DimsBpiDataProvider(factory.Create(source), timeBegin, timeEnd);
     }
 
-    public class DimsTicDataProviderFactory
-        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    public sealed class DimsTicDataProviderFactory<T>(IDataProviderFactory<T> factory, double timeBegin, double timeEnd) : IDataProviderFactory<T>
     {
-        private readonly double timeBegin;
-        private readonly double timeEnd;
-        private readonly int retry;
-        private readonly bool isGuiProcess;
-
-        public DimsTicDataProviderFactory(
-            double timeBegin = double.MinValue,
-            double timeEnd = double.MaxValue,
-            int retry = 5,
-            bool isGuiProcess = false) {
-            this.timeBegin = timeBegin;
-            this.timeEnd = timeEnd;
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
-        }
-
-        public IDataProvider Create(AnalysisFileBean source) {
-            return new DimsTicDataProvider(source, timeBegin, timeEnd, isGuiProcess, retry);
-        }
-
-        public IDataProvider Create(RawMeasurement source) {
-            return new DimsTicDataProvider(source, timeBegin, timeEnd);
-        }
+        public IDataProvider Create(T source) => new DimsTicDataProvider(factory.Create(source), timeBegin, timeEnd);
     }
 
-    public class DimsAverageDataProviderFactory
-        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
-    {
-        private readonly double massTolerance;
-        private readonly double timeBegin;
-        private readonly double timeEnd;
-        private readonly int retry;
-        private readonly bool isGuiProcess;
-
-        public DimsAverageDataProviderFactory(
-            double massTolerance,
-            double timeBegin = double.MinValue,
-            double timeEnd = double.MaxValue,
-            int retry = 5,
-            bool isGuiProcess = false) {
-            this.massTolerance = massTolerance;
-            this.timeBegin = timeBegin;
-            this.timeEnd = timeEnd;
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
-        }
-
-        public IDataProvider Create(AnalysisFileBean source) {
-            return new DimsAverageDataProvider(source, massTolerance, timeBegin, timeEnd, isGuiProcess, retry);
-        }
-
-        public IDataProvider Create(RawMeasurement source) {
-            return new DimsAverageDataProvider(source, massTolerance, timeBegin, timeEnd);
-        }
+    public sealed class DimsAverageDataProviderFactory<T>(IDataProviderFactory<T> factory, double mzTolerance, double timeBegin, double timeEnd) : IDataProviderFactory<T> {
+        public IDataProvider Create(T source) => new DimsAverageDataProvider(factory.Create(source), mzTolerance, timeBegin, timeEnd);
     }
 }
