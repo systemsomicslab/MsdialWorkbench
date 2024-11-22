@@ -2,7 +2,6 @@
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.Raw.Contract;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -165,7 +164,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 massBins[group.Key] = [basepeak.Mz, accIntensity, basepeak.Intensity];
             }
             var result = ms1Spectrums.First().ShallowCopy();
-            SpectrumParser.setSpectrumProperties(result, massBins);
+            result.SetSpectrumProperties(massBins);
             return new[] { result }.Concat(
                 spectrums.Where(spectrum => spectrum.MsLevel != 1)
                 .Select(spec => spec.ShallowCopy())
