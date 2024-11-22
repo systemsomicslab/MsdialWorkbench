@@ -39,7 +39,7 @@ Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN),
 Past developers: Diego Pedrosa (UC Davis), Ipputa Tada (SOKENDAI)
 
 # Usage
-See the tutorial page: https://mtbinfo-team.github.io/mtbinfo.github.io/
+See the tutorial page: [https://mtbinfo-team.github.io/mtbinfo.github.io/](https://systemsomicslab.github.io/mtbinfo.github.io/MS-FINDER/tutorial)
 
 # About LBM file in MS-DIAL project
 The LBM (*.LBM2) file contains the in silico MS/MS spectra of lipids.
