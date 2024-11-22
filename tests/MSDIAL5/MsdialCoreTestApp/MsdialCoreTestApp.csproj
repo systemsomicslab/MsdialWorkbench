@@ -33,6 +33,10 @@
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialIntegrate\MsdialIntegrate.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialLcMsApi\MsdialLcMsApi.csproj" />
+	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
   </ItemGroup>
 
   <ItemGroup>
