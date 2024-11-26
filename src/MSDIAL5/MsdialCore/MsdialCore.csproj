@@ -12,7 +12,7 @@
     <PackageReference Include="Accord" Version="3.8.0" />
     <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
-	  <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>
 
@@ -32,12 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-	<InternalsVisibleTo Include="MsdialCoreTests" />
+  <InternalsVisibleTo Include="MsdialCoreTests" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\..\Common\CompMs.Raw.Contract\CompMs.Raw.Contract.csproj" />
+    <ProjectReference Include="..\..\Common\CompMs.Raw.Abstractions\CompMs.Raw.Abstractions.csproj" />
     <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 

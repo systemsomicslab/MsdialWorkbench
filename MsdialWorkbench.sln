@@ -185,7 +185,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DC2AD876-6
 		THIRD-PARTY-LICENSE-README.md = THIRD-PARTY-LICENSE-README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompMs.Raw.Contract", "src\Common\CompMs.Raw.Contract\CompMs.Raw.Contract.csproj", "{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompMs.Raw.Abstractions", "src\Common\CompMs.Raw.Abstractions\CompMs.Raw.Abstractions.csproj", "{B22AF017-5D94-4EDE-9DF5-D3B941541CD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
