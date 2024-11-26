@@ -1,6 +1,4 @@
-﻿using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialDimsCore.Algorithm;
+﻿using CompMs.MsdialDimsCore.Algorithm;
 using CompMs.Raw.Contract;
 using MessagePack;
 
@@ -11,7 +9,7 @@ namespace CompMs.MsdialDimsCore.Parameter
     [Union(2, typeof(DimsAverageDataProviderFactoryParameter))]
     public interface IDimsDataProviderFactoryParameter
     {
-        IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
+        IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory);
     }
 
     [MessagePackObject]
@@ -27,8 +25,8 @@ namespace CompMs.MsdialDimsCore.Parameter
         [Key(nameof(TimeEnd))]
         public double TimeEnd { get; }
 
-        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsBpiDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
+        public IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory) {
+            return new DimsBpiDataProviderFactory<T>(factory, TimeBegin, TimeEnd);
         }
     }
 
@@ -45,8 +43,8 @@ namespace CompMs.MsdialDimsCore.Parameter
         [Key(nameof(TimeEnd))]
         public double TimeEnd { get; }
 
-        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsTicDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
+        public IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory) {
+            return new DimsTicDataProviderFactory<T>(factory, TimeBegin, TimeEnd);
         }
     }
 
@@ -66,8 +64,8 @@ namespace CompMs.MsdialDimsCore.Parameter
         [Key(nameof(MassTolerance))]
         public double MassTolerance { get; }
 
-        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), MassTolerance, TimeBegin, TimeEnd);
+        public IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory) {
+            return new DimsAverageDataProviderFactory<T>(factory, MassTolerance, TimeBegin, TimeEnd);
         }
     }
 }

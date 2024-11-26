@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Utility;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -19,6 +18,7 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.Raw.Contract;
+using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly StudyContextModel _studyContext;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
-        private readonly StandardDataProviderFactory _providerFactory;
+        private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private readonly List<CalculateMatchScore> _calculateMatchScores;
@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _studyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
-            _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
+            _providerFactory = new StandardDataProviderFactory { Retry = 5, IsGuiProcess = true,  }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown | DisplayFilter.Blank);
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
             switch (storage.Parameter.RetentionType) {

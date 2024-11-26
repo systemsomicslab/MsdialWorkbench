@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm;
+using CompMs.RawDataHandler.DataProvider;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -25,7 +25,7 @@ namespace CompMs.App.RawDataViewer.Model
         private RawSpectrum _selectedSpectrum;
 
         public static Task<RawMsSpectrumCheckModel> CreateAsync(AnalysisDataModel dataModel, CancellationToken token = default) {
-            return dataModel.CreateDataProviderByFactory(new StandardDataProviderFactory(isGuiProcess: true), token)
+            return dataModel.CreateDataProviderByFactory(new StandardDataProviderFactory() { IsGuiProcess = true }, token)
                 .ContinueWith(async task =>
                 {
                     var provider = await task.ConfigureAwait(false);

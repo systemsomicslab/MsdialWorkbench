@@ -15,6 +15,7 @@ using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.Raw.Contract;
+using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -54,7 +55,8 @@ namespace CompMs.App.Msdial.Model.Dims
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
-            ProviderFactory = storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+            var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            ProviderFactory = storage.Parameter.ProviderFactoryParameter.Create(providerFactory);
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {

@@ -19,6 +19,7 @@ using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcMsApi.Export;
 using CompMs.MsdialLcMsApi.Process;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,7 +88,7 @@ public sealed class LcmsProcess
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
-        var providerFactory = new StandardDataProviderFactory(5, false);
+        var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
         var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);

@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;

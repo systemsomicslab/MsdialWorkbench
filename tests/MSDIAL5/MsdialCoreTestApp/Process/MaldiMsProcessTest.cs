@@ -15,8 +15,8 @@ using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialIntegrate.Parser;
-using CompMs.Raw.Contract;
 using CompMs.RawDataHandler.Core;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,17 +69,7 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
-            RawMeasurement? rawobj = null;
-            using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
-                rawobj = access.GetMeasurement();
-            }
-            IImagingDataProviderFactory<AnalysisFileBean> providerFactory = default!;
-            //var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
-            //    using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
-            //    return access.GetMeasurement();
-            //});
-            var provider = new StandardDataProviderFactory().Create(rawobj);
-
+            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             var db = DataBaseStorage.CreateEmpty();
             var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB);
             var textDBAnnotator = new ImmsTextDBAnnotator(tdb, param.TextDbSearchParam, "TextDB", -1);
@@ -160,18 +150,9 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
-            RawMeasurement? rawobj = null;
             Console.WriteLine("Reading data...");
-            using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
-                rawobj = access.GetMeasurement();
-            }
-            IImagingDataProviderFactory<AnalysisFileBean> providerFactory = default!;
-            //var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
-            //    using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
-            //    return access.GetMeasurement();
-            //});
+            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             Console.WriteLine("Peak picking...");
-            var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialImmsDataStorage {
                 AnalysisFiles = [file], 
                 AlignmentFiles = [],
@@ -292,8 +273,9 @@ namespace CompMs.App.MsdialConsole.Process
             );
 
             var annotationProcess = BuildAnnotationProcess(container.DataBases);
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
 
-            MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
+            MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(providerFactory, container, annotationProcess, evaluator);
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 

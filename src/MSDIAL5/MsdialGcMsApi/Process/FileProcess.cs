@@ -127,12 +127,6 @@ namespace CompMs.MsdialGcMsApi.Process
             }
         }
 
-        public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
-            var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType));
-            processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token).Wait();
-        }
-
         private void SetRetentionIndex(IReadOnlyList<IChromatogramPeakFeature> peaks, RetentionIndexHandler riHandler) {
             if (riHandler is null) {
                 return;

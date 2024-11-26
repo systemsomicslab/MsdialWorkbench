@@ -17,6 +17,7 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
@@ -262,7 +263,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _fileProperties, _studyContext, _broker);
+            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)), _fileProperties, _studyContext, _broker);
         }
     }
 

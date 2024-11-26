@@ -17,10 +17,4 @@ public interface IDataProvider {
     Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token);
 
     List<double> LoadCollisionEnergyTargets();
-    // TODO: Previous implementation was commented out
-    /*
-    public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
-        return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
-    }
-    */
 }

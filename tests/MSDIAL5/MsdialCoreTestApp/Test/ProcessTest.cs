@@ -2,6 +2,7 @@
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -277,7 +278,8 @@ namespace CompMs.App.MsdialConsole.Test {
         }
 
         private static void DumpN(string file, int n) {
-            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = file }, isImagingMs: false, isGuiProcess: false, 5);
+            var providerFactory = new StandardDataProviderFactory() { IsImaging = false, IsGuiProcess = false, Retry = 5, };
+            var provider = providerFactory.Create(file);
             var allspectra = provider.LoadMsSpectrums();
             Console.WriteLine($"Number of spectrum: {allspectra.Count}");
             Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}");
@@ -289,7 +291,8 @@ namespace CompMs.App.MsdialConsole.Test {
         }
 
         private static void DumpSpectrum(string file, int scanNumber, double mz, double mztol) {
-            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = file }, isImagingMs: false, isGuiProcess: false, 5);
+            var providerFactory = new StandardDataProviderFactory() { IsImaging = false, IsGuiProcess = false, Retry = 5, };
+            var provider = providerFactory.Create(file);
             var allspectra = provider.LoadMsSpectrums();
             var spectra = allspectra.FirstOrDefault(spec => spec.ScanNumber == scanNumber);
             Console.WriteLine(
@@ -323,7 +326,8 @@ namespace CompMs.App.MsdialConsole.Test {
         private RawDataDump() { }
 
         public static void Dump(string filepath) {
-            var provider = new StandardDataProvider(new AnalysisFileBean() { AnalysisFilePath = filepath }, isImagingMs: false, isGuiProcess: false, 5);
+            var providerFactory = new StandardDataProviderFactory() { IsImaging = false, IsGuiProcess = false, Retry = 5, };
+            var provider = providerFactory.Create(filepath);
             var allSpectra = provider.LoadMsSpectrums();
             foreach (var spec in allSpectra) {
                 var precursorMz = spec.Precursor == null ? -1 : spec.Precursor.SelectedIonMz;

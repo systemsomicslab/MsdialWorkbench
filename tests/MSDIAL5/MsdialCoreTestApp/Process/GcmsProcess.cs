@@ -21,6 +21,7 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialIntegrate.Parser;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -186,7 +187,7 @@ public sealed class GcmsProcess
 
         var files = storage.AnalysisFiles;
         var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));
-        var providerFactory = new StandardDataProviderFactory(isGuiProcess: false);
+        var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType));
         var runner = new ProcessRunner(process, storage.MsdialGcmsParameter.NumThreads / 2);
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);

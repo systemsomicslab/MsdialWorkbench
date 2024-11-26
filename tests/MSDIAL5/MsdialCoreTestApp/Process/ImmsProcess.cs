@@ -1,8 +1,9 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -17,13 +18,13 @@ using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using CompMs.MsdialIntegrate.Parser;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CompMs.App.MsdialConsole.Properties;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -84,7 +85,7 @@ public sealed class ImmsProcess
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        var providerFactory = new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(), mzTolerance: 0.001, driftTolerance: 0.002);
+        var providerFactory = new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)), mzTolerance: 0.001, driftTolerance: 0.002);
         var factories = storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories;
 
         // temporary

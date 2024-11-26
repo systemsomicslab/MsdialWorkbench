@@ -1,7 +1,4 @@
-﻿using CompMs.Common.DataObj;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialImmsCore.Algorithm;
+﻿using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.Raw.Contract;
 using MessagePack;
 
@@ -11,8 +8,7 @@ namespace CompMs.MsdialImmsCore.Parameter
     [Union(1, typeof(ImmsTicDataProviderFactoryParameter))]
     public interface IImmsDataProviderFactoryParameter
     {
-        IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
-        IDataProviderFactory<RawMeasurement> Create();
+        IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory);
     }
 
     [MessagePackObject]
@@ -28,12 +24,8 @@ namespace CompMs.MsdialImmsCore.Parameter
         [Key(nameof(TimeEnd))]
         public double TimeEnd { get; }
 
-        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new ImmsRepresentativeDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), TimeBegin, TimeEnd);
-        }
-
-        public IDataProviderFactory<RawMeasurement> Create() {
-            return new ImmsRepresentativeDataProviderFactory<RawMeasurement>(new StandardDataProviderFactory(), TimeBegin, TimeEnd);
+        public IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> factory) {
+            return new ImmsRepresentativeDataProviderFactory<T>(factory, TimeBegin, TimeEnd);
         }
     }
 
@@ -56,12 +48,8 @@ namespace CompMs.MsdialImmsCore.Parameter
         [Key(nameof(TimeEnd))]
         public double TimeEnd { get; }
 
-        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory(retry, isGuiProcess), MassTolerance, DriftTolerance, TimeBegin, TimeEnd);
-        }
-
-        public IDataProviderFactory<RawMeasurement> Create() {
-            return new ImmsAverageDataProviderFactory<RawMeasurement>(new StandardDataProviderFactory(), TimeBegin, TimeEnd);
+        public IDataProviderFactory<T> Create<T>(IDataProviderFactory<T> providerFactory) {
+            return new ImmsAverageDataProviderFactory<T>(providerFactory, MassTolerance, DriftTolerance, TimeBegin, TimeEnd);
         }
     }
 }

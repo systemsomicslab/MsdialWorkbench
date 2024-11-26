@@ -4,6 +4,8 @@ using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Contract;
+using CompMs.RawDataHandler.DataProvider;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -82,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Core
                 MaxDegreeOfParallelism = param.NumThreads
             };
             System.Threading.Tasks.Parallel.ForEach(files, parallelOptions, f => {
-                StandardDataProviderFactory factory = new StandardDataProviderFactory();
+                IDataProviderFactory<AnalysisFileBean> factory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
                 var provider = factory.Create(f);
                 RetentionTimeCorrection.Execute(f, param, provider);
                 _bgWorker!.ReportProgress(1);

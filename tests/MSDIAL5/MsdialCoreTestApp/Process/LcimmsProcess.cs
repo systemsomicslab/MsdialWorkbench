@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
@@ -8,8 +9,10 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -17,15 +20,13 @@ using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
-using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialIntegrate.Parser;
-using CompMs.App.MsdialConsole.Properties;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -86,7 +87,7 @@ public sealed class LcimmsProcess {
         var files = storage.AnalysisFiles;
         var evaluator = new MsScanMatchResultEvaluator(storage.Parameter.MspSearchParam);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
-        var providerFactory = new StandardDataProviderFactory(5, false);
+        var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = false, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         var accProviderFactory = new LcimmsAccumulateDataProviderFactory<AnalysisFileBean>(providerFactory);
         var process = new FileProcess(providerFactory, accProviderFactory, annotationProcess, evaluator, storage);
         var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);

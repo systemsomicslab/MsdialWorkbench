@@ -138,7 +138,8 @@ namespace MsdialPrivateConsoleApp {
                 var beginRtForSub = 2.0 - 0.1;
                 var endRtForSub = 2.0 + 0.1;
 
-                var provider = new StandardDataProvider(file, false, false, 5);
+                var providerFactory = new CompMs.RawDataHandler.DataProvider.StandardDataProviderFactory() { IsImaging = false, IsGuiProcess = false, Retry = 5, };
+                var provider = providerFactory.Create((file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
 
                 var spectrum = provider.LoadMsNSpectrums(level: 2);
                 var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();

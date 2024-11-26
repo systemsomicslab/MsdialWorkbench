@@ -28,7 +28,7 @@ namespace CompMs.App.RawDataViewer.Model
 
         public Task<IDataProvider> CreateDataProvider(CancellationToken token = default) {
             if (dataProvider is null) {
-                dataProvider = Task.Run(async () => (IDataProvider)new StandardDataProvider(await rawMeasurementTask.ConfigureAwait(false)), token);
+                dataProvider = Task.Run<IDataProvider>(() => new RawDataHandler.DataProvider.StandardDataProvider(rawMeasurementTask), token);
             }
             return dataProvider;
         }
@@ -37,7 +37,7 @@ namespace CompMs.App.RawDataViewer.Model
         public Task<IDataProvider> CreateAccumulatedDataProvider(CancellationToken token = default) {
             if (accumulatedDataProvider is null) {
                 accumulatedDataProvider = Task.Run(async () => {
-                    var provider = new StandardDataProvider(await rawMeasurementTask.ConfigureAwait(false));
+                    var provider = new RawDataHandler.DataProvider.StandardDataProvider(rawMeasurementTask);
                     return (IDataProvider)new MsdialLcImMsApi.Algorithm.LcimmsAccumulateDataProvider(provider);
                 }, token);
             }

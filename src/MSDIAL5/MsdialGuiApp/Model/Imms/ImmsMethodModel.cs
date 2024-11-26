@@ -18,6 +18,7 @@ using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using CompMs.Raw.Contract;
+using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -56,7 +57,8 @@ namespace CompMs.App.Msdial.Model.Imms
             if (parameter.ProviderFactoryParameter is null) {
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
-            ProviderFactory = parameter.ProviderFactoryParameter.Create(5, true);
+            var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true };
+            ProviderFactory = parameter.ProviderFactoryParameter.Create(providerFactory.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)));
 
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 

@@ -84,7 +84,7 @@
 	  <PackageReference Include="R.NET" Version="1.9.0" />
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
 	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
-	  <PackageReference Include="RawDataHandler" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler" Version="2.0.*-*" Condition="'$(Configuration)'=='Debug'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
 	</ItemGroup>

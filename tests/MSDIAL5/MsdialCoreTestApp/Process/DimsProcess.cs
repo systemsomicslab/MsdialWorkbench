@@ -20,6 +20,7 @@ using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialIntegrate.Parser;
 using CompMs.Raw.Contract;
+using CompMs.RawDataHandler.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,7 +75,7 @@ public sealed class DimsProcess {
         container.DataBases = dbStorage;
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
-        var providerFactory = new StandardDataProviderFactory();
+        var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, providerFactory, outputFolder, isProjectSaved).Result;
     }

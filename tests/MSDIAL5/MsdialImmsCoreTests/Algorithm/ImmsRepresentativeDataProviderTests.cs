@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Tests
@@ -10,7 +11,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Tests
     {
         [TestMethod()]
         public void ImmsRepresentativeDataProviderTest() {
-            var spectrums = new[]
+            var spectrums = new System.Collections.Generic.List<RawSpectrum>
             {
                 CreateRawSpectrum(1, 1, 0, 0, 2.0, 100),
                 CreateRawSpectrum(1, 1, 1, 1, 1.5, 200),
@@ -70,7 +71,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Tests
                 CreateRawSpectrum(10, 2, 52, 52, 0.7),
             };
 
-            var provider = new ImmsRepresentativeDataProvider(new StandardDataProvider(spectrums));
+            var stubDataProvider = new StubDataProvider();
+            stubDataProvider.SetSpectra(spectrums);
+            var provider = new ImmsRepresentativeDataProvider(stubDataProvider);
 
             var expected = new[] { spectrums[26], spectrums[27], spectrums[28], spectrums[29], spectrums[30] };
             CollectionAssert.AreEquivalent(

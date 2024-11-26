@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Linq;
-using CompMs.MsdialCore.Algorithm;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Tests
 {
@@ -11,28 +11,29 @@ namespace CompMs.MsdialImmsCore.Algorithm.Tests
     {
         [TestMethod()]
         public void IndexTest() {
-            var provider = new ImmsAverageDataProvider(
-                new StandardDataProvider(
-                    new[]
-                    {
-                        new RawSpectrum { Index = 0, OriginalIndex = 0, MsLevel = 1,
-                            ScanStartTime = 1, DriftTime = 1, },
-                        new RawSpectrum { Index = 1, OriginalIndex = 1, MsLevel = 2,
-                            ScanStartTime = 1, DriftTime = 1, },
-                        new RawSpectrum { Index = 2, OriginalIndex = 2, MsLevel = 2,
-                            ScanStartTime = 1, DriftTime = 1, },
-                        new RawSpectrum { Index = 3, OriginalIndex = 3, MsLevel = 1,
-                            ScanStartTime = 2, DriftTime = 1, },
-                        new RawSpectrum { Index = 4, OriginalIndex = 4, MsLevel = 2,
-                            ScanStartTime = 2, DriftTime = 1, },
-                        new RawSpectrum { Index = 5, OriginalIndex = 5, MsLevel = 2,
-                            ScanStartTime = 2, DriftTime = 1, },
-                        new RawSpectrum { Index = 6, OriginalIndex = 6, MsLevel = 1,
-                            ScanStartTime = 3, DriftTime = 2, },
-                        new RawSpectrum { Index = 7, OriginalIndex = 7, MsLevel = 2,
-                            ScanStartTime = 3, DriftTime = 2, },
-                    }),
-                0.01, 0.02);
+            var stubProvider = new StubDataProvider();
+            stubProvider.SetSpectra(
+                new List<RawSpectrum>
+                {
+                    new RawSpectrum { Index = 0, OriginalIndex = 0, MsLevel = 1,
+                        ScanStartTime = 1, DriftTime = 1, },
+                    new RawSpectrum { Index = 1, OriginalIndex = 1, MsLevel = 2,
+                        ScanStartTime = 1, DriftTime = 1, },
+                    new RawSpectrum { Index = 2, OriginalIndex = 2, MsLevel = 2,
+                        ScanStartTime = 1, DriftTime = 1, },
+                    new RawSpectrum { Index = 3, OriginalIndex = 3, MsLevel = 1,
+                        ScanStartTime = 2, DriftTime = 1, },
+                    new RawSpectrum { Index = 4, OriginalIndex = 4, MsLevel = 2,
+                        ScanStartTime = 2, DriftTime = 1, },
+                    new RawSpectrum { Index = 5, OriginalIndex = 5, MsLevel = 2,
+                        ScanStartTime = 2, DriftTime = 1, },
+                    new RawSpectrum { Index = 6, OriginalIndex = 6, MsLevel = 1,
+                        ScanStartTime = 3, DriftTime = 2, },
+                    new RawSpectrum { Index = 7, OriginalIndex = 7, MsLevel = 2,
+                        ScanStartTime = 3, DriftTime = 2, },
+                }
+            );
+            var provider = new ImmsAverageDataProvider(stubProvider, 0.01, 0.02);
 
             var actuals = provider.LoadMsSpectrums();
 
