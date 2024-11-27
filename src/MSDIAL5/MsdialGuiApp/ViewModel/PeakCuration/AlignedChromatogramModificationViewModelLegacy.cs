@@ -81,8 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
 
         public void ClearRtAlignment() {
             _model.ClearRtAlignment();
-            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned, IsRI);
-            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList.ToList());
+            UpdateAlignedChromUC();
         }
     }
 
@@ -171,6 +170,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         }
 
         public void ClearAlignedPeakList() {
+            AlignOffset = 0d;
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
                 if (p.ChromXs.MainType == ChromXType.RI && _riHandler is { }) {
