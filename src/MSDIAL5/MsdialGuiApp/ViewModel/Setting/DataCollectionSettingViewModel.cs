@@ -21,30 +21,30 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsReadOnly = model.IsReadOnly;
 
-            Ms1Tolerance = model.ToReactivePropertyAsSynchronized(
-                m => m.Ms1Tolerance,
+            Ms1Tolerance = model.PeakPickBaseParameterModel.ToReactivePropertyAsSynchronized(
+                m => m.CentroidMs1Tolerance,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => Ms1Tolerance).AddTo(Disposables);
 
-            Ms2Tolerance = model.ToReactivePropertyAsSynchronized(
-                m => m.Ms2Tolerance,
+            Ms2Tolerance = model.PeakPickBaseParameterModel.ToReactivePropertyAsSynchronized(
+                m => m.CentroidMs2Tolerance,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => Ms2Tolerance).AddTo(Disposables);
 
-            MaxChargeNumber = model.ToReactivePropertyAsSynchronized(
+            MaxChargeNumber = model.PeakPickBaseParameterModel.ToReactivePropertyAsSynchronized(
                 m => m.MaxChargeNumber,
                 m => m.ToString(),
                 vm => int.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MaxChargeNumber).AddTo(Disposables);
 
-            IsBrClConsideredForIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
+            IsBrClConsideredForIsotopes = model.PeakPickBaseParameterModel.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
 
-            MaxIsotopesDetectedInMs1Spectrum = model.ToReactivePropertyAsSynchronized(
+            MaxIsotopesDetectedInMs1Spectrum = model.PeakPickBaseParameterModel.ToReactivePropertyAsSynchronized(
                 m => m.MaxIsotopesDetectedInMs1Spectrum,
                 m => m.ToString(),
                 vm => int.Parse(vm),

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.Common.Enum;
@@ -25,62 +26,28 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly ParameterBase parameter;
         private readonly IReadOnlyList<AnalysisFileBean> analysisFiles;
 
-        public DataCollectionSettingModel(ParameterBase parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) {
+        public DataCollectionSettingModel(ParameterBase parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) {
             this.parameter = parameter;
+            PeakPickBaseParameterModel = peakPickBaseParameterModel;
             this.analysisFiles = analysisFiles;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
 
-            Ms1Tolerance = parameter.PeakPickBaseParam.CentroidMs1Tolerance;
-            Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
-            MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
-            IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
-            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
-            DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
+            DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter, peakPickBaseParameterModel));
         }
 
-        public DataCollectionSettingModel(MsdialDimsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
-            DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
+        public DataCollectionSettingModel(MsdialDimsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, peakPickBaseParameterModel, analysisFiles, process) {
+            DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, peakPickBaseParameterModel, parameter.ProviderFactoryParameter);
         }
 
-        public DataCollectionSettingModel(MsdialImmsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
-            ImmsProviderFactoryParameter = new ImmsDataCollectionSettingModel(parameter);
+        public DataCollectionSettingModel(MsdialImmsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, peakPickBaseParameterModel, analysisFiles, process) {
+            ImmsProviderFactoryParameter = new ImmsDataCollectionSettingModel(parameter, peakPickBaseParameterModel);
         }
 
         public bool IsReadOnly { get; }
 
-        public float Ms1Tolerance {
-            get => ms1Tolerance;
-            set => SetProperty(ref ms1Tolerance, value);
-        }
-        private float ms1Tolerance;
-
-        public float Ms2Tolerance {
-            get => ms2Tolerance;
-            set => SetProperty(ref ms2Tolerance, value);
-        }
-        private float ms2Tolerance;
-
         public ObservableCollection<IDataCollectionRangeSetting> DataCollectionRangeSettings { get; }
-
-        public int MaxChargeNumber {
-            get => maxChargeNumber;
-            set => SetProperty(ref maxChargeNumber, value);
-        }
-        private int maxChargeNumber;
-
-        public bool IsBrClConsideredForIsotopes {
-            get => isBrClConsideredForIsotopes;
-            set => SetProperty(ref isBrClConsideredForIsotopes, value);
-        }
-        private bool isBrClConsideredForIsotopes;
-
-        public int MaxIsotopesDetectedInMs1Spectrum {
-            get => _maxIsotopesDetectedInMs1Spectrum;
-            set => SetProperty(ref _maxIsotopesDetectedInMs1Spectrum, value);
-        }
-        private int _maxIsotopesDetectedInMs1Spectrum;
 
         public int NumberOfThreads {
             get => numberOfThreads;
@@ -96,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
+        public PeakPickBaseParameterModel PeakPickBaseParameterModel { get; }
 
         public bool TryCommit() {
             if (IsReadOnly) {
@@ -107,11 +75,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     return false;
                 }
             }
-            parameter.PeakPickBaseParam.CentroidMs1Tolerance = Ms1Tolerance;
-            parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;
-            parameter.PeakPickBaseParam.MaxChargeNumber = MaxChargeNumber;
-            parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes = IsBrClConsideredForIsotopes;
-            parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum = MaxIsotopesDetectedInMs1Spectrum;
+            PeakPickBaseParameterModel.Commit();
             parameter.ProcessBaseParam.NumThreads = NumberOfThreads;
             foreach (var s in DataCollectionRangeSettings) {
                 s.Commit(); 
@@ -135,11 +99,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return;
             }
-            Ms1Tolerance = parameter.PeakPickBaseParam.CentroidMs1Tolerance;
-            Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
-            MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
-            IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
-            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
+            PeakPickBaseParameterModel.LoadParameter(parameter.PeakPickBaseParam);
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             foreach (var s in DataCollectionRangeSettings) {
@@ -153,36 +113,36 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        private static List<IDataCollectionRangeSetting> PrepareRangeSettings(ParameterBase parameter) {
+        private static List<IDataCollectionRangeSetting> PrepareRangeSettings(ParameterBase parameter, PeakPickBaseParameterModel peakPickBaseParameterModel) {
             switch (parameter) {
                 case MsdialLcImMsParameter lcimmsParameter:
                     return new List<IDataCollectionRangeSetting>
                     {
-                        new RetentionTimeCollectionRangeSetting(lcimmsParameter, needAccmulation: true),
+                        new RetentionTimeCollectionRangeSetting(lcimmsParameter, peakPickBaseParameterModel, needAccmulation: true),
                         new DriftTimeCollectionRangeSetting(lcimmsParameter, needAccmulation: false),
-                        new Ms1CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
-                        new Ms2CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
+                        new Ms1CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
+                        new Ms2CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
                     };
                 case MsdialGcmsParameter _:
                 case MsdialLcmsParameter _:
                     return new List<IDataCollectionRangeSetting>
                     {
-                        new RetentionTimeCollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
-                        new Ms1CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
-                        new Ms2CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
+                        new RetentionTimeCollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
+                        new Ms1CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
+                        new Ms2CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
                     };
                 case MsdialImmsParameter immsParameter:
                     return new List<IDataCollectionRangeSetting>
                     {
                         new DriftTimeCollectionRangeSetting(immsParameter, needAccmulation: false),
-                        new Ms1CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
-                        new Ms2CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
+                        new Ms1CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
+                        new Ms2CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
                     };
                 case MsdialDimsParameter _:
                     return new List<IDataCollectionRangeSetting>
                     {
-                        new Ms1CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
-                        new Ms2CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false),
+                        new Ms1CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
+                        new Ms2CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false),
                     };
                 default:
                     return new List<IDataCollectionRangeSetting>();

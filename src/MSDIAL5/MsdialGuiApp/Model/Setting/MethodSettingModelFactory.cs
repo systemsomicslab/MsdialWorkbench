@@ -92,6 +92,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _messageBroker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public DimsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialDimsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, ProcessOption process, IMessageBroker messageBroker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
@@ -101,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _studyContext = studyContext;
             this.process = process;
             _messageBroker = messageBroker;
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -112,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return new DataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -170,7 +172,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+            return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -187,6 +189,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public LcmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
@@ -200,6 +203,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 this.storage.Parameter.MaxChargeNumber = 8;
                 this.storage.Parameter.RemoveAfterPrecursor = false;
             }
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -211,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return new DataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -258,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+            return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -275,6 +279,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public ImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
@@ -284,6 +289,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _studyContext = studyContext;
             this.process = process;
             _broker = broker;
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -295,7 +301,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return new DataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -348,7 +354,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+            return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -365,6 +371,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public LcimmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
@@ -374,6 +381,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _studyContext = studyContext;
             this.process = process;
             _broker = broker;
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -385,7 +393,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return new DataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -438,7 +446,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+            return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -455,6 +463,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public ImagingImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
@@ -464,6 +473,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _studyContext = studyContext;
             this.process = process;
             _broker = broker;
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -475,7 +485,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return new DataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -528,7 +538,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+            return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -546,6 +556,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameter;
 
         public GcmsMethodSettingModelFactory(
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
@@ -566,6 +577,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 this.storage.Parameter.MaxChargeNumber = 8;
                 this.storage.Parameter.RemoveAfterPrecursor = false;
             }
+            _peakPickBaseParameter = new PeakPickBaseParameterModel(storage.Parameter.PeakPickBaseParam);
         }
 
         public AdductIonSettingModel? CreateAdductIonSetting() {
@@ -577,7 +589,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {
-            return new GcmsDataCollectionSettingModel(storage.Parameter, process);
+            return new GcmsDataCollectionSettingModel(storage.Parameter, _peakPickBaseParameter, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -597,7 +609,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new GcmsPeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, storage.Parameter.ChromDecBaseParam, process);
+            return new GcmsPeakDetectionSettingModel(_peakPickBaseParameter, storage.Parameter.ChromDecBaseParam, process);
         }
 
         public IMethodModel BuildMethod() {

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 
@@ -8,14 +9,14 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly ChromDecBaseParameter _chromDecBaseParameter;
 
-        public GcmsPeakDetectionSettingModel(PeakPickBaseParameter peakPickBaseParameter, ChromDecBaseParameter chromDecBaseParameter, ProcessOption process) {
+        public GcmsPeakDetectionSettingModel(PeakPickBaseParameterModel peakPickBaseParameterModel, ChromDecBaseParameter chromDecBaseParameter, ProcessOption process) {
             _chromDecBaseParameter = chromDecBaseParameter;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
-            PeakPickSettingModel = new PeakPickSettingModel(peakPickBaseParameter);
+            PeakPickSettingModel = peakPickBaseParameterModel;
             AccuracyType = chromDecBaseParameter.AccuracyType;
         }
 
-        public PeakPickSettingModel PeakPickSettingModel { get; }
+        public PeakPickBaseParameterModel PeakPickSettingModel { get; }
 
         public bool IsReadOnly { get; }
 
