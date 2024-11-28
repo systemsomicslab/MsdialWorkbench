@@ -32,6 +32,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
+        private readonly AnalysisFileBeanModel _file;
+        private readonly MaldiFrames _maldiFrames;
+        private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
