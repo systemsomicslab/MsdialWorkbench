@@ -205,7 +205,7 @@
                                                VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                    <TextBlock Text="Compund detail"
+                                    <TextBlock Text="Compound detail"
                                                VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">

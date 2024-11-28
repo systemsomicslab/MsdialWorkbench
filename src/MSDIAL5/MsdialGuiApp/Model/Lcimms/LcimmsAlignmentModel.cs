@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompundSearchModel(t, r, searcherCollection) : null)
+                .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompoundSearchModel(t, r, searcherCollection) : null)
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -352,7 +352,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
 
-        private CompoundSearchModel<PeakSpotModel>? CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
+        private CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
             if (spot is null || msdec is null) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
