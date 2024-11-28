@@ -11,7 +11,7 @@ namespace CompMs.MsdialLcImMsApi.Export
 {
     public sealed class LcimmsMetadataAccessor : BaseMetadataAccessor
     {
-        public LcimmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, MsdialLcImMsParameter parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
+        public LcimmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, MsdialLcImMsParameter parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
 
         }
 

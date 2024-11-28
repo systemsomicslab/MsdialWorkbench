@@ -303,6 +303,37 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DMEDFAHFA:
                     return OadDefaultCharacterization.Characterize4Fahfa(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.PC_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PE_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PS_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PG_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PI_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.Cer_NS_d7:
+                    return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.SM_d9:
+                    return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.TG_d5:
+                    return OadDefaultCharacterization.Characterize4TriacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.CE_d7:
+                    return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DG_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPC_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPS_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPE_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPG_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPI_d5:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }

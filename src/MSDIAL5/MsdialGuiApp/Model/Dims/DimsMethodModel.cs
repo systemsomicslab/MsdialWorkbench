@@ -21,10 +21,8 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Dims
     internal sealed class DimsMethodModel : MethodModelBase
     {
         static DimsMethodModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz)!;
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;

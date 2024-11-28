@@ -15,6 +15,10 @@
         <com:CBoolNegativeConverter x:Key="negate"/>
     </Page.Resources>
     <Grid>
+        <Grid.InputBindings>
+            <KeyBinding Gesture="Ctrl+Z" Command="{x:Static ui:AreaSelector.UndoCommand}" CommandTarget="{Binding ElementName=Selector}"/>
+            <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=Selector}"/>
+        </Grid.InputBindings>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -36,13 +40,14 @@
                 <Grid Width="400" Height="400"
                       behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=View}"
                       behavior:AddMovabilityBehavior.IsEnabled="{Binding IsChecked, ElementName=SwitchEnabled, Converter={StaticResource negate}}">
-                    <Image Source="http://prime.psc.riken.jp/compms/static/images/iconMsdial.png"/>
+                    <Image Source="https://systemsomicslab.github.io/compms/static/images/iconMsdial.png"/>
                     <ui:AreaSelector x:Name="Selector"
                                      Background="Transparent"
                                      Stroke="Red"
                                      VerticalAlignment="Stretch"
                                      HorizontalAlignment="Stretch"
-                                     IsSelectable="{Binding IsChecked, ElementName=SwitchEnabled}"/>
+                                     IsSelectable="{Binding IsChecked, ElementName=SwitchEnabled}">
+                    </ui:AreaSelector>
                 </Grid>
             </Viewbox>
         </Border>

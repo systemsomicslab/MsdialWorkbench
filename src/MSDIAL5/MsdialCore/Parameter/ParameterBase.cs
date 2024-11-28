@@ -740,7 +740,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(0)]
         public string DictionaryFilePath { get; set; } = string.Empty;
         [Key(1)]
-        public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
+        public Dictionary<int, float>? RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
 
         [IgnoreMember]
         public bool IsIncorrectFormat => RiDictionary is null || RiDictionary.Count == 0;

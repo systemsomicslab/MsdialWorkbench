@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private static readonly double MZ_TOL = 20;
 
         static LcmsAlignmentModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT)!;
         }
 
         private readonly AlignmentFileBeanModel _alignmentFile;

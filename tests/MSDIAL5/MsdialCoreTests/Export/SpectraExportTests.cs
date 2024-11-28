@@ -23,6 +23,7 @@ public class SpectraExportTests
 $@"NAME: XXX
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
+IONMODE: Positive
 RETENTIONTIME: 3
 FORMULA: C6
 ONTOLOGY: Molecule ontology
@@ -108,6 +109,7 @@ Num Peaks: 4
 $@"NAME: Unknown|ID=0|MZ=200|RT=3
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
+IONMODE: Positive
 RETENTIONTIME: 3
 FORMULA: C6
 ONTOLOGY: Molecule ontology
@@ -189,6 +191,7 @@ Num Peaks: 4
 $@"NAME: TestCompound
 PRECURSORMZ: 250.15
 PRECURSORTYPE: [M+H]+
+IONMODE: Positive
 RETENTIONTIME: 5.5
 FORMULA: C10H20
 ONTOLOGY: Test Ontology

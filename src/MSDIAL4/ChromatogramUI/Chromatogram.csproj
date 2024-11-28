@@ -38,8 +38,8 @@
     <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
-    <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="RawDataHandler" Version="1.2.9013.327" Condition="'$(Configuration)'=='Debug'"/>
     <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
     <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />

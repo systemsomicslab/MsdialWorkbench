@@ -39,12 +39,12 @@ public class PeakAligner {
 
     public AlignmentResultContainer Alignment(
         IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
-        ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
+        ChromatogramSerializer<ChromatogramSpotInfo>? spotSerializer) {
 
         var spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
         spots = FilterAlignments(spots, Param);
 
-        var chromPeakInfoSerializer = spotSerializer == null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
+        var chromPeakInfoSerializer = spotSerializer is null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
         var files = analysisFiles.Select(_ => Path.GetTempFileName()).ToArray();
         try {
             var id2idx = CollectPeakSpots(analysisFiles, spots, chromPeakInfoSerializer, files);

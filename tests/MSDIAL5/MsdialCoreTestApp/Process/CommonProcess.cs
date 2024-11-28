@@ -1,6 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
@@ -37,17 +38,20 @@ namespace CompMs.App.MsdialConsole.Process
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
             param.FileID_AnalysisFileType = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileType);
 
-            foreach (var analysisFile in analysisFiles) {
 #pragma warning disable CS0618 // Type or member is obsolete
+            if (param.ProjectParam.AcquisitionType == AcquisitionType.None) {
+                param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
+            }
+            foreach (var analysisFile in analysisFiles) {
                 // ProjectBaseParameter.AcquisitionType is obsolete, but is used because it is not possible to set the AcquisitionType of individual files in the Console application.
                 analysisFile.AcquisitionType = param.ProjectParam.AcquisitionType;
-#pragma warning restore CS0618 // Type or member is obsolete
             }
+#pragma warning restore CS0618 // Type or member is obsolete
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
-                param.Ionization = Common.Enum.Ionization.EI;
+                param.Ionization = Ionization.EI;
             }
             else {
-                param.Ionization = Common.Enum.Ionization.ESI;
+                param.Ionization = Ionization.ESI;
             }
             return true;
         }
