@@ -128,12 +128,12 @@
                             <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                            DataType="{x:Type com:SpectrumPeak}"
                                                            HorizontalProperty="{Binding HorizontalProperty}"
-                                                           VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                                           VerticalProperty="{Binding VerticalProperty}"
                                                            LineBrush="{Binding Brush.Value}"
                                                            HueProperty="{Binding HueProperty}"/>
                             <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
-                                             VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                             VerticalPropertyName="{Binding VerticalProperty}"
                                              LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
                                              OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                              Brush="Black"
@@ -176,9 +176,9 @@
             <io:StyleFormatter x:Key="FormattedChartFormatter" Style="{StaticResource FormalStyle}"/>
             <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
             <io:CopyImageAsCommand x:Key="CopyFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
-            <ContextMenu x:Key="ChartContextMenu" d:DataContext="{d:DesignInstance Type={x:Type vm:RawPurifiedSpectrumsViewModel}}">
+            <ContextMenu x:Key="ChartContextMenu" d:DataContext="{d:DesignInstance Type={x:Type vm:SingleSpectrumViewModel}}">
                 <MenuItem Header="Save spectra table as.."
-                          Command="{Binding SaveMs2SpectrumCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
+                          Command="{Binding SaveCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
                 <MenuItem Header="Save image as...">
                     <MenuItem Header="Save formatted image"
                               Command="{StaticResource SaveFormattedChartCommand}"
@@ -219,9 +219,11 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ContentControl Content="{Binding RawSpectrumViewModel}" Grid.Row="0"
+        <ContentControl Content="{Binding}"
+                        DataContext="{Binding RawSpectrumViewModel}" Grid.Row="0"
                         ContextMenu="{StaticResource ChartContextMenu}"/>
-        <ContentControl Content="{Binding DecSpectrumViewModel}" Grid.Row="1"
+        <ContentControl Content="{Binding}" Grid.Row="1"
+                        DataContext="{Binding DecSpectrumViewModel}" 
                         ContextMenu="{StaticResource ChartContextMenu}"/>
     </Grid>
 </UserControl>
