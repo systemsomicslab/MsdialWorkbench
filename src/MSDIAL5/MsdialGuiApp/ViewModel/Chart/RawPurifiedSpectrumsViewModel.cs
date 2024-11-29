@@ -2,6 +2,7 @@
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -10,13 +11,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         private readonly RawPurifiedSpectrumsModel _model;
 
-        public RawPurifiedSpectrumsViewModel(RawPurifiedSpectrumsModel model) {
+        public RawPurifiedSpectrumsViewModel(RawPurifiedSpectrumsModel model, IMessageBroker broker) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
 
-            RawSpectrumViewModel = new SingleSpectrumViewModel(model.RawSpectrumModel).AddTo(Disposables);
-            DecSpectrumViewModel = new SingleSpectrumViewModel(model.DecSpectrumModel).AddTo(Disposables);
+            RawSpectrumViewModel = new SingleSpectrumViewModel(model.RawSpectrumModel, broker).AddTo(Disposables);
+            DecSpectrumViewModel = new SingleSpectrumViewModel(model.DecSpectrumModel, broker).AddTo(Disposables);
             _model = model;
         }
 
