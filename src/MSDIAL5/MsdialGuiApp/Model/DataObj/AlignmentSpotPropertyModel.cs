@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             get => innerModel.AdductType;
             set {
                 if (innerModel.AdductType != value) {
-                    innerModel.AdductType = value;
+                    innerModel.SetAdductType(value);
                     OnPropertyChanged(nameof(AdductType));
                     OnPropertyChanged(nameof(AdductIonName));
                 }

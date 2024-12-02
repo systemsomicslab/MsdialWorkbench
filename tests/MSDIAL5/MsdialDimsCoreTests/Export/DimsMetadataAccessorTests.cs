@@ -45,7 +45,6 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 // to avoid errors
                 MasterAlignmentID = 100,
                 Name = "AAA",
-                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 FillParcentage = 0.67f,
                 RepresentativeFileID = 1,
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
@@ -58,6 +57,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 IsManuallyModifiedForQuant = true,
                 SignalToNoiseAve = 12.34f,
             };
+            spot.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
             spot.MatchResults.AddResults(
                 new List<MsScanMatchResult> {
                     new MsScanMatchResult {
