@@ -61,7 +61,14 @@ public class PeakCharacterEstimator {
         RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
         chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
         ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
-        if (chromPeakFeatures.Count < 10000) {
+
+        var featurelimit = 
+            parameter.MachineCategory == MachineCategory.LCIMMS || 
+            parameter.MachineCategory == MachineCategory.LCMS ||
+            parameter.MachineCategory == MachineCategory.IMMS ||
+            parameter.MachineCategory == MachineCategory.GCMS ? int.MaxValue : 10000;
+        var doChromCorr = chromPeakFeatures.Count < 10000 ? true : false;
+        if (chromPeakFeatures.Count < featurelimit) {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var feature = chromPeakFeatures[i];
                 var peakRt = isDriftAxis ? feature.ChromXs.Drift.Value : feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
@@ -78,7 +85,7 @@ public class PeakCharacterEstimator {
                     }
                 }
 
-                CharacterAssigner(searchedPeakSpots, msdecResults, evaluator, parameter, rawSpectra); // TODO: temporarily comment out. fix algorithm. Don't delete!
+                CharacterAssigner(searchedPeakSpots, msdecResults, evaluator, parameter, rawSpectra, doChromCorr); // TODO: temporarily comment out. fix algorithm. Don't delete!
                 reporter.Report(i, chromPeakFeatures.Count);
             }
         }
@@ -265,7 +272,7 @@ public class PeakCharacterEstimator {
     // the RT deviations of peakspots should be less than 0.03 min
     // here, each peak is evaluated.
     // the purpose is to group the ions which are recognized as the same metabolite
-    public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, RawSpectra rawSpectra) {
+    public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, RawSpectra rawSpectra, bool doChromCorr = true) {
         if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
         //foreach (var feature in chromPeakFeatures) {
         //    if (feature.MasterPeakID == 10999) {
@@ -289,7 +296,8 @@ public class PeakCharacterEstimator {
         assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
         // linkage by chromatogram correlations
-        assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, param, rawSpectra);
+        if (doChromCorr)
+            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, param, rawSpectra);
 
         // linked by partial matching of MS1 and MS2
         //if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
