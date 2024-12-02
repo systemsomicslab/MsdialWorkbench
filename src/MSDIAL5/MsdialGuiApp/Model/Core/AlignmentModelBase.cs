@@ -9,6 +9,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
@@ -62,6 +63,10 @@ namespace CompMs.App.Msdial.Model.Core
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.PeakCharacter).ToList());
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);
