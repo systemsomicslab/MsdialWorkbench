@@ -57,24 +57,24 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop;
             alignmentPeak.MS2RawSpectrumID = peak.MS2RawSpectrumID;
             alignmentPeak.MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE;
-            alignmentPeak.ChromScanIdLeft = peak.ChromScanIdLeft;
-            alignmentPeak.ChromScanIdRight = peak.ChromScanIdRight;
-            alignmentPeak.ChromScanIdTop = peak.ChromScanIdTop;
+            alignmentPeak.ChromScanIdLeft = peak.PeakFeature.ChromScanIdLeft;
+            alignmentPeak.ChromScanIdRight = peak.PeakFeature.ChromScanIdRight;
+            alignmentPeak.ChromScanIdTop = peak.PeakFeature.ChromScanIdTop;
             alignmentPeak.MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop;
             alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
             alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight;
-            alignmentPeak.ChromXsLeft = peak.ChromXsLeft;
-            alignmentPeak.ChromXsTop = peak.ChromXsTop;
-            alignmentPeak.ChromXsRight = peak.ChromXsRight;
-            alignmentPeak.PeakHeightLeft = peak.PeakHeightLeft;
-            alignmentPeak.PeakHeightTop = peak.PeakHeightTop;
-            alignmentPeak.PeakHeightRight = peak.PeakHeightRight;
-            alignmentPeak.PeakAreaAboveZero = peak.PeakAreaAboveZero;
-            alignmentPeak.PeakAreaAboveBaseline = peak.PeakAreaAboveBaseline;
-            alignmentPeak.Mass = peak.Mass;
+            alignmentPeak.ChromXsLeft = peak.PeakFeature.ChromXsLeft;
+            alignmentPeak.ChromXsTop = peak.PeakFeature.ChromXsTop;
+            alignmentPeak.ChromXsRight = peak.PeakFeature.ChromXsRight;
+            alignmentPeak.PeakHeightLeft = peak.PeakFeature.PeakHeightLeft;
+            alignmentPeak.PeakHeightTop = peak.PeakFeature.PeakHeightTop;
+            alignmentPeak.PeakHeightRight = peak.PeakFeature.PeakHeightRight;
+            alignmentPeak.PeakAreaAboveZero = peak.PeakFeature.PeakAreaAboveZero;
+            alignmentPeak.PeakAreaAboveBaseline = peak.PeakFeature.PeakAreaAboveBaseline;
+            alignmentPeak.Mass = peak.PeakFeature.Mass;
             alignmentPeak.IonMode = peak.IonMode;
             alignmentPeak.Name = peak.Name;
             alignmentPeak.Protein = peak.Protein;
@@ -97,10 +97,6 @@ namespace CompMs.MsdialCore.Utility
 
             alignmentPeak.PeakCharacter = peak.PeakCharacter;
             alignmentPeak.PeakShape = peak.PeakShape;
-            //if (peak.IsReferenceMatched) {
-            //    Console.WriteLine(peak.Name + "\t" + peak.PeakCharacter.AdductType.AdductIonName + "\t" + peak.AdductType.AdductIonName);
-            //}
-           // Console.WriteLine(alignmentPeak.Name + "\t" + alignmentPeak.PeakCharacter.AdductType.AdductIonName);
         }
 
         public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
@@ -125,7 +121,6 @@ namespace CompMs.MsdialCore.Utility
                 AdductType = spot.AdductType,
                 AdductTypeByAmalgamationProgram = representative.PeakCharacter.AdductTypeByAmalgamationProgram, 
                 Charge = representative.PeakCharacter.Charge,
-                PeakLinks = representative.PeakCharacter.PeakLinks.ToList(),
                 IsotopeWeightNumber = representative.PeakCharacter.IsotopeWeightNumber,
                 IsotopeParentPeakID = representative.PeakCharacter.IsotopeParentPeakID,
                 PeakGroupID = representative.PeakCharacter.PeakGroupID,
