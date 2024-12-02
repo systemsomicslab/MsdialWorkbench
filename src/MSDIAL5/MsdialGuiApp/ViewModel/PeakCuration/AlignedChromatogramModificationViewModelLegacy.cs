@@ -116,6 +116,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 //p.PeakBean.PeakID = -3;
                 p.Model.IsManuallyModifiedForQuant = true;
                 p.Model.PeakAreaAboveZero = p.PeakAreaAboveZero;
+                p.Model.PeakAreaAboveBaseline = p.PeakAreaAboveBaseline;
                 p.Model.PeakHeightTop = p.PeakHeight;
                 p.Model.SignalToNoise = p.Accessory.Chromatogram.SignalToNoise;
             }
@@ -145,6 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public double AlignOffset { get; set; }
         public double AverageRt { get; set; }
         public double PeakAreaAboveZero { get; set; }
+        public double PeakAreaAboveBaseline { get; set; }
         public double PeakHeight { get; set; }
         public Accessory? Accessory { get; set; }
 
@@ -206,8 +208,12 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             var sn = peakHeightFromBaseline / noise;
 
             this.PeakAreaAboveZero = peakAreaAboveZero;
-            if (areatype == ChromXType.RT) {
+            var left = sPeaklist.FirstOrDefault(p => p.ChromXs.GetRepresentativeXAxis().Value >= minChromXValue);
+            var right = sPeaklist.LastOrDefault(p => p.ChromXs.GetRepresentativeXAxis().Value <= maxChromXValue);
+            this.PeakAreaAboveBaseline = peakAreaAboveZero - (right.ChromXs.GetRepresentativeXAxis().Value - left.ChromXs.GetRepresentativeXAxis().Value) * (right.Intensity + left.Intensity) / 2;
+            if (areatype == ChromXType.RT || areatype == ChromXType.RI) {
                 this.PeakAreaAboveZero *= 60d;
+                this.PeakAreaAboveBaseline *= 60d;
             }
             this.PeakHeight = maxInt;
             this.Accessory = new Accessory();

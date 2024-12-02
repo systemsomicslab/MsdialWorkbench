@@ -163,17 +163,21 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
-            double peakAreaAboveZero = 0d;
+            double peakAreaAboveZero = 0d, baseline = 0d;
             if (center.Type == ChromXType.RI || center.Type == ChromXType.RT) {
                 for (int i = leftId; i < rightId; i++) {
                     peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.RT.Value - sPeaklist[i].ChromXs.RT.Value);
                 }
                 peakAreaAboveZero *= 60d;
+
+                baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.RT.Value - sPeaklist[leftId].ChromXs.RT.Value) / 2;
+                baseline *= 60d;
             }
             else {
                 for (int i = leftId; i < rightId; i++) {
                     peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value);
                 }
+                baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.Value - sPeaklist[leftId].ChromXs.Value) / 2;
             }
 
             System.Diagnostics.Debug.Assert(sPeaklist[id].ChromXs != null);
@@ -193,6 +197,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakHeightLeft = sPeaklist[leftId].Intensity;
             result.PeakHeightRight = sPeaklist[rightId].Intensity;
             result.PeakAreaAboveZero = peakAreaAboveZero;
+            result.PeakAreaAboveBaseline = peakAreaAboveZero - baseline;
             result.PeakShape.SignalToNoise = (float)result.PeakHeightTop / result.PeakShape.EstimatedNoise;
         }
 
@@ -208,6 +213,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakHeightLeft = 0;
             result.PeakHeightRight = 0;
             result.PeakAreaAboveZero = 0;
+            result.PeakAreaAboveBaseline = 0;
             result.PeakShape.SignalToNoise = 0;
         }
     }
