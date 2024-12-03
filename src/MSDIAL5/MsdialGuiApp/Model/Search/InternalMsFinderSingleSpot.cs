@@ -237,7 +237,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _msScanMatchResultContainer = ms1BasedSpectrumFeature.MatchResults;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
-                _adduct = new AdductIon() { AdductIonName = _rawData.PrecursorType };
+                _adduct = AdductIon.GetAdductIon(_rawData.PrecursorType);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
