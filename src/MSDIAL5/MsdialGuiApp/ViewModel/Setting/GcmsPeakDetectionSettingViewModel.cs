@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AveragePeakWidth).AddTo(Disposables);
 
-            ExcludedMassList = model.PeakPickSettingModel.ExcludedMassList
+            ExcludedMassList = model.PeakPickSettingModel.ExcludedMzQueries
                 .ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
 
             AddCommand = new[]

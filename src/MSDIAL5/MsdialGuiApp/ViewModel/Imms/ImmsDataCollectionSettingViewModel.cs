@@ -48,7 +48,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ProcessBaseParameterViewModel ProcessParameter { get; }
 
         public void Commit() {
-            PeakPickParameter.Commit();
             ProcessParameter.Commit();
         }
     }

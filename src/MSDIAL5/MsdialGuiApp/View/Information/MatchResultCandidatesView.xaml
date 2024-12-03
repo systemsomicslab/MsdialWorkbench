@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Information"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:result="clr-namespace:CompMs.Common.DataObj.Result;assembly=Common"
              mc:Ignorable="d" 
@@ -17,8 +18,14 @@
     </UserControl.Resources>
     <ListBox ItemsSource="{Binding Candidates.Value}"
              SelectedItem="{Binding SelectedCandidate.Value, Mode=TwoWay}">
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+                <Setter Property="BorderBrush" Value="LightGray"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+        </ListBox.ItemContainerStyle>
         <ListBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type result:MsScanMatchResult}">
+            <DataTemplate DataType="{x:Type m:ReferedReference}">
                 <DataTemplate.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="TextBlock.FontWeight" Value="Normal"/>
@@ -26,7 +33,7 @@
                             <DataTrigger Value="True">
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource AreEquals}">
-                                        <Binding/>
+                                        <Binding Path="MatchResult"/>
                                         <Binding Path="DataContext.(vm:MatchResultCandidatesViewModel.Representative).Value"
                                                  RelativeSource="{RelativeSource AncestorType=ListBox}"/>
                                     </MultiBinding>
@@ -39,15 +46,16 @@
                     </Style>
                 </DataTemplate.Resources>
                 <StackPanel>
+                    <TextBlock Text="{Binding Path=MatchResult.Name, Mode=OneTime, TargetNullValue='Unknown'}"/>
                     <TextBlock>
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} ({1})">
-                                <Binding Path="Name" Mode="OneTime" TargetNullValue="Unknown"/>
-                                <Binding Path="TotalScore" StringFormat="F3" Mode="OneTime"/>
+                            <MultiBinding StringFormat="{}Library name: {0} (score={1})">
+                                <Binding Path="Reference.Name" Mode="OneTime" TargetNullValue="Unknown"/>
+                                <Binding Path="MatchResult.TotalScore" Mode="OneTime"/>
                             </MultiBinding> 
                         </TextBlock.Text>
                     </TextBlock>
-                    <TextBlock Text="{Binding AnnotatorID, StringFormat=Annotation method: {0}, Mode=OneTime, TargetNullValue=No information}"/>
+                    <TextBlock Text="{Binding Path=MatchResult.AnnotatorID, StringFormat=Annotation method: {0}, Mode=OneTime, TargetNullValue=No information}"/>
                 </StackPanel>
             </DataTemplate>
         </ListBox.ItemTemplate>

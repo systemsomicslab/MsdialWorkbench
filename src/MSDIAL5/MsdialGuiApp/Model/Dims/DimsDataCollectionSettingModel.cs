@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using System;
@@ -7,9 +8,9 @@ namespace CompMs.App.Msdial.Model.Dims
 {
     public sealed class DimsDataCollectionSettingModel : BindableBase
     {
-        public DimsDataCollectionSettingModel(ProcessBaseParameter processParameter, PeakPickBaseParameter peakPickParameter, IDimsDataProviderFactoryParameter factoryParameter) {
+        public DimsDataCollectionSettingModel(ProcessBaseParameter processParameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IDimsDataProviderFactoryParameter factoryParameter) {
             ProcessParameter = processParameter;
-            PeakPickParameter = peakPickParameter;
+            PeakPickParameter = peakPickBaseParameterModel;
 
             PrepareProviderFactoryParameter(factoryParameter);
         }
@@ -52,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         // TODO: Why are these parameters being used?
         public ProcessBaseParameter ProcessParameter { get; }
-        public PeakPickBaseParameter PeakPickParameter { get; }
+        public PeakPickBaseParameterModel PeakPickParameter { get; }
 
         public IDimsDataProviderFactoryParameter CreateDataProviderFactoryParameter() {
             if (UseMs1WithHighestTic) {
