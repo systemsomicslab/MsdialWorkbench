@@ -1,18 +1,23 @@
-﻿<Window x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
-        xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
-        mc:Ignorable="d"
-        Title="MS-FINDER Setting" Height="575" Width="620">
-    <Window.Resources>
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+             xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
+             mc:Ignorable="d"
+             d:DesignHeight="575" d:DesignWidth="620">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
@@ -64,7 +69,7 @@
                 <Setter Property="IsReadOnly" Value="True" />
             </Style>
         </ResourceDictionary>
-    </Window.Resources>
+    </UserControl.Resources>
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -583,7 +588,7 @@
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="ui:LabeledContent">
                                                                 <Grid HorizontalAlignment="Stretch">
-                                                                    
+
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Setter.Value>
@@ -838,64 +843,51 @@
                             <StackPanel Margin="8,0">
                                 <StackPanel Margin="8,0">
                                     <RadioButton Content="Create a project"
-                                 IsChecked="{Binding IsCreateNewProject.Value}"
-                                 d:IsChecked="True"/>
-                                    <StackPanel Margin="20,8,0,0"
-                                IsEnabled="{Binding IsCreateNewProject.Value}">
-                                        <CheckBox Content="Use automatically determined folder name"
-                                  IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
+                                                 IsChecked="{Binding IsCreateNewProject.Value}"
+                                                 d:IsChecked="True"/>
+                                    <StackPanel Margin="20,8,0,0" IsEnabled="{Binding IsCreateNewProject.Value}">
+                                        <CheckBox Content="Use automatically determined folder name" IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
                                         <ui:LabeledContent PrependLabel="Folder name:"
-                                           Margin="0,8,0,0"
-                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
+                                                           Margin="0,8,0,0"
+                                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
                                             <TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
                                         </ui:LabeledContent>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Margin="8,10,8,0">
-                                    <RadioButton Content="Load a project"
-                                 IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
-                                    <Grid Margin="20,8,0,0"
-                          IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
+                                    <RadioButton Content="Load a project" IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
+                                    <Grid Margin="20,8,0,0" IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="210"/>
                                             <ColumnDefinition Width="274"/>
                                             <ColumnDefinition Width="60"/>
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0"
-                                           Content="File path:"
-                                           FontStyle="Italic"
-                                           Margin="8,0,0,0"/>
+                                               Content="File path:"
+                                               FontStyle="Italic"
+                                               Margin="8,0,0,0"/>
                                         <TextBox Grid.Column="1"
-                                 Name="TextBox_ExistProjectPath"
-                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 Height="18"
-                                 VerticalAlignment="Center">
+                                                 Name="TextBox_ExistProjectPath"
+                                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                 Height="18"
+                                                 VerticalAlignment="Center">
                                             <TextBox.ToolTip>
                                                 <TextBlock></TextBlock>
                                             </TextBox.ToolTip>
                                         </TextBox>
                                         <Button Grid.Column="2"
-                                Name="Button_ExistProjectPath_Browse"
-                                Content="Select"
-                                Click="Button_ExistProjectPath_Browse_Click"
-                                Margin="8,0,0,0"/>
+                                                Name="Button_ExistProjectPath_Browse"
+                                                Content="Select"
+                                                Click="Button_ExistProjectPath_Browse_Click"
+                                                Margin="8,0,0,0"/>
                                     </Grid>
                                 </StackPanel>
                             </StackPanel>
-
                         </GroupBox>
                     </Grid>
                 </TabItem>
             </TabControl>
-            <StackPanel Grid.Row="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Height="24"
-                        Margin="0,0,10,0">
-                <Button Content="Save" Click="Click_Save" Command="{Binding Save}" Width="64"/>
-                <Button Content="Cancel" Click="Click_Cancel" Command="{Binding Cancel}" Width="64" Margin="10,0,0,0"/>
-            </StackPanel>
         </Grid>
     </Grid>
-</Window>
+</UserControl>

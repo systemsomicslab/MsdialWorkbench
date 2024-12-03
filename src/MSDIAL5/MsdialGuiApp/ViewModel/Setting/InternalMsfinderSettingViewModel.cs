@@ -4,16 +4,18 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    internal sealed class InternalMsfinderSettingViewModel : ViewModelBase
+    internal sealed class InternalMsfinderSettingViewModel : SettingDialogViewModel
     {
         public InternalMsfinderSettingViewModel(MsfinderParameterSetting model, IMessageBroker broker) {
             MassTolType = model.ToReactivePropertySlimAsSynchronized(m => m.MassTolType).AddTo(Disposables);
@@ -764,5 +766,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> UserDefinedProjectFolderName { get; }
         [PathExists(ErrorMessage = "hogehoge", IsDirectory = true)]
         public ReactiveProperty<string> ExistProjectPath { get; }
+
+        public override ICommand? FinishCommand => Save;
+        public override ICommand? CancelCommand => Cancel;
     }
 }
