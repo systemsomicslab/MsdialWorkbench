@@ -154,6 +154,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);
         private DelegateCommand? _saveMs2SpectrumCommand;
 

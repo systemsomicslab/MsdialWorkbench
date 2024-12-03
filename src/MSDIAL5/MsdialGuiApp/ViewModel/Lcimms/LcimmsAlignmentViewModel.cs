@@ -176,6 +176,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         private void ShowIonTable() {
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }

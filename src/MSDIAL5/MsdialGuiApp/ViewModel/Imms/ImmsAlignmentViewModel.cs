@@ -128,6 +128,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using var csm = _model.CreateCompoundSearchModel();

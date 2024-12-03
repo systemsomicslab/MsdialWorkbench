@@ -111,5 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public GcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(((IResultModel)_model).InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
     }
 }

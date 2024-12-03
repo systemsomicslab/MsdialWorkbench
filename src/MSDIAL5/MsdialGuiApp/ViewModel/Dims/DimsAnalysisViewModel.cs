@@ -108,6 +108,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
         public ICommand SetUnknownCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using var model = _model.BuildCompoundSearchModel();

@@ -29,7 +29,7 @@
             <RibbonGallery>
                 <RibbonMenuItem Header="Batch analysis" Command="{Binding GoToMsfinderBatchCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" KeyTip="B"/>
                 <RibbonMenuItem Header="Parameter setting" Command="{Binding ShowMsfinderSettingViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" ToolTip="MS-FINDER setting" KeyTip="P"/>
-                <RibbonMenuItem Header="Use external MS-FINDER" Command="{Binding GoToMsfinderBatchCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" KeyTip="F"/>
+                <RibbonMenuItem Header="Use external MS-FINDER" Command="{Binding GoToMsfinderCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" KeyTip="F"/>
             </RibbonGallery>
         </RibbonSplitButton>
                            

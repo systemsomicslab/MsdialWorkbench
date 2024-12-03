@@ -138,6 +138,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;
     }

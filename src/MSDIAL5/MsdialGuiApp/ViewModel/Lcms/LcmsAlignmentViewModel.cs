@@ -166,6 +166,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand GoToMsfinderCommand {  get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;
 

@@ -136,5 +136,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(Model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand = null;
     }
 }
