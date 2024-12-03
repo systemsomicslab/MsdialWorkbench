@@ -27,8 +27,9 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
+        PeakLinkModel peakLinkModel,
         IAxisManager<double>? horizontalAxis = null)
-        : this(spotsSource.Spots?.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, horizontalAxis) {
+        : this(spotsSource.Spots?.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, peakLinkModel, horizontalAxis) {
 
         _spotsSource = spotsSource;
     }
@@ -41,6 +42,7 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
+        PeakLinkModel peakLinkModel,
         IAxisManager<double>? horizontalAxis = null) {
         if (horizontalSelector is null) {
             throw new ArgumentNullException(nameof(horizontalSelector));
@@ -58,6 +60,7 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
         TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
         LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
         _selectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+        PeakLinkModel = peakLinkModel;
         Brushes = new ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>>(brushes);
 
         GraphTitle = string.Empty;
@@ -121,7 +124,7 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
     private string? verticalProperty;
 
     public IObservable<string?> LabelSource { get; }
-
+    public PeakLinkModel PeakLinkModel { get; }
     public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
         get => _selectedBrush;
         set => SetProperty(ref _selectedBrush, value);

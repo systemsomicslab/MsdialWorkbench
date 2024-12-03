@@ -28,8 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SpectrumLoaded = model.SpectrumLoaded;
             ReferenceHasSpectrumInformation = model.ReferenceHasSpectrumInformation;
 
-            UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
-            LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
+            UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m, broker)).AddTo(Disposables);
+            LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel, broker).AddTo(Disposables);
 
             HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 

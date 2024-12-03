@@ -108,7 +108,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     PlotModel.HorizontalTitle = "Retention time (min)";
                     break;
             }
-            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PlotModel.HorizontalAxis)
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.RT, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()), PlotModel.HorizontalAxis)
             {
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -133,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 VerticalTitle = "2nd column retention time (min)",
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
 
             // MS spectrum
             var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -142,10 +142,10 @@ namespace CompMs.App.Msdial.Model.Gcms
             GraphLabels msGraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum deconvolutedObservableMsSpectrum = ObservableMsSpectrum.Create(target, msDecSpectrumLoader, spectraExporter).AddTo(Disposables);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
             MsSpectrumModel = new AlignmentMs2SpectrumModel(
-                target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
+                target, MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),

@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using System;
@@ -7,10 +8,10 @@ namespace CompMs.App.Msdial.Model.Imms
 {
     public sealed class ImmsDataCollectionSettingModel : BindableBase
     {
-        public ImmsDataCollectionSettingModel(MsdialImmsParameter parameter) {
+        public ImmsDataCollectionSettingModel(MsdialImmsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel) {
             Parameter = parameter;
             ProcessParameter = parameter.ProcessBaseParam;
-            PeakPickParameter = parameter.PeakPickBaseParam;
+            PeakPickParameter = peakPickBaseParameterModel;
 
             PrepareFactoryParameter(parameter.ProviderFactoryParameter);
         }
@@ -54,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Imms
         // TODO: Why are these parameters being used?
         public MsdialImmsParameter Parameter { get; }
         public ProcessBaseParameter ProcessParameter { get; }
-        public PeakPickBaseParameter PeakPickParameter { get; }
+        public PeakPickBaseParameterModel PeakPickParameter { get; }
 
         public IImmsDataProviderFactoryParameter CreateDataProviderFactoryParameter() {
             if (UseAverageMs1) {

@@ -313,6 +313,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
             this.SelectedData.AlignedPeakProperty.PeakHeightTop = prop.HeightFromZero;
             this.SelectedData.AlignedPeakProperty.PeakAreaAboveZero = prop.AreaFromZero;
+            this.SelectedData.AlignedPeakProperty.PeakAreaAboveBaseline = prop.AreaFromBaseline;
             this.SelectedData.AlignedPeakProperty.IsManuallyModifiedForQuant = true;
             this.SelectedData.AlignedPeakProperty.SignalToNoise = prop.SignalToNoise;
 

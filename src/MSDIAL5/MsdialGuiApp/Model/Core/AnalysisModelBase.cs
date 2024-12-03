@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -106,6 +107,10 @@ namespace CompMs.App.Msdial.Model.Core {
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.InnerModel.PeakCharacter).ToList());
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
