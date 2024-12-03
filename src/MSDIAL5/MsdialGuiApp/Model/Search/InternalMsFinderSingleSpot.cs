@@ -43,16 +43,13 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly MsfinderParameterSetting? _parameter;
         private readonly string _folderPath;
         private readonly RawData? _rawData;
-        public MsScanMatchResultContainerModel _msScanMatchResultContainer;
-        public ChromatogramPeakFeatureModel? _chromatogram;
-        public AlignmentSpotPropertyModel? _alignmentSpot;
-        private SpectrumFeature? _spectrumFeature;
         private readonly BehaviorSubject<MsSpectrum> _ms1SpectrumSubject;
         private readonly BehaviorSubject<MsSpectrum> _ms2SpectrumSubject;
         private readonly ReactivePropertySlim<MsSpectrum?> _refSpectrum;
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
         private readonly MoleculeDataBase _molecules;
         private readonly string _filePath;
+        private readonly SetAnnotationUsecase _setAnnotationUsecase;
         private readonly AdductIon _adduct;
 
         private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
@@ -116,15 +113,15 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, ChromatogramPeakFeatureModel chromatogram, MoleculeDataBase molecules, MsfinderParameterSetting parameter) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, AdductIon adductType, SetAnnotationUsecase setAnnotationUsecase)
+        {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
-                _msScanMatchResultContainer = chromatogram.MatchResultsModel;
-                _chromatogram = chromatogram;
-                _adduct = chromatogram.AdductType;
+                _adduct = adductType;
                 _molecules = molecules;
                 _filePath = filePath;
+                _setAnnotationUsecase = setAnnotationUsecase;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
@@ -171,70 +168,15 @@ namespace CompMs.App.Msdial.Model.Search
                 throw;
             }
         }
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, AlignmentSpotPropertyModel alignmentSpot, MoleculeDataBase molecules, MsfinderParameterSetting parameter) {
-            try {
-                _parameter = parameter;
-                _folderPath = tempDir;
-                _molecules = molecules;
-                _alignmentSpot = alignmentSpot;
-                _msScanMatchResultContainer = alignmentSpot.MatchResultsModel;
-                _adduct = alignmentSpot.AdductType;
-                _filePath = filePath;
 
-                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
-                _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
-                _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
-
-                var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
-                var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-
-                var internalMsFinderMs2 = new ObservableMsSpectrum(_ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
-                var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-
-                var ms2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_rawData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
-                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-
-                var rawMs2Range = _rawData.Ms2Spectrum.IsEmptyOrNull()
-                    ? null
-                    : new AxisRange(_rawData.Ms2Spectrum.Min(p => p.Mass), _rawData.Ms2Spectrum.Max(p => p.Mass));
-
-                _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null).AddTo(Disposables);
-                var observableRefSpectrum = new ObservableMsSpectrum(_refSpectrum, null, Observable.Return<ISpectraExporter?>(null));
-                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
-
-                _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d)).AddTo(Disposables);
-                var horizontalAxis = _spectrumRange.Select(range => AxisRange.Union(range, rawMs2Range) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
-                var itemSelector = new AxisItemSelector<double>(new AxisItemModel<double>("m/z", horizontalAxis, "m/z")).AddTo(Disposables);
-                var propertySelectors = new AxisPropertySelectors<double>(itemSelector);
-                propertySelectors.Register(new PropertySelector<SpectrumPeak, double>(p => p.Mass));
-                var refMs2HorizontalAxis = propertySelectors;
-
-                FindFormula();
-                MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-
-                var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
-                SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
-                var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
-                var refSpectrumModel = new SingleSpectrumModel(observableRefSpectrum, refMs2HorizontalAxis, refVerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Red)), _msGraphLabels).AddTo(Disposables);
-                RefMs2SpectrumModel = new MsSpectrumModel(ms2SpectrumModel, refSpectrumModel, Observable.Return<Ms2ScanMatching?>(null)).AddTo(Disposables);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                throw;
-            }
-        }
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, SpectrumFeature spectrumFeature, Ms1BasedSpectrumFeature ms1BasedSpectrumFeature, MoleculeDataBase molecules, MsfinderParameterSetting parameter) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, SetAnnotationUsecase setAnnotationUsecase)
+        {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
                 _filePath = filePath;
                 _molecules = molecules;
-                _spectrumFeature = spectrumFeature;
-                _msScanMatchResultContainer = ms1BasedSpectrumFeature.MatchResults;
+                _setAnnotationUsecase = setAnnotationUsecase;
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
                 _adduct = AdductIon.GetAdductIon(_rawData.PrecursorType);
@@ -464,19 +406,7 @@ namespace CompMs.App.Msdial.Model.Search
                     RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
                     LibraryID = moleculeMsReference.ScanID,
                 };
-                _msScanMatchResultContainer.AddResult(matchResult);
-                if (_chromatogram is not null) {                    
-                    var _setAnnotation = new SetAnnotationUsecase(_chromatogram, _msScanMatchResultContainer, new Service.UndoManager());
-                    _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
-                }
-                else if (_alignmentSpot is not null) {                   
-                    var _setAnnotation = new SetAnnotationUsecase(_alignmentSpot, _msScanMatchResultContainer, new Service.UndoManager());
-                    _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
-                }
-                else if (_spectrumFeature is not null) {                    
-                    var _setAnnotation = new SetAnnotationUsecase(_spectrumFeature.AnnotatedMSDecResult.Molecule, _msScanMatchResultContainer, new Service.UndoManager());
-                    _setAnnotation.SetConfidence(moleculeMsReference, matchResult);
-                }
+                _setAnnotationUsecase.SetConfidence(moleculeMsReference, matchResult);
             } else {
                 MessageBox.Show("Please select structure to reflect to the MS-DIAL.");
             }

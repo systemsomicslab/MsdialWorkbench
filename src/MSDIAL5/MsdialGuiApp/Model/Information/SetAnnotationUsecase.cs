@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class SetAnnotationUsecase
     {
         private readonly IMoleculeProperty _molecule;
-        public readonly MsScanMatchResultContainerModel _results;
+        private readonly MsScanMatchResultContainerModel _results;
         private readonly UndoManager _undoManager;
 
         public SetAnnotationUsecase(IMoleculeProperty molecule, MsScanMatchResultContainerModel results, UndoManager undoManager) {

@@ -252,7 +252,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             } try {
-                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider);
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider, _undoManager);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

@@ -396,7 +396,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             } try {
-                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _spectrumProvider);
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _spectrumProvider, _undoManager);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

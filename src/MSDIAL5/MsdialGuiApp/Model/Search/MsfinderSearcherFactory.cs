@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -21,12 +23,14 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
     private readonly MoleculeDataBase _molecules;
     private readonly string _tempDir;
 
-    public MsfinderSearcherFactory(DataBaseStorage dataBases, DataBaseMapper dataBaseMapper, ParameterBase parameter, string dataBaseId) {
+    public MsfinderSearcherFactory(DataBaseStorage dataBases, DataBaseMapper dataBaseMapper, ParameterBase parameter, string dataBaseId)
+    {
         _parameter = parameter;
 
         var db = dataBases.MetabolomicsDataBases.Select(db => db.DataBase).FirstOrDefault(db => db.Id == dataBaseId);
         _molecules = db ?? new MoleculeDataBase([], dataBaseId, DataBaseSource.MsFinder, SourceType.None);
-        if (db is null) {
+        if (db is null)
+        {
             dataBases.AddMoleculeDataBase(_molecules, []);
         }
         _dataBases = dataBases;
@@ -37,7 +41,8 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         _tempDir = Path.Combine(parameter.ProjectFolderPath, "MSDIAL_TEMP");
     }
 
-    public InternalMsFinderSingleSpot? CreateModelForAnalysisPeak(MsfinderParameterSetting parameter, ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider) {
+    public InternalMsFinderSingleSpot? CreateModelForAnalysisPeak(MsfinderParameterSetting parameter, ChromatogramPeakFeatureModel peak, MSDecResult msdec, IDataProvider provider, UndoManager undoManager)
+    {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -59,9 +64,12 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 _dataBaseMapper,
                 _parameter);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, peak, _molecules, parameter);
+
+        return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, peak.AdductType, new SetAnnotationUsecase(peak, peak.MatchResultsModel, undoManager));
     }
-    public InternalMsFinderSingleSpot? CreateModelForAlignmentSpot(MsfinderParameterSetting parameter, AlignmentSpotPropertyModel spot, MSDecResult msdec) {
+
+    public InternalMsFinderSingleSpot? CreateModelForAlignmentSpot(MsfinderParameterSetting parameter, AlignmentSpotPropertyModel spot, MSDecResult msdec, UndoManager undoManager)
+    {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -82,10 +90,12 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 _dataBaseMapper,
                 _parameter);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, spot, _molecules, parameter);
+
+        return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, spot.AdductType, new SetAnnotationUsecase(spot, spot.MatchResultsModel, undoManager));
     }
 
-    public InternalMsFinderSingleSpot? CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting parameter, SpectrumFeature spectrumFeature, Ms1BasedSpectrumFeature ms1BasedSpectrumFeature) {
+    public InternalMsFinderSingleSpot? CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting parameter, SpectrumFeature spectrumFeature, Ms1BasedSpectrumFeature ms1BasedSpectrumFeature, UndoManager undoManager)
+    {
         if (!Directory.Exists(_tempDir)) {
             Directory.CreateDirectory(_tempDir);
         }
@@ -105,7 +115,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 spectrumFeature.QuantifiedChromatogramPeak.PeakFeature,
                 _parameter.ProjectParam);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, spectrumFeature, ms1BasedSpectrumFeature, _molecules, parameter);
+        return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, new SetAnnotationUsecase(spectrumFeature.AnnotatedMSDecResult.Molecule, ms1BasedSpectrumFeature.MatchResults, undoManager));
     }
 
     protected override void Dispose(bool disposing) {

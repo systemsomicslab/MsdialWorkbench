@@ -318,7 +318,16 @@ namespace CompMs.App.Msdial.Model.Dims
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
+
+/* Unmerged change from project 'MsdialGuiApp (net481)'
+Before:
             return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, Target.Value, result);
+        }
+After:
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, Target.Value, result, TODO);
+        }
+*/
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, Target.Value, result, _undoManager);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {

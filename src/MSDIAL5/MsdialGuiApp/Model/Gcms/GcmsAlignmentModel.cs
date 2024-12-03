@@ -320,7 +320,16 @@ namespace CompMs.App.Msdial.Model.Gcms
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
+
+/* Unmerged change from project 'MsdialGuiApp (net481)'
+Before:
             return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result);
+        }
+After:
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, TODO);
+        }
+*/
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, UndoManager);
         }
 
         public override void SearchFragment() {
