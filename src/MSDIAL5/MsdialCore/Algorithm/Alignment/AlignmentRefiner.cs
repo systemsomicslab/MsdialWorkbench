@@ -138,9 +138,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                             continue;
                                     }
                                     else {
-                                        var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
-                                        if (rAdductCharge != rSpot.PeakCharacter.Charge)
-                                            break;
                                         rSpot.SetAdductType(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                     }
                                 }

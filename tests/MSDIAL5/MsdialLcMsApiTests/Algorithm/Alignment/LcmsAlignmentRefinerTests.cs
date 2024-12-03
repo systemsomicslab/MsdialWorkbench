@@ -1103,6 +1103,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
             expects[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
+                new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Adduct },
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.FoundInUpperMsMs },
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.SameFeature },
             };
@@ -1129,9 +1130,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.CorrelSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Adduct },
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.SameFeature },
             };
-            expects[3].PeakCharacter.Charge = 1;
+            expects[3].SetAdductType(AdductIon.GetAdductIon("[M+2H]2+"));
             expects[3].AlignedPeakProperties[1].PeakCharacter.AdductType = AdductIon.GetAdductIon("[M+2H]2+");
             expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[3].TextDbBasedMatchResult = null;
@@ -1158,11 +1160,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[4].PeakCharacter.PeakGroupID = 0;
 
             (var actuals, _) = refiner.Refine(alignments);
-            actuals[4].PeakCharacter.PeakLinks.ForEach(link => Console.WriteLine($"{link.Character}, {link.LinkedPeakID}"));
 
             Assert.AreEqual(5, actuals.Count);
-            foreach ((var expect, var actual) in expects.Zip(actuals))
+            foreach ((var expect, var actual) in expects.Zip(actuals)) {
                 AreEqual(expect, actual);
+            }
         }
 
         [TestMethod()]
@@ -1555,17 +1557,23 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Assert.AreEqual(expected.LibraryID, actual.LibraryID, "LibraryID in " + message);
         }
         void AreEqual(IonFeatureCharacter expected, IonFeatureCharacter actual, string message = "") {
-            Assert.AreEqual(expected.IsotopeWeightNumber, actual.IsotopeWeightNumber, "IsotopeWightNumber in " + message);
-            Assert.AreEqual(expected.Charge, actual.Charge, "Charge in " + message);
+            Assert.AreEqual(expected.IsotopeWeightNumber, actual.IsotopeWeightNumber,
+                $"\nIsotopeWightNumber in {message}\nexpected: {expected.IsotopeWeightNumber}\nactual: {actual.IsotopeWeightNumber}");
+            Assert.AreEqual(expected.Charge, actual.Charge,
+                $"\nCharge in {message}\nexpected: {expected.Charge}\nactual: {actual.Charge}");
             CollectionAssert.AreEquivalent(
                 expected.PeakLinks.Select(p => p.Character).ToList(),
                 actual.PeakLinks.Select(p => p.Character).ToList(),
-                "Character in " + message
+                $"\nCharacter in {message}" +
+                $"\nexpected: {string.Join(",", expected.PeakLinks.Select(p => p.Character).ToArray())}" +
+                $"\nactual: {string.Join(",", actual.PeakLinks.Select(p => p.Character).ToArray())}"
                 );
             CollectionAssert.AreEquivalent(
                 expected.PeakLinks.Select(p => p.LinkedPeakID).ToList(),
                 actual.PeakLinks.Select(p => p.LinkedPeakID).ToList(),
-                "LinkedPeakID in " + message
+                $"\nLinkedPeakID in {message}" +
+                $"\nexpected: {string.Join(",", expected.PeakLinks.Select(p => p.LinkedPeakID).ToArray())}" +
+                $"\nactual: {string.Join(",", actual.PeakLinks.Select(p => p.LinkedPeakID).ToArray())}"
                 );
             Assert.AreEqual(expected.AdductType.AdductIonName, actual.AdductType.AdductIonName, "AdductIonName in " + message);
             Assert.AreEqual(expected.PeakGroupID, actual.PeakGroupID, "PeakGroupID in " + message);
