@@ -64,10 +64,10 @@ namespace CompMs.Common.Algorithm.Function
 
         public void ExportEdgeTable(string edgeFile) {
             using (StreamWriter sw = new StreamWriter(edgeFile, false, Encoding.ASCII)) {
-                sw.WriteLine("SourceID\tTargetID\tScore\tType");
+                sw.WriteLine("SourceID\tTargetID\tScore\tType\tColor\tComment");
                 foreach (var edgeObj in Root.edges) {
                     var edge = edgeObj.data;
-                    sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes);
+                    sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes + "\t" + edge.linecolor + "\t" + edge.comment);
                 }
             }
         }

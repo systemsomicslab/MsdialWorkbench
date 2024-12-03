@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(11)]
         public IonMode IonMode { get; set; }
         [Key(54)]
-        public AdductIon AdductType { get; set; } = AdductIon.Default;
+        public AdductIon AdductType { get; [Obsolete("Use SetAdductType")] set; } = AdductIon.Default;
 
         public void SetAdductType(AdductIon adduct) {
             AdductType = adduct;
@@ -391,6 +391,7 @@ namespace CompMs.MsdialCore.DataObj {
                 IsMzFilteredByPostCurator = IsMzFilteredByPostCurator,
                 MSDecResultIdUsed = MSDecResultIdUsed,
             };
+            spot.SetAdductType(AdductType);
             return spot;
         }
 

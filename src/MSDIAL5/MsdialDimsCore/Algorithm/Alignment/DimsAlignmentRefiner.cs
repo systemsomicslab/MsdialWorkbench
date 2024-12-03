@@ -183,7 +183,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                                         var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                         if (rAdductCharge != rSpot.PeakCharacter.Charge)
                                             break;
-                                        rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                        rSpot.SetAdductType(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                     }
                                 }
                                 RegisterLinks(cSpot, rSpot, rLinkProp);
@@ -220,9 +220,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                                 if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
 
                                 RegisterLinks(fcSpot, rSpot, rLinkProp);
-                                rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                rSpot.SetAdductType(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                 if (!fcSpot.AdductType.HasAdduct) {
-                                    fcSpot.AdductType = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                    fcSpot.SetAdductType(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                 }
                             }
                             else {
@@ -289,7 +289,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private static void SetAdducts(IEnumerable<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
-                spot.AdductType = AdductIon.GetStandardAdductIon(spot.AdductType.ChargeNumber, spot.AdductType.IonMode);
+                spot.SetAdductType(AdductIon.GetStandardAdductIon(spot.AdductType.ChargeNumber, spot.AdductType.IonMode));
             }
         }
     }
