@@ -15,8 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Search {
             Disposables.Add(model);
             _broker = broker;
 
-            SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1).AddTo(Disposables);
-            SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2).AddTo(Disposables);
+            SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1, broker).AddTo(Disposables);
+            SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2, broker).AddTo(Disposables);
             MsSpectrumViewModel = new MsSpectrumViewModel(model.RefMs2SpectrumModel).AddTo(Disposables);
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel);
         }
