@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
-            MsfinderSettingParameter = new MsfinderParameterSetting(storage.Parameter.ProjectParam);
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
 

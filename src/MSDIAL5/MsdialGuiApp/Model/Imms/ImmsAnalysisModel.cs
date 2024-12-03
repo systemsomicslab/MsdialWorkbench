@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;

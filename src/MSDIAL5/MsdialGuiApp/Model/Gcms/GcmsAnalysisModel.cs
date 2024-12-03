@@ -240,7 +240,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode);
-            MsfinderParameterSetting = new MsfinderParameterSetting(projectParameter);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(projectParameter);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel => _file;

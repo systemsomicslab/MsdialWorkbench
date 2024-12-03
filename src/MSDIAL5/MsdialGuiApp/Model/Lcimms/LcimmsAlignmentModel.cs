@@ -311,7 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam).AddTo(Disposables);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;

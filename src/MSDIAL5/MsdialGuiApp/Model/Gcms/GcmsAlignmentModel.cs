@@ -263,7 +263,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(_projectParameter).AddTo(Disposables);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(_projectParameter);
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }

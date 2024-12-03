@@ -204,7 +204,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam).AddTo(Disposables);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         static ImmsAlignmentModel() {

@@ -308,7 +308,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel => _analysisFileModel;

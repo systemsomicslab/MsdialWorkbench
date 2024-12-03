@@ -231,7 +231,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
             analysisFile = analysisFileModel;
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         private static readonly double RtTol = 0.5;

@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter = projectParameter;
             exporter = alignmentExporter;
             CurrentAlignmentModel = currentAlignmentModel;
-            analysisParam = projectParameter.analysisParameter;
+            analysisParam = projectParameter.AnalysisParameter;
         }
 
         private readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(

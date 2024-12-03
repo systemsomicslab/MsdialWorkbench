@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
@@ -19,7 +18,6 @@ using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
-using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -136,36 +134,9 @@ namespace CompMs.App.Msdial.Model.Imms
             };
 
             var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
-            var notameExportModel = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(analysisFiles, ExportFormat.Tsv) { IsLongFormat = false, },
-                new[] {
-                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue>(0), true),
-                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue>(0)),
-                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue>(0), isNormalized),
-                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue>(0), isNormalized),
-                },
-                new AccessPeakMetaModel(new IdentityAlignmentMetadataAccessorFactory(
-                    new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, trimSpectrumToExcelLimit: true)
-                        .Insert("Ion mode", 34, (p, _) => {
-                            switch (p.IonMode)
-                            {
-                                case IonMode.Positive:
-                                    return "RP_pos";
-                                case IonMode.Negative:
-                                    return "RP_neg";
-                                default:
-                                    return "null";
-                            }
-                        }))),
-                new AccessFileMetaModel(fileProperties) { EnableMultiClass = true, NumberOfClasses = 2, }.AddTo(Disposables),
-                new[] { ExportspectraType.deconvoluted, },
-                peakSpotSupplyer);
-
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
-            MsfinderSettingParameter = new MsfinderParameterSetting(storage.Parameter.ProjectParam);
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }

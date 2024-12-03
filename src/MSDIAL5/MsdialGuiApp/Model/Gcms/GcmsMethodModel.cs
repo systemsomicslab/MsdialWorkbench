@@ -145,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
-            MsfinderSettingParameter = new MsfinderParameterSetting(storage.Parameter.ProjectParam);
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }

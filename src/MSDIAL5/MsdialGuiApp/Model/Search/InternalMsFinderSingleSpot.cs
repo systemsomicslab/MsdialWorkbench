@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _filePath = filePath;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
+                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.analysisParameter);
+                _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
                 _adduct = AdductIon.GetAdductIon(_rawData.PrecursorType);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
@@ -232,8 +232,8 @@ namespace CompMs.App.Msdial.Model.Search
         private void FindFormula() {
             Mouse.OverrideCursor = Cursors.Wait;
             if (_rawData is null || _parameter is null) return;
-            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter.analysisParameter);
-            ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _rawData.IonMode, _parameter.analysisParameter, _adduct, productIonDB, neutralLossDB);
+            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _rawData, _parameter.AnalysisParameter);
+            ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _rawData.IonMode, _parameter.AnalysisParameter, _adduct, productIonDB, neutralLossDB);
             FormulaList = formulaResults;
             foreach (var formulaResult in formulaResults) {
                 var formulaFileName = Path.Combine(_folderPath, formulaResult.Formula.FormulaString);
@@ -257,7 +257,7 @@ namespace CompMs.App.Msdial.Model.Search
                 File.Delete(file);
             }
             var process = new StructureFinderBatchProcess();
-            process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter.analysisParameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
+            process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter.AnalysisParameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
             var updatedStructureList = new List<FragmenterResult>();
             foreach (var file in structureFilePaths) {

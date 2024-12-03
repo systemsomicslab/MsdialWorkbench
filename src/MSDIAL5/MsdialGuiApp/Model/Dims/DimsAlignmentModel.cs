@@ -222,7 +222,7 @@ namespace CompMs.App.Msdial.Model.Dims
             MoleculeStructureModel = moleculeStructureModel;
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
-            MsfinderParameterSetting = new MsfinderParameterSetting(parameter.ProjectParam).AddTo(Disposables);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;

@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 ExportIndividually = true,
             };
-            MsfinderParameterSetting = new MsfinderParameterSetting(storage.Parameter.ProjectParam);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderParameterSetting, exportMatForMsfinder, currentAlignmentFile);
         }
 
