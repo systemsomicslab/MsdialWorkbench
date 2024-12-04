@@ -101,23 +101,22 @@
                                         d:IsChecked="True"/>
 						<StackPanel Margin="20,8,0,0" IsEnabled="{Binding IsCreateNewProject.Value}">
 							<CheckBox Content="Use my folder name" IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
-							<ui:LabeledContent PrependLabel="Folder name:"
-                                                Margin="0,8,0,0"
-                                                IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
-								<TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Margin="20,0" Height="20"/>
+							<ui:LabeledContent PrependLabel="Set folder name as:"
+											   FontStyle="Italic"
+                                               Margin="0,8,0,0"
+                                               IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
+								<TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Margin="15,0" Height="20"/>
 							</ui:LabeledContent>
 						</StackPanel>
-					</StackPanel>
-					<StackPanel Margin="8,10,8,0">
-						<RadioButton Content="Load previous project" IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
+						<RadioButton Content="Load previous project" IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}" Margin="0,10,0,0"/>
 						<Grid Margin="10,8,0,0" IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="115"/>
-								<ColumnDefinition Width="490"/>
+								<ColumnDefinition Width="140"/>
+								<ColumnDefinition Width="450"/>
 								<ColumnDefinition Width="95"/>
 							</Grid.ColumnDefinitions>
 							<Label Grid.Column="0"
-                                    Content="File path:"
+                                    Content="Project folder path:"
                                     FontStyle="Italic"
                                     Margin="8,0,0,0"/>
 							<TextBox Grid.Column="1"

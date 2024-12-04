@@ -172,7 +172,7 @@
                             <StackPanel Margin="8,0,0,0">
                                 <ui:LabeledContent PrependLabel="LEWIS and SENIOR check:"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This valence rule will reduce candidates.">
+                                                   ToolTip="Candidates will be reduced based on these valence rules.">
                                     <CheckBox IsChecked="{Binding IsLewisAndSeniorCheck.Value}"/>
                                 </ui:LabeledContent>
                                 <ui:LabeledContent PrependLabel="Isotopic ratio tolerance:"
@@ -184,7 +184,7 @@
                                 <ui:LabeledContent PrependLabel="Element ratio check:"
                                                    AppendLabel="covering"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This rule is based on the current report statistics. Please see http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
                                     <ComboBox SelectedValue="{Binding CoverRange.Value}" SelectedValuePath="DataContext">
                                         <ComboBox.Items>
                                             <ComboBoxItem Content="Common range (99.7%)" DataContext="{x:Static enum:CoverRange.CommonRange}"/>
@@ -195,7 +195,7 @@
                                 </ui:LabeledContent>
                                 <ui:LabeledContent PrependLabel="Element probability check:"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This rule is based on the current report statistics. Please see http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
                                     <CheckBox IsChecked="{Binding IsElementProbabilityCheck.Value}"/>
                                 </ui:LabeledContent>
                             </StackPanel>
@@ -360,7 +360,7 @@
                                 <Label Content="FSEA setting" FontStyle="Italic"/>
                             </GroupBox.Header>
                             <StackPanel Margin="8,0,0,0">
-                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%] (significant peak):"
+                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%]:"
                                                    AppendLabel="%"
                                                    Style="{StaticResource AlignedContent}"
                                                    ToolTip="Add the cut off value for removing noise effects.">
