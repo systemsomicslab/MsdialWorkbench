@@ -125,14 +125,14 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<AccumulatedExtractedMs2SpectrumView>(height: 600, width: 800));
             broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
                 .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
-            //broker.ToObservable<InternalMsfinderSettingViewModel>()
-            //    .Subscribe(ShowInternalMsfinderSettingView);
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
-            broker.ToObservable<InternalMsfinderSettingViewModel>()
-                .Subscribe(ShowChildSettingDialog<InternalMsfinderSettingView>("MS-FINDER", height: 600, width: 800, finishCommandContent: "OK", needDispose: true));
+            broker.ToObservable<InternalMsfinderBatchSettingVM>()
+                .Subscribe(ShowChildSettingDialog<InternalMsfinderBatchSettingView>("MS-FINDER  batch processing setting", height: 800, width: 800, finishCommandContent: "Run", needDispose: true));
             broker.ToObservable<InternalMsFinderViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));
+            broker.ToObservable<InternalMsfinderSettingViewModel>()
+                .Subscribe(ShowChildSettingDialog<InternalMsfinderSettingView>("MS-FINDER setting", height: 600, width: 800, finishCommandContent: "OK", needDispose: true));
             broker.ToObservable<InternalMsFinderSingleSpotViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderSingleSpotView>("MS-FINDER", height: 1000, width: 1500, needDispose: true));
             broker.ToObservable<InternalMsfinderSubstructure>()

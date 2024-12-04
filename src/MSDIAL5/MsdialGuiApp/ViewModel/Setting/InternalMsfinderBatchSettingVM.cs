@@ -7,6 +7,8 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
@@ -28,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsCreateNewProject = model.ToReactivePropertySlimAsSynchronized(m => m.IsCreateNewProject).AddTo(Disposables);
             IsUseAutoDefinedFolderName = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseAutoDefinedFolderName).AddTo(Disposables);
 
-            char[] invalidChars = System.IO.Path.GetInvalidPathChars();
+            char[] invalidChars = Path.GetInvalidPathChars();
             UserDefinedProjectFolderName = model.ToReactivePropertyAsSynchronized(m => m.UserDefinedProjectFolderName, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => UserDefinedProjectFolderName)
                 .SetValidateNotifyError(path => path.IndexOfAny(invalidChars) >= 0 ? "Invalid character contains." : null).AddTo(Disposables);
@@ -57,7 +59,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 if (msfinder is not null) {
                     broker.Publish(new InternalMsFinderViewModel(msfinder, broker));
                 } else {
-                    return;
+                    Debug.Assert(true, "Msfinder null!!");
                 }
                 Mouse.OverrideCursor = null;
             }).AddTo(Disposables);
@@ -79,9 +81,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> IsStructureFinder { get; set; }
 
-        public ReactiveCommand Run { get; }
-        public ReactiveCommand Apply { get; }
-        public ReactiveCommand Cancel { get; }
+        private ReactiveCommand Run { get; }
+        private ReactiveCommand Apply { get; }
+        private ReactiveCommand Cancel { get; }
 
         public ReactivePropertySlim<bool> IsCreateNewProject { get; }
         public ReactivePropertySlim<bool> IsUseAutoDefinedFolderName { get; }

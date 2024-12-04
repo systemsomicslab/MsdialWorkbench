@@ -46,9 +46,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _focusControlManager = focusControlManager.AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
-            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.MsfinderSettingParameter, broker).AddTo(Disposables);
-            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
-            InternalMsfinderSettingModel = model.InternalMsfinderSettingModel;
+            var batchMsfinder = model.InternalMsfinderSettingModel;
+            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingVM(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
         }
 
         public AsyncReactiveCommand ExportParameterCommand { get; }
@@ -176,23 +176,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase?>[] { rawdec, ms2chrom, rawpur, repref});
         }
 
-        public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
-
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
-        private InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
-        public DelegateCommand GoToMsfinderBatchCommand => _goToMsfinderBatchCommand ??= new DelegateCommand(GoToMsfinderBatchProcess);
-        private DelegateCommand _goToMsfinderBatchCommand;
-
-        private void GoToMsfinderBatchProcess() {
-            var msfinder = InternalMsfinderSettingModel.Process();
-            if (msfinder is null) {
-                throw new ArgumentException(nameof(msfinder));
-                MessageBox.Show("Please select alignment result from alignment navigator to run batch processing.");
-            }
-            else
-            {
-                _broker.Publish(new InternalMsFinderViewModel(msfinder, _broker));
-            }
-        }
     }
 }
