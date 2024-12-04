@@ -100,7 +100,7 @@
                         <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="8"/>
                         <Popup x:Name="MSFINDERPopup" StaysOpen="False" IsOpen="{Binding IsChecked, ElementName=MSFinderSettingPopupToggle}" PlacementTarget="{Binding ElementName=MSFinderSettingPopupToggle}" Placement="Bottom">
                             <ItemsControl Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="1">
-                                <MenuItem Header="MS-Finder search" Command="{Binding GoToMsfinderCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                                <MenuItem Header="MS-FINDER search" Command="{Binding GoToMsfinderCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                                 <MenuItem Header="Parameter setting" Command="{Binding ShowMsfinderSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                                 <MenuItem Header="Use external MS-FINDER" Command="{Binding GoToExternalMsfinderCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                             </ItemsControl>
