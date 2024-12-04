@@ -17,7 +17,7 @@ using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

@@ -1,4 +1,4 @@
-﻿using CompMs.Raw.Contract;
+﻿using CompMs.Raw.Abstractions;
 using System;
 
 namespace CompMs.MsdialCore.Algorithm;

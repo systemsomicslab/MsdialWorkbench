@@ -26,7 +26,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;

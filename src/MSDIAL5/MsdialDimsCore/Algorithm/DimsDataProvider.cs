@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

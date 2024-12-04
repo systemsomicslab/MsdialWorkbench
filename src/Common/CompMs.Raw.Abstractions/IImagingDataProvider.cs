@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using System.Collections.Generic;
 
-namespace CompMs.Raw.Contract;
+namespace CompMs.Raw.Abstractions;
 
 public interface IImagingDataProvider : IDataProvider
 {

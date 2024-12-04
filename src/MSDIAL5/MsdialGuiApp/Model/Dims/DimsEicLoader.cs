@@ -6,7 +6,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 

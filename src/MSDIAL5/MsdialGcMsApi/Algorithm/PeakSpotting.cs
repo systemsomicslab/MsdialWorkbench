@@ -4,12 +4,13 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace CompMs.MsdialGcMsApi.Algorithm {
+namespace CompMs.MsdialGcMsApi.Algorithm
+{
     public sealed class PeakSpotting {
         private readonly IupacDatabase _iupacDB;
         private readonly MsdialGcmsParameter _parameter;

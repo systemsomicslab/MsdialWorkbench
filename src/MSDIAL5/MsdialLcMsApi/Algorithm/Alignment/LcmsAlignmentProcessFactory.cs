@@ -4,7 +4,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment;

@@ -1,5 +1,5 @@
 ﻿using CompMs.MsdialImmsCore.Algorithm;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using MessagePack;
 
 namespace CompMs.MsdialImmsCore.Parameter

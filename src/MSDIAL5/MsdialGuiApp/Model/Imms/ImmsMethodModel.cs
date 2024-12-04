@@ -17,7 +17,7 @@ using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

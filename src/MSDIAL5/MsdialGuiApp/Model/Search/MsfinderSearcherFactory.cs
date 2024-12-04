@@ -7,7 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.IO;
 using System.Linq;

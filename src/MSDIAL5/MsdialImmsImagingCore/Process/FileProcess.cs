@@ -4,7 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Linq;
 using System.Threading;

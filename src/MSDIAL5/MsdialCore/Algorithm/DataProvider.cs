@@ -2,7 +2,7 @@
 using CompMs.Common.Enum;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Internal;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

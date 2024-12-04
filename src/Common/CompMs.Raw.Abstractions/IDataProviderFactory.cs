@@ -1,4 +1,4 @@
-﻿namespace CompMs.Raw.Contract;
+﻿namespace CompMs.Raw.Abstractions;
 
 public interface IDataProviderFactory<in T>
 {

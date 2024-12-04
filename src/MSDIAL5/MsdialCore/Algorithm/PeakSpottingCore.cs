@@ -10,7 +10,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +18,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.Algorithm {
+namespace CompMs.MsdialCore.Algorithm
+{
     public sealed class PeakSpottingCore {
         private readonly ParameterBase _parameter;
 

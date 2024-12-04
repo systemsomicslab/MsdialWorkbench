@@ -10,7 +10,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using CompMs.RawDataHandler.Core;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

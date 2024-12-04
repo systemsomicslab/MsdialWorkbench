@@ -8,7 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;

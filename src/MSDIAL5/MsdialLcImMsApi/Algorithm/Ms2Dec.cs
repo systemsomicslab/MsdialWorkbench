@@ -6,12 +6,12 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.MsdialLcImMsApi.Algorithm; 
+namespace CompMs.MsdialLcImMsApi.Algorithm;
 public sealed class Ms2Dec {
     private readonly AnalysisFileBean _analysisFile;
 

@@ -4,7 +4,7 @@ using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using CompMs.RawDataHandler.DataProvider;
 using System.Collections.Generic;
 using System.ComponentModel;

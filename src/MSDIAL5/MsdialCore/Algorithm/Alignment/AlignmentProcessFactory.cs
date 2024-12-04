@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {

@@ -7,7 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +15,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialLcMsApi.Algorithm {
+namespace CompMs.MsdialLcMsApi.Algorithm
+{
     public class Ms2Dec {
         public double InitialProgress { get; set; } = 30.0;
         public double ProgressMax { get; set; } = 30.0;

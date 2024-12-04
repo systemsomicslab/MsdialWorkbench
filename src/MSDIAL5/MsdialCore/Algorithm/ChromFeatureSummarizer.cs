@@ -1,5 +1,5 @@
 ﻿using CompMs.MsdialCore.DataObj;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm

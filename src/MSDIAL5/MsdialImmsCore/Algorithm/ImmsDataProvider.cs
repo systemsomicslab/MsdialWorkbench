@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

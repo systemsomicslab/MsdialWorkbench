@@ -4,10 +4,11 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.Raw.Contract;
+namespace CompMs.Raw.Abstractions;
 
 
-public interface IDataProvider {
+public interface IDataProvider
+{
     ReadOnlyCollection<RawSpectrum> LoadMsSpectrums();
     ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums();
     ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level);

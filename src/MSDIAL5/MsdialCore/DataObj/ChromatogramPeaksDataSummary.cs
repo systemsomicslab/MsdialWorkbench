@@ -3,12 +3,13 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.Raw.Contract;
+using CompMs.Raw.Abstractions;
 using MessagePack;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     class ScanNumberSummary {
         public ScanNumberSummary(int min, int max) {
             Min = min;
