@@ -25,6 +25,7 @@ using System.Threading;
 using System.Linq;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialIntegrate.Parser;
+using CompMs.App.MsdialConsole.Properties;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -144,7 +145,7 @@ public sealed class LcimmsProcess {
         }
 
         if (isProjectSaved) {
-            storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
+            storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

@@ -36,7 +36,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public void Commit() {
-            PeakPickParameter.Commit();
             ProcessParameter.Commit();
         }
 

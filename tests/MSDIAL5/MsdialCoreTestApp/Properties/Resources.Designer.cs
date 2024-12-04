@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CompMs.App.Msdial.Properties {
+namespace CompMs.App.MsdialConsole.Properties {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace CompMs.App.Msdial.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CompMs.App.Msdial.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CompMs.App.MsdialConsole.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,36 +61,9 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string EXPORT_DIR {
-            get {
-                return ResourceManager.GetString("EXPORT_DIR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://systemsomicslab.github.io/msdial5tutorial/.
-        /// </summary>
-        public static string TUTORIAL_URI {
-            get {
-                return ResourceManager.GetString("TUTORIAL_URI", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100.
-        /// </summary>
-        public static string VDD_URI {
-            get {
-                return ResourceManager.GetString("VDD_URI", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 5.5.241113.
         /// </summary>
-        public static string VERSION {
+        internal static string VERSION {
             get {
                 return ResourceManager.GetString("VERSION", resourceCulture);
             }

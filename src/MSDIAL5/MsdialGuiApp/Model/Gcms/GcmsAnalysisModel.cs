@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 Observable.Return((string?)null),
                 gcgcBrushes.First(),
                 gcgcBrushes,
-                new PeakLinkModel(_peaks),
+                PeakLinkModel.Build(_peaks, _peaks.Select(p => p.InnerModel.PeakCharacter).ToList()),
                 horizontalAxis: PeakPlotModel.HorizontalAxis)
             {
                 HorizontalTitle = "Retention time (min)",
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             EicModel.VerticalTitle = "Abundance";
             PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
 
-            var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
+            var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults), dbMapper).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
             var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType);
             var decLoader = file.MSDecLoader;
@@ -143,8 +143,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var refGraphLabels = new GraphLabels("Reference EI spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Red);
-            var exporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(dbMapper.MoleculeMsRefer)).AddTo(_disposables);
-            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, exporter).AddTo(_disposables);
+            var exporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(dbMapper)).AddTo(_disposables);
+            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), refLoader, exporter).AddTo(_disposables);
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(_disposables);
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(dbStorage, dbMapper);

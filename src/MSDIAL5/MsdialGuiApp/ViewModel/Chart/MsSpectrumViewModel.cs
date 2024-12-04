@@ -20,8 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public MsSpectrumViewModel(MsSpectrumModel model, Action? focusAction = null, IObservable<bool>? isFocused = null, IMessageBroker? broker = null) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
-            LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
+            UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m, broker)).AddTo(Disposables);
+            LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel, broker).AddTo(Disposables);
 
             HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperSpectrumModel.VerticalAxisItemSelector.AxisItems);

@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CompMs.App.MsdialConsole.Properties;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -155,7 +156,7 @@ public sealed class ImmsProcess
         }
 
         if (isProjectSaved) {
-            storage.Parameter.ProjectParam.MsdialVersionNumber = "console";
+            storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

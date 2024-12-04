@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Brushes = brushMapDataSelector.Brushes.ToList();
             SelectedBrush = brushMapDataSelector.SelectedBrush;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes)
+            RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(accumulatedPropModels, accumulatedPropModels.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             RtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, SelectedBrush, Brushes)
+            DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(propModels, propModels.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -205,7 +205,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -214,10 +214,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum upperObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decLoader, spectraExporter).AddTo(Disposables);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, searcherCollection, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
+                Target, MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),
@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompundSearchModel(t, r, searcherCollection) : null)
+                .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompoundSearchModel(t, r, searcherCollection) : null)
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -352,7 +352,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
 
-        private CompoundSearchModel<PeakSpotModel>? CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
+        private CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
             if (spot is null || msdec is null) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;

@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var vAxis = Observable.Return(new AxisRange(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, new PeakLinkModel(Ms1Peaks), verticalAxis: vAxis)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, PeakLinkModel.Build(Ms1Peaks, Ms1Peaks.Select(p => p.InnerModel.PeakCharacter).ToList()), verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
@@ -100,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Abundance"
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
 
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
@@ -122,8 +122,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             var refGraphLabels = new GraphLabels("Reference spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Red);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
-            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, referenceExporter).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
+            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), refLoader, referenceExporter).AddTo(Disposables);
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(Disposables);
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
