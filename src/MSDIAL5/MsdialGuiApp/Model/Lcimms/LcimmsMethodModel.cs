@@ -136,32 +136,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var notameExportModel = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(analysisFiles, ExportFormat.Tsv) { IsLongFormat = false, },
-                new[] {
-                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue>(0), true),
-                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue>(0)),
-                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue>(0), isNormalized),
-                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue>(0), isNormalized),
-                },
-                new AccessPeakMetaModel(new IdentityAlignmentMetadataAccessorFactory(
-                    new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, trimSpectrumToExcelLimit: true)
-                        .Insert("Ion mode", 34, (p, _) => {
-                            switch (p.IonMode)
-                            {
-                                case IonMode.Positive:
-                                    return "RP_pos";
-                                case IonMode.Negative:
-                                    return "RP_neg";
-                                default:
-                                    return "null";
-                            }
-                        }))),
-                new AccessFileMetaModel(fileProperties) { EnableMultiClass = true, NumberOfClasses = 2, }.AddTo(Disposables),
-                new[] { ExportspectraType.deconvoluted, },
-                peakSpotSupplyer);
-
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
             MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
