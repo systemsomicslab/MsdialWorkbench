@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
-            broker.ToObservable<InternalMsfinderBatchSettingVM>()
+            broker.ToObservable<InternalMsfinderBatchSettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<InternalMsfinderBatchSettingView>("MS-FINDER  batch processing setting", height: 800, width: 800, finishCommandContent: "Run", needDispose: true));
             broker.ToObservable<InternalMsFinderViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));

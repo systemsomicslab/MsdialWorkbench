@@ -36,10 +36,10 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             Disposables.Add(alignmentFileViewModel);
 
             var batchMsfinder = model.InternalMsfinderSettingModel;
-            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingVM(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
+            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
         }
-        public InternalMsfinderBatchSettingVM InternalMsfinderBatchSettingVM { get; }
+        public InternalMsfinderBatchSettingViewModel InternalMsfinderBatchSettingVM { get; }
 
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 

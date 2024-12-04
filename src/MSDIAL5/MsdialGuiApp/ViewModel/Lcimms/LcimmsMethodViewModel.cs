@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
             var batchMsfinder = model.InternalMsfinderSettingModel;
-            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingVM(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
+            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
         }
 

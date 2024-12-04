@@ -13,8 +13,8 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    internal class InternalMsfinderBatchSettingVM : SettingDialogViewModel {
-        public InternalMsfinderBatchSettingVM(MsfinderParameterSetting model, InternalMsfinderSettingModel batchMsfinder, IMessageBroker broker) {
+    internal class InternalMsfinderBatchSettingViewModel : SettingDialogViewModel {
+        public InternalMsfinderBatchSettingViewModel(MsfinderParameterSetting model, InternalMsfinderSettingModel batchMsfinder, IMessageBroker broker) {
             InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model, broker);
 
             TryTopNmolecularFormulaSearch = model.ToReactivePropertyAsSynchronized(
