@@ -87,10 +87,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> IsCreateNewProject { get; }
         public ReactivePropertySlim<bool> IsUseAutoDefinedFolderName { get; }
-
-        [Required(ErrorMessage = "Folder name is required.")]
         public ReactiveProperty<string> UserDefinedProjectFolderName { get; }
-        [PathExists(ErrorMessage = "hogehoge", IsDirectory = true)]
         public ReactiveProperty<string> ExistProjectPath { get; }
 
         public override ICommand? FinishCommand => Run;

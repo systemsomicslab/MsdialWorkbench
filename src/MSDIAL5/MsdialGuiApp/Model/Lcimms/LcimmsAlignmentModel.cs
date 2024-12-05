@@ -384,15 +384,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
                 return null;
             }
-
-/* Unmerged change from project 'MsdialGuiApp (net481)'
-Before:
-            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result);
-        }
-After:
-            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, TODO);
-        }
-*/
             return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, _undoManager);
         }
 
