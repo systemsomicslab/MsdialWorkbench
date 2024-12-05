@@ -7,12 +7,13 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class AdductIonSettingModel : BindableBase
+    public class AdductIonSettingModel : BindableBase, IAdductIonSettingModel
     {
         public AdductIonSettingModel(ParameterBase parameter, ProcessOption process) {
             referenceParameter = parameter.ReferenceFileParam;
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => userDefinedAdductName;
             set => SetProperty(ref userDefinedAdductName, value);
         }
-        private string userDefinedAdductName;
+        private string userDefinedAdductName = string.Empty;
 
         public AdductIon UserDefinedAdduct => AdductIon.GetAdductIon(userDefinedAdductName);
 

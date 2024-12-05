@@ -120,10 +120,13 @@
   <data name="EXPORT_DIR" xml:space="preserve">
     <value />
   </data>
+  <data name="TUTORIAL_URI" xml:space="preserve">
+    <value>https://systemsomicslab.github.io/msdial5tutorial/</value>
+  </data>
   <data name="VDD_URI" xml:space="preserve">
     <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.1.230912-dev</value>
+    <value>5.5.241113</value>
   </data>
 </root>

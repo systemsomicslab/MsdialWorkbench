@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Core
             Storage = storage;
             _broker = broker;
             Datasets = new ObservableCollection<IDatasetModel>();
-            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset, broker);
+            datasetSettingModel = new DatasetSettingModel(false, SetNewDataset, broker);
         }
 
         public ProjectParameter Parameter => Storage.ProjectParameter;
@@ -38,13 +38,13 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private DatasetSettingModel datasetSettingModel;
 
-        public IDatasetModel CurrentDataset {
+        public IDatasetModel? CurrentDataset {
             get => currentDataset;
             private set => SetProperty(ref currentDataset, value);
         }
-        private IDatasetModel currentDataset;
+        private IDatasetModel? currentDataset;
 
-        IDatasetModel IProjectModel.CurrentDataset {
+        IDatasetModel? IProjectModel.CurrentDataset {
             get => CurrentDataset;
             set => CurrentDataset = value;
         }
@@ -62,10 +62,10 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task SaveAsync() {
-            if (!(CurrentDataset is null)) {
+            if (CurrentDataset is not null) {
                 await CurrentDataset.SaveAsync();
             }
-            using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
+            using var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath);
             using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(
@@ -74,15 +74,15 @@ namespace CompMs.App.Msdial.Model.Core
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
                 streamManager.Complete();
-                fs.Move();
             }
+            fs.Move();
         }
 
         public async Task SaveAsAsync() {
             if (!(CurrentDataset is null)) {
                 await CurrentDataset.SaveAsAsync();
             }
-            using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
+            using var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath);
             using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(
@@ -91,8 +91,9 @@ namespace CompMs.App.Msdial.Model.Core
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
                 streamManager.Complete();
-                fs.Move();
+
             }
+            fs.Move();
         }
 
         public static async Task<ProjectModel> LoadAsync(string projectPath, IMessageBroker broker) {
@@ -120,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Core
                     projectDir,
                     async parameter =>
                     {
-                        string result = null;
+                        string? result = null;
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             var newofd = new OpenFileDialog
@@ -170,15 +171,16 @@ namespace CompMs.App.Msdial.Model.Core
                 storage.AddStorage(data);
             }
 
-            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
-            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
-                var serializer = new MsdialIgnoreSavingSerializer();
-                await storage.Save(
-                    streamManager,
-                    serializer,
-                    path => null,
-                    parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
-                streamManager.Complete();
+            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath)) {
+                using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
+                    var serializer = new MsdialIgnoreSavingSerializer();
+                    await storage.Save(
+                        streamManager,
+                        serializer,
+                        path => null,
+                        parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
+                    streamManager.Complete();
+                }
                 fs.Move();
             }
 

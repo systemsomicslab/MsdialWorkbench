@@ -1,5 +1,10 @@
-﻿using System.Windows;
+﻿using CompMs.App.Msdial.ViewModel.Statistics;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial.View.Statistics
 {
@@ -26,6 +31,24 @@ namespace CompMs.App.Msdial.View.Statistics
                 window.DialogResult = false;
             }
             window.Close();
+        }
+    }
+
+    internal sealed class SelectedAndBellowRowsConverter : IValueConverter
+    {
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            var datagrid = (DataGrid)value;
+            if (datagrid is null) {
+                return default;
+            }
+            var current = (NormalizationSpotPropertyViewModel)datagrid.CurrentItem;
+            var currentIndex = datagrid.Items.IndexOf(current);
+            var targets = datagrid.Items.Cast<NormalizationSpotPropertyViewModel>().Skip(currentIndex);
+            return (current, targets);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            return Binding.DoNothing;
         }
     }
 }

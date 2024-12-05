@@ -27,7 +27,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         public DimsGapFiller(MsdialDimsParameter param)
             : this(param.CentroidMs1Tolerance, param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Mz.Value), ChromXType.Mz, ChromXUnit.Mz);
         }
 
@@ -42,7 +42,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             }
             var peakElements = peakElementsMemo[fileID];
             var peaklist = DataAccess.ConvertRawPeakElementToChromatogramPeakList(peakElements, center.Mz.Value - peakWidth * 2.0, center.Mz.Value + peakWidth * 2.0);
-            return new Chromatogram(peaklist, ChromXType.Mz, ChromXUnit.Mz).Smoothing(smoothingMethod, smoothingLevel);
+            return new Chromatogram(peaklist, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
         }
     }
 }

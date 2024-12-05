@@ -1,14 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace CompMs.MsdialCore.Algorithm.Annotation
+﻿namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IMatchResultFinder<in TQuery, TResult>
-    {
-        string Id { get; }
-        List<TResult> FindCandidates(TQuery query);
-        int Priority { get; }
-    }
-
     public interface IAnnotator<in TQuery, out TReference, TResult> : IMatchResultFinder<TQuery, TResult>, IMatchResultRefer<TReference, TResult>, IMatchResultEvaluator<TResult>
     {
     }

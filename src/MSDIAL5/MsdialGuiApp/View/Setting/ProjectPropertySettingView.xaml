@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.ProjectPropertySettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ProjectPropertySettingViewModel}}"
+             d:Background="White"
+             d:DesignHeight="400" d:DesignWidth="400">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="ui:LabeledContent">
+                <Setter Property="Margin" Value="4,0,4,0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ui:LabeledContent">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Content="{TemplateBinding PrependLabel}"
+                                       VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                       Width="128" Margin="0,0,8,0"
+                                       Grid.Column="0"/>
+                                <ContentPresenter VerticalAlignment="Stretch"
+                                                  Grid.Column="1"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource {x:Type ui:LabeledContent}}">
+                    <Setter Property="Height" Value="32"/>
+                </Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Height" Value="24"/>
+                </Style>
+            </StackPanel.Resources>
+
+            <ui:LabeledContent PrependLabel="Instrument type:" ToolTip="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition">
+                <TextBox Text="{Binding InstrumentType.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Instrument:" ToolTip="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent">
+                <TextBox Text="{Binding Instrument.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Authors:" ToolTip="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita">
+                <TextBox Text="{Binding Authors.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="License:" ToolTip="ex. CC-BY">
+                <TextBox Text="{Binding License.Value}"/>
+            </ui:LabeledContent>
+
+            <ui:LabeledContent PrependLabel="CollisionEnergy:" ToolTip="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)">
+                <TextBox Text="{Binding CollisionEnergy.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+
+        <ui:LabeledContent PrependLabel="Comment:" ToolTip="Add comment."
+                           VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
+                           Margin="4"
+                           Grid.Row="1">
+            <TextBox Text="{Binding Comment.Value}"
+                     AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" 
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </ui:LabeledContent>
+    </Grid>
+</UserControl>

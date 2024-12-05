@@ -1,7 +1,9 @@
-﻿using CompMs.App.Msdial.Dto;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Dto;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -23,21 +25,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal sealed class MainWindowVM : ViewModelBase
     {
-        public MainWindowVM(
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
+        public MainWindowVM(IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
             _broker = MessageBroker.Default;
@@ -45,16 +35,16 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, _broker))
+                .Select(m => m is null ? null : new ProjectViewModel(m, peakSpotTableService, _broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var datasetViewModel = projectViewModel
-                .SelectSwitch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
+                .SelectSwitch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel?>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var methodViewModel = datasetViewModel
-                .SelectSwitch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
+                .SelectSwitch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel?>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -103,14 +93,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public MainWindowModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<ProjectViewModel> ProjectViewModel { get; }
-        public ReadOnlyReactivePropertySlim<DatasetViewModel> DatasetViewModel { get; }
-        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ProjectViewModel?> ProjectViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetViewModel?> DatasetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel?> MethodViewModel { get; }
 
         private readonly TaskProgressCollection _taskProgressCollection;
         public ReadOnlyObservableCollection<ProgressBarVM> TaskProgressCollection => _taskProgressCollection.ProgressBars;
 
-        public IMsdialDataStorage<ParameterBase> Storage {
+        public IMsdialDataStorage<ParameterBase>? Storage {
             get => _storage;
             set {
                 if (SetProperty(ref _storage, value)) {
@@ -118,7 +108,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 }
             }
         }
-        private IMsdialDataStorage<ParameterBase> _storage;
+        private IMsdialDataStorage<ParameterBase>? _storage;
 
         public string ProjectFile => Storage?.Parameter is null ? string.Empty : Storage.Parameter.ProjectParam.ProjectFilePath;
 
@@ -141,39 +131,49 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand AddNewDatasetCommand { get; }
 
         private async Task AddNewDataset() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, _broker)) {
-                await RunProcess(vm);
+            if (Model.CurrentProject is not IProjectModel project) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.ProjectIsNotCreated));
+                return;
             }
+            using var vm = new ProcessSettingViewModel(project, _broker);
+            await RunProcess(vm);
         }
 
         public AsyncReactiveCommand ExecuteAllMethodProcessCommand { get; }
 
         private async Task ExecuteAllMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel, _broker)) {
-                vm.MoveToDataCollectionSetting();
-                await RunProcess(vm);
+            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
+                return;
             }
+            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AllProcessMethodSettingModel, _broker);
+            vm.MoveToDataCollectionSetting();
+            await RunProcess(vm);
         }
 
         public AsyncReactiveCommand ExecuteIdentificationMethodProcessCommand { get; }
 
         private async Task ExecuteIdentificationMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel, _broker)) {
-                vm.MoveToIdentificationSetting();
-                await RunProcess(vm);
+            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
+                return;
             }
+            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.IdentificationProcessMethodSettingModel, _broker);
+            vm.MoveToIdentificationSetting();
+            await RunProcess(vm);
         }
 
         public AsyncReactiveCommand ExecuteAlignmentMethodProcessCommand { get; }
 
         private async Task ExecuteAlignmentMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel, _broker)) {
-                vm.MoveToAlignmentSetting();
-                await RunProcess(vm);
+            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
+                return;
             }
+            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AlignmentProcessMethodSettingModel, _broker);
+            vm.MoveToAlignmentSetting();
+            await RunProcess(vm);
         }
-
-        public ReactiveCommand RunProcessAllCommand { get; }
 
         public AsyncReactiveCommand OpenProjectCommand { get; }
         public AsyncReactiveCommand<ProjectCrumb> OpenPreviousProjectCommand { get; }
@@ -182,22 +182,22 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand SaveProjectCommand { get; }
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
 
-        public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ?? (_goToTutorialCommand = new DelegateCommand(GoToTutorial));
-        private DelegateCommand _goToTutorialCommand;
+        public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ??= new DelegateCommand(GoToTutorial);
+        private DelegateCommand? _goToTutorialCommand;
 
         private void GoToTutorial() {
-            System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+            System.Diagnostics.Process.Start(Resources.TUTORIAL_URI);
         }
 
-        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ?? (_goToLicenceCommand = new DelegateCommand(GoToLicence));
-        private DelegateCommand _goToLicenceCommand;
+        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ??= new DelegateCommand(GoToLicence);
+        private DelegateCommand? _goToLicenceCommand;
 
         private void GoToLicence() {
             System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/licence/main.html");
         }
 
-        public DelegateCommand ShowAboutCommand => _showAboutCommand ?? (_showAboutCommand = new DelegateCommand(ShowAbout));
-        private DelegateCommand _showAboutCommand;
+        public DelegateCommand ShowAboutCommand => _showAboutCommand ??= new DelegateCommand(ShowAbout);
+        private DelegateCommand? _showAboutCommand;
 
         private void ShowAbout() {
             var view = new View.Help.HelpAboutDialog();

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
+using CompMs.Common.Enum;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Core
         private readonly Properties.Settings _settings;
 
         public MainWindowModel(IMessageBroker broker) {
-            ProjectSetting = new ProjectSettingModel(SetNewProject, broker);
+            projectSetting = new ProjectSettingModel(SetNewProject, broker);
             nowSaving = new BusyNotifier();
             _broker = broker;
             nowLoading = new BusyNotifier();
@@ -36,7 +37,11 @@ namespace CompMs.App.Msdial.Model.Core
             }
             _previousProjects = _settings.PreviousProjects;
             PreviousProjects = _previousProjects.AsReadOnly();
+
+            //InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Negative);
         }
+
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
 
         public IObservable<bool> NowSaving => nowSaving;
         private readonly BusyNotifier nowSaving;
@@ -44,11 +49,11 @@ namespace CompMs.App.Msdial.Model.Core
         public IObservable<bool> NowLoading => nowLoading;
         private readonly BusyNotifier nowLoading;
 
-        public IProjectModel CurrentProject {
+        public IProjectModel? CurrentProject {
             get => currentProject;
             private set => SetProperty(ref currentProject, value);
         }
-        private IProjectModel currentProject;
+        private IProjectModel? currentProject;
 
         public ProjectSettingModel ProjectSetting {
             get => projectSetting;
@@ -111,10 +116,12 @@ namespace CompMs.App.Msdial.Model.Core
                         return;
                     }
                     var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker).ConfigureAwait(false);
-                    if (!(loadedProject is null)) {
-                        CurrentProject = loadedProject;
+                    if (loadedProject is null) {
+                        _broker.Publish(new ShortMessageRequest("Project loading has failed."));
+                        return;
                     }
-                    var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                    CurrentProject = loadedProject;
+                    var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
                     if (_previousProjects.Any(currentCrumb.MaybeSame)) {
                         _previousProjects.RemoveAll(currentCrumb.MaybeSame);
                     }
@@ -135,14 +142,16 @@ namespace CompMs.App.Msdial.Model.Core
         public async Task LoadProjectAsync(ProjectCrumb projectCrumb) {
             using (nowLoading.ProcessStart()) {
                 try {
-                    if (!File.Exists(projectCrumb.FilePath)) {
+                    if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
                         return;
                     }
                     var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(true);
-                    if (!(loadedProject is null)) {
-                        CurrentProject = loadedProject;
+                    if (loadedProject is null) {
+                        _broker.Publish(new ShortMessageRequest("Project loading has failed."));
+                        return;
                     }
-                    var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                    CurrentProject = loadedProject;
+                    var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
                     if (_previousProjects.Any(currentCrumb.MaybeSame)) {
                         _previousProjects.RemoveAll(currentCrumb.MaybeSame);
                     }

@@ -26,7 +26,7 @@
                       ToolTip="The internal standard information can be added to each peak. Please add the suitable alignment ID to each peak."
                       KeyTip="L"/>
         <RibbonButton Label="Project property setting" LargeImageSource="{StaticResource Project_property_setting_is}"
-                      IsEnabled="False"
+                      Command="{Binding ProjectSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="P"
                       ToolTip="Meta data can be added for MassBank, MoNA, and MSP export."/>
         <RibbonButton Label="Experiment config setting" LargeImageSource="{StaticResource Experiment_config_setting_is}"

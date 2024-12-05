@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +20,16 @@ namespace CompMs.App.Msdial.Model.Loader
             _loaders = dictionary;
         }
 
-        public IObservable<List<SpectrumPeak>> GetObservableSpectrum(AnalysisFileBeanModel file, IObservable<AlignmentSpotPropertyModel> target) {
-            return target.DefaultIfNull(_loaders[file].LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>())).Switch();
+        public IObservable<List<SpectrumPeak>> GetObservableSpectrum(AnalysisFileBeanModel file, IObservable<AlignmentSpotPropertyModel?> target) {
+            IObservable<IMSScanProperty?> ifNull = Observable.Return<IMSScanProperty?>(null);
+            return target.DefaultIfNull(_loaders[file].LoadScanAsObservable, ifNull).Switch().DefaultIfNull(scan => scan.Spectrum, new List<SpectrumPeak>(0));
         }
 
         public Task<List<SpectrumPeak>[]> GetCurrentSpectraAsync(IEnumerable<AnalysisFileBeanModel> files, AlignmentSpotPropertyModel target) {
             if (target is null) {
-                Task.FromResult(files.Select(_ => new List<SpectrumPeak>(0)).ToArray());
+                return Task.FromResult(files.Select(_ => new List<SpectrumPeak>(0)).ToArray());
             }
-            return Task.WhenAll(files.Select(f => _loaders[f].LoadSpectrumAsObservable(target).FirstAsync().ToTask()).ToArray());
+            return Task.WhenAll(files.Select(f => _loaders[f].LoadScanAsObservable(target).Select(scan => scan?.Spectrum ?? []).FirstAsync().ToTask()).ToArray());
         }
     }
 }

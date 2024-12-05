@@ -1,9 +1,11 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
+#if NETSTANDARD || NETFRAMEWORK
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -1283,6 +1285,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 130.08625504885998,//Header - CH2
                 144.101905113,//Header  
                 162.1124697967,//Header + H2O
+                173.10464476463,//C8H14NO3
                 175.12029482877,//C8H16NO3  
                 204.1230344804,//Gly-O  
                 204.12303618681,// -CH2(SN1)  

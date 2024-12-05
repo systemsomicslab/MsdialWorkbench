@@ -4,7 +4,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,18 +13,22 @@ namespace CompMs.App.Msdial.Model.Information
 {
     internal sealed class CompoundDetailModel : DisposableModelBase
     {
-        public CompoundDetailModel(IObservable<MsScanMatchResult> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public CompoundDetailModel(IObservable<MsScanMatchResult?> result, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
+            _annotation = string.Empty;
+            _compoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
+            _annotatorId = string.Empty;
+
             result.Subscribe(result_ => {
-                Annotation = result_?.Name;
-                AnnotatorId = result_?.AnnotatorID;
-                var reference_ = refer.Refer(result_);
+                Annotation = result_?.Name ?? string.Empty;
+                AnnotatorId = result_?.AnnotatorID ?? string.Empty;
+                var reference_ = result_ is not null ? refer.Refer(result_) : null;
                 Formula = reference_?.Formula?.FormulaString;
                 Ontology = reference_?.Ontology ?? reference_?.CompoundClass;
                 Smiles = reference_?.SMILES;
                 InChIKey = reference_?.InChIKey;
             }).AddTo(Disposables);
 
-            _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult, ISimilarity>>();
+            _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult?, ISimilarity>>();
             CompoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
             result.Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
                 .DisposePreviousValue()
@@ -45,36 +48,36 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private ReadOnlyObservableCollection<ISimilarity> _compoundSimilarities;
 
-        private readonly ObservableCollection<Func<MsScanMatchResult, ISimilarity>> _compoundSimilaritiesMaps;
-        public void Add(params Func<MsScanMatchResult, ISimilarity>[] maps) {
+        private readonly ObservableCollection<Func<MsScanMatchResult?, ISimilarity>> _compoundSimilaritiesMaps;
+        public void Add(params Func<MsScanMatchResult?, ISimilarity>[] maps) {
             foreach (var map in maps) {
                 _compoundSimilaritiesMaps.Add(map);
             }
         }
 
-        public string Formula {
+        public string? Formula {
             get => string.IsNullOrEmpty(_formula) ? "NA" : _formula;
             private set => SetProperty(ref _formula, value);
         }
-        private string _formula;
+        private string? _formula;
 
-        public string Ontology {
+        public string? Ontology {
             get => string.IsNullOrEmpty(_ontology) ? "NA" : _ontology;
             private set => SetProperty(ref _ontology, value);
         }
-        private string _ontology;
+        private string? _ontology;
 
-        public string Smiles {
+        public string? Smiles {
             get => string.IsNullOrEmpty(_smiles) ? "NA" : _smiles;
             private set => SetProperty(ref _smiles, value);
         }
-        private string _smiles;
+        private string? _smiles;
 
-        public string InChIKey {
+        public string? InChIKey {
             get => string.IsNullOrEmpty(_inChIKey) ? "NA" : _inChIKey;
             private set => SetProperty(ref _inChIKey, value);
         }
-        private string _inChIKey;
+        private string? _inChIKey;
 
         public string AnnotatorId {
             get => string.IsNullOrEmpty(_annotatorId) ? "NA" : _annotatorId;
@@ -112,6 +115,19 @@ namespace CompMs.App.Msdial.Model.Information
         }
 
         public string Label => RTSIMILARITY_LABEL;
+        public string Score => Math.Round(_score * 1000).ToString("F0");
+    }
+
+    internal sealed class RiSimilarity : BindableBase, ISimilarity
+    {
+        private const string RISIMILARITY_LABEL = "RI similarity";
+        private readonly double _score;
+
+        public RiSimilarity(double score) {
+            _score = score;
+        }
+
+        public string Label => RISIMILARITY_LABEL;
         public string Score => Math.Round(_score * 1000).ToString("F0");
     }
 

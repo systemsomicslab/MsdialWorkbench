@@ -39,7 +39,7 @@
                             </Style>
                             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
                         </StackPanel.Resources>
-                        <Button Content="Apply">
+                        <Button Content="{Binding ApplyCommandContent, RelativeSource={RelativeSource TemplatedParent}}">
                             <Button.Command>
                                 <PriorityBinding>
                                     <Binding Path="ApplyCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
@@ -48,7 +48,7 @@
                                 </PriorityBinding>
                             </Button.Command>
                         </Button>
-                        <Button Content="Finish" Click="FinishClose">
+                        <Button Content="{Binding FinishCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="FinishClose">
                             <Button.Command>
                                 <PriorityBinding>
                                     <Binding Path="FinishCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
@@ -57,7 +57,7 @@
                                 </PriorityBinding>
                             </Button.Command>
                         </Button>
-                        <Button Content="Cancel" Click="CancelClose">
+                        <Button Content="{Binding CancelCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="CancelClose">
                             <Button.Command>
                                 <PriorityBinding>
                                     <Binding Path="CancelCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>

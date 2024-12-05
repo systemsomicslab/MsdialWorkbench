@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public DatasetSettingModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<MethodSettingViewModel> MethodSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodSettingViewModel?> MethodSettingViewModel { get; }
         public ObservableCollection<ISettingViewModel> SettingViewModels { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             var current = SettingViewModels.IndexOf(selected);
             if (current >= 0) {
                 for (int i = 0; i <= current; i++) {

@@ -7,18 +7,18 @@ namespace CompMs.Graphics.AxisManager.Generic
 {
     public sealed class AbsoluteAxisManager : BaseAxisManager<double>
     {
-        public AbsoluteAxisManager(Range range) : base(range) {
+        public AbsoluteAxisManager(AxisRange range) : base(range) {
         }
 
-        public AbsoluteAxisManager(Range range, Range bounds) : base(range, bounds) {
-
-        }
-
-        public AbsoluteAxisManager(Range range, IChartMargin margin) : base(range, margin) {
+        public AbsoluteAxisManager(AxisRange range, AxisRange bounds) : base(range, bounds) {
 
         }
 
-        public AbsoluteAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
+        public AbsoluteAxisManager(AxisRange range, IChartMargin margin) : base(range, margin) {
+
+        }
+
+        public AbsoluteAxisManager(AxisRange range, IChartMargin margin, AxisRange bounds) : base(range, margin, bounds) {
 
         }
 
@@ -26,7 +26,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public AbsoluteAxisManager(IEnumerable<double> source, Range bounds) : this(ToRange(source), bounds) {
+        public AbsoluteAxisManager(IEnumerable<double> source, AxisRange bounds) : this(ToRange(source), bounds) {
 
         }
 
@@ -34,7 +34,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public AbsoluteAxisManager(IEnumerable<double> source, IChartMargin margin, Range bounds) : this(ToRange(source), margin, bounds) {
+        public AbsoluteAxisManager(IEnumerable<double> source, IChartMargin margin, AxisRange bounds) : this(ToRange(source), margin, bounds) {
 
         }
 
@@ -91,12 +91,12 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public static AbsoluteAxisManager Build<T>(IEnumerable<T> source, Func<T, double> map, double lowBound, double highBound) {
-            return new AbsoluteAxisManager(ToRange(source.Select(map)), new Range(lowBound, highBound));
+            return new AbsoluteAxisManager(ToRange(source.Select(map)), new AxisRange(lowBound, highBound));
         }
 
-        private static Range ToRange(IEnumerable<double> source) {
+        private static AxisRange ToRange(IEnumerable<double> source) {
             var arr = source.ToArray();
-            return new Range(arr.DefaultIfEmpty().Min(), arr.DefaultIfEmpty().Max());
+            return new AxisRange(arr.DefaultIfEmpty().Min(), arr.DefaultIfEmpty().Max());
         }
     }
 }

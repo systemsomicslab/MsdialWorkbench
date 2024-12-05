@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MassSpectrogram</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,71 +52,8 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj"/>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MassSpectrogramBean.cs" />
-    <Compile Include="MassSpectrogramDisplayLabel.cs" />
-    <Compile Include="MassSpectrogram\MassSpectrogramFE.cs" />
-    <Compile Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateFE.cs" />
-    <Compile Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateUI.xaml.cs">
-      <DependentUpon>MassSpectrogramLeftRotateUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateFE.cs" />
-    <Compile Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateUI.xaml.cs">
-      <DependentUpon>MassSpectrogramRightRotateUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogram\MassSpectrogramUI.xaml.cs">
-      <DependentUpon>MassSpectrogramUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogramViewModel.cs" />
-    <Compile Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceFE.cs" />
-    <Compile Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceUI.xaml.cs">
-      <DependentUpon>MassSpectrogramWithReferenceUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogram\MassSpectrogramUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj">
-      <Project>{8f90089f-df30-4353-833f-220ecac7c1cf}</Project>
-      <Name>Splash</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

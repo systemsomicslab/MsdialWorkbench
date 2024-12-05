@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Chart
             RawLoader = loader;
         }
 
-        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching> ms2ScanMatching, MultiMsmsRawSpectrumLoader loader = null) {
+        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null) {
             if (rawSpectrumModel is null) {
                 throw new ArgumentNullException(nameof(rawSpectrumModel));
             }
@@ -48,6 +48,6 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
-        public MultiMsmsRawSpectrumLoader RawLoader { get; }
+        public MultiMsmsRawSpectrumLoader? RawLoader { get; }
     }
 }

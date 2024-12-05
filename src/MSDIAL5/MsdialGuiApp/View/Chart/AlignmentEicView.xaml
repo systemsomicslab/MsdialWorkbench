@@ -76,7 +76,7 @@
             </chart:SimpleChartControl.ContextMenu>
             <Grid>
                 <chart:MultiLineChartControl ItemsSources="{Binding EicChromatograms.Value}"
-                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             CollectionDataType="{x:Type do:PeakChromatogram}"
                                              ItemsProperty="Peaks"
                                              ItemsDataType="{x:Type do:PeakItem}"
                                              HorizontalProperty="{Binding HorizontalProperty.Value}"
@@ -104,7 +104,7 @@
                     </chart:MultiLineChartControl.ToolTip>
                 </chart:MultiLineChartControl>
                 <chart:MultiAreaChartControl ItemsSources="{Binding EicChromatograms.Value}"
-                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             CollectionDataType="{x:Type do:PeakChromatogram}"
                                              ItemsProperty="PeakArea"
                                              ItemsDataType="{x:Type do:PeakItem}"
                                              HorizontalProperty="{Binding HorizontalProperty.Value}"

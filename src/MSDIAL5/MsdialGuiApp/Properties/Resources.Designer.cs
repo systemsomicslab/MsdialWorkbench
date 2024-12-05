@@ -70,16 +70,16 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dec. 18th, 2022.
+        ///   Looks up a localized string similar to https://systemsomicslab.github.io/msdial5tutorial/.
         /// </summary>
-        public static string LASTEST_UPDATE {
+        public static string TUTORIAL_URI {
             get {
-                return ResourceManager.GetString("LASTEST_UPDATE", resourceCulture);
+                return ResourceManager.GetString("TUTORIAL_URI", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vmsdial.json.
+        ///   Looks up a localized string similar to https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100.
         /// </summary>
         public static string VDD_URI {
             get {
@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.1.230129.
+        ///   Looks up a localized string similar to 5.5.241113.
         /// </summary>
         public static string VERSION {
             get {

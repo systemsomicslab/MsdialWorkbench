@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public bool IsReadOnly { get; }
 
-        public ReadOnlyReactivePropertySlim<string> DatasetFolderPath { get; }
+        public ReadOnlyReactivePropertySlim<string?> DatasetFolderPath { get; }
 
         [Required(ErrorMessage = "DatasetFileName is required.")]
         [RegularExpression(@"[a-zA-Z0-9_\.\-]+", ErrorMessage = "Invalid character contains.")]
@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             Model.Prepare();
             return null;

@@ -136,7 +136,12 @@ namespace CompMs.Graphics.UI
         private void UpdateValue(int count) {
             _updating = true;
             _counter += count;
-            Value = _baseValue + _counter * Step;
+            var value = _baseValue + _counter * Step;
+            Value = value;
+            if (Value != value) {
+                _baseValue = Value;
+                _counter = 0;
+            }
             _updating = false;
         }
 

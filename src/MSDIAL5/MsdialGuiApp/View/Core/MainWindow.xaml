@@ -220,6 +220,11 @@
                               xmlns:lcimvw="clr-namespace:CompMs.App.Msdial.View.Lcimms">
                     <lcimvw:LcimmsMainView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type gcvm:GcmsMethodViewModel}"
+                              xmlns:gcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
+                              xmlns:gcvw="clr-namespace:CompMs.App.Msdial.View.Gcms">
+                    <gcvw:GcmsMainView />
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type iimvm:ImagingImmsMainViewModel}"
                               xmlns:iimvm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
                               xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.ImagingImms">

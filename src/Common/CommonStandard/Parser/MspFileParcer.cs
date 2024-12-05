@@ -167,7 +167,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             var tQueries = getTrueQueryStrings(queries);
-            if (tQueries.Count == 0) return null;
+            if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
             var mspDB = ReadSerializedMspObject(file);
@@ -260,12 +260,12 @@ namespace CompMs.Common.Parser
 
                 case "formula": 
                     mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue); 
-                    if (mspObj.Formula != null) {
+                    if (mspObj.Formula != null && mspObj.Formula.IsCorrectlyImported) {
                         mspObj.Formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(mspObj.Formula);
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 
                         var isotopeProp = IsotopeCalculator.GetAccurateIsotopeProperty(mspObj.Formula.FormulaString, 2, IupacDatabase);
-                        mspObj.IsotopicPeaks = isotopeProp.IsotopeProfile;
+                        mspObj.IsotopicPeaks = isotopeProp?.IsotopeProfile ?? new List<IsotopicPeak>(0);
                     }
                     return false;
                 case "smiles": mspObj.SMILES = fieldValue;  return false;
@@ -294,13 +294,21 @@ namespace CompMs.Common.Parser
                         if (isFiehnDB) {
                             mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
                         }
+                    } else if (fieldValue.Contains("a=")) {
+                        var newFieldValue = fieldValue.Replace("a=", "");
+                        if (float.TryParse(newFieldValue, out ri)) {
+                            mspObj.ChromXs.RI = new RetentionIndex(ri);
+                            if (isFiehnDB) {
+                                mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
+                            }
+                        }
                     }
                    
                      return false;
 
                 case "ionmode": 
                 case "ion_mode":
-                case "ionization": 
+                //case "ionization":
                     mspObj.IonMode = fieldValue.ToLower().Contains("n") ? IonMode.Negative : IonMode.Positive; 
                      return false;
 
@@ -340,6 +348,8 @@ namespace CompMs.Common.Parser
                     if (mspObj.Comment == string.Empty) mspObj.Comment = "scannumber=" + fieldValue;
                     else mspObj.Comment += "; scannumber=" + fieldValue;
                     return false;
+                case "databaseuniqueidentifier":
+                    mspObj.DatabaseUniqueIdentifier = fieldValue; return false;
                 case "num peaks":
                 case "numpeaks":
                 case "num_peaks":
@@ -573,10 +583,13 @@ namespace CompMs.Common.Parser
             sw.WriteLine("PRECURSORTYPE: " + adducttype);
             sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT.Value);
             sw.WriteLine("FORMULA: " + record.Formula);
+            sw.WriteLine("ONTOLOGY: " + record.Ontology);
             sw.WriteLine("SMILES: " + record.SMILES);
             sw.WriteLine("INCHIKEY: " + record.InChIKey);
+            sw.WriteLine("INSTRUMENTTYPE: " + record.InstrumentType);
             sw.WriteLine("COLLISIONENERGY: " + record.CollisionEnergy);
             sw.WriteLine("IONMODE: " + record.IonMode);
+            sw.WriteLine("DatabaseUniqueIdentifier: " + record.DatabaseUniqueIdentifier);
             sw.WriteLine("Comment: " + record.Comment);
             sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
 

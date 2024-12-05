@@ -106,7 +106,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
         public static MSDecResult ReadMSDecResult(string file, long seekPoint) {
-            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 var buffer = new byte[7];
                 fs.Seek(0, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 7);
@@ -127,7 +127,7 @@ namespace CompMs.MsdialCore.Parser {
 
 
         public static MSDecResult ReadMSDecResult(string file, long seekPoint, int version, bool isAnnotationInfoIncluded) {
-            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 if (version == 1) {
                     fs.Seek(seekPoint, SeekOrigin.Begin);
                     return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);

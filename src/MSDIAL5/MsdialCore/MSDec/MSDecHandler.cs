@@ -12,6 +12,7 @@ using CompMs.MsdialCore.Utility;
 using NSSplash;
 using NSSplash.impl;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -184,12 +185,9 @@ namespace CompMs.MsdialCore.MSDec {
         }
     }
 
-    public sealed class MSDecHandler {
-        private MSDecHandler() { }
-
+    public static class MSDecHandler {
         #region gcms
-        public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
-            ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
+        public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, ReportProgress reporter) {
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
@@ -239,7 +237,7 @@ namespace CompMs.MsdialCore.MSDec {
 
                     counter++;
                 }
-                ReportProgress.Show(initialProgress, progressMax, i, modelChromatograms.Count, reportAction);
+                reporter.Report(i, modelChromatograms.Count);
             }
 
             foreach (var ms1DecResult in msdecResults) {
@@ -260,30 +258,26 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecResults;
         }
 
-        
-
-        public static PeakDetectionResult GetChromatogramQuantInformation(
-            RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
+        public static QuantifiedChromatogramPeak? GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
             var model = result.ModelPeakChromatogram;
-            if (model.IsEmptyOrNull()) return new PeakDetectionResult();
+            System.Diagnostics.Debug.Assert(model is null || model.Count > 0, "No model peak chromatogram");
             var startID = model[0].ID;
             var endID = model[model.Count - 1].ID;
             var startRt = model[0].ChromXs.RT.Value;
             var endRt = model[model.Count - 1].ChromXs.RT.Value;
-            var offset = 0.1;
-
-            return GetChromatogramQuantInformation(spectra, targetMz, startID, endID, startRt, endRt, offset, param);
-        }
-
-        public static PeakDetectionResult GetChromatogramQuantInformation(
-            RawSpectra spectra, double targetMz, int startID, int endID, double startRt, double endRt, double offset, ParameterBase param) {
-            var chromatogramRange = new ChromatogramRange(
-                startRt - offset < spectra.StartRt ? spectra.StartRt : startRt - offset,
-                endRt + offset > spectra.EndRt ? spectra.EndRt : endRt + offset,
-                ChromXType.RT, ChromXUnit.Min);
-            var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
-            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
-            return peakResult;
+            var offset = .5d;
+            ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
+            //targetMz = (int)targetMz;
+            using var chrom = spectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange);
+            using var smoothedchrom = chrom.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var peakResult = smoothedchrom.GetPeakDetectionResultFromRange(startID, endID);
+            System.Diagnostics.Debug.Assert(peakResult is not null);
+            if (peakResult is null) {
+                return null;
+            }
+            var peak = peakResult.ConvertToPeakFeature(smoothedchrom, targetMz);
+            var peakShape = new ChromatogramPeakShape(peakResult);
+            return QuantifiedChromatogramPeak.RecalculatedFromChromatogram(peak, peakShape, peakResult, smoothedchrom);
         }
 
         private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {
@@ -358,7 +352,6 @@ namespace CompMs.MsdialCore.MSDec {
             var modelChrom = new ModelChromatogram() { SharpnessValue = maxSharpnessValue, IdealSlopeValue = maxIdealSlopeValue };
             var firstFlg = false;
 
-            var peaklist = new List<ChromatogramPeak>();
             var peaklists = new List<List<ChromatogramPeak>>();
             var baselineCorrectedPeaklist = new List<ChromatogramPeak>();
 
@@ -369,22 +362,15 @@ namespace CompMs.MsdialCore.MSDec {
                     modelChrom.ChromScanOfPeakTop = rdamToChromDict[modelChrom.RdamScanOfPeakTop];
                     modelChrom.ChromScanOfPeakLeft = modelChrom.ChromScanOfPeakTop - (peak.ChromScanIdTop - peak.ChromScanIdLeft);
                     modelChrom.ChromScanOfPeakRight = modelChrom.ChromScanOfPeakTop + (peak.ChromScanIdRight - peak.ChromScanIdTop);
-                    modelChrom.ModelMzList.Add((float)peak.Mass);
                     modelChrom.SharpnessValue = peak.PeakShape.ShapenessValue;
                     modelChrom.EstimatedNoise = peak.PeakShape.EstimatedNoise;
                     modelChrom.SignalToNoise = peak.PeakShape.SignalToNoise;
-
-                    peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
-                    baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
-                    peaklists.Add(baselineCorrectedPeaklist);
                     firstFlg = true;
                 }
-                else {
-                    modelChrom.ModelMzList.Add((float)peak.Mass);
-                    peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
-                    baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
-                    peaklists.Add(baselineCorrectedPeaklist);
-                }
+                modelChrom.ModelMzList.Add((float)peak.Mass);
+                var peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
+                baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
+                peaklists.Add(baselineCorrectedPeaklist);
             }
 
             double mzCount = modelChrom.ModelMzList.Count;
@@ -392,7 +378,7 @@ namespace CompMs.MsdialCore.MSDec {
                 modelChrom.Peaks.Add(new ChromatogramPeak(peak.ID, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
             }
 
-            if (peaklist.Count > 1) {
+            if (peaklists.Count > 1) {
                 for (int i = 1; i < peaklists.Count; i++) {
                     for (int j = 0; j < peaklists[i].Count; j++) {
                         modelChrom.Peaks[j].Intensity += peaklists[i][j].Intensity /= mzCount;
@@ -487,7 +473,7 @@ namespace CompMs.MsdialCore.MSDec {
             }
             if (spectrum.Count > 0) {
                 var maxIntensity = spectrum.Max(n => n.Intensity);
-                spectrum = spectrum.Where(n => n.Intensity > maxIntensity * 0.001).ToList();
+                spectrum = spectrum.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
                 return spectrum;
             }
 
@@ -514,7 +500,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
 
-            var sPeaklist = peaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var sPeaklist = peaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
             if (sPeaklist.Count != 0) {
 
                 var maxID = -1;
@@ -692,7 +678,7 @@ namespace CompMs.MsdialCore.MSDec {
         //}
 
 
-        public static MSDecResult GetMSDecResult(List<Chromatogram_temp2> chromatogramList, ParameterBase param, int targetScanNumber,
+        public static MSDecResult GetMSDecResult(List<ExtractedIonChromatogram> chromatogramList, ParameterBase param, int targetScanNumber,
             ChromXType chromType = ChromXType.RT, ChromXUnit chromUnit = ChromXUnit.Min) {
             if (chromatogramList == null || chromatogramList.Count == 0) return null;
             //Peak detections in MS/MS chromatogras
@@ -764,7 +750,7 @@ namespace CompMs.MsdialCore.MSDec {
             return peakSpots;
         }
 
-        private static List<ChromatogramPeakFeature> getPeakSpots(List<Chromatogram_temp2> chromatogramList, ParameterBase param, ChromXType type, ChromXUnit unit) {
+        private static List<ChromatogramPeakFeature> getPeakSpots(List<ExtractedIonChromatogram> chromatogramList, ParameterBase param, ChromXType type, ChromXUnit unit) {
             var peakSpots = new List<ChromatogramPeakFeature>();
 
             var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
@@ -814,7 +800,7 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
 
-        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, Chromatogram_temp2 chromatogram) {
+        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, ExtractedIonChromatogram chromatogram) {
 
             var ms2DecBins = new MsDecBin[chromatogram.Length];
 
@@ -935,7 +921,7 @@ namespace CompMs.MsdialCore.MSDec {
             return mPeaklist;
         }
 
-        private static List<ModelChromatogram_temp> getModelChromatograms(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakSpots, MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
+        private static List<ModelChromatogram_temp> getModelChromatograms(List<ExtractedIonChromatogram> chromatogramList, List<ChromatogramPeakFeature> peakSpots, MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
             var regionMarkers = getRegionMarkers(matchedFilterArray);
             var modelChromatograms = new List<ModelChromatogram_temp>();
             //   Debug.WriteLine("Regions count: {regionMarkers.Count}");
@@ -964,7 +950,7 @@ namespace CompMs.MsdialCore.MSDec {
             return modelChromatograms;
         }
 
-        private static ModelChromatogram_temp getModelChromatogram(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakAreas,
+        private static ModelChromatogram_temp getModelChromatogram(List<ExtractedIonChromatogram> chromatogramList, List<ChromatogramPeakFeature> peakAreas,
             MsDecBin[] msdecBins, ParameterBase param) {
             if (peakAreas == null || peakAreas.Count == 0) return null;
             var maxSharpnessValue = peakAreas.Max(n => n.PeakShape.ShapenessValue);
@@ -1026,7 +1012,7 @@ namespace CompMs.MsdialCore.MSDec {
             return peaksList;
         }
 
-        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<Chromatogram_temp2> chromatogramList, ParameterBase param) {
+        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<ExtractedIonChromatogram> chromatogramList, ParameterBase param) {
             var peaksList = new List<ValuePeak[]>();
             foreach (var chromatogram in chromatogramList) {
                 var peaks = chromatogram.TrimPeaks(modelChromVector.ChromScanList[0], modelChromVector.ChromScanList[modelChromVector.ChromScanList.Count - 1]);
@@ -1302,7 +1288,6 @@ namespace CompMs.MsdialCore.MSDec {
 
         private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(IReadOnlyList<RawSpectrum> spectrumList,
             int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, MsDecBin[] msdecBins, float focusedMass, ParameterBase param) {
-            var peaklist = new List<ChromatogramPeak>();
 
             int leftRemainder = 0, rightRemainder = 0;
             double sum = 0, maxIntensityMz, maxMass;
@@ -1314,6 +1299,7 @@ namespace CompMs.MsdialCore.MSDec {
             if (chromLeft < 0) { leftRemainder = smoothedMargin - chromScanOfPeakLeft; chromLeft = 0; }
             if (chromRight > msdecBins.Length - 1) { rightRemainder = chromScanOfPeakRight + smoothedMargin - (msdecBins.Length - 1); chromRight = msdecBins.Length - 1; }
 
+            var peaklist = new ValuePeak[chromRight - chromLeft + 1];
             for (int i = chromLeft; i <= chromRight; i++) {
                 var rdamScan = msdecBins[i].RdamScanNumber;
                 var spectrum = spectrumList[rdamScan];
@@ -1336,10 +1322,11 @@ namespace CompMs.MsdialCore.MSDec {
                     }
                     else if (massSpectra[j].Mz >= focusedMass + massTol) break;
                 }
-                peaklist.Add(new ChromatogramPeak(spectrum.Index, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
+                peaklist[i - chromLeft] = new ValuePeak(spectrum.Index, spectrum.ScanStartTime, maxMass, sum);
             }
 
-            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            using var smoothedChromatogram = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = smoothedChromatogram.AsPeakArray();
             for (int i = 0; i < smoothedMargin - leftRemainder; i++) smoothedPeaklist.RemoveAt(0);
             for (int i = 0; i < smoothedMargin - rightRemainder; i++) smoothedPeaklist.RemoveAt(smoothedPeaklist.Count - 1);
 

@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.GcmsIdentificationSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsIdentificationSettingViewModel}}"
+             d:DesignHeight="800" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Margin" Value="8,0,0,0"/>
+            </Style>
+            <Style TargetType="RadioButton">
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="StackPanel">
+                <Setter Property="Margin" Value="8,0,0,0"/>
+            </Style>
+        </Grid.Resources>
+        <StackPanel>
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="Retention time setting" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <ui:LabeledContent PrependLabel="RI or RT:">
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <RadioButton Content="Use retention index (RI)" IsChecked="{Binding UseRI.Value}"/>
+                            <RadioButton Content="Use retention time (min)" IsChecked="{Binding UseRT.Value}" d:IsChecked="True"/>
+                        </StackPanel>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Index file:"
+                                       ToolTip="Carbon number and retention time dictionaly for RI calculation">
+                        <StackPanel Orientation="Horizontal" Margin="0">
+                            <Button Content="Set" Command="{Binding Path=IndexFileSetCommand, Mode=OneTime}"
+                                    Width="64"/>
+                            <TextBlock Margin="8,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Status: empty"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsIndexImported.Value}" Value="True">
+                                                <Setter Property="Text" Value="Status: imported"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="MSP file and identification setting" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <ui:ExecutableBar Label="MSP file:"
+                                      ButtonContent="Browse"
+                                      Command="{Binding BrowseMspCommand, Mode=OneTime}"
+                                      Style="{StaticResource AlignedExecutableBar}">
+                        <ui:ExecutableBar.ToolTip>
+                            <TextBlock>
+                                If you select FAMEs as RI, you do not have to select a msp since MS-DIAL has the Fiehn library internally.<LineBreak /> 
+                                But of course, you can select your own MSP file from here.
+                            </TextBlock>
+                        </ui:ExecutableBar.ToolTip>
+                        <TextBox Text="{Binding Path=MspFilePath.Value}" />
+                    </ui:ExecutableBar>
+                    <ui:LabeledContent PrependLabel="Retention index tolerance:">
+                        <TextBox Text="{Binding SearchParameter.RiTolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Retention time tolerance:">
+                        <TextBox Text="{Binding SearchParameter.RtTolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="m/z range begin:">
+                        <TextBox Text="{Binding SearchParameter.MassRangeBegin.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="m/z range end:">
+                        <TextBox Text="{Binding SearchParameter.MassRangeEnd.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="m/z tolerance:">
+                        <TextBox Text="{Binding SearchParameter.Ms1Tolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Weighted dot product score cut off:"
+                                       ToolTip="EI similarity">
+                        <TextBox Text="{Binding SearchParameter.WeightedDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Dot product score cut off:">
+                        <TextBox Text="{Binding SearchParameter.SimpleDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Reverse dot product score cut off:">
+                        <TextBox Text="{Binding SearchParameter.ReverseDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Identification score cut off:">
+                        <TextBox Text="{Binding SearchParameter.TotalScoreCutoff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use retention information for scoring:"
+                                       ToolTip="If unchecked, RT similarity is not used in total score.">
+                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationScoring.Value}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use retention information for filtering:"
+                                       ToolTip="If checked, RT is used for filtering candidates out.">
+                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationFiltering.Value}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use quant masses defined in MSP format file:"
+                                       ToolTip="If checked, the quant mass of identified metabolites was calculated by the information of 'QUANTMASS: ' field in MSP.">
+                        <CheckBox IsChecked="{Binding UseQuantMassesDefinedInMsp.Value}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Only report the top hit:"
+                                       ToolTip="One result having the top score will be reported as a result of the post identification process.">
+                        <CheckBox IsChecked="{Binding OnlyReportTopHit.Value}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

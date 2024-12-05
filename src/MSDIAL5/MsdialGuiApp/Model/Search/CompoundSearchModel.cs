@@ -1,46 +1,38 @@
-﻿using Accord;
-using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Service;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Media;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
     interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
-        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+        IList SearchMethods { get; }
 
-        CompoundSearcher SelectedCompoundSearcher { get; set; }
+        object? SearchMethod { get; set; }
+
+        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         IFileBean File { get; }
 
-        IPeakSpotModel PeakSpot { get; }
+        ICompoundResult? SelectedCompoundResult { get; set; }
+
+        IReadOnlyList<ICompoundResult>? CompoundResults { get; }
 
         MsSpectrumModel MsSpectrumModel { get; }
-
-        MoleculeMsReference SelectedReference { get; set; }
-
-        MsScanMatchResult SelectedMatchResult { get; set; }
-
-        CompoundResultCollection Search();
 
         void SetConfidence();
 
@@ -49,114 +41,90 @@ namespace CompMs.App.Msdial.Model.Search
         void SetUnknown();
     }
 
-    internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
+    internal class CompoundSearchModel<T> : DisposableModelBase, ICompoundSearchModel
     {
-        private readonly MSDecResult _msdecResult;
-        private readonly UndoManager _undoManager;
-        private readonly IPeakSpotModel _peakSpot;
+        private readonly SetAnnotationUsecase _setAnnotationService;
+        private readonly PlotComparedMsSpectrumUsecase _plotService;
+        private readonly ICompoundSearchUsecase<ICompoundResult, T> _compoundSearchService;
+        private readonly T _peakSpot;
+        private readonly BusyNotifier _isBusy;
 
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, CompoundSearcherCollection compoundSearchers, UndoManager undoManager)
-            : this(fileBean, peakSpot, msdecResult, compoundSearchers.Items, undoManager) {
-
-        }
-
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager) {
+        public CompoundSearchModel(IFileBean fileBean, T peakSpot, ICompoundSearchUsecase<ICompoundResult, T> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
-            _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
-            CompoundSearchers = compoundSearchers;
-            _undoManager = undoManager;
-            SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
-            _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
-
-            var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
-                .SkipNull()
-                .Select(c => new MsSpectrum(c.Spectrum))
+            _peakSpot = peakSpot;
+            _compoundSearchService = compoundSearchService;
+            _plotService = plotComparedMsSpectrumService;
+            _setAnnotationService = setAnnotationService;
+            _isBusy = new BusyNotifier();
+            SearchParameter = _compoundSearchService.ObserveProperty(m => m.SearchParameter)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var scorer = this.ObserveProperty(m => m.SelectedCompoundSearcher)
+            SearchMethod = SearchMethods.OfType<object>().FirstOrDefault();
+
+            this.ObserveProperty(m => SelectedCompoundResult)
+                .Subscribe(r => _plotService.UpdateReference(r?.MsReference)).AddTo(Disposables);
+            _compoundSearchService.ObserveProperty(m => m.SearchParameter)
                 .SkipNull()
-                .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            ObservableMsSpectrum upperObservableMsSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(msdecResult.Spectrum)), null, Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
-            ObservableMsSpectrum lowerObservableMsSpectrum = new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables), Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
-            ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Blue));
-            SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
-                upperObservableMsSpectrum,
-                upperObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
-                upperObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
-                upperSpectrumHueItem,
-                msGraphLabels).AddTo(Disposables);
-            ChartHueItem lowerSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Red));
-            SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
-                lowerObservableMsSpectrum,
-                lowerObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
-                lowerObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
-                lowerSpectrumHueItem,
-                msGraphLabels).AddTo(Disposables);
-            MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, scorer)
-            {
-                GraphTitle = string.Empty,
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Abundance",
-            }.AddTo(Disposables);
+                .Select(s => new Ms2ScanMatching(s))
+                .Subscribe(_plotService.UpdateMatchingScorer).AddTo(Disposables);
         }
 
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+        public IList SearchMethods => _compoundSearchService.SearchMethods;
 
-        public CompoundSearcher SelectedCompoundSearcher {
-            get => _compoundSearcher;
-            set => SetProperty(ref _compoundSearcher, value);
+        public object? SearchMethod {
+            get => _compoundSearchService.SearchMethod;
+            set {
+                if (_compoundSearchService.SearchMethod != value) {
+                    _compoundSearchService.SearchMethod = value;
+                    OnPropertyChanged(nameof(SearchMethod));
+                }
+            }
         }
-        private CompoundSearcher _compoundSearcher;
+
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         public IFileBean File { get; }
 
-        public IPeakSpotModel PeakSpot => _peakSpot;
+        public T PeakSpot => _peakSpot;
 
-        public MsSpectrumModel MsSpectrumModel { get; }
+        public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
 
-        public MoleculeMsReference SelectedReference { 
-            get => _selectedReference;
-            set => SetProperty(ref _selectedReference, value);
+        public ICompoundResult? SelectedCompoundResult {
+            get => _selectedCompoundResult;
+            set => SetProperty(ref _selectedCompoundResult, value);
         }
-        private MoleculeMsReference _selectedReference;
+        private ICompoundResult? _selectedCompoundResult;
 
-        public MsScanMatchResult SelectedMatchResult {
-            get => _selectedMatchResult;
-            set => SetProperty(ref _selectedMatchResult, value);
+        public IReadOnlyList<ICompoundResult>? CompoundResults {
+            get => _compoundResults;
+            private set => SetProperty(ref _compoundResults, value);
         }
-        private MsScanMatchResult _selectedMatchResult;
+        private IReadOnlyList<ICompoundResult>? _compoundResults;
 
-        public virtual CompoundResultCollection Search() {
-            return new CompoundResultCollection
-            {
-                Results = SearchCore().ToList(),
-            };
-        }
+        public IObservable<bool> IsBusy => _isBusy;
 
-        protected IEnumerable<ICompoundResult> SearchCore() {
-            return SelectedCompoundSearcher.Search(
-                _peakSpot.MSIon,
-                _msdecResult,
-                new List<RawPeakElement>(),
-                new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
-            );
+        public async Task SearchAsync(CancellationToken token) {
+            using (_isBusy.ProcessStart()) {
+                CompoundResults = await Task.Run(() => _compoundSearchService.Search(_peakSpot), token).ConfigureAwait(false);
+            }
         }
 
         public void SetConfidence() {
-            _peakSpot.SetConfidence(SelectedReference, SelectedMatchResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetConfidence(result);
+            }
         }
 
         public void SetUnsettled() {
-            _peakSpot.SetUnsettled(SelectedReference, SelectedMatchResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetUnsettled(result);
+            }
         }
 
         public void SetUnknown() {
-            _peakSpot.SetUnknown(_undoManager);
+            _setAnnotationService.SetUnknown();
         }
+
+        internal new IList<IDisposable> Disposables => base.Disposables;
     }
 }

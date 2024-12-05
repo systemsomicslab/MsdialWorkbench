@@ -143,11 +143,11 @@
                          HorizontalContentAlignment="Left"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Lipid database:" Visibility="{Binding IsLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
-                <Button Content="Set"
+                <Button Content="Configure lipid class"
                         Command="{Binding LipidDBSetCommand, Mode=OneTime}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Width="64"/>
+                        Width="128"/>
             </ui:LabeledContent>
             <GroupBox Header="Peptide database setting"
                       BorderThickness="0"
@@ -287,10 +287,10 @@
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource MassToleranceSetting}"/>
                 <TextBlock Text="MS2 spectrum cut off"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource Ms2Setting}"/>
             </StackPanel>
         </ScrollViewer>

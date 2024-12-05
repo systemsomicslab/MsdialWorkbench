@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{68A6A63D-489A-4E21-84E1-AFC885B9A95E}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MassSpectrogram</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,87 +52,12 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MassSpectrogramBean.cs" />
-    <Compile Include="MassSpectrogramDisplayLabel.cs" />
-    <Compile Include="MassSpectrogram\MassSpectrogramFE.cs" />
-    <Compile Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateFE.cs" />
-    <Compile Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateUI.xaml.cs">
-      <DependentUpon>MassSpectrogramLeftRotateUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateFE.cs" />
-    <Compile Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateUI.xaml.cs">
-      <DependentUpon>MassSpectrogramRightRotateUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogram\MassSpectrogramUI.xaml.cs">
-      <DependentUpon>MassSpectrogramUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MassSpectrogramViewModel.cs" />
-    <Compile Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceFE.cs" />
-    <Compile Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceUI.xaml.cs">
-      <DependentUpon>MassSpectrogramWithReferenceUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="MassSpectrogramLeftRotate\MassSpectrogramLeftRotateUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogramRightRotate\MassSpectrogramRightRotateUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogram\MassSpectrogramUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MassSpectrogramWithReference\MassSpectrogramWithReferenceUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj">
-      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
-      <Name>CommonStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
-      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
-      <Name>MolecularFormulaFinderStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MSDIAL4\MolViewer\MolViewer.csproj">
-      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
-      <Name>MolViewer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MSDIAL4\StructureFinderStandard\StructureFinderStandard.csproj">
-      <Project>{0001b4ac-83ae-4011-b314-085c8d3f6157}</Project>
-      <Name>StructureFinderStandard</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj"/>
+    <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj"/>
+    <ProjectReference Include="..\..\MSDIAL4\MolViewer\MolViewer.csproj"/>
+    <ProjectReference Include="..\..\MSDIAL4\StructureFinderStandard\StructureFinderStandard.csproj"/>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

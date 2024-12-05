@@ -3,8 +3,6 @@ using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Core.Base;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -15,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class ExperimentSpectrumViewModel : ViewModelBase
+    internal class ExperimentSpectrumViewModel : ViewModelBase
     {
         public ExperimentSpectrumViewModel(ExperimentSpectrumModel model) {
             this.model = model;
@@ -39,12 +37,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public RangeSelectableChromatogramViewModel RangeSelectableChromatogramViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<SummarizedSpectrumViewModel> Ms1Spectrum { get; }
+        public ReadOnlyReactivePropertySlim<SummarizedSpectrumViewModel?> Ms1Spectrum { get; }
 
         public ReadOnlyReactiveCollection<SummarizedSpectrumViewModel> Ms2Spectrums { get; }
-
-        public IAxisManager HorizontalAxis { get; }
-        public IAxisManager VerticalAxis { get; }
 
         public AsyncReactiveCommand AccumulateSpectrumCommand { get; }
 

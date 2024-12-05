@@ -7,6 +7,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:RawMsSpectrumCheckViewModel}}"
              d:Background="White"
@@ -68,6 +69,7 @@
                   SelectedItem="{Binding SelectedSpectrum.Value}"
                   IsReadOnly="True"
                   AutoGenerateColumns="False"
+                  behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Index" Binding="{Binding OriginalIndex}"/>

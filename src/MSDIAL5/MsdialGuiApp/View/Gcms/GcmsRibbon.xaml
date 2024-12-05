@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Gcms.GcmsRibbon"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
+            xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+            xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
+            mc:Ignorable="d" 
+            d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsMethodViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
+    <Ribbon Background="{StaticResource MainThemeColor}">
+        <Ribbon.QuickAccessToolBar>
+            <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.QuickAccessToolBar>
+        <Ribbon.HelpPaneContent>
+            <RibbonButton SmallImageSource="{StaticResource Version_is}"
+                          Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.HelpPaneContent>
+        <Ribbon.ApplicationMenu>
+            <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.ApplicationMenu>
+        <Ribbon.ContextualTabGroups>
+            <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
+        </Ribbon.ContextualTabGroups>
+
+        <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialDataVisualizationTab/>
+        <ribbon:MsdialSearchTab/>
+        <ribbon:MsdialViewTab/>
+        <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialExportTab/>
+        <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
+        <ribbon:MsdialGraphUtilityTab ContextualTabGroupHeader="Graph tools"
+                                      DataContext="{Binding AlignmentViewModel.Value.PlotViewModel}"
+                                      Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+    </Ribbon>
+</UserControl>

@@ -3,9 +3,7 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -26,7 +24,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager, IMessageBroker broker)
+        private ImmsMethodViewModel(
+            ImmsMethodModel model,
+            IReadOnlyReactiveProperty<IAnalysisResultViewModel?> analysisViewModelAsObservable,
+            IReadOnlyReactiveProperty<IAlignmentResultViewModel?> alignmentViewModelAsObservable,
+            ViewModelSwitcher chromatogramViewModels,
+            ViewModelSwitcher massSpectrumViewModels,
+            FocusControlManager focusControlmanager,
+            IMessageBroker broker)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             this.model = model;
@@ -51,8 +56,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
-        private DelegateCommand _exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
+        private DelegateCommand? _exportAnalysisResultCommand;
 
         private void ExportAnalysis() {
             using (var vm = new AnalysisResultExportViewModel(model.CreateExportAnalysisResult())) {
@@ -61,8 +66,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         
 
-        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
-        private DelegateCommand _exportAlignmentResultCommand;
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
+        private DelegateCommand? _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
             using (var vm = new AlignmentResultExportViewModel(model.AlignmentResultExportModel, _broker)) {
@@ -70,80 +75,42 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
-        private DelegateCommand _showTicCommand;
+        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
+        private DelegateCommand? _showTicCommand;
 
-        private void ShowTIC() {
-            var m = model.PrepareTIC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        } 
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
+        private DelegateCommand? _showBpcCommand;
 
-        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
-        private DelegateCommand _showBpcCommand;
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
+        private DelegateCommand? _showTicBpcRepEIC;
 
-        private void ShowBPC() {
-            var m = model.PrepareBPC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        }
+        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
+        private DelegateCommand? _showEicCommand;
 
-        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
-        private DelegateCommand _showTicBpcRepEIC;
-
-        private void ShowTicBpcRepEIC() {
-            var m = model.PrepareTicBpcRepEIC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
-        private DelegateCommand _showEicCommand;
-
-        private void ShowEIC() {
-            var m = model.PrepareEicSetting();
-            if (m is null) {
-                return;
-            }
-            using (var settingvm = new DisplayEicSettingViewModel(m)) {
-                _broker.Publish(settingvm);
-                if (!settingvm.DialogResult) {
+        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            void InnerShowChromatograms() {
+                var m = model.PrepareChromatograms(tic, bpc, highestEic);
+                if (m is null) {
                     return;
                 }
+                var vm = new CheckChromatogramsViewModel(m, _broker);
+                _broker.Publish(vm);
             }
-            var chromatograms = m.PrepareChromatograms();
-            if (chromatograms is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(chromatograms, _broker);
-            _broker.Publish(vm);
+            return InnerShowChromatograms;
         }
 
-        private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel?> ConvertToAnalysisViewModel(
             ImmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker messageBroker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<ImmsAnalysisViewModel> result;
-            using (var subject = new Subject<ImmsAnalysisModel>()) {
+            ReadOnlyReactivePropertySlim<ImmsAnalysisViewModel?> result;
+            using (var subject = new Subject<ImmsAnalysisModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new ImmsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager))
+                    .Select(m => m is null ? null : new ImmsAnalysisViewModel(m, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -152,22 +119,18 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return result;
         }
 
-        private static IReadOnlyReactiveProperty<ImmsAlignmentViewModel> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<ImmsAlignmentViewModel?> ConvertToAlignmentViewModel(
             ImmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker messageBroker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<ImmsAlignmentViewModel> result;
-            using (var subject = new Subject<ImmsAlignmentModel>()) {
+            ReadOnlyReactivePropertySlim<ImmsAlignmentViewModel?> result;
+            using (var subject = new Subject<ImmsAlignmentModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new ImmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager))
+                    .Select(m => m is null ? null : new ImmsAlignmentViewModel(m, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
@@ -176,26 +139,26 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return result;
         }
 
-        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<ImmsAnalysisViewModel?> analysisAsObservable, IObservable<ImmsAlignmentViewModel?> alignmentAsObservable) {
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
             var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
-            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase?>[] { eic, bar, alignmentEic});
         }
 
-        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel?> analysisAsObservable, IObservable<ImmsAlignmentViewModel?> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
-            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase?>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
-            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase?>[] { rawdec, ms2chrom, rawpur, repref});
         }
 
-        public static ImmsMethodViewModel Create(ImmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {
+        public static ImmsMethodViewModel Create(ImmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {
             var focusControlManager = new FocusControlManager();
 
-            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
-            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
+            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, peakSpotTableService, messageBroker, focusControlManager);
+            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, peakSpotTableService, messageBroker, focusControlManager);
             var chromatogramViewSwitcher = PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
             var massSpectrumViewSwitcher =  PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
             return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager, messageBroker);

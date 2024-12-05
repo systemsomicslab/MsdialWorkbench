@@ -1,22 +1,36 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Chart;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    internal sealed class AnalysisPeakPlotViewModel : ViewModelBase
+    internal class AnalysisPeakPlotViewModel : AnalysisPeakPlotViewModel<ChromatogramPeakFeatureModel, ObservableCollection<ChromatogramPeakFeatureModel>>
     {
-        private readonly AnalysisPeakPlotModel _model;
+        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, Action focus, IObservable<bool> isFocused, IMessageBroker broker) :
+            base(model, focus, isFocused, broker) {
 
-        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
+        }
+    }
+
+    internal class AnalysisPeakPlotViewModel<T, U> : ViewModelBase where U: IList, IEnumerable<T>, INotifyCollectionChanged
+    {
+        private readonly AnalysisPeakPlotModel<T, U> _model;
+        private readonly IMessageBroker _broker;
+
+        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel<T, U> model, Action focus, IObservable<bool> isFocused, IMessageBroker broker) {
             _model = model;
 
             Spots = model.Spots;
@@ -61,6 +75,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SpotLabelBrush = model.SpotLabelBrush;
 
             Focus = focus;
+            _broker = broker;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
@@ -68,36 +83,52 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Spots { get; }
+        public IList Spots { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; } 
 
-        public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>> Brush { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<T>?> Brush { get; }
 
-        public ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>> Brushes => _model.Brushes;
+        public ReadOnlyCollection<BrushMapData<T>> Brushes => _model.Brushes;
 
-        public ReactiveProperty<BrushMapData<ChromatogramPeakFeatureModel>> SelectedBrush { get; }
+        public ReactiveProperty<BrushMapData<T>> SelectedBrush { get; }
 
-        public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public IReactiveProperty<T?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> LabelProperty { get; }
 
         public ReadOnlyObservableCollection<SpotLinker> Links { get; }
         public ReadOnlyObservableCollection<SpotAnnotator> Annotations { get; }
 
         public IBrushMapper<SpotLinker> LinkerBrush { get; }
         public IBrushMapper<SpotAnnotator> SpotLabelBrush { get; }
+
+        public DelegateCommand SaveMrmprobsCommand => _saveMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(false), () => _model.ExportMrmprobs != null);
+        private DelegateCommand? _saveMrmprobsCommand;
+
+        public DelegateCommand CopyMrmprobsCommand => _copyMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(true), () => _model.ExportMrmprobs != null);
+        private DelegateCommand? _copyMrmprobsCommand;
+
+        private void ExportMrmprobs(bool copy) {
+            var m = _model.ExportMrmprobsModel();
+            if (m is null) {
+                return;
+            }
+            m.Copy = copy;
+            using var vm = new ExportMrmprobsViewModel(m);
+            _broker.Publish(vm);
+        }
     }
 }

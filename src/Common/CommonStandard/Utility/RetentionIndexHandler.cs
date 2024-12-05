@@ -1,4 +1,7 @@
-﻿using CompMs.Common.Mathematics.Basic;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,11 +10,57 @@ using System.Text;
 
 namespace CompMs.Common.Utility {
     public sealed class RetentionIndexHandler {
-        private RetentionIndexHandler() { }
+        private readonly RiCompoundType _riCompoundType;
+        private readonly Dictionary<int, float> _carbon2RtDict;
+        private readonly FiehnRiCoefficient _fiehnRiCoefficient, _revFiehnRiCoefficient;
 
-        public static Dictionary<int, float> GetRiDictionary(string filePath) {
+        public RetentionIndexHandler(RiCompoundType riCompoundType, Dictionary<int, float> carbon2RtDict)
+        {
+            _riCompoundType = riCompoundType;
+            _carbon2RtDict = carbon2RtDict;
+            if (riCompoundType == RiCompoundType.Fames) {
+                _fiehnRiCoefficient = GetFiehnRiCoefficient(GetFiehnFamesDictionary(), carbon2RtDict);
+                _revFiehnRiCoefficient = GetFiehnRiCoefficient(carbon2RtDict, GetFiehnFamesDictionary());
+            }
+        }
+
+        public RetentionIndex Convert(RetentionTime retentionTime) {
+            if (_carbon2RtDict.IsEmptyOrNull()) {
+                return RetentionIndex.Default;
+            }
+            switch (_riCompoundType) {
+                case RiCompoundType.Alkanes:
+                    return ConvertWithKovats(retentionTime);
+                case RiCompoundType.Fames:
+                    return ConvertWithFiehnFames(retentionTime);
+                default:
+                    throw new NotSupportedException($"RI compound type: {_riCompoundType}");
+            }
+        }
+
+        public RetentionTime ConvertBack(RetentionIndex retentionIndex) {
+            switch (_riCompoundType) {
+                case RiCompoundType.Alkanes:
+                    return new RetentionTime(ConvertKovatsRiToRetentiontime(_carbon2RtDict, retentionIndex.Value));
+                case RiCompoundType.Fames:
+                    return new RetentionTime(ConvertFiehnRiToRetentionTime(_revFiehnRiCoefficient, retentionIndex.Value));
+                default:
+                    throw new NotSupportedException($"RI compound type: {_riCompoundType}");
+            }
+        }
+
+        private RetentionIndex ConvertWithKovats(RetentionTime retentionTime) {
+            return new RetentionIndex(GetRetentionIndexByAlkanes(_carbon2RtDict, (float)retentionTime.Value));
+        } 
+
+        private RetentionIndex ConvertWithFiehnFames(RetentionTime retentionTime) {
+            return new RetentionIndex(Math.Round(CalculateFiehnRi(_fiehnRiCoefficient, retentionTime.Value), 1));
+        }
+
+        public static Dictionary<int, float>? GetRiDictionary(string filePath) {
             var dict = new Dictionary<int, float>();
-            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var sr = new StreamReader(stream, Encoding.ASCII)) {
                 sr.ReadLine();
                 while (sr.Peek() > -1) {
                     var line = sr.ReadLine();
@@ -19,8 +68,7 @@ namespace CompMs.Common.Utility {
                     var lineArray = line.Split('\t');
                     if (lineArray.Length < 2) continue;
 
-                    int carbon; float rt;
-                    if (int.TryParse(lineArray[0], out carbon) && float.TryParse(lineArray[1], out rt))
+                    if (int.TryParse(lineArray[0], out int carbon) && float.TryParse(lineArray[1], out float rt))
                         dict[carbon] = rt;
                 }
             }

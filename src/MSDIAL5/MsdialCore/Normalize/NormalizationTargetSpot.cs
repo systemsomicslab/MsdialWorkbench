@@ -25,7 +25,7 @@ namespace CompMs.MsdialCore.Normalize
             return _target.InternalStandardId >= 0;
         }
 
-        public string GetAnnotatedLipidClass(IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses) {
+        public string GetAnnotatedLipidClass(IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, HashSet<string> lipidClasses) {
             if (!_target.IsReferenceMatched(evaluator)) {
                 return "Unknown";
             }

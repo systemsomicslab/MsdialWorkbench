@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
@@ -22,7 +21,15 @@ namespace CompMs.MsdialCore.Algorithm
                 throw new ArgumentNullException(nameof(spectrums));
             }
 
-            _spectraTask = Task.FromResult((spectrums as IList<RawSpectrum>) ?? spectrums.ToList());
+            _spectraTask = Task.Run(() => {
+                var result = (spectrums as IList<RawSpectrum>) ?? spectrums.ToList();
+                foreach (var s in result) {
+                    if (s.MsLevel == 0) {
+                        s.MsLevel = 1;
+                    }
+                }
+                return result;
+            });
         }
 
         protected BaseDataProvider(Task<RawMeasurement> measurementTask) {
@@ -33,12 +40,27 @@ namespace CompMs.MsdialCore.Algorithm
             _spectraTask = Task.Run<IList<RawSpectrum>>(async () =>
             {
                 var measurement = await measurementTask.ConfigureAwait(false);
+                foreach (var s in measurement.SpectrumList) {
+                    if (s.MsLevel == 0) {
+                        s.MsLevel = 1;
+                    }
+                }
                 return measurement.SpectrumList;
             });
         }
 
-        protected static Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token) {
-            return Task.Run(() => LoadMeasurement(file, isProfile, isImagingMs, isGuiProcess, retry), token);
+        protected static async Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+                for (var i = 0; i < retry; i++) {
+                    var rawObj = await Task.Run(() => access.GetMeasurement(), token).ConfigureAwait(false);
+                    if (rawObj != null) {
+                        return rawObj;
+                    }
+                    Thread.Sleep(5000);
+                    token.ThrowIfCancellationRequested();
+                }
+            }
+            throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
         }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry) {
@@ -71,7 +93,9 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public async Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token = default) {
-            var spectra = await _spectraTask.ConfigureAwait(false);
+            var spectra = _spectraTask.IsCompleted
+                ? _spectraTask.Result
+                : await _spectraTask.ConfigureAwait(false);
             return new ReadOnlyCollection<RawSpectrum>(spectra);
         }
 
@@ -84,7 +108,9 @@ namespace CompMs.MsdialCore.Algorithm
             return cache.GetOrAdd(level,
                 i => new Lazy<Task<ReadOnlyCollection<RawSpectrum>>>(async () => 
                 {
-                    var spectra = await _spectraTask.ConfigureAwait(false);
+                    var spectra = _spectraTask.IsCompleted
+                        ? _spectraTask.Result
+                        : await _spectraTask.ConfigureAwait(false);
                     return spectra.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
                 })).Value;
         }

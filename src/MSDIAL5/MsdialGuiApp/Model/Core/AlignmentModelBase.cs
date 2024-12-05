@@ -1,5 +1,4 @@
-﻿using Accord.Math;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -10,6 +9,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,10 +24,10 @@ namespace CompMs.App.Msdial.Model.Core
         public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
             _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
             _broker = broker;
-            Container = alignmentFileModel.LoadAlignmentResultAsync().Result;
-            if (Container == null) {
+            _container = alignmentFileModel.LoadAlignmentResultAsync().Result;
+            if (_container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
-                Container = new AlignmentResultContainer
+                _container = new AlignmentResultContainer
                 {
                     AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(),
                 };
@@ -39,6 +39,8 @@ namespace CompMs.App.Msdial.Model.Core
             private set => SetProperty(ref _container, value);
         }
         private AlignmentResultContainer _container;
+
+        public abstract AlignmentSpotSource AlignmentSpotSource { get; }
 
         public virtual Task SaveAsync() {
             return _alignmentFileModel.SaveAlignmentResultAsync(Container);
@@ -61,6 +63,10 @@ namespace CompMs.App.Msdial.Model.Core
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.PeakCharacter).ToList());
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);

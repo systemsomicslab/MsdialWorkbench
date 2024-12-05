@@ -20,56 +20,6 @@ namespace CompMs.MsdialCore.Algorithm
         Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token);
     }
 
-    public static class DataProviderExtensions {
-        public static RawSpectrum LoadMsSpectrumFromIndex(this IDataProvider provider, int index) {
-            if (index < 0) {
-                return null;
-            }
-            return provider.LoadMsSpectrums()[index];
-        }
-
-        public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
-            return provider.LoadMs1Spectrums()[index];
-        }
-
-        public static double GetMinimumCollisionEnergy(this IDataProvider provider) {
-            return provider.LoadMsSpectrums().DefaultIfEmpty().Min(s => s?.CollisionEnergy) ?? -1d;
-        }
-        
-        public static (int, int) GetScanNumberRange(this IDataProvider provider) {
-            var spectra = provider.LoadMsSpectrums();
-            return (spectra.FirstOrDefault()?.ScanNumber ?? 0, spectra.LastOrDefault()?.ScanNumber ?? 0);
-        }
-
-        public static (double, double) GetRetentionTimeRange(this IDataProvider provider) {
-            var spectra = provider.LoadMsSpectrums();
-            return ((float)(spectra.FirstOrDefault()?.ScanStartTime ?? 0d), (float)(spectra.LastOrDefault()?.ScanStartTime ?? 0d));
-        }
-
-        public static (double, double) GetMassRange(this IDataProvider provider) {
-            var spectra = provider.LoadMsSpectrums();
-            return ((float)(spectra.Min(spectrum => spectrum?.LowestObservedMz) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.HighestObservedMz) ?? 0d));
-        }
-
-        public static (double, double) GetIntensityRange(this IDataProvider provider) {
-            var spectra = provider.LoadMsSpectrums();
-            return ((float)(spectra.Min(spectrum => spectrum?.MinIntensity) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.BasePeakIntensity) ?? 0d));
-        }
-
-        public static (double, double) GetDriftTimeRange(this IDataProvider provider) {
-            var spectra = provider.LoadMsSpectrums();
-            return ((float)(spectra.Min(spectrum => spectrum?.DriftTime) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.DriftTime) ?? 0d));
-        }
-
-        public static int Count(this IDataProvider provider) {
-            return provider.LoadMsSpectrums().Count;
-        }
-
-        public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
-            return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
-        }
-    }
-
     public static class DataProvider {
 
         /// <summary>

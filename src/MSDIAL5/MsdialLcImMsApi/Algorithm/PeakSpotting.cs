@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -30,7 +31,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
         // feature detection for rt, ion mobility, m/z, and intensity (3D) data 
         public List<ChromatogramPeakFeature> Execute4DFeatureDetection(
             AnalysisFileBean file, IDataProvider spectrumProvider,
-            IDataProvider accSpectrumProvider, int numThreads, CancellationToken token, Action<int> reportAction) {
+            IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
 
             // used for rt, mz, intensity (3D) data
             var isTargetedMode = !_parameter.CompoundListInTargetMode.IsEmptyOrNull();
@@ -39,21 +40,20 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     return Execute4DFeatureDetectionTargetMode(file, spectrumProvider, accSpectrumProvider);
                 }
                 else {
-                    return Execute4DFeatureDetectionTargetModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, token, reportAction);
+                    return Execute4DFeatureDetectionTargetModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, token);
                 }
             }
             else {
                 if (numThreads <= 1) {
-                    return Execute4DFeatureDetectionNormalMode(file, spectrumProvider, accSpectrumProvider, reportAction);
+                    return Execute4DFeatureDetectionNormalMode(file, spectrumProvider, accSpectrumProvider, progress);
                 }
                 else {
-                    return Execute4DFeatureDetectionNormalModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, token, reportAction);
+                    return Execute4DFeatureDetectionNormalModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, progress, token);
                 }
             }
         }
 
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, Action<int> reportAction) {
-
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var mzRange = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = Math.Max(mzRange.Min, _parameter.MassRangeBegin);
@@ -64,7 +64,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-            for (var focusedMass = startMass; focusedMass < endMass; ReportProgress.Show(InitialProgress, ProgressMax, focusedMass += massStep, endMass, reportAction)) {
+            ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
+            for (var focusedMass = startMass; focusedMass < endMass; reporter.Report(focusedMass += massStep, endMass)) {
                 var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, focusedMass, chromatogramRange, peakDetector);
                 if (chromPeakFeatures.IsEmptyOrNull()) {
                     continue;
@@ -81,8 +82,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType);
         }
 
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, CancellationToken token, Action<int> reportAction) {
-
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
             var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
             float endMass = mzMax > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzMax;
@@ -91,13 +91,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 massStep = 1.0F;
             }
 
-            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
+            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep);
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-            var syncObj = new object();
             var counter = 0;
+            ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
             var chromPeakFeaturesArray = targetMasses
                 .AsParallel()
                 .AsOrdered()
@@ -105,10 +105,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 .WithDegreeOfParallelism(numThreads)
                 .Select(targetMass => {
                     var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetMass, chromatogramRange, peakDetector);
-                    Interlocked.Increment(ref counter);
-                    lock (syncObj) {
-                        ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
-                    }
+                    reporter.Report(Interlocked.Increment(ref counter), targetMasses.Count);
                     return chromPeakFeatures;
                 })
                 .ToArray();
@@ -131,7 +128,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
             AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider,
-            int numThreads, CancellationToken token, Action<int> reportAction) {
+            int numThreads, CancellationToken token) {
             var targetedScans = _parameter.CompoundListInTargetMode;
             if (targetedScans.IsEmptyOrNull()) return null;
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
@@ -151,7 +148,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
             //get EIC chromatogram
-            var chromatogram = accSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, _parameter.MassSliceWidth, chromatogramRange);
+            var chromatogram = accSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange);
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;

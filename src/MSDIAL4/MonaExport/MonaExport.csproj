@@ -1,15 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3232EF20-FADB-47C5-958F-4EAB0EEE2F91}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>edu.ucdavis.fiehnlab.MonaExport</RootNamespace>
     <AssemblyName>MonaExport</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -30,6 +29,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -89,105 +89,11 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <!--    <ApplicationDefinition Include="ssApp.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>-->
-    <Compile Include="Behaviors\CloseWindowBehavior.cs" />
-    <Compile Include="DataObjects\MonaProjectData.cs" />
-    <Compile Include="UtilClasses\CloseableViewModel.cs" />
-    <Compile Include="UtilClasses\CustomCommands.cs" />
-    <Compile Include="UtilClasses\DesignTimeMonaClient.cs" />
-    <Compile Include="UtilClasses\ImageConverter.cs" />
-    <Compile Include="UtilClasses\MetadataNameComparer.cs" />
-    <Compile Include="UtilClasses\RelayCommand.cs" />
-    <Compile Include="UtilClasses\TrimmedTextBlockVisibilityConverter.cs" />
-    <Compile Include="UtilClasses\MetadataValueToStringConverter.cs" />
-    <Compile Include="UtilClasses\ValueToMetadataConverter.cs" />
-    <Compile Include="ViewModels\AddTagVM.cs" />
-    <Compile Include="ViewModels\LoginErrorVM.cs" />
-    <Compile Include="ViewModels\MonaExportWindowVM.cs" />
-    <Compile Include="Windows\AddTagWindow.xaml.cs">
-      <DependentUpon>AddTagWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MonaExportWindow.xaml.cs">
-      <DependentUpon>MonaExportWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\LoginError.xaml.cs">
-      <DependentUpon>LoginError.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\PasswordUserControl.xaml.cs">
-      <DependentUpon>PasswordUserControl.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Windows\AddTagWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MonaExportWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\LoginError.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\PasswordUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -213,14 +119,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj">
-      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
-      <Name>CommonMVVM</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonaRestApi\MonaRestApi.csproj">
-      <Project>{D4610DBD-360C-4310-8CB0-FFB9E24545C1}</Project>
-      <Name>MonaRestApi</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj"/>
+    <ProjectReference Include="..\MonaRestApi\MonaRestApi.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />
@@ -228,12 +128,8 @@
   <ItemGroup>
     <Resource Include="Resources\loginerror.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
 </Project>

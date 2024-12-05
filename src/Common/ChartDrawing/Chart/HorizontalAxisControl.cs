@@ -86,6 +86,7 @@ namespace CompMs.Graphics.Chart
         public HorizontalAxisControl() {
             MouseMove += VisualFocusOnMouseOver;
             ZoomByDragBehavior.SetIsEnabled(this, true);
+            ZoomByDragBehavior.SetStrechVertical(this, true);
             ZoomByWheelBehavior.SetIsEnabled(this, true);
             MoveByDragBehavior.SetIsEnabled(this, true);
             ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);

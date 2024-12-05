@@ -49,9 +49,9 @@ namespace CompMs.MsdialImmsCore.Parser
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly RefSpecMatchBaseParameter _searchParameter;
         private readonly ProteomicsParameter _proteomicsParameter;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
 
-        public ImmsAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public ImmsAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
             _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             _proteomicsParameter = proteomicsParameter ?? throw new ArgumentNullException(nameof(proteomicsParameter));

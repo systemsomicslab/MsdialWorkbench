@@ -13,11 +13,11 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal class MsSpectrumModel : DisposableModelBase {
-        private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _upperSpectrum;
-        private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _lowerSpectrum;
-        private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching> _ms2ScanMatching;
+        private readonly ReadOnlyReactivePropertySlim<MsSpectrum?> _upperSpectrum;
+        private readonly ReadOnlyReactivePropertySlim<MsSpectrum?> _lowerSpectrum;
+        private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching?> _ms2ScanMatching;
 
-        public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, IObservable<Ms2ScanMatching> ms2ScanMatching) {
+        public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching) {
             UpperSpectrumModel = upperSpectrumModel ?? throw new ArgumentNullException(nameof(upperSpectrumModel));
             LowerSpectrumModel = lowerSpectrumModel ?? throw new ArgumentNullException(nameof(lowerSpectrumModel));
 
@@ -45,11 +45,11 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 upperSpectrumModel.GetHorizontalRange(),
                 lowerSpectrumModel.GetHorizontalRange(),
-            }.CombineLatest(xs => xs.Aggregate((x, y) => (Math.Min(x.Item1, y.Item1), Math.Max(x.Item2, x.Item2))))
+            }.CombineLatest(xs => xs.Aggregate((x, y) => (Math.Min(x.Item1, y.Item1), Math.Max(x.Item2, y.Item2))))
             .ToReactiveContinuousAxisManager(new ConstantMargin(40))
             .AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);
-            _ms2ScanMatching = ms2ScanMatching?.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _ms2ScanMatching = (ms2ScanMatching ?? Observable.Never<Ms2ScanMatching>()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             _upperSpectrum = upperSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _lowerSpectrum = lowerSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -76,26 +76,28 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => _graphTitle;
             set => SetProperty(ref _graphTitle, value);
         }
-        private string _graphTitle;
-        public string HorizontalTitle {
+        private string? _graphTitle;
+        public string? HorizontalTitle {
             get => _horizontalTitle;
             set => SetProperty(ref _horizontalTitle, value);
         }
-        private string _horizontalTitle;
-        public string VerticalTitle {
+        private string? _horizontalTitle;
+        public string? VerticalTitle {
             get => _verticalTitle;
             set => SetProperty(ref _verticalTitle, value);
         }
-        private string _verticalTitle;
+        private string? _verticalTitle;
 
         public IObservable<bool> CanSaveMatchedSpectrum { get; }
 
         public void SaveMatchedSpectrum(Stream stream) {
-            if (_ms2ScanMatching?.Value is Ms2ScanMatching scorer) {
+            if (_ms2ScanMatching.Value is Ms2ScanMatching scorer
+                && _upperSpectrum.Value is not null
+                && _lowerSpectrum.Value is not null) {
                 var pairs = scorer.GetMatchedSpectrum(_upperSpectrum.Value.Spectrum, _lowerSpectrum.Value.Spectrum);
                 pairs.Save(stream);
             }

@@ -1,9 +1,8 @@
-﻿using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using MessagePack;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
     public class ChromatogramPeakShape {
         [SerializationConstructor]
@@ -12,16 +11,30 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public ChromatogramPeakShape(ChromatogramPeakShape peakShape) {
-            EstimatedNoise = EstimatedNoise;
-            SignalToNoise = SignalToNoise;
-            PeakPureValue = PeakPureValue;
-            ShapenessValue = ShapenessValue;
-            GaussianSimilarityValue = GaussianSimilarityValue;
-            IdealSlopeValue = IdealSlopeValue;
-            BasePeakValue = BasePeakValue;
-            SymmetryValue = SymmetryValue;
-            AmplitudeOrderValue = AmplitudeOrderValue;
-            AmplitudeScoreValue = AmplitudeScoreValue;
+            EstimatedNoise = peakShape.EstimatedNoise;
+            SignalToNoise = peakShape.SignalToNoise;
+            PeakPureValue = peakShape.PeakPureValue;
+            ShapenessValue = peakShape.ShapenessValue;
+            GaussianSimilarityValue = peakShape.GaussianSimilarityValue;
+            IdealSlopeValue = peakShape.IdealSlopeValue;
+            BasePeakValue = peakShape.BasePeakValue;
+            SymmetryValue = peakShape.SymmetryValue;
+            AmplitudeOrderValue = peakShape.AmplitudeOrderValue;
+            AmplitudeScoreValue = peakShape.AmplitudeScoreValue;
+        }
+
+
+        public ChromatogramPeakShape(PeakDetectionResult peakDetectionResult) {
+            EstimatedNoise = peakDetectionResult.EstimatedNoise;
+            SignalToNoise = peakDetectionResult.SignalToNoise;
+            PeakPureValue = peakDetectionResult.PeakPureValue;
+            ShapenessValue = peakDetectionResult.ShapnessValue;
+            GaussianSimilarityValue = peakDetectionResult.GaussianSimilarityValue;
+            IdealSlopeValue = peakDetectionResult.IdealSlopeValue;
+            BasePeakValue = peakDetectionResult.BasePeakValue;
+            SymmetryValue = peakDetectionResult.SymmetryValue;
+            AmplitudeOrderValue = peakDetectionResult.AmplitudeOrderValue;
+            AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue;
         }
 
         [Key(0)]

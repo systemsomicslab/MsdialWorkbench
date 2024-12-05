@@ -55,6 +55,7 @@ namespace ChartDrawingUiTest
                 typeof(TestPage),
                 typeof(AxisTest),
                 typeof(AxisLabelTest),
+                typeof(AxisValueMappingChangedEventTest),
                 typeof(BindingStaticResource),
                 typeof(DependencyPropertyTest),
                 typeof(DoubleClickListBox),
@@ -68,6 +69,10 @@ namespace ChartDrawingUiTest
                 typeof(AreaSelector),
                 typeof(NumericUpDownTest),
                 typeof(NestedProperties),
+                typeof(ResizableItemsControl),
+                typeof(DockItemsControl),
+                typeof(ReorderableItemsControlBehaviorTest),
+                typeof(MovableItemsControlBehaviorTest),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();

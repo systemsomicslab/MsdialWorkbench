@@ -4,15 +4,12 @@ using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Statistics {
+namespace CompMs.App.Msdial.Model.Statistics
+{
     internal class SimpleScatterPlotModel : BindableBase {
         public SimpleScatterPlotModel(ObservableCollection<SimplePlotItem> items,
             string xAxisTitle,
@@ -27,60 +24,60 @@ namespace CompMs.App.Msdial.Model.Statistics {
             XAxis = new ContinuousAxisManager<double>(items.Select(n => n.XValue).ToList(), new ConstantMargin(10, 10));
             YAxis = new ContinuousAxisManager<double>(items.Select(n => n.YValue).ToList(), new ConstantMargin(10, 10));
       
-            PointBrush = new IdentityBrushMapper().Contramap((SimplePlotItem item) => item.Brush);
+            PointBrush = new DelegateBrushMapper<SimplePlotItem>((SimplePlotItem item) => item.Brush);
         }
-        public string XAxisTitle {
+        public string? XAxisTitle {
             get => xAxisTitle;
             set => SetProperty(ref xAxisTitle, value);
         }
-        private string xAxisTitle;
+        private string? xAxisTitle;
 
-        public string YAxisTitle {
+        public string? YAxisTitle {
             get => yAxisTitle;
             set => SetProperty(ref yAxisTitle, value);
         }
-        private string yAxisTitle;
+        private string? yAxisTitle;
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);
         }
-        private string graphTitle;
+        private string? graphTitle;
 
-        public ObservableCollection<SimplePlotItem> PlotItems {
+        public ObservableCollection<SimplePlotItem>? PlotItems {
             get => plotItems;
             set => SetProperty(ref plotItems, value);
         }
 
-        private ObservableCollection<SimplePlotItem> plotItems;
+        private ObservableCollection<SimplePlotItem>? plotItems;
 
-        public IAxisManager<double> XAxis {
+        public IAxisManager<double>? XAxis {
             get => xAxis;
             set => SetProperty(ref xAxis, value);
         }
-        private IAxisManager<double> xAxis;
+        private IAxisManager<double>? xAxis;
 
-        public IAxisManager<double> YAxis {
+        public IAxisManager<double>? YAxis {
             get => yAxis;
             set => SetProperty(ref yAxis, value);
         }
-        private IAxisManager<double> yAxis;
+        private IAxisManager<double>? yAxis;
 
-        public IBrushMapper<SimplePlotItem> PointBrush {
+        public IBrushMapper<SimplePlotItem>? PointBrush {
             get => _pointBrush;
             set => SetProperty(ref _pointBrush, value);
         }
-        private IBrushMapper<SimplePlotItem> _pointBrush;
+        private IBrushMapper<SimplePlotItem>? _pointBrush;
     }
 
     internal class SimplePlotItem : BindableBase {
-        public SimplePlotItem() { }
         public SimplePlotItem(int id, string legend, double xValue, double yValue) {
             ID = id;
             Legend = legend;
             XValue = xValue;
             YValue = yValue;
         }
+
         public SimplePlotItem(int id, string legend, double xValue, double yValue, SolidColorBrush brush) : this(id, legend, xValue, yValue) {
             Brush = brush;
         }
@@ -96,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref legend, value);
         }
 
-        private string legend;
+        private string legend = string.Empty;
         public double YValue {
             get => yValue;
             set => SetProperty(ref yValue, value);

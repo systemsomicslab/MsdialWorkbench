@@ -249,7 +249,7 @@ namespace Rfx.Riken.OsakaUniv
             };
 
             string wkstr;
-            var pattern = new Regex(@"^(?<field>.+):\s*(?<content>((?<subtag>.+?)\s+)?(?<subcontent>.+))$");
+            var pattern = new Regex(@"^(?<field>.+?):\s*(?<content>((?<subtag>.+?)\s+)?(?<subcontent>.+))$");
             using (StreamReader sr = new StreamReader(filePath))
             {
                 var peaks = new Dictionary<double, Peak>();

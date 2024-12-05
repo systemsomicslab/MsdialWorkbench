@@ -70,6 +70,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
     }
 
+    public class RetentionIndexEqualityParameterSettingViewModel : PeakEqualityParameterSettingViewModel
+    {
+        public RetentionIndexEqualityParameterSettingViewModel(RetentionIndexEqualityParameterSetting model) : base(model) {
+
+        }
+    }
+
     public class DriftTimeEqualityParameterSettingViewModel : PeakEqualityParameterSettingViewModel
     {
         public DriftTimeEqualityParameterSettingViewModel(DriftTimeEqualityParameterSetting model) : base(model) {
@@ -86,10 +93,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public static class PeakEqualityParameterSettingViewModelFactory
     {
-        public static PeakEqualityParameterSettingViewModel Create(IPeakEqualityParameterSetting model) {
+        public static PeakEqualityParameterSettingViewModel? Create(IPeakEqualityParameterSetting model) {
             switch (model) {
                 case RetentionTimeEqualityParameterSetting rt:
                     return new RetentionTimeEqualityParameterSettingViewModel(rt);
+                case RetentionIndexEqualityParameterSetting ri:
+                    return new RetentionIndexEqualityParameterSettingViewModel(ri);
                 case DriftTimeEqualityParameterSetting dt:
                     return new DriftTimeEqualityParameterSettingViewModel(dt);
                 case Ms1EqualityParameterSetting ms1:

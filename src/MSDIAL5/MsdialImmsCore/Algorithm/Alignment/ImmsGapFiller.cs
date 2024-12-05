@@ -23,7 +23,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             this.ionMode = ionMode;
         }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Drift.Value), ChromXType.Drift, ChromXUnit.Msec)
             {
                 Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),
@@ -33,7 +33,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var chromatogramRange = new ChromatogramRange(center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5, ChromXType.Drift, ChromXUnit.Msec);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
-            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
+            return peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
         }
 
         protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {

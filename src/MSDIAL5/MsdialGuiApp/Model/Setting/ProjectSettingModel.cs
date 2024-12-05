@@ -22,21 +22,21 @@ namespace CompMs.App.Msdial.Model.Setting
             run = null;
         }
 
-        private readonly Func<IProjectModel, Task> run;
+        private readonly Func<IProjectModel, Task>? run;
 
-        public IProjectModel Result {
+        public IProjectModel? Result {
             get => result;
             private set => SetProperty(ref result, value);
         }
-        private IProjectModel result;
+        private IProjectModel? result;
 
         public ProjectParameterSettingModel ProjectParameterSettingModel { get; }
 
-        public DatasetSettingModel DatasetSettingModel {
+        public DatasetSettingModel? DatasetSettingModel {
             get => datasetSettingModel;
             private set => SetProperty(ref datasetSettingModel, value);
         }
-        private DatasetSettingModel datasetSettingModel;
+        private DatasetSettingModel? datasetSettingModel;
 
         public bool IsReadOnlyProjectParameter { get; }
 
@@ -46,7 +46,10 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public Task RunAsync() {
-            return run?.Invoke(Result) ?? Task.CompletedTask;
+            if (Result is null || run is null) {
+                return Task.CompletedTask;
+            }
+            return run.Invoke(Result);
         }
     }
 }

@@ -64,6 +64,7 @@ namespace CompMs.Graphics.Chart
 
             MouseMove += VisualFocusOnMouseOver;
             ZoomByDragBehavior.SetIsEnabled(this, true);
+            ZoomByDragBehavior.SetStrechHorizontal(this, true);
             ZoomByWheelBehavior.SetIsEnabled(this, true);
             MoveByDragBehavior.SetIsEnabled(this, true);
             ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);

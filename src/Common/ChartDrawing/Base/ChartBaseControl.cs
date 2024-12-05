@@ -42,16 +42,22 @@ namespace CompMs.Graphics.Core.Base
         protected virtual void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnHorizontalRangeChanged;
+                oldValue.AxisValueMappingChanged -= OnHorizontalMappingChanged;
                 AxisRangeRecalculationBehavior.SetHorizontalAxis(this, null);
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnHorizontalRangeChanged;
+                newValue.AxisValueMappingChanged += OnHorizontalMappingChanged;
                 AxisRangeRecalculationBehavior.SetHorizontalAxis(this, newValue);
             }
         }
 
         protected virtual void OnHorizontalRangeChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        protected virtual void OnHorizontalMappingChanged(object sender, EventArgs e) {
             InvalidateVisual();
         }
 
@@ -88,11 +94,13 @@ namespace CompMs.Graphics.Core.Base
         protected virtual void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnVerticalRangeChanged;
+                oldValue.AxisValueMappingChanged -= OnVerticalMappingChanged;
                 AxisRangeRecalculationBehavior.SetVerticalAxis(this, null);
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnVerticalRangeChanged;
+                newValue.AxisValueMappingChanged += OnVerticalMappingChanged;
                 AxisRangeRecalculationBehavior.SetVerticalAxis(this, newValue);
             }
         }
@@ -101,7 +109,11 @@ namespace CompMs.Graphics.Core.Base
             InvalidateVisual();
         }
 
-        public Range RangeX {
+        protected virtual void OnVerticalMappingChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        public AxisRange RangeX {
             get => HorizontalAxis?.Range;
             set {
                 if (HorizontalAxis != null)
@@ -109,7 +121,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        public Range RangeY {
+        public AxisRange RangeY {
             get => VerticalAxis?.Range;
             set {
                 if (VerticalAxis != null)

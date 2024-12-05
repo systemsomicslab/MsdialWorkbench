@@ -20,19 +20,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     internal sealed class DimsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly DimsAnalysisModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
 
         public DimsAnalysisViewModel(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -42,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
@@ -50,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused, broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
@@ -95,35 +89,37 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand)) {
-                _compoundSearchService.ShowDialog(vm);
+            using var model = _model.BuildCompoundSearchModel();
+            if (model is null) {
+                return;
             }
+            using var vm = new DimsCompoundSearchViewModel(model);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
-        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
-        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ?? (_searchAnalysisSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod));
-        private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
+        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ??= new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod);
+        private DelegateCommand? _searchAnalysisSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
+        private DelegateCommand? _goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
             _model.InvokeMsfinder();
         }
 
-        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
-        private DelegateCommand _saveMs2SpectrumCommand;
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, CanSaveSpectra);
+        private DelegateCommand? _saveMs2SpectrumCommand;
 
         private void SaveSpectra()
         {
@@ -142,8 +138,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return _model.CanSaveSpectra();
         }
 
-        public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
-        private DelegateCommand _copyMs2SpectrumCommand;
+        public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ??= new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra);
+        private DelegateCommand? _copyMs2SpectrumCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

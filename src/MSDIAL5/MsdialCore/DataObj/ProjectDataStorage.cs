@@ -1,4 +1,5 @@
-﻿using CompMs.Common.MessagePack;
+﻿using CompMs.Common.Extension;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
@@ -63,7 +64,7 @@ namespace CompMs.MsdialCore.DataObj
             ProjectParameter.FixProjectFolder(projectDir);
         }
 
-        public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, Action<ProjectBaseParameter> faultedHandle) {
+        public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager?>? datasetStreamManagerFactory, Action<ProjectBaseParameter> faultedHandle) {
             using (var parameterStream = await streamManager.Create(ParameterKey).ConfigureAwait(false)) {
                 ProjectParameter.Save(parameterStream);
             }
@@ -75,7 +76,7 @@ namespace CompMs.MsdialCore.DataObj
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
+        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
             ProjectDataStorage storage;
             using (var projectStream = await streamManager.Get(SerializationKey).ConfigureAwait(false)) {
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
@@ -101,7 +102,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private async static Task SaveDataStorage(
-            Func<string, IStreamManager> datasetStreamManagerFactory,
+            Func<string, IStreamManager?>? datasetStreamManagerFactory,
             IMsdialDataStorage<ParameterBase> storage,
             IMsdialSerializer serializer,
             Action<ProjectBaseParameter> faultedHandle) {
@@ -109,10 +110,9 @@ namespace CompMs.MsdialCore.DataObj
             var dir = storage.Parameter.ProjectFolderPath;
             var file = storage.Parameter.ProjectFileName;
             try {
-                using (var streamManager = datasetStreamManagerFactory?.Invoke(dir)) {
-                    await serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(file), dir);
-                    streamManager?.Complete();
-                }
+                using var streamManager = datasetStreamManagerFactory?.Invoke(dir);
+                await serializer.SaveAsync(storage, streamManager, file, dir);
+                streamManager?.Complete();
             }
             catch (Exception ex) {
                 Debug.WriteLine(ex);
@@ -125,7 +125,7 @@ namespace CompMs.MsdialCore.DataObj
             ProjectBaseParameter projectParameter,
             IMsdialSerializer serializer,
             string newProjectDir,
-            Func<ProjectBaseParameter, Task<string>> setNewPlacement,
+            Func<ProjectBaseParameter, Task<string?>> setNewPlacement,
             Action<ProjectBaseParameter> faultedHandle) {
 
             var projectDir = projectParameter.ProjectFolderPath;
@@ -149,6 +149,7 @@ namespace CompMs.MsdialCore.DataObj
                     var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
                     streamManager?.Complete();
                     storage.FixDatasetFolder(newProjectDir);
+                    KeepPreviousRtCorrectionResult(storage);
                     return storage;
                 }
             }
@@ -158,7 +159,7 @@ namespace CompMs.MsdialCore.DataObj
                     throw;
                 }
                 var path = await setNewPlacement.Invoke(projectParameter);
-                if (!(path is null)) {
+                if (path is not null) {
                     projectDir = Path.GetDirectoryName(path);
                     projectFile = Path.GetFileName(path);
                 }
@@ -173,6 +174,7 @@ namespace CompMs.MsdialCore.DataObj
                     var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
                     streamManager?.Complete();
                     storage.FixDatasetFolder(projectDir);
+                    KeepPreviousRtCorrectionResult(storage);
                     return storage;
                 }
             }
@@ -182,6 +184,17 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        public static void KeepPreviousRtCorrectionResult(IMsdialDataStorage<ParameterBase> storage) {
+            if (storage.AnalysisFiles is null) {
+                return;
+            }
+            foreach (var file in storage.AnalysisFiles) {
+                var rtbean = file.RetentionTimeCorrectionBean;
+                if (!rtbean.OriginalRt.IsEmptyOrNull()) {
+                    RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(rtbean.RetentionTimeCorrectionResultFilePath, rtbean.OriginalRt, rtbean.RtDiff, rtbean.PredictedRt);
+                }
+            }
+        }
         private static Task<IMsdialDataStorage<ParameterBase>> LoadDataStorageCore(IStreamManager manager, IMsdialSerializer serializer, string projectFolderPath, string projectFileName) {
             return serializer.LoadAsync(manager, projectFileName, projectFolderPath, string.Empty);
         }

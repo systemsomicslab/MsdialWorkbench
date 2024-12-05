@@ -241,6 +241,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (result.IsOtherLipidMatch)
                 return;
 
+            if (!result.IsSpectrumMatch) {
+                var lipid = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
+                if (lipid != null && !string.IsNullOrEmpty(lipid.SublevelLipidName) && lipid.LipidName != lipid.SublevelLipidName) {
+                    name = $"{lipid.SublevelLipidName}|{lipid.LipidName}";
+                }
+            }
             result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
         }
 

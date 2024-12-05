@@ -71,6 +71,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     DeconvolutionFilePath = Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}"),
                     PeakAreaBeanInformationFilePath = Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}"),
                     ProteinAssembledResultFilePath = Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}"),
+                    RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.rtc}")),
                     AcquisitionType = AcquisitionType.DDA,
                 };
                 FileModels.AddAnalysisFile(bean);
@@ -96,9 +97,7 @@ namespace CompMs.App.Msdial.Model.Setting
             var fileID_ClassName = parameter.FileID_ClassName;
             fileID_AnalysisFileType.Clear();
             fileID_ClassName.Clear();
-            var counter = 0;
             foreach (var analysisfile in IncludedFileModels) {
-                analysisfile.AnalysisFileId = counter++;
                 fileID_ClassName[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileClass;
                 fileID_AnalysisFileType[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileType;
             }

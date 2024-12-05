@@ -1,10 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -41,11 +44,11 @@ namespace CompMs.App.Msdial.Model.Core {
                 MessageBox.Show("No peak information. Check your polarity setting.");
             }
 
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
 
-            decLoader = analysisFileModel.MSDecLoader;
-            MsdecResult = Target.SkipNull()
-                .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+            var loader = new MsDecSpectrumFromFileLoader(analysisFileModel);
+            MsdecResult = Target
+                .DefaultIfNull(loader.LoadMSDecResult)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -58,15 +61,13 @@ namespace CompMs.App.Msdial.Model.Core {
             .AddTo(Disposables);
         }
 
-        protected readonly MSDecLoader decLoader;
-
         public AnalysisFileBeanModel AnalysisFileModel { get; }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+        public ReadOnlyReactivePropertySlim<MSDecResult?> MsdecResult { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
@@ -84,6 +85,10 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public void InvokeMoleculerNetworkingForTargetSpot() {
             var network = GetMolecularNetworkingInstanceForTargetSpot(_molecularSpectrumNetworkingParameter);
+            if (network is null) {
+                _broker.Publish(new ShortMessageRequest("Failed to calculate molecular network.\nPlease check selected peak spot."));
+                return;
+            }
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
@@ -102,6 +107,10 @@ namespace CompMs.App.Msdial.Model.Core {
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.InnerModel.PeakCharacter).ToList());
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
@@ -111,7 +120,10 @@ namespace CompMs.App.Msdial.Model.Core {
             }
         }
 
-        private MolecularNetworkInstance GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance? GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (Target.Value is not ChromatogramPeakFeatureModel targetSpot) {
+                return null;
+            }
             if (parameter.MaxEdgeNumberPerNode == 0) {
                 parameter.MinimumPeakMatch = 3;
                 parameter.MaxEdgeNumberPerNode = 6;
@@ -122,7 +134,6 @@ namespace CompMs.App.Msdial.Model.Core {
                 var spots = Ms1Peaks;
                 var peaks = AnalysisFileModel.MSDecLoader.LoadMSDecResults();
 
-                var targetSpot = Target.Value;
                 var targetPeak = peaks[targetSpot.MasterPeakID];
 
                 void notify(double progressRate) {

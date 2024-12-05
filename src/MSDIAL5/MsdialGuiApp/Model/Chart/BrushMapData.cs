@@ -10,8 +10,8 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class BrushMapData<T> : BindableBase
     {
         public BrushMapData(IBrushMapper<T> brush, string label) {
-            Mapper = brush;
-            Label = label;
+            _mapper = brush;
+            _label = label;
         }
 
         public IBrushMapper<T> Mapper {

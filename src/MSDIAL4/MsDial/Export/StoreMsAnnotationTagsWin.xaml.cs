@@ -85,7 +85,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            fbd.Description = "Chose an export folder.";
+            fbd.Description = "Choose an export folder.";
             fbd.SelectedPath = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -137,7 +137,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             if (mainWindow.ProjectProperty.MethodType == MethodType.ddMSMS && ((ComboBox)sender).SelectedIndex == 2)
             {
-                MessageBox.Show("In data depeondent mode, you cannot chose the deconvoluton output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("In data depeondent mode, you cannot choose the deconvoluton output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             this.exportMsType = (ExportspectraType)((ComboBox)sender).SelectedIndex;

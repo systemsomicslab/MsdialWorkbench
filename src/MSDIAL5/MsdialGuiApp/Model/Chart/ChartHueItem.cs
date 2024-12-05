@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Brush = brush;
         }
 
-        public ChartHueItem(ProjectBaseParameterModel projectBaseParameterModel, Color defaultColor)
+        public ChartHueItem(FilePropertiesModel projectBaseParameterModel, Color defaultColor)
             : this(nameof(SpectrumPeak.SpectrumComment), projectBaseParameterModel.GetSpectrumBrush(defaultColor)) {
             
         }

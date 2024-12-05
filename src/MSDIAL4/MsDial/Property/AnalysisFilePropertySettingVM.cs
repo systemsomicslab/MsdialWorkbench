@@ -38,7 +38,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static ValidationResult ValidateAnalysisFile(ObservableCollection<AnalysisFilePropertyVM> test, ValidationContext context)
         {
-            if (test == null || test.Count == 0) return new ValidationResult("Chose the analysis files (abf, mzML, or netCDF format).");
+            if (test == null || test.Count == 0) return new ValidationResult("Choose the analysis files (abf, mzML, or netCDF format).");
             else return ValidationResult.Success;
         }
         #endregion
@@ -190,12 +190,12 @@ namespace Rfx.Riken.OsakaUniv
                     break;
                 }
 #else
-                if (fileExtension != ".abf" && fileExtension != ".cdf" && 
-                    fileExtension != ".mzml" && fileExtension != ".raw" &&
+                if (fileExtension != ".abf" && fileExtension != ".hmd" && fileExtension != ".mzb" &&
+                    fileExtension != ".cdf" && fileExtension != ".mzml" && fileExtension != ".raw" &&
                     fileExtension != ".d" && fileExtension != ".iabf" && fileExtension != ".ibf"
                      && fileExtension != ".wiff" && fileExtension != ".wiff2" && fileExtension != ".qgd" && fileExtension != ".lcd"
                      && fileExtension != ".lrp") {
-                    errorMessage += "This program can just accept .abf, .mzml, .cdf, .d, .ibf, .wiff, .wiff2, .lcd, .qgd, .lrp or .raw files.";
+                    errorMessage += "This program can just accept .abf, .hmd, .mzb, .mzml, .cdf, .d, .ibf, .wiff, .wiff2, .lcd, .qgd, .lrp or .raw files.";
                     break;
                 }
 #endif

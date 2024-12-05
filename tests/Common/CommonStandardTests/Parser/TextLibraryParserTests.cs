@@ -1,13 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Algorithm.IsotopeCalc;
+#if  NETSTANDARD || NETFRAMEWORK
+using CompMs.Common.Extension;
+#endif
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Database;
-using CompMs.Common.Algorithm.IsotopeCalc;
+using System.Diagnostics;
 
 namespace CompMs.Common.Parser.Tests
 {
@@ -35,7 +36,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(result => result.Name).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => row.Split('\t')[0]).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => row.TrimEnd('\r').Split('\t')[0]).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -46,7 +47,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
         {
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
-            var n = data.Split("\r\n").Length;
+            var n = data.Split('\n').Length;
             var results = references.Select(result => result.ScanID).ToList();
             results.Sort();
             CollectionAssert.AreEqual(Enumerable.Range(0, n-1).ToArray(), results);
@@ -58,7 +59,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(result => result.PrecursorMz).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => double.Parse(row.Split('\t')[1])).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => double.Parse(row.TrimEnd('\r').Split('\t')[1])).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -69,7 +70,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
         {
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
-            var expected = data.Split("\r\n").Skip(1).Select(row => double.Parse(row.Split('\t')[2])).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => double.Parse(row.TrimEnd('\r').Split('\t')[2])).ToList();
             var results = references.Select(reference => reference.ChromXs.RT.Value).ToList();
             expected.Sort();
             results.Sort();
@@ -82,12 +83,11 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.AdductType).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => AdductIon.GetAdductIon(row.Split('\t')[3])).ToList();
-            results.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
-            expected.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
+            var expected = data.Split('\n').Skip(1).Select(row => AdductIon.GetAdductIon(row.TrimEnd('\r').Split('\t')[3])).ToList();
 
             foreach ((AdductIon a, AdductIon b) in expected.Zip(results))
             {
+                Debug.WriteLine($"{a.AdductIonName}\t{b.AdductIonName}");
                 Assert.AreEqual(a.AdductIonAccurateMass, b.AdductIonAccurateMass);
                 Assert.AreEqual(a.AdductIonXmer, b.AdductIonXmer);
                 Assert.AreEqual(a.AdductIonName, b.AdductIonName);
@@ -107,7 +107,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.InChIKey).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => row.Split('\t')[4]).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => row.TrimEnd('\r').Split('\t')[4]).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -118,8 +118,8 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
         {
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
-            var results = references.Select(references => references.Formula).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(row.Split('\t')[5])).ToList();
+            var results = references.Select(rs => rs.Formula).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(row.TrimEnd('\r').Split('\t')[5])).ToList();
             expected.ForEach(formula =>
             {
                 formula.M1IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula);
@@ -156,7 +156,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.IsotopicPeaks).ToList();
             var iupacDb = IupacResourceParser.GetIUPACDatabase();
-            var formulas = data.Split("\r\n").Skip(1).Select(row => FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(row.Split('\t')[5])).ToList();
+            var formulas = data.Split('\n').Skip(1).Select(row => FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(row.TrimEnd('\r').Split('\t')[5])).ToList();
             var expected = formulas.Select(formula => IsotopeCalculator.GetAccurateIsotopeProperty(formula.FormulaString, 2, iupacDb).IsotopeProfile).ToList();
             results.Sort((a, b) => a.Sum(e => e.MassDifferenceFromMonoisotopicIon).CompareTo(b.Sum(e => e.MassDifferenceFromMonoisotopicIon)));
             expected.Sort((a, b) => a.Sum(e => e.MassDifferenceFromMonoisotopicIon).CompareTo(b.Sum(e => e.MassDifferenceFromMonoisotopicIon)));
@@ -175,7 +175,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.SMILES).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => row.Split('\t')[6]).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => row.TrimEnd('\r').Split('\t')[6]).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -187,7 +187,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.Ontology).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => row.Split('\t')[7]).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => row.TrimEnd('\r').Split('\t')[7]).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -199,7 +199,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.CollisionCrossSection).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => double.Parse(row.Split('\t')[8])).ToList();
+            var expected = data.Split('\n').Skip(1).Select(row => double.Parse(row.TrimEnd('\r').Split('\t')[8])).ToList();
             results.Sort();
             expected.Sort();
             CollectionAssert.AreEqual(expected, results);
@@ -252,7 +252,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
 
             var sr = new StringReader(less_field_data);
             var result = TextLibraryParser.TextLibraryReader(sr, out string message);
-            var n = less_field_data.Split("\r\n").Length;
+            var n = less_field_data.Split('\n').Length;
             var expected = Enumerable.Range(1, n - 1).Select(i => $"Error type 1: line {i} is not suitable.\r\n");
             foreach (var expect in expected)
             {
@@ -278,7 +278,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
 
             var sr = new StringReader(non_numerical_mz_data);
             var result = TextLibraryParser.TextLibraryReader(sr, out string message);
-            var n = non_numerical_mz_data.Split("\r\n").Length;
+            var n = non_numerical_mz_data.Split('\n').Length;
             var expected = new int[] { 1, 2, 4, 6 }.Select(i => $"Error type 2: line {i} includes non-numerical value for accurate mass information.\r\n");
             foreach (var expect in expected)
             {
@@ -304,7 +304,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
 
             var sr = new StringReader(non_numerical_rt_data);
             var result = TextLibraryParser.TextLibraryReader(sr, out string message);
-            var n = non_numerical_rt_data.Split("\r\n").Length;
+            var n = non_numerical_rt_data.Split('\n').Length;
             var expected = new int[] { 1, 2, 4, 6 }.Select(i => $"Error type 2: line {i} includes non-numerical value for retention time information.\r\n").ToArray();
             foreach (var expect in expected)
             {
@@ -331,7 +331,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
 
             var sr = new StringReader(non_numerical_ccs_data);
             var result = TextLibraryParser.TextLibraryReader(sr, out string message);
-            var n = non_numerical_ccs_data.Split("\r\n").Length;
+            var n = non_numerical_ccs_data.Split('\n').Length;
             var expected = new int[] { 1, 2, 4, 6 }.Select(i => $"Error type 2: line {i} includes non-numerical value for CCS information.\r\n");
             foreach (var expect in expected)
             {
@@ -357,7 +357,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
 
             var sr = new StringReader(negative_mz_data);
             var result = TextLibraryParser.TextLibraryReader(sr, out string message);
-            var n = negative_mz_data.Split("\r\n").Length;
+            var n = negative_mz_data.Split('\n').Length;
             var expected = new int[] { 2, 5 }.Select(i => $"Error type 3: line {i} includes negative value for accurate mass information.\r\n");
             foreach (var expect in expected)
             {
@@ -423,6 +423,29 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var results = TextLibraryParser.TextLibraryReader(sr, out _);
             Assert.AreEqual("PC 36:2|PC 18:0_18:2(9,12)", results[0].Name);
         }
+
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\txt_invalid_formula.txt", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\txt_invalid_formula.txt")]
+        public void TextLibraryReaderWorks(string library) {
+            var results = TextLibraryParser.TextLibraryReader(library, out var error);
+            Debug.WriteLine($"Error message: {error}");
+            Debug.WriteLine($"Count: {results.Count}");
+        }
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\txt_with_blank_end_line.txt", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\txt_with_blank_end_line.txt", 2)]
+        public void SuccessIfReadBlankLineInEnd(string library, int rowCnt)
+        {
+            var results = TextLibraryParser.TextLibraryReader(library, out var error);
+            Assert.AreEqual(string.Empty, error);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(rowCnt, results.Count);
+
+        }
+
     }
 
 }

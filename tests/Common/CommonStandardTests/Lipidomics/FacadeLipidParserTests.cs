@@ -49,5 +49,35 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
         }
+
+        [DataTestMethod]
+        [DataRow("PC 34:1|PC 16:0_18:1")]
+        [DataRow("PC 16:0_18:1")]
+        public void Parse_ValidLipid_ReturnsILipidObject(string lipidStr) {
+            var parser = new FacadeLipidParser();
+            parser.Add(new PCLipidParser());
+
+            // Act
+            ILipid result = parser.Parse(lipidStr);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.PC, result.LipidClass);
+            Assert.AreEqual("16:0_18:1", result.Chains.ToString());
+        }
+
+        [TestMethod]
+        public void Parse_InvalidLipid_ReturnsNull() {
+            var parser = new FacadeLipidParser();
+
+            // Arrange
+            string lipidStr = "InvalidLipid";
+
+            // Act
+            ILipid result = parser.Parse(lipidStr);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }

@@ -63,6 +63,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         public DelegateCommand ClearList => _clearList ??= new DelegateCommand(_model.ClearListMethod);
-        private DelegateCommand _clearList;
+        private DelegateCommand? _clearList;
     }
 }

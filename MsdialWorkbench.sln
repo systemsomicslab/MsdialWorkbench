@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarChart", "src\MSDIAL4\BarChart\BarChart.csproj", "{A3AC4D50-9249-478D-BE03-0465FD00EF2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarChart", "src\MSDIAL4\BarChart\BarChart.csproj", "{A3AC4D50-9249-478D-BE03-0465FD00EF2F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chromatogram", "src\MSDIAL4\ChromatogramUI\Chromatogram.csproj", "{6DCED6BB-4107-40C9-A9EF-D60658C385C0}"
 EndProject
@@ -11,35 +11,35 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonMVVM", "src\Common\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeggApiConsoleApp", "src\MSDIAL4\KeggApiConsoleApp\KeggApiConsoleApp.csproj", "{D3DB703C-BA48-4635-8C42-74ECAB76C885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassSpectrogramMsfinder", "src\MSFINDER\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj", "{68A6A63D-489A-4E21-84E1-AFC885B9A95E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassSpectrogramMsfinder", "src\MSFINDER\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj", "{68A6A63D-489A-4E21-84E1-AFC885B9A95E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoisotopicIonCalculatorApp", "src\MSDIAL4\MonoisotopicIonCalculatorApp\MonoisotopicIonCalculatorApp.csproj", "{3951C285-7E2A-45B6-91C8-B5854F0F65D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoisotopicIonCalculatorApp", "src\MSDIAL4\MonoisotopicIonCalculatorApp\MonoisotopicIonCalculatorApp.csproj", "{3951C285-7E2A-45B6-91C8-B5854F0F65D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSFINDER", "src\MSFINDER\MsFinder\MSFINDER.csproj", "{37F1BB27-1361-46AE-AE71-14A51055E35B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PairwisePlotCommon", "src\MSDIAL4\PairwisePlotCommon\PairwisePlotCommon.csproj", "{1DDACBB2-AC43-40BD-B094-091458158523}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PairwisePlotCommon", "src\MSDIAL4\PairwisePlotCommon\PairwisePlotCommon.csproj", "{1DDACBB2-AC43-40BD-B094-091458158523}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructureFinderConsoleApp", "src\MSDIAL4\StructureFinderConsoleApp\StructureFinderConsoleApp.csproj", "{86885B4A-4080-4C44-BAA7-D581745D26F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChartDrawing", "src\Common\ChartDrawing\ChartDrawing.csproj", "{6131640B-30E6-4606-A394-BE953590F3E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPickerWpfApp", "src\MSDIAL4\ColorPickerWpfApp\ColorPickerWpfApp.csproj", "{DF1C7411-8616-4566-952D-7C6344309C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorPickerWpfApp", "src\MSDIAL4\ColorPickerWpfApp\ColorPickerWpfApp.csproj", "{DF1C7411-8616-4566-952D-7C6344309C87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChartDrawingTests", "tests\Common\ChartDrawingTests\ChartDrawingTests.csproj", "{D5940EE8-8826-4C8B-BC8D-8308BD1B9E95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartDrawingUiTest", "tests\Common\ChartDrawingUiTest\ChartDrawingUiTest.csproj", "{9656B2ED-B9D7-47D5-95C9-5336D8374972}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChartDrawingUiTest", "tests\Common\ChartDrawingUiTest\ChartDrawingUiTest.csproj", "{9656B2ED-B9D7-47D5-95C9-5336D8374972}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseParserConsoleApp", "src\MSDIAL4\DatabaseParserConsoleApp\DatabaseParserConsoleApp.csproj", "{50CE8B07-17DA-4AB4-A096-BE6F48E2EF7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LipidomicsRtManager", "src\MSDIAL4\LipidomicsRtManageProgram\LipidomicsRtManager.csproj", "{E523391D-9817-4344-B848-36A3DB4A7EE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LipidomicsRtManager", "src\MSDIAL4\LipidomicsRtManageProgram\LipidomicsRtManager.csproj", "{E523391D-9817-4344-B848-36A3DB4A7EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonaExport", "src\MSDIAL4\MonaExport\MonaExport.csproj", "{3232EF20-FADB-47C5-958F-4EAB0EEE2F91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonaExport", "src\MSDIAL4\MonaExport\MonaExport.csproj", "{3232EF20-FADB-47C5-958F-4EAB0EEE2F91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonaRestApi", "src\MSDIAL4\MonaRestApi\MonaRestApi.csproj", "{D4610DBD-360C-4310-8CB0-FFB9E24545C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonaRestApi", "src\MSDIAL4\MonaRestApi\MonaRestApi.csproj", "{D4610DBD-360C-4310-8CB0-FFB9E24545C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonaRestApiTests", "tests\MSDIAL4\MonaRestApiTests\MonaRestApiTests.csproj", "{1DC75792-8CC8-4274-B29C-B1023127356D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonaRunner", "src\MSDIAL4\MonaRunner\MonaRunner.csproj", "{893C1D02-AAFC-4A74-86B9-5420E8FBD4FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonaRunner", "src\MSDIAL4\MonaRunner\MonaRunner.csproj", "{893C1D02-AAFC-4A74-86B9-5420E8FBD4FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSDIAL", "src\MSDIAL4\MsDial\MSDIAL.csproj", "{9AD54C44-CFE7-481B-9A55-A11A6A1D4A38}"
 EndProject
@@ -49,17 +49,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialMolecularNetworkingCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialPrivateConsoleApp", "src\MSDIAL4\MsdialPrivateConsoleApp\MsdialPrivateConsoleApp.csproj", "{8D53BF56-44A3-41AD-B3FA-E7727657DB3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PairwisePlot", "src\MSDIAL4\PairwisePlot\PairwisePlot.csproj", "{9F9CCFC8-5B22-4BCE-81B1-04C09EC717D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PairwisePlot", "src\MSDIAL4\PairwisePlot\PairwisePlot.csproj", "{9F9CCFC8-5B22-4BCE-81B1-04C09EC717D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathwayMapApp", "src\MSDIAL4\PathwayMapApp\PathwayMapApp.csproj", "{F23A4819-946F-4F93-94AD-65E3B1683CD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PathwayMapApp", "src\MSDIAL4\PathwayMapApp\PathwayMapApp.csproj", "{F23A4819-946F-4F93-94AD-65E3B1683CD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathwayMap", "src\MSDIAL4\PathwayMap\PathwayMap.csproj", "{7C8BF853-6F34-4CBD-BEC9-6D1AEA199947}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PathwayMap", "src\MSDIAL4\PathwayMap\PathwayMap.csproj", "{7C8BF853-6F34-4CBD-BEC9-6D1AEA199947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfExporter", "src\MSDIAL4\PdfExporter\PdfExporter.csproj", "{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfExporter", "src\MSDIAL4\PdfExporter\PdfExporter.csproj", "{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatisticsTests", "tests\MSDIAL4\StatisticsTests\StatisticsTests.csproj", "{BE80842B-9747-4BFC-A5B4-1845051AA1D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassSpectrogram", "src\MSDIAL4\MassSpectrogram\MassSpectrogram.csproj", "{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassSpectrogram", "src\MSDIAL4\MassSpectrogram\MassSpectrogram.csproj", "{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK", "src\Common\NCDK\NCDK.csproj", "{7976AEFC-8382-47D3-BA50-55FA18BABADF}"
 EndProject
@@ -99,7 +99,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialConsoleAppCore", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsfinderConsoleAppCore", "src\MSFINDER\MsfinderConsoleAppCore\MsfinderConsoleAppCore.csproj", "{F59D72CB-8A4A-420C-AA54-65C9B350E8C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MolViewer", "src\MSDIAL4\MolViewer\MolViewer.csproj", "{6D6E44EC-A467-461F-AF6B-83A9D575EF76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MolViewer", "src\MSDIAL4\MolViewer\MolViewer.csproj", "{6D6E44EC-A467-461F-AF6B-83A9D575EF76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassyfireConsoleApp", "src\MSDIAL4\ClassyfireConsoleApp\ClassyfireConsoleApp.csproj", "{F6484267-B235-4CC5-8AC8-96A676219D51}"
 EndProject
@@ -141,9 +141,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrate", "src\MSDI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrateTests", "tests\MSDIAL5\MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumViewer", "src\MSDIAL5\SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpectrumViewer", "src\MSDIAL5\SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsDialMassqlTestApp", "tests\MSDIAL5\MsDialMassqlTestApp\MsDialMassqlTestApp.csproj", "{EC61509F-B542-43B0-BB57-98CC3715BC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsDialMassqlTestApp", "tests\MSDIAL5\MsDialMassqlTestApp\MsDialMassqlTestApp.csproj", "{EC61509F-B542-43B0-BB57-98CC3715BC0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsImagingCore", "src\MSDIAL5\MsdialImmsImagingCore\MsdialImmsImagingCore.csproj", "{5B4EE33D-FB87-4ECB-B0C4-B47FE3D22839}"
 EndProject
@@ -170,7 +170,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompareAnnotationResult", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonSourceGenerator", "src\Common\CommonSourceGenerator\CommonSourceGenerator.csproj", "{3D4C4D5C-DF84-4979-B2AE-8ACF4DFD77C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonSourceGeneratorTests", "tests\Common\CommonSourceGeneratorTests\CommonSourceGeneratorTests.csproj", "{AF6A5BEF-8D19-4846-BC82-03782B53C092}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonSourceGeneratorTests", "tests\Common\CommonSourceGeneratorTests\CommonSourceGeneratorTests.csproj", "{AF6A5BEF-8D19-4846-BC82-03782B53C092}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{26C4466E-49D5-404B-8777-8A92DDBBC35D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandardBenchmark", "benchmark\CompMs\CommonStandardBenchmark\CommonStandardBenchmark.csproj", "{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DC2AD876-69E5-4D56-AD01-A871FA14CF04}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		LGPL.txt = LGPL.txt
+		README.md = README.md
+		THIRD-PARTY-LICENSE-README.md = THIRD-PARTY-LICENSE-README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -774,8 +787,8 @@ Global
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|x64.ActiveCfg = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|x64.Build.0 = Debug|Any CPU
 		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
@@ -794,8 +807,8 @@ Global
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|x64.ActiveCfg = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|x64.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
@@ -1786,6 +1799,26 @@ Global
 		{AF6A5BEF-8D19-4846-BC82-03782B53C092}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF6A5BEF-8D19-4846-BC82-03782B53C092}.Release|x64.ActiveCfg = Release|Any CPU
 		{AF6A5BEF-8D19-4846-BC82-03782B53C092}.Release|x64.Build.0 = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug vendor unsupported|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug vendor unsupported|Any CPU.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug vendor unsupported|x64.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug vendor unsupported|x64.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug with args|x64.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug with args|x64.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Debug|x64.Build.0 = Debug|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release vendor unsupported|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release vendor unsupported|Any CPU.Build.0 = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release vendor unsupported|x64.ActiveCfg = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release vendor unsupported|x64.Build.0 = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|x64.ActiveCfg = Release|Any CPU
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1808,6 +1841,7 @@ Global
 		{73B3153A-3DC9-4F83-A419-ABA0BCBF37E1} = {B1471530-7779-4A57-9664-1E3A06F1A449}
 		{D8B8B716-2710-41F3-9C0F-A6709420C96F} = {B1471530-7779-4A57-9664-1E3A06F1A449}
 		{AF6A5BEF-8D19-4846-BC82-03782B53C092} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
+		{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD} = {26C4466E-49D5-404B-8777-8A92DDBBC35D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}

@@ -1,14 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,13 +22,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             this.lcmsParameter = lcmsParameter;
         }
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot,
-            Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-            //var peaklist = DataAccess.GetMs1Peaklist(
-            //    spectrum, (float)peak.Mass, 
-            //    (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-            //    peak.IonMode);
             var timeMin = detected.Min(x => x.ChromXsTop.RT.Value);
             var timeMax = detected.Max(x => x.ChromXsTop.RT.Value);
             var peakWidth = detected.Average(x => x.PeakWidth(ChromXType.RT));
@@ -45,7 +37,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
             return new ChromatogramPeakInfo(
-                peak.FileID, peaklist.Smoothing(this.lcmsParameter.SmoothingMethod, this.lcmsParameter.SmoothingLevel),
+                peak.FileID, peaklist.ChromatogramSmoothing(this.lcmsParameter.SmoothingMethod, this.lcmsParameter.SmoothingLevel).AsPeakArray(),
                 (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
         }
 

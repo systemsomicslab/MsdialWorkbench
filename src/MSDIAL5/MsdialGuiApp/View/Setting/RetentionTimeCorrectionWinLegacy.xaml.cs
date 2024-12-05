@@ -172,7 +172,7 @@ namespace CompMs.App.Msdial.View.Setting {
 
         #region ContextMenu
         private void contextMenu_SaveImageAs_Click(object sender, RoutedEventArgs e) {
-            var target = ((e.Source as MenuItem).Parent as ContextMenu).PlacementTarget;
+            var target = ((ContextMenu)((MenuItem)e.Source).Parent).PlacementTarget;
 
             SaveImageAsWinLegacy window = new SaveImageAsWinLegacy(target);
             window.Owner = this;
@@ -181,7 +181,7 @@ namespace CompMs.App.Msdial.View.Setting {
         }
 
         private void contextMenu_CopyImageAs_Click(object sender, RoutedEventArgs e) {
-            var target = ((e.Source as MenuItem).Parent as ContextMenu).PlacementTarget;
+            var target = ((ContextMenu)((MenuItem)e.Source).Parent).PlacementTarget;
 
             CopyImageAsWinLegacy window = new CopyImageAsWinLegacy(target);
             window.Owner = this;

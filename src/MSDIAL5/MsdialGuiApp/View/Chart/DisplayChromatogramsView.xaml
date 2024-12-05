@@ -27,9 +27,9 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
-                          HorizontalTitle="{Binding HorizontalTitle}"
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
+                          VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
+                          HorizontalTitle="{Binding HorizontalSelector.SelectedAxisItem.GraphLabel}"
                           GraphTitle="{Binding GraphTitle}"
                           ItemsSource="{Binding DisplayChromatograms}"
                           Background="WhiteSmoke"
@@ -40,15 +40,15 @@
                         <Setter.Value>
                             <MultiBinding StringFormat="{}{0}({1})">
                                 <MultiBinding.Bindings>
-                                    <Binding Path="VerticalTitle"/>
-                                    <Binding Path="VerticalAxis.UnitLabel"/>
+                                    <Binding Path="VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                    <Binding Path="VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
                                 </MultiBinding.Bindings>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding VerticalAxis.UnitLabel, TargetNullValue=''}" Value="">
-                            <Setter Property="VerticalTitle" Value="{Binding VerticalTitle}"/>
+                        <DataTrigger Binding="{Binding VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                            <Setter Property="VerticalTitle" Value="{Binding VerticalSelector.SelectedAxisItem.GraphLabel}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

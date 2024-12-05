@@ -8,7 +8,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 {
     public sealed class RelativeAxisManager : ViewModelBase, IAxisManager<double>
     {
-        private static readonly Range RELATIVE_RANGE = new Range(0d, 1d);
+        private static readonly AxisRange RELATIVE_RANGE = new AxisRange(0d, 1d);
         private readonly IAxisManager<double> _axisManagerImpl;
 
         public RelativeAxisManager(double low, double high, IAxisManager<double> shareAxis) {
@@ -30,7 +30,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public RelativeAxisManager(double low, double high, Range bounds) : this(low, high, new ContinuousAxisManager<double>(RELATIVE_RANGE, bounds)) {
+        public RelativeAxisManager(double low, double high, AxisRange bounds) : this(low, high, new ContinuousAxisManager<double>(RELATIVE_RANGE, bounds)) {
 
         }
 
@@ -38,7 +38,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public RelativeAxisManager(double low, double high, IChartMargin margin, Range bounds) : this(low, high, new ContinuousAxisManager<double>(RELATIVE_RANGE, margin, bounds)) {
+        public RelativeAxisManager(double low, double high, IChartMargin margin, AxisRange bounds) : this(low, high, new ContinuousAxisManager<double>(RELATIVE_RANGE, margin, bounds)) {
 
         }
 
@@ -46,7 +46,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         public double High { get; }
         public double Delta { get; }
 
-        public Range Range => new Range(_axisManagerImpl.Range.Minimum.Value * Delta + Low, _axisManagerImpl.Range.Maximum.Value * Delta + Low);
+        public AxisRange Range => new AxisRange(_axisManagerImpl.Range.Minimum.Value * Delta + Low, _axisManagerImpl.Range.Maximum.Value * Delta + Low);
 
         public event EventHandler RangeChanged {
             add => _axisManagerImpl.RangeChanged += value;
@@ -58,11 +58,16 @@ namespace CompMs.Graphics.AxisManager.Generic
             remove => _axisManagerImpl.InitialRangeChanged -= value;
         }
 
+        public event EventHandler AxisValueMappingChanged {
+            add => _axisManagerImpl.AxisValueMappingChanged += value;
+            remove => _axisManagerImpl.AxisValueMappingChanged -= value;
+        }
+
         public bool Contains(AxisValue value) => _axisManagerImpl.Contains(value);
 
         public bool ContainsCurrent(AxisValue value) => _axisManagerImpl.ContainsCurrent(value);
 
-        public void Focus(Range range) => _axisManagerImpl.Focus(range);
+        public void Focus(AxisRange range) => _axisManagerImpl.Focus(range);
 
         public List<LabelTickData> GetLabelTicks() => _axisManagerImpl.GetLabelTicks();
 
@@ -94,7 +99,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new ContinuousAxisManager<double>(RELATIVE_RANGE);
         }
 
-        public static IAxisManager<double> CreateBaseAxis(Range bounds) {
+        public static IAxisManager<double> CreateBaseAxis(AxisRange bounds) {
             return new ContinuousAxisManager<double>(RELATIVE_RANGE, bounds);
         }
 
@@ -102,7 +107,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new ContinuousAxisManager<double>(RELATIVE_RANGE, margin);
         }
 
-        public static IAxisManager<double> CreateBaseAxis(IChartMargin margin, Range bounds) {
+        public static IAxisManager<double> CreateBaseAxis(IChartMargin margin, AxisRange bounds) {
             return new ContinuousAxisManager<double>(RELATIVE_RANGE, margin, bounds);
         }
     }

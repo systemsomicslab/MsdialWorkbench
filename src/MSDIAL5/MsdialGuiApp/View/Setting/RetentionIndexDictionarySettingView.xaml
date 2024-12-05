@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.RetentionIndexDictionarySettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:RiDictionarySettingViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ui:LabeledContent PrependLabel="Index type:" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" Margin="0">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="8,0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </StackPanel.Resources>
+                <RadioButton Content="Alkanes" IsChecked="{Binding UseAlkanes.Value}" d:IsChecked="True"/>
+                <RadioButton Content="FAMEs" IsChecked="{Binding UseFAMEs.Value}"/>
+            </StackPanel>
+        </ui:LabeledContent>
+        <DataGrid ItemsSource="{Binding Path=RetentionIndexFiles}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" 
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader"
+                  Grid.Row="1">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Resources>
+                <common:BindingProxy x:Key="RiDictionariesViewModel" Data="{Binding}"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding FilePath}" SortMemberPath="FilePath" Width="*" Header="File path" IsReadOnly="True"/>
+                <DataGridTextColumn Binding="{Binding FileName}" SortMemberPath="FileName" Width="*" Header="File name" IsReadOnly="True"/>
+
+                <DataGridTemplateColumn SortMemberPath="DictionaryPath.Value" Width="2*" Header="Carbon-RT(min) dictionary file path" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="15" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                         Text="{Binding Path=DictionaryPath.Value}" 
+                                         VerticalContentAlignment="Center" IsReadOnly="False" HorizontalAlignment="Stretch" Grid.Column="0" >
+                                    <TextBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Auto fill"
+                                                      Command="{Binding Path=Data.AutoFillCommand, Source={StaticResource RiDictionariesViewModel}, Mode=OneWay}"
+                                                      CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </ContextMenu>
+                                    </TextBox.ContextMenu>
+                                </TextBox>
+                                <Button Content="..."
+                                        Command="{Binding Path=SelectDictionaryCommand}"
+                                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                        Grid.Column="1"/>
+                            </Grid>
+                        </DataTemplate>
+                        
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

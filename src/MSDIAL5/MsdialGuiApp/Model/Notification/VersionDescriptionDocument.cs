@@ -7,15 +7,15 @@ namespace CompMs.App.Msdial.Model.Notification
     class VersionDescriptionDocument
     {
         [DataMember(Name = "latestVersion")]
-        public string LatestVersion { get; set; }
+        public string? LatestVersion { get; set; }
 
         [DataMember(Name = "changeLog")]
-        public string ChangeLog { get; set; }
+        public string? ChangeLog { get; set; }
         
         [DataMember(Name = "datePublished")]
-        public string DatePublished { get; set; }
+        public string? DatePublished { get; set; }
         
         [DataMember(Name = "downloadUri")]
-        public Uri DownloadUri { get; set; }
+        public Uri? DownloadUri { get; set; }
     }
 }

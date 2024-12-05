@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using System;
 using System.ComponentModel;
 
 namespace CompMs.Common.Components
@@ -15,10 +16,11 @@ namespace CompMs.Common.Components
         double Value { get; }
         ChromXType Type { get; } 
         ChromXUnit Unit { get; }
+        IChromX Add(double delta);
     }
 
     [MessagePackObject]
-    public sealed class RetentionTime : IChromX
+    public sealed class RetentionTime : IChromX, IComparable<RetentionTime>
     {
         [Key(0)]
         public double Value { get; }
@@ -50,20 +52,9 @@ namespace CompMs.Common.Components
 
         public override string ToString()
         {
-            switch (Type)
-            {
-                case ChromXType.RT:
-                    return $"RT: {Value:F3} {GetUnitString()}";
-                case ChromXType.RI:
-                    return $"RI: {Value:F3} {GetUnitString()}";
-                case ChromXType.Drift:
-                    return $"Drift: {Value:F3} {GetUnitString()}";
-                case ChromXType.Mz:
-                    return $"Mz: {Value:F3} {GetUnitString()}";
-                default:
-                    return "";
-            }
+            return $"RT: {Value:F3} {GetUnitString()}";
         }
+
         public string GetUnitString()
         {
             switch (Unit)
@@ -83,11 +74,27 @@ namespace CompMs.Common.Components
             }
         }
 
+        public int CompareTo(RetentionTime other) {
+            return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
+        public static RetentionTime operator+(RetentionTime left, double delta) {
+            return new RetentionTime(left.Value + delta, left.Unit);
+        }
+
+        public static RetentionTime operator-(RetentionTime left, double delta) {
+            return new RetentionTime(left.Value - delta, left.Unit);
+        }
+
         internal static RetentionTime Default { get; } = new RetentionTime(-1, ChromXUnit.Min);
     }
 
     [MessagePackObject]
-    public sealed class RetentionIndex : IChromX
+    public sealed class RetentionIndex : IChromX, IComparable<RetentionIndex>
     {
         [Key(0)]
         public double Value { get; }
@@ -119,20 +126,9 @@ namespace CompMs.Common.Components
 
         public override string ToString()
         {
-            switch (Type)
-            {
-                case ChromXType.RT:
-                    return $"RT: {Value:F3} {GetUnitString()}";
-                case ChromXType.RI:
-                    return $"RI: {Value:F3} {GetUnitString()}";
-                case ChromXType.Drift:
-                    return $"Drift: {Value:F3} {GetUnitString()}";
-                case ChromXType.Mz:
-                    return $"Mz: {Value:F3} {GetUnitString()}";
-                default:
-                    return "";
-            }
+            return $"RI: {Value:F3} {GetUnitString()}";
         }
+
         public string GetUnitString()
         {
             switch (Unit)
@@ -152,11 +148,27 @@ namespace CompMs.Common.Components
             }
         }
 
+        public int CompareTo(RetentionIndex other) {
+            return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
+        public static RetentionIndex operator+(RetentionIndex left, double delta) {
+            return new RetentionIndex(left.Value + delta, left.Unit);
+        }
+
+        public static RetentionIndex operator-(RetentionIndex left, double delta) {
+            return new RetentionIndex(left.Value - delta, left.Unit);
+        }
+
         internal static RetentionIndex Default { get; } = new RetentionIndex(-1, ChromXUnit.None);
     }
 
     [MessagePackObject]
-    public sealed class DriftTime : IChromX
+    public sealed class DriftTime : IChromX, IComparable<DriftTime>
     {
         [Key(0)]
         public double Value { get; }
@@ -188,19 +200,7 @@ namespace CompMs.Common.Components
 
         public override string ToString()
         {
-            switch (Type)
-            {
-                case ChromXType.RT:
-                    return $"RT: {Value:F3} {GetUnitString()}";
-                case ChromXType.RI:
-                    return $"RI: {Value:F3} {GetUnitString()}";
-                case ChromXType.Drift:
-                    return $"Drift: {Value:F3} {GetUnitString()}";
-                case ChromXType.Mz:
-                    return $"Mz: {Value:F3} {GetUnitString()}";
-                default:
-                    return "";
-            }
+            return $"Drift: {Value:F3} {GetUnitString()}";
         }
         public string GetUnitString()
         {
@@ -221,11 +221,27 @@ namespace CompMs.Common.Components
             }
         }
 
+        public int CompareTo(DriftTime other) {
+            return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
+        public static DriftTime operator+(DriftTime left, double delta) {
+            return new DriftTime(left.Value + delta, left.Unit);
+        }
+
+        public static DriftTime operator-(DriftTime left, double delta) {
+            return new DriftTime(left.Value - delta, left.Unit);
+        }
+
         internal static DriftTime Default { get; } = new DriftTime(-1, ChromXUnit.Msec);
     }
 
     [MessagePackObject]
-    public sealed class MzValue : IChromX {
+    public sealed class MzValue : IChromX, IComparable<MzValue> {
         [Key(0)]
         public double Value { get; }
         [Key(1)]
@@ -255,20 +271,9 @@ namespace CompMs.Common.Components
 
         public override string ToString()
         {
-            switch (Type)
-            {
-                case ChromXType.RT:
-                    return $"RT: {Value:F3} {GetUnitString()}";
-                case ChromXType.RI:
-                    return $"RI: {Value:F3} {GetUnitString()}";
-                case ChromXType.Drift:
-                    return $"Drift: {Value:F3} {GetUnitString()}";
-                case ChromXType.Mz:
-                    return $"Mz: {Value:F3} {GetUnitString()}";
-                default:
-                    return "";
-            }
+            return $"Mz: {Value:F3} {GetUnitString()}";
         }
+
         public string GetUnitString()
         {
             switch (Unit)
@@ -288,6 +293,39 @@ namespace CompMs.Common.Components
             }
         }
 
+        public int CompareTo(MzValue other) {
+            return Value.CompareTo(other.Value);
+        }
+
+        IChromX IChromX.Add(double delta) {
+            return this + delta;
+        }
+
+        public static MzValue operator+(MzValue left, double delta) {
+            return new MzValue(left.Value + delta, left.Unit);
+        }
+
+        public static MzValue operator-(MzValue left, double delta) {
+            return new MzValue(left.Value - delta, left.Unit);
+        }
+
         internal static MzValue Default { get; } = new MzValue(-1, ChromXUnit.Mz);
+    }
+
+    public static class ChromX {
+        public static IChromX Convert(double value, ChromXType type, ChromXUnit unit) {
+            switch (type) {
+                case ChromXType.RT:
+                    return new RetentionTime(value, unit);
+                case ChromXType.RI:
+                    return new RetentionIndex(value, unit);
+                case ChromXType.Drift:
+                    return new DriftTime(value, unit);
+                case ChromXType.Mz:
+                    return new MzValue(value, unit);
+                default:
+                    throw new NotSupportedException(nameof(type));
+            }
+        }
     }
 }

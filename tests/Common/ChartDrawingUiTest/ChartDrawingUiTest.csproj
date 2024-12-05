@@ -1,20 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9656B2ED-B9D7-47D5-95C9-5336D8374972}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
     <RootNamespace>ChartDrawingUiTest</RootNamespace>
     <AssemblyName>ChartDrawingUiTest</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net48</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,7 +43,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release vendor unsupported|AnyCPU'">
@@ -51,404 +51,28 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="AreaChart\AreaChart1.xaml.cs">
-      <DependentUpon>AreaChart1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AreaChart\AreaChartVM1.cs" />
-    <Compile Include="Bar\Bar1.xaml.cs">
-      <DependentUpon>Bar1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Bar\Bar2.xaml.cs">
-      <DependentUpon>Bar2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Bar\Bar3.xaml.cs">
-      <DependentUpon>Bar3.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Bar\BarViewModel3.cs" />
-    <Compile Include="Bar\BarVM1.cs" />
-    <Compile Include="Behavior\AreaSelectBehaviorTest.xaml.cs">
-      <DependentUpon>AreaSelectBehaviorTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Behavior\AreaSelectBehaviorTestViewModel.cs" />
-    <Compile Include="Behavior\DataGridPasteBehaviorTest.xaml.cs">
-      <DependentUpon>DataGridPasteBehaviorTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Behavior\DataGridPasteBehaviorTestViewModel.cs" />
-    <Compile Include="Chart\AxisLabelTest.xaml.cs">
-      <DependentUpon>AxisLabelTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\AxisLabelTestViewModel.cs" />
-    <Compile Include="Chart\AxisTest.xaml.cs">
-      <DependentUpon>AxisTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\AxisTestViewModel.cs" />
-    <Compile Include="Chart\ChartUpdate.xaml.cs">
-      <DependentUpon>ChartUpdate.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\ChartUpdateVM.cs" />
-    <Compile Include="Chart\ErrorBar1.xaml.cs">
-      <DependentUpon>ErrorBar1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\ErrorBarVM1.cs" />
-    <Compile Include="Chart\LineSpectrumControlSlimTest1.xaml.cs">
-      <DependentUpon>LineSpectrumControlSlimTest1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\LineSpectrumControlSlimTestViewModel1.cs" />
-    <Compile Include="Chart\MultiAreaChartControl1.xaml.cs">
-      <DependentUpon>MultiAreaChartControl1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\MultiChart1.xaml.cs">
-      <DependentUpon>MultiChart1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\MultiChartVM1.cs" />
-    <Compile Include="Chart\MultiLineChartControl1.xaml.cs">
-      <DependentUpon>MultiLineChartControl1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\MultiLineChartControlViewModel1.cs" />
-    <Compile Include="Chart\NestedProperties.xaml.cs">
-      <DependentUpon>NestedProperties.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\NestedPropertiesViewModel.cs" />
-    <Compile Include="Chart\RangeSelector.xaml.cs">
-      <DependentUpon>RangeSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\RangeSelectorViewModel.cs" />
-    <Compile Include="Chart\ScatterControlSlimTest1.xaml.cs">
-      <DependentUpon>ScatterControlSlimTest1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\ScatterControlSlimTestViewModel1.cs" />
-    <Compile Include="Chart\SimpleChart1.xaml.cs">
-      <DependentUpon>SimpleChart1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\SimpleChartVM1.cs" />
-    <Compile Include="Chart\SpotLinedAnnotatorTest1.xaml.cs">
-      <DependentUpon>SpotLinedAnnotatorTest1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Chart\SpotLinkedAnnotatorTestViewModel1.cs" />
-    <Compile Include="Controls\FileOpenControl1.xaml.cs">
-      <DependentUpon>FileOpenControl1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataGrid\DataGrid1.xaml.cs">
-      <DependentUpon>DataGrid1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataGrid\DataGridVM1.cs" />
-    <Compile Include="Dendrogram\Dendrogram5.xaml.cs">
-      <DependentUpon>Dendrogram5.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dendrogram\DendrogramVM4.cs" />
-    <Compile Include="Heatmap\Heatmap4.xaml.cs">
-      <DependentUpon>Heatmap4.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Heatmap\HeatmapVM3.cs" />
-    <Compile Include="LineChart\LineChart4.xaml.cs">
-      <DependentUpon>LineChart4.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LineChart\LineChartVM4.cs" />
-    <Compile Include="LineSpectrum\LineSpecrumVM1.cs" />
-    <Compile Include="LineSpectrum\LineSpectrum1.xaml.cs">
-      <DependentUpon>LineSpectrum1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LineSpectrum\LineSpectrum2.xaml.cs">
-      <DependentUpon>LineSpectrum2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LineSpectrum\LineSpectrum3.xaml.cs">
-      <DependentUpon>LineSpectrum3.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LineSpectrum\LineSpectrumVM2.cs" />
-    <Compile Include="LineSpectrum\LineSpectrumVM3.cs" />
-    <Compile Include="Scatter\Scatter3.xaml.cs">
-      <DependentUpon>Scatter3.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Scatter\Scatter4.xaml.cs">
-      <DependentUpon>Scatter4.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Scatter\ScatterVM3.cs" />
-    <Compile Include="Scatter\ScatterVM4.cs" />
-    <Compile Include="UI\AreaSelector.xaml.cs">
-      <DependentUpon>AreaSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\BindingStaticResource.xaml.cs">
-      <DependentUpon>BindingStaticResource.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\DependencyPropertyTest.xaml.cs">
-      <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\DoubleClickListBox.xaml.cs">
-      <DependentUpon>DoubleClickListBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\DPControl.cs" />
-    <Compile Include="UI\ImageZoomTest.xaml.cs">
-      <DependentUpon>ImageZoomTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\NumericUpDownTest.xaml.cs">
-      <DependentUpon>NumericUpDownTest.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\RangeSlider.xaml.cs">
-      <DependentUpon>RangeSlider.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\TestControl.cs" />
-    <Compile Include="UI\TestPage.xaml.cs">
-      <DependentUpon>TestPage.xaml</DependentUpon>
-    </Compile>
-    <Page Include="AreaChart\AreaChart1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Bar\Bar1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Bar\Bar2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Bar\Bar3.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Behavior\AreaSelectBehaviorTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Behavior\DataGridPasteBehaviorTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\AxisLabelTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\AxisTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\ChartUpdate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\ErrorBar1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\LineSpectrumControlSlimTest1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\MultiAreaChartControl1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\MultiChart1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\MultiLineChartControl1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\NestedProperties.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\RangeSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\ScatterControlSlimTest1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\SimpleChart1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chart\SpotLinedAnnotatorTest1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Chromatogram\Chromatogram1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\FileOpenControl1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DataGrid\DataGrid1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dendrogram\Dendrogram5.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Heatmap\Heatmap4.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LineChart\LineChart4.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LineSpectrum\LineSpectrum1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LineSpectrum\LineSpectrum2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LineSpectrum\LineSpectrum3.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Chromatogram\Chromatogram1.xaml.cs">
-      <DependentUpon>Chromatogram1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Scatter\Scatter3.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Scatter\Scatter4.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\AreaSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\BindingStaticResource.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\ColorPicker.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\DependencyPropertyTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\DoubleClickListBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\ImageZoomTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\NumericUpDownTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\RangeSlider.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\TestPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\MSDIAL4\ChromatogramUI\Chromatogram.csproj">
-      <Project>{6dced6bb-4107-40c9-a9ef-d60658c385c0}</Project>
-      <Name>Chromatogram</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj">
-      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
-      <Name>CommonMVVM</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj">
-      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
-      <Name>ChartDrawing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj">
-      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
-      <Name>CommonStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\MSDIAL4\DataProcessingStandard\DataProcessingStandard.csproj">
-      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
-      <Name>DataProcessingStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj">
-      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
-      <Name>MathematicsStandard</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL4\ChromatogramUI\Chromatogram.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\..\src\MSDIAL4\DataProcessingStandard\DataProcessingStandard.csproj" />
+    <ProjectReference Include="..\..\..\src\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="data\testmatrix.txt" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
 </Project>

@@ -13,9 +13,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public MsdialAnalysisMassBankRecordExportViewModel(MsdialAnalysisMassBankRecordExportModel model) {
             _model = model;
             ShouldExport = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldExport).AddTo(Disposables);
+            ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID).AddTo(Disposables);
         }
 
         public string Label => _model.Label;
+
+        public ReactiveProperty<string?> ContributorID { get; }
 
         public ReactivePropertySlim<bool> ShouldExport { get; }
 

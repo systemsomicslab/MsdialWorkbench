@@ -3,6 +3,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Loader
@@ -20,7 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Loader
 
         public BarItemsLoaderData Model { get; }
         public string Label => Model.Label;
-        public IObservable<IBarItemsLoader> Loader => Model.ObservableLoader;
+        public IObservable<IBarItemsLoader> Loader => Observable.Return(Model.Loader);
         public ICommand SwitchCommand { get; }
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
     }

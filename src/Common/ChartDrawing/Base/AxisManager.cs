@@ -18,11 +18,11 @@ namespace CompMs.Graphics.Core.Base
     }
 
     public interface IAxisManager {
-        Range Range { get; }
+        AxisRange Range { get; }
 
         event EventHandler RangeChanged;
-
         event EventHandler InitialRangeChanged;
+        event EventHandler AxisValueMappingChanged;
 
         AxisValue TranslateToAxisValue(object value);
         double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
@@ -32,7 +32,7 @@ namespace CompMs.Graphics.Core.Base
 
         bool Contains(AxisValue value);
         bool ContainsCurrent(AxisValue value);
-        void Focus(Range range);
+        void Focus(AxisRange range);
         void Reset();
         void Recalculate(double drawableLength);
         List<LabelTickData> GetLabelTicks();
@@ -54,7 +54,7 @@ namespace CompMs.Graphics.Core.Base
             return axis.TranslateToRenderPoint(axis.TranslateToAxisValue(value), isFlipped, drawableLength);
         }
 
-        public static bool Contains(this IAxisManager axis, Range range) {
+        public static bool Contains(this IAxisManager axis, AxisRange range) {
             return axis.Contains(range.Minimum) && axis.Contains(range.Maximum);
         }
 
@@ -67,11 +67,11 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public static void Focus(this IAxisManager axis, object low, object high) {
-            axis.Focus(new Range(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
+            axis.Focus(new AxisRange(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
         }
 
         public static void Focus<T>(this IAxisManager<T> axis, T low, T high) {
-            axis.Focus(new Range(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
+            axis.Focus(new AxisRange(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
         }
     }
 }

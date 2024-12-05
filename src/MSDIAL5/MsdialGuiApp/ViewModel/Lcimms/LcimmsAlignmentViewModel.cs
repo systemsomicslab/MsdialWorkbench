@@ -26,18 +26,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     internal sealed class LcimmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcimmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
 
         public LcimmsAlignmentViewModel(
             LcimmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager,
             IMessageBroker broker) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -47,7 +42,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
 
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
@@ -63,8 +57,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
-            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
-            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused, broker).AddTo(Disposables);
+            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused, broker).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
@@ -92,9 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, SetUnknownCommand)) {
-                    compoundSearchService.ShowDialog(vm);
-                }
+                using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                broker.Publish<ICompoundSearchViewModel>(vm);
             })
             .AddTo(Disposables);
 
@@ -119,7 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
@@ -136,9 +129,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ICollectionView Ms1Spots { get; }
 
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
 
-        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>?> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
@@ -154,19 +147,19 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
-        public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => showIonTableCommand ??= new DelegateCommand(ShowIonTable);
 
-        private DelegateCommand showIonTableCommand;
+        private DelegateCommand? showIonTableCommand;
 
-        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
-        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ??= new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod);
+        private DelegateCommand? _searchAlignmentSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
+        private DelegateCommand? _goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
             _model.InvokeMsfinder();

@@ -1,14 +1,14 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
 using System.Linq;
-using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.MsdialCore.DataObj;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -86,14 +86,19 @@ namespace CompMs.App.Msdial.Model.DataObj
             _observableAnalysisFiles.Clear();
         }
 
-        public AnalysisFileBeanModel GetById(int id) {
-            return AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == id);
-        }
-
         public void ReleaseMSDecLoaders() {
             foreach (var file in _observableAnalysisFiles) {
                 file.ReleaseMSDecLoader();
             }
+        }
+
+        public int Count => AnalysisFiles.Count;
+
+        public AnalysisFileBeanModel FindByID(int fileID) {
+            if (AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileID) is AnalysisFileBeanModel file) {
+                return file;
+            }
+            throw new KeyNotFoundException($"ID {fileID} does not exist in current analysis files.");
         }
 
         private static bool AreAnalyticalOrdersUnique(IEnumerable<AnalysisFileBeanModel> files) {

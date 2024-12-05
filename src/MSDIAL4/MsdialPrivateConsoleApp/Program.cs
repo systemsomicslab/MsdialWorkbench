@@ -21,15 +21,41 @@ namespace MsdialPrivateConsoleApp {
             //LipidomicsResultCuration.Name2Smiles(@"E:\6_Projects\Collaboration\NCC\20210406\temp.txt", @"E:\6_Projects\Collaboration\NCC\20210406\temp_result.txt");
             //LipidomicsResultCuration.Text2Msp(@"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\node.txt", @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\feces_negspec.msp");
 
+            //LipidomicsResultCuration.EadValidationResultExport(
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\AlignmentResult_2024_01_07_09_08_59.xml",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\pairfile.txt");
 
+            //LipidomicsResultCuration.EadValidationResultExport(
+            //   @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\AlignmentResult_2024_01_07_19_12_06.xml",
+            //   @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\pairfile.txt");
 
+            var mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19.msp";
+            var inchikeytable = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\inchikey2ontology.txt";
+            var new_mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated.msp";
+            var new_resultfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated_woms2.txt";
 
+            //MspManager.ExtractPositiveSpectra(
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\new_ontlogycasmi2022.msp", 
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\casmi2022_pos.msp");
 
-            //var mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp";
-            //var inchikeytable = @"D:\9_Spectral library curations\Distributed MSPs\inchikey_classyfire_table.txt";
-            //var new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15-For-Statistics.msp";
+            //MspManager.ExtractNegativeSpectra(
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\new_ontlogycasmi2022.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\casmi2022_neg.msp");
 
             //MspManager.CurateOntologyField(mspfile, inchikeytable, new_mspfile);
+            //MspManager.AddOntologies(mspfile, inchikeytable, new_mspfile);
+            //MspManager.Msp2TextAsMsdialAlignmentResultFormat(new_mspfile, new_resultfile, "msp_neg");
+
+            //MspManager.MergeEdgePairs(@"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\output_msn_neg\result-2403280444",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.edge");
+            //MspManager.MergeMspFiles(@"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\input_msn_neg",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp");
+            MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
+                @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+            //MspManager.Msp2TextAsMsdialAlignmentResultFormat(
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.txt",
+            //    "casmi_neg");
 
             //mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp";
             //new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15-For-Statistics.msp";

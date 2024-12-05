@@ -118,6 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-DIAL console ver. 4.70</value>
+    <value>MS-DIAL console ver. 4.92_27012024</value>
+    <comment>multi cpu support for lcmsdda</comment>
   </data>
 </root>

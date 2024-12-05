@@ -1,13 +1,18 @@
 ﻿using CompMs.Common.Extension;
-using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class Omega3nChainGenerator : IChainGenerator
+    public sealed class Omega3nChainGenerator : IChainGenerator
     {
+        private readonly static ExtraChains _exChains;
+        static Omega3nChainGenerator() {
+            _exChains = new ExtraChains();
+        }
+
         public bool CarbonIsValid(int carbon) {
             return true;
         }
@@ -50,18 +55,7 @@ namespace CompMs.Common.Lipidomics
                 return Enumerable.Empty<IDoubleBond>();
             }
             var result = InnerEnumerateDoubleBond(carbon, doubleBond);
-            if (carbon == 14 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(9)));
-            }
-            if (carbon == 16 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(9)));
-            }
-            if (carbon == 15 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(10)));
-            }
-            if (carbon == 17 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(10)));
-            }
+            result = _exChains.Append(carbon, doubleBond).Concat(result);
             return result;
         }
 
@@ -236,6 +230,34 @@ namespace CompMs.Common.Lipidomics
             }
 
             return rec(begin, new List<int>(oxidized.UnDecidedCount));
+        }
+
+        class ExtraChains {
+            private readonly Dictionary<(int, int), DoubleBond[]> _map;
+
+            public ExtraChains() {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var stream = assembly.GetManifestResourceStream("CompMs.Common.Lipidomics.LipidmapsAcylChains.xml");
+                var xml = XElement.Load(stream);
+                var groups = xml.Elements("Chain").Select(elem => (carbon: int.Parse(elem.Attribute("carbon").Value), bond: Parse(elem))).GroupBy(pair => (pair.carbon, pair.bond.Count), pair => pair.bond);
+                _map = groups.ToDictionary(group => group.Key, group => group.Where(db => db.Bonds.Any(b => (group.Key.carbon - b.Position) % 3 != 0)).ToArray());
+            }
+
+            private static DoubleBond Parse(XElement element) {
+                var pos = element.Elements("DoubleBond").Select(elem => int.Parse(elem.Attribute("position").Value)).ToArray();
+                return DoubleBond.CreateFromPosition(pos);
+                
+            }
+
+            public IEnumerable<IDoubleBond> Append(int carbon, IDoubleBond baseBond) {
+                if (_map.TryGetValue((carbon, baseBond.Count), out var bonds)) {
+                    if (baseBond.DecidedCount >= 1) {
+                        return bonds.Where(baseBond.Includes);
+                    }
+                    return bonds;
+                }
+                return Array.Empty<IDoubleBond>();
+            }
         }
     }
 }

@@ -120,7 +120,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public MatchedSpotCandidate<T> Match<T>(T spot, MoleculeMsReference reference) where T: IAnnotatedObject, IChromatogramPeak {
             var candidate = Score(spot, reference);
-            if (candidate.IsSimilarByMz) {
+            if (candidate.IsSimilarByMz && candidate.IsSimilarByTime) {
                 return candidate;
             }
             else {

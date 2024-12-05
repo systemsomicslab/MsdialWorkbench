@@ -61,19 +61,38 @@
                     <ItemsControl ItemsSource="{Binding RoiViewModels}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
-                                <CheckBox IsChecked="{Binding IsSelected.Value}">
-                                    <CheckBox.Content>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Id}"/>
-                                            <Rectangle Width="16" Height="8" Margin="8,0,0,0">
-                                                <Rectangle.Fill>
-                                                    <SolidColorBrush Color="{Binding Roi.Color}"
-                                                                     PresentationOptions:Freeze="True"/>
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                                        </StackPanel>
-                                    </CheckBox.Content>
-                                </CheckBox>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected.Value}"
+                                              Tag="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource NegativeConverter}}"
+                                              Visibility="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Id.Value}"/>
+                                                <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                         PresentationOptions:Freeze="True"/>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </StackPanel>
+                                        </CheckBox.Content>
+                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox IsChecked="{Binding IsSelected.Value}" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding Id.Value}"/>
+                                        <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                 PresentationOptions:Freeze="True"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="EditButton" Content="&#xED63;" FontFamily="Segoe MDL2 Assets" Margin="4,2" Background="White"/>
+                                    <Button Command="{Binding DataContext.(vm:ImagingImmsImageViewModel.RemoveRoiCommand), Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Model}"
+                                            Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                            Margin="4,2" Background="White"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -286,6 +305,10 @@
                 </TabControl.ItemTemplate>
             </TabControl>
             <Grid Grid.Row="1">
+            <Grid.InputBindings>
+                <KeyBinding Gesture="Ctrl+Z" Command="{x:Static ui:AreaSelector.UndoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+                <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+            </Grid.InputBindings>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -327,6 +350,8 @@
                                 </StackPanel>
                             </ContentControl>
                             <Button Content="Save" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.SaveCommand}"/>
+                            <Button Content="Save intensities" Command="{Binding SelectedImageViewModel.SaveIntensitiesCommand}"/>
+                            <Button Content="Load ROI" Command="{Binding SelectedImageViewModel.LoadRoiCommand}"/>
                         </ItemsControl>
                     </GroupBox>
                 </StackPanel>
@@ -355,7 +380,8 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <ui:AreaSelector SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
+                            <ui:AreaSelector x:Name="roiSelector"
+                                             SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
                                              Background="Transparent"
                                              Stroke="Red"
                                              VerticalAlignment="Stretch"

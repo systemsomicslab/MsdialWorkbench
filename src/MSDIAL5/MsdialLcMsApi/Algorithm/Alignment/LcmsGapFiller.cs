@@ -28,7 +28,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             : this(param.RetentionTimeAlignmentTolerance, param.CentroidMs1Tolerance, param.IonMode,
                   param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
             {
                 Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),
@@ -44,7 +44,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 
             var chromatogramRange = new ChromatogramRange(center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5, ChromXType.RT, ChromXUnit.Min);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
-            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
+            return peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
         }
     }
 }

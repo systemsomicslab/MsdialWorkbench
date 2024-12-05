@@ -12,6 +12,8 @@
         xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
         xmlns:lcimv="clr-namespace:CompMs.App.Msdial.View.Lcimms"
         xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+        xmlns:gcv="clr-namespace:CompMs.App.Msdial.View.Gcms"
+        xmlns:gcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:CompoundSearchVM}}"
@@ -42,6 +44,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type lcimvm:LcimmsCompoundSearchViewModel}">
                 <lcimv:LcimmsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type gcvm:GcmsAnalysisCompoundSearchViewModel}">
+                <gcv:GcmsAnalysisCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type gcvm:GcmsAlignmentCompoundSearchViewModel}">
+                <gcv:GcmsAlignmentCompoundSearchView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

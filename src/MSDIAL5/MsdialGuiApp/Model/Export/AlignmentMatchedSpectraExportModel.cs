@@ -17,17 +17,17 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AlignmentMatchedSpectraExportModel : BindableBase, IAlignmentResultExportModel
     {
         private readonly AlignmentPeakSpotSupplyer _peakSpotSupplyer;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly CompoundSearcherCollection _compoundSearchers;
-        private readonly ConcurrentDictionary<int, MSDecLoader> _loaders;
+        private readonly ConcurrentDictionary<int, MSDecLoader?> _loaders;
         private readonly IReadOnlyList<AnalysisFileBeanModel> _analysisFiles;
 
-        public AlignmentMatchedSpectraExportModel(AlignmentPeakSpotSupplyer peakSpotSupplyer, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IEnumerable<AnalysisFileBeanModel> analysisFiles, CompoundSearcherCollection compoundSearchers) {
+        public AlignmentMatchedSpectraExportModel(AlignmentPeakSpotSupplyer peakSpotSupplyer, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IEnumerable<AnalysisFileBeanModel> analysisFiles, CompoundSearcherCollection compoundSearchers) {
             _peakSpotSupplyer = peakSpotSupplyer;
             _refer = refer;
             _compoundSearchers = compoundSearchers;
             _analysisFiles = (analysisFiles as IReadOnlyList<AnalysisFileBeanModel>) ?? analysisFiles.ToArray();
-            _loaders = new ConcurrentDictionary<int, MSDecLoader>();
+            _loaders = new ConcurrentDictionary<int, MSDecLoader?>();
         }
 
         public bool IsSelected {
@@ -65,6 +65,10 @@ namespace CompMs.App.Msdial.Model.Export
                     var peakElement = new XElement("Peak");
                     spotElement.Add(peakElement);
                     peakElement.SetAttributeValue("FileId", peak.FileID);
+
+                    if (matchingCalculator is null) {
+                        continue;
+                    }
                     var loader = GetLoader(peak.FileID);
                     if (loader is null) {
                         continue;
@@ -73,6 +77,7 @@ namespace CompMs.App.Msdial.Model.Export
                     if (decId < 0) {
                         continue;
                     }
+
                     var result = loader.LoadMSDecResult(decId);
                     var pair = matchingCalculator.GetMatchedSpectrum(result.Spectrum, reference.Spectrum);
                     Write(peakElement, pair);
@@ -92,7 +97,7 @@ namespace CompMs.App.Msdial.Model.Export
             ClearLoaders();
         }
 
-        private MSDecLoader GetLoader(int id) {
+        private MSDecLoader? GetLoader(int id) {
             return _loaders.GetOrAdd(id, id_ => {
                 var file = _analysisFiles.FirstOrDefault(f => f.AnalysisFileId == id_);
                 if (file is null) {
@@ -104,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         private void ClearLoaders() {
             foreach (var loader in _loaders.Values) {
-                loader.Dispose();
+                loader?.Dispose();
             }
             _loaders.Clear();
         }

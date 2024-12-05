@@ -40,7 +40,7 @@
                     <DataGridTextColumn Header="Annotation" Width="1.5*" Binding="{Binding Path=AlignedPeakProperty.Name}" IsReadOnly="True" />
                     <DataGridTextColumn Header="TotalScore" Width="1*" Binding="{Binding Path=AlignedPeakProperty.TotalScore, StringFormat=0.00}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Mz" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Mass, StringFormat=0.000}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Time, StringFormat=0.00}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.ChromXsTop.RT.Value, StringFormat=0.00}" IsReadOnly="True" />
                     <DataGridTextColumn Header="S/N" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.SignalToNoise, StringFormat=0.0}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Peak Int." Width="1*" Binding="{Binding Path=AlignedPeakProperty.PeakHeightTop, StringFormat=0}"  IsReadOnly="True" >
                         <DataGridTextColumn.CellStyle>

@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Chains>
+    <Chain carbon="14">
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="15">
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="15">
+        <DoubleBond position="10"/>
+    </Chain>
+    <Chain carbon="16">
+        <DoubleBond position="7"/>
+    </Chain>
+    <Chain carbon="16">
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="17">
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="17">
+        <DoubleBond position="10"/>
+    </Chain>
+    <Chain carbon="17">
+        <DoubleBond position="9"/>
+        <DoubleBond position="12"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="11"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="13"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="17"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="4"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="6"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="7"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="2"/>
+        <DoubleBond position="4"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="6"/>
+        <DoubleBond position="9"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="9"/>
+        <DoubleBond position="11"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="9"/>
+        <DoubleBond position="12"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="6"/>
+        <DoubleBond position="9"/>
+        <DoubleBond position="12"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="9"/>
+        <DoubleBond position="12"/>
+        <DoubleBond position="15"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="3"/>
+        <DoubleBond position="7"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="6"/>
+        <DoubleBond position="9"/>
+        <DoubleBond position="12"/>
+        <DoubleBond position="15"/>
+    </Chain>
+    <Chain carbon="18">
+        <DoubleBond position="9"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="15"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="11"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="13"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="13"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="6"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="7"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+    </Chain>
+    <Chain carbon="20">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+        <DoubleBond position="17"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="13"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="7"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="4"/>
+        <DoubleBond position="7"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="7"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+        <DoubleBond position="19"/>
+    </Chain>
+    <Chain carbon="22">
+        <DoubleBond position="4"/>
+        <DoubleBond position="7"/>
+        <DoubleBond position="10"/>
+        <DoubleBond position="13"/>
+        <DoubleBond position="16"/>
+        <DoubleBond position="19"/>
+    </Chain>
+    <Chain carbon="24">
+        <DoubleBond position="15"/>
+    </Chain>
+    <Chain carbon="24">
+        <DoubleBond position="5"/>
+        <DoubleBond position="8"/>
+        <DoubleBond position="11"/>
+        <DoubleBond position="14"/>
+    </Chain>
+    <Chain carbon="26">
+        <DoubleBond position="5"/>
+    </Chain>
+    <Chain carbon="26">
+        <DoubleBond position="5"/>
+        <DoubleBond position="9"/>
+    </Chain>
+</Chains>

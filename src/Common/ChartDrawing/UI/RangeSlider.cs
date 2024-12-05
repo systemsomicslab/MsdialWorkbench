@@ -96,6 +96,9 @@ namespace CompMs.Graphics.UI.RangeSlider
         private static object CoerceValue(DependencyObject d, object value) {
             var slider = (RangeSlider)d;
             var lower = (double)value;
+            if (double.IsNaN(lower)) {
+                return slider.LowerValue;
+            } 
             if (slider.Minimum > lower) {
                 return slider.Minimum;
             }

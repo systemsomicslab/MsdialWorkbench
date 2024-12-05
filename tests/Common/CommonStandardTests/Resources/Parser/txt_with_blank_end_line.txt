@@ -1,0 +1,4 @@
+﻿Name	MZ	RT	Adduct	InChIKey	Formula
+Test	100.000	1	[M-H]-	-	-
+Test2	100.000	1	[M-H]-	-	-
+

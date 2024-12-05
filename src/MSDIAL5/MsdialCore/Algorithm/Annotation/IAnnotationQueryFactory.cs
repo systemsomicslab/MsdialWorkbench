@@ -65,7 +65,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             IReadOnlyList<IsotopicPeak> GetIsotope(IMSIonProperty property, IReadOnlyList<RawPeakElement> spectrums) {
-                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
+                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance, peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             }
             return GetIsotope;
         }
@@ -98,7 +98,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance, _peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, _proteomicsParameter, _annotator, ignoreIsotopicPeak: false);
         }
 
@@ -151,14 +151,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public sealed class AnnotationQueryWithReferenceFactory : IAnnotationQueryFactory<MsScanMatchResult>
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
         private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _annotator;
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
         private readonly bool _ignoreIsotopicPeak;
 
         private AnnotationQueryWithReferenceFactory(
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             MsRefSearchParameterBase searchParameter,
             Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter,
@@ -172,7 +172,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public AnnotationQueryWithReferenceFactory(
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             PeakPickBaseParameter peakPickParameter,
             MsRefSearchParameterBase searchParameter,
@@ -219,7 +219,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             IReadOnlyList<IsotopicPeak> GetIsotope(IMSIonProperty property, IReadOnlyList<RawPeakElement> spectrums) {
-                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
+                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance, peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             }
             return GetIsotope;
         }

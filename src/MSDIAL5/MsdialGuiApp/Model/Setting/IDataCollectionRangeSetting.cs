@@ -1,7 +1,10 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
+using Reactive.Bindings.Extensions;
+using System;
 using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.Setting
@@ -15,6 +18,7 @@ namespace CompMs.App.Msdial.Model.Setting
         float AccumulatedRange { get; set; }
 
         void Commit();
+        void Update(ParameterBase parameter);
     }
 
     public abstract class DataCollectionRangeSetting : BindableBase
@@ -46,33 +50,41 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public class RetentionTimeCollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
-        private readonly PeakPickBaseParameter parameter;
-        private readonly MsdialLcImMsParameter lcImMsParameter;
+        private readonly MsdialLcImMsParameter? lcImMsParameter;
 
-        public RetentionTimeCollectionRangeSetting(PeakPickBaseParameter parameter, bool needAccmulation) : base(needAccmulation) {
-            Begin = parameter.RetentionTimeBegin;
-            End = parameter.RetentionTimeEnd;
-            this.parameter = parameter;
+        public RetentionTimeCollectionRangeSetting(PeakPickBaseParameterModel peakPickBaseParameterModel, bool needAccmulation) : base(needAccmulation) {
+            Begin = peakPickBaseParameterModel.RetentionTimeBegin;
+            End = peakPickBaseParameterModel.RetentionTimeEnd;
+            this.ObserveProperty(p => p.Begin).Subscribe(v => peakPickBaseParameterModel.RetentionTimeBegin = v);
+            this.ObserveProperty(p => p.End).Subscribe(v => peakPickBaseParameterModel.RetentionTimeEnd = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.RetentionTimeBegin).Subscribe(v => Begin = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.RetentionTimeEnd).Subscribe(v => End = v);
         }
 
-        public RetentionTimeCollectionRangeSetting(MsdialLcImMsParameter parameter, bool needAccmulation) : this(parameter.PeakPickBaseParam, needAccmulation) {
+        public RetentionTimeCollectionRangeSetting(MsdialLcImMsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, bool needAccmulation) : this(peakPickBaseParameterModel, needAccmulation) {
             AccumulatedRange = parameter.AccumulatedRtRange;
             lcImMsParameter = parameter;
         }
 
         public void Commit() {
-            parameter.RetentionTimeBegin = Begin;
-            parameter.RetentionTimeEnd = End;
             if (lcImMsParameter != null) {
                 lcImMsParameter.AccumulatedRtRange = AccumulatedRange;
+            }
+        }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.RetentionTimeBegin;
+            End = parameter.PeakPickBaseParam.RetentionTimeEnd;
+            if (parameter is MsdialLcImMsParameter p) {
+                AccumulatedRange = p.AccumulatedRtRange;
             }
         }
     }
 
     public class DriftTimeCollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
-        private readonly MsdialLcImMsParameter lcImMsParameter;
-        private readonly MsdialImmsParameter immsParameter;
+        private readonly MsdialLcImMsParameter? lcImMsParameter;
+        private readonly MsdialImmsParameter? immsParameter;
 
         public DriftTimeCollectionRangeSetting(MsdialLcImMsParameter parameter, bool needAccmulation) : base(needAccmulation) {
             Begin = parameter.DriftTimeBegin;
@@ -96,37 +108,60 @@ namespace CompMs.App.Msdial.Model.Setting
                 immsParameter.DriftTimeEnd = End;
             }
         }
+
+        public void Update(ParameterBase parameter) {
+            switch (parameter) {
+                case MsdialImmsParameter imms:
+                    Begin = imms.DriftTimeBegin;
+                    End = imms.DriftTimeEnd;
+                    break;
+                case MsdialLcImMsParameter lcimms:
+                    Begin = lcimms.DriftTimeBegin;
+                    End = lcimms.DriftTimeEnd;
+                    break;
+            }
+        }
     }
 
     public class Ms1CollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
-        private readonly PeakPickBaseParameter parameter;
-
-        public Ms1CollectionRangeSetting(PeakPickBaseParameter parameter, bool needAccmulation) : base(needAccmulation) {
-            Begin = parameter.MassRangeBegin;
-            End = parameter.MassRangeEnd;
-            this.parameter = parameter;
+        public Ms1CollectionRangeSetting(PeakPickBaseParameterModel peakPickBaseParameterModel, bool needAccmulation) : base(needAccmulation) {
+            Begin = peakPickBaseParameterModel.MassRangeBegin;
+            End = peakPickBaseParameterModel.MassRangeEnd;
+            this.ObserveProperty(p => p.Begin).Subscribe(v => peakPickBaseParameterModel.MassRangeBegin = v);
+            this.ObserveProperty(p => p.End).Subscribe(v => peakPickBaseParameterModel.MassRangeEnd = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.MassRangeBegin).Subscribe(v => Begin = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.MassRangeEnd).Subscribe(v => End = v);
         }
 
         public void Commit() {
-            parameter.MassRangeBegin = Begin;
-            parameter.MassRangeEnd = End;
+
+        }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.MassRangeBegin;
+            End = parameter.PeakPickBaseParam.MassRangeEnd;
         }
     }
 
     public class Ms2CollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
-        private readonly PeakPickBaseParameter parameter;
-
-        public Ms2CollectionRangeSetting(PeakPickBaseParameter parameter, bool needAccmulation) : base(needAccmulation) {
-            Begin = parameter.Ms2MassRangeBegin;
-            End = parameter.Ms2MassRangeEnd;
-            this.parameter = parameter;
+        public Ms2CollectionRangeSetting(PeakPickBaseParameterModel peakPickBaseParameterModel, bool needAccmulation) : base(needAccmulation) {
+            Begin = peakPickBaseParameterModel.Ms2MassRangeBegin;
+            End = peakPickBaseParameterModel.Ms2MassRangeEnd;
+            this.ObserveProperty(p => p.Begin).Subscribe(v => peakPickBaseParameterModel.Ms2MassRangeBegin = v);
+            this.ObserveProperty(p => p.End).Subscribe(v => peakPickBaseParameterModel.Ms2MassRangeEnd = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.Ms2MassRangeBegin).Subscribe(v => Begin = v);
+            peakPickBaseParameterModel.ObserveProperty(p => p.Ms2MassRangeEnd).Subscribe(v => End = v);
         }
 
         public void Commit() {
-            parameter.Ms2MassRangeBegin = Begin;
-            parameter.Ms2MassRangeEnd = End;
+
+        }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.Ms2MassRangeBegin;
+            End = parameter.PeakPickBaseParam.Ms2MassRangeEnd;
         }
     }
 }

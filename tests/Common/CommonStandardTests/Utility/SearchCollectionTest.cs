@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Utility;
+﻿#if NETSTANDARD || NETFRAMEWORK
+using CompMs.Common.Extension;
+#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -366,6 +368,28 @@ namespace CompMs.Common.Utility.Tests
             var actuals = SearchCollection.CartesianProduct(collection);
 
             foreach ((var exp, var act) in expects.Zip(actuals)) {
+                CollectionAssert.AreEqual(exp, act);
+            }
+        }
+
+        [TestMethod]
+        public void CartesianProductSingleElementTest()
+        {
+            int[][] collection = [
+                [1,],
+                [ 2, 3, 4, 5, ],
+            ];
+
+            int[][] expects = [
+                [ 1, 2, ],
+                [ 1, 3, ],
+                [ 1, 4, ],
+                [ 1, 5, ],
+            ];
+            var actuals = SearchCollection.CartesianProduct(collection);
+
+            foreach ((var exp, var act) in expects.Zip(actuals))
+            {
                 CollectionAssert.AreEqual(exp, act);
             }
         }

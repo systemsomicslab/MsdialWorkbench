@@ -1,23 +1,10 @@
-﻿using CompMs.Common.DataObj.Result;
-using CompMs.Common.Parameter;
-using CompMs.Common.Proteomics.DataObj;
-using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parameter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Setting {
+namespace CompMs.App.Msdial.Model.Setting
+{
     abstract class FastaAnnotationSettingModel : DataBaseAnnotationSettingModelBase {
-        public FastaAnnotationSettingModel() {
-
-        }
-
-        public FastaAnnotationSettingModel(DataBaseAnnotationSettingModelBase model) {
+        public FastaAnnotationSettingModel(DataBaseAnnotationSettingModelBase model) : base(model) {
             DataBasePath = model.DataBasePath;
             DataBaseID = model.DataBaseID;
             DBSource = model.DBSource;
@@ -27,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             ProteomicsParameter = new ProteomicsParameter();
         }
 
-        public FastaAnnotationSettingModel(FastaAnnotationSettingModel model) {
+        public FastaAnnotationSettingModel(FastaAnnotationSettingModel model) : base(model) {
             DataBasePath = model.DataBasePath;
             DataBaseID = model.DataBaseID;
             DBSource = model.DBSource;

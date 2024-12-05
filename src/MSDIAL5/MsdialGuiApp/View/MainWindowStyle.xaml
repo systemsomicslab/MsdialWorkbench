@@ -12,6 +12,7 @@
     <converter:BooleanAnyConverter x:Key="BooleanAny"/>
     <converter2:AreEqualsConverter x:Key="AreEquals"/>
     <converter:AdductIonConverter x:Key="AdductIonConverter"/>
+    <converter2:MultiIdentityConverter x:Key="MultiId"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>
@@ -340,6 +341,46 @@
                                Style="{StaticResource CopyableDetailContent}"/>
             <ui:LabeledContent PrependLabel="Formula:"
                                Content="{Binding Path=(if:IMoleculeProperty.Formula).FormulaString, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SpectrumInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="MS information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="Quant mass:">
+                <TextBox Text="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.Mass, StringFormat=F5, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Retention time:"
+                               Content="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Retention index:"
+                               Content="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Identified:">
+                <TextBox>
+                    <TextBox.Style>
+                        <Style BasedOn="{StaticResource ReadOnlyTextBox}" TargetType="TextBox">
+                            <Setter Property="Text" Value="{Binding Path=Molecule.Name, Mode=OneWay}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Molecule.Name, Mode=OneWay, TargetNullValue=''}" Value="">
+                                    <Setter Property="Text" Value="Unknown"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Ontology:"
+                               Content="{Binding Path=Molecule.Ontology, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+            <ui:LabeledContent PrependLabel="Formula:"
+                               Content="{Binding Path=Molecule.Formula, Mode=OneWay}"
                                Style="{StaticResource CopyableDetailContent}"/>
         </StackPanel>
     </DataTemplate>

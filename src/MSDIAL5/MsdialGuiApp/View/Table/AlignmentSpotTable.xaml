@@ -11,6 +11,8 @@
         xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
         xmlns:lcimv="clr-namespace:CompMs.App.Msdial.View.Lcimms"
         xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+        xmlns:gcv="clr-namespace:CompMs.App.Msdial.View.Gcms"
+        xmlns:gcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
         mc:Ignorable="d"
         Title="Peak spot table" Height="450" Width="1250">
     <ContentControl Content="{Binding}">
@@ -44,6 +46,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type lcimvm:LcimmsAlignmentSpotTableViewModel}">
                 <lcimv:LcimmsAlignmentSpotTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type gcvm:GcmsAnalysisPeakTableViewModel}">
+                <gcv:GcmsAnalysisPeakTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type gcvm:GcmsAlignmentSpotTableViewModel}">
+                <gcv:GcmsAlignmentSpotTableView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

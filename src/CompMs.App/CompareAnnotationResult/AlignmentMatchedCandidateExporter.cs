@@ -46,6 +46,7 @@ namespace CompMs.App.CompareAnnotationResult
             peakElement.Add(new XElement("SimilarByMz", candidate.IsSimilarByMz));
             peakElement.Add(new XElement("SimilarByTime", candidate.IsSimilarByTime));
             peakElement.Add(new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold));
+            peakElement.Add(new XElement("TotalScore", candidate.Spot.MatchResults.Representative.TotalScore));
             return peakElement;
         }
     }

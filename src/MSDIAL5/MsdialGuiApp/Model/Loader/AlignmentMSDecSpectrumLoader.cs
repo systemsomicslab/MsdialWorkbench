@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.MSDec;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -16,15 +14,15 @@ namespace CompMs.App.Msdial.Model.Loader
             _alignmentFile = alignmentFile;
         }
 
-        private Task<MSDecResult> LoadMSDecResultAsync(AlignmentSpotPropertyModel target) {
+        private Task<MSDecResult?> LoadMSDecResultAsync(AlignmentSpotPropertyModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
             return _alignmentFile.LoadMSDecResultByIndexAsync(target.MasterAlignmentID);
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
-            return Observable.FromAsync(() => LoadMSDecResultAsync(target)).Select(r => r.Spectrum);
+        IObservable<IMSScanProperty?> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadScanAsObservable(AlignmentSpotPropertyModel target) {
+            return Observable.FromAsync(() => LoadMSDecResultAsync(target));
         }
     }
 }

@@ -19,21 +19,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ProcessSettingViewModel(ProjectSettingModel projectSettingModel) {
             _model = new ProcessSettingModel(projectSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
-            ProjectSettingViewModel = project
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var dataset = project
-                .SelectSwitch(psvm => psvm.DatasetSettingViewModel);
-            DatasetSettingViewModel = dataset
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            ProjectSettingViewModel = project.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var dataset = project.SelectSwitch(psvm => psvm.DatasetSettingViewModel);
+            DatasetSettingViewModel = dataset.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var method = dataset
-                .Where(dsvm => dsvm != null)
-                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
+                .Where(dsvm => dsvm is not null)
+                .SelectSwitch(dsvm => dsvm!.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
+            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel?>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
                 .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
@@ -58,12 +53,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -79,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DialogResult = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
 
-            SelectedSettingViewModel.Value = ProjectSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+            SelectedSettingViewModel.Value = ProjectSettingViewModel.Value?.SettingViewModels.FirstOrDefault();
         }
 
         public ProcessSettingViewModel(IProjectModel projectModel, IMessageBroker broker) {
@@ -95,13 +90,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var method = dataset
-                .Where(dsvm => dsvm != null)
-                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
+                .Where(dsvm => dsvm is not null)
+                .SelectSwitch(dsvm => dsvm!.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
+            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel?>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
                 .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
@@ -126,12 +121,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -147,7 +142,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DialogResult = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
 
-            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault();
         }
 
         public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, IMessageBroker broker) {
@@ -169,7 +164,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
+            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel?>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
                 .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
@@ -194,12 +189,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
-                .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next)
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
@@ -216,7 +210,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DialogResult = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
 
-            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault();
         }
 
         public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, MethodSettingModel methodSettingModel, IMessageBroker broker) {
@@ -236,7 +230,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
+            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel?>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
                 .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
@@ -261,12 +255,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -282,7 +276,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DialogResult = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
 
-            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+            SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault();
         }
         public ProcessSettingViewModel(ProjectSettingModel projectSettingModel, DatasetSettingModel datasetSettingModel, MethodSettingModel methodSettingModel) {
             _model = new ProcessSettingModel(projectSettingModel, datasetSettingModel, methodSettingModel).AddTo(Disposables);
@@ -299,7 +293,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
+            SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel?>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
                 .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
@@ -324,12 +318,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -344,19 +338,19 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DialogResult = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
 
-            SelectedSettingViewModel.Value = MethodSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+            SelectedSettingViewModel.Value = MethodSettingViewModel.Value?.SettingViewModels.FirstOrDefault();
         }
 
         public ProcessSettingModel Model => _model;
-        public ReadOnlyReactivePropertySlim<ProjectSettingViewModel> ProjectSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ProjectSettingViewModel?> ProjectSettingViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<DatasetSettingViewModel> DatasetSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetSettingViewModel?> DatasetSettingViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<MethodSettingViewModel> MethodSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodSettingViewModel?> MethodSettingViewModel { get; }
 
-        public ReactivePropertySlim<ISettingViewModel> SelectedSettingViewModel { get; } 
+        public ReactivePropertySlim<ISettingViewModel?> SelectedSettingViewModel { get; } 
 
-        public ReadOnlyReactivePropertySlim<ISettingViewModel> SelectedParentSettingViewModel { get; } 
+        public ReadOnlyReactivePropertySlim<ISettingViewModel?> SelectedParentSettingViewModel { get; } 
 
         public ReactiveCommand ContinueCommand { get; } 
 
@@ -369,7 +363,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecide { get; }
 
-        private IObservable<ISettingViewModel> ToParentSettingViewModel(ISettingViewModel selected) {
+        private IObservable<ISettingViewModel?> ToParentSettingViewModel(ISettingViewModel? selected) {
+            if (selected is null) {
+                return Observable.Return<ISettingViewModel?>(null);
+            }
             if (ProjectSettingViewModel.Value?.SettingViewModels.Contains(selected) ?? false) {
                 return ProjectSettingViewModel.StartWith(ProjectSettingViewModel.Value);
             }
@@ -379,25 +376,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             if (MethodSettingViewModel.Value?.SettingViewModels.Contains(selected) ?? false) {
                 return MethodSettingViewModel.StartWith(MethodSettingViewModel.Value);
             }
-            return Observable.Return<ISettingViewModel>(null);
+            return Observable.Return<ISettingViewModel?>(null);
         }
 
         private void Next() {
-            var parent = SelectedParentSettingViewModel.Value;
-            if (parent is null) {
+            if (SelectedParentSettingViewModel.Value is not ISettingViewModel parent || SelectedSettingViewModel.Value is not ISettingViewModel current) {
                 return;
             }
-            var next = parent.Next(SelectedSettingViewModel.Value);
-            if (!(next is null)) {
+            var next = parent.Next(current);
+            if (next is not null) {
                 SelectedSettingViewModel.Value = next;
                 return;
             }
             switch (parent) {
                 case ProjectSettingViewModel _:
-                    SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? SelectedSettingViewModel.Value;
+                    SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? current;
                     break;
                 case DatasetSettingViewModel _:
-                    SelectedSettingViewModel.Value = MethodSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? SelectedSettingViewModel.Value;
+                    SelectedSettingViewModel.Value = MethodSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? current;
                     break;
                 case MethodSettingViewModel _:
                     break;

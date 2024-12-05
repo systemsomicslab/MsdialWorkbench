@@ -22,7 +22,7 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Product(this);
         }
-
+        private readonly ITotalChainVariationGenerator totalChainGenerator;
         public override string ToString() {
             return string.Join("/", GetDeterminedChains().Select(c => c.ToString()));
         }

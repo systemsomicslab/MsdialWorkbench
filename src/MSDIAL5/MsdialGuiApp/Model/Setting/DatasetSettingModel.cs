@@ -25,12 +25,12 @@ namespace CompMs.App.Msdial.Model.Setting
             DatasetParameterSettingModel = new DatasetParameterSettingModel(model.Storage.Parameter, DatasetFileSettingModel, broker);
         }
 
-        public MethodSettingModel MethodSettingModel {
+        public MethodSettingModel? MethodSettingModel {
             get => methodSettingModel;
             private set => SetProperty(ref methodSettingModel, value);
         }
-        private MethodSettingModel methodSettingModel;
-        private readonly Action<IDatasetModel> handler;
+        private MethodSettingModel? methodSettingModel;
+        private readonly Action<IDatasetModel>? handler;
 
         public DatasetFileSettingModel DatasetFileSettingModel { get; }
 
@@ -38,11 +38,11 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyDatasetParameter { get; }
 
-        public IDatasetModel Result {
+        public IDatasetModel? Result {
             get => result;
             private set => SetProperty(ref result, value);
         }
-        private IDatasetModel result;
+        private IDatasetModel? result;
 
         private void PrepareMethodSetting(DatasetModel datasetModel) {
             Result = datasetModel;
@@ -50,7 +50,10 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public void Run() {
-            handler?.Invoke(Result);
+            if (handler is null || Result is null) {
+                return;
+            }
+            handler.Invoke(Result);
         }
     }
 }

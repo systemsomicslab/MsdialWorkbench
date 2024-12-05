@@ -12,19 +12,20 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public class CompoundSearcher
+    public sealed class CompoundSearcher
     {
         private readonly IAnnotationQueryFactory<MsScanMatchResult> _queryFactory;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
 
-        public CompoundSearcher(IAnnotationQueryFactory<MsScanMatchResult> queryFactory, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public CompoundSearcher(IAnnotationQueryFactory<MsScanMatchResult> queryFactory, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
             _queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             MsRefSearchParameter = queryFactory.PrepareParameter();
-            Id = queryFactory.AnnotatorId;
         }
 
-        public string Id { get; }
+        public string Id => _queryFactory.AnnotatorId;
+
+        public IAnnotationQueryFactory<MsScanMatchResult> QueryFactory => _queryFactory;
 
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
 
@@ -41,7 +42,11 @@ namespace CompMs.App.Msdial.Model.Search
             }
             return candidates
                 .OrderByDescending(result => result.TotalScore)
-                .Select(result => new CompoundResult(_refer.Refer(result), result));
+                .Select(result => new CompoundResult(_refer.Refer(result)!, result));
+        }
+
+        public override string ToString() {
+            return Id;
         }
     }
 }

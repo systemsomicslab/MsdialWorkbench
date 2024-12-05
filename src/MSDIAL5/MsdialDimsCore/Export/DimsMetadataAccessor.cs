@@ -14,7 +14,7 @@ namespace CompMs.MsdialDimsCore.Export
 {
     public class DimsMetadataAccessor : BaseMetadataAccessor
     {
-        public DimsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
+        public DimsMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
 
         }
 
@@ -70,11 +70,11 @@ namespace CompMs.MsdialDimsCore.Export
 
     public class DimsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter, parameter.ExportSpectraType) {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) : base(refer, parameter, parameter.ExportSpectraType) {
 
         }
 
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 
@@ -118,9 +118,9 @@ namespace CompMs.MsdialDimsCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile, ExportStyle exportStyle) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
             content["m/z left"] = string.Format("{0:F5}", feature.ChromXsLeft.Mz.Value);
             content["m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
             content["m/z right"] = string.Format("{0:F5}", feature.ChromXsRight.Mz.Value);

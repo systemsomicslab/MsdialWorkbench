@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.SingleSpectrumView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:SingleSpectrumViewModel}}"
+             d:Background="White"
+             d:DesignHeight="300" d:DesignWidth="370" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
+                          VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}"
+                          GraphTitle="{Binding Labels.GraphTitle}"
+                          HorizontalTitle="{Binding Labels.HorizontalTitle}"
+                          VerticalTitle="{Binding SelectedVerticalAxisItem.Value.GraphLabel}"
+                          Style="{StaticResource OverlapChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
+
+            <Grid Visibility="{Binding IsVisible.Value, Converter={StaticResource BooleanToVisibility}}">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                </StackPanel>
+                <chart:LineSpectrumControlSlim x:Name="MS2Line"
+                                                ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                DataType="{x:Type components:SpectrumPeak}"
+                                                HorizontalProperty="{Binding HorizontalProperty}"
+                                                VerticalProperty="{Binding VerticalProperty}"
+                                                LineBrush="{Binding Brush.Value}"
+                                                LineThickness="{Binding LineThickness.Value}"
+                                                HueProperty="SpectrumComment">
+                    <chart:LineSpectrumControlSlim.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                    d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
+                <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                    HorizontalPropertyName="{Binding HorizontalProperty}"
+                                    VerticalPropertyName="{Binding VerticalProperty}"
+                                    LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                    OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                    Brush="Black"
+                                    Overlap="Horizontal, Direct"
+                                    Format="F4"
+                                    ClipToBounds="True"/>
+            </Grid>
+
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

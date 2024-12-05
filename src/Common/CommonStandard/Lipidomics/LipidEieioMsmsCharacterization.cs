@@ -252,8 +252,6 @@ namespace CompMs.Common.Lipidomics
                         return null;
                     }
 
-                    if (sn1Carbon == 18 && sn1Double == 1) return null;
-
                     // from here, acyl level annotation is executed.
                     var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                     var nl_SN1_H2O = nl_SN1 - H2O;

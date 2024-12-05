@@ -118,6 +118,7 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CHO2), 200d, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 200d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(C8H16NO3), 100d, "C8H16NO3") { SpectrumComment = SpectrumComment.metaboliteclass}, //175[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(C8H16NO3 - MassDiffDictionary.HydrogenMass*2), 100d, "C8H14NO3") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }, //173[M+H]+
                 new SpectrumPeak(adduct.ConvertToMz(C7H13NO2), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass}, //144[M+H]+
                 new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 + H2O), 200d, "Header + H2O") { SpectrumComment = SpectrumComment.metaboliteclass}, //162[M+H]+
                 new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 - CH2), 200d, "Header - CH2") { SpectrumComment = SpectrumComment.metaboliteclass}, // 130[M+H]+

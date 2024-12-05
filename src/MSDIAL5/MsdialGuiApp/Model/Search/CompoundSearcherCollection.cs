@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public IReadOnlyList<CompoundSearcher> Items => _items;
 
-        public Ms2ScanMatching GetMs2ScanMatching(MsScanMatchResult result) {
+        public Ms2ScanMatching? GetMs2ScanMatching(MsScanMatchResult? result) {
             var searcher = _items.FirstOrDefault(item => item.Id == result?.AnnotatorID);
             if (searcher is null) {
                 return null;

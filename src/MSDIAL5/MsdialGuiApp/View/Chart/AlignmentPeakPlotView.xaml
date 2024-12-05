@@ -24,7 +24,7 @@
     </UserControl.Resources>
     <Grid>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
-                          VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
+                          VerticalAxis="{Binding VerticalAxis.Value, Mode=OneWay}"
                           GraphTitle="{Binding GraphTitle.Value, Mode=OneTime}"
                           HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneTime}"
                           VerticalTitle="{Binding VerticalTitle.Value, Mode=OneTime}"
@@ -57,6 +57,10 @@
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Duplicate selected peak spot" Command="{Binding DuplicatesCommand, Mode=OneTime}"/>
+                    <MenuItem Header="Export as MRMPROBS reference format">
+                        <MenuItem Header="Save as MRMPROBS reference format" Command="{Binding SaveMrmprobsCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Copy as MRMPROBS reference format" Command="{Binding CopyMrmprobsCommand, Mode=OneTime}"/>
+                    </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="alignmentScatter"
@@ -85,6 +89,16 @@
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
+            <chart:SpotLinkedAnnotator Spots="{Binding Spots, Mode=OneWay}"
+                                       Links="{Binding PeakLinks.Links, Mode=OneWay}"
+                                       Annotators="{Binding PeakLinks.Annotations, Mode=OneWay}"
+                                       DataType="{x:Type do:AlignmentSpotPropertyModel}"
+                                       Target="{Binding Target.Value, Mode=OneWay}"
+                                       HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
+                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                       LinkBrush="{Binding PeakLinks.LinkerBrush, Mode=OneWay}"
+                                       SpotLabelBrush="{Binding PeakLinks.SpotLabelBrush, Mode=OneWay}"
+                                       Radius="5.5"/>
             <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
                             ContentTemplate="{DynamicResource FocusCross}"
                             IsHitTestVisible="False">

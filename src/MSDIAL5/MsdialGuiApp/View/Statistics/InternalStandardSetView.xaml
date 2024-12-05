@@ -6,6 +6,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:InternalStandardSetViewModel}}"
@@ -23,7 +24,6 @@
                 <Setter Property="AutoGenerateColumns" Value="False"/>
                 <Setter Property="SelectionUnit" Value="FullRow"/>
                 <Setter Property="behavior:DataGridCommitBehavior.Enable" Value="True"/>
-                <Setter Property="behavior:DataGridPasteBehavior.Enable" Value="True"/>
             </Style>
             <Style TargetType="DataGridColumnHeader">
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -33,7 +33,25 @@
     <DataGrid ItemsSource="{Binding Spots}" Grid.Row="0">
         <DataGrid.Resources>
             <common:BindingProxy x:Key="TargetMsMethod"  Data="{Binding TargetMsMethod}"/>
+            <local:SelectedAndBellowRowsConverter x:Key="SelectedAndBellowRows"/>
         </DataGrid.Resources>
+        <DataGrid.InputBindings>
+            <KeyBinding Key="V" Modifiers="Ctrl"
+                        Command="{x:Static common:DataGridPasteCommand.Instance}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+        </DataGrid.InputBindings>
+        <DataGrid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Auto fill"
+                          Command="{Binding Path=PlacementTarget.(DataGrid.DataContext).(vm:InternalStandardSetViewModel.AutoFillCommand), RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                          CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource SelectedAndBellowRows}}"/>
+                <MenuItem Header="Copy" Command="Copy"/>
+                <MenuItem Header="Paste"
+                          Command="{x:Static common:DataGridPasteCommand.Instance}"
+                          CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                          InputGestureText="Ctrl+V"/>
+            </ContextMenu>
+        </DataGrid.ContextMenu>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Alignment ID"
                                 Binding="{Binding Id}"

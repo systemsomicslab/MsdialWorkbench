@@ -83,7 +83,7 @@
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource MassToleranceSettingWithoutMs2}"/>
             </StackPanel>
         </ScrollViewer>
@@ -94,10 +94,10 @@
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource MassToleranceSetting}"/>
                 <TextBlock Text="MS2 spectrum cut off"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource Ms2Setting}"/>
             </StackPanel>
         </ScrollViewer>

@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             GapFillCore(peaklist, chromXCenter, AxTolSecond, target);
         }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
             return GetCenterFirst(peaks);
         }
         protected abstract ChromXs GetCenterFirst(IEnumerable<AlignmentChromPeakFeature> peaks);

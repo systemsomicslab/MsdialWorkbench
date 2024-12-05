@@ -6,9 +6,9 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal class AnalysisFilePropertyResetModel : BindableBase
     {
-        private readonly ProjectBaseParameterModel _projectParameter;
+        private readonly FilePropertiesModel _projectParameter;
 
-        public AnalysisFilePropertyResetModel(AnalysisFileBeanModelCollection fileCollection, ProjectBaseParameterModel projectParameter) {
+        public AnalysisFilePropertyResetModel(AnalysisFileBeanModelCollection fileCollection, FilePropertiesModel projectParameter) {
             AnalysisFileModelCollection = fileCollection;
             _projectParameter = projectParameter;
         }

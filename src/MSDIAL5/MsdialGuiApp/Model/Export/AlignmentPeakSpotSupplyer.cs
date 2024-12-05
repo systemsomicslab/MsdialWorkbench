@@ -16,10 +16,10 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentPeakSpotSupplyer : BindableBase
     {
-        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel?> _currentResult;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
 
-        public AlignmentPeakSpotSupplyer(IReadOnlyReactiveProperty<IAlignmentModel> currentResult, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
+        public AlignmentPeakSpotSupplyer(IReadOnlyReactiveProperty<IAlignmentModel?> currentResult, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
             _currentResult = currentResult;
             _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
@@ -38,12 +38,13 @@ namespace CompMs.App.Msdial.Model.Export
             else {
                 container = _currentResult.Value.AlignmentResult;
             }
+            var spots = container.AlignmentSpotProperties;
+            var flatten = spots.SelectMany(s => s.IsMultiLayeredData() ? s.AlignmentDriftSpotFeatures : [s]).ToList();
             if (UseFilter) {
-                using (var disposable = new CompositeDisposable()) {
-                    return _filter.Filter(container.AlignmentSpotProperties.Select(spot => new AlignmentSpotPropertyModel(spot).AddTo(disposable))).Select(m => m.innerModel).ToList();
-                } 
+                using var disposable = new CompositeDisposable();
+                return _filter.Filter(flatten.Select(spot => new AlignmentSpotPropertyModel(spot).AddTo(disposable))).Select(m => m.innerModel).ToList();
             }
-            return container.AlignmentSpotProperties;
+            return flatten;
         }
     }
 }

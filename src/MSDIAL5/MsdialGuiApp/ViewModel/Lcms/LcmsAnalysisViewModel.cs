@@ -8,7 +8,6 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -23,69 +22,64 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly LcmsAnalysisModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IMessageBroker _broker;
 
-        public LcmsAnalysisViewModel(
-            LcmsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IMessageBroker broker,
-            FocusControlManager focusControlManager) {
+        public LcmsAnalysisViewModel(LcmsAnalysisModel model, IMessageBroker broker, FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(
-                _model.EicModel,
+                model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
 
-            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel, broker).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
-            SurveyScanViewModel = new SurveyScanViewModel(
-                model.SurveyScanModel,
-                horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             PeakTableViewModel = LcmsTableViewModelHelper.CreateViewModel(
-                _model.PeakTableModel,
+                model.PeakTableModel,
                 Observable.Return(_model.EicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
             .AddTo(Disposables);
 
-            SearchCompoundCommand = this._model.CanSearchCompound
+            SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                var msfinder = model.CreateSingleSearchMsfinderModel();
+                if (msfinder is not null) {
+                    broker.Publish(InternalMsFinderSingleSpotViewModel = new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                }
+            }).AddTo(Disposables);
+
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
-                .Where(model_ => model_ != null)
-                .Select(model_ => new ExperimentSpectrumViewModel(model_))
+                .Where(model_ => model_ is not null)
+                .Select(model_ => new ExperimentSpectrumViewModel(model_!))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -127,48 +121,42 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new LcmsCompoundSearchViewModel(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
-        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _broker.Publish(PeakTableViewModel);
         }
 
-        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ?? (_searchAnalysisSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod));
-        private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
+        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ??= new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod);
+        private DelegateCommand? _searchAnalysisSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+                
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public InternalMsFinderSingleSpotViewModel InternalMsFinderSingleSpotViewModel { get; set; }
 
 
-        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
-        private DelegateCommand _saveMs2SpectrumCommand;
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);
+        private DelegateCommand? _saveMs2SpectrumCommand;
 
         public AsyncReactiveCommand SaveMs2RawSpectrumCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
-        public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel?> ExperimentSpectrumViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+        public IObservable<ProteinResultContainerModel?> ProteinResultContainerAsObservable { get; }
 
         private void SaveSpectra() {
             var filename = string.Empty;

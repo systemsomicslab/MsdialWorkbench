@@ -20,8 +20,8 @@ namespace CompMs.MsdialCore.Export.Tests
     {
         [TestMethod()]
         public void ContainsDelimiterInFieldTest() {
-            var exporter = new AnalysisCSVExporter(",");
-            var spots = new List<ChromatogramPeakFeature>
+            var exporterFactory = new AnalysisCSVExporterFactory(",");
+            var spots = new ChromatogramPeakFeatureCollection(new List<ChromatogramPeakFeature>
             {
                 new ChromatogramPeakFeature(new BaseChromatogramPeakFeature() {
                     PeakHeightTop = 400,
@@ -30,12 +30,11 @@ namespace CompMs.MsdialCore.Export.Tests
                     MasterPeakID = 0,
                     Name = "Metabolite 1,2",
                 },
-            };
-            var msdecs = new List<MSDecResult> { null, };
+            });
             var file = new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, };
 
             var memory = new MemoryStream();
-            exporter.Export(memory, spots, msdecs, new FakeProvider(), new FakeMetaAccessor(), file);
+            exporterFactory.CreateExporter(new FakeMetaAccessor()).Export(memory, file, spots.Items, new ExportStyle());
 
             var newline = Environment.NewLine;
             Assert.AreEqual(
@@ -71,9 +70,17 @@ namespace CompMs.MsdialCore.Export.Tests
             }
         }
 
-        class FakeMetaAccessor : IAnalysisMetadataAccessor
+        class FakeMetaAccessor : IAnalysisMetadataAccessor, IAnalysisMetadataAccessor<ChromatogramPeakFeature>
         {
-            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
+            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
+                return new Dictionary<string, string>
+                {
+                    ["Id"] = feature.MasterPeakID.ToString(),
+                    ["Name"] = feature.Name,
+                };
+            }
+
+            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature) {
                 return new Dictionary<string, string>
                 {
                     ["Id"] = feature.MasterPeakID.ToString(),

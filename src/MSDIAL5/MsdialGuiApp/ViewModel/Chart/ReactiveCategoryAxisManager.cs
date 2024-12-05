@@ -10,13 +10,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveCategoryAxisManager(
             IObservable<IReadOnlyCollection<T>> collectionSource,
             Func<T, U> toKey,
-            Func<T, string> toLabel = null)
+            Func<T, string>? toLabel = null)
             : base(new T[0], toKey, toLabel) {
 
             _unSubscriber = collectionSource.ObserveOnDispatcher().Subscribe(UpdateCollection);
         }
 
-        private IDisposable _unSubscriber;
+        private IDisposable? _unSubscriber;
         private bool _disposedValue;
 
         protected override void Dispose(bool disposing) {
@@ -36,13 +36,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public ReactiveCategoryAxisManager(
             IObservable<IReadOnlyCollection<T>> collectionSource,
-            Func<T, string> toLabel = null)
+            Func<T, string>? toLabel = null)
             : base(new T[0], toLabel) {
 
             _unSubscriber = collectionSource.ObserveOnDispatcher().Subscribe(UpdateCollection);
         }
 
-        private IDisposable _unSubscriber;
+        private IDisposable? _unSubscriber;
         private bool _disposedValue;
 
         protected override void Dispose(bool disposing) {

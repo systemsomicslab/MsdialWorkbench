@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
@@ -15,21 +16,23 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AlignmentResultExportModel : BindableBase
     {
         private readonly DataExportBaseParameter _dataExportParameter;
+        private readonly IMessageBroker _broker;
 
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter, IMessageBroker? broker) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _dataExportParameter = dataExportParameter;
             var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
             Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
             ExportDirectory = dataExportParameter.ExportFolderPath;
+            _broker = broker ?? MessageBroker.Default;
         }
 
         public string ExportDirectory {
             get => _exportDirectory;
             set => SetProperty(ref _exportDirectory, value);
         }
-        private string _exportDirectory;
+        private string _exportDirectory = string.Empty;
 
         public AlignmentFilesForExport AlignmentFilesForExport { get; }
 
@@ -37,6 +40,10 @@ namespace CompMs.App.Msdial.Model.Export
         public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
+            if (AlignmentFilesForExport.SelectedFile is null) {
+                _broker.Publish(new ShortMessageRequest("Alignment result is not selected."));
+                return Task.CompletedTask;
+            }
             return Task.Run(() => {
                 var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 broker.Publish(task);

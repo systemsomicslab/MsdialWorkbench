@@ -124,10 +124,10 @@ namespace CompMs.App.MsdialConsole.Parser
             return param;
         }
 
-        private static void readFieldValues(string line, out string method, out string value, out bool isReadable) {
+        private static void readFieldValues(string? line, out string method, out string value, out bool isReadable) {
             method = string.Empty; value = string.Empty; isReadable = false;
-            if (line == string.Empty) return;
-            if (line.Length < 2) return;
+            if (string.IsNullOrEmpty(line)) return;
+            if (line!.Length < 2) return;
             if (line[0] == '#') return;
 
             var lineArray = line.Split(':');
@@ -228,7 +228,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mnabsoluteabundancecutoff":
                     if (float.TryParse(valueLower, out float mnabsoluteabundancecutoff)) param.MnAbsoluteAbundanceCutOff = mnabsoluteabundancecutoff; return true;
                 case "msmssimilaritycalc":
-                    if (value == "Bonanza" || value == "ModDot")
+                    if (value == "Bonanza" || value == "ModDot" || value == "Cosine" || value == "All")
                         param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
                 case "mnisexportioncorrelation":
                     if (valueLower == "true" || valueLower == "false") param.MnIsExportIonCorrelation = bool.Parse(valueLower); return true;

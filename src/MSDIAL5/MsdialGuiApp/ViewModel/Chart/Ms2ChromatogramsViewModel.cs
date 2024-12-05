@@ -17,8 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
 
             ChromatogramsViewModel = model.ChromatogramsModel
-                .Where(chromatograms => !(chromatograms is null))
-                .Select(chromatograms => new ChromatogramsViewModel(chromatograms))
+                .Where(chromatograms => chromatograms is not null)
+                .Select(chromatograms => new ChromatogramsViewModel(chromatograms!))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             IsRawSelected = model.IsRawSelected;
@@ -29,13 +29,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IsBothEnabled = model.IsBothEnabled;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MultiMsRawSpectrumLoaderViewModel = new MultiMsRawSpectrumLoaderViewModel(model.Loader);
+            MultiMsRawSpectrumLoaderViewModel = new MultiMsmsRawSpectrumLoaderViewModel(model.Loader);
             NumberOfChromatograms = model.NumberOfChromatograms.SetValidateAttribute(() => NumberOfChromatograms);
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(model.CopyAsTable).AddTo(Disposables);
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> ChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }
@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> IsBothEnabled { get; }
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
-        public MultiMsRawSpectrumLoaderViewModel MultiMsRawSpectrumLoaderViewModel { get; }
+        public MultiMsmsRawSpectrumLoaderViewModel MultiMsRawSpectrumLoaderViewModel { get; }
 
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]

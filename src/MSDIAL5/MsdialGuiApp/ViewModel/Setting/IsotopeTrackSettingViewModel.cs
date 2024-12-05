@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public IsotopeTrackingDictionary IsotopeTrackingDictionary => Model.IsotopeTrackingDictionary;
 
-        public ReactivePropertySlim<AnalysisFileBean> NonLabeledReference { get; }
+        public ReactivePropertySlim<AnalysisFileBean?> NonLabeledReference { get; }
 
         public ReactivePropertySlim<bool> UseTargetFormulaLibrary { get; }
 
@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> SetFullyLabeledReferenceFile { get; }
 
-        public ReactivePropertySlim<AnalysisFileBean> FullyLabeledReference { get; }
+        public ReactivePropertySlim<AnalysisFileBean?> FullyLabeledReference { get; }
 
         public ReadOnlyCollection<AnalysisFileBean> AnalysisFiles => Model.AnalysisFiles;
 
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

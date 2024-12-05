@@ -43,6 +43,15 @@
         <TargetClass>PS</TargetClass>
       </Lipid>
       <Lipid>
+        <StandardName>PS 15:0_18:1(d7)</StandardName>
+        <Concentration>32.1742</Concentration>
+        <DilutionRate>0.015625</DilutionRate>
+        <MolecularWeight>777.02</MolecularWeight>
+        <PeakID>-1</PeakID>
+        <TargetClass>PT</TargetClass>
+        <IsLabPrivateVersion>true</IsLabPrivateVersion>
+      </Lipid>
+      <Lipid>
         <StandardName>PG 15:0_18:1(d7)</StandardName>
         <Concentration>32.7217</Concentration>
         <DilutionRate>0.015625</DilutionRate>

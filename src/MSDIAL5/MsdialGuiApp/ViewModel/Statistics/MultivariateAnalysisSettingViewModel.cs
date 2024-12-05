@@ -64,8 +64,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
-        public DelegateCommand ExecuteCommand => executeCommand ?? (executeCommand = new DelegateCommand(Execute, () => !HasValidationErrors));
-        private DelegateCommand executeCommand;
+        public DelegateCommand ExecuteCommand => executeCommand ??= new DelegateCommand(Execute, () => !HasValidationErrors);
+        private DelegateCommand? executeCommand;
 
         private void Execute() {
             if (MultivariateAnalysisOption.Value == CompMs.Common.Enum.MultivariateAnalysisOption.Pca) {

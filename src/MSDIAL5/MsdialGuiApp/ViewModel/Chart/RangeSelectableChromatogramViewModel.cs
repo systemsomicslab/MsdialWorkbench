@@ -3,36 +3,32 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Reactive;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class RangeSelectableChromatogramViewModel : ViewModelBase
+    internal sealed class RangeSelectableChromatogramViewModel : ViewModelBase
     {
         public RangeSelectableChromatogramViewModel(RangeSelectableChromatogramModel model) {
             Model = model;
-            SelectedRanges = Model.SelectedRanges.ToReadOnlyReactiveCollection().AddTo(Disposables);
             ChromatogramsViewModel = new ChromatogramsViewModel(model.ChromatogramModel);
-            SelectedRange = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedRange).AddTo(Disposables);
+            SelectedRange = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedRange).AddTo(Disposables);
 
-            var commandChange = Model.SelectedRanges
-                .CollectionChangedAsObservable()
-                .ToUnit()
-                .StartWith(Unit.Default);
+            var commandChange = model.ObserveProperty(m => m.SelectedRange);
 
-            SetMainRangeCommand = commandChange.Select(_ => Model.CanSetMainRange())
+            SetMainRangeCommand = commandChange.Select(_ => model.CanSetMainRange())
                 .ToReactiveCommand()
-                .WithSubscribe(Model.SetMainRange)
+                .WithSubscribe(model.SetMainRange)
                 .AddTo(Disposables);
 
-            SetSubtractRangeCommand = commandChange.Select(_ => Model.CanSetSubstractRange())
+            SetSubtractRangeCommand = commandChange.Select(_ => model.CanSetSubstractRange())
                 .ToReactiveCommand()
-                .WithSubscribe(Model.SetSubtractRange)
+                .WithSubscribe(model.SetSubtractRange)
                 .AddTo(Disposables);
 
             RemoveRangesCommand = new ReactiveCommand()
-                .WithSubscribe(Model.RemoveRanges)
+                .WithSubscribe(model.RemoveRanges)
                 .AddTo(Disposables);
         }
 
@@ -44,9 +40,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand RemoveRangesCommand { get; }
 
-        public ReactivePropertySlim<Range> SelectedRange { get; }
+        public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
-        public ReadOnlyReactiveCollection<RangeSelection> SelectedRanges { get; }
+        public ReadOnlyObservableCollection<RangeSelection> SelectedRanges => Model.SelectedRanges;
 
         public RangeSelectableChromatogramModel Model { get; }
     }

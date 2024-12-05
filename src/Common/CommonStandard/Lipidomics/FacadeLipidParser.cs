@@ -8,9 +8,17 @@ namespace CompMs.Common.Lipidomics
 
         public string Target { get; } = string.Empty;
 
+        /// <summary>
+        /// Parses the given lipid string and returns the corresponding ILipid object.
+        /// </summary>
+        /// <param name="lipidStr">The lipid name to parse.</param>
+        /// <returns>The parsed ILipid object, or null if parsing fails.</returns>
         public ILipid Parse(string lipidStr) {
             var key = lipidStr.Split()[0];
             if (map.TryGetValue(key, out var parsers)) {
+                // Remove lipid synonym (e.g. PC 34:1|PC 16:0_18:1 -> PC 16:0_18:1) if it exists
+                var parts = lipidStr.Split('|');
+                lipidStr = parts.Length > 1 ? parts[1] : lipidStr;
                 foreach (var parser in parsers) {
                     if (parser.Parse(lipidStr) is ILipid lipid) {
                         return lipid;

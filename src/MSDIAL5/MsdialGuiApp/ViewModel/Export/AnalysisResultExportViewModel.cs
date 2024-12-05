@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AnalysisResultExportViewModel(AnalysisResultExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            MsdialAnalysisExportViewModels = model.AnalysisExports.Select(m => MsdialAnalysisExportViewModelFactory.Create(m).AddTo(Disposables)).ToArray();
+            MsdialAnalysisExportViewModels = model.AnalysisExports.Select(m => MsdialAnalysisExportViewModelFactory.Create(m)?.AddTo(Disposables)).OfType<IMsdialAnalysisExportViewModel>().ToArray();
 
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
@@ -47,57 +47,57 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyReactiveCollection<FileBeanSelection> SelectedFrom { get; }
         public ReadOnlyReactiveCollection<FileBeanSelection> SelectedTo { get; }
 
-        public DelegateCommand AddItemsCommand => _addItemsCommand ?? (_addItemsCommand = new DelegateCommand(AddItems));
-        private DelegateCommand _addItemsCommand;
+        public DelegateCommand AddItemsCommand => _addItemsCommand ??= new DelegateCommand(AddItems);
+        private DelegateCommand? _addItemsCommand;
 
         private void AddItems() {
             _model.Selects(SelectedFrom.Where(file => file.IsChecked).Select(file => file.File));
         }
 
-        public DelegateCommand AddAllItemsCommand => _addAllItemsCommand ?? (_addAllItemsCommand = new DelegateCommand(AddAllItems));
-        private DelegateCommand _addAllItemsCommand;
+        public DelegateCommand AddAllItemsCommand => _addAllItemsCommand ??= new DelegateCommand(AddAllItems);
+        private DelegateCommand? _addAllItemsCommand;
 
         private void AddAllItems() {
             _model.Selects(SelectedFrom.Select(file => file.File));
         }
 
-        public DelegateCommand RemoveItemsCommand => _removeItemsCommand ?? (_removeItemsCommand = new DelegateCommand(RemoveItems));
-        private DelegateCommand _removeItemsCommand;
+        public DelegateCommand RemoveItemsCommand => _removeItemsCommand ??= new DelegateCommand(RemoveItems);
+        private DelegateCommand? _removeItemsCommand;
 
         private void RemoveItems() {
             _model.UnSelects(SelectedTo.Where(file => file.IsChecked).Select(file => file.File));
         }
 
-        public DelegateCommand RemoveAllItemsCommand => _removeAllItemsCommand ?? (_removeAllItemsCommand = new DelegateCommand(RemoveAllItems));
-        private DelegateCommand _removeAllItemsCommand;
+        public DelegateCommand RemoveAllItemsCommand => _removeAllItemsCommand ??= new DelegateCommand(RemoveAllItems);
+        private DelegateCommand? _removeAllItemsCommand;
 
         private void RemoveAllItems() {
             _model.UnSelects(SelectedTo.Select(file => file.File));
         }
 
-        public DelegateCommand SelectDestinationCommand => _selectDestinationCommand ?? (_selectDestinationCommand = new DelegateCommand(SelectDestination));
-        private DelegateCommand _selectDestinationCommand;
+        public DelegateCommand SelectDestinationCommand => _selectDestinationCommand ??= new DelegateCommand(SelectDestination);
+        private DelegateCommand? _selectDestinationCommand;
 
         [Required(ErrorMessage = "Choose a folder for the exported files.")]
         [PathExists(ErrorMessage = "Choose an existing folder", IsDirectory = true)]
-        public string DestinationFolder {
+        public string? DestinationFolder {
             get {
                 return _destinationFolder;
             }
             set {
                 if (SetProperty(ref _destinationFolder, value)) {
                     if (!ContainsError(nameof(DestinationFolder))) {
-                        _model.DestinationFolder = _destinationFolder;
+                        _model.DestinationFolder = _destinationFolder!; // Here is not null because of RequiredAttribute.
                     }
                 }
             }
         }
-        private string _destinationFolder;
+        private string? _destinationFolder;
 
         public void SelectDestination() {
             var fbd = new Graphics.Window.SelectFolderDialog
             {
-                Title = "Chose a export folder.",
+                Title = "Choose a export folder.",
             };
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 DestinationFolder = fbd.SelectedPath;

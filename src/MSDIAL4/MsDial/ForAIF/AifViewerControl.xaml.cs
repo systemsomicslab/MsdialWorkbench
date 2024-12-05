@@ -1095,7 +1095,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         private void message_requestAlignment() {
-            MessageBox.Show("Chose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Choose an alignment file from the file navigator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void message_willBeAvailable() {

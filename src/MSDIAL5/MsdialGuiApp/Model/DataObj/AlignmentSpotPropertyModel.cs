@@ -8,7 +8,6 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,7 +17,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject, IChromatogramPeak, IMoleculeProperty
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject, IChromatogramPeak, IMoleculeProperty, IIonProperty
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -31,18 +30,19 @@ namespace CompMs.App.Msdial.Model.DataObj
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
-        public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel => _alignedPeakPropertiesModelProperty.Value;
-        public IReadOnlyReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> AlignedPeakPropertiesModelProperty => _alignedPeakPropertiesModelProperty;
-        private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> _alignedPeakPropertiesModelProperty;
+        public ReadOnlyCollection<AlignmentChromPeakFeatureModel>? AlignedPeakPropertiesModel => _alignedPeakPropertiesModelProperty.Value;
+        public IReadOnlyReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> AlignedPeakPropertiesModelProperty => _alignedPeakPropertiesModelProperty;
+        private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> _alignedPeakPropertiesModelProperty;
 
         public double RT => innerModel.TimesCenter.RT.Value;
+        public double RI => innerModel.TimesCenter.RI.Value;
         public double Drift => innerModel.TimesCenter.Drift.Value;
 
         public double TimesCenter {
             get => innerModel.TimesCenter.Value;
             set {
                 if (innerModel.TimesCenter.Value != value) {
-                    innerModel.TimesCenter = new ChromXs(value, ChromXType, ChromXUnit);
+                    innerModel.TimesCenter.SetChromX(ChromX.Convert(value, ChromXType, ChromXUnit));
                     OnPropertyChanged(nameof(TimesCenter));
                 }
             }
@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             get => innerModel.AdductType;
             set {
                 if (innerModel.AdductType != value) {
-                    innerModel.AdductType = value;
+                    innerModel.SetAdductType(value);
                     OnPropertyChanged(nameof(AdductType));
                     OnPropertyChanged(nameof(AdductIonName));
                 }
@@ -322,25 +322,17 @@ namespace CompMs.App.Msdial.Model.DataObj
         // IPeakSpotModel
         IMSIonProperty IPeakSpotModel.MSIon => innerModel;
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
-
-        public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
-        public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
             undoManager.Add(command);
+        }
+
+        // IIonProperty
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            innerModel.SetAdductType(adduct);
+            OnPropertyChanged(nameof(AdductType));
+            OnPropertyChanged(nameof(AdductIonName));
         }
 
         // IChromatogramPeak

@@ -84,7 +84,7 @@ namespace CompMs.MsdialCore.Export {
             var category = param.MachineCategory;
             var type = param.ExportSpectraType;
             var ms1tol = param.CentroidMs1Tolerance;
-            var isotopes = category != MachineCategory.GCMS ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol) : new List<IsotopicPeak>();
+            var isotopes = category != MachineCategory.GCMS ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum) : new List<IsotopicPeak>();
             var isotopeString = isotopes.IsEmptyOrNull() ? "null" : String.Join(";", isotopes.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.AbsoluteAbundance) })));
             var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, param, file.AcquisitionType);
             var specString = spectrum.IsEmptyOrNull() ? "null" : String.Join(";", spectrum.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.Intensity) })));

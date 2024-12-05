@@ -99,9 +99,14 @@
                               Margin="4"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:MsdialAnalysisMassBankRecordExportViewModel}">
-                    <CheckBox Content="{Binding Label, Mode=OneTime}"
-                              IsChecked="{Binding ShouldExport.Value}"
-                              Margin="4"/>
+                    <StackPanel Margin="4">
+                        <CheckBox Content="{Binding Label, Mode=OneTime}"
+                                  IsChecked="{Binding ShouldExport.Value}"/>
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
+                            <TextBlock Text="ContributorID:" Margin="0,0,4,0"/>
+                            <TextBox Text="{Binding ContributorID.Value}" Width="128"/>
+                        </StackPanel>
+                    </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SpectraTypeSelectableMsdialAnalysisExportViewModel}">
                     <CheckBox IsChecked="{Binding ShouldExport.Value}"
@@ -148,6 +153,11 @@
                                          VerticalContentAlignment="Center"
                                          Width="40"/>
                             </ui:LabeledContent>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" IsEnabled="{Binding ShouldExport.Value}">
+                            <CheckBox Content="Trim content for excel"
+                                      IsChecked="{Binding TrimToExcelLimit.Value, Mode=TwoWay}"
+                                      ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>

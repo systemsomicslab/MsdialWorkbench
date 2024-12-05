@@ -1,0 +1,204 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.GcmsPeakDetectionSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             mc:Ignorable="d" 
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsPeakDetectionSettingViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="8,0,0,0">
+            <GroupBox BorderThickness="0">
+                <GroupBox.Header>
+                    <TextBlock Text="Peak detection parameters" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel Margin="8,0,0,0">
+                    <ui:LabeledContent PrependLabel="Minimum peak height:"
+                                       AppendLabel="amplitude"
+                                       ToolTip="Recommend: 2000-3000"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding MinimumAmplitude.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox BorderThickness="0">
+                <GroupBox.Header>
+                    <TextBlock Text="Peak spotting parameters" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel Margin="8,0,0,0">
+                    <ui:LabeledContent PrependLabel="Accurate MS:"
+                                       Style="{StaticResource AlignedContent}">
+                        <CheckBox HorizontalAlignment="Left" 
+                                  IsChecked="{Binding Path=IsAccurateMS.Value}" 
+                                  IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
+                                  ToolTip="Check this option if your instrument is a high resolution GC/MS."/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Mass slice width:"
+                                       AppendLabel="Da"
+                                       ToolTip="Recommend: 0.05-0.1"
+                                       IsEnabled="{Binding IsAccurateMS.Value}"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding MassSliceWidth.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Mass accuracy for centroiding:"
+                                       AppendLabel="Da"
+                                       ToolTip="Recommend: 0.05-0.1"
+                                       IsEnabled="{Binding IsAccurateMS.Value}"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding MassAccuracy.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <Expander Header="Advanced"
+                  ExpandDirection="Down"
+                  d:IsExpanded="True"
+                  Grid.Row="1">
+            <Grid Margin="8,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="8,0,0,0">
+                    <ui:LabeledContent PrependLabel="Smoothing method:"
+                                       Style="{StaticResource AlignedContent}"
+                                       ToolTip="Linear weighted moving average is recommended.">
+                        <ComboBox SelectedValue="{Binding SmoothingMethod.Value}" SelectedValuePath="DataContext"
+                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <ComboBox.Items>
+                                <ComboBoxItem Content="Simple moving average" DataContext="{x:Static enum:SmoothingMethod.SimpleMovingAverage}"/>
+                                <ComboBoxItem Content="Linear weighted moving average" DataContext="{x:Static enum:SmoothingMethod.LinearWeightedMovingAverage}"/>
+                                <ComboBoxItem Content="Savitzky-Golay filter" DataContext="{x:Static enum:SmoothingMethod.SavitzkyGolayFilter}"/>
+                                <ComboBoxItem Content="Binomial filter" DataContext="{x:Static enum:SmoothingMethod.BinomialFilter}"/>
+                            </ComboBox.Items>
+                        </ComboBox>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="Smoothing level:"
+                                       AppendLabel="scan"
+                                       ToolTip="Recommend: 2-4 (if a peak have just 5-10 data points)"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding SmoothingLevel.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="Average peak width:"
+                                       AppendLabel="scan"
+                                       ToolTip="Recommend: 10-20"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding AveragePeakWidth.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+
+                <DockPanel Grid.Row="1" Margin="12,0,0,0">
+                    <Grid Margin="0,8"
+                          DockPanel.Dock="Top">
+                        <TextBlock Text="Exclusion mass list"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+                            <ui:LabeledContent PrependLabel="Mass:">
+                                <TextBox Text="{Binding NewMass}" Width="64"
+                                         IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                            </ui:LabeledContent>
+                            <ui:LabeledContent PrependLabel="Tolerane:">
+                                <TextBox Text="{Binding NewTolerance}" Width="64"
+                                         IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                            </ui:LabeledContent>
+                            <Button Content="Add" Command="{Binding AddCommand, Mode=OneTime}" Width="64" Margin="8,0"
+                                    IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
+                            <Button Content="Remove" Command="{Binding RemoveCommand, Mode=OneTime}" Width="64" Margin="8,0"
+                                    IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <DataGrid Name="DataGrid_ExcludeMassSetting" 
+                              ItemsSource="{Binding Path=ExcludedMassList}" 
+                              SelectedItem="{Binding SelectedQuery}"
+                              CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
+                              CanUserSortColumns="False" SelectionUnit="Cell" IsReadOnly="False"
+                              HeadersVisibility="All" AutoGenerateColumns="False"
+                              VerticalAlignment="Stretch"
+                              VerticalContentAlignment="Stretch"
+                              behavior:DataGridPasteBehavior.Enable="True">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" >
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="*" Header="Accurate mass [Da]" IsReadOnly="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Name="TextBox_ExcludedMass" 
+                                                 Text="{Binding Mass, TargetNullValue=''}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_ExcludedMass}">
+                                            <TextBox Name="TextBox_ExcludedMass" Text="{Binding Mass, TargetNullValue=''}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="*" Header="Mass tolerance [Da]" IsReadOnly="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Name="TextBox_MassTolerance"
+                                                 Text="{Binding MassTolerance, TargetNullValue=''}"
+                                                 IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <Grid FocusManager.FocusedElement="{Binding ElementName=TextBox_MassTolerance}">
+                                            <TextBox Name="TextBox_MassTolerance" 
+                                                     Text="{Binding Tolerance, TargetNullValue=''}"
+                                                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                </DockPanel>
+            </Grid>
+        </Expander>
+    </Grid>
+</UserControl>

@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
 
         [PathExists(ErrorMessage = "Library file is not found.", IsFile = true)]
         public ReactiveProperty<string> TargetLibrary { get; }
-        public ReadOnlyReactivePropertySlim<string> LoadingError { get; }
+        public ReadOnlyReactivePropertySlim<string?> LoadingError { get; }
 
         public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MoleculeMsReference>> References { get; }
 

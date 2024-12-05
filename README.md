@@ -14,7 +14,7 @@ or
 https://github.com/systemsomicslab/MsdialWorkbench/discussions
 (instead of e-mail).
 
-However, if the discussion is something that cannot be done openly by any means, please email htsugawa@go.tuat.ac.jp.
+However, if the discussion is something that cannot be done openly by any means, please email msdial-jp-groups@go.tuat.ac.jp.
 
 # How to build MS-DIAL5 Desktop Application (for Windows)
 
@@ -39,7 +39,7 @@ Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN),
 Past developers: Diego Pedrosa (UC Davis), Ipputa Tada (SOKENDAI)
 
 # Usage
-See the tutorial page: https://mtbinfo-team.github.io/mtbinfo.github.io/
+See the tutorial page: https://systemsomicslab.github.io/mtbinfo.github.io/
 
 # About LBM file in MS-DIAL project
 The LBM (*.LBM2) file contains the in silico MS/MS spectra of lipids.
