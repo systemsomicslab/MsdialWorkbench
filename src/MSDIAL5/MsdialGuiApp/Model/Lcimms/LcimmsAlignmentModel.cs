@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
             IMessageBroker broker)
-            : base(alignmentFileBean, broker) {
+            : base(alignmentFileBean, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }

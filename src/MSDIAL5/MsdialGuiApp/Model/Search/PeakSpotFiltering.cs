@@ -13,10 +13,11 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal class PeakSpotFiltering<T> : IDisposable where T: IFilterable, IAnnotatedObject
+    public class PeakSpotFiltering<T> : IDisposable where T: IFilterable, IAnnotatedObject
     {
         private readonly Dictionary<ICollectionView, AttachedPeakFilters<T>> _viewToFilterMethods = new Dictionary<ICollectionView, AttachedPeakFilters<T>>();
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
+        private readonly FilterEnableStatus _status;
         private bool _disposedValue;
 
         public PeakSpotFiltering(FilterEnableStatus status) {
@@ -61,6 +62,7 @@ namespace CompMs.App.Msdial.Model.Search
             KeywordFilterManagers = keywordFilterManagers;
             AmplitudeFilterModel = amplitudeFilterModel;
             TagSearchQueryBuilder = tagSearchQueryBuilder;
+            _status = status;
         }
 
         public List<ValueFilterManager<T>> ValueFilterManagers { get; }
@@ -70,6 +72,10 @@ namespace CompMs.App.Msdial.Model.Search
 
         public PeakSpotFilter CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
             return new PeakSpotFilter(this, peakFilterModel, evaluator, status);
+        }
+
+        public PeakSpotFilter CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator) {
+            return new PeakSpotFilter(this, peakFilterModel, evaluator, _status);
         }
 
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {

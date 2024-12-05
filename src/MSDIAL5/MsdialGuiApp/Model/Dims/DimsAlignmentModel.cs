@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Dims
             PeakFilterModel peakFilterModel,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             IMessageBroker broker)
-            : base(alignmentFileModel, broker) {
+            : base(alignmentFileModel, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
