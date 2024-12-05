@@ -7,7 +7,8 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CompMs.App.Msdial.ViewModel.Setting {
+namespace CompMs.App.Msdial.ViewModel.Setting
+{
     internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase {
         private readonly MolecularNetworkingSettingModel _model;
 
@@ -93,6 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 .SetValidateAttribute(() => ExportFolderPath).AddTo(Disposables);
             ValidateProperty(nameof(ExportFolderPath), ExportFolderPath);
 
+            UseCurrentFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.UseCurrentFiltering).AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 RtTolerance.ObserveHasErrors,
@@ -177,6 +180,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public ReactiveProperty<string> ExportFolderPath { get; }
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
+
+        public ReactivePropertySlim<bool> UseCurrentFiltering { get; }
 
         public ReadOnlyReactivePropertySlim<bool> AvailableFileResult => _model.AvailableFileResult;
         public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult => _model.AvailableAlignmentResult;
@@ -268,6 +273,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             ).SetValidateAttribute(() => MaxPrecursorDifferenceAsPercent).AddTo(Disposables);
 
             MsmsSimilarityCalc = model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
+
+            UseCurrentFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.UseCurrentFiltering).AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 RtTolerance.ObserveHasErrors,
@@ -347,6 +355,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public ReactivePropertySlim<MsmsSimilarityCalc> MsmsSimilarityCalc { get; }
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
+
+        public ReactivePropertySlim<bool> UseCurrentFiltering { get; }
 
         public ReadOnlyReactivePropertySlim<bool> AvailableFileResult => _model.AvailableFileResult;
         public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult => _model.AvailableAlignmentResult;
