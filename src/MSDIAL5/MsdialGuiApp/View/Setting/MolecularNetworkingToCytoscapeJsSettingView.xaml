@@ -8,7 +8,7 @@
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingSendingToCytoscapeJsSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Visualization setting of molecular spectrum networking data in CytoJS" Height="565" Width="450">
+        Title="Visualization setting of molecular spectrum networking data in CytoJS" Height="600" Width="450">
     <Window.Resources>
         <ControlTemplate x:Key="InputErrorTemplate">
             <DockPanel>
@@ -55,6 +55,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="65"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -172,16 +173,15 @@
                  HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center"
                  Width="120" Height="25" Margin="0,31,5,0" />
 
-        <Label Grid.Row="11" 
-               HorizontalAlignment="Stretch" 
-               Name="Label_Explanation"
-               VerticalAlignment="Center" Margin="10, 5,0,5">
-        </Label>
+        <CheckBox Content="Filtering by current parameter"
+                  IsChecked="{Binding Path=UseCurrentFiltering.Value}"
+                  Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  Margin="10,5,0,0"/>
 
         <Button x:Name="Button_Run" Content="Run" 
                 Click="Run_Click"
                 Command="{Binding MolecularNetworkingAsyncCommand, Mode=OneTime}" 
-                Grid.Row="11" 
+                Grid.Row="12" 
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Height="25" 
@@ -190,7 +190,7 @@
         <Button x:Name="Button_Cancel" 
                 Content="Cancel" 
                 Command="ApplicationCommands.Close"
-                Grid.Row="11"
+                Grid.Row="12"
                 HorizontalAlignment="Right" 
                 VerticalAlignment="Center" 
                 Height="25" Width="70"

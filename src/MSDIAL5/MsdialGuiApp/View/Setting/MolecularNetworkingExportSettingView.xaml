@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingExportSettingViewModel}}"
         mc:Ignorable="d"
         
-        Title="Export setting of molecular spectrum networking data" Height="595" Width="465">
+        Title="Export setting of molecular spectrum networking data" Height="620" Width="465">
 
     <Window.Resources>
         <ControlTemplate x:Key="InputErrorTemplate">
@@ -62,6 +62,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="65"/>
+            <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -197,7 +198,12 @@
                  HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center"
                  Width="120" Height="25" Margin="0,31,5,0" Grid.Column="1" />
 
-        <Label Grid.Row="12" 
+        <CheckBox Content="Filtering by current parameter"
+                  IsChecked="{Binding Path=UseCurrentFiltering.Value}"
+                  Grid.Row="12" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  Margin="10,5,0,0"/>
+
+        <Label Grid.Row="13" 
                Name="Label_Explanation"
                VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2">
             <TextBlock TextWrapping="WrapWithOverflow">
@@ -208,7 +214,7 @@
         <Button x:Name="Button_Run" Content="Run" 
                 Click="Run_Click"
                 Command="{Binding MolecularNetworkingAsyncCommand, Mode=OneTime}" 
-                Grid.Row="12" 
+                Grid.Row="13" 
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Height="25" 
@@ -217,7 +223,7 @@
         <Button x:Name="Button_Cancel" 
                 Content="Cancel" 
                 Command="ApplicationCommands.Close"
-                Grid.Row="12"
+                Grid.Row="13"
                 HorizontalAlignment="Left" 
                 VerticalAlignment="Center" 
                 Height="25" Width="70"
