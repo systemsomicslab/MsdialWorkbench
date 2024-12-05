@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Validator;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -9,10 +8,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Setting;
 
-internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase {
+internal sealed class MolecularNetworkingSendingToCytoscapeJsSettingViewModel : ViewModelBase {
     private readonly MolecularNetworkingSettingModel _model;
 
-    public MolecularNetworkingExportSettingViewModel(MolecularNetworkingSettingModel model) {
+    public MolecularNetworkingSendingToCytoscapeJsSettingViewModel(MolecularNetworkingSettingModel model) {
         _model = model ?? throw new ArgumentNullException(nameof(model));
 
         IsAlignSpotViewSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsAlignSpotViewSelected).AddTo(Disposables);
@@ -90,9 +89,6 @@ internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase 
         ).SetValidateAttribute(() => MaxPrecursorDifferenceAsPercent).AddTo(Disposables);
 
         MsmsSimilarityCalc = model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
-        ExportFolderPath = model.ToReactivePropertyAsSynchronized(m => m.ExportFolderPath, ignoreValidationErrorValue: true)
-            .SetValidateAttribute(() => ExportFolderPath).AddTo(Disposables);
-        ValidateProperty(nameof(ExportFolderPath), ExportFolderPath);
 
         UseCurrentFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.UseCurrentFiltering).AddTo(Disposables);
 
@@ -108,14 +104,13 @@ internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase 
             MaxEdgeNumberPerNode.ObserveHasErrors,
             MaxPrecursorDifference.ObserveHasErrors,
             MaxPrecursorDifferenceAsPercent.ObserveHasErrors,
-            ExportFolderPath.ObserveHasErrors,
         }.CombineLatestValuesAreAllFalse()
         .Inverse()
         .ToReadOnlyReactivePropertySlim()
         .AddTo(Disposables);
 
         MolecularNetworkingAsyncCommand = ObserveHasErrors.Inverse().ToAsyncReactiveCommand()
-            .WithSubscribe(model.RunMolecularNetworkingAsync).AddTo(Disposables);
+            .WithSubscribe(model.SendMolecularNetworkingDataToCytoscapeJsAsync).AddTo(Disposables);
     }
 
     [Required(ErrorMessage = "Required field")]
@@ -174,10 +169,6 @@ internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase 
     public ReactiveProperty<string> MaxPrecursorDifferenceAsPercent { get; }
 
     public ReactivePropertySlim<MsmsSimilarityCalc> MsmsSimilarityCalc { get; }
-
-    [Required(ErrorMessage = "Please enter the folder which the results will be exported.")]
-    [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
-    public ReactiveProperty<string> ExportFolderPath { get; }
 
     public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
