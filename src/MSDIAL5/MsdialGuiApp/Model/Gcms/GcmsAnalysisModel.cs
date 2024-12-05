@@ -298,16 +298,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (_spectrumFeatures.SelectedSpectrum.Value is not Ms1BasedSpectrumFeature spectrumFeature) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
-            } 
-
-/* Unmerged change from project 'MsdialGuiApp (net481)'
-Before:
-            return _msfinderSearcherFactory.CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting, spectrumFeature.GetCurrentSpectrumFeature(), spectrumFeature);
-        }
-After:
-            return _msfinderSearcherFactory.CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting, spectrumFeature.GetCurrentSpectrumFeature(), spectrumFeature, TODO);
-        }
-*/
+            }
             return _msfinderSearcherFactory.CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting, spectrumFeature.GetCurrentSpectrumFeature(), spectrumFeature, UndoManager);
         }
 

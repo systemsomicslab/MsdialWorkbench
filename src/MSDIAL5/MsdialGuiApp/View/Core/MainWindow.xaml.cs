@@ -396,17 +396,6 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
-        //private void ShowInternalMsfinderSettingView(InternalMsfinderSettingViewModel vm) {
-        //    Dispatcher.Invoke(() => {
-        //        var dialog = new InternalMsfinderSettingView() {
-        //            DataContext = vm,
-        //            Owner = this,
-        //            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-        //        };
-        //        var result = dialog.ShowDialog();
-        //    });
-        //}
-
         protected override void OnContentRendered(EventArgs e) {
             base.OnContentRendered(e);
 

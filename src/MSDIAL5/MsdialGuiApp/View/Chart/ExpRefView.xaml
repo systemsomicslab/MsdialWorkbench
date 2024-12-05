@@ -61,18 +61,6 @@
                     Content="/Resources/CompoundSearchIcon.ico"
                     ToolTip="Compound search"
                     Style="{StaticResource IconButton}"/>
-<!--
-            <Button Name="Button_MsFinderSearchPeakViewer"
-                    Command="{Binding GoToMsfinderCommand}"
-                    Content="/Resources/msfinder_icon.ico"
-                    ToolTip="MS-FINDER search" Margin="0,0,0,0"
-                    Style="{StaticResource IconButton}"/>
-            <Button x:Name="Button_MsFinderSettingViewer"
-                    Command="{Binding ShowMsfinderSettingCommand}"
-                    Height="30" Width="10"
-                    Content=">"  Margin="0,0,3,0"
-                    ToolTip="MS-FINDER setting"/>
-            -->
             <Grid Height="32" Margin="0,4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
