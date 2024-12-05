@@ -6,6 +6,17 @@ namespace CompMs.Common.DataObj;
 
 public class RawSpectrum
 {
+    /// <summary>
+    /// Gets or sets the identifier for the RawSpectrum, ensuring its uniqueness.
+    /// </summary>
+    /// <remarks>
+    /// This property serves as a unique identifier to ensure the uniqueness of a RawSpectrum. 
+    /// When the same raw data is loaded, the same RawSpectrum must always have the same RawSpectrumID.
+    /// This ID may be duplicated across different files.
+    /// It is not guaranteed that IDs are sequential, and using this property as an index is prohibited.
+    /// Typically, the setter for this property is not used for any purpose other than initialization.
+    /// </remarks>
+    public ISpectrumIdentifier? RawSpectrumID { get; set; }
     public int Index { get; set; } // for raw data parser
     public string Id { get; set; } // for raw data parser
     public int ScanNumber { get; set; } // for index accessing rawspectrum object
