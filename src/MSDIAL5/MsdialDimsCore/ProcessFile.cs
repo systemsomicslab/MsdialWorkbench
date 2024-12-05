@@ -158,8 +158,8 @@ public sealed class ProcessFile : IFileProcessor {
         var ID2CE = new Dictionary<int, double>();
         int startID = SearchCollection.LowerBound(
             ms2SpecObjects,
-            new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
-            (x, y) => (x.Precursor.IsolationTargetMz + x.Precursor.IsolationWindowUpperOffset).CompareTo(y.Precursor.IsolationTargetMz + y.Precursor.IsolationWindowUpperOffset));
+            precursorMz - mzTolerance,
+            (x, y) => (x.Precursor.IsolationTargetMz + x.Precursor.IsolationWindowUpperOffset).CompareTo(y));
         
         for (int i = startID; i < ms2SpecObjects.Count; i++) {
             var spec = ms2SpecObjects[i];
@@ -184,8 +184,8 @@ public sealed class ProcessFile : IFileProcessor {
         var ID2CE = new Dictionary<int, double>();
         int startID = SearchCollection.LowerBound(
             ms2SpecObjects,
-            new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
-            (x, y) => (x.Precursor.IsolationTargetMz).CompareTo(y.Precursor.IsolationTargetMz));
+            precursorMz - mzTolerance,
+            (x, y) => (x.Precursor.IsolationTargetMz).CompareTo(y));
         
         for (int i = startID; i < ms2SpecObjects.Count; i++) {
             var spec = ms2SpecObjects[i];

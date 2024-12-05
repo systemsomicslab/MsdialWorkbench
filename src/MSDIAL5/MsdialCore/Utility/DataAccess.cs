@@ -590,8 +590,8 @@ namespace CompMs.MsdialCore.Utility
         public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
             var min = Math.Min(start, end);
             var max = Math.Max(start, end);
-            var lo = SearchCollection.LowerBound(spectrumList, new RawSpectrum() { ScanStartTime = min }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
-            var hi = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var lo = SearchCollection.LowerBound(spectrumList, min, (a, b) => a.ScanStartTime.CompareTo(b));
+            var hi = SearchCollection.UpperBound(spectrumList, max, (a, b) => a.ScanStartTime.CompareTo(b));
             var points = new List<int>();
             for (int i = lo; i < hi; i++) {
                 var spec = spectrumList[i];

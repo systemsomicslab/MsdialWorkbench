@@ -9,6 +9,22 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm;
 
+class LcimmsAccumulatedSpectrumIdentifier(ISpectrumIdentifier[] ids) : ISpectrumIdentifier
+{
+    public ISpectrumIdentifier[] IDs { get; } = ids;
+
+    public bool Equals(ISpectrumIdentifier other) {
+        if (other is not LcimmsAccumulatedSpectrumIdentifier si) {
+            return false;
+        }
+        return Enumerable.SequenceEqual(IDs, si.IDs);
+    }
+
+    public override int GetHashCode() {
+        return IDs.Aggregate(0, (current, item) => current * 31 + item.GetHashCode());
+    }
+}
+
 public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : IDataProvider
 {
     private readonly IDataProvider _dataProvider = dataProvider;
@@ -53,24 +69,26 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
     private static List<RawSpectrum> GetAccumulatedMs1Spectrum(ReadOnlyCollection<RawSpectrum> spectra) {
         var aSpec = new List<RawSpectrum>();
 
-        var ranges = GetFrameRanges(spectra);
+        var packed = SplitByScan(spectra);
         var pool = new MassBinPool();
         var accumulatedMassBin = new Dictionary<int, MassBin>();
 
-        for (int i = 0; i < ranges.Count; i++) {
+        var idx = 0;
+        foreach (var pack in packed) {
             accumulatedMassBin.Clear();
-            var lowest = spectra[ranges[i].Start].LowestObservedMz;
-            var highest = spectra[ranges[i].Start].HighestObservedMz;
-            for (int j = ranges[i].Start; j <= ranges[i].End; j++) {
-                foreach (var peak in spectra[j].Spectrum)
+            var lowest = pack[0].LowestObservedMz;
+            var highest = pack[0].HighestObservedMz;
+            foreach (var spectrum in pack) {
+                foreach (var peak in spectrum.Spectrum)
                     AddToMassBinDictionary(accumulatedMassBin, pool, peak.Mz, peak.Intensity);
-                lowest = Math.Min(spectra[j].LowestObservedMz, lowest);
-                highest = Math.Max(spectra[j].HighestObservedMz, highest);
+                lowest = Math.Min(spectrum.LowestObservedMz, lowest);
+                highest = Math.Max(spectrum.HighestObservedMz, highest);
             }
-            var rSpec = spectra[ranges[i].Start];
+            var rSpec = pack[0];
             var spec = new RawSpectrum {
+                RawSpectrumID = new LcimmsAccumulatedSpectrumIdentifier(pack.Select(s => s.RawSpectrumID).ToArray()),
                 OriginalIndex = rSpec.OriginalIndex,
-                Index = i,
+                Index = idx++,
                 ScanNumber = rSpec.ScanNumber,
                 ScanStartTime = rSpec.ScanStartTime,
                 ScanStartTimeUnit = rSpec.ScanStartTimeUnit,
@@ -93,24 +111,26 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
         return aSpec;
     }
 
-    private static List<(int Start, int End)> GetFrameRanges(ReadOnlyCollection<RawSpectrum> spectra) {
-        var ranges = new List<(int, int)>();
-        var start = 0;
-        var end = 0;
-        var initial = spectra[0].ScanNumber;
-        for (int i = 0; i < spectra.Count; i++) {
-            if (spectra[i].ScanNumber == initial) {
-                end = i;
+    private static List<List<RawSpectrum>> SplitByScan(ReadOnlyCollection<RawSpectrum> spectra) {
+        var results = new List<List<RawSpectrum>>();
+        var result = new List<RawSpectrum>();
+        var initial = 0;
+        foreach (var spectrum in spectra) {
+            if (spectrum.ScanNumber == initial) {
+                result.Add(spectrum);
             }
             else {
-                initial = spectra[i].ScanNumber;
-                ranges.Add((start, end));
-                start = i;
-                end = i;
+                initial = spectrum.ScanNumber;
+                if (result.Count > 0) {
+                    results.Add(result);
+                }
+                result = [spectrum,];
             }
         }
-        ranges.Add((start, end));
-        return ranges;
+        if (result.Count > 0) {
+            results.Add(result);
+        }
+        return results;
     }
 
     private static void AddToMassBinDictionary(Dictionary<int, MassBin> accumulatedMassBin, MassBinPool pool, double mass, double intensity) {
