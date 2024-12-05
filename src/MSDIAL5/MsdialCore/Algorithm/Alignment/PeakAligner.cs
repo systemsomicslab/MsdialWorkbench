@@ -141,7 +141,7 @@ public class PeakAligner {
                 if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
                     var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
                     if (index < 0 || spectra == null || index >= spectra.Count) {
-                        spot.IsotopicPeaks = new List<IsotopicPeak>(0);
+                        spot.IsotopicPeaks = [];
                     }
                     else {
                         spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
