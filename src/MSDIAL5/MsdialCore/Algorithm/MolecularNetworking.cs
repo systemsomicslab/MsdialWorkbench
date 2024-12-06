@@ -50,13 +50,13 @@ namespace CompMs.MsdialCore.Algorithm {
             return edges;
         }
 
-        public static List<Edge> GenerateFeatureLinkedEdges<T>(IReadOnlyList<T> spots, IReadOnlyList<IonFeatureCharacter> ionFeatures) where T : IMoleculeProperty, IChromatogramPeak {
+        public static List<Edge> GenerateFeatureLinkedEdges<T>(IReadOnlyList<T> spots, IReadOnlyDictionary<int, IonFeatureCharacter> ionFeatures) where T : IMoleculeProperty, IChromatogramPeak {
             var edges = new List<Edge>();
             if (spots.IsEmptyOrNull()) return edges;
             var id2spot = spots.ToDictionary(spot => spot.ID);
             for (int i = 0; i < spots.Count; ++i) {
                 var spot = spots[i];
-                var ionlinks = ionFeatures[i].PeakLinks;
+                var ionlinks = ionFeatures[spot.ID].PeakLinks;
                 foreach (var peak in ionlinks) {
                     var linkedID = peak.LinkedPeakID;
                     var linkedProp = peak.Character;

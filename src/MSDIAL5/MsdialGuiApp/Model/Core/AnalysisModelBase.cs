@@ -116,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Core {
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
 
-                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.InnerModel.PeakCharacter).ToList());
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterPeakID, s => s.InnerModel.PeakCharacter));
                 rootObj.edges.AddRange(ionfeature_edges);
 
                 for (int i = 0; i < rootObj.nodes.Count; i++) {

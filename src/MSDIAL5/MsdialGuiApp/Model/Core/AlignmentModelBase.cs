@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Core
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
 
-                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.Select(n => n.innerModel.PeakCharacter).ToList());
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
                 rootObj.edges.AddRange(ionfeature_edges);
 
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
