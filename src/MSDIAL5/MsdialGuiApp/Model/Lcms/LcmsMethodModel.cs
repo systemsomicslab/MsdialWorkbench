@@ -149,7 +149,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(storage.Parameter.ProjectParam, exportMatForMsfinder, currentAlignmentFile);
 
             var notameExportModel = new AlignmentExportGroupModel(
                 "Peaks",
@@ -178,9 +177,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             Notame = new Notame(alignmentFilesForExport, peakSpotSupplyer, notameExportModel, storage.Parameter.DataExportParam, storage.Parameter);
 
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
 
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
+
         public PeakFilterModel PeakFilterModel { get; }
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
@@ -238,6 +242,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _fileProperties,
                 _storage.AnalysisFiles,
                 AnalysisFileModelCollection,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }

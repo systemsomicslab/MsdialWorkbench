@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
         private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel?> _target;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
 
@@ -61,6 +62,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             CalculateMatchScore? calculateMatchScore,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(alignmentFileBean, broker)
         {
@@ -70,6 +72,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _broker = broker;
             UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer = default!;
             switch (parameter.AlignmentIndexType) {
@@ -259,6 +262,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
+
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(_projectParameter);
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }
@@ -278,6 +283,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public UndoManager UndoManager { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
         public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
@@ -307,6 +313,14 @@ namespace CompMs.App.Msdial.Model.Gcms
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgramForGcms(_alignmentFileModel, spot.innerModel, scan, _projectParameter);
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (_target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, UndoManager);
         }
 
         public override void SearchFragment() {

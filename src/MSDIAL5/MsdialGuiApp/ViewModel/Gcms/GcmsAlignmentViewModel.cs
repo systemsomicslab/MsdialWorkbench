@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -77,6 +78,22 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var notification = TaskNotification.Start("Loading alignment results...");
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
+
+            GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
+                var msfinder = model.CreateSingleSearchMsfinderModel();
+                if (msfinder is not null)
+                {
+                    broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                }
+            }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = new ReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null)
+                {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public BarChartViewModel BarChartViewModel { get; }
@@ -117,7 +134,10 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             _broker?.Publish((ICompoundSearchViewModel)vm);
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(Model.InvokeMsfinder);
-        private DelegateCommand? _goToMsfinderCommand = null;
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(Model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand = null;
     }
 }

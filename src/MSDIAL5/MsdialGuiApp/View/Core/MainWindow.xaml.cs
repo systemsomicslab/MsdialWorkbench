@@ -125,12 +125,14 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<AccumulatedExtractedMs2SpectrumView>(height: 600, width: 800));
             broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
                 .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>(height: 600, width: 800));
-            broker.ToObservable<InternalMsfinderSettingViewModel>()
-                .Subscribe(ShowInternalMsfinderSettingView);
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
+            broker.ToObservable<InternalMsfinderBatchSettingViewModel>()
+                .Subscribe(ShowChildSettingDialog<InternalMsfinderBatchSettingView>("MS-FINDER  batch processing setting", height: 800, width: 800, finishCommandContent: "Run", needDispose: true));
             broker.ToObservable<InternalMsFinderViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));
+            broker.ToObservable<InternalMsfinderSettingViewModel>()
+                .Subscribe(ShowChildSettingDialog<InternalMsfinderSettingView>("MS-FINDER setting", height: 600, width: 800, finishCommandContent: "OK", needDispose: true));
             broker.ToObservable<InternalMsFinderSingleSpotViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderSingleSpotView>("MS-FINDER", height: 1000, width: 1500, needDispose: true));
             broker.ToObservable<InternalMsfinderSubstructure>()
@@ -217,7 +219,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null)
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog() {
@@ -232,6 +234,10 @@ namespace CompMs.App.Msdial.View.Core
                     dialog.FinishCommandContent = finishCommandContent;
                 }
                 dialog.ShowDialog();
+                if (needDispose)
+                {
+                    (viewmodel as IDisposable)?.Dispose();
+                }
             }
             return InnerShowDialog;
         }
@@ -387,17 +393,6 @@ namespace CompMs.App.Msdial.View.Core
                 };
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
-            });
-        }
-
-        private void ShowInternalMsfinderSettingView(InternalMsfinderSettingViewModel vm) {
-            Dispatcher.Invoke(() => {
-                var dialog = new InternalMsfinderSettingView() {
-                    DataContext = vm,
-                    Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                var result = dialog.ShowDialog();
             });
         }
 

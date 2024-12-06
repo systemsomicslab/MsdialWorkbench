@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -110,6 +111,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var notification = TaskNotification.Start("Loading alignment results...");
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
+
+            GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
+                var msfinder = model.CreateSingleSearchMsfinderModel();
+                if (msfinder is not null) {
+                    broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                }
+            }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = new ReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
@@ -158,12 +173,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Utility;
@@ -43,6 +44,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private readonly List<CalculateMatchScore> _calculateMatchScores;
         private readonly ChromatogramSerializer<ChromatogramSpotInfo>? _chromatogramSpotSerializer;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -123,7 +125,31 @@ namespace CompMs.App.Msdial.Model.Gcms
 
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
+
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter) {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[] 
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)) {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
 
         public GcmsAnalysisModel? SelectedAnalysisModel {
             get => _selectedAnalysisModel;
@@ -220,12 +246,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }
 
         public CheckChromatogramsModel? ShowChromatograms(bool tic, bool bpc, bool highestEic) {

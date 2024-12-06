@@ -1,14 +1,9 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -16,8 +11,6 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly AnalysisParamOfMsfinder parameter;
         private readonly IonMode ionMode;
-        private enum AdductListType { Ms1Pos, Ms1Neg, Ms2Pos, Ms2Neg };
-        private List<AdductIon> adductIons;
         private ObservableCollection<AdductIon> ms1adductIons;
         private ObservableCollection<AdductIon> ms2adductIons;
 
@@ -35,10 +28,12 @@ namespace CompMs.App.Msdial.Model.Setting
                     ms1adductIons = new ObservableCollection<AdductIon>(parameter.MS1NegativeAdductIonList);
                     ms2adductIons = new ObservableCollection<AdductIon>(parameter.MS2NegativeAdductIonList);
                     break;
+                default:
+                    System.Diagnostics.Debug.Fail("Unsupported IonMode");
+                    ms1adductIons = [];
+                    ms2adductIons = [];
+                    break;
             }
-            //adductIons = AdductResourceParser.GetAdductIonInformationList(ionMode);
-            //ms1adductIons = new ObservableCollection<AdductIon>(adductIons);
-            //ms2adductIons = new ObservableCollection<AdductIon>(adductIons);
 
             Ms1AdductIonSetting = new MsfinderAdductIonSettingModel(ms1adductIons);
             Ms2AdductIonSetting = new MsfinderAdductIonSettingModel(ms2adductIons);
@@ -75,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => _userDefinedAdductName;
             set => SetProperty(ref _userDefinedAdductName, value);
         }
-        private string _userDefinedAdductName;
+        private string _userDefinedAdductName = string.Empty;
 
         public AdductIon UserDefinedAdduct => AdductIon.GetAdductIon(_userDefinedAdductName);
 

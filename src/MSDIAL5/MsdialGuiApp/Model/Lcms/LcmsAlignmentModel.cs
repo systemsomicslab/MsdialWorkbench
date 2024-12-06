@@ -62,6 +62,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IMessageBroker _messageBroker;
         private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
         private readonly ParameterBase _parameter;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public LcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -74,6 +75,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, messageBroker) {
             if (evaluator is null) {
@@ -91,6 +93,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _alignmentFile = alignmentFileBean;
             _parameter = parameter;
             _projectBaseParameter = projectBaseParameter;
+            _msfinderSearcherFactory = msfinderSearcherFactory;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
@@ -249,6 +252,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush).AddTo(Disposables);
 
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -274,6 +278,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public ProteinResultContainerModel? ProteinResultContainerModel { get; }
         public override AlignmentSpotSource AlignmentSpotSource { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
@@ -327,6 +332,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 result,
                 _dataBaseMapper,
                 _parameter);
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
+                _messageBroker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, _undoManager);
         }
 
         private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
