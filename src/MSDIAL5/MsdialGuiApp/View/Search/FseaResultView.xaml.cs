@@ -17,10 +17,6 @@ namespace CompMs.App.Msdial.View.Search {
         public FseaResultViewModel(List<FormulaResult> formulaResults, List<ChemicalOntology> chemOntDB, List<FragmentOntology> fragmentOntDB, IonMode ionMode) {
             fseaResultVMs ??= [];
             foreach (var formula in formulaResults) {
-                if (formula.ChemicalOntologyDescriptions == null || formula.ChemicalOntologyDescriptions.Count == 0) {
-                    MessageBox.Show("No chemical ontology description found.");
-                    return;
-                }
                 var descriptCount = formula.ChemicalOntologyDescriptions.Count;
                 var idCount = formula.ChemicalOntologyIDs.Count;
                 var repInchiCount = formula.ChemicalOntologyRepresentativeInChIKeys.Count;

@@ -3,6 +3,7 @@ using CompMs.Common.Parser;
 using MessagePack;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
+using System;
 using System.Collections.Concurrent;
 
 namespace CompMs.Common.DataObj.Property
@@ -22,6 +23,7 @@ namespace CompMs.Common.DataObj.Property
         /// </para>
         /// </summary>
         [SerializationConstructor]
+        [Obsolete("Use GetAdductIon static method.")]
         public AdductIon() { }
 
         [Key(0)]
@@ -84,12 +86,14 @@ namespace CompMs.Common.DataObj.Property
         /// </summary>
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns>AdductIon</returns>
-        public static AdductIon GetAdductIon(string adductName) {
+        public static AdductIon GetAdductIon(string? adductName) {
             return ADDUCT_IONS.GetOrAdd(adductName ?? string.Empty);
         }
 
         private static AdductIon GetAdductIonCore(string adductName) {
+#pragma warning disable CS0618 // Type or member is obsolete
             AdductIon adduct = new AdductIon() { AdductIonName = adductName };
+#pragma warning restore CS0618 // Type or member is obsolete
 
             if (!AdductIonParser.IonTypeFormatChecker(adductName)) {
                 adduct.FormatCheck = false;
@@ -137,7 +141,9 @@ namespace CompMs.Common.DataObj.Property
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public static readonly AdductIon Default = new AdductIon();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         private static readonly AdductIons ADDUCT_IONS = new AdductIons();
 

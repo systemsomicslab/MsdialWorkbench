@@ -1,9 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.StructureFinder.Property;
-using System;
 using System.Collections.Generic;
-using System.Text;
+
 
 namespace CompMs.Common.StructureFinder.Result
 {
@@ -25,6 +24,7 @@ namespace CompMs.Common.StructureFinder.Result
         private string ontology;
         private string ontologyID;
 
+        private double precursorMz;
         private double retentionTime;
         private double retentionIndex;
         private double ccs;
@@ -47,11 +47,12 @@ namespace CompMs.Common.StructureFinder.Result
 
         #region // constructer from fragmenter functions
         public FragmenterResult(Structure structure, List<PeakFragmentPair> fragmentPics,
-             float retentiontime, float retentionindex, float ccs)
+             float retentiontime, float retentionindex, float ccs, double precursorMz)
         {
             this.isSpectrumSearchResult = false;
             this.fragmentPics = fragmentPics;
             this.referenceSpectrum = null;
+            this.precursorMz = precursorMz;
 
             this.title = structure.Title;
             this.id = structure.Id;
@@ -102,7 +103,7 @@ namespace CompMs.Common.StructureFinder.Result
 
         #region //constructer from file reader
         public FragmenterResult(bool isSpectrumSearchResult, List<PeakFragmentPair> fragmentPics, List<SpectrumPeak> referenceSpectrum,
-            string title, string id, double totalBondEnergy, string inchikey, string smiles, string substructureInChIKeys,
+            string title, string id, double precursorMz, double totalBondEnergy, string inchikey, string smiles, string substructureInChIKeys,
             string substructureOntologies, string resources,
             string ontology, string ontologyID,
             double retentionTime, double retentionIndex, double ccs,
@@ -115,6 +116,8 @@ namespace CompMs.Common.StructureFinder.Result
 
             this.title = title;
             this.id = id;
+            this.precursorMz = precursorMz;
+
             this.totalBondEnergy = totalBondEnergy;
             this.inchikey = inchikey;
             this.smiles = smiles;
@@ -207,6 +210,11 @@ namespace CompMs.Common.StructureFinder.Result
         public string Title
         {
             get { return title; }
+        }
+
+        public double PrecursorMz
+        {
+            get { return precursorMz; }
         }
 
         public string Inchikey

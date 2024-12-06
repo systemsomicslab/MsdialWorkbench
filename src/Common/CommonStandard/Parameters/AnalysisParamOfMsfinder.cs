@@ -55,7 +55,7 @@ namespace CompMs.Common.Parameter {
             StructureMaximumReportNumber = 100;
 
             IsAllProcess = false;
-            IsFormulaFinder = true;
+            IsFormulaFinder = false;
             IsStructureFinder = false;
             TryTopNmolecularFormulaSearch = 5;
 

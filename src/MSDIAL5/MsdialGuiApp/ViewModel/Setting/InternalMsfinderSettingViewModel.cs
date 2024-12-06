@@ -1,23 +1,15 @@
-﻿using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Validator;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Reactive.Linq;
+using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel.Setting
-{
-    internal sealed class InternalMsfinderSettingViewModel : ViewModelBase
-    {
-
-        public InternalMsfinderSettingViewModel(InternalMsfinderSettingModel model, IMessageBroker broker) {
-
+namespace CompMs.App.Msdial.ViewModel.Setting {
+    internal sealed class InternalMsfinderSettingViewModel : SettingDialogViewModel {
+        public InternalMsfinderSettingViewModel(MsfinderParameterSetting model, IMessageBroker broker) {
             MassTolType = model.ToReactivePropertySlimAsSynchronized(m => m.MassTolType).AddTo(Disposables);
 
             Mass1Tolerance = model.ToReactivePropertyAsSynchronized(
@@ -129,16 +121,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsAllProcess = model.ToReactivePropertySlimAsSynchronized(m => m.IsAllProcess).AddTo(Disposables);
 
             IsUseEiFragmentDB = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseEiFragmentDB).AddTo(Disposables);
-
-            TryTopNmolecularFormulaSearch = model.ToReactivePropertyAsSynchronized(
-                m => m.TryTopNmolecularFormulaSearch,
-                m => m.ToString(),
-                vm => int.Parse(vm)
-            ).SetValidateAttribute(() => TryTopNmolecularFormulaSearch).AddTo(Disposables);
-
-            IsFormulaFinder = model.ToReactivePropertySlimAsSynchronized(m => m.IsFormulaFinder).AddTo(Disposables);
-
-            IsStructureFinder = model.ToReactivePropertySlimAsSynchronized(m => m.IsStructureFinder).AddTo(Disposables);
 
             Chebi = model.ToReactivePropertySlimAsSynchronized(m => m.DatabaseQuery.Chebi).AddTo(Disposables);
 
@@ -436,22 +418,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsUseCcsForFilteringCandidates = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseCcsForFilteringCandidates).AddTo(Disposables);
 
-            IsCreateNewProject = model.ToReactivePropertySlimAsSynchronized(m => m.IsCreateNewProject).AddTo(Disposables);
-            IsUseAutoDefinedFolderName = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseAutoDefinedFolderName).AddTo(Disposables);
-
-            char[] invalidChars = System.IO.Path.GetInvalidPathChars();
-            UserDefinedProjectFolderName = model.ToReactivePropertyAsSynchronized(m => m.UserDefinedProjectFolderName, ignoreValidationErrorValue: true)
-                .SetValidateAttribute(() => UserDefinedProjectFolderName)
-                .SetValidateNotifyError(path => path.IndexOfAny(invalidChars) >= 0 ? "Invalid character contains." : null).AddTo(Disposables);
-            ExistProjectPath = model.ToReactivePropertyAsSynchronized(m => m.ExistProjectPath, ignoreValidationErrorValue: true).SetValidateAttribute(() => ExistProjectPath).AddTo(Disposables);
-
-            //LipidQueryBean = model.ToReactivePropertyAsSynchronized(m => m.LipidQueryBean).AddTo(Disposables);
-            //FseanonsignificantDef = model.ToReactivePropertyAsSynchronized(m => m.FseanonsignificantDef).AddTo(Disposables);
-            //MS1PositiveAdductIonList = model.ToReactivePropertyAsSynchronized(m => m.MS1PositiveAdductIonList).AddTo(Disposables);
-            //MS2PositiveAdductIonList = model.ToReactivePropertyAsSynchronized(m => m.MS2PositiveAdductIonList).AddTo(Disposables);
-            //MS1NegativeAdductIonList = model.ToReactivePropertyAsSynchronized(m => m.MS1NegativeAdductIonList).AddTo(Disposables);
-            //MS2NegativeAdductIonList = model.ToReactivePropertyAsSynchronized(m => m.MS2NegativeAdductIonList).AddTo(Disposables);
-
             FormulaFinderAdductIonSettingViewModel = new FormulaFinderAdductIonSettingViewModel(model.FormulaFinderAdductIonSetting).AddTo(Disposables);
             OpenSetAdductTypeWindow = new ReactiveCommand()
                 .WithSubscribe(() =>
@@ -459,42 +425,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     broker.Publish(FormulaFinderAdductIonSettingViewModel);
                 });
 
-            var folderDoesNotExists = ExistProjectPath.ObserveHasErrors;
-            var loadProjectSelected = IsCreateNewProject.Inverse();
-            var loadProjectAndFolderDoesNotExists = new[]
-            {
-                loadProjectSelected,
-                folderDoesNotExists,
-            }.CombineLatestValuesAreAllTrue();
-            var createNewFolder = IsCreateNewProject;
-            var invalidUserDefinedProjectFolderName = UserDefinedProjectFolderName.ObserveHasErrors;
-            var createNewFolderAndInvalidFolderName = new[]
-            {
-                createNewFolder,
-                IsUseAutoDefinedFolderName.Inverse(),
-                invalidUserDefinedProjectFolderName,
-            }.CombineLatestValuesAreAllTrue();
-
-            Run = new[] {
-                model.CurrentAlignmentModel.Select(f => f is not null),
-                loadProjectAndFolderDoesNotExists.Inverse(),
-                createNewFolderAndInvalidFolderName.Inverse(),
-            }.CombineLatestValuesAreAllTrue() // Commandが実行できる条件
-            .ToReactiveCommand().WithSubscribe(() =>
-            {
-                var msfinder = model.Process();
-                if (msfinder is not null)
-                {
-                    broker.Publish(InternalMsFinderViewModel = new InternalMsFinderViewModel(msfinder, broker));
-                }
+            Save = new ReactiveCommand().WithSubscribe(() => {
+                model.Commit();
             }).AddTo(Disposables);
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {
                 model.Cancel();
             }).AddTo(Disposables);
         }
-
-        private readonly InternalMsfinderSettingModel model;
 
         public InternalMsFinderViewModel InternalMsFinderViewModel { get; set; }
 
@@ -567,12 +505,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> IsAllProcess { get; set; }
 
         public ReactivePropertySlim<bool> IsUseEiFragmentDB { get; }
-
-        public ReactiveProperty<string> TryTopNmolecularFormulaSearch { get; }
-
-        public ReactivePropertySlim<bool> IsFormulaFinder { get; set; }
-
-        public ReactivePropertySlim<bool> IsStructureFinder { get; set; }
 
         // Check
         public ReactivePropertySlim<bool> Chebi { get; }
@@ -741,14 +673,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveProperty<string> StructurePredictionTimeOut { get; }
 
-        //public ReactiveProperty<string> MS1PositiveAdductIonList { get; }
-
-        //public ReactiveProperty<string> MS2PositiveAdductIonList { get; }
-
-        //public ReactiveProperty<string> MS1NegativeAdductIonList { get; }
-
-        //public ReactiveProperty<string> MS2NegativeAdductIonList { get; }
-
         public ReactiveProperty<string> CcsToleranceForStructureElucidation { get; }
 
         public ReactivePropertySlim<bool> IsUsePredictedCcsForStructureElucidation { get; }
@@ -765,16 +689,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveCommand OpenSetAdductTypeWindow { get; }
 
-        public ReactiveCommand Run { get; }
+        public ReactiveCommand Save { get; }
 
         public ReactiveCommand Cancel { get; }
 
-        public ReactivePropertySlim<bool> IsCreateNewProject { get; }
-        public ReactivePropertySlim<bool> IsUseAutoDefinedFolderName { get; }
-
-        [Required(ErrorMessage = "Folder name is required.")]
-        public ReactiveProperty<string> UserDefinedProjectFolderName { get; }
-        [PathExists(ErrorMessage = "hogehoge", IsDirectory = true)]
-        public ReactiveProperty<string> ExistProjectPath { get; }
+        public override ICommand? FinishCommand => Save;
+        public override ICommand? CancelCommand => Cancel;
     }
 }

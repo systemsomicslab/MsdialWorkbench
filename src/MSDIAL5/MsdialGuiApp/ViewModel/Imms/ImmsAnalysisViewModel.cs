@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -67,6 +68,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             var matchResultCandidateViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidateViewModel, };
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public UndoManagerViewModel UndoManagerViewModel { get; }
@@ -84,6 +100,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ReactiveCommand SearchCompoundCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
+
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
         public ICommand SetUnknownCommand { get; }
 
@@ -109,14 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
-
+               
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, CanSaveSpectra);
         private DelegateCommand? _saveMs2SpectrumCommand;
 

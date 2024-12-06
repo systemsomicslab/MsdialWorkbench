@@ -229,6 +229,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
             analysisFile = analysisFileModel;
+
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         private static readonly double RtTol = 0.5;
@@ -263,7 +265,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
-        public InternalMsFinderSingleSpot? InternalMsFinderSingleSpot { get; }
+
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
@@ -293,7 +296,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
             try {
-                return _msfinderSearcherFactory.CreateModel(peak, msdec, _provider);
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider, _undoManager);
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message);

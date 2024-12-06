@@ -32,6 +32,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ImmsAnalysisModel _analysisModel;
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly AnalysisFileBeanModel _file;
         private readonly MaldiFrames _maldiFrames;
         private readonly RoiModel _wholeRoi;
@@ -40,7 +41,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
             var peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
-            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, peakFiltering, projectBaseParameterModel, broker).AddTo(Disposables);
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, peakFiltering, projectBaseParameterModel, _msfinderSearcherFactory, broker).AddTo(Disposables);
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();

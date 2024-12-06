@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -84,6 +85,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ShowNormalizationSettingCommand = new ReactiveCommand()
                 .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
                 .AddTo(Disposables);
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
@@ -109,6 +125,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand SetUnknownCommand { get; }
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using var csm = _model.CreateCompoundSearchModel();
@@ -136,13 +158,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
-        }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
         }
 
         public ICommand SaveSpectraCommand => _saveSpectraCommand ??= new DelegateCommand(SaveSpectra, CanSaveSpectra);
