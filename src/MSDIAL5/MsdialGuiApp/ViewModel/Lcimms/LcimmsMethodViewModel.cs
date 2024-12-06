@@ -1,9 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -16,6 +19,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -41,6 +45,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _broker = broker;
             _focusControlManager = focusControlManager.AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
+
+            var batchMsfinder = model.InternalMsfinderSettingModel;
+            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
         }
 
         public AsyncReactiveCommand ExportParameterCommand { get; }
@@ -167,5 +175,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase?>[] { rawdec, ms2chrom, rawpur, repref});
         }
+
+        public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
     }
 }

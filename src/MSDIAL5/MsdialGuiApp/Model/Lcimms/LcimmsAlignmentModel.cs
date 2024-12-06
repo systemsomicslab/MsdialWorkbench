@@ -57,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
 
         public LcimmsAlignmentModel(
@@ -71,8 +72,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(alignmentFileBean, broker) {
+            : base(alignmentFileBean, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -83,6 +85,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
             _projectBaseParameter = projectBaseParameter;
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
 
@@ -315,6 +318,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -344,7 +349,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
-
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public BrushMapData<AlignmentSpotPropertyModel>? SelectedBrush {
@@ -380,6 +385,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             using (var decLoader = _alignmentFileBean.CreateTemporaryMSDecLoader()) {
                 MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, _parameter);
             }
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || MsdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, _undoManager);
         }
 
         public override void InvokeMsfinder() {
