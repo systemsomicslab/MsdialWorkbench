@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.ViewModel.Setting;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
-using System;
 using System.IO;
 using System.Linq;
 using System.Windows;

@@ -68,6 +68,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(SetSelectedAquisitionTypeToAll)
                 .AddTo(Disposables);
 
+            SupportingMessage = model.ObserveProperty(m => m.SupportingMessage)
+                .ToReadOnlyReactivePropertySlim(initialValue: string.Empty)
+                .AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 analysisFileHasError,
@@ -102,6 +106,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<AcquisitionType> SelectedAcquisitionType { get; }
         public ReactiveCommand SetSelectedAcquisitionTypeCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<string> SupportingMessage { get; }
 
         public bool IsReadOnly { get; }
 

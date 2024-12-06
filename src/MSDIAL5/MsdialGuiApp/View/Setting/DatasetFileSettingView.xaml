@@ -44,7 +44,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal"
@@ -237,5 +237,12 @@
 
             </DataGrid.Columns>
         </DataGrid>
+
+        <TextBox Text="{Binding SupportingMessage.Value, Mode=OneWay}"
+                 TextWrapping="WrapWithOverflow"
+                 Foreground="DeepPink"
+                 Style="{StaticResource ReadOnlyTextBox}"
+                 Margin="8,0"
+                 Grid.Row="2"/>
     </Grid>
 </UserControl>
