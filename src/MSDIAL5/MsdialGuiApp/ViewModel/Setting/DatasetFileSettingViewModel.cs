@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(SetSelectedAquisitionTypeToAll)
                 .AddTo(Disposables);
 
-            SupportingMessage = model.ObserveProperty(m => m.FileTypeInfo)
+            SupportingMessage = model.ObserveProperty(m => m.SupportingMessage)
                 .ToReadOnlyReactivePropertySlim(initialValue: string.Empty)
                 .AddTo(Disposables);
 

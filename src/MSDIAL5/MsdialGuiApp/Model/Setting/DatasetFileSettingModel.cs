@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private AcquisitionType _selectedAcquisiolationType = AcquisitionType.DDA;
 
-        public string FileTypeInfo {
+        public string SupportingMessage {
             get => _filetypeInfo;
             set => SetProperty(ref _filetypeInfo, value);
         }
@@ -87,7 +87,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
 
             ProjectFolderPath = FileModels.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
-            FileTypeInfo = checker.GetSupportMessage();
+            SupportingMessage = checker.GetSupportMessage();
         }
 
         public void SetSelectedAquisitionTypeToAll() {
