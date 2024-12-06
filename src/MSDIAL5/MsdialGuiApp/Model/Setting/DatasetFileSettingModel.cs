@@ -48,26 +48,9 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private AcquisitionType _selectedAcquisiolationType = AcquisitionType.DDA;
 
-        public bool ContainsNetCdf {
-            get => _containsNetCdf;
-            set => SetProperty(ref _containsNetCdf, value);
-        }
-        private bool _containsNetCdf;
-
-        public bool ContainsAgilentD {
-            get => _containsAgilentD;
-            set => SetProperty(ref _containsAgilentD, value);
-        }
-        private bool _containsAgilentD;
-
-        public bool ContainsShimadzuLcd {
-            get => _containsShimadzuLcd;
-            set => SetProperty(ref _containsShimadzuLcd, value);
-        }
-        private bool _containsShimadzuLcd;
-
         public string FileTypeInfo {
-            get;set;
+            get => _filetypeInfo;
+            set => SetProperty(ref _filetypeInfo, value);
         }
         private string _filetypeInfo = string.Empty;
 
@@ -76,8 +59,8 @@ namespace CompMs.App.Msdial.Model.Setting
                 return;
             }
 
-            ClearFileTypeInfo();
             FileModels.Clear();
+            var checker = new FileTypeChecker();
             foreach ((var file, var i) in files.OrderBy(file => file).WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
@@ -100,31 +83,11 @@ namespace CompMs.App.Msdial.Model.Setting
                     AcquisitionType = AcquisitionType.DDA,
                 };
                 FileModels.AddAnalysisFile(bean);
-                CheckFileType(bean.AnalysisFilePath);
+                checker.CheckFileType(bean.AnalysisFilePath);
             }
 
             ProjectFolderPath = FileModels.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
-        }
-
-        private void ClearFileTypeInfo() {
-            ContainsNetCdf = false;
-            ContainsAgilentD = false;
-            ContainsShimadzuLcd = false;
-        }
-
-        private void CheckFileType(string path) {
-            var ext = Path.GetExtension(path);
-            if (ext == ".cdf") {
-                ContainsNetCdf = true;
-            }
-            else if (ext == ".lcd") {
-                ContainsShimadzuLcd = true;
-            }
-            else if (ext == ".d") {
-                if (Directory.Exists(Path.Combine(path, "AcqData"))) {
-                    ContainsAgilentD = true;
-                }
-            }
+            FileTypeInfo = checker.GetSupportMessage();
         }
 
         public void SetSelectedAquisitionTypeToAll() {
@@ -198,6 +161,22 @@ namespace CompMs.App.Msdial.Model.Setting
                     builder.AppendLine("The NetCDF format requires the Unidata NetCDF library for reading data.");
                     builder.AppendLine("If you encounter issues while attempting to read a file, please download and install the necessary library from the following link: https://downloads.unidata.ucar.edu/netcdf/.");
                     builder.AppendLine("Note: During installation, make sure to enable the option to add the library to the system PATH environment variable.");
+                }
+                if (ContainsAgilentD) {
+                    if (builder.Length > 0) {
+                        builder.AppendLine();
+                    }
+                    builder.AppendLine("Agilent .d Format Notice");
+                    builder.AppendLine("The Agilent .d format may require Visual C++ 2013 for compatibility on newer Windows versions.");
+                    builder.AppendLine("If you encounter issues when trying to read a file, please download and install the Visual C++ 2013 Runtime from Microsoft: https://support.microsoft.com/en-us/topic/update-for-visual-c-2013-and-visual-c-redistributable-package-5b2ac5ab-4139-8acc-08e2-9578ec9b2cf1.");
+                }
+                if (ContainsShimadzuLcd) {
+                    if (builder.Length > 0) {
+                        builder.AppendLine();
+                    }
+                    builder.AppendLine("Shimadzu .lcd Format Notice");
+                    builder.AppendLine("The Shimadzu .lcd format may require Visual C++ 2015 for compatibility on newer Windows versions.");
+                    builder.AppendLine("If you experience issues while trying to read a file, please download and install the Visual C++ 2015 Runtime from Microsoft: https://www.microsoft.com/en-us/download/details.aspx?id=48145.");
                 }
 
                 return builder.ToString();
