@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -47,11 +48,35 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private AcquisitionType _selectedAcquisiolationType = AcquisitionType.DDA;
 
+        public bool ContainsNetCdf {
+            get => _containsNetCdf;
+            set => SetProperty(ref _containsNetCdf, value);
+        }
+        private bool _containsNetCdf;
+
+        public bool ContainsAgilentD {
+            get => _containsAgilentD;
+            set => SetProperty(ref _containsAgilentD, value);
+        }
+        private bool _containsAgilentD;
+
+        public bool ContainsShimadzuLcd {
+            get => _containsShimadzuLcd;
+            set => SetProperty(ref _containsShimadzuLcd, value);
+        }
+        private bool _containsShimadzuLcd;
+
+        public string FileTypeInfo {
+            get;set;
+        }
+        private string _filetypeInfo = string.Empty;
+
         public void SetFiles(IEnumerable<string> files) {
             if (IsReadOnly) {
                 return;
             }
 
+            ClearFileTypeInfo();
             FileModels.Clear();
             foreach ((var file, var i) in files.OrderBy(file => file).WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
@@ -75,9 +100,31 @@ namespace CompMs.App.Msdial.Model.Setting
                     AcquisitionType = AcquisitionType.DDA,
                 };
                 FileModels.AddAnalysisFile(bean);
+                CheckFileType(bean.AnalysisFilePath);
             }
 
             ProjectFolderPath = FileModels.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
+        }
+
+        private void ClearFileTypeInfo() {
+            ContainsNetCdf = false;
+            ContainsAgilentD = false;
+            ContainsShimadzuLcd = false;
+        }
+
+        private void CheckFileType(string path) {
+            var ext = Path.GetExtension(path);
+            if (ext == ".cdf") {
+                ContainsNetCdf = true;
+            }
+            else if (ext == ".lcd") {
+                ContainsShimadzuLcd = true;
+            }
+            else if (ext == ".d") {
+                if (Directory.Exists(Path.Combine(path, "AcqData"))) {
+                    ContainsAgilentD = true;
+                }
+            }
         }
 
         public void SetSelectedAquisitionTypeToAll() {
@@ -116,6 +163,45 @@ namespace CompMs.App.Msdial.Model.Setting
                 .GroupBy(analysisfile => analysisfile.AnalysisFileType)
                 .Average(group => group.Count())
                 > 4;
+        }
+
+        class FileTypeChecker {
+            public bool ContainsNetCdf { get; set; }
+            public bool ContainsAgilentD { get; set; }
+            public bool ContainsShimadzuLcd { get; set; }
+
+            public void ClearFileTypeInfo() {
+                ContainsNetCdf = false;
+                ContainsAgilentD = false;
+                ContainsShimadzuLcd = false;
+            }
+
+            public void CheckFileType(string path) {
+                var ext = Path.GetExtension(path);
+                if (ext == ".cdf") {
+                    ContainsNetCdf = true;
+                }
+                else if (ext == ".lcd") {
+                    ContainsShimadzuLcd = true;
+                }
+                else if (ext == ".d") {
+                    if (Directory.Exists(Path.Combine(path, "AcqData"))) {
+                        ContainsAgilentD = true;
+                    }
+                }
+            }
+
+            public string GetSupportMessage() {
+                var builder = new StringBuilder();
+                if (ContainsNetCdf) {
+                    builder.AppendLine("NetCDF Format Notice");
+                    builder.AppendLine("The NetCDF format requires the Unidata NetCDF library for reading data.");
+                    builder.AppendLine("If you encounter issues while attempting to read a file, please download and install the necessary library from the following link: https://downloads.unidata.ucar.edu/netcdf/.");
+                    builder.AppendLine("Note: During installation, make sure to enable the option to add the library to the system PATH environment variable.");
+                }
+
+                return builder.ToString();
+            }
         }
     }
 }
