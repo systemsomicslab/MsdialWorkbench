@@ -141,13 +141,13 @@ namespace CompMs.App.Msdial.Model.Setting
 
             public void CheckFileType(string path) {
                 var ext = Path.GetExtension(path);
-                if (ext == ".cdf") {
+                if (string.Equals(ext, ".cdf", StringComparison.CurrentCultureIgnoreCase)) {
                     ContainsNetCdf = true;
                 }
-                else if (ext == ".lcd") {
+                else if (string.Equals(ext, ".lcd", StringComparison.CurrentCultureIgnoreCase)) {
                     ContainsShimadzuLcd = true;
                 }
-                else if (ext == ".d") {
+                else if (string.Equals(ext, ".d", StringComparison.CurrentCultureIgnoreCase)) {
                     if (Directory.Exists(Path.Combine(path, "AcqData"))) {
                         ContainsAgilentD = true;
                     }
