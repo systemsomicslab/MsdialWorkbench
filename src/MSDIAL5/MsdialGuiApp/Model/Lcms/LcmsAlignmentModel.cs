@@ -354,7 +354,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (useCurrentFiltering) {
                     spots = _filter.Filter(Ms1Spots).ToList();
                 }
-                _filter.Filter(Ms1Spots);
                 var peaks = _alignmentFileModel.LoadMSDecResults();
 
                 void notify(double progressRate) {
