@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Search
 
     }
 
-    class ValueFilterManager<T> where T: IAnnotatedObject, IFilterable {
+    public class ValueFilterManager<T> where T: IAnnotatedObject, IFilterable {
         private readonly ValueFilterModel _model;
             private readonly FilterEnableStatus _status;
         private readonly Func<T, double> _convert;
@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             }
 
-    class KeywordFilterManager<T> : IDisposable where T : IAnnotatedObject, IFilterable
+    public class KeywordFilterManager<T> : IDisposable where T : IAnnotatedObject, IFilterable
     {
         private readonly KeywordFilterModel _model;
             private readonly FilterEnableStatus _status;

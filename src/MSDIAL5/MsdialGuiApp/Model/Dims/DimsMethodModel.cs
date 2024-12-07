@@ -37,7 +37,8 @@ namespace CompMs.App.Msdial.Model.Dims
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
         private readonly FilePropertiesModel _fileProperties;
         private readonly IMessageBroker _broker;
-        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _spotFiltering;
+        private readonly PeakSpotFiltering<ChromatogramPeakFeatureModel> _peakFiltering;
         private FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
@@ -61,8 +62,9 @@ namespace CompMs.App.Msdial.Model.Dims
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 filterEnabled |= FilterEnableStatus.Protein;
             }
-            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
-            var filter = _peakSpotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
+            _spotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
+            _peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
+            var filter = _spotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
 
             DimsAlignmentMetadataAccessorFactory metadataAccessorFactory = new DimsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
@@ -261,6 +263,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 PeakFilterModel,
+                _peakFiltering,
                 _fileProperties,
                 _msfinderSearcherFactory,
                 _broker).AddTo(Disposables);
@@ -281,7 +284,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.AnalysisFiles,
                 AnalysisFileModelCollection,
                 PeakFilterModel,
-                _peakSpotFiltering,
+                _spotFiltering,
                 _msfinderSearcherFactory,
                 _broker).AddTo(Disposables);
         }

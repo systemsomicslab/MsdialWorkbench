@@ -319,11 +319,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
             throw new NotImplementedException();
         }
 
-        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
             throw new NotImplementedException();
         }
 

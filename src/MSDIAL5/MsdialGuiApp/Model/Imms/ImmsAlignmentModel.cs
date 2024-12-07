@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Imms
             List<AnalysisFileBean> files,
             MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(alignmentFileModel, broker) {
+            : base(alignmentFileModel, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
 
             _alignmentFile = alignmentFileModel;
             _parameter = parameter;

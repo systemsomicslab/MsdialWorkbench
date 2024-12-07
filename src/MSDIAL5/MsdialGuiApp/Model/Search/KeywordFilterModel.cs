@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    enum KeywordFilteringType {
+    public enum KeywordFilteringType {
         None,
         IgnoreIfWordIsNull,
         KeepIfWordIsNull,
         ExactMatch,
     }
 
-    internal sealed class KeywordFilterModel : DisposableModelBase
+    public sealed class KeywordFilterModel : DisposableModelBase
     {
         private readonly SemaphoreSlim _sem;
         private readonly List<string> _keywords;

@@ -64,8 +64,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             CalculateMatchScore? calculateMatchScore,
             MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(alignmentFileBean, broker)
-        {
+            : base(alignmentFileBean, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             _projectParameter = parameter.ProjectParam;
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _calculateMatchScore = calculateMatchScore;

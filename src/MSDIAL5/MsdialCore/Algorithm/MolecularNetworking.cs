@@ -50,16 +50,20 @@ namespace CompMs.MsdialCore.Algorithm {
             return edges;
         }
 
-        public static List<Edge> GenerateFeatureLinkedEdges<T>(IReadOnlyList<T> spots, IReadOnlyList<IonFeatureCharacter> ionFeatures) where T : IMoleculeProperty, IChromatogramPeak {
+        public static List<Edge> GenerateFeatureLinkedEdges<T>(IReadOnlyList<T> spots, IReadOnlyDictionary<int, IonFeatureCharacter> ionFeatures) where T : IMoleculeProperty, IChromatogramPeak {
             var edges = new List<Edge>();
             if (spots.IsEmptyOrNull()) return edges;
+            var id2spot = spots.ToDictionary(spot => spot.ID);
             for (int i = 0; i < spots.Count; ++i) {
                 var spot = spots[i];
-                var ionlinks = ionFeatures[i].PeakLinks;
+                var ionlinks = ionFeatures[spot.ID].PeakLinks;
                 foreach (var peak in ionlinks) {
                     var linkedID = peak.LinkedPeakID;
                     var linkedProp = peak.Character;
-                    var linkedSpot = spots[linkedID];
+                    if (!id2spot.ContainsKey(linkedID)) {
+                        continue;
+                    }
+                    var linkedSpot = id2spot[linkedID];
 
                     var sourceID = Math.Min(spot.ID, linkedSpot.ID);
                     var targetID = Math.Max(spot.ID, linkedSpot.ID);
@@ -68,7 +72,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     var annotation = "null";
                     var linecolor = "black";
                     var score = 1.0;
-                    var mzdiff = Math.Round(Math.Abs(spots[sourceID].Mass - spots[targetID].Mass), 5);
+                    var mzdiff = Math.Round(Math.Abs(id2spot[sourceID].Mass - id2spot[targetID].Mass), 5);
 
                     if (linkedProp == Common.Enum.PeakLinkFeatureEnum.Adduct) {
                         type = "Adduct annotation";

@@ -139,6 +139,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
             InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
+            var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -172,6 +174,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
         public MsfinderParameterSetting MsfinderSettingParameter { get; }
 
+        public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();

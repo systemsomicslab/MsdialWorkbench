@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -38,8 +39,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
+            var peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
-            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, projectBaseParameterModel, _msfinderSearcherFactory, broker).AddTo(Disposables);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, peakFiltering, projectBaseParameterModel, _msfinderSearcherFactory, broker).AddTo(Disposables);
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();

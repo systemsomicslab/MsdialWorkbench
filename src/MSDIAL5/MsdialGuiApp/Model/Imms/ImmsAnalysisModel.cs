@@ -56,10 +56,11 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper mapper,
             MsdialImmsParameter parameter,
             PeakFilterModel peakFilterModel,
+            PeakSpotFiltering<ChromatogramPeakFeatureModel> peakFiltering,
             FilePropertiesModel projectBaseParameterModel,
             MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, peakFiltering, peakFilterModel, evaluator.Contramap((ChromatogramPeakFeatureModel peak) => peak.ScanMatchResult), broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -73,11 +74,7 @@ namespace CompMs.App.Msdial.Model.Imms
             CompoundSearcher = new ImmsCompoundSearchUsecase(_compoundSearchers.Items);
             _msfinderSearcherFactory = msfinderSearcherFactory;
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks, new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled)).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks, peakFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(Ms1Peaks, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
