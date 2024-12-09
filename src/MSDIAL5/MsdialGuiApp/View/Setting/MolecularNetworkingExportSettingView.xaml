@@ -9,63 +9,58 @@
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingExportSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Export setting of molecular spectrum networking data" Height="620" Width="465">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="44*"/>
-            <ColumnDefinition Width="181*"/>
-        </Grid.ColumnDefinitions>
+        Title="Export setting of molecular spectrum networking data" Height="672" Width="465">
+    <DockPanel>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="16,8"
+                    Grid.Row="1"
+                    DockPanel.Dock="Bottom">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Height" Value="24"/>
+                    <Setter Property="Width" Value="72"/>
+                    <Setter Property="Margin" Value="4,0,0,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Run" 
+                    Click="Run_Click"
+                    Command="{Binding MolecularNetworkingAsyncCommand, Mode=OneTime}" 
+                    IsDefault="True" />
 
-        <ui:ExecutableBar Label="Export folder path:"
+            <Button Content="Cancel" 
+                    Command="ApplicationCommands.Close"
+                    IsCancel="True" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <ui:ExecutableBar Label="Export folder path:"
                               LabelWidth="110"
                               ButtonContent="Browse"
                               Command="ApplicationCommands.Open" 
+                              IsTabStop="False"
                               ButtonWidth="72"
-                              ButtonHeight="25"
-                              Margin="12,8,8,5" Grid.ColumnSpan="2">
-            <ui:ExecutableBar.ToolTip>
-                Select a project folder.
-            </ui:ExecutableBar.ToolTip>
-            <TextBox x:Name="TextBox_ExportFolderPath"
+                              ButtonHeight="24"
+                              Height="32"
+                              Margin="12,4"
+                              ToolTip="Select a project folder."
+                              KeyboardNavigation.TabNavigation="Local"
+                              Control.TabIndex="0" >
+                <TextBox x:Name="TextBox_ExportFolderPath"
                          Text="{Binding ExportFolderPath.Value, UpdateSourceTrigger=PropertyChanged}"
                          VerticalContentAlignment="Center"
                          Margin="8,0"
-                         TabIndex="0"/>
-        </ui:ExecutableBar>
+                         TabIndex="0" />
+            </ui:ExecutableBar>
 
-        <local:MolecularNetworkingSettingView DataContext="{Binding Path=SettingViewModel}"
-                                              Grid.Row="1" Grid.ColumnSpan="2"/>
+            <CheckBox Content="Restrict cell value length to Excel's limit"
+                      IsChecked="{Binding Path=SettingViewModel.CutByExcelLimit.Value}" Margin="8,4" TabIndex="0"/>
 
-        <Label Grid.Row="2" 
-               Name="Label_Explanation"
-               VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2">
-            <TextBlock TextWrapping="WrapWithOverflow">
-                *The output files can be imported by cytoscape.
-            </TextBlock>
-        </Label>
+            <local:MolecularNetworkingSettingView DataContext="{Binding Path=SettingViewModel}" KeyboardNavigation.TabNavigation="Local" TabIndex="0" />
 
-        <Button x:Name="Button_Run" Content="Run" 
-                Click="Run_Click"
-                Command="{Binding MolecularNetworkingAsyncCommand, Mode=OneTime}" 
-                Grid.Row="2" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Height="25" 
-                Width="70" Margin="212,0,0,0" Grid.Column="1" />
-
-        <Button x:Name="Button_Cancel" 
-                Content="Cancel" 
-                Command="ApplicationCommands.Close"
-                Grid.Row="2"
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Center" 
-                Height="25" Width="70"
-                Margin="287,0,0,0" Grid.Column="1" />
-    </Grid>
+            <TextBlock Text="*The output files can be imported by cytoscape."
+                       TextWrapping="WrapWithOverflow"
+                       Margin="8,0,0,0" VerticalAlignment="Center" />
+        </StackPanel>
+    </DockPanel>
 </Window>
