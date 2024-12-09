@@ -82,6 +82,8 @@ public class MolecularNetworkInstanceTests
 
         var lines = File.ReadAllLines(edgeFile);
         Assert.AreEqual(2, lines.Length); // Header + 1 edge
+        Assert.AreEqual(6, lines[0].Split('\t').Length); // Check header columns count
+        Assert.AreEqual(6, lines[1].Split('\t').Length); // Check first row columns count
     }
 
     [TestMethod]

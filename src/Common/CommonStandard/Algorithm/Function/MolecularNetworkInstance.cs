@@ -72,12 +72,18 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         public void ExportEdgeTable(string edgeFile) {
-            using (StreamWriter sw = new StreamWriter(edgeFile, false, Encoding.ASCII)) {
-                sw.WriteLine("SourceID\tTargetID\tScore\tType\tColor\tComment");
-                foreach (var edgeObj in Root.edges) {
-                    var edge = edgeObj.data;
-                    sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes + "\t" + edge.linecolor + "\t" + edge.comment);
-                }
+            using var writer = new CsvWriter(edgeFile) { Delimiter = '\t', };
+            writer.WriteRow(["SourceID", "TargetID", "Score", "Type", "Color", "Comment"]);
+            foreach (var edgeObj in Root.edges) {
+                var edge = edgeObj.data;
+                writer.WriteRow([
+                    edge.source.ToString(),
+                    edge.target.ToString(),
+                    edge.score.ToString(),
+                    edgeObj.classes,
+                    edge.linecolor,
+                    edge.comment,
+                ]);
             }
         }
 
