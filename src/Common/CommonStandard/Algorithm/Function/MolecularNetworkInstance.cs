@@ -95,11 +95,17 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        public void ExportNodeEdgeFiles(string folder) {
+        public (string, string, string) ExportNodeEdgeFiles(string folder) {
             var dt = DateTime.Now;
-            ExportNodeTable(Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt"));
-            ExportEdgeTable(Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt"));
-            ExportCyelement(Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js"));
+            var nodeFilePath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
+            var edgeFilePath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
+            var cyelementFilePath = Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js");
+
+            ExportNodeTable(nodeFilePath);
+            ExportEdgeTable(edgeFilePath);
+            ExportCyelement(cyelementFilePath);
+
+            return (nodeFilePath, edgeFilePath, cyelementFilePath);
         }
 
         public void SaveCytoscapeJs(string cyjsexportpath) {
