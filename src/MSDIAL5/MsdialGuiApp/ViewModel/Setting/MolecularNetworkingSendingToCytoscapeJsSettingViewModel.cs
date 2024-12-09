@@ -14,6 +14,13 @@ internal sealed class MolecularNetworkingSendingToCytoscapeJsSettingViewModel : 
 
         SettingViewModel = new MolecularNetworkingSettingViewModel(model).AddTo(Disposables);
 
+        CytoscapeApiUrl = model.ToReactivePropertySlimAsSynchronized(m => m.CytoscapeUrl).AddTo(Disposables);
+        UseCytoscape = model.ToReactivePropertySlimAsSynchronized(
+            m => m.NetworkPresentationType,
+            m => m == NetworkPresentationType.Cytoscape,
+            vm => vm ? NetworkPresentationType.Cytoscape : NetworkPresentationType.CytoscapeJs
+        ).AddTo(Disposables);
+
         ObserveHasErrors = new[]
         {
             SettingViewModel.ObserveHasErrors,
@@ -25,6 +32,9 @@ internal sealed class MolecularNetworkingSendingToCytoscapeJsSettingViewModel : 
         MolecularNetworkingAsyncCommand = ObserveHasErrors.Inverse().ToAsyncReactiveCommand()
             .WithSubscribe(model.SendMolecularNetworkingDataToCytoscapeJsAsync).AddTo(Disposables);
     }
+
+    public ReactivePropertySlim<bool> UseCytoscape { get; }
+    public ReactivePropertySlim<string> CytoscapeApiUrl { get; }
 
     public MolecularNetworkingSettingViewModel SettingViewModel { get; }
 

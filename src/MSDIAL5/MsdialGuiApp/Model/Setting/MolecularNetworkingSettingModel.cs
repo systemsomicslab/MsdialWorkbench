@@ -8,6 +8,11 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
+    public enum NetworkPresentationType {
+        CytoscapeJs,
+        Cytoscape,
+    }
+
     internal sealed class MolecularNetworkingSettingModel : DisposableModelBase {
 
         private readonly MolecularSpectrumNetworkingBaseParameter _parameter;
@@ -145,6 +150,18 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool _cutByExcelLimit = true;
 
+        public NetworkPresentationType NetworkPresentationType {
+            get => _networkPresentationType;
+            set => SetProperty(ref _networkPresentationType, value);
+        }
+        private NetworkPresentationType _networkPresentationType = NetworkPresentationType.CytoscapeJs;
+
+        public string CytoscapeUrl {
+            get => _cytoscapeUrl;
+            set => SetProperty(ref _cytoscapeUrl, value);
+        }
+        private string _cytoscapeUrl = "http://localhost:1234";
+
         public ReadOnlyReactivePropertySlim<bool> AvailableFileResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableIonEdge { get; }
@@ -181,10 +198,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering);
+                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering, NetworkPresentationType, CytoscapeUrl);
                 }
                 else {
-                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering);
+                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering, NetworkPresentationType, CytoscapeUrl);
                 }
             });
         }

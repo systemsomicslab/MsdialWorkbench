@@ -9,7 +9,15 @@
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingSendingToCytoscapeJsSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Visualization setting of molecular spectrum networking data in CytoJS" Height="600" Width="450">
+        SizeToContent="Height"
+        Title="Visualization setting of molecular spectrum networking data in CytoJS" Width="450">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
 
         <Grid.RowDefinitions>
@@ -17,8 +25,73 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <local:MolecularNetworkingSettingView DataContext="{Binding Path=SettingViewModel}"
-                                              Grid.Row="0" Grid.ColumnSpan="2"/>
+        <StackPanel Grid.Row="0">
+            <local:MolecularNetworkingSettingView DataContext="{Binding Path=SettingViewModel}" />
+
+            <CheckBox x:Name="UseCytoscape" Content="Use Cytoscape"
+                      IsChecked="{Binding UseCytoscape.Value}"
+                      d:IsChecked="True"
+                      Margin="8,0"/>
+
+            <StackPanel Visibility="{Binding IsChecked, ElementName=UseCytoscape, Converter={StaticResource BooleanToVisibility}}"
+                        Margin="8,0">
+                <ui:LabeledBar Label="Cytoscape URL:" LabelWidth="120">
+                    <TextBox Text="{Binding CytoscapeApiUrl.Value}" d:Text="http://localhost:1234" />
+                </ui:LabeledBar>
+                <StackPanel Margin="4,0" >
+                    <TextBlock>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Hyperlink.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="HelpPopup"
+                                                                        Storyboard.TargetProperty="IsOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                        <Run Text="If you cannot find the CyREST API URL, " />
+                        <Hyperlink>
+                            <Run Text="click here" /> 
+                        </Hyperlink>
+                        <Run Text=" for more information." />
+                    </TextBlock>
+                    <TextBlock Text="Please make sure Cytoscape is open before running this feature." Foreground="Red" TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <Popup x:Name="HelpPopup" Placement="Center" StaysOpen="False" IsOpen="False">
+                    <Border Background="White" BorderBrush="Gray" BorderThickness="1" Padding="8">
+                        <TextBlock TextWrapping="Wrap" Margin="8">
+                            <Run FontWeight="Bold" Text="How to Find the CyREST API URL in Cytoscape" />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run Text="To connect this software with Cytoscape, you need to enter the CyREST API URL. Follow these steps to locate the URL:" />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run FontWeight="Bold" Text="1. Open Cytoscape" />
+                            <LineBreak />
+                            <Run Text="Start Cytoscape on your computer." />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run FontWeight="Bold" Text="2. Navigate to the CyREST Help Page" />
+                            <LineBreak />
+                            <Run Text="In the Cytoscape menu, go to " />
+                            <Run FontStyle="Italic" Text="Help > Automation > CyREST API" />
+                            <Run Text=". This will open a page in your default web browser." />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run FontWeight="Bold" Text="3. Check the URL on the Web Page" />
+                            <LineBreak />
+                            <Run Text="On the page that opens, you will see the CyREST API URL displayed at the top (e.g., " />
+                            <Run FontStyle="Italic" Text="http://localhost:1234" />
+                            <Run Text="). This URL is what you need to enter in this software." />
+                        </TextBlock>
+                    </Border>
+                </Popup>
+            </StackPanel>
+        </StackPanel>
 
         <Button x:Name="Button_Run" Content="Run" 
                 Click="Run_Click"

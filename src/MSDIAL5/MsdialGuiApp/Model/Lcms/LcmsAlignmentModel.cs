@@ -8,6 +8,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
@@ -429,9 +430,22 @@ namespace CompMs.App.Msdial.Model.Lcms
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
         }
 
-        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkPresentationType networkPresentationType, string cytoscapeUrl) {
             var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            CytoscapejsModel.SendToCytoscapeJs(network);
+            switch (networkPresentationType) {
+                case NetworkPresentationType.Cytoscape:
+                    try {
+                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
+                    }
+                    catch {
+                        // ignore
+                        System.Diagnostics.Debug.WriteLine("Failed to connect to Cytoscape.");
+                    }
+                    break;
+                case NetworkPresentationType.CytoscapeJs:
+                    CytoscapejsModel.SendToCytoscapeJs(network);
+                    break;
+            }
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
