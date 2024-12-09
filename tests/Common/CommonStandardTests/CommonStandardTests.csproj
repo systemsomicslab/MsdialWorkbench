@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <RootNamespace>CompMs.Common</RootNamespace>
 
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>12</LangVersion>
