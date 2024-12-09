@@ -37,6 +37,7 @@ namespace CompMs.Graphics.UI
     {
         static ExecutableBar() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ExecutableBar), new FrameworkPropertyMetadata(typeof(ExecutableBar)));
+            IsTabStopProperty.OverrideMetadata(typeof(ExecutableBar), new FrameworkPropertyMetadata(false));
         }
 
         public static readonly DependencyProperty LabelProperty =
