@@ -48,7 +48,7 @@
                                 </PriorityBinding>
                             </Button.Command>
                         </Button>
-                        <Button Content="{Binding FinishCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="FinishClose">
+                        <Button Content="{Binding FinishCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="FinishClose" IsDefault="True">
                             <Button.Command>
                                 <PriorityBinding>
                                     <Binding Path="FinishCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
@@ -57,7 +57,7 @@
                                 </PriorityBinding>
                             </Button.Command>
                         </Button>
-                        <Button Content="{Binding CancelCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="CancelClose">
+                        <Button Content="{Binding CancelCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="CancelClose" IsCancel="True">
                             <Button.Command>
                                 <PriorityBinding>
                                     <Binding Path="CancelCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
