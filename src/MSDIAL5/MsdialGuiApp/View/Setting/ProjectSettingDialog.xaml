@@ -172,17 +172,17 @@
                             </ScrollViewer>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
-                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <ContentControl IsTabStop="False" IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                                 <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
                             </ContentControl>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
-                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <ContentControl IsTabStop="False" IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                                 <local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                             </ContentControl>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
-                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <ContentControl IsTabStop="False" IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                                 <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                             </ContentControl>
                         </DataTemplate>

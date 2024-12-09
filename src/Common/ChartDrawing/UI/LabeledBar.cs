@@ -36,6 +36,7 @@ namespace CompMs.Graphics.UI
     {
         static LabeledBar() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LabeledBar), new FrameworkPropertyMetadata(typeof(LabeledBar)));
+            IsTabStopProperty.OverrideMetadata(typeof(LabeledBar), new FrameworkPropertyMetadata(false));
         }
 
         public static readonly DependencyProperty LabelWidthProperty =
@@ -57,5 +58,7 @@ namespace CompMs.Graphics.UI
             get => GetValue(LabelProperty);
             set => SetValue(LabelProperty, value);
         }
+
+
     }
 }
