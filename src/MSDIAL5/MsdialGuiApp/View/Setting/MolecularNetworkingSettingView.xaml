@@ -9,184 +9,117 @@
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingSettingViewModel}}"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="465">
+             d:DesignHeight="600" d:DesignWidth="464">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <ControlTemplate x:Key="InputErrorTemplate">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
-                    <AdornedElementPlaceholder/>
-                </DockPanel>
-            </ControlTemplate>
-
-            <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
-                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
-                <Style.Triggers>
-                    <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
-                        <Setter Property="BorderBrush" Value="Pink" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="ToolTipErrorStyleDataGrid" TargetType="{x:Type DataGrid}">
-                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
-                <Style.Triggers>
-                    <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
-                        <Setter Property="BorderBrush" Value="Pink" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <converter:CBoolNegativeConverter x:Key="CBoolNegConverter" />
-            <converter:BooleanToEnumConverter x:Key="EnumToBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="44*"/>
-            <ColumnDefinition Width="181*"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel Margin="8,0,0,0">
+        <StackPanel.Resources>
+            <Style TargetType="RadioButton">
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,24,0" />
+            </Style>
+            <Style TargetType="ui:LabeledBar">
+                <Setter Property="LabelWidth" Value="192"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Content, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Width="120"
+                                     Height="24"
+                                     Margin="0,0,16,0"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="CheckBox">
+                <Setter Property="Height" Value="24"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Margin" Value="0,4,0,0"/>
+            </Style>
+            <Style TargetType="HeaderedItemsControl">
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="HeaderedItemsControl">
+                            <ControlTemplate.Resources>
+                                <Style TargetType="GroupBox">
+                                    <Setter Property="Height" Value="40"/>
+                                    <Setter Property="Margin" Value="4"/>
+                                    <Setter Property="BorderBrush" Value="LightGray"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GroupBox">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="4">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Label Content="{TemplateBinding Header}" Width="100" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ControlTemplate.Resources>
+                            <GroupBox Header="{TemplateBinding Header}">
+                                <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                            </GroupBox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </StackPanel.Resources>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="65"/>
-            <RowDefinition Height="32"/>
-        </Grid.RowDefinitions>
+        <HeaderedItemsControl Header="Search viewer:">
+            <RadioButton Content="Peak spots" 
+                         IsChecked="{Binding Path=IsAlignSpotViewSelected.Value, Converter={StaticResource NegativeConverter}}" 
+                         IsEnabled="{Binding Path=AvailableFileResult.Value}" />
+            <RadioButton Content="Alignment spots"
+                         IsChecked="{Binding Path=IsAlignSpotViewSelected.Value}" 
+                         IsEnabled="{Binding Path=AvailableAlignmentResult.Value}" />
+        </HeaderedItemsControl>
 
-        <GroupBox Grid.Row="0" Grid.ColumnSpan="2">
-            <Grid>
-                <Label Content="Search viewer: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
-                <RadioButton Content="Peak spots" 
-                             IsChecked="{Binding Path=IsAlignSpotViewSelected.Value, Converter={StaticResource CBoolNegConverter}}" 
-                             IsEnabled="{Binding Path=AvailableFileResult.Value}"
-                             HorizontalAlignment="Left" 
-                             VerticalAlignment="Center" 
-                             VerticalContentAlignment="Center"
-                             Margin="100,0,0,0"
-                             Grid.Row="0"/>
-                <RadioButton Content="Alignment spots"
-                             IsChecked="{Binding Path=IsAlignSpotViewSelected.Value}" 
-                             IsEnabled="{Binding Path=AvailableAlignmentResult.Value}"
-                             HorizontalAlignment="Left" 
-                             VerticalAlignment="Center" 
-                             VerticalContentAlignment="Center" 
-                             Margin="195,0,0,0"
-                             Grid.Row="0"/>
-            </Grid>
-        </GroupBox>
+        <HeaderedItemsControl Header="Method:">
+            <RadioButton Content="Modified dot product"
+                         IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ModDot}" />
+            <RadioButton Content="Bonanza score"
+                         IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Bonanza}" />
+        </HeaderedItemsControl>
 
-        <GroupBox Grid.Row="1" Grid.ColumnSpan="2">
-            <Grid>
-                <Label Content="Method: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
-                <RadioButton Content="Modified dot product" 
-                     Name="RadioButton_ModifiedDot" 
-                     Grid.Row="1"
-                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDot}" 
-                     HorizontalAlignment="Left" 
-                     VerticalAlignment="Center" 
-                     VerticalContentAlignment="Center" Margin="100,0,0,0" />
-                <RadioButton Content="Bonanza score"
-                     Name="RadioButton_Bonanza" 
-                     Grid.Row="1" 
-                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Bonanza}" 
-                     HorizontalAlignment="Left" 
-                     VerticalAlignment="Center" 
-                     VerticalContentAlignment="Center" 
-                     Margin="260,0,0,0" />
+        <ui:LabeledBar Label="Mass tolerance [Da]:" Content="{Binding MassTolerance.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Relative abundance cut off [%]:" Content="{Binding RelativeAbundanceCutoff.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Absolute abundance cut off:" Content="{Binding AbsoluteAbundanceCutoff.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding SpectrumSimilarityCutOff.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Minimum peak match:" Content="{Binding MinimumPeakMatch.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Max edge number per node:" Content="{Binding MaxEdgeNumberPerNode.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Max precursor difference:" Content="{Binding MaxPrecursorDifference.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Retention time tolerance [min]:" Content="{Binding RtTolerance.Value, Mode=TwoWay}" />
 
-            </Grid>
-        </GroupBox>
-
-        <Label Content="Mass tolerance [Da]: " Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_MassTolerance" Grid.Row="2"
-                 Text="{Binding MassTolerance.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-
-        <Label Content="Relative abundance cut off [%]:" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_RelativeAbundanceCutoff" Grid.Row="3" 
-                 Text="{Binding RelativeAbundanceCutoff.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center"
-                 VerticalContentAlignment="Center" Width="120" Height="24"
-                 Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Absolute abundance cut off:" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_AbsoluteAbundanceCutoff" Grid.Row="4" 
-                 Text="{Binding AbsoluteAbundanceCutoff.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center"
-                 VerticalContentAlignment="Center" Width="120" Height="24"
-                 Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Similarity cut off [%]:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_SimilarityCutoff" Grid.Row="5" 
-                 Text="{Binding SpectrumSimilarityCutOff.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Minimum peak match:" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_MinimumPeakMatch" Grid.Row="6" 
-                 Text="{Binding MinimumPeakMatch.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Max edge number per node:" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_MaxEdgeNumberPerNode" Grid.Row="7" 
-                 Text="{Binding MaxEdgeNumberPerNode.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Max precursor difference:" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_MaxPrecursorDifference" Grid.Row="8" 
-                 Text="{Binding MaxPrecursorDifference.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-        <Label Content="Retention time tolerance [min]:" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_RtTolerance" Grid.Row="9" 
-                 Text="{Binding RtTolerance.Value}"
-                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                 VerticalContentAlignment="Center" Width="120" Height="24" Margin="237,0,0,0" Grid.Column="1" />
-
-
-        <CheckBox Name="CheckBox_IonAbundanceCorrelation"
-                  Content="Export ion abundance correlation among samples"
+        <CheckBox Content="Export ion abundance correlation among samples"
                   IsChecked="{Binding Path=IsExportIonCorrelation.Value}"
                   IsEnabled="{Binding Path=AvailableIonEdgeExport.Value, Mode=OneWay}"
-                  Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Top"
-                  Margin="10,5,0,0"
-                  ToolTipService.ShowOnDisabled="True" Grid.ColumnSpan="2">
-            <ToolTipService.ToolTip>
-                <ToolTip Content="This option is available when the imported files are more than 6." />
-            </ToolTipService.ToolTip>
-        </CheckBox>
+                  ToolTipService.ShowOnDisabled="True"
+                  ToolTipService.ToolTip="This option is available when the imported files are more than 6." />
 
-        <Label Content="Similarity cut off [%]:" IsEnabled="{Binding IsExportIonCorrelation.Value}" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Grid.ColumnSpan="2" />
-        <TextBox Name="TextBox_IonCorrelationSimilarityCutoff" Grid.Row="10" 
-                 Text="{Binding IonCorrelationSimilarityCutoff.Value}"
-                 IsEnabled="{Binding IsExportIonCorrelation.Value}"
-                 HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center"
-                 Width="120" Height="25" Margin="0,31,5,0" Grid.Column="1" />
+        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding RtTolerance.Value, Mode=TwoWay}"
+                       IsEnabled="{Binding IsExportIonCorrelation.Value}"/>
 
         <CheckBox Content="Filtering by current parameter"
-                  IsChecked="{Binding Path=UseCurrentFiltering.Value}"
-                  Grid.Row="11" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"
-                  Margin="10,5,0,0"/>
-    </Grid>
+                  IsChecked="{Binding Path=UseCurrentFiltering.Value}"/>
+            
+    </StackPanel>
 </UserControl>
