@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.NodeEdge;
+using CompMs.Common.Parser;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -49,16 +50,24 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         public void ExportNodeTable(string nodeFile) {
-            using (StreamWriter sw = new StreamWriter(nodeFile, false, Encoding.ASCII)) {
-                sw.WriteLine("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tSize\tBorderColor\tBackgroundColor\tMs2");
-                foreach (var nodeObj in Root.nodes) {
-                    var node = nodeObj.data;
-                    sw.Write(node.id + "\t" + node.Name + "\t" + node.Rt + "\t" + node.Mz + "\t" + node.Formula + "\t" + node.Ontology + "\t" +
-                       node.InChiKey + "\t" + node.Smiles + "\t" + node.Size + "\t" + node.bordercolor + "\t" + node.backgroundcolor + "\t");
-
-                    var ms2String = GetMsString(node.MSMS);
-                    sw.WriteLine(ms2String);
-                }
+            using var writer = new CsvWriter(nodeFile) { Delimiter = '\t', };
+            writer.WriteRow(["ID", "MetaboliteName", "Rt", "Mz", "Formula", "Ontology", "InChIKey", "SMILES", "Size", "BorderColor", "BackgroundColor", "Ms2"]);
+            foreach (var nodeObj in Root.nodes) {
+                var node = nodeObj.data;
+                writer.WriteRow([
+                    node.id.ToString(),
+                    node.Name,
+                    node.Rt,
+                    node.Mz,
+                    node.Formula,
+                    node.Ontology,
+                    node.InChiKey,
+                    node.Smiles,
+                    node.Size.ToString(),
+                    node.bordercolor,
+                    node.backgroundcolor,
+                    GetMsString(node.MSMS)
+                ]);
             }
         }
 

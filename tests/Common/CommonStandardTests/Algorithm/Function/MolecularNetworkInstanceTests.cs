@@ -9,25 +9,23 @@ namespace CompMs.Common.Tests.Algorithm.Function;
 [TestClass]
 public class MolecularNetworkInstanceTests
 {
-    private RootObject CreateTestRootObject()
-    {
+    private RootObject CreateTestRootObject() {
         return new RootObject
         {
             nodes = new List<Node>
-            {
-                new Node { data = new NodeData { id = 1, Name = "Node1", Rt = "1.0", Mz = "100.0", Formula = "H2O", Ontology = "Water", InChiKey = "InChIKey1", Smiles = "O", Size = 1, bordercolor = "black", backgroundcolor = "white", MSMS = new List<List<double>> { new List<double> { 100.0, 1.0 } } } },
-                new Node { data = new NodeData { id = 2, Name = "Node2", Rt = "2.0", Mz = "200.0", Formula = "CO2", Ontology = "Carbon Dioxide", InChiKey = "InChIKey2", Smiles = "O=C=O", Size = 2, bordercolor = "black", backgroundcolor = "white", MSMS = new List<List<double>> { new List<double> { 200.0, 2.0 } } } }
-            },
+                {
+                    new Node { data = new NodeData { id = 1, Name = "Node1", Rt = "1.0", Mz = "100.0", Formula = "H2O", Ontology = "Water", InChiKey = "InChIKey1", Smiles = "O", Size = 1, bordercolor = "black", backgroundcolor = "white", MSMS = new List<List<double>> { new List<double> { 100.0, 1.0 } } } },
+                    new Node { data = new NodeData { id = 2, Name = "Node2", Rt = "2.0", Mz = "200.0", Formula = "CO2", Ontology = "Carbon Dioxide", InChiKey = "InChIKey2", Smiles = "O=C=O", Size = 2, bordercolor = "black", backgroundcolor = "white", MSMS = new List<List<double>> { new List<double> { 200.0, 2.0 } } } }
+                },
             edges = new List<Edge>
-            {
-                new Edge { data = new EdgeData { source = 1, target = 2, score = 0.9, linecolor = "red", comment = "Edge1" }, classes = "class1" }
-            }
+                {
+                    new Edge { data = new EdgeData { source = 1, target = 2, score = 0.9, linecolor = "red", comment = "Edge1" }, classes = "class1" }
+                }
         };
     }
 
     [TestMethod]
-    public void PruneEdgeByScore_ShouldPruneEdges()
-    {
+    public void PruneEdgeByScore_ShouldPruneEdges() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
 
@@ -37,8 +35,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void DropIsolatedNodes_ShouldDropIsolatedNodes()
-    {
+    public void DropIsolatedNodes_ShouldDropIsolatedNodes() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
 
@@ -48,8 +45,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void DropInvalidMsmsNodes_ShouldDropInvalidNodes()
-    {
+    public void DropInvalidMsmsNodes_ShouldDropInvalidNodes() {
         var root = CreateTestRootObject();
         root.nodes[0].data.MsmsMin = -1.0;
         var instance = new MolecularNetworkInstance(root);
@@ -60,8 +56,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void ExportNodeTable_ShouldExportNodeTable()
-    {
+    public void ExportNodeTable_ShouldExportNodeTable() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
         var nodeFile = Path.GetTempFileName();
@@ -70,11 +65,15 @@ public class MolecularNetworkInstanceTests
 
         var lines = File.ReadAllLines(nodeFile);
         Assert.AreEqual(3, lines.Length); // Header + 2 nodes
+        Assert.AreEqual(12, lines[0].Split('\t').Length); // Check header columns count
+        Assert.AreEqual(12, lines[1].Split('\t').Length); // Check first row columns count
+        Assert.AreEqual(12, lines[2].Split('\t').Length); // Check second row columns count
+        Assert.IsTrue(lines[1].Contains("Node1"));
+        Assert.IsTrue(lines[2].Contains("Node2"));
     }
 
     [TestMethod]
-    public void ExportEdgeTable_ShouldExportEdgeTable()
-    {
+    public void ExportEdgeTable_ShouldExportEdgeTable() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
         var edgeFile = Path.GetTempFileName();
@@ -86,8 +85,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void ExportCyelement_ShouldExportCyelement()
-    {
+    public void ExportCyelement_ShouldExportCyelement() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
         var cyelementFile = Path.GetTempFileName();
@@ -99,8 +97,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void ExportNodeEdgeFiles_ShouldExportAllFiles()
-    {
+    public void ExportNodeEdgeFiles_ShouldExportAllFiles() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
         var folder = Path.GetTempPath();
@@ -117,8 +114,7 @@ public class MolecularNetworkInstanceTests
     }
 
     [TestMethod]
-    public void SaveCytoscapeJs_ShouldSaveCytoscapeJs()
-    {
+    public void SaveCytoscapeJs_ShouldSaveCytoscapeJs() {
         var root = CreateTestRootObject();
         var instance = new MolecularNetworkInstance(root);
         var cyjsexportpath = Path.GetTempFileName();
