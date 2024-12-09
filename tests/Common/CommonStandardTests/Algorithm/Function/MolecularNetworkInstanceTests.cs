@@ -61,15 +61,20 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var nodeFile = Path.GetTempFileName();
 
-        instance.ExportNodeTable(nodeFile);
+        try {
+            instance.ExportNodeTable(nodeFile);
 
-        var lines = File.ReadAllLines(nodeFile);
-        Assert.AreEqual(3, lines.Length); // Header + 2 nodes
-        Assert.AreEqual(12, lines[0].Split('\t').Length); // Check header columns count
-        Assert.AreEqual(12, lines[1].Split('\t').Length); // Check first row columns count
-        Assert.AreEqual(12, lines[2].Split('\t').Length); // Check second row columns count
-        Assert.IsTrue(lines[1].Contains("Node1"));
-        Assert.IsTrue(lines[2].Contains("Node2"));
+            var lines = File.ReadAllLines(nodeFile);
+            Assert.AreEqual(3, lines.Length); // Header + 2 nodes
+            Assert.AreEqual(12, lines[0].Split('\t').Length); // Check header columns count
+            Assert.AreEqual(12, lines[1].Split('\t').Length); // Check first row columns count
+            Assert.AreEqual(12, lines[2].Split('\t').Length); // Check second row columns count
+            Assert.IsTrue(lines[1].Contains("Node1"));
+            Assert.IsTrue(lines[2].Contains("Node2"));
+        }
+        finally {
+            File.Delete(nodeFile);
+        }
     }
 
     [TestMethod]
@@ -78,12 +83,17 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var edgeFile = Path.GetTempFileName();
 
-        instance.ExportEdgeTable(edgeFile);
+        try {
+            instance.ExportEdgeTable(edgeFile);
 
-        var lines = File.ReadAllLines(edgeFile);
-        Assert.AreEqual(2, lines.Length); // Header + 1 edge
-        Assert.AreEqual(6, lines[0].Split('\t').Length); // Check header columns count
-        Assert.AreEqual(6, lines[1].Split('\t').Length); // Check first row columns count
+            var lines = File.ReadAllLines(edgeFile);
+            Assert.AreEqual(2, lines.Length); // Header + 1 edge
+            Assert.AreEqual(6, lines[0].Split('\t').Length); // Check header columns count
+            Assert.AreEqual(6, lines[1].Split('\t').Length); // Check first row columns count
+        }
+        finally {
+            File.Delete(edgeFile);
+        }
     }
 
     [TestMethod]
@@ -92,10 +102,15 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var cyelementFile = Path.GetTempFileName();
 
-        instance.ExportCyelement(cyelementFile);
+        try {
+            instance.ExportCyelement(cyelementFile);
 
-        var content = File.ReadAllText(cyelementFile);
-        Assert.IsTrue(content.Contains("elements"));
+            var content = File.ReadAllText(cyelementFile);
+            Assert.IsTrue(content.Contains("elements"));
+        }
+        finally {
+            File.Delete(cyelementFile);
+        }
     }
 
     [TestMethod]
@@ -104,15 +119,18 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var folder = Path.GetTempPath();
 
-        instance.ExportNodeEdgeFiles(folder);
+        var (nodeFilePath, edgeFilePath, cyelementFilePath) = instance.ExportNodeEdgeFiles(folder);
 
-        var nodeFiles = Directory.GetFiles(folder, "node-*.txt");
-        var edgeFiles = Directory.GetFiles(folder, "edge-*.txt");
-        var cyelementFiles = Directory.GetFiles(folder, "cyelements-*.js");
-
-        Assert.IsTrue(nodeFiles.Length > 0);
-        Assert.IsTrue(edgeFiles.Length > 0);
-        Assert.IsTrue(cyelementFiles.Length > 0);
+        try {
+            Assert.IsTrue(File.Exists(nodeFilePath));
+            Assert.IsTrue(File.Exists(edgeFilePath));
+            Assert.IsTrue(File.Exists(cyelementFilePath));
+        }
+        finally {
+            File.Delete(nodeFilePath);
+            File.Delete(edgeFilePath);
+            File.Delete(cyelementFilePath);
+        }
     }
 
     [TestMethod]
@@ -121,9 +139,14 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var cyjsexportpath = Path.GetTempFileName();
 
-        instance.SaveCytoscapeJs(cyjsexportpath);
+        try {
+            instance.SaveCytoscapeJs(cyjsexportpath);
 
-        var content = File.ReadAllText(cyjsexportpath);
-        Assert.IsTrue(content.Contains("var dataElements"));
+            var content = File.ReadAllText(cyjsexportpath);
+            Assert.IsTrue(content.Contains("var dataElements"));
+        }
+        finally {
+            File.Delete(cyjsexportpath);
+        }
     }
 }
