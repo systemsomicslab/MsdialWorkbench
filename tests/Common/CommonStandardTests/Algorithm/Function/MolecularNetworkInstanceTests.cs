@@ -62,7 +62,7 @@ public class MolecularNetworkInstanceTests
         var nodeFile = Path.GetTempFileName();
 
         try {
-            instance.ExportNodeTable(nodeFile);
+            instance.ExportNodeTable(nodeFile, false);
 
             var lines = File.ReadAllLines(nodeFile);
             Assert.AreEqual(3, lines.Length); // Header + 2 nodes
@@ -84,7 +84,7 @@ public class MolecularNetworkInstanceTests
         var edgeFile = Path.GetTempFileName();
 
         try {
-            instance.ExportEdgeTable(edgeFile);
+            instance.ExportEdgeTable(edgeFile, false);
 
             var lines = File.ReadAllLines(edgeFile);
             Assert.AreEqual(2, lines.Length); // Header + 1 edge
@@ -119,7 +119,7 @@ public class MolecularNetworkInstanceTests
         var instance = new MolecularNetworkInstance(root);
         var folder = Path.GetTempPath();
 
-        var (nodeFilePath, edgeFilePath, cyelementFilePath) = instance.ExportNodeEdgeFiles(folder);
+        var (nodeFilePath, edgeFilePath, cyelementFilePath) = instance.ExportNodeEdgeFiles(folder, false);
 
         try {
             Assert.IsTrue(File.Exists(nodeFilePath));

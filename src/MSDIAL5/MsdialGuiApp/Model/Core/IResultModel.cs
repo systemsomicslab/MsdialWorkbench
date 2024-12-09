@@ -6,7 +6,7 @@ namespace CompMs.App.Msdial.Model.Core
     {
         void SearchFragment();
         void InvokeMsfinder();
-        void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering);
+        void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit);
         void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering);
         void InvokeMoleculerNetworkingForTargetSpot();
     }

@@ -139,6 +139,12 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool _useCurrentFiltering;
 
+        public bool CutByExcelLimit {
+            get => _cutByExcelLimit;
+            set => SetProperty(ref _cutByExcelLimit, value);
+        }
+        private bool _cutByExcelLimit = true;
+
         public ReadOnlyReactivePropertySlim<bool> AvailableFileResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableIonEdge { get; }
@@ -163,10 +169,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering);
+                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering, CutByExcelLimit);
                 }
                 else {
-                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering);
+                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering, CutByExcelLimit);
                 }
             });
         }

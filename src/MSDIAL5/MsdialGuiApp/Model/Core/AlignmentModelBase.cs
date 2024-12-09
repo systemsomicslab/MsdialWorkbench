@@ -87,9 +87,9 @@ namespace CompMs.App.Msdial.Model.Core
             }
         }
 
-        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
             var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
         }
 
         public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {

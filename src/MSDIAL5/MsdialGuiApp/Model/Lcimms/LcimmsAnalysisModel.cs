@@ -417,7 +417,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
 
-        void IResultModel.ExportMoleculerNetworkingData(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+        void IResultModel.ExportMoleculerNetworkingData(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
             throw new NotImplementedException();
         }
 

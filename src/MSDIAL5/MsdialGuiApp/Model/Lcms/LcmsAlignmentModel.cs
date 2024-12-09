@@ -424,9 +424,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
-        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
             var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {

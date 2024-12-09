@@ -319,7 +319,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
             throw new NotImplementedException();
         }
 

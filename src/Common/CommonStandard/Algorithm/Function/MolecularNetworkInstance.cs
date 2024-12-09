@@ -49,8 +49,8 @@ namespace CompMs.Common.Algorithm.Function
             return new MolecularNetworkInstance(new RootObject { edges = edges, nodes = nodes, });
         }
 
-        public void ExportNodeTable(string nodeFile) {
-            using var writer = new CsvWriter(nodeFile) { Delimiter = '\t', };
+        public void ExportNodeTable(string nodeFile, bool cutByExcelLimit) {
+            using var writer = new CsvWriter(nodeFile) { Delimiter = '\t', CutByExcelLimit = cutByExcelLimit, };
             writer.WriteRow(["ID", "MetaboliteName", "Rt", "Mz", "Formula", "Ontology", "InChIKey", "SMILES", "Size", "BorderColor", "BackgroundColor", "Ms2"]);
             foreach (var nodeObj in Root.nodes) {
                 var node = nodeObj.data;
@@ -71,8 +71,8 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        public void ExportEdgeTable(string edgeFile) {
-            using var writer = new CsvWriter(edgeFile) { Delimiter = '\t', };
+        public void ExportEdgeTable(string edgeFile, bool cutByExcelLimit) {
+            using var writer = new CsvWriter(edgeFile) { Delimiter = '\t', CutByExcelLimit = cutByExcelLimit, };
             writer.WriteRow(["SourceID", "TargetID", "Score", "Type", "Color", "Comment"]);
             foreach (var edgeObj in Root.edges) {
                 var edge = edgeObj.data;
@@ -95,14 +95,14 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        public (string, string, string) ExportNodeEdgeFiles(string folder) {
+        public (string, string, string) ExportNodeEdgeFiles(string folder, bool cutByExcelLimit) {
             var dt = DateTime.Now;
             var nodeFilePath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
             var edgeFilePath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
             var cyelementFilePath = Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js");
 
-            ExportNodeTable(nodeFilePath);
-            ExportEdgeTable(edgeFilePath);
+            ExportNodeTable(nodeFilePath, cutByExcelLimit);
+            ExportEdgeTable(edgeFilePath, cutByExcelLimit);
             ExportCyelement(cyelementFilePath);
 
             return (nodeFilePath, edgeFilePath, cyelementFilePath);

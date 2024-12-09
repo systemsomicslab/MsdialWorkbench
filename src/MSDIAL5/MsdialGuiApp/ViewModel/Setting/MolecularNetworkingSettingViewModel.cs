@@ -92,6 +92,8 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
 
         UseCurrentFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.UseCurrentFiltering).AddTo(Disposables);
 
+        CutByExcelLimit = model.ToReactivePropertySlimAsSynchronized(m => m.CutByExcelLimit).AddTo(Disposables);
+
         ObserveHasErrors = new[]
         {
             RtTolerance.ObserveHasErrors,
@@ -167,6 +169,8 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
     public ReactivePropertySlim<MsmsSimilarityCalc> MsmsSimilarityCalc { get; }
 
     public ReactivePropertySlim<bool> UseCurrentFiltering { get; }
+
+    public ReactivePropertySlim<bool> CutByExcelLimit { get; }
 
     public ReadOnlyReactivePropertySlim<bool> AvailableFileResult => _model.AvailableFileResult;
     public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult => _model.AvailableAlignmentResult;
