@@ -10,37 +10,63 @@ namespace CompMs.MsdialCore.Algorithm
 {
     public sealed class CytoscapeMolecularNetworkClient
     {
-        private readonly HttpClient _client;
-        private readonly MolecularNetworkInstance _instance;
-        private int _networkSUID;
+        private static HttpClient _client;
 
-        public CytoscapeMolecularNetworkClient(MolecularNetworkInstance instance, string url)
+        private readonly MolecularNetworkInstance _instance;
+        private readonly int _networkSUID;
+        private readonly Uri _baseUri; 
+
+        public CytoscapeMolecularNetworkClient(MolecularNetworkInstance instance, Uri baseUri, int networkSUID)
         {
             _instance = instance;
-            _client = new HttpClient();
+            _networkSUID = networkSUID;
+            _baseUri = baseUri;
+        }
+
+        public static async Task<CytoscapeMolecularNetworkClient> CreateAsync(MolecularNetworkInstance instance, string url) {
+            _client ??= new HttpClient();
+
             var baseUri = new Uri(url);
-            _ = Task.Run(async () => {
-                HttpResponseMessage response;
-                string content;
+            var suid = await Task.Run(async () => {
                 var json = ToCyjs(instance);
-                using (var jsonContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json")) {
-                    response = await _client.PostAsync(new Uri(baseUri, "v1/networks"), jsonContent).ConfigureAwait(false);
-                    content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    System.Diagnostics.Debug.WriteLine($"networks: {content}");
-                }
-
+                using var jsonContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync(new Uri(baseUri, "v1/networks"), jsonContent).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine($"networks: {content}");
                 var r = JsonConvert.DeserializeObject<Response>(content);
-                _networkSUID = r.networkSUID;
-                response = await _client.GetAsync(new Uri(baseUri, $"v1/apply/layouts/force-directed/{_networkSUID}")).ConfigureAwait(false);
-                content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                System.Diagnostics.Debug.WriteLine($"layouts: {content}");
+                return r.networkSUID;
+            }).ConfigureAwait(false);
 
-                using (var jsonContent = new StringContent("[{ \"mappingType\": \"passthrough\", \"mappingColumn\": \"backgroundcolor\", \"mappingColumnType\": \"String\", \"visualProperty\": \"NODE_FILL_COLOR\" }]", System.Text.Encoding.UTF8, "application/json")) {
-                    response = await _client.PostAsync(new Uri(baseUri, "v1/styles/default/mappings"), jsonContent).ConfigureAwait(false);
-                    content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    System.Diagnostics.Debug.WriteLine($"visual property: {content}");
-                }
+            var layout = Task.Run(async () => {
+                var response = await _client.GetAsync(new Uri(baseUri, $"v1/apply/layouts/force-directed/{suid}")).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine($"layouts: {content}");
             });
+
+            var mapping = Task.Run(async () => {
+                var mappings = new CytoscapeVisualPropertyMappings();
+                mappings.AddMapping(new CytoscapePassThroughMapping("NODE_FILL_COLOR", "backgroundcolor", "String"));
+                mappings.AddMapping(new CytoscapePassThroughMapping("EDGE_STROKE_UNSELECTED_PAINT", "linecolor", "String"));
+                mappings.AddMapping(new CytoscapePassThroughMapping("NODE_HEIGHT", "Size", "String"));
+                mappings.AddMapping(new CytoscapePassThroughMapping("NODE_WIDTH", "Size", "String"));
+
+                using var jsonContent = new StringContent(mappings.AsJson(), System.Text.Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync(new Uri(baseUri, "v1/styles/default/mappings"), jsonContent).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine($"visual property: {content}");
+            });
+
+            var value = Task.Run(async () => {
+                var body = "[{\"visualProperty\":\"NODE_SHAPE\", \"value\": \"Ellipse\"}]";
+                using var jsonContent = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+                var response = await _client.PutAsync(new Uri(baseUri, "v1/styles/default/defaults"), jsonContent).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine($"visual property: {content}");
+            });
+
+            await Task.WhenAll(layout, mapping, value).ConfigureAwait(false);
+
+            return new CytoscapeMolecularNetworkClient(instance, baseUri, suid);
         }
 
         private static string ToCyjs(MolecularNetworkInstance instance) {
