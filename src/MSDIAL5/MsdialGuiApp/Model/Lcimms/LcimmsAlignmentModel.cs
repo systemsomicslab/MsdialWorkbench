@@ -7,8 +7,11 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -17,10 +20,12 @@ using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -31,8 +36,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -47,12 +52,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift)!;
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly  MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
+        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
 
         public LcimmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -78,6 +86,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
+            _projectBaseParameter = projectBaseParameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
@@ -258,6 +267,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
+            _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
+            _filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
+
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
@@ -398,8 +410,33 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _dataBaseMapper,
                 _parameter);
         }
+
+        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
+        }
+
+        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType viewType, string cyresturl) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
+            switch (viewType) {
+                case NetworkVisualizationType.Cytoscape:
+                    try {
+                        CytoscapeMolecularNetworkClient.CreateAsync(network, cyresturl).Wait();
+                    }
+                    catch {
+                        // ignore
+                        System.Diagnostics.Debug.WriteLine("Failed to connect to Cytoscape.");
+                    }
+                    break;
+                case NetworkVisualizationType.CytoscapeJs:
+                    CytoscapejsModel.SendToCytoscapeJs(network);
+                    break;
+            }
+        }
+
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            throw new NotImplementedException();
+            var network = GetMolecularNetworkInstanceForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
@@ -407,5 +444,91 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
+
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            var param = _projectBaseParameter;
+            var loaderProperty = _barItemsLoaderDataProperty.Value;
+            var loader = loaderProperty.Loader;
+            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
+
+            using (publisher.Start()) {
+                IReadOnlyList<AlignmentSpotPropertyModel> spots = Ms1Spots;
+                if (useCurrentFiltering) {
+                    spots = _filter.Filter(Ms1Spots).ToList();
+                }
+                var flatten = spots.Select(n => n.innerModel).SelectMany(s => s.IsMultiLayeredData() ? s.AlignmentDriftSpotFeatures : [s]).ToList();
+                var flattenmodel = flatten.Select(n => new AlignmentSpotPropertyModel(n)).ToList();
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+                var flattenpeaks = flatten.Select(n => peaks[n.MasterAlignmentID]).ToList();
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMolecularNetworkInstance(flatten, flattenpeaks, query, notify);
+                var rootObj = network.Root;
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(flattenmodel[i], loader, param.ClassProperties.ClassToColor);
+                }
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(flatten, flatten.ToDictionary(s => s.MasterAlignmentID, s => s.PeakCharacter));
+                rootObj.edges.AddRange(ionfeature_edges);
+
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(flatten, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    rootObj.edges.AddRange(ion_edges);
+                }
+
+                return network;
+            }
+        }
+
+        private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (parameter.MaxEdgeNumberPerNode == 0) {
+                parameter.MinimumPeakMatch = 3;
+                parameter.MaxEdgeNumberPerNode = 6;
+                parameter.MaxPrecursorDifference = 400;
+            }
+            if (Target.Value is null) {
+                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
+            }
+
+            var param = _projectBaseParameter;
+            var loaderProperty = _barItemsLoaderDataProperty.Value;
+            var loader = loaderProperty.Loader;
+            var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
+
+            using (publisher.Start()) {
+                var spots = Ms1Spots;
+                var flatten = spots.Select(n => n.innerModel).SelectMany(s => s.IsMultiLayeredData() ? s.AlignmentDriftSpotFeatures : [s]).ToList();
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+                var flattenpeaks = flatten.Select(n => peaks[n.MasterAlignmentID]).ToList();
+                var id2index = flatten.Select((spot, index) => new { spot.MasterAlignmentID, Index = index }).ToDictionary(item => item.MasterAlignmentID, item => item.Index);
+
+                var targetSpot = Target.Value;
+                var targetPeak = peaks[targetSpot.MasterAlignmentID];
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Preparing MN results");
+                }
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot.innerModel, targetPeak, flatten, flattenpeaks, query, notify);
+                var rootObj = network.Root;
+
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[id2index[node.data.id]], loader, param.ClassProperties.ClassToColor);
+                }
+
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
+                }
+
+                return network;
+            }
+        }
     }
 }

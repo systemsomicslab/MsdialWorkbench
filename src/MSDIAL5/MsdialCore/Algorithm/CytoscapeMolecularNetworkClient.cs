@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Algorithm
                 using var jsonContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                 var response = await _client.PostAsync(new Uri(baseUri, "v1/networks"), jsonContent).ConfigureAwait(false);
                 var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                System.Diagnostics.Debug.WriteLine($"networks: {content}");
+                    System.Diagnostics.Debug.WriteLine($"networks: {content}");
                 var r = JsonConvert.DeserializeObject<Response>(content);
                 return r.networkSUID;
             }).ConfigureAwait(false);

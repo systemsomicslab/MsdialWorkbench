@@ -1,10 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -19,7 +17,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -28,6 +25,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private readonly LcimmsMethodModel _model;
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
+        private readonly MolecularNetworkingSettingViewModel _molecularNetworkingSettingViewModel;
+        private readonly MolecularNetworkingExportSettingViewModel _molecularNetworkingExportSettingViewModel;
+        private readonly MolecularNetworkingSendingToCytoscapeJsSettingViewModel _molecularNetworkingSendingToCytoscapeJsSettingViewModel;
+
 
         private LcimmsMethodViewModel(
             LcimmsMethodModel model,
@@ -44,6 +45,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _model = model;
             _broker = broker;
             _focusControlManager = focusControlManager.AddTo(Disposables);
+            _molecularNetworkingSettingViewModel = new MolecularNetworkingSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_molecularNetworkingSettingViewModel, _model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_molecularNetworkingSettingViewModel, _model.MolecularNetworkingSettingModel).AddTo(Disposables);
+
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
             var batchMsfinder = model.InternalMsfinderSettingModel;
@@ -177,5 +182,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
 
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
+
+        public DelegateCommand ShowMolecularNetworkingExportSettingCommand => _molecularNetworkingExportSettingCommand ??= new DelegateCommand(MolecularNetworkingExportSettingMethod);
+        private DelegateCommand? _molecularNetworkingExportSettingCommand;
+
+        private void MolecularNetworkingExportSettingMethod() {
+            _broker.Publish(_molecularNetworkingExportSettingViewModel);
+        }
+
+        public DelegateCommand ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ??= new DelegateCommand(MolecularNetworkingVisualizationSettingMethod);
+        private DelegateCommand? _molecularNetworkingVisualizationSettingCommand;
+
+        private void MolecularNetworkingVisualizationSettingMethod() {
+            _broker.Publish(_molecularNetworkingSendingToCytoscapeJsSettingViewModel);
+        }
+
     }
 }
