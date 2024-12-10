@@ -52,6 +52,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
+        private readonly ObservableCollection<ChromatogramPeakFeatureModel> _driftPeaks;
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
         private readonly DataBaseMapper _dataBaseMapper;
@@ -105,6 +106,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
             var driftPeaks = new ObservableCollection<ChromatogramPeakFeatureModel>(peakTree.Query(0, orderedPeaks.Length));
+            _driftPeaks = driftPeaks;
             var peakRanges = new Dictionary<ChromatogramPeakFeatureModel, (int, int)>();
             {
                 var j = 0;
@@ -486,7 +488,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
-                var flatten = spots.Select(n => n.InnerModel).SelectMany(s => s.IsMultiLayeredData() ? s.DriftChromFeatures : [s]).ToList();
+                var flatten = _driftPeaks;
                 var peaks = AnalysisFileModel.MSDecLoader.LoadMSDecResults();
 
                 var targetPeak = peaks[targetSpot.MasterPeakID];
@@ -499,7 +501,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot.InnerModel, targetPeak, flatten, flattenpeaks, query, notify);
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, flatten, flattenpeaks, query, notify);
                 var rootObj = network.Root;
 
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
