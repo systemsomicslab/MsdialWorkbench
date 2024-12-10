@@ -33,7 +33,7 @@
                 <TextBlock Text="View type:" Margin="4,0"/>
                 <RadioButton Content="CytoscapeJS"
                              IsChecked="{Binding ViewType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static model:NetworkVisualizationType.CytoscapeJs}}"
-                      d:IsChecked="True"
+                             d:IsChecked="True"
                              Margin="4,0"/>
                 <RadioButton x:Name="UseCytoscape" Content="Cytoscape"
                              IsChecked="{Binding ViewType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static model:NetworkVisualizationType.Cytoscape}}"
@@ -43,7 +43,7 @@
 
             <StackPanel Visibility="{Binding IsChecked, ElementName=UseCytoscape, Converter={StaticResource BooleanToVisibility}}"
                         Margin="8,0">
-                <ui:LabeledBar Label="Cytoscape URL:" LabelWidth="120">
+                <ui:LabeledBar Label="CyREST API URL:" LabelWidth="120">
                     <TextBox Text="{Binding CytoscapeApiUrl.Value}" d:Text="http://localhost:1234" />
                 </ui:LabeledBar>
                 <StackPanel Margin="4,0" >
@@ -75,7 +75,9 @@
                             <Run FontWeight="Bold" Text="How to Find the CyREST API URL in Cytoscape" />
                             <LineBreak />
                             <LineBreak />
-                            <Run Text="To connect this software with Cytoscape, you need to enter the CyREST API URL. Follow these steps to locate the URL:" />
+                            <Run Text="To use this software with Cytoscape, you need to provide the CyREST API URL." />
+                            <LineBreak />
+                            <Run Text="Follow these steps to locate the URL:" />
                             <LineBreak />
                             <LineBreak />
                             <Run FontWeight="Bold" Text="1. Open Cytoscape" />
@@ -86,15 +88,20 @@
                             <Run FontWeight="Bold" Text="2. Navigate to the CyREST Help Page" />
                             <LineBreak />
                             <Run Text="In the Cytoscape menu, go to " />
-                            <Run FontStyle="Italic" Text="Help > Automation > CyREST API" />
-                            <Run Text=". This will open a page in your default web browser." />
+                            <Run FontStyle="Italic" Text="Help > Automation > CyREST API." />
+                            <LineBreak />
+                            <Run Text="This action will open the Swagger UI in a new browser-like window within Cytoscape." />
                             <LineBreak />
                             <LineBreak />
-                            <Run FontWeight="Bold" Text="3. Check the URL on the Web Page" />
+                            <Run FontWeight="Bold" Text="3. Locate the CyREST API URL" />
                             <LineBreak />
-                            <Run Text="On the page that opens, you will see the CyREST API URL displayed at the top (e.g., " />
-                            <Run FontStyle="Italic" Text="http://localhost:1234" />
-                            <Run Text="). This URL is what you need to enter in this software." />
+                            <Run Text="At the top of the Swagger UI, you will see a URL like " />
+                            <Run FontStyle="Italic" Text="http://localhost:1234/v1/swagger.json." />
+                            <LineBreak />
+                            <Run Text="The CyREST API URL is the base part of this URL, which is " />
+                            <Run FontStyle="Italic" Text="http://localhost:1234." />
+                            <LineBreak />
+                            <Run Text="This is the URL you need to use in this software." />
                         </TextBlock>
                     </Border>
                 </Popup>
