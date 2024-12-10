@@ -233,7 +233,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void MolecularNetworkingVisualizationSettingMethod(NetworkVisualizationType? type) {
             if (type is not null) {
-                _model.MolecularNetworkingSettingModel.NetworkPresentationType = type.Value;
+                _molecularNetworkingSendingToCytoscapeJsSettingViewModel.ViewType.Value = type.Value;
             }
             _broker.Publish(_molecularNetworkingSendingToCytoscapeJsSettingViewModel);
         }

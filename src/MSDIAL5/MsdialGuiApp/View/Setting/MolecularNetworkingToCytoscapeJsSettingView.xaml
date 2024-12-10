@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Setting"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
@@ -28,10 +29,17 @@
         <StackPanel Grid.Row="0">
             <local:MolecularNetworkingSettingView DataContext="{Binding Path=SettingViewModel}" />
 
-            <CheckBox x:Name="UseCytoscape" Content="Use Cytoscape"
-                      IsChecked="{Binding UseCytoscape.Value}"
+            <StackPanel Orientation="Horizontal" Margin="4">
+                <TextBlock Text="View type:" Margin="4,0"/>
+                <RadioButton Content="CytoscapeJS"
+                             IsChecked="{Binding ViewType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static model:NetworkVisualizationType.CytoscapeJs}}"
                       d:IsChecked="True"
-                      Margin="8,0"/>
+                             Margin="4,0"/>
+                <RadioButton x:Name="UseCytoscape" Content="Cytoscape"
+                             IsChecked="{Binding ViewType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter={x:Static model:NetworkVisualizationType.Cytoscape}}"
+                             d:IsChecked="True"
+                             Margin="4,0"/>
+            </StackPanel>
 
             <StackPanel Visibility="{Binding IsChecked, ElementName=UseCytoscape, Converter={StaticResource BooleanToVisibility}}"
                         Margin="8,0">
