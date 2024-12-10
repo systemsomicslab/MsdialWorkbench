@@ -45,7 +45,7 @@ public sealed class CsvWriter : IDisposable
     /// </summary>
     /// <param name="values">The string values to write.</param>
     /// <exception cref="ObjectDisposedException">Thrown if the writer has been disposed.</exception>
-    public void WriteRow(params string[] values) {
+    public void WriteRow(params string?[] values) {
         EnsureWriterIsNotDisposed();
 
         for (int i = 0; i < values.Length; i++) {
@@ -62,7 +62,7 @@ public sealed class CsvWriter : IDisposable
     /// </summary>
     /// <param name="values">The object values to write.</param>
     /// <exception cref="ObjectDisposedException">Thrown if the writer has been disposed.</exception>
-    public void WriteRow(params object[] values) {
+    public void WriteRow(params object?[] values) {
         EnsureWriterIsNotDisposed();
 
         for (int i = 0; i < values.Length; i++) {
@@ -74,8 +74,8 @@ public sealed class CsvWriter : IDisposable
         _writer.WriteLine();
     }
 
-    private void WriteValue(string value) {
-        if (CutByExcelLimit && value.Length > ExcelCellCharacterLimit) {
+    private void WriteValue(string? value) {
+        if (CutByExcelLimit && value is { Length: > ExcelCellCharacterLimit }) {
 #if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
             _writer.Write(value.AsSpan(0, ExcelCellCharacterLimit));
 #else
