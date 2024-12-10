@@ -33,7 +33,7 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <TextBox Text="{Binding Content, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            <TextBox Text="{Binding Value, Mode=TwoWay}"
                                      HorizontalAlignment="Right"
                                      VerticalAlignment="Center"
                                      VerticalContentAlignment="Center"
@@ -100,14 +100,14 @@
                          IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Bonanza}" />
         </HeaderedItemsControl>
 
-        <ui:LabeledBar Label="Mass tolerance [Da]:" Content="{Binding MassTolerance.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Relative abundance cut off [%]:" Content="{Binding RelativeAbundanceCutoff.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Absolute abundance cut off:" Content="{Binding AbsoluteAbundanceCutoff.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding SpectrumSimilarityCutOff.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Minimum peak match:" Content="{Binding MinimumPeakMatch.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Max edge number per node:" Content="{Binding MaxEdgeNumberPerNode.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Max precursor difference:" Content="{Binding MaxPrecursorDifference.Value, Mode=TwoWay}" />
-        <ui:LabeledBar Label="Retention time tolerance [min]:" Content="{Binding RtTolerance.Value, Mode=TwoWay}" />
+        <ui:LabeledBar Label="Mass tolerance [Da]:" Content="{Binding MassTolerance}" />
+        <ui:LabeledBar Label="Relative abundance cut off [%]:" Content="{Binding RelativeAbundanceCutoff}" />
+        <ui:LabeledBar Label="Absolute abundance cut off:" Content="{Binding AbsoluteAbundanceCutoff}" />
+        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding SpectrumSimilarityCutOff}" />
+        <ui:LabeledBar Label="Minimum peak match:" Content="{Binding MinimumPeakMatch}" />
+        <ui:LabeledBar Label="Max edge number per node:" Content="{Binding MaxEdgeNumberPerNode}" />
+        <ui:LabeledBar Label="Max precursor difference:" Content="{Binding MaxPrecursorDifference}" />
+        <ui:LabeledBar Label="Retention time tolerance [min]:" Content="{Binding RtTolerance}" />
 
         <CheckBox Content="Export ion abundance correlation among samples"
                   IsChecked="{Binding Path=IsExportIonCorrelation.Value}"
@@ -115,7 +115,7 @@
                   ToolTipService.ShowOnDisabled="True"
                   ToolTipService.ToolTip="This option is available when the imported files are more than 6." />
 
-        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding RtTolerance.Value, Mode=TwoWay}"
+        <ui:LabeledBar Label="Similarity cut off [%]:" Content="{Binding RtTolerance}"
                        IsEnabled="{Binding IsExportIonCorrelation.Value}"/>
 
         <CheckBox Content="Filtering by current parameter"
