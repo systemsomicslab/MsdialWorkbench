@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    public enum NetworkPresentationType {
+    public enum NetworkVisualizationType {
         CytoscapeJs,
         Cytoscape,
     }
@@ -150,11 +150,11 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool _cutByExcelLimit = true;
 
-        public NetworkPresentationType NetworkPresentationType {
+        public NetworkVisualizationType NetworkPresentationType {
             get => _networkPresentationType;
             set => SetProperty(ref _networkPresentationType, value);
         }
-        private NetworkPresentationType _networkPresentationType = NetworkPresentationType.CytoscapeJs;
+        private NetworkVisualizationType _networkPresentationType = NetworkVisualizationType.CytoscapeJs;
 
         public string CytoscapeUrl {
             get => _cytoscapeUrl;

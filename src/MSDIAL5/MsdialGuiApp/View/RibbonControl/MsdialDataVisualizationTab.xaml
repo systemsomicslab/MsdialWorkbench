@@ -48,11 +48,11 @@
             <RibbonGallery>
                 <RibbonMenuItem Header="Run molecular networking (CytoscapeJS)"
                                 Command="{Binding ShowMolecularNetworkingVisualizationSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                                CommandParameter="{x:Static setting:NetworkPresentationType.CytoscapeJs}"
+                                CommandParameter="{x:Static setting:NetworkVisualizationType.CytoscapeJs}"
                                 KeyTip="J" />
                 <RibbonMenuItem Header="Run molecular networking (Cytoscape)"
                                 Command="{Binding ShowMolecularNetworkingVisualizationSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                                CommandParameter="{x:Static setting:NetworkPresentationType.Cytoscape}"
+                                CommandParameter="{x:Static setting:NetworkVisualizationType.Cytoscape}"
                                 KeyTip="C" />
                 <RibbonMenuItem Header="Export molecular networking"
                                 Command="{Binding ShowMolecularNetworkingExportSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"

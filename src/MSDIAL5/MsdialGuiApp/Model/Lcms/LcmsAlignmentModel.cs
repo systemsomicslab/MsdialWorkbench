@@ -430,10 +430,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
         }
 
-        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkPresentationType networkPresentationType, string cytoscapeUrl) {
+        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
             var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
             switch (networkPresentationType) {
-                case NetworkPresentationType.Cytoscape:
+                case NetworkVisualizationType.Cytoscape:
                     try {
                         CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
                     }
@@ -442,7 +442,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         System.Diagnostics.Debug.WriteLine("Failed to connect to Cytoscape.");
                     }
                     break;
-                case NetworkPresentationType.CytoscapeJs:
+                case NetworkVisualizationType.CytoscapeJs:
                     CytoscapejsModel.SendToCytoscapeJs(network);
                     break;
             }

@@ -228,10 +228,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _broker.Publish(_molecularNetworkingExportSettingViewModel);
         }
 
-        public DelegateCommand<NetworkPresentationType?> ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ??= new DelegateCommand<NetworkPresentationType?>(MolecularNetworkingVisualizationSettingMethod);
-        private DelegateCommand<NetworkPresentationType?>? _molecularNetworkingVisualizationSettingCommand;
+        public DelegateCommand<NetworkVisualizationType?> ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ??= new DelegateCommand<NetworkVisualizationType?>(MolecularNetworkingVisualizationSettingMethod);
+        private DelegateCommand<NetworkVisualizationType?>? _molecularNetworkingVisualizationSettingCommand;
 
-        private void MolecularNetworkingVisualizationSettingMethod(NetworkPresentationType? type) {
+        private void MolecularNetworkingVisualizationSettingMethod(NetworkVisualizationType? type) {
             if (type is not null) {
                 _model.MolecularNetworkingSettingModel.NetworkPresentationType = type.Value;
             }

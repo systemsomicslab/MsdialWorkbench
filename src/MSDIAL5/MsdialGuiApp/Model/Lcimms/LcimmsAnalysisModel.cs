@@ -422,7 +422,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             throw new NotImplementedException();
         }
 
-        void IResultModel.InvokeMoleculerNetworking(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkPresentationType networkPresentationType, string cytoscapeUrl) {
+        void IResultModel.InvokeMoleculerNetworking(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
             throw new NotImplementedException();
         }
 

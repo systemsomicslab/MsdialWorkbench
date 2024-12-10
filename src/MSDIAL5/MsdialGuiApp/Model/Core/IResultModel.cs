@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model.Core
         void SearchFragment();
         void InvokeMsfinder();
         void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit);
-        void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkPresentationType networkPresentationType, string cytoscapeUrl);
+        void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl);
         void InvokeMoleculerNetworkingForTargetSpot();
     }
 }
