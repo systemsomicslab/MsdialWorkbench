@@ -79,4 +79,24 @@ public class CsvWriterTests
             memoryStream.WriteByte(0);
         });
     }
+
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void WriteRow_NullValues_WritesCorrectOutput(bool cutByExcelLimit) {
+        using var memoryStream = new MemoryStream();
+        using (var writer = new CsvWriter(memoryStream, leaveOpen: true)
+        {
+            CutByExcelLimit = cutByExcelLimit
+        }) {
+            writer.WriteRow("A", null, "C");
+            writer.WriteRow(null, "E", null);
+        }
+
+        memoryStream.Position = 0;
+        using var reader = new StreamReader(memoryStream);
+        string result = reader.ReadToEnd();
+
+        Assert.AreEqual("A,,C\r\n,E,\r\n", result);
+    }
 }
