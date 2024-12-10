@@ -9,10 +9,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting;
 internal sealed class MolecularNetworkingSendingToCytoscapeJsSettingViewModel : ViewModelBase {
     private readonly MolecularNetworkingSettingModel _model;
 
-    public MolecularNetworkingSendingToCytoscapeJsSettingViewModel(MolecularNetworkingSettingModel model) {
+    public MolecularNetworkingSendingToCytoscapeJsSettingViewModel(MolecularNetworkingSettingViewModel viewmodel, MolecularNetworkingSettingModel model) {
         _model = model ?? throw new ArgumentNullException(nameof(model));
 
-        SettingViewModel = new MolecularNetworkingSettingViewModel(model).AddTo(Disposables);
+        SettingViewModel = viewmodel;
 
         CytoscapeApiUrl = model.ToReactivePropertySlimAsSynchronized(m => m.CytoscapeUrl).AddTo(Disposables);
         UseCytoscape = model.ToReactivePropertySlimAsSynchronized(

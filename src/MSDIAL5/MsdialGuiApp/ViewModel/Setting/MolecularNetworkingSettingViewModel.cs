@@ -1,13 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel.DataAnnotations;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting;
 
-internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
+internal sealed class MolecularNetworkingSettingViewModel : SettingDialogViewModel
 {
     private readonly MolecularNetworkingSettingModel _model;
 
@@ -110,6 +111,10 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
         .Inverse()
         .ToReadOnlyReactivePropertySlim()
         .AddTo(Disposables);
+
+        OKCommand = ObserveHasErrors.Inverse().ToReactiveCommand()
+            .WithSubscribe(() => model.Commit())
+            .AddTo(Disposables);
     }
 
     public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
@@ -177,4 +182,9 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<bool> AvailableIonEdgeExport => _model.AvailableIonEdge;
 
     public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+    public ReactiveCommand OKCommand { get; }
+
+    // SettingDialogViewModel
+    public override ICommand? FinishCommand => OKCommand;
 }

@@ -11,10 +11,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting;
 internal sealed class MolecularNetworkingExportSettingViewModel : ViewModelBase {
     private readonly MolecularNetworkingSettingModel _model;
 
-    public MolecularNetworkingExportSettingViewModel(MolecularNetworkingSettingModel model) {
+    public MolecularNetworkingExportSettingViewModel(MolecularNetworkingSettingViewModel viewmodel, MolecularNetworkingSettingModel model) {
         _model = model ?? throw new ArgumentNullException(nameof(model));
 
-        SettingViewModel = new MolecularNetworkingSettingViewModel(model).AddTo(Disposables);
+        SettingViewModel = viewmodel;
 
         ExportFolderPath = model.ToReactivePropertyAsSynchronized(m => m.ExportFolderPath, ignoreValidationErrorValue: true)
             .SetValidateAttribute(() => ExportFolderPath).AddTo(Disposables);

@@ -99,6 +99,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
                 .Subscribe(ShowChildSettingDialog<FindTargetCompoundsSpotView>("Find match peak spots", height: 800, width: 400));
+            broker.ToObservable<MolecularNetworkingSettingViewModel>()
+                .Subscribe(ShowChildSettingDialog<MolecularNetworkingSettingView>("Setting of molecular spectrum networking data", height: 620, width: 480, finishCommandContent: "OK"));
             broker.ToObservable<MolecularNetworkingExportSettingViewModel>()
                 .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
             broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()

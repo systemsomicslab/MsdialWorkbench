@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Setting;
@@ -7,7 +6,6 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
@@ -28,6 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
+        private readonly MolecularNetworkingSettingViewModel _molecularNetworkingSettingViewModel;
         private readonly MolecularNetworkingExportSettingViewModel _molecularNetworkingExportSettingViewModel;
         private readonly MolecularNetworkingSendingToCytoscapeJsSettingViewModel _molecularNetworkingSendingToCytoscapeJsSettingViewModel;
 
@@ -70,8 +69,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
 
-            _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
-            _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingSettingViewModel = new MolecularNetworkingSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_molecularNetworkingSettingViewModel, _model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_molecularNetworkingSettingViewModel, _model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
             var batchMsfinder = model.InternalMsfinderSettingModel;
@@ -212,6 +212,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
+        public DelegateCommand ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ??= new DelegateCommand(MolecularNetworkingSettingMethod);
+        private DelegateCommand? _molecularNetworkingSettingCommand;
+
+        private void MolecularNetworkingSettingMethod()
+        {
+            _broker.Publish(_molecularNetworkingSettingViewModel);
+        }
+
         public DelegateCommand ShowMolecularNetworkingExportSettingCommand => _molecularNetworkingExportSettingCommand ??= new DelegateCommand(MolecularNetworkingExportSettingMethod);
         private DelegateCommand? _molecularNetworkingExportSettingCommand;
 
@@ -220,10 +228,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _broker.Publish(_molecularNetworkingExportSettingViewModel);
         }
 
-        public DelegateCommand ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ??= new DelegateCommand(MolecularNetworkingVisualizationSettingMethod);
-        private DelegateCommand? _molecularNetworkingVisualizationSettingCommand;
+        public DelegateCommand<NetworkPresentationType?> ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ??= new DelegateCommand<NetworkPresentationType?>(MolecularNetworkingVisualizationSettingMethod);
+        private DelegateCommand<NetworkPresentationType?>? _molecularNetworkingVisualizationSettingCommand;
 
-        private void MolecularNetworkingVisualizationSettingMethod() {
+        private void MolecularNetworkingVisualizationSettingMethod(NetworkPresentationType? type) {
+            if (type is not null) {
+                _model.MolecularNetworkingSettingModel.NetworkPresentationType = type.Value;
+            }
             _broker.Publish(_molecularNetworkingSendingToCytoscapeJsSettingViewModel);
         }
 
