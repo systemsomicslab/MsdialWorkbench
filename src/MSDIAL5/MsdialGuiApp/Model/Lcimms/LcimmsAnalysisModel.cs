@@ -465,7 +465,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
                 var flatten = spots.Select(n => n.InnerModel).SelectMany(s => s.IsMultiLayeredData() ? s.DriftChromFeatures : [s]).ToList();
                 var flattenmodel = flatten.Select(n => new ChromatogramPeakFeatureModel(n)).ToList();
-                var flattenpeaks = flatten.Select(n => peaks[n.MasterPeakID]).ToList();
+                var flattenpeaks = flatten.Select(n => peaks[n.GetMSDecResultID()]).ToList();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
@@ -505,8 +505,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
                 var targetPeak = peaks[targetSpot.MasterPeakID];
                 var flattenpeaks = flatten.Select(n => peaks[n.MasterPeakID]).ToList();
-                var id2index = flatten.Select((spot, index) => new { spot.MasterPeakID, Index = index }).ToDictionary(item => item.MasterPeakID, item => item.Index);
-
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Preparing MN results");

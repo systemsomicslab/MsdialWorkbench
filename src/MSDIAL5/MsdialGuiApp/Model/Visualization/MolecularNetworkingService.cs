@@ -12,6 +12,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Visualization;
 
@@ -73,12 +74,12 @@ public sealed class MolecularNetworkingService
         if (useCurrentFiltering) {
             spots = _filter.Filter(spots).ToList();
         }
-        var peaks = _alignmentFileModel.LoadMSDecResults();
+        var peaks = Task.WhenAll(spots.Select(s => _alignmentFileModel.LoadMSDecResultByIndexAsync(s.MasterAlignmentID)).ToList()).Result;
         var id2spot = spots.ToDictionary(spot => spot.MasterAlignmentID);
 
         var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
         var builder = new MoleculerNetworkingBase();
-        var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notification);
+        var network = builder.GetMolecularNetworkInstance(spots, peaks!, query, notification);
         var rootObj = network.Root;
 
         if (loader is not null && _classProperties is not null) {
@@ -126,6 +127,7 @@ public sealed class MolecularNetworkingService
         var id2spot = spots.ToDictionary(spot => spot.MasterAlignmentID);
       
         var targetPeak = peaks[targetSpot.MasterAlignmentID];
+        peaks = spots.Select(s => peaks[s.MasterAlignmentID]).ToList();
 
         var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
         var builder = new MoleculerNetworkingBase();

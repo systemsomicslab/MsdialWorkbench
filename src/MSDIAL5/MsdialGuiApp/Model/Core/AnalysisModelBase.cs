@@ -119,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Core {
                     spots = _filter.Filter(spots).ToList();
                 }
                 var loader = AnalysisFileModel.MSDecLoader;
-                var peaks = loader.LoadMSDecResults();
+                var peaks = spots.Select(s => loader.LoadMSDecResult(s.MSDecResultIDUsedForAnnotation)).ToList();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
