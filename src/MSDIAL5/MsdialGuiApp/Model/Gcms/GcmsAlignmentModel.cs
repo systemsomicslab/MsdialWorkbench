@@ -9,16 +9,14 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -52,7 +50,6 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel?> _target;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
-        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
 
         public GcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -105,7 +102,6 @@ namespace CompMs.App.Msdial.Model.Gcms
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(spotsSource.Spots!.Items, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(spotsSource.Spots!.Items, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
-            _filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
@@ -208,7 +204,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Select(data => data.Loader).ToReactiveProperty<IBarItemsLoader>().AddTo(Disposables);
-            var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
+            var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
             AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(spotsSource.Spots!.Items, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, UndoManager).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
@@ -268,6 +264,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(_projectParameter);
+
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, AlignmentSpotSource, broker, filter);
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }
@@ -289,7 +287,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public UndoManager UndoManager { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
-        public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
+        private readonly MolecularNetworkingService _molecularNetworkingService;
+
+        public IObservable<bool> CanSetUnknown => _target.Select(t => t is not null);
         public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
 
         public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
@@ -312,59 +312,12 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
-            if (AlignmentSpotSource.Spots is null) {
-                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
-            }
-            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
-            using (publisher.Start()) {
-                IReadOnlyList<AlignmentSpotPropertyModel> spots = AlignmentSpotSource.Spots.Items;
-                if (useCurrentFiltering) {
-                    spots = _filter.Filter(spots).ToList();
-                }
-                var peaks = _alignmentFileModel.LoadMSDecResults();
-
-                void notify(double progressRate) {
-                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
-                }
-
-                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
-                var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
-                var rootObj = network.Root;
-
-                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
-                rootObj.edges.AddRange(ionfeature_edges);
-
-                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    rootObj.edges.AddRange(ion_edges);
-                }
-                return network;
-            }
-        }
-
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
+            _molecularNetworkingService.Export(parameter, useCurrentFiltering, cutByExcelLimit);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            switch (networkPresentationType) {
-                case NetworkVisualizationType.Cytoscape:
-                    try {
-                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
-                    }
-                    catch {
-                        // ignore
-                        System.Diagnostics.Debug.WriteLine("Failed to connect to Cytoscape.");
-                    }
-                    break;
-                case NetworkVisualizationType.CytoscapeJs:
-                    CytoscapejsModel.SendToCytoscapeJs(network);
-                    break;
-            }
+            _molecularNetworkingService.Show(parameter, useCurrentFiltering, networkPresentationType, cytoscapeUrl);
         }
 
         public override void InvokeMsfinder() {

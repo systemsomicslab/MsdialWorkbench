@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -7,23 +8,32 @@ using CompMs.Common.Algorithm.Function;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Visualization;
 
 public sealed class MolecularNetworkingService
 {
-    private AlignmentFileBeanModel _alignmentFileModel;
-    private AlignmentSpotSource _alignmentSpotSource;
-    private IMessageBroker _broker;
-    private PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
+    private readonly AlignmentFileBeanModel _alignmentFileModel;
+    private readonly AlignmentSpotSource _alignmentSpotSource;
+    private readonly IMessageBroker _broker;
+    private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
+    private IObservable<IBarItemsLoader>? _loader;
+    private FileClassPropertiesModel? _classProperties;
 
     public MolecularNetworkingService(AlignmentFileBeanModel alignmentFileModel, AlignmentSpotSource alignmentSpotSource, IMessageBroker broker, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
         _alignmentFileModel = alignmentFileModel;
         _alignmentSpotSource = alignmentSpotSource;
         _broker = broker;
         _filter = filter;
+    }
+
+    public void SetLoaderAndClassProperties(IObservable<IBarItemsLoader> loader, FileClassPropertiesModel classProperties) {
+        _loader = loader;
+        _classProperties = classProperties;
     }
 
     public void Export(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
@@ -53,6 +63,7 @@ public sealed class MolecularNetworkingService
         if (_alignmentSpotSource.Spots is null) {
             return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
         }
+        var loader = _loader?.ToTask().Result;
         var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
         using (publisher.Start()) {
             IReadOnlyList<AlignmentSpotPropertyModel> spots = _alignmentSpotSource.Spots.Items;
@@ -65,6 +76,14 @@ public sealed class MolecularNetworkingService
             var builder = new MoleculerNetworkingBase();
             var network = builder.GetMolecularNetworkInstance(spots, peaks, query, progressRate => publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}"));
             var rootObj = network.Root;
+
+            if (loader is not null && _classProperties is not null) {
+                for (int i = 0; i < spots.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    var spot = spots[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spot, loader, _classProperties.ClassToColor);
+                }
+            }
 
             var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
             rootObj.edges.AddRange(ionfeature_edges);
