@@ -265,7 +265,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(_projectParameter);
 
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, AlignmentSpotSource, broker, filter);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, broker, filter, AlignmentSpotSource.Spots!.Items);
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }

@@ -24,7 +24,7 @@ namespace CompMs.Common.Algorithm.Function
     }
 
     public sealed class MoleculerNetworkingBase {
-        public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double>? report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
             RefineScans(scans, query);
@@ -98,7 +98,7 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double>? report) where T:IMoleculeProperty, IChromatogramPeak {
             var edges = GenerateEdges(peakScans, peakScans, query, report);
             var counts = new Dictionary<int, int>();
             foreach (var edge in edges) {
@@ -122,8 +122,6 @@ namespace CompMs.Common.Algorithm.Function
             var edges = GenerateEdges(new List<PeakScanPair<T>> { targetPeakScan }, peakScans, query, report);
             return edges.Select(edge => new Edge() { data = edge, classes = "ms_similarity" }).ToList();
         }
-
-        
 
         private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;

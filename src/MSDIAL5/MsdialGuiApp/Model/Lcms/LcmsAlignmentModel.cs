@@ -257,8 +257,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
 
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, AlignmentSpotSource, messageBroker, filter);
-            _molecularNetworkingService.SetLoaderAndClassProperties(_barItemsLoaderDataProperty.Select(p => p.Loader), projectBaseParameter.ClassProperties);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, messageBroker, filter, AlignmentSpotSource.Spots!.Items);
+            _molecularNetworkingService.SetLoaderAndClassProperties(barItemsLoaderDataProperty.Select(p => p.Loader).ToReadOnlyReactivePropertySlim().AddTo(Disposables), projectBaseParameter.ClassProperties);
         }
 
         public UndoManager UndoManager => _undoManager;
