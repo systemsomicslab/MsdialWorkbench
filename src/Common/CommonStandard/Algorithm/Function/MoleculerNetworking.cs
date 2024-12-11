@@ -32,7 +32,7 @@ namespace CompMs.Common.Algorithm.Function
             return new MolecularNetworkInstance(new RootObject { nodes = nodes, edges = edges });
         }
 
-        public MolecularNetworkInstance GetMoleculerNetworkInstanceForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        public MolecularNetworkInstance GetMoleculerNetworkInstanceForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double>? report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
             if (scans.All(s => s.ScanID != targetScan.ScanID)) {
@@ -115,7 +115,7 @@ namespace CompMs.Common.Algorithm.Function
             return filteredEdges.Select(edge => new Edge { data = edge, classes = "ms_similarity" }).ToList();
         }
 
-        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(PeakScanPair<T> targetPeakScan, List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(PeakScanPair<T> targetPeakScan, List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double>? report) where T : IMoleculeProperty, IChromatogramPeak {
             if (targetPeakScan.Scan.Spectrum.IsEmptyOrNull()) {
                 return new List<Edge>(0);
             }
@@ -123,7 +123,7 @@ namespace CompMs.Common.Algorithm.Function
             return edges.Select(edge => new Edge() { data = edge, classes = "ms_similarity" }).ToList();
         }
 
-        private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double>? report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;
             var max = srcPeakScans.Count * dstPeakScans.Count;
             var edges = new List<EdgeData>();

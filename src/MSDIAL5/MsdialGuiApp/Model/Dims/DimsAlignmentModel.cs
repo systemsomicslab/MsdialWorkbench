@@ -226,7 +226,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
 
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileModel, _broker, filter, AlignmentSpotSource.Spots!.Items);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileModel, _broker, filter, AlignmentSpotSource.Spots!.Items, Target);
+            _molecularNetworkingService.SetLoaderAndClassProperties(barItemsLoaderDataProperty.Select(p => p.Loader).ToReadOnlyReactivePropertySlim().AddTo(Disposables), projectBaseParameter.ClassProperties);
         }
 
         public UndoManager UndoManager => _undoManager;

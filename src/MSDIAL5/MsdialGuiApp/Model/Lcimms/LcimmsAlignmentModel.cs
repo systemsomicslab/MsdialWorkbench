@@ -327,7 +327,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var driftspots = Ms1Spots.Select(n => n.innerModel).SelectMany(s => s.IsMultiLayeredData() ? s.AlignmentDriftSpotFeatures : [s]).ToList();
             var driftspotmodels = driftspots.Select(n => new AlignmentSpotPropertyModel(n)).ToList();
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, broker, filter, driftspotmodels);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, broker, filter, driftspotmodels, target);
             _molecularNetworkingService.SetLoaderAndClassProperties(barItemsLoaderDataProperty.Select(p => p.Loader).ToReadOnlyReactivePropertySlim().AddTo(Disposables), projectBaseParameter.ClassProperties);
         }
 

@@ -209,7 +209,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
 
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileModel, broker, filter, AlignmentSpotSource.Spots!.Items);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileModel, broker, filter, AlignmentSpotSource.Spots!.Items, Target);
+            _molecularNetworkingService.SetLoaderAndClassProperties(barItemsLoaderDataProperty.Select(p => p.Loader).ToReadOnlyReactivePropertySlim().AddTo(Disposables), projectBaseParameter.ClassProperties);
         }
 
         static ImmsAlignmentModel() {

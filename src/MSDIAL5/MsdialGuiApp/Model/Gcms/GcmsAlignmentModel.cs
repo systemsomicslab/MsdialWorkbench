@@ -265,7 +265,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(_projectParameter);
 
-            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, broker, filter, AlignmentSpotSource.Spots!.Items);
+            _molecularNetworkingService = new MolecularNetworkingService(alignmentFileBean, broker, filter, AlignmentSpotSource.Spots!.Items, target);
+            _molecularNetworkingService.SetLoaderAndClassProperties(barItemsLoaderDataProperty.Select(p => p.Loader).ToReadOnlyReactivePropertySlim().AddTo(Disposables), projectBaseParameter.ClassProperties);
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }
