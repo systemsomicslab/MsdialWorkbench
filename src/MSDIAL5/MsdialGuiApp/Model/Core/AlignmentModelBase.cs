@@ -1,19 +1,13 @@
-﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Algorithm.Function;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,60 +50,9 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
 
-        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
-            if (AlignmentSpotSource.Spots is null) {
-                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
-            }
-            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
-            using (publisher.Start()) {
-                IReadOnlyList<AlignmentSpotPropertyModel> spots = AlignmentSpotSource.Spots.Items;
-                if (useCurrentFiltering) {
-                    spots = _filter.Filter(spots).ToList();
-                }
-                var peaks = _alignmentFileModel.LoadMSDecResults();
+        public abstract void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit);
 
-                void notify(double progressRate) {
-                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
-                }
-
-                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
-                var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
-                var rootObj = network.Root;
-
-                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
-                rootObj.edges.AddRange(ionfeature_edges);
-
-                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    rootObj.edges.AddRange(ion_edges);
-                }
-                return network;
-            }
-        }
-
-        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
-        }
-
-        public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            switch (networkPresentationType) {
-                case NetworkVisualizationType.Cytoscape:
-                    try {
-                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
-                    }
-                    catch {
-                        // ignore
-                        System.Diagnostics.Debug.WriteLine("Failed to connect to Cytoscape.");
-                    }
-                    break;
-                case NetworkVisualizationType.CytoscapeJs:
-                    CytoscapejsModel.SendToCytoscapeJs(network);
-                    break;
-            }
-        }
+        public abstract void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl);
 
         public abstract void InvokeMoleculerNetworkingForTargetSpot();
 
