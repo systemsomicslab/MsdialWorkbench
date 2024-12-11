@@ -11,8 +11,6 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -53,14 +51,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift)!;
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
-        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly  MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
-        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
         private readonly MolecularNetworkingService _molecularNetworkingService;
 
         public LcimmsAlignmentModel(
@@ -87,7 +83,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
-            _projectBaseParameter = projectBaseParameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
@@ -268,7 +263,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
-            _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
 
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
@@ -425,8 +419,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            var network = GetMolecularNetworkInstanceForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
-            CytoscapejsModel.SendToCytoscapeJs(network);
+            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
         }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
@@ -434,52 +427,5 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
-
-        private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
-            if (parameter.MaxEdgeNumberPerNode == 0) {
-                parameter.MinimumPeakMatch = 3;
-                parameter.MaxEdgeNumberPerNode = 6;
-                parameter.MaxPrecursorDifference = 400;
-            }
-            if (Target.Value is null) {
-                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
-            }
-
-            var param = _projectBaseParameter;
-            var loaderProperty = _barItemsLoaderDataProperty.Value;
-            var loader = loaderProperty.Loader;
-            var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
-
-            using (publisher.Start()) {
-                var spots = Ms1Spots;
-                var flatten = spots.Select(n => n.innerModel).SelectMany(s => s.IsMultiLayeredData() ? s.AlignmentDriftSpotFeatures : [s]).ToList();
-                var peaks = _alignmentFileModel.LoadMSDecResults();
-                var flattenpeaks = flatten.Select(n => peaks[n.MasterAlignmentID]).ToList();
-                var id2index = flatten.Select((spot, index) => new { spot.MasterAlignmentID, Index = index }).ToDictionary(item => item.MasterAlignmentID, item => item.Index);
-
-                var targetSpot = Target.Value;
-                var targetPeak = peaks[targetSpot.MasterAlignmentID];
-
-                void notify(double progressRate) {
-                    publisher.Progress(progressRate, $"Preparing MN results");
-                }
-                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
-                var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot.innerModel, targetPeak, flatten, flattenpeaks, query, notify);
-                var rootObj = network.Root;
-
-                for (int i = 0; i < rootObj.nodes.Count; i++) {
-                    var node = rootObj.nodes[i];
-                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[id2index[node.data.id]], loader, param.ClassProperties.ClassToColor);
-                }
-
-                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
-                }
-
-                return network;
-            }
-        }
     }
 }

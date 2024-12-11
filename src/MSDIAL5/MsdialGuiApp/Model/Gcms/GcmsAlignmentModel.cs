@@ -43,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
         private readonly ProjectBaseParameter _projectParameter;
+        private readonly MsdialGcmsParameter _parameter;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CalculateMatchScore? _calculateMatchScore;
         private readonly IMessageBroker _broker;
@@ -67,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             IMessageBroker broker)
             : base(alignmentFileBean, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             _projectParameter = parameter.ProjectParam;
+            _parameter = parameter;
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _calculateMatchScore = calculateMatchScore;
             _broker = broker;
@@ -310,7 +312,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            throw new NotImplementedException();
+            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {

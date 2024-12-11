@@ -319,7 +319,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _parameter);
         }
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            throw new NotImplementedException();
+            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {

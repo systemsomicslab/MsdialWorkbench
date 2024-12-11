@@ -13,8 +13,6 @@ using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -347,50 +345,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, spot, result, _undoManager);
         }
 
-        private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
-            if (parameter.MaxEdgeNumberPerNode == 0) {
-                parameter.MinimumPeakMatch = 3;
-                parameter.MaxEdgeNumberPerNode = 6;
-                parameter.MaxPrecursorDifference = 400;
-            }
-            if (Target.Value is null) {
-                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
-            }
-
-            var param = _projectBaseParameter;
-            var loaderProperty = _barItemsLoaderDataProperty.Value;
-            var loader = loaderProperty.Loader;
-            var publisher = new TaskProgressPublisher(_messageBroker, $"Preparing MN results");
-
-            using (publisher.Start()) {
-                var spots = Ms1Spots;
-                var peaks = _alignmentFileModel.LoadMSDecResults();
-              
-                var targetSpot = Target.Value;
-                var targetPeak = peaks[targetSpot.MasterAlignmentID];
-
-                void notify(double progressRate) {
-                    publisher.Progress(progressRate, $"Preparing MN results");
-                }
-                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
-                var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
-                var rootObj = network.Root;
-
-                for (int i = 0; i < rootObj.nodes.Count; i++) {
-                    var node = rootObj.nodes[i];
-                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[node.data.id], loader, param.ClassProperties.ClassToColor);
-                }
-
-                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
-                }
-
-                return network;
-            }
-        }
-
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
             _molecularNetworkingService.Export(parameter, useCurrentFiltering, cutByExcelLimit);
         }
@@ -400,8 +354,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            var network = GetMolecularNetworkInstanceForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
-            CytoscapejsModel.SendToCytoscapeJs(network);
+            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
         }
     }
 }
