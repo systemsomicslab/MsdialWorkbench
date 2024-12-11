@@ -14,11 +14,17 @@ namespace CompMs.App.Msdial.Model.Visualization;
 
 public sealed class MolecularNetworkingService
 {
+    private AlignmentFileBeanModel _alignmentFileModel;
+    private AlignmentSpotSource _alignmentSpotSource;
     private IMessageBroker _broker;
     private PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
-    private AlignmentFileBeanModel _alignmentFileModel;
 
-    public AlignmentSpotSource AlignmentSpotSource { get; }
+    public MolecularNetworkingService(AlignmentFileBeanModel alignmentFileModel, AlignmentSpotSource alignmentSpotSource, IMessageBroker broker, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
+        _alignmentFileModel = alignmentFileModel;
+        _alignmentSpotSource = alignmentSpotSource;
+        _broker = broker;
+        _filter = filter;
+    }
 
     public void Export(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
         var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
@@ -44,12 +50,12 @@ public sealed class MolecularNetworkingService
     }
 
     private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
-        if (AlignmentSpotSource.Spots is null) {
+        if (_alignmentSpotSource.Spots is null) {
             return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
         }
         var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
         using (publisher.Start()) {
-            IReadOnlyList<AlignmentSpotPropertyModel> spots = AlignmentSpotSource.Spots.Items;
+            IReadOnlyList<AlignmentSpotPropertyModel> spots = _alignmentSpotSource.Spots.Items;
             if (useCurrentFiltering) {
                 spots = _filter.Filter(spots).ToList();
             }
