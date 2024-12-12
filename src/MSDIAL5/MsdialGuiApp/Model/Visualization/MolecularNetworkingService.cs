@@ -6,7 +6,6 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -39,22 +38,22 @@ public sealed class MolecularNetworkingService
         _classProperties = classProperties;
     }
 
-    public void Export(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-        var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
+    public void Export(MolecularNetworkingParameter parameter) {
+        var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.BaseParameter.ExportFolderPath}");
         using (publisher.Start()) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering, progressRate => publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}"));
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
+            var network = GetMolecularNetworkInstance(parameter, progressRate => publisher.Progress(progressRate, $"Exporting MN results in {parameter.BaseParameter.ExportFolderPath}"));
+            network.ExportNodeEdgeFiles(parameter.BaseParameter.ExportFolderPath, parameter.CutByExcelLimit);
         }
     }
 
-    public void Show(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
+    public void Show(MolecularNetworkingParameter parameter) {
         var publisher = new TaskProgressPublisher(_broker, $"Preparing network");
         using (publisher.Start()) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering, progressRate => publisher.Progress(progressRate, $"Preparing network {parameter.ExportFolderPath}"));
-            switch (networkPresentationType) {
+            var network = GetMolecularNetworkInstance(parameter, progressRate => publisher.Progress(progressRate, $"Preparing network {parameter.BaseParameter.ExportFolderPath}"));
+            switch (parameter.NetworkPresentationType) {
                 case NetworkVisualizationType.Cytoscape:
                     try {
-                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
+                        CytoscapeMolecularNetworkClient.CreateAsync(network, parameter.CyRestApiUrl).Wait();
                     }
                     catch {
                         // ignore
@@ -68,16 +67,17 @@ public sealed class MolecularNetworkingService
         }
     }
 
-    private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, Action<double>? notification) {
+    private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularNetworkingParameter parameter, Action<double>? notification) {
         var loader = _loader?.Value;
         var spots = _spots;
-        if (useCurrentFiltering) {
+        if (parameter.UseCurrentFiltering) {
             spots = _filter.Filter(spots).ToList();
         }
+        
         var peaks = Task.WhenAll(spots.Select(s => _alignmentFileModel.LoadMSDecResultByIndexAsync(s.MasterAlignmentID)).ToList()).Result;
         var id2spot = spots.ToDictionary(spot => spot.MasterAlignmentID);
 
-        var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+        var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter.BaseParameter);
         var builder = new MoleculerNetworkingBase();
         var network = builder.GetMolecularNetworkInstance(spots, peaks!, query, notification);
         var rootObj = network.Root;
@@ -91,33 +91,33 @@ public sealed class MolecularNetworkingService
         var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
         rootObj.edges.AddRange(ionfeature_edges);
 
-        if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-            var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+        if (parameter.BaseParameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+            var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.BaseParameter.MnIonCorrelationSimilarityCutOff, parameter.BaseParameter.MaxEdgeNumberPerNode);
             rootObj.edges.AddRange(ion_edges);
         }
         return network;
     }
 
-    public void ShowForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+    public void ShowForTargetSpot(MolecularNetworkingParameter parameter) {
         var publisher = new TaskProgressPublisher(_broker, $"Preparing network");
         using (publisher.Start()) {
-            var network = GetMolecularNetworkInstanceForTargetSpot(parameter, useCurrentFiltering, progressRate => publisher.Progress(progressRate, $"Preparing MN results {parameter.ExportFolderPath}"));
+            var network = GetMolecularNetworkInstanceForTargetSpot(parameter, progressRate => publisher.Progress(progressRate, $"Preparing MN results {parameter.BaseParameter.ExportFolderPath}"));
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
     }
 
-    private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, Action<double>? notification) {
-        if (parameter.MaxEdgeNumberPerNode == 0) {
-            parameter.MinimumPeakMatch = 3;
-            parameter.MaxEdgeNumberPerNode = 6;
-            parameter.MaxPrecursorDifference = 400;
+    private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularNetworkingParameter parameter, Action<double>? notification) {
+        if (parameter.BaseParameter.MaxEdgeNumberPerNode == 0) {
+            parameter.BaseParameter.MinimumPeakMatch = 3;
+            parameter.BaseParameter.MaxEdgeNumberPerNode = 6;
+            parameter.BaseParameter.MaxPrecursorDifference = 400;
         }
         if (_target.Value is not { } targetSpot) {
             return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
         }
 
         var spots = _spots;
-        if (useCurrentFiltering) {
+        if (parameter.UseCurrentFiltering) {
             spots = _filter.Filter(spots).ToList();
         }
 
@@ -129,7 +129,7 @@ public sealed class MolecularNetworkingService
         var targetPeak = peaks[targetSpot.MasterAlignmentID];
         peaks = spots.Select(s => peaks[s.MasterAlignmentID]).ToList();
 
-        var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+        var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter.BaseParameter);
         var builder = new MoleculerNetworkingBase();
         var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notification);
         var rootObj = network.Root;
@@ -144,8 +144,8 @@ public sealed class MolecularNetworkingService
         var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges([targetSpot], spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
         rootObj.edges.AddRange(ionfeature_edges);
 
-        if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-            var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+        if (parameter.BaseParameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+            var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.BaseParameter.MnIonCorrelationSimilarityCutOff, parameter.BaseParameter.MaxEdgeNumberPerNode);
             rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
         }
 

@@ -411,15 +411,18 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            _molecularNetworkingService.Export(parameter, useCurrentFiltering, cutByExcelLimit);
+            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, CutByExcelLimit = cutByExcelLimit, };
+            _molecularNetworkingService.Export(para);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType viewType, string cyresturl) {
-            _molecularNetworkingService.Show(parameter, useCurrentFiltering, viewType, cyresturl);
+            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, NetworkPresentationType = viewType, CyRestApiUrl = cyresturl, };
+            _molecularNetworkingService.Show(para);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
+            var parameter = new MolecularNetworkingParameter(_parameter.MolecularSpectrumNetworkingBaseParam) { UseCurrentFiltering = false };
+            _molecularNetworkingService.ShowForTargetSpot(parameter);
         }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();

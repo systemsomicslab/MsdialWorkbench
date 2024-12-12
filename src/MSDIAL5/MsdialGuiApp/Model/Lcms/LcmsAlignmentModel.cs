@@ -346,15 +346,18 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            _molecularNetworkingService.Export(parameter, useCurrentFiltering, cutByExcelLimit);
+            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, CutByExcelLimit = cutByExcelLimit, };
+            _molecularNetworkingService.Export(para);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            _molecularNetworkingService.Show(parameter, useCurrentFiltering, networkPresentationType, cytoscapeUrl);
+            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, NetworkPresentationType = networkPresentationType, CyRestApiUrl = cytoscapeUrl };
+            _molecularNetworkingService.Show(para);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            _molecularNetworkingService.ShowForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam, useCurrentFiltering: false);
+            var parameter = new MolecularNetworkingParameter(_parameter.MolecularSpectrumNetworkingBaseParam) { UseCurrentFiltering = false };
+            _molecularNetworkingService.ShowForTargetSpot(parameter);
         }
     }
 }
