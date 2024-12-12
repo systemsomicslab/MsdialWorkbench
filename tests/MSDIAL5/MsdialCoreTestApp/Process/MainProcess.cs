@@ -50,6 +50,10 @@ namespace CompMs.App.MsdialConsole.Process
                 }
                 else if (args[i] == "-a") isAllEdgeExport = true;
             }
+            inputFolder = Path.GetFullPath(inputFolder);
+            methodFile = Path.GetFullPath(methodFile);
+            outputFolder = Path.GetFullPath(outputFolder);
+
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
             var analysisType = args[0];
             try {
