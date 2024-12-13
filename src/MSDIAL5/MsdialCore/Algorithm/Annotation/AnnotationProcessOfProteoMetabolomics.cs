@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
@@ -108,14 +107,11 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
         using var sem = new SemaphoreSlim(numThreads);
         var counter = 0;
-        var annotationTasks = new List<Task>();
-        for (int j = 0; j < chromPeakFeatures.Count; j++) {
-            var i = j;
-            var v = Task.Run(async () => {
+        var annotationTasks = chromPeakFeatures.Select((chromPeakFeature, i) =>
+            Task.Run(async () => {
                 await sem.WaitAsync(token);
 
                 try {
-                    var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults.MSDecResults, parentID2IsotopePeakIDs);
                     await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, msdecResults.CollisionEnergy, token);
                 }
@@ -123,10 +119,8 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
                     sem.Release();
                     reporter.Report(Interlocked.Increment(ref counter), chromPeakFeatures.Count);
                 }
-            }, token);
-            annotationTasks.Add(v);
-        }
-        await Task.WhenAll(annotationTasks);
+            }, token)).ToList();
+        await Task.WhenAll(annotationTasks).ConfigureAwait(false);
     }
 
     private async Task RunAnnotationCoreAsync(
