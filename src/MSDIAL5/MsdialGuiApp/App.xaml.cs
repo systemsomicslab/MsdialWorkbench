@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial
             finally
             {
                 System.Diagnostics.Debug.Write($"{message}\n\n{exception.Message}");
-                MessageBox.Show($"{message}\n\n{exception.Message}", "Unexpected exception occured");
+                MessageBox.Show($"{message}\n\n{exception.Message}\n\nStack trace below:\n\n{exception.StackTrace}", $"Unexpected exception occured.");
             }
         }
     }
