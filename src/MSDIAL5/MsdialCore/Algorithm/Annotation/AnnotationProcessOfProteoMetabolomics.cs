@@ -108,7 +108,8 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
         using var sem = new SemaphoreSlim(numThreads);
         var annotationTasks = new List<Task>();
-        for (int i = 0; i < chromPeakFeatures.Count; i++) {
+        for (int j = 0; j < chromPeakFeatures.Count; j++) {
+            var i = j;
             var v = Task.Run(async () => {
                 await sem.WaitAsync(token);
 
