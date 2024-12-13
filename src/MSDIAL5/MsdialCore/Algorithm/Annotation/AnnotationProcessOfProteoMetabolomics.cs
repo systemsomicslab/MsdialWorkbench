@@ -107,6 +107,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
         ReportProgress reporter) {
         var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
         using var sem = new SemaphoreSlim(numThreads);
+        var counter = 0;
         var annotationTasks = new List<Task>();
         for (int j = 0; j < chromPeakFeatures.Count; j++) {
             var i = j;
@@ -120,7 +121,7 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
                 }
                 finally {
                     sem.Release();
-                    reporter.Report(i + 1, chromPeakFeatures.Count);
+                    reporter.Report(Interlocked.Increment(ref counter), chromPeakFeatures.Count);
                 }
             }, token);
             annotationTasks.Add(v);
