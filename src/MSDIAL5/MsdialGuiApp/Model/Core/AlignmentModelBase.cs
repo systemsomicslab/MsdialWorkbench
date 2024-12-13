@@ -1,10 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
@@ -50,9 +49,9 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
 
-        public abstract void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit);
+        public abstract void ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter);
 
-        public abstract void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl);
+        public abstract void InvokeMoleculerNetworking(MolecularNetworkingParameter parameter);
 
         public abstract void InvokeMoleculerNetworkingForTargetSpot();
 

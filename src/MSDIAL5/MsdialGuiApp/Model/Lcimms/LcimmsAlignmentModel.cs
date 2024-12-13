@@ -7,7 +7,6 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
@@ -24,7 +23,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -410,14 +408,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _parameter);
         }
 
-        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, CutByExcelLimit = cutByExcelLimit, };
-            _molecularNetworkingService.Export(para);
+        public override void ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter) {
+            _molecularNetworkingService.Export(parameter);
         }
 
-        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType viewType, string cyresturl) {
-            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, NetworkPresentationType = viewType, CyRestApiUrl = cyresturl, };
-            _molecularNetworkingService.Show(para);
+        public override void InvokeMoleculerNetworking(MolecularNetworkingParameter parameter) {
+            _molecularNetworkingService.Show(parameter);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {

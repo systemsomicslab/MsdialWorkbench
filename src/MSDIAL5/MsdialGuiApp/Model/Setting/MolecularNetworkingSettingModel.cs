@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
@@ -186,10 +187,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering, CutByExcelLimit);
+                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(new MolecularNetworkingParameter(_parameter) { UseCurrentFiltering = UseCurrentFiltering, CutByExcelLimit = CutByExcelLimit, });
                 }
                 else {
-                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering, CutByExcelLimit);
+                    _currentFileModel.Value?.ExportMoleculerNetworkingData(new MolecularNetworkingParameter(_parameter) { UseCurrentFiltering = UseCurrentFiltering, CutByExcelLimit = CutByExcelLimit, });
                 }
             });
         }
@@ -198,10 +199,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering, NetworkPresentationType, CytoscapeUrl);
+                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(new MolecularNetworkingParameter(_parameter) { UseCurrentFiltering = UseCurrentFiltering, NetworkPresentationType = NetworkPresentationType, CyRestApiUrl = CytoscapeUrl, });
                 }
                 else {
-                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering, NetworkPresentationType, CytoscapeUrl);
+                    _currentFileModel.Value?.InvokeMoleculerNetworking(new MolecularNetworkingParameter(_parameter) { UseCurrentFiltering = UseCurrentFiltering, NetworkPresentationType = NetworkPresentationType, CyRestApiUrl = CytoscapeUrl, });
                 }
             });
         }

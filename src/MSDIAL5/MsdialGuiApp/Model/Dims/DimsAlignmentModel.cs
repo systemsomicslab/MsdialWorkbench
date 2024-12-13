@@ -7,7 +7,6 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
@@ -331,14 +330,12 @@ namespace CompMs.App.Msdial.Model.Dims
             _molecularNetworkingService.ShowForTargetSpot(parameter);
         }
 
-        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, CutByExcelLimit = cutByExcelLimit, };
-            _molecularNetworkingService.Export(para);
+        public override void ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter) {
+            _molecularNetworkingService.Export(parameter);
         }
 
-        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            var para = new MolecularNetworkingParameter(parameter) { UseCurrentFiltering = useCurrentFiltering, NetworkPresentationType = networkPresentationType, CyRestApiUrl = cytoscapeUrl };
-            _molecularNetworkingService.Show(para);
+        public override void InvokeMoleculerNetworking(MolecularNetworkingParameter parameter) {
+            _molecularNetworkingService.Show(parameter);
         }
 
         public void Undo() => _undoManager.Undo();

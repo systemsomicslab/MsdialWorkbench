@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -79,17 +80,17 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
+        public void ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter.BaseParameter, parameter.UseCurrentFiltering);
+            network.ExportNodeEdgeFiles(parameter.BaseParameter.ExportFolderPath, parameter.CutByExcelLimit);
         }
 
-        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            switch (networkPresentationType) {
+        public void InvokeMoleculerNetworking(MolecularNetworkingParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter.BaseParameter, parameter.UseCurrentFiltering);
+            switch (parameter.NetworkPresentationType) {
                 case NetworkVisualizationType.Cytoscape:
                     try {
-                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
+                        CytoscapeMolecularNetworkClient.CreateAsync(network, parameter.CyRestApiUrl).Wait();
                     }
                     catch {
                         // ignore

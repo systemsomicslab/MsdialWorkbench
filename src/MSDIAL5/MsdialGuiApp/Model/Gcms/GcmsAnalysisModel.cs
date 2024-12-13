@@ -8,7 +8,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
-using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -320,11 +320,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
+        void IResultModel.ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter) {
             throw new NotImplementedException();
         }
 
-        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
+        void IResultModel.InvokeMoleculerNetworking(MolecularNetworkingParameter parameter) {
             throw new NotImplementedException();
         }
 

@@ -8,10 +8,11 @@ using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Visualization;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Components;
 using CompMs.Common.Algorithm.Function;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
@@ -421,17 +422,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
 
-        void IResultModel.ExportMoleculerNetworkingData(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, bool cutByExcelLimit) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            network.ExportNodeEdgeFiles(parameter.ExportFolderPath, cutByExcelLimit);
+        void IResultModel.ExportMoleculerNetworkingData(MolecularNetworkingParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter.BaseParameter, parameter.UseCurrentFiltering);
+            network.ExportNodeEdgeFiles(parameter.BaseParameter.ExportFolderPath, parameter.CutByExcelLimit);
         }
 
-        void IResultModel.InvokeMoleculerNetworking(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering, NetworkVisualizationType networkPresentationType, string cytoscapeUrl) {
-            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
-            switch (networkPresentationType) {
+        void IResultModel.InvokeMoleculerNetworking(MolecularNetworkingParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter.BaseParameter, parameter.UseCurrentFiltering);
+            switch (parameter.NetworkPresentationType) {
                 case NetworkVisualizationType.Cytoscape:
                     try {
-                        CytoscapeMolecularNetworkClient.CreateAsync(network, cytoscapeUrl).Wait();
+                        CytoscapeMolecularNetworkClient.CreateAsync(network, parameter.CyRestApiUrl).Wait();
                     }
                     catch {
                         // ignore
