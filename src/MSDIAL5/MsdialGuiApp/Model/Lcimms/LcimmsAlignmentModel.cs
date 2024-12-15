@@ -114,15 +114,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
             var accumulatedTarget = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
-            var target = accumulatedTarget.SkipNull()
-                .Delay(TimeSpan.FromSeconds(.05d))
-                .Select(t =>
-                {
-                    var idx = orderedProps.IndexOf(t);
-                    return propTree.Query(idx, idx + 1).FirstOrDefault();
-                })
-                .ToReactiveProperty()
-                .AddTo(Disposables);
+            var target = new ReactiveProperty<AlignmentSpotPropertyModel?>().AddTo(Disposables);
+                //accumulatedTarget.SkipNull()
+                //.Delay(TimeSpan.FromSeconds(.05d))
+                //.Select(t =>
+                //{
+                //    var idx = orderedProps.IndexOf(t);
+                //    return propTree.Query(idx, idx + 1).FirstOrDefault();
+                //})
+                //.ToReactiveProperty()
+                //.AddTo(Disposables);
             Target = target;
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -140,6 +141,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         propModels.ClearOnScheduler();
                         propModels.AddRangeOnScheduler(props_);
                     }
+                    target.Value = propModels.FirstOrDefault();
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
             AlignmentSpotSource = new AlignmentSpotSource(alignmentFileBean, Container, DRIFT_CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
