@@ -1,18 +1,13 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export.Tests
 {
@@ -42,37 +37,6 @@ namespace CompMs.MsdialCore.Export.Tests
                 "Id,Name" + newline +
                 "0,\"Metabolite 1,2\"" + newline,
                 Encoding.ASCII.GetString(memory.ToArray()));
-        }
-
-        class FakeProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                throw new NotImplementedException();
-            }
         }
 
         class FakeMetaAccessor : IAnalysisMetadataAccessor, IAnalysisMetadataAccessor<ChromatogramPeakFeature>

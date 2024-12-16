@@ -7,14 +7,12 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
-using CompMs.Raw.Abstractions;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
@@ -134,38 +132,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
     class FakeDataProviderFactory : IDataProviderFactory<AnalysisFileBean>
     {
         public IDataProvider Create(AnalysisFileBean source) {
-            return new FakeDataProvider();
-        }
-
-        class FakeDataProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                return new List<RawSpectrum>().AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                throw new NotImplementedException();
-            }
+            return new StubDataProvider();
         }
     }
 

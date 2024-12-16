@@ -1,10 +1,6 @@
-﻿using CompMs.Common.DataObj;
-using CompMs.Raw.Abstractions;
+﻿using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
+using MsdialCoreTestHelper.DataProvider;
 
 namespace CompMs.MsdialCore.Algorithm.Internal.Tests;
 
@@ -62,36 +58,5 @@ public class CachedDataProviderTests
         var actual1 = provider.LoadMsSpectrumsAsync(default).Result;
         var actual2 = provider.LoadMsSpectrumsAsync(default).Result;
         Assert.AreEqual(actual1, actual2);
-    }
-
-    class StubDataProvider : IDataProvider
-    {
-        public List<double> LoadCollisionEnergyTargets() {
-            return [];
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return new List<RawSpectrum>(0).AsReadOnly();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-            return Task.FromResult(new List<RawSpectrum>(0).AsReadOnly());
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            return new List<RawSpectrum>(0).AsReadOnly();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-            return Task.FromResult(new List<RawSpectrum>(0).AsReadOnly());
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return new List<RawSpectrum>(0).AsReadOnly();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-            return Task.FromResult(new List<RawSpectrum>(0).AsReadOnly());
-        }
     }
 }

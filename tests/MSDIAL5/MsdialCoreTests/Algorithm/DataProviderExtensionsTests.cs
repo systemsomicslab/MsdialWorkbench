@@ -1,12 +1,6 @@
-﻿using CompMs.Common.DataObj;
-using CompMs.Raw.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Tests;
 
@@ -15,7 +9,16 @@ public class DataProviderExtensionsTests
 {
     [TestMethod()]
     public void LoadMs2SpectraWithRtRangeTest() {
-        var provider = new StubDataProvider();
+        var provider = new StubDataProvider()
+        {
+            Spectra = [
+                new() { ScanStartTime = 1d, },
+                new() { ScanStartTime = 2d, },
+                new() { ScanStartTime = 3d, },
+                new() { ScanStartTime = 4d, },
+                new() { ScanStartTime = 5d, },
+            ],
+        };
         var spectra = provider.LoadMsNSpectrumsAsync(2, default).Result;
         var expected = spectra.Where(s => 2d <= s.ScanStartTime && s.ScanStartTime < 4d).ToArray();
         var actual = provider.LoadMs2SpectraWithRtRangeAsync(2, 4, default).Result;
@@ -32,7 +35,7 @@ public class DataProviderExtensionsTests
     public void LoadMs2SpectraByNearestMs1WithRtTest(double targetRt) {
         var provider = new StubDataProvider
         {
-            MsSpectra = new ReadOnlyCollection<RawSpectrum>([
+            Spectra = [
                 new() { ScanStartTime = 1d, MsLevel = 1, ExperimentID = 1, },
                 new() { ScanStartTime = 1d, MsLevel = 2, ExperimentID = 2, },
                 new() { ScanStartTime = 2d, MsLevel = 1, ExperimentID = 1, },
@@ -44,12 +47,12 @@ public class DataProviderExtensionsTests
                 new() { ScanStartTime = 4d, MsLevel = 2, ExperimentID = 2, },
                 new() { ScanStartTime = 5d, MsLevel = 1, ExperimentID = 1, },
                 new() { ScanStartTime = 5d, MsLevel = 2, ExperimentID = 2, },
-            ]),
+            ],
         };
 
         // Call the method being tested
         var actual = provider.LoadMs2SpectraByNearestMs1WithRtAsync(targetRt, default).Result;
-        var expected = new[]{ provider.MsSpectra[5], provider.MsSpectra[6], };
+        var expected = new[]{ provider.Spectra[5], provider.Spectra[6], };
 
         // Ensure MS2 spectra are found
         Assert.IsTrue(actual.Length > 0, "Expected MS2 spectra, but none were found.");
@@ -57,46 +60,5 @@ public class DataProviderExtensionsTests
         // Assertions
         Assert.AreEqual(expected.Length, actual.Length, "The number of MS2 spectra does not match.");
         CollectionAssert.AreEqual(expected, actual, "The returned MS2 spectra do not match the expected spectra.");
-    }
-
-    class StubDataProvider : IDataProvider
-    {
-        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            throw new NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-            throw new NotImplementedException();
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            throw new NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-            var spectra = new RawSpectrum[]
-            {
-                new() { ScanStartTime = 1d, },
-                new() { ScanStartTime = 2d, },
-                new() { ScanStartTime = 3d, },
-                new() { ScanStartTime = 4d, },
-                new() { ScanStartTime = 5d, },
-            };
-            return Task.FromResult(new ReadOnlyCollection<RawSpectrum>(spectra));
-        }
-
-        public ReadOnlyCollection<RawSpectrum> MsSpectra { get; set; }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return MsSpectra;
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-            return Task.FromResult(MsSpectra);
-        }
-
-        public List<double> LoadCollisionEnergyTargets() {
-            throw new NotImplementedException();
-        }
     }
 }

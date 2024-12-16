@@ -1,18 +1,13 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Export.Tests
 {
@@ -91,7 +86,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                     },
                 });
             var msdec = new MSDecResult();
-            var provider = new MockDataProvider();
+            var provider = new StubDataProvider();
             var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
 
             Assert.AreEqual("100.991", content["Mobility left"]);
@@ -105,37 +100,6 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             Assert.AreEqual("True", content["m/z matched"]);
             Assert.AreEqual("0.68", content["CCS similarity"]);
             Assert.AreEqual("0.81", content["m/z similarity"]);
-        }
-
-        class MockDataProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                return new List<double>(0);
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                return new List<RawSpectrum> { }.AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                return Task.FromResult(LoadMs1Spectrums());
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                throw new System.NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                throw new System.NotImplementedException();
-            }
         }
 
         class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>

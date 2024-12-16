@@ -6,13 +6,11 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
@@ -38,7 +36,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
-            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new StubDataProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
             Assert.AreEqual(annotator.Dummy, chromPeaks[1].MatchResults.Representative);
@@ -64,7 +62,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
-            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new StubDataProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
             Assert.AreEqual(annotator.Dummy, chromPeaks[1].MatchResults.Representative);
@@ -84,42 +82,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             ], 0d);
             var annotator = new MockAnnotator("Annotator");
             var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
-            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new StubDataProvider(), 4);
 
             await Console.Out.WriteLineAsync(string.Join(",", chromPeaks[0].MatchResults.MatchResults.Select(r => r.Name))).ConfigureAwait(false);
             var highScoreSubset = annotator.Dummies.Where(r => annotator.IsReferenceMatched(r) || annotator.IsAnnotationSuggested(r)).ToArray();
             CollectionAssert.IsSubsetOf(highScoreSubset, chromPeaks[0].MatchResults.MatchResults);
-        }
-
-        class MockProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                return [];
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                return Task.FromResult(LoadMs1Spectrums());
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                return new List<RawSpectrum>().AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                return Task.FromResult(LoadMsNSpectrums(level));
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                return Task.FromResult(new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly());
-            }
         }
 
         class MockQuery : IAnnotationQuery<MsScanMatchResult>

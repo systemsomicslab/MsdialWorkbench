@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialDimsCore\MsdialDimsCore.csproj" />
+    <ProjectReference Include="..\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj" />
   </ItemGroup>
 
   <ItemGroup>

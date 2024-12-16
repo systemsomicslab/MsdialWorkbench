@@ -1,12 +1,9 @@
 ﻿using CompMs.Common.DataObj;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Internal.Tests
 {
@@ -15,7 +12,17 @@ namespace CompMs.MsdialCore.Algorithm.Internal.Tests
     {
         [TestMethod()]
         public void LoadMsNSpectrumsAsyncTest() {
-            var provider = new StubDataProvider();
+            var provider = new StubDataProvider()
+            {
+                Spectra = new List<RawSpectrum>
+                {
+                    new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 100d, } },
+                    new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 200d, } },
+                    new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 300d, } },
+                    new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 400d, } },
+                    new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 500d, } },
+                }
+            };
             var filtered = new PrecursorMzSelectedDataProvider(provider, 300d, 100d);
             var actual = filtered.LoadMsNSpectrums(2);
             var expected = provider.LoadMsNSpectrums(2).Where(s => Math.Abs(s.Precursor.SelectedIonMz - 300d) <= 100d).ToArray();
@@ -23,44 +30,6 @@ namespace CompMs.MsdialCore.Algorithm.Internal.Tests
             Assert.AreEqual(expected.Length, actual.Count);
             for (int i = 0; i < expected.Length; i++) {
                 Assert.AreEqual(expected[i].Precursor.SelectedIonMz, actual[i].Precursor.SelectedIonMz);
-            }
-        }
-
-        class StubDataProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                throw new NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                throw new System.NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                return new List<RawSpectrum>
-                {
-                    new() { Precursor = new RawPrecursorIon { SelectedIonMz = 100d, } },
-                    new() { Precursor = new RawPrecursorIon { SelectedIonMz = 200d, } },
-                    new() { Precursor = new RawPrecursorIon { SelectedIonMz = 300d, } },
-                    new() { Precursor = new RawPrecursorIon { SelectedIonMz = 400d, } },
-                    new() { Precursor = new RawPrecursorIon { SelectedIonMz = 500d, } },
-                }.AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                throw new System.NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                throw new System.NotImplementedException();
             }
         }
     }

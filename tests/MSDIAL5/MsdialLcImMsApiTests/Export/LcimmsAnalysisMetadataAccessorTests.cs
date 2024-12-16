@@ -1,19 +1,14 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Export.Tests
 {
@@ -105,7 +100,7 @@ namespace CompMs.MsdialLcImMsApi.Export.Tests
             var msdec = new MSDecResult();
             var analysisFile = new AnalysisFileBean();
 
-            var dict = accessor.GetContent(feature, msdec, new MockDataProvider(), analysisFile, new());
+            var dict = accessor.GetContent(feature, msdec, new StubDataProvider(), analysisFile, new());
 
             Assert.AreEqual("1.100", dict["RT left(min)"]);
             Assert.AreEqual("1.200", dict["RT (min)"]);
@@ -124,37 +119,6 @@ namespace CompMs.MsdialLcImMsApi.Export.Tests
             Assert.AreEqual("0.95", dict["RT similarity"]);
             Assert.AreEqual("0.98", dict["CCS similarity"]);
             Assert.AreEqual("0.99", dict["m/z similarity"]);
-        }
-    }
-
-    class MockDataProvider : IDataProvider
-    {
-        public List<double> LoadCollisionEnergyTargets() {
-            return new List<double>(0);
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return new List<RawSpectrum> { }.AsReadOnly();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-            return Task.FromResult(LoadMs1Spectrums());
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-            throw new System.NotImplementedException();
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-            throw new System.NotImplementedException();
         }
     }
 

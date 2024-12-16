@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -7,14 +6,11 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Tests;
 
@@ -74,7 +70,7 @@ public class PeakCharacterEstimatorTests
         peaks[3].MatchResults.AddResult(new MsScanMatchResult { AnnotatorID = "matched", Source = SourceType.MspDB, Priority = 1, });
         peaks[4].MatchResults.AddResult(new MsScanMatchResult { AnnotatorID = "suggested", Source = SourceType.MspDB, Priority = 1, });
         peaks[5].MatchResults.AddResult(new MsScanMatchResult { AnnotatorID = "matched", Source = SourceType.MspDB, Priority = 1, });
-        var stubProvider = new FakeProvider();
+        var stubProvider = new StubDataProvider();
         var stubDecs = new List<MSDecResult>();
         var evaluator = new FakeEvaluator(matched: "matched", suggested: "suggested");
         var stubParameter = new ParameterBase();
@@ -159,37 +155,6 @@ public class PeakCharacterEstimatorTests
             Assert.AreEqual(expects[i].PeakCharacter.PeakLinks.Count, peaks[i].PeakCharacter.PeakLinks.Count);
             CollectionAssert.AreEquivalent(expects[i].PeakCharacter.PeakLinks.Select(l => l.LinkedPeakID).ToArray(), peaks[i].PeakCharacter.PeakLinks.Select(l => l.LinkedPeakID).ToArray());
             CollectionAssert.AreEquivalent(expects[i].PeakCharacter.PeakLinks.Select(l => l.Character).ToArray(), peaks[i].PeakCharacter.PeakLinks.Select(l => l.Character).ToArray());
-        }
-    }
-
-    class FakeProvider : IDataProvider
-    {
-        public List<double> LoadCollisionEnergyTargets() {
-            throw new NotImplementedException();
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            throw new NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-            throw new NotImplementedException();
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            throw new NotImplementedException();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-            throw new NotImplementedException();
-        }
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return new List<RawSpectrum>().AsReadOnly();
-        }
-
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-            throw new NotImplementedException();
         }
     }
 

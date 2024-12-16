@@ -3,18 +3,14 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.Raw.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export.Tests
 {
@@ -99,7 +95,31 @@ namespace CompMs.MsdialCore.Export.Tests
                     new SpectrumPeak { Mass = 200.00003, Intensity = 50, },
                 },
             };
-            var provider = new MockDataProvider();
+            var provider = new StubDataProvider
+            {
+                Spectra =
+                [
+                    new RawSpectrum
+                    {
+                        OriginalIndex = 2,
+                        Spectrum = new[]
+                        {
+                            new RawPeakElement { Mz = 700d, Intensity = 1000d, },
+                            new RawPeakElement { Mz = 701.00001, Intensity = 100d, },
+                        },
+                    },
+                    new RawSpectrum
+                    {
+                        Spectrum = new[]
+                        {
+                            new RawPeakElement { Mz = 200.00003, Intensity = 50, },
+                            new RawPeakElement { Mz = 500.00002, Intensity = 200, },
+                            new RawPeakElement { Mz = 700.00001, Intensity = 1000, },
+                        },
+                    },
+
+                ],
+            };
             var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
 
             Assert.AreEqual("100", content["Peak ID"]);
@@ -131,58 +151,6 @@ namespace CompMs.MsdialCore.Export.Tests
         {
             public TestAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
-            }
-        }
-
-        class MockDataProvider : IDataProvider
-        {
-            public List<double> LoadCollisionEnergyTargets() {
-                throw new System.NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-                return new List<RawSpectrum>
-                { 
-                    new RawSpectrum
-                    {
-                        OriginalIndex = 2,
-                        Spectrum = new[]
-                        {
-                            new RawPeakElement { Mz = 700d, Intensity = 1000d, },
-                            new RawPeakElement { Mz = 701.00001, Intensity = 100d, },
-                        },
-                    },
-                    new RawSpectrum
-                    {
-                        Spectrum = new[]
-                        {
-                            new RawPeakElement { Mz = 200.00003, Intensity = 50, },
-                            new RawPeakElement { Mz = 500.00002, Intensity = 200, },
-                            new RawPeakElement { Mz = 700.00001, Intensity = 1000, },
-                        },
-                    },
-
-                }.AsReadOnly();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-                return Task.FromResult(LoadMs1Spectrums());
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
-                throw new System.NotImplementedException();
-            }
-
-            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                throw new System.NotImplementedException();
             }
         }
 
