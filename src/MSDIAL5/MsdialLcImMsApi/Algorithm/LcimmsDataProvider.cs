@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm;
 
-class LcimmsAccumulatedSpectrumIdentifier(ISpectrumIdentifier[] ids) : ISpectrumIdentifier
+class LcimmsAccumulatedSpectrumIdentifier(ulong id, SpectrumIDType idType, ISpectrumIdentifier[] ids) : ISpectrumIdentifier
 {
+    public ulong ID { get; } = id;
+
+    public SpectrumIDType IDType { get; } = idType;
+
     public ISpectrumIdentifier[] IDs { get; } = ids;
 
     public bool Equals(ISpectrumIdentifier other) {
@@ -86,7 +90,7 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
             }
             var rSpec = pack[0];
             var spec = new RawSpectrum {
-                RawSpectrumID = new LcimmsAccumulatedSpectrumIdentifier(pack.Select(s => s.RawSpectrumID).ToArray()),
+                RawSpectrumID = new LcimmsAccumulatedSpectrumIdentifier((ulong)idx, SpectrumIDType.Index, pack.Select(s => s.RawSpectrumID).ToArray()),
                 OriginalIndex = rSpec.OriginalIndex,
                 Index = idx++,
                 ScanNumber = rSpec.ScanNumber,

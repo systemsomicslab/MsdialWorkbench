@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
@@ -69,6 +70,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .OrderBy(spectrum => spectrum.DriftTime).ToList();
             for (int i = 0; i < result.Count; i++) {
                 result[i].Index = i;
+                result[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return result;
         }
@@ -146,6 +148,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .ToList();
             for (var i = 0; i < result.Count; i++) {
                 result[i].Index = i;
+                result[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
 
             return result;

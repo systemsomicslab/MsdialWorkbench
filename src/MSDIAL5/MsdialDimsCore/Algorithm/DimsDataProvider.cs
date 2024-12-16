@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.DataObj;
 using CompMs.Raw.Abstractions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -91,6 +92,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             var result = msSpectrums.Prepend(ms1Spectrum).ToList();
             for (int i = 0; i < result.Count; i++) {
                 result[i].Index = i;
+                result[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return result;
         }
@@ -137,6 +139,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             var result = new[] { ms1Spectrum }.Concat(msSpectrums).ToList();
             for (int i = 0; i < result.Count; i++) {
                 result[i].Index = i;
+                result[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return result;
         }
@@ -190,6 +193,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             var results = new[] { result }.Concat(spectrums.Where(spectrum => spectrum.MsLevel != 1)).ToList();
             for (int i = 0; i < results.Count; i++) {
                 results[i].Index = i;
+                results[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return results;
         }
