@@ -302,6 +302,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 peaks.Add(driftFeature);
                 counter++;
             }
+            peaks = GetBackgroundSubtractedPeaks(peaks, chromatogram);
+            if (peaks == null || peaks.Count == 0) return null;
             return peaks;
         }
 
@@ -652,7 +654,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return sPeakAreaList;
         }
 
-        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, ExtractedIonChromatogram chromatogram) {
+        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram chromatogram) {
             var counterThreshold = 4;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 

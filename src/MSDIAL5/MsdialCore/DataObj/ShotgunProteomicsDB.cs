@@ -185,8 +185,8 @@ namespace CompMs.MsdialCore.DataObj {
 
             Console.WriteLine("Preparing peptide queries");
             var peptides = LibraryHandler.GenerateTargetPeptideReference(FastaQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
-            //var decoyPeptides = LibraryHandler.GenerateTargetPeptideReference(DecoyQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
-            var decoyPeptides = LibraryHandler.GenerateDecoyPeptideReference(peptides);
+            var decoyPeptides = LibraryHandler.GenerateTargetPeptideReference(DecoyQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
+            //var decoyPeptides = LibraryHandler.GenerateDecoyPeptideReference(peptides);
 
             Console.WriteLine("Peptide count {0}", peptides.Count);
 

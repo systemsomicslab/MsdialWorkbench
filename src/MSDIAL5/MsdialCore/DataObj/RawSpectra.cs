@@ -83,7 +83,7 @@ namespace CompMs.MsdialCore.DataObj
             return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
-        public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol) {
+        public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
             var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
             var driftBinToBasePeakIntensity = new Dictionary<int, double>();
 
@@ -91,6 +91,7 @@ namespace CompMs.MsdialCore.DataObj
             for (int i = scanID + 1; i >= 0; i--) {
                 var spectrum = _spectra[i];
                 if (spectrum.MsLevel != 1) continue;
+                if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
                 if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
                 SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
             }
@@ -99,11 +100,16 @@ namespace CompMs.MsdialCore.DataObj
             for (int i = scanID + 2; i < _spectra.Count; i++) {
                 var spectrum = _spectra[i];
                 if (spectrum.MsLevel != 1) continue;
+                if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
                 if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
                 SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
             }
 
             return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
+        }
+
+        public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol) {
+            return GetDriftChromatogramByScanRtMz(scanID, rt, rtWidth, mz, mztol, float.MinValue, float.MaxValue);
         }
 
         /// <summary>
