@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Algorithm
 {
-    class DimsBaseDataProvider : IDataProvider
+    class DimsBaseDataProvider
     {
         private readonly IDataProvider _provider;
         private readonly List<RawSpectrum> _spectra;
@@ -96,6 +96,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             return result;
         }
+
+        public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+            if (id < (ulong)_spectra.Count) {
+                return Task.FromResult(_spectra[(int)id]);
+            }
+            return Task.FromResult<RawSpectrum?>(null);
+        }
     }
 
     public sealed class DimsTicDataProvider : IDataProvider
@@ -142,6 +149,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 result[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return result;
+        }
+
+        public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+            if (id < (ulong)_spectra.Count) {
+                return Task.FromResult(_spectra[(int)id]);
+            }
+            return Task.FromResult<RawSpectrum?>(null);
         }
     }
 
@@ -196,6 +210,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 results[i].RawSpectrumID = new IndexedSpectrumIdentifier(i);
             }
             return results;
+        }
+
+        public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+            if (id < (ulong)_spectra.Count) {
+                return Task.FromResult(_spectra[(int)id]);
+            }
+            return Task.FromResult<RawSpectrum?>(null);
         }
     }
 

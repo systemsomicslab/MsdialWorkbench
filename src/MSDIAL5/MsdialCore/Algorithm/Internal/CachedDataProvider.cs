@@ -116,4 +116,8 @@ internal sealed class CachedDataProvider: IDataProvider
     public List<double> LoadCollisionEnergyTargets() {
         return _provider.LoadCollisionEnergyTargets();
     }
+
+    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        return _provider.LoadSpectrumAsync(id, idType);
+    }
 }

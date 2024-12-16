@@ -192,6 +192,10 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
         spectrum.MinIntensity = minIntensity;
     }
 
+    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        throw new NotImplementedException();
+    }
+
     sealed class MassBin
     {
         public MassBin(double mz, double intensity) {

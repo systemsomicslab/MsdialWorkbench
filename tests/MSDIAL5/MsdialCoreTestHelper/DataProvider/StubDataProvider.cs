@@ -45,4 +45,8 @@ public sealed class StubDataProvider : IDataProvider
     public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
         return Task.FromResult(LoadMsSpectrums());
     }
+
+    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        return Task.FromResult(LoadMsSpectrums()[(int)id]);
+    }
 }

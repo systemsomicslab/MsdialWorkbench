@@ -82,4 +82,8 @@ internal sealed class ExperimentIDSelectedDataProvider(IDataProvider other, int 
         var spectra = await other.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.ExperimentID == experimentID).ToArray());
     }
+
+    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        return other.LoadSpectrumAsync(id, idType);
+    }
 }

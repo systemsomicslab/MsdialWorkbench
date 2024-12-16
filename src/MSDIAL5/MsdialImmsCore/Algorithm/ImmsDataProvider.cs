@@ -78,6 +78,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private static IEnumerable<RawSpectrum> FilterByScanTime(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd) {
             return spectrums.Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd);
         }
+
+        public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+            if (id < (ulong)_spectra.Count) {
+                return Task.FromResult(_spectra[(int)id]);
+            }
+            return Task.FromResult<RawSpectrum?>(null);
+        }
     }
 
     public sealed class ImmsAverageDataProvider : IDataProvider {
@@ -176,6 +183,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static IEnumerable<RawSpectrum> FilterByScanTime(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd) {
             return spectrums.Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd);
+        }
+
+        public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+            if (id < (ulong)_spectra.Count) {
+                return Task.FromResult(_spectra[(int)id]);
+            }
+            return Task.FromResult<RawSpectrum?>(null);
         }
     }
 

@@ -55,4 +55,8 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
         var spectra = await _other.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
     }
+
+    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        return _other.LoadSpectrumAsync(id, idType);
+    }
 }
