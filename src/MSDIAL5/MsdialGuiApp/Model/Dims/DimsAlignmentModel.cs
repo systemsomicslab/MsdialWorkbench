@@ -10,6 +10,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -113,11 +114,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 .Add(horizontalAxis, "m/z", "m/z")
                 .Register(horizontalProperty)
                 .Build();
-            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.KMD);
-            var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
             var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Register(verticalProperty)
-                .Add(verticalAxis, "mass defect", "Kendric mass defect")
+                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
                 .Build();
             PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {

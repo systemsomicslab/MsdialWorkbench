@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
             var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Add(verticalAxis, "m/z", "m/z")
-                .Add(massDefectAxis, "Mass defect", "Mass defect")
+                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
                 .Register(verticalProperty)
                 .Build();
             PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
