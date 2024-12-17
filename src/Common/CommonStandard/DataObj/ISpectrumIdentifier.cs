@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CompMs.Common.DataObj;
 
@@ -40,4 +41,8 @@ public interface ISpectrumIdentifier : IEquatable<ISpectrumIdentifier>
 {
     ulong ID { get; }
     SpectrumIDType IDType { get; }
+}
+
+public interface IModifiedSpectrumIdentifier : ISpectrumIdentifier {
+    IReadOnlyList<ISpectrumIdentifier> OriginalIDs { get; }
 }
