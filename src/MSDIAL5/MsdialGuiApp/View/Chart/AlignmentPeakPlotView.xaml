@@ -23,9 +23,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
-                          VerticalAxis="{Binding VerticalAxis.Value, Mode=OneWay}"
-                          GraphTitle="{Binding GraphTitle.Value, Mode=OneTime}"
+        <chart:MultiChart HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneWay}"
+                          VerticalAxis="{Binding Path=VerticalAxis.Value, Mode=OneWay}"
+                          GraphTitle="{Binding Path=GraphTitle.Value, Mode=OneTime}"
                           HorizontalTitle="{Binding Path=HorizontalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel, Mode=OneWay}"
                           VerticalTitle="{Binding Path=VerticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem.GraphLabel, Mode=OneWay}"
                           Style="{StaticResource OverlapChart}"

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
@@ -28,7 +29,12 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
 
         Spots = model.Spots;
         HorizontalAxis = model.HorizontalAxis;
-        VerticalAxis = model.ObserveProperty(m => m.VerticalAxis).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+        VerticalAxis = model.VerticalPropertySelectors.AxisItemSelector
+            .ObserveProperty(s => s.SelectedAxisItem)
+            .SkipNull().Select(item => item.AxisManager)
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
 
         SelectedBrush = model.ToReactivePropertyAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
         Brush = SelectedBrush.Select(data => data?.Mapper)

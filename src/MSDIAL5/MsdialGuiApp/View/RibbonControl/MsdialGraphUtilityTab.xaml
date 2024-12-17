@@ -17,4 +17,12 @@
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>
+    <RibbonGroup Header="Scatter axis type">
+        <RibbonComboBox Label="Vertical axis"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding VerticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding VerticalAxisPropertySelectors.AxisItemSelector.AxisItems}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+    </RibbonGroup>
 </RibbonTab>
