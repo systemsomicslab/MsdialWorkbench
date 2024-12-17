@@ -1,6 +1,7 @@
 ﻿using Accord.Diagnostics;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -114,6 +115,11 @@ namespace CompMs.MsdialCore.DataObj
         public int MS1AccumulatedMs1RawSpectrumIdLeft { get; set; } // used for LC-IM-MS/MS
         [Key(47)]
         public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
+        [Key(54)]
+        public SpectrumIDType RawDataIDType { get; set; }
+        [Key(55)]
+        public SpectrumIDType AccumulatedDataIDType { get; set; }
+
         [Key(18)]
         public int MS2RawSpectrumID { get; set; } = -1; // representative ID
         [Key(19)]

@@ -139,12 +139,12 @@ public class PeakAligner {
                     Filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, analysisFile.AnalysisFileId);
                 }
                 if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
-                    var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
-                    if (index < 0 || spectra == null || index >= spectra.Count) {
+                    var spectrum = provider.LoadSpectrumAsync((ulong)peak.MS1RawSpectrumIdTop, peak.RawDataIDType).Result;
+                    if (spectrum is null) {
                         spot.IsotopicPeaks = [];
                     }
                     else {
-                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
+                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     }
                 }
 

@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm;
 
-class LcimmsAccumulatedSpectrumIdentifier(ulong id, SpectrumIDType idType, ISpectrumIdentifier[] ids) : ISpectrumIdentifier
+class LcimmsAccumulatedSpectrumIdentifier(ulong id, SpectrumIDType idType, ISpectrumIdentifier[] ids) : IModifiedSpectrumIdentifier
 {
     public ulong ID { get; } = id;
 
     public SpectrumIDType IDType { get; } = idType;
 
     public ISpectrumIdentifier[] IDs { get; } = ids;
+
+    IReadOnlyList<ISpectrumIdentifier> IModifiedSpectrumIdentifier.OriginalIDs => IDs;
 
     public bool Equals(ISpectrumIdentifier other) {
         if (other is not LcimmsAccumulatedSpectrumIdentifier si) {

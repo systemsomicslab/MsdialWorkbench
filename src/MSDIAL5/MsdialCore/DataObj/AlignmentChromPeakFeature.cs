@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -75,6 +76,10 @@ namespace CompMs.MsdialCore.DataObj
         public int MS1AccumulatedMs1RawSpectrumIdLeft { get; set; } // used for LC-IM-MS/MS
         [Key(43)]
         public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
+        [Key(53)]
+        public SpectrumIDType RawDataIDType { get; set; }
+        [Key(54)]
+        public SpectrumIDType AccumulatedDataIDType { get; set; }
 
         [Key(14)]
         public ChromXs ChromXsLeft { get; set; }
@@ -296,6 +301,8 @@ namespace CompMs.MsdialCore.DataObj
                 MS1AccumulatedMs1RawSpectrumIdTop = MS1AccumulatedMs1RawSpectrumIdTop,
                 MS1AccumulatedMs1RawSpectrumIdLeft = MS1AccumulatedMs1RawSpectrumIdLeft,
                 MS1AccumulatedMs1RawSpectrumIdRight = MS1AccumulatedMs1RawSpectrumIdRight,
+                RawDataIDType = RawDataIDType,
+                AccumulatedDataIDType = AccumulatedDataIDType,
                 ChromXsLeft = new ChromXs(ChromXsLeft.RT, ChromXsLeft.RI, ChromXsLeft.Drift, ChromXsLeft.Mz, ChromXsLeft.MainType),
                 ChromXsTop = new ChromXs(ChromXsTop.RT, ChromXsTop.RI, ChromXsTop.Drift, ChromXsTop.Mz, ChromXsTop.MainType),
                 ChromXsRight = new ChromXs(ChromXsRight.RT, ChromXsRight.RI, ChromXsRight.Drift, ChromXsRight.Mz, ChromXsRight.MainType),

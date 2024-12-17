@@ -114,8 +114,6 @@ namespace CompMs.MsdialCore.Utility
             return GetIsotopicPeaks(spectrum, targetedMz, massTolerance, maxIsotopes);
         }
 
-
-
         public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawPeakElement> spectrum, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
             //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);

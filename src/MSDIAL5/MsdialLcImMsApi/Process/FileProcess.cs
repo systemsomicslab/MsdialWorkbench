@@ -1,5 +1,4 @@
-﻿using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;

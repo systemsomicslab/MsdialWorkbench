@@ -52,12 +52,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     Filler3d.GapFillFirst(rawSpectra, spot, analysisFile.AnalysisFileId);
                 }
                 if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
-                    var index = accumulated.LowerBound(peak.MS1AccumulatedMs1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
-                    if (index < 0 || accumulated == null || index >= accumulated.Count) {
-                        spot.IsotopicPeaks = new List<IsotopicPeak>(0);
+                    var spectrum = rawProvider.LoadSpectrumAsync((ulong)peak.MS1AccumulatedMs1RawSpectrumIdTop, peak.AccumulatedDataIDType).Result;
+                    if (spectrum is null) {
+                        spot.IsotopicPeaks = [];
                     }
                     else {
-                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
+                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     }
                 }
 
