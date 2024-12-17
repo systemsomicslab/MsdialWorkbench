@@ -87,7 +87,7 @@ public sealed class LcimmsProcess {
         var files = storage.AnalysisFiles;
         var evaluator = new MsScanMatchResultEvaluator(storage.Parameter.MspSearchParam);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
-        var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = false, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+        var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = false, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         var accProviderFactory = new LcimmsAccumulateDataProviderFactory<AnalysisFileBean>(providerFactory);
         var process = new FileProcess(providerFactory, accProviderFactory, annotationProcess, evaluator, storage);
         var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);

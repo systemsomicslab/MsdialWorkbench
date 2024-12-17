@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             _studyContext = studyContext;
             _broker = broker;
-            providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             accProviderFactory = new LcimmsAccumulateDataProviderFactory<AnalysisFileBean>(providerFactory);
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);

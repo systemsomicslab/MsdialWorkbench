@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
-            var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             ProviderFactory = storage.Parameter.ProviderFactoryParameter.Create(providerFactory);
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;

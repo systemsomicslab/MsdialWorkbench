@@ -69,7 +69,7 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
-            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             var db = DataBaseStorage.CreateEmpty();
             var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB);
             var textDBAnnotator = new ImmsTextDBAnnotator(tdb, param.TextDbSearchParam, "TextDB", -1);
@@ -151,7 +151,7 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
             Console.WriteLine("Reading data...");
-            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = false, IsImaging = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             Console.WriteLine("Peak picking...");
             var container = new MsdialImmsDataStorage {
                 AnalysisFiles = [file], 
@@ -273,7 +273,7 @@ namespace CompMs.App.MsdialConsole.Process
             );
 
             var annotationProcess = BuildAnnotationProcess(container.DataBases);
-            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
 
             MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(providerFactory, container, annotationProcess, evaluator);
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();

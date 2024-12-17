@@ -85,7 +85,7 @@ public sealed class ImmsProcess
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        var providerFactory = new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)), mzTolerance: 0.001, driftTolerance: 0.002);
+        var providerFactory = new ImmsAverageDataProviderFactory<AnalysisFileBean>(new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt)), mzTolerance: 0.001, driftTolerance: 0.002);
         var factories = storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories;
 
         // temporary

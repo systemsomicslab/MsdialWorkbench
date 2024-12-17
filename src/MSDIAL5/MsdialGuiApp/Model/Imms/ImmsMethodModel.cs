@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
             var providerFactory = new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true };
-            ProviderFactory = parameter.ProviderFactoryParameter.Create(providerFactory.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)));
+            ProviderFactory = parameter.ProviderFactoryParameter.Create(providerFactory.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt)));
 
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 

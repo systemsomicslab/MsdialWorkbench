@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Core
                 MaxDegreeOfParallelism = param.NumThreads
             };
             System.Threading.Tasks.Parallel.ForEach(files, parallelOptions, f => {
-                IDataProviderFactory<AnalysisFileBean> factory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+                IDataProviderFactory<AnalysisFileBean> factory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
                 var provider = factory.Create(f);
                 RetentionTimeCorrection.Execute(f, param, provider);
                 _bgWorker!.ReportProgress(1);

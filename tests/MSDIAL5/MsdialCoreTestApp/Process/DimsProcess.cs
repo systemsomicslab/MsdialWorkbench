@@ -75,7 +75,7 @@ public sealed class DimsProcess {
         container.DataBases = dbStorage;
         container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
 
-        var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+        var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, providerFactory, outputFolder, isProjectSaved).Result;
     }

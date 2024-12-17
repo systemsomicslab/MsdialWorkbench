@@ -136,7 +136,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
             var providerFactory = new StandardDataProviderFactory() { IsGuiProcess = true, Retry = 5, SleepTimeBeforeRetry = 5000, IsImaging = true };
-            var immsProviderFactory = _storage.Parameter.ProviderFactoryParameter.Create(providerFactory.ContraMap((AnalysisFileBean file) => (file.PeakAreaBeanInformationFilePath, file.RetentionTimeCorrectionBean.PredictedRt)));
+            var immsProviderFactory = _storage.Parameter.ProviderFactoryParameter.Create(providerFactory.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt)));
 
             var models = new IMsdialAnalysisExport[]
             {
