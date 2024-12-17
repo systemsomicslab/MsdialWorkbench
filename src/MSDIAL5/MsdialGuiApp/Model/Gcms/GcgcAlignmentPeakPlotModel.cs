@@ -6,7 +6,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Gcms;
 
@@ -27,8 +26,19 @@ internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
         var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05)).AddTo(Disposables);
         _axis = axis;
 
-        verticalSelector.AxisItemSelector.Add(axis, "2nd column", "2nd column retention time (min)");
-        verticalSelector.AxisItemSelector.SelectedAxisItem = verticalSelector.AxisItemSelector.AxisItems.FirstOrDefault(item => item.AxisManager == axis);
+        var axisItem = new AxisItemModelWithValue<double>("2nd column", axis, "2nd column retention time (min)")
+        {
+            ValueLabel = "TimeStep",
+            Value = 1d,
+        };
+        axisItem.PropertyChanged += (s, e) => {
+            if (e.PropertyName == nameof(AxisItemModelWithValue<double>.Value)) {
+                axis.Factor = axis.Divisor = ((AxisItemModelWithValue<double>)s).Value;
+            }
+        };
+
+        verticalSelector.AxisItemSelector.AxisItems.Add(axisItem);
+        verticalSelector.AxisItemSelector.SelectedAxisItem = axisItem;
     }
 
     public double TimeStep {

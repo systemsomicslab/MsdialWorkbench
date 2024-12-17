@@ -116,9 +116,19 @@ namespace CompMs.App.Msdial.Model.Dims
                 .Build();
             var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
             var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
+            var massDefectItem = new AxisItemModelWithValue<double>("Mass defect", massDefectAxis, "Kendric mass defect")
+            {
+                ValueLabel = "m/z step",
+                Value = AtomMass.hMass * 2 + AtomMass.cMass,
+            };
+            massDefectItem.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(AxisItemModelWithValue<double>.Value)) {
+                    massDefectAxis.Factor = massDefectAxis.Divisor = ((AxisItemModelWithValue<double>)s).Value;
+                }
+            };
             var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Register(verticalProperty)
-                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Add(massDefectItem)
                 .Build();
             PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {

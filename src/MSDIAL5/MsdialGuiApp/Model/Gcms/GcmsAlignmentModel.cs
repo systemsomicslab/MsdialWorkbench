@@ -125,9 +125,19 @@ namespace CompMs.App.Msdial.Model.Gcms
             var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
             var verticalAxis = spotsSource.ObserveRange(verticalProperty.Selector, Disposables).ToReactiveContinuousAxisManager(new RelativeMargin(0.05)).AddTo(Disposables);
             var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
+            var massDefectItem = new AxisItemModelWithValue<double>("Mass defect", massDefectAxis, "Kendric mass defect")
+            {
+                ValueLabel = "m/z step",
+                Value = AtomMass.hMass * 2 + AtomMass.cMass,
+            };
+            massDefectItem.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(AxisItemModelWithValue<double>.Value)) {
+                    massDefectAxis.Factor = massDefectAxis.Divisor = ((AxisItemModelWithValue<double>)s).Value;
+                }
+            };
             var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Add(verticalAxis, "m/z", "m/z")
-                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Add(massDefectItem)
                 .Register(verticalProperty)
                 .Build();
             PlotModel = new AlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))

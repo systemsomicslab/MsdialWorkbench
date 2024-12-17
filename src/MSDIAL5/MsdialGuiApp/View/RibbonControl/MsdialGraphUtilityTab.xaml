@@ -3,6 +3,7 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Chart"
            xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
            Header="Utility"
            d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentPeakPlotViewModel}}"
@@ -24,5 +25,18 @@
                 <RibbonGalleryCategory ItemsSource="{Binding VerticalAxisPropertySelectors.AxisItemSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
+        <RibbonTextBox DataContext="{Binding VerticalAxisPropertySelectors.AxisItemSelector.SelectedAxisItem}"
+                       Label="{Binding Path=ValueLabel}" Text="{Binding Path=Value}">
+            <RibbonTextBox.Style>
+                <Style TargetType="RibbonTextBox">
+                    <Setter Property="Visibility" Value="visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Value, FallbackValue={x:Null}}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </RibbonTextBox.Style>
+        </RibbonTextBox>
     </RibbonGroup>
 </RibbonTab>

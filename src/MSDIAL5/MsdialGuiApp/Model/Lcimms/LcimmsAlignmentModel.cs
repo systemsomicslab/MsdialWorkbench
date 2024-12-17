@@ -180,10 +180,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
+            var massDefectItem = new AxisItemModelWithValue<double>("Mass defect", massDefectAxis, "Kendric mass defect")
+            {
+                ValueLabel = "m/z step",
+                Value = AtomMass.hMass * 2 + AtomMass.cMass,
+            };
+            massDefectItem.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(AxisItemModelWithValue<double>.Value)) {
+                    massDefectAxis.Factor = massDefectAxis.Divisor = ((AxisItemModelWithValue<double>)s).Value;
+                }
+            };
             var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Register(verticalProperty)
                 .Add(verticalAxis, "m/z", "m/z")
-                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Add(massDefectItem)
                 .Build();
             Disposables.Add(collectionChanged.Connect());
             RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), horizontalPropertySelectors, verticalPropertySelectors, accumulatedTarget, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(accumulatedPropModels, accumulatedPropModels.Select(p => p.innerModel.PeakCharacter).ToList()))
@@ -227,7 +237,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var dtVerticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
                 .Register(verticalProperty)
                 .Add(dtVerticalAxis, "m/z", "m/z")
-                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Add(massDefectItem)
                 .Build();
             Disposables.Add(dtCollectionChanged.Connect());
             DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), dtHorizontalPropertySelectors, dtVerticalPropertySelectors, target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(propModels, propModels.Select(p => p.innerModel.PeakCharacter).ToList()))
