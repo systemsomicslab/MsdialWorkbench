@@ -1,17 +1,10 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.App.Msdial.Model.Chart
-{
-    public sealed class AxisItemModel<T> : BindableBase {
-        public AxisItemModel(string label, IAxisManager<T> axisManager, string graphLabel) {
-            AxisManager = axisManager;
-            Label = label;
-            GraphLabel = graphLabel;
-        }
+namespace CompMs.App.Msdial.Model.Chart;
 
-        public IAxisManager<T> AxisManager { get; }
-        public string Label { get; }
-        public string GraphLabel { get; }
-    }
+public class AxisItemModel<T>(string label, IAxisManager<T> axisManager, string graphLabel) : BindableBase {
+    public IAxisManager<T> AxisManager { get; } = axisManager;
+    public string Label { get; } = label;
+    public string GraphLabel { get; } = graphLabel;
 }
