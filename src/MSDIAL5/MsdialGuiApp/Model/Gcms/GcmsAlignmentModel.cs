@@ -135,11 +135,12 @@ namespace CompMs.App.Msdial.Model.Gcms
                 GraphTitle = alignmentFileBean.FileName,
             }.AddTo(Disposables);
             var verticalProperty2 = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.RT);
-            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, horizontalProperty, verticalProperty2, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()), horizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager)
+            var verticalPropertySelectors2 = AxisPropertySelectors<double>.CreateBuilder()
+                .Register(verticalProperty2)
+                .Build();
+            GcgcPlotModel = new GcgcAlignmentPeakPlotModel(spotsSource, horizontalPropertySelectors, verticalPropertySelectors2, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = alignmentFileBean.FileName,
-                HorizontalTitle = PlotModel.HorizontalTitle,
-                VerticalTitle = "2nd column retention time (min)",
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);

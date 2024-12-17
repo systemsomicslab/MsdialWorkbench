@@ -10,19 +10,23 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Common.Algorithm.Function;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -38,7 +42,6 @@ using System.Reactive.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -160,11 +163,32 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Brushes = brushMapDataSelector.Brushes.ToList();
             SelectedBrush = brushMapDataSelector.SelectedBrush;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), new(spot => spot.TimesCenter), new(spot => spot.MassCenter), accumulatedTarget, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(accumulatedPropModels, accumulatedPropModels.Select(p => p.innerModel.PeakCharacter).ToList()))
+
+            var horizontalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.TimesCenter);
+            var collectionChanged = accumulatedPropModels.CollectionChangedAsObservable().ToUnit().Publish();
+            var horizontalAxis = collectionChanged
+                .Select(_ => accumulatedPropModels.Any() ? new AxisRange(accumulatedPropModels.Min(s => s.TimesCenter), accumulatedPropModels.Max(s => s.TimesCenter)) : AxisRange.Unit)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            var horizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(horizontalAxis, "RT", "Retention time [min]")
+                .Register(horizontalProperty)
+                .Build();
+            var verticalProperty = new PropertySelector<AlignmentSpotPropertyModel, double>(s => s.MassCenter);
+            var verticalAxis = collectionChanged
+                .Select(_ => accumulatedPropModels.Any() ? new AxisRange(accumulatedPropModels.Min(s => s.MassCenter), accumulatedPropModels.Max(s => s.MassCenter)) : AxisRange.Unit)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            var massDefectAxis = new DefectAxisManager(AtomMass.hMass * 2 + AtomMass.cMass, new RelativeMargin(.05)).AddTo(Disposables);
+            var verticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Register(verticalProperty)
+                .Add(verticalAxis, "m/z", "m/z")
+                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Build();
+            Disposables.Add(collectionChanged.Connect());
+            RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), horizontalPropertySelectors, verticalPropertySelectors, accumulatedTarget, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(accumulatedPropModels, accumulatedPropModels.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
-                GraphTitle = ((IFileBean)alignmentFileBean).FileName,
-                HorizontalTitle = "Retention time [min]",
-                VerticalTitle = "m/z",
+                GraphTitle = alignmentFileBean.FileName,
             }.AddTo(Disposables);
             accumulatedTarget.Select(
                 t => $"Alignment: {((IFileBean)alignmentFileBean).FileName}" +
@@ -187,11 +211,28 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             RtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), new(spot => spot.TimesCenter), new(spot => spot.MassCenter), target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(propModels, propModels.Select(p => p.innerModel.PeakCharacter).ToList()))
+            var dtCollectionChanged = propModels.CollectionChangedAsObservable().ToUnit().Publish();
+            var dtHorizontalAxis = dtCollectionChanged
+                .Select(_ => propModels.Any() ? new AxisRange(propModels.Min(s => s.TimesCenter), propModels.Max(s => s.TimesCenter)) : AxisRange.Unit)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            var dtHorizontalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Add(dtHorizontalAxis, "Ion mobility", "Mobility [1/k0]") // TODO: not only 1/k0
+                .Register(horizontalProperty)
+                .Build();
+            var dtVerticalAxis = dtCollectionChanged
+                .Select(_ => propModels.Any() ? new AxisRange(propModels.Min(s => s.MassCenter), propModels.Max(s => s.MassCenter)) : AxisRange.Unit)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            var dtVerticalPropertySelectors = AxisPropertySelectors<double>.CreateBuilder()
+                .Register(verticalProperty)
+                .Add(dtVerticalAxis, "m/z", "m/z")
+                .Add(massDefectAxis, "Mass defect", "Kendric mass defect")
+                .Build();
+            Disposables.Add(dtCollectionChanged.Connect());
+            DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), dtHorizontalPropertySelectors, dtVerticalPropertySelectors, target, labelSource, SelectedBrush, Brushes, PeakLinkModel.Build(propModels, propModels.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)alignmentFileBean).FileName,
-                HorizontalTitle = "Mobility [1/K0]",
-                VerticalTitle = "m/z",
             }.AddTo(Disposables);
             accumulatedTarget.Select(
                 t => $"{((IFileBean)alignmentFileBean).FileName}" +

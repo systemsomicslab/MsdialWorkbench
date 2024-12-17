@@ -20,7 +20,7 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
     private readonly AlignmentSpotSource? _spotsSource;
 
     public AlignmentPeakPlotModel(
-        AlignmentSpotSource spotsSource,
+        ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
         AxisPropertySelectors<double> horizontalAxisPropertySelectors,
         AxisPropertySelectors<double> verticalAxisPropertySelectors,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
@@ -29,8 +29,7 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
         PeakLinkModel peakLinkModel) {
 
-        _spotsSource = spotsSource;
-        Spots = spotsSource.Spots?.Items ?? throw new ArgumentNullException(nameof(spotsSource));
+        Spots = spots ?? throw new ArgumentNullException(nameof(spots));
         TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
         PeakLinkModel = peakLinkModel;
         LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
@@ -49,15 +48,13 @@ internal class AlignmentPeakPlotModel : DisposableModelBase
 
     public AlignmentPeakPlotModel(
         AlignmentSpotSource spotsSource,
-        PropertySelector<AlignmentSpotPropertyModel, double> horizontalSelector,
-        PropertySelector<AlignmentSpotPropertyModel, double> verticalSelector,
+        AxisPropertySelectors<double> horizontalAxisPropertySelectors,
+        AxisPropertySelectors<double> verticalAxisPropertySelectors,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
-        PeakLinkModel peakLinkModel,
-        IAxisManager<double>? horizontalAxis = null)
-        : this(spotsSource.Spots?.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, peakLinkModel, horizontalAxis) {
+        PeakLinkModel peakLinkModel) : this(spotsSource.Spots!.Items, horizontalAxisPropertySelectors, verticalAxisPropertySelectors, targetSource, labelSource, selectedBrush, brushes, peakLinkModel) {
 
         _spotsSource = spotsSource;
     }

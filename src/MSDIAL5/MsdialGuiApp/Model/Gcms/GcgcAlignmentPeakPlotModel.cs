@@ -3,33 +3,32 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Gcms;
 
 internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
 {
-    private readonly SerialDisposable _serialDisposable;
+    private readonly DefectAxisManager _axis;
 
     public GcgcAlignmentPeakPlotModel(
         AlignmentSpotSource spots,
-        PropertySelector<AlignmentSpotPropertyModel, double> horizontalSelector,
-        PropertySelector<AlignmentSpotPropertyModel, double> verticalSelector,
+        AxisPropertySelectors<double> horizontalSelector,
+        AxisPropertySelectors<double> verticalSelector,
         IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
-        PeakLinkModel peakLinkModel,
-        IAxisManager<double>? horizontalAxis = null)
-        : base(spots, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, peakLinkModel, horizontalAxis) {
-        var disposable = new SerialDisposable();
-        _serialDisposable = disposable;
-        Disposables.Add(disposable);
-        var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
-        VerticalAxis = axis;
-        _serialDisposable.Disposable = axis;
+        PeakLinkModel peakLinkModel)
+        : base(spots, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, peakLinkModel) {
+        var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05)).AddTo(Disposables);
+        _axis = axis;
+
+        verticalSelector.AxisItemSelector.Add(axis, "2nd column", "2nd column retention time (min)");
+        verticalSelector.AxisItemSelector.SelectedAxisItem = verticalSelector.AxisItemSelector.AxisItems.FirstOrDefault(item => item.AxisManager == axis);
     }
 
     public double TimeStep {
@@ -37,9 +36,7 @@ internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
         set {
             if (SetProperty(ref _timeStep, value)) {
                 if (_timeStep > 0d) {
-                    var axis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
-                    VerticalAxis = axis;
-                    _serialDisposable.Disposable = axis;
+                    _axis.Divisor = _axis.Factor = _timeStep;
                 }
             }
         }
