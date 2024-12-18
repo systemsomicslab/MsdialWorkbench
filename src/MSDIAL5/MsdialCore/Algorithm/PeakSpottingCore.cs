@@ -445,7 +445,7 @@ namespace CompMs.MsdialCore.Algorithm
             feature.MS1RawSpectrumIdTop = peaklist[chromTopID].ID;
             feature.MS1RawSpectrumIdRight = peaklist[chromRightID].ID;
 
-            SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, peaklist[chromLeftID].ID, peaklist[chromTopID].ID, peaklist[chromRightID].ID, type);
+            SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, peaklist[chromLeftID].ChromXs.RT.Value, peaklist[chromTopID].ChromXs.RT.Value, peaklist[chromRightID].ChromXs.RT.Value, type);
         }
 
         public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, AcquisitionType type) {
@@ -461,54 +461,37 @@ namespace CompMs.MsdialCore.Algorithm
             feature.MS1RawSpectrumIdRight = (int)peakRight.RawSpectrumID.ID;
             feature.RawDataIDType = peakTop.RawSpectrumID.IDType;
 
-            SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.MS1RawSpectrumIdLeft, feature.MS1RawSpectrumIdTop, feature.MS1RawSpectrumIdRight, type);
+            SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.PeakFeature.ChromXsLeft.RT.Value, feature.PeakFeature.ChromXsTop.RT.Value, feature.PeakFeature.ChromXsRight.RT.Value, type);
         }
 
-        public void SetMS2RawSpectrumIDs2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, int scanBegin, int scanTop, int scanEnd, AcquisitionType type) {
-
+        public void SetMS2RawSpectrumIDs2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, double scanBeginTime, double scanTopTime, double scanEndTime, AcquisitionType type) {
             var mass = feature.PeakFeature.Mass;
-            var minDiff = int.MaxValue;
-            var msSpectrumList = provider.LoadMsSpectrums();
-            var ms2SpectrumList = provider.LoadMsNSpectrums(level:2);
-            var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
+            var minDiff = double.MaxValue;
 
             var scanPolarity = _parameter.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-            if (scanBegin < 0) scanBegin = 0;
-            var ms2Tol = _parameter.CentroidMs2Tolerance;
-            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms2Tol));
-            #region // practical parameter changes
-            if (mass > 500) {
-                ms2Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
-            }
-            #endregion
+            var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, mass);
 
-            var ms1Begin = SearchCollection.LowerBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanBegin), (a, b) => a.Index.CompareTo(b.Index));
-            var ms1End = SearchCollection.UpperBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanEnd), (a, b) => a.Index.CompareTo(b.Index));
-            var ms1TopIndex = provider.LoadMsSpectrumFromIndex(scanTop).Index;
-            for (int i = ms1Begin; i < ms1End; i++) {
-                var spec = ms2SpectrumList[i];
-                if (spec.MsLevel <= 1) continue;
-                // for tsugawa own research
-                // if (spec.ExperimentID != 3) continue;
-
-                if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
-                    if (IsInMassWindow(mass, spec, ms2Tol, type) && spec.Spectrum.Length > 0) {
+            var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
+            var spectra = provider.LoadMs2SpectraWithRtRangeAsync(scanBeginTime, scanEndTime, default).Result;
+            foreach (var spec in spectra) {
+                if (spec.MsLevel == 2 && spec.Precursor is not null && scanPolarity == spec.ScanPolarity) {
+                    if (spec.Precursor.ContainsMz(mass, ms2Tol, type) && spec.Spectrum.Length > 0) {
                         var ce = spec.CollisionEnergy;
 
                         if (type == AcquisitionType.AIF) {
                             var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points
-                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.Index - ms1TopIndex)) {
-                                ce2MinDiff[ceRounded] = Math.Abs(spec.Index - ms1TopIndex);
-                                feature.MS2RawSpectrumID2CE[spec.Index] = ce;
+                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.ScanStartTime - scanTopTime)) {
+                                ce2MinDiff[ceRounded] = Math.Abs(spec.ScanStartTime - scanTopTime);
+                                feature.MS2RawSpectrumID2CE[(int)spec.RawSpectrumID.ID] = ce;
                             }
                         }
                         else {
-                            feature.MS2RawSpectrumID2CE[spec.Index] = ce;
+                            feature.MS2RawSpectrumID2CE[(int)spec.RawSpectrumID.ID] = ce;
                         }
 
-                        if (minDiff > Math.Abs(spec.Index - ms1TopIndex)) {
-                            minDiff = Math.Abs(spec.Index - ms1TopIndex);
-                            feature.MS2RawSpectrumID = spec.Index;
+                        if (minDiff > Math.Abs(spec.ScanStartTime - scanTopTime)) {
+                            minDiff = Math.Abs(spec.ScanStartTime - scanTopTime);
+                            feature.MS2RawSpectrumID = (int)spec.RawSpectrumID.ID;
                         }
                     }
                 }
@@ -895,7 +878,7 @@ namespace CompMs.MsdialCore.Algorithm
 
                 var peaks = chromatogram.AsPeakArray();
                 if (peakFeature.DriftChromFeatures is null) { // meaning not ion mobility data
-                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(peakFeature, provider, peaks[minLeftId].Id, peaks[maxID].Id, peaks[minRightId].Id, type);
+                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(peakFeature, provider, peaks[minLeftId].Time, peaks[maxID].Time, peaks[minRightId].Time, type);
                 }
 
                 peakFeature.MS1RawSpectrumIdLeft = peaks[minLeftId].Id;
