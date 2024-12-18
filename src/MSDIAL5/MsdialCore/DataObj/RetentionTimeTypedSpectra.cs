@@ -1,13 +1,13 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj;
 
@@ -17,12 +17,8 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     private readonly ChromXUnit _unit;
     private readonly AcquisitionType _acquisitionType;
     private readonly ScanPolarity _polarity;
-    private readonly List<RawSpectrum> _spectra;
-    private readonly RetentionTime[] _idToRetentionTime;
-    private readonly ConcurrentDictionary<int, Spectrum> _lazySpectra;
-    private readonly int[] _ms1Counts;
 
-    public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, IDataProvider spectraProvider, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+    public RetentionTimeTypedSpectra(IDataProvider spectraProvider, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
         _spectraProvider = spectraProvider;
         _unit = unit;
         _acquisitionType = acquisitionType;
@@ -32,92 +28,71 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
             IonMode.Negative => ScanPolarity.Negative,
             _ => throw new ArgumentException($"IonMode {ionMode} is not supported."),
         };
-        _spectra = spectra?.OrderBy(spectrum => spectrum.ScanStartTime).ToList() ?? throw new ArgumentNullException(nameof(spectra));
-        _idToRetentionTime = new RetentionTime[_spectra.Count];
-        _ms1Counts = new int[_spectra.Count + 1];
-        _lazySpectra = new ConcurrentDictionary<int, Spectrum>();
-        for (int i = 0; i < _spectra.Count; i++) {
-            _idToRetentionTime[i] = new RetentionTime(_spectra[i].ScanStartTime, unit);
-            if (_spectra[i].MsLevel == 1 && _spectra[i].ScanPolarity == _polarity) {
-                _ms1Counts[i + 1]++;
-            }
-        }
-        for (int i = 1; i < _ms1Counts.Length; i++) {
-            _ms1Counts[i] += _ms1Counts[i - 1];
-        }
     }
 
     public Chromatogram GetMs1BasePeakChromatogram(double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default).Result;
         var results = new List<ChromatogramPeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 1 ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, basePeakIntensity, _) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, basePeakIntensity, _idToRetentionTime[i]));
+            var (basePeakMz, basePeakIntensity, _) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
+            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, basePeakIntensity, new RetentionTime(spectrum.ScanStartTime, _unit)));
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
     }
 
     public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default).Result;
         var results = new List<ChromatogramPeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 1 ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
+            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, summedIntensity, new RetentionTime(spectrum.ScanStartTime, _unit)));
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
     }
 
     public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default).Result;
         var arrayPool = ArrayPool<ValuePeak>.Shared;
-        var results = arrayPool.Rent(_ms1Counts[endIndex] - _ms1Counts[startIndex]);
+        var results = arrayPool.Rent(spectra.Length);
         var idc = 0;
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 1 ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.MsLevel != 1 ||
+                spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var spectrum = _lazySpectra.GetOrAdd(i, index => new Spectrum(_spectra[index].Spectrum));
-            var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
-            results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
+            results[idc++] = new ValuePeak(spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity);
         }
         return new ExtractedIonChromatogram(results, idc, ChromXType.RT, _unit, mz, arrayPool);
     }
 
     public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
-        var indexs = new int[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
-        var times = new double[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
+        var spectra = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default).Result;
+        var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[spectra.Length];
+        var indexs = new int[spectra.Length];
+        var times = new double[spectra.Length];
         var idc = 0;
         var mzs_ = mzs.ToList();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 1 ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var spectrum = _lazySpectra.GetOrAdd(i, index => new Spectrum(_spectra[index].Spectrum));
-            enumerators[idc] = spectrum.RetrieveBins(mzs_, tolerance).GetEnumerator();
-            indexs[idc] = _spectra[i].Index;
-            times[idc] = _idToRetentionTime[i].Value;
+            enumerators[idc] = new Spectrum(spectrum.Spectrum).RetrieveBins(mzs_, tolerance).GetEnumerator();
+            indexs[idc] = spectrum.Index;
+            times[idc] = spectrum.ScanStartTime;
             ++idc;
         }
+
         var counter = 0;
         while (true) {
             var peaks = ArrayPool<ValuePeak>.Shared.Rent(indexs.Length);
-            for (int i = 0; i < indexs.Length; i++) {
+            for (int i = 0; i < idc; i++) {
                 if (!enumerators[i].MoveNext()) {
                     ArrayPool<ValuePeak>.Shared.Return(peaks);
                     yield break;
@@ -130,16 +105,15 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default).Result;
         var results = new List<ChromatogramPeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 1 ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.MsLevel != 1 ||
+                spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
+            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, summedIntensity, new RetentionTime(spectrum.ScanStartTime, _unit)));
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
     }
@@ -158,17 +132,14 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// how the intensity of specified product ions changes over the selected range of retention times.
     /// </remarks>
     public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
-        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
         var results = new List<ValuePeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 2 ||
-                !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (!spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
+            results.Add(new ValuePeak(spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity));
         }
         return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
     }
@@ -218,41 +189,31 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     private IEnumerable<ArraySegment<RawSpectrum>> GroupedSpectrum(ChromatogramRange chromatogramRange, ArrayPool<RawSpectrum> arrayPool) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        if (startIndex - 1 < 0 || _spectra[startIndex - 1].MsLevel != 1) {
-            while (startIndex < _spectra.Count && _spectra[startIndex].MsLevel != 1) {
-                ++startIndex;
-            }
-            if (startIndex < _spectra.Count) {
-                ++startIndex;
-            }
-        }
-        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        while (endIndex < _spectra.Count && _spectra[endIndex].MsLevel != 1) {
-            ++endIndex;
-        }
+
+        var spectra1Task = _spectraProvider.LoadMs1SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default);
+        var spectra2Task = _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default);
+        Task.WaitAll(spectra1Task, spectra2Task);
+        var spectra1 = spectra1Task.Result;
+        var spectra2 = spectra2Task.Result;
+
+        if (spectra1.Length == 0) {
+            yield break;
+        } 
         var buffer = new List<RawSpectrum>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].ScanPolarity != _polarity) {
-                continue;
-            }
-            else if (_spectra[i].MsLevel == 1) {
-                if (buffer.Count > 0) {
-                    var result = arrayPool.Rent(buffer.Count);
-                    buffer.CopyTo(result);
-                    yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
-                    buffer.Clear();
-                }
-            }
-            else if (_spectra[i].MsLevel == 2) {
-                buffer.Add(_spectra[i]);
-            }
+        var idx = 0;
+        while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectra1[0].ScanStartTime) {
+            ++idx;
         }
-        if (buffer.Count > 0) {
-            var result = arrayPool.Rent(buffer.Count);
-            buffer.CopyTo(result);
-            yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
-            buffer.Clear();
+        foreach (var spectrum1 in spectra1) {
+            while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectrum1.ScanStartTime) {
+                buffer.Add(spectra2[idx++]);
+            }
+            if (buffer.Count > 0) {
+                var result = arrayPool.Rent(buffer.Count);
+                buffer.CopyTo(result);
+                yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
+                buffer.Clear();
+            }
         }
     }
 
@@ -267,17 +228,14 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
         var results = new List<ValuePeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 2 ||
-                _spectra[i].ExperimentID != experimentID ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
+            results.Add(new ValuePeak(spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity));
         }
         return new SpecificExperimentChromatogram(results, ChromXType.RT, _unit, experimentID);
     }
@@ -294,17 +252,14 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var spectra = _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
         var results = new List<ValuePeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 2 ||
-                _spectra[i].ExperimentID != experimentID ||
-                _spectra[i].ScanPolarity != _polarity) {
+        foreach (var spectrum in spectra) {
+            if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
+            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
+            results.Add(new ValuePeak(spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity));
         }
         return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
     }

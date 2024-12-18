@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.DataObj
         private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
             switch (type) {
                 case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectra, spectraProvider, unit, ionMode, acquisitionType);
+                    return new RetentionTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
                     return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 default:

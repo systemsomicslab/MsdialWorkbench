@@ -21,7 +21,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
@@ -49,7 +49,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1TotalIonChromatogram(2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
@@ -77,7 +77,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1BasePeakChromatogram(2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
@@ -108,7 +108,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 7, ScanStartTime = 8d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 100d, }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
         Assert.AreEqual(2, chromatogram.Length);
         Assert.AreEqual(3, chromatogram[0].Id);
@@ -137,7 +137,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 7, ScanStartTime = 8d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 100d, }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
 
         // Act: Call the method under test with a specific chromatogram range.
         var chromatogram = spectra.GetMs2TotalIonChromatogram(new ChromatogramRange(2d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
@@ -174,7 +174,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 7, ScanStartTime = 8d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 100d }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d }, new RawPeakElement{ Mz = 100d, Intensity = 1000d } } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
 
         int testExperimentID = 2; // Specify the experiment ID to filter by.
 
@@ -209,7 +209,7 @@ public class RetentionTimeTypedSpectraTests
             new RawSpectrum { Index = 7, ScanStartTime = 8d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 250d, Intensity = 1500d } } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
-        var spectra = new RetentionTimeTypedSpectra(rawSpectra, provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
+        var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
 
         int testExperimentID = 2; // Specify the experiment ID to filter by.
         MzRange testMzRange = new MzRange(140d, 10d); // Targeting m/z of 150 with a tolerance of 10.
