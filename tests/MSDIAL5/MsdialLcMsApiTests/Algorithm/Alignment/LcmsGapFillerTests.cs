@@ -66,7 +66,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
 
             var provider = new StubDataProvider() {  Spectra = spectra };
-            var ms1Spectra = new Ms1Spectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA, provider);
+            var ms1Spectra = new Ms1Spectra(Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA, provider);
             var rawSpectra = new RawSpectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA, provider);
             filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, 0);
             Debug.WriteLine($"Mass: {spot.AlignedPeakProperties[0].Mass}");

@@ -2,7 +2,9 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.DataObj.Tests;
 
@@ -11,16 +13,16 @@ public class DriftTimeTypedSpectraTests
 {
     [TestMethod]
     public void GetMs1ExtractedChromatogramTest() {
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
             new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
             new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
             new RawSpectrum { Index = 3, ScanStartTime = 4d, DriftTime = 2d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(3, chromatogram[0].ID);
@@ -39,16 +41,16 @@ public class DriftTimeTypedSpectraTests
 
     [TestMethod()]
     public void GetMs1TotalIonChromatogramTest() {
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
             new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
             new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
             new RawSpectrum { Index = 3, ScanStartTime = 4d, DriftTime = 2d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1TotalIonChromatogram(2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(3, chromatogram[0].ID);
@@ -67,16 +69,16 @@ public class DriftTimeTypedSpectraTests
 
     [TestMethod()]
     public void GetMs1BasePeakChromatogramTest() {
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
             new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
             new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
             new RawSpectrum { Index = 3, ScanStartTime = 4d, DriftTime = 2d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetMs1BasePeakChromatogram(2d, 4d).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(3, chromatogram[0].ID);
@@ -95,7 +97,7 @@ public class DriftTimeTypedSpectraTests
 
     [TestMethod()]
     public void GetProductIonChromatogramTest() {
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, } },
             new RawSpectrum { Index = 1, DriftTime = 2d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 100d, }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, } },
@@ -105,9 +107,9 @@ public class DriftTimeTypedSpectraTests
             new RawSpectrum { Index = 5, DriftTime = 6d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 200d, }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, } },
             new RawSpectrum { Index = 6, DriftTime = 7d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, } },
             new RawSpectrum { Index = 7, DriftTime = 8d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Precursor = new RawPrecursorIon { SelectedIonMz = 100d, }, Spectrum = new[] { new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
         var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.Drift, ChromXUnit.Msec)).AsPeakArray();
         Assert.AreEqual(2, chromatogram.Length);
         Assert.AreEqual(3, chromatogram[0].Id);
@@ -124,16 +126,16 @@ public class DriftTimeTypedSpectraTests
     public void GetMS2TotalIonChromatogram_WithDriftTimeRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Set up a collection of MS2 spectra with varying drift times.
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 500d }, new RawPeakElement{ Mz = 105d, Intensity = 505d } } },
             new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 501d }, new RawPeakElement{ Mz = 106d, Intensity = 506d } } },
             new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 502d }, new RawPeakElement{ Mz = 107d, Intensity = 507d } } },
             new RawSpectrum { Index = 3, ScanStartTime = 4d, DriftTime = 2d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 503d }, new RawPeakElement{ Mz = 108d, Intensity = 508d } } },
             new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 504d }, new RawPeakElement{ Mz = 109d, Intensity = 509d } } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
 
         var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.Drift, ChromXUnit.Msec);
 
@@ -162,15 +164,15 @@ public class DriftTimeTypedSpectraTests
     public void GetMS2TotalIonChromatogram_WithExperimentIdAndDriftTimeRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Set up a collection of MS2 spectra with varying drift times and different experiment IDs.
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 500d }, new RawPeakElement{ Mz = 105d, Intensity = 505d } } },
             new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 501d }, new RawPeakElement{ Mz = 106d, Intensity = 506d } } },
             new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 2, ExperimentID = 3, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 502d }, new RawPeakElement{ Mz = 107d, Intensity = 507d } } },
             // Other spectra omitted for brevity
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
 
         var chromatogramRange = new ChromatogramRange(2d, 5d, ChromXType.Drift, ChromXUnit.Msec);
         int experimentID = 2; // Specify the experiment ID to filter by
@@ -196,16 +198,16 @@ public class DriftTimeTypedSpectraTests
     public void GetMS2ExtractedIonChromatogram_WithExperimentIdAndValidMzAndDriftTimeRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Create a set of test spectra with varying characteristics and different experiment IDs.
-        var spectra = new DriftTimeTypedSpectra(new[]
+        List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, DriftTime = 1d, MsLevel = 2, ExperimentID = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 100d }, new RawPeakElement{ Mz = 150d, Intensity = 1000d } } },
             new RawSpectrum { Index = 1, DriftTime = 2d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
             new RawSpectrum { Index = 2, DriftTime = 3d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
             // Additional spectra omitted for brevity...
             new RawSpectrum { Index = 6, DriftTime = 7d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
-        },
-        ChromXUnit.Msec,
-        IonMode.Positive, AcquisitionType.DDA);
+        };
+        var spectraProvider = new StubDataProvider { Spectra = rawSpectra, };
+        var spectra = new DriftTimeTypedSpectra(spectraProvider, ChromXUnit.Msec, IonMode.Positive, AcquisitionType.DDA);
 
         int testExperimentID = 2; // Specify the experiment ID to filter by.
         MzRange testMzRange = new MzRange(150d, 5d); // Targeting m/z of 150 with a tolerance of 5.

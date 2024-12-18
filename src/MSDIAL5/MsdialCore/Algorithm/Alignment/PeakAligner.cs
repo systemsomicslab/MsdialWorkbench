@@ -126,7 +126,7 @@ public class PeakAligner {
 
         var provider = ProviderFactory.Create(analysisFile);
         IReadOnlyList<RawSpectrum> spectra = provider.LoadMs1Spectrums();
-        var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType, provider);
+        var ms1Spectra = new Ms1Spectra(Param.IonMode, analysisFile.AcquisitionType, provider);
         var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType, provider);
         var peakInfos = peaks.Zip(spots)
             .AsParallel()

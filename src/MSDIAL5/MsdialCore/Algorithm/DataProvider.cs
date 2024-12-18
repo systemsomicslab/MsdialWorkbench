@@ -110,6 +110,66 @@ public static class DataProvider {
     }
 
     /// <summary>
+    /// Asynchronously retrieves MS1 spectra from the data provider that have a DriftTime within the specified range.
+    /// This method filters the spectra based on their drift times and returns only those within the provided bounds.
+    /// </summary>
+    /// <param name="provider">The data provider instance used to access spectra data.</param>
+    /// <param name="start">The lower bound of the DriftTime range, inclusive. Spectra with a DriftTime equal to or greater than this value are included.</param>
+    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime less than this value are included.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation if needed.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. On completion, the task returns an array of <see cref="RawSpectrum"/> objects that fall within the specified DriftTime range.
+    /// These spectra correspond to MS1, the first stage of mass spectrometry analysis.
+    /// </returns>
+    /// <remarks>
+    /// Use this method when processing spectra based on their DriftTime, particularly when this time dimension is relevant for analysis.
+    /// </remarks>
+    public static async Task<RawSpectrum[]> LoadMs1SpectraWithDtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
+        var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+        var sorted = spectra.OrderBy(s => s.DriftTime).ToList();
+        var lower = sorted.LowerBound(start, (t, s) => t.DriftTime.CompareTo(s));
+        var upper = lower;
+        while (upper < sorted.Count && sorted[upper].DriftTime < end) {
+            ++upper;
+        }
+        var result = new RawSpectrum[upper - lower];
+        for (int i = 0; i < result.Length; i++) {
+            result[i] = sorted[i + lower];
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves MS2 spectra from the data provider that have a DriftTime within the specified range.
+    /// This method filters spectra based on their drift times and returns only those within the specified bounds.
+    /// </summary>
+    /// <param name="provider">The data provider instance used to access spectra data.</param>
+    /// <param name="start">The lower bound of the DriftTime range, inclusive. Spectra with a DriftTime equal to or greater than this value are included.</param>
+    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime less than this value are included.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation if needed.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. Upon completion, the task returns an array of <see cref="RawSpectrum"/> objects that fall within the specified DriftTime range.
+    /// These spectra correspond to MS2, the second stage of mass spectrometry analysis.
+    /// </returns>
+    /// <remarks>
+    /// This method is suitable when processing spectra with a specific DriftTime range, particularly in analyses where ion mobility separation is critical.
+    /// </remarks>
+    public static async Task<RawSpectrum[]> LoadMs2SpectraWithDtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
+        var spectra = await provider.LoadMsNSpectrumsAsync(2, token).ConfigureAwait(false);
+        var sorted = spectra.OrderBy(s => s.DriftTime).ToList();
+        var lower = spectra.LowerBound(start, (t, s) => t.DriftTime.CompareTo(s));
+        var upper = lower;
+        while (upper < spectra.Count && spectra[upper].DriftTime < end) {
+            ++upper;
+        }
+        var result = new RawSpectrum[upper - lower];
+        for (int i = 0; i < result.Length; i++) {
+            result[i] = spectra[i + lower];
+        }
+        return result;
+    }
+
+    /// <summary>
     /// An extension method for IDataProvider to retrieve all MS2 spectra associated with the MS1 spectrum closest to the specified retention time (RT).
     /// </summary>
     /// <param name="provider">The data provider instance on which the extension method operates.</param>

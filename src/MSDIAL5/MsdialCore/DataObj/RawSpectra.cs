@@ -203,15 +203,15 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType, _spectraProvider))).Value;
+            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectraProvider, pair.Item1, pair.Item2, _ionMode, _acquisitionType))).Value;
         }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
+        private static IChromatogramTypedSpectra BuildTypedSpectra(IDataProvider spectraProvider, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
             switch (type) {
                 case ChromXType.RT:
                     return new RetentionTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
-                    return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
+                    return new DriftTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType);
                 default:
                     throw new ArgumentException($"ChromXType {type} is not supported.");
             }
