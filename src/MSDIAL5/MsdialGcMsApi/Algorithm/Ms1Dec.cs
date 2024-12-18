@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,8 +20,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter);
         }
 
-        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {
-            var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, file.AcquisitionType);
+        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults, IDataProvider spectraProvider) {
+            var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, file.AcquisitionType, spectraProvider);
 
             var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
             foreach (var annotatedMSDecResult in msdecResults) {

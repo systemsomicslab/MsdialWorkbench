@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Utility;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -12,6 +13,7 @@ namespace CompMs.MsdialCore.DataObj;
 
 internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
 {
+    private readonly IDataProvider _spectraProvider;
     private readonly ChromXUnit _unit;
     private readonly AcquisitionType _acquisitionType;
     private readonly ScanPolarity _polarity;
@@ -20,7 +22,8 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     private readonly ConcurrentDictionary<int, Spectrum> _lazySpectra;
     private readonly int[] _ms1Counts;
 
-    public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+    public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, IDataProvider spectraProvider, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+        _spectraProvider = spectraProvider;
         _unit = unit;
         _acquisitionType = acquisitionType;
         _polarity = ionMode switch

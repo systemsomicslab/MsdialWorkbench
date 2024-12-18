@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,11 +14,13 @@ namespace CompMs.MsdialCore.DataObj
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
         private readonly AcquisitionType _acquisitionType;
+        private readonly IDataProvider _spectraProvider;
 
-        public Ms1Spectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
+        public Ms1Spectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
             _spectra = spectra;
             _ionMode = ionMode;
             _acquisitionType = acquisitionType;
+            _spectraProvider = spectraProvider;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
         }
 
@@ -27,13 +30,13 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType));
+            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType, _spectraProvider));
         }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
             switch (type) {
                 case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
+                    return new RetentionTimeTypedSpectra(spectra, spectraProvider, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
                     return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 default:

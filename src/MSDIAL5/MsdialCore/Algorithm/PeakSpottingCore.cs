@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Algorithm
                 endMass = (float)Math.Ceiling(endMass);
                 focusedMass = startMass;
             }
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
             var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             while (focusedMass < endMass) {
                 if (focusedMass < _parameter.MassRangeBegin) { focusedMass += massStep; continue; }
@@ -127,7 +127,7 @@ namespace CompMs.MsdialCore.Algorithm
             numThreads = Math.Max(2, numThreads);
             using (var bc = new BlockingCollection<(ExtractedIonChromatogram, int)>(numThreads * 4)) {
                 var counter = 0;
-                var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
+                var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
                 var tasks = new Task[numThreads];
                 tasks[0] = ProduceChromatogramAsync(bc, rawSpectra, chromatogramRange, targetMasses, token);
                 for (int i = 1; i < numThreads; i++) {
@@ -196,7 +196,7 @@ namespace CompMs.MsdialCore.Algorithm
         public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(AnalysisFileBean file, IDataProvider provider, List<MoleculeMsReference> targetedScans, ChromatogramRange chromatogramRange) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             if (targetedScans.IsEmptyOrNull()) return null;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
             foreach (var targetComp in targetedScans) {
                 var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, provider, (float)targetComp.PrecursorMz, chromatogramRange);
                 if (!chromPeakFeatures.IsEmptyOrNull())
@@ -214,7 +214,7 @@ namespace CompMs.MsdialCore.Algorithm
         public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(AnalysisFileBean file, IDataProvider provider, List<MoleculeMsReference> targetedScans, int numThreads, CancellationToken token, ChromatogramRange chromatogramRange) {
             var spectrumList = provider.LoadMs1Spectrums();
             if (targetedScans.IsEmptyOrNull()) return null;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
             var chromPeakFeaturesList = targetedScans
                 .AsParallel()
                 .AsOrdered()
@@ -723,7 +723,7 @@ namespace CompMs.MsdialCore.Algorithm
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
             // var counter = 0;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type, provider);
             foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.Zip(chromPeakFeatures)) {
                 //get EIC chromatogram
                 var peakWidth = peak.PeakWidth();

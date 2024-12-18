@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MsdialCoreTestHelper.DataProvider;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -64,8 +65,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 },
             };
 
-            var ms1Spectra = new Ms1Spectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA);
-            var rawSpectra = new RawSpectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA);
+            var provider = new StubDataProvider() {  Spectra = spectra };
+            var ms1Spectra = new Ms1Spectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA, provider);
+            var rawSpectra = new RawSpectra(spectra, Common.Enum.IonMode.Positive, Common.Enum.AcquisitionType.DDA, provider);
             filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, 0);
             Debug.WriteLine($"Mass: {spot.AlignedPeakProperties[0].Mass}");
             Debug.WriteLine($"ChromScanIdTop: {spot.AlignedPeakProperties[0].ChromScanIdTop}");

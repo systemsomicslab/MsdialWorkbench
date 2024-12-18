@@ -3,7 +3,6 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
@@ -18,20 +17,23 @@ namespace CompMs.MsdialCore.DataObj
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
         private readonly AcquisitionType _acquisitionType;
+        private readonly IDataProvider _spectraProvider;
         public AcquisitionType AcquisitionType { get => _acquisitionType; }
 
         public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = provider.LoadMsSpectrums();
+            _spectraProvider = provider;
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
             _acquisitionType = acquisitionType;
         }
 
-        public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
+        public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
             _spectra = spectra;
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
             _acquisitionType= acquisitionType;
+            _spectraProvider = spectraProvider;
         }
 
         public double StartRt { 
@@ -201,13 +203,13 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType))).Value;
+            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType, _spectraProvider))).Value;
         }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
             switch (type) {
                 case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
+                    return new RetentionTimeTypedSpectra(spectra, spectraProvider, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
                     return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 default:

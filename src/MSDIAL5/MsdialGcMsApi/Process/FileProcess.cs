@@ -71,7 +71,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
             token.ThrowIfCancellationRequested();
             var annotatedMSDecResults = Identification(msdecResults, option, progress);
-            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
+            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults, provider);
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
