@@ -1,12 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
@@ -73,8 +74,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
-            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.InternalMsfinderSettingModel, broker).AddTo(Disposables);
-            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
+            var batchMsfinder = model.InternalMsfinderSettingModel;
+            var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
 
             NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }
@@ -160,8 +162,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 m.Search();
             }
         }
-
-        public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
 
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 

@@ -271,7 +271,7 @@ namespace CompMs.MsdialCore.Algorithm
             alignmentSpot.MatchResults.ClearResults();
             alignmentSpot.MatchResults.ClearMspResults();
             alignmentSpot.MatchResults.ClearTextDbResults();
-            alignmentSpot.AdductType = AdductIon.Default;
+            alignmentSpot.SetAdductType(AdductIon.Default);
             alignmentSpot.Name = string.Empty;
         }
 
@@ -574,7 +574,7 @@ namespace CompMs.MsdialCore.Algorithm
             result.Source = SourceType.TextDB;
             spot.MatchResults.AddTextDbResult(result);
             spot.Formula = query.Formula;
-            spot.AdductType = query.AdductType;
+            spot.SetAdductType(query.AdductType);
         }
 
         private static MsScanMatchResult getTargetFormulaSimilarity(MoleculeMsReference query, AlignmentSpotProperty alignedSpot, ParameterBase param)

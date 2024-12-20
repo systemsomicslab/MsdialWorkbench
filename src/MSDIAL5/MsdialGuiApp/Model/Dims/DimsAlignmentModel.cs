@@ -55,6 +55,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly List<AnalysisFileBean> _files;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
 
@@ -69,8 +70,9 @@ namespace CompMs.App.Msdial.Model.Dims
             AnalysisFileBeanModelCollection fileCollection,
             PeakFilterModel peakFilterModel,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(alignmentFileModel, broker) {
+            : base(alignmentFileModel, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
@@ -85,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
+            _msfinderSearcherFactory = msfinderSearcherFactory;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             AlignmentSpotSource = spotsSource;
@@ -102,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList())
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList(), PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
@@ -111,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Kendrick mass defect"
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -120,10 +123,10 @@ namespace CompMs.App.Msdial.Model.Dims
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem upperSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum upperObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decSpecLoader, spectraExporter).AddTo(Disposables);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
+                target, MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),
@@ -187,7 +190,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            CanSeachCompound = new[] {
+            CanSearchCompound = new[] {
                 target.Select(t => t?.innerModel != null),
                 _msdecResult.Select(r => r != null),
             }.CombineLatestValuesAreAllTrue()
@@ -218,6 +221,8 @@ namespace CompMs.App.Msdial.Model.Dims
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -238,12 +243,13 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile { get; }
-        public ReadOnlyReactivePropertySlim<bool> CanSeachCompound { get; }
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
             if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult msdec) {
@@ -296,15 +302,23 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || _msdecResult.Value is null || _msdecResult.Value.Spectrum.IsEmptyOrNull()) {
+            if (Target.Value is null || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
                 _alignmentFile,
                 Target.Value.innerModel,
-                _msdecResult.Value,
+                result,
                 _dataBaseMapper,
                 _parameter);
+        }
+
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForAlignmentSpot(MsfinderParameterSetting, Target.Value, result, _undoManager);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {

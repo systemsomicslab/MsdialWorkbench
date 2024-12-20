@@ -1,22 +1,17 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.Query;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
     public class PeakPickBaseParameterViewModel : ViewModelBase
     {
-        private readonly PeakPickBaseParameter model;
+        private readonly PeakPickBaseParameterModel _peakPickBaseParameterModel;
 
         public ReactivePropertySlim<SmoothingMethod> SmoothingMethod { get; }
 
@@ -74,143 +69,125 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public ReactivePropertySlim<bool> IsBrClConsideredForIsotopes { get; }
 
-        public ObservableCollection<MzSearchQueryVM> ExcludedMassList { get; }
-
-        public Subject<Unit> CommitTrigger { get; } = new Subject<Unit>();
+        public ReadOnlyReactiveCollection<MzSearchQueryViewModel> ExcludedMassList { get; }
 
         public ReadOnlyReactivePropertySlim<bool> HasErrors { get; }
 
-        public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !HasErrors.Value);
+        public PeakPickBaseParameterViewModel(PeakPickBaseParameterModel peakPickBaseParameterModel) {
+            _peakPickBaseParameterModel = peakPickBaseParameterModel;
 
-        public PeakPickBaseParameterViewModel(PeakPickBaseParameter model) {
-            this.model = model;
-
-            SmoothingMethod = new ReactivePropertySlim<SmoothingMethod>(this.model.SmoothingMethod)
+            SmoothingMethod = peakPickBaseParameterModel
+                .ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => SmoothingMethod)
-                .Subscribe(x => this.model.SmoothingMethod = x)
-                .AddTo(Disposables);
-
-            SmoothingLevel = new ReactiveProperty<string>(this.model.SmoothingLevel.ToString())
+            SmoothingLevel = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.SmoothingLevel,
+                    m => m.ToString(),
+                    vm => int.Parse(vm)
+                )
                 .SetValidateAttribute(() => SmoothingLevel)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => SmoothingLevel)
-                .Subscribe(x => this.model.SmoothingLevel = int.Parse(x))
-                .AddTo(Disposables);
-
-            MinimumAmplitude = new ReactiveProperty<string>(this.model.MinimumAmplitude.ToString())
+            MinimumAmplitude = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MinimumAmplitude,
+                    m => m.ToString(),
+                    vm => double.Parse(vm)
+                )
                 .SetValidateAttribute(() => MinimumAmplitude)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MinimumAmplitude)
-                .Subscribe(x => this.model.MinimumAmplitude = double.Parse(x))
-                .AddTo(Disposables);
-
-            MinimumDatapoints = new ReactiveProperty<string>(this.model.MinimumDatapoints.ToString())
+            MinimumDatapoints = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MinimumDatapoints,
+                    m => m.ToString(),
+                    vm => double.Parse(vm)
+                )
                 .SetValidateAttribute(() => MinimumDatapoints)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MinimumDatapoints)
-                .Subscribe(x => this.model.MinimumDatapoints = double.Parse(x))
-                .AddTo(Disposables);
-
-            MassSliceWidth = new ReactiveProperty<string>(this.model.MassSliceWidth.ToString())
+            MassSliceWidth = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MassSliceWidth,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => MassSliceWidth)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MassSliceWidth)
-                .Subscribe(x => this.model.MassSliceWidth = float.Parse(x))
-                .AddTo(Disposables);
-
-            RetentionTimeBegin = new ReactiveProperty<string>(this.model.RetentionTimeBegin.ToString())
+            RetentionTimeBegin = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.RetentionTimeBegin,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => RetentionTimeBegin)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => RetentionTimeBegin)
-                .Subscribe(x => this.model.RetentionTimeBegin = float.Parse(x))
-                .AddTo(Disposables);
-
-            RetentionTimeEnd = new ReactiveProperty<string>(this.model.RetentionTimeEnd.ToString())
+            RetentionTimeEnd = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.RetentionTimeEnd,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => RetentionTimeEnd)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => RetentionTimeEnd)
-                .Subscribe(x => this.model.RetentionTimeEnd = float.Parse(x))
-                .AddTo(Disposables);
-
-            MassRangeBegin = new ReactiveProperty<string>(this.model.MassRangeBegin.ToString())
+            MassRangeBegin = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MassRangeBegin,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => MassRangeBegin)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MassRangeBegin)
-                .Subscribe(x => this.model.MassRangeBegin = float.Parse(x))
-                .AddTo(Disposables);
-
-            MassRangeEnd = new ReactiveProperty<string>(this.model.MassRangeEnd.ToString())
+            MassRangeEnd = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MassRangeEnd,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => MassRangeEnd)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MassRangeEnd)
-                .Subscribe(x => this.model.MassRangeEnd = float.Parse(x))
-                .AddTo(Disposables);
-
-            Ms2MassRangeBegin = new ReactiveProperty<string>(this.model.Ms2MassRangeBegin.ToString())
+            Ms2MassRangeBegin = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.Ms2MassRangeBegin,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => Ms2MassRangeBegin)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => Ms2MassRangeBegin)
-                .Subscribe(x => this.model.Ms2MassRangeBegin = float.Parse(x))
-                .AddTo(Disposables);
-
-            Ms2MassRangeEnd = new ReactiveProperty<string>(this.model.Ms2MassRangeEnd.ToString())
+            Ms2MassRangeEnd = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.Ms2MassRangeEnd,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => Ms2MassRangeEnd)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => Ms2MassRangeEnd)
-                .Subscribe(x => this.model.Ms2MassRangeEnd = float.Parse(x))
-                .AddTo(Disposables);
-
-            CentroidMs1Tolerance = new ReactiveProperty<string>(this.model.CentroidMs1Tolerance.ToString())
+            CentroidMs1Tolerance = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.CentroidMs1Tolerance,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => CentroidMs1Tolerance)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => CentroidMs1Tolerance)
-                .Subscribe(x => this.model.CentroidMs1Tolerance = float.Parse(x))
-                .AddTo(Disposables);
-
-            CentroidMs2Tolerance = new ReactiveProperty<string>(this.model.CentroidMs2Tolerance.ToString())
+            CentroidMs2Tolerance = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.CentroidMs2Tolerance,
+                    m => m.ToString(),
+                    vm => float.Parse(vm)
+                )
                 .SetValidateAttribute(() => CentroidMs2Tolerance)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => CentroidMs2Tolerance)
-                .Subscribe(x => this.model.CentroidMs2Tolerance = float.Parse(x))
-                .AddTo(Disposables);
-
-            MaxChargeNumber = new ReactiveProperty<string>(this.model.MaxChargeNumber.ToString())
+            MaxChargeNumber = peakPickBaseParameterModel
+                .ToReactivePropertyAsSynchronized(
+                    m => m.MaxChargeNumber,
+                    m => m.ToString(),
+                    vm => int.Parse(vm)
+                )
                 .SetValidateAttribute(() => MaxChargeNumber)
                 .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => MaxChargeNumber)
-                .Subscribe(x => this.model.MaxChargeNumber = int.Parse(x))
+            IsBrClConsideredForIsotopes = peakPickBaseParameterModel
+                .ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes)
                 .AddTo(Disposables);
-
-            IsBrClConsideredForIsotopes = new ReactivePropertySlim<bool>(this.model.IsBrClConsideredForIsotopes)
-                .AddTo(Disposables);
-            CommitAsObservable
-                .SelectMany(_ => IsBrClConsideredForIsotopes)
-                .Subscribe(x => this.model.IsBrClConsideredForIsotopes = x).AddTo(Disposables);
-
-            ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
-                this.model.ExcludedMassList.Select(mass => new MzSearchQueryVM { Mass = mass.Mass, Tolerance = mass.MassTolerance, })
-                );
-            CommitAsObservable
-                .Select(_ => ExcludedMassList
-                    .Where(query => query.IsValid)
-                    .Select(query => new MzSearchQuery { Mass = query.Mass!.Value, MassTolerance = query.Tolerance!.Value })
-                    .ToList())
-                .Subscribe(queries => this.model.ExcludedMassList = queries)
+            ExcludedMassList = peakPickBaseParameterModel.ExcludedMzQueries
+                .ToReadOnlyReactiveCollection(query => new MzSearchQueryViewModel(query))
                 .AddTo(Disposables);
 
             HasErrors = new[]
@@ -231,10 +208,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim();
-        }
-
-        public void Commit() {
-            CommitTrigger.OnNext(Unit.Default);
         }
     }
 }

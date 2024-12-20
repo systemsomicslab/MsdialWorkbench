@@ -120,18 +120,19 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand LoadAnalysisFileCommand { get; }
 
-        protected Task LoadAnalysisFileAsync(CancellationToken token) {
-            if (!(SelectedAnalysisFile.Value is null)) {
-                // foreach (AnalysisFileBeanViewModel analysisFile in AnalysisFilesView) {
-                //     analysisFile.IsSelected = false;
-                // }
-                // SelectedAnalysisFile.Value.IsSelected = true;
-                var task = LoadAnalysisFileCoreAsync(SelectedAnalysisFile.Value, token);
-                ChromatogramViewModels.SelectAnalysisFile();
-                MassSpectrumViewModels.SelectAnalysisFile();
-                return task;
+        protected async Task LoadAnalysisFileAsync(CancellationToken token) {
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            try {
+                if (!(SelectedAnalysisFile.Value is null)) {
+                    var task = LoadAnalysisFileCoreAsync(SelectedAnalysisFile.Value, token);
+                    ChromatogramViewModels.SelectAnalysisFile();
+                    MassSpectrumViewModels.SelectAnalysisFile();
+                    await task;
+                }
             }
-            return Task.CompletedTask;
+            finally {
+                System.Windows.Input.Mouse.OverrideCursor = null;
+            }
         }
 
         protected abstract Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token);
@@ -139,18 +140,19 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand LoadAlignmentFileCommand { get; }
 
-        protected Task LoadAlignmentFileAsync(CancellationToken token) {
-            if (!(SelectedAlignmentFile.Value is null)) {
-                // foreach (AlignmentFileBeanViewModel alignmentFile in AlignmentFilesView) {
-                //     alignmentFile.IsSelected = false;
-                // }
-                // SelectedAlignmentFile.Value.IsSelected = true;
-                var task = LoadAlignmentFileCoreAsync(SelectedAlignmentFile.Value, token);
-                ChromatogramViewModels.SelectAlignmentFile();
-                MassSpectrumViewModels.SelectAlignmentFile();
-                return task;
+        protected async Task LoadAlignmentFileAsync(CancellationToken token) {
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            try {
+                if (!(SelectedAlignmentFile.Value is null)) {
+                    var task = LoadAlignmentFileCoreAsync(SelectedAlignmentFile.Value, token);
+                    ChromatogramViewModels.SelectAlignmentFile();
+                    MassSpectrumViewModels.SelectAlignmentFile();
+                    await task;
+                }
             }
-            return Task.CompletedTask;
+            finally {
+                System.Windows.Input.Mouse.OverrideCursor = null;
+            }
         }
 
         protected abstract Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token);

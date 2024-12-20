@@ -93,7 +93,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spot.PeakCharacter.IsotopeWeightNumber = 0;
                 }
                 if (!spot.IsReferenceMatched(evaluator) && !spot.IsAnnotationSuggested(evaluator)) {
-                    spot.AdductType = AdductIon.Default;
+                    spot.SetAdductType(AdductIon.Default);
                 }
             }
             if (_param.TrackingIsotopeLabels) return;
@@ -113,7 +113,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
             foreach (var fcSpot in alignments.Where(spot => !spot.AdductType.HasAdduct)) {
-                fcSpot.AdductType = AdductIon.GetStandardAdductIon(fcSpot.PeakCharacter.Charge, _param.IonMode);
+                fcSpot.SetAdductType(AdductIon.GetStandardAdductIon(fcSpot.PeakCharacter.Charge, _param.IonMode));
             }
         }
 
@@ -138,10 +138,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                             continue;
                                     }
                                     else {
-                                        var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
-                                        if (rAdductCharge != rSpot.PeakCharacter.Charge)
-                                            break;
-                                        rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                        rSpot.SetAdductType(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                     }
                                 }
                                 RegisterLinks(cSpot, rSpot, rLinkProp);
@@ -177,9 +174,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                 if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
 
                                 RegisterLinks(fcSpot, rSpot, rLinkProp);
-                                rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                rSpot.SetAdductType(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                 if (!fcSpot.AdductType.HasAdduct) {
-                                    fcSpot.AdductType = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
+                                    fcSpot.SetAdductType(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                 }
                             }
                             else {

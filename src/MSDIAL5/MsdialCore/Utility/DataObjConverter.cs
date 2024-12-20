@@ -97,10 +97,6 @@ namespace CompMs.MsdialCore.Utility
 
             alignmentPeak.PeakCharacter = peak.PeakCharacter;
             alignmentPeak.PeakShape = peak.PeakShape;
-            //if (peak.IsReferenceMatched) {
-            //    Console.WriteLine(peak.Name + "\t" + peak.PeakCharacter.AdductType.AdductIonName + "\t" + peak.AdductType.AdductIonName);
-            //}
-           // Console.WriteLine(alignmentPeak.Name + "\t" + alignmentPeak.PeakCharacter.AdductType.AdductIonName);
         }
 
         public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
@@ -125,7 +121,6 @@ namespace CompMs.MsdialCore.Utility
                 AdductType = spot.AdductType,
                 AdductTypeByAmalgamationProgram = representative.PeakCharacter.AdductTypeByAmalgamationProgram, 
                 Charge = representative.PeakCharacter.Charge,
-                PeakLinks = representative.PeakCharacter.PeakLinks.ToList(),
                 IsotopeWeightNumber = representative.PeakCharacter.IsotopeWeightNumber,
                 IsotopeParentPeakID = representative.PeakCharacter.IsotopeParentPeakID,
                 PeakGroupID = representative.PeakCharacter.PeakGroupID,

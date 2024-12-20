@@ -1,14 +1,10 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal sealed class PeakSpotTagSearchQueryBuilderModel : BindableBase
+    public sealed class PeakSpotTagSearchQueryBuilderModel : BindableBase
     {
         public bool Confirmed {
             get => _confirmed;

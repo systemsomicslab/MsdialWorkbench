@@ -123,6 +123,8 @@ namespace CompMs.Common.Algorithm.Function
             return edges.Select(edge => new Edge() { data = edge, classes = "ms_similarity" }).ToList();
         }
 
+        
+
         private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;
             var max = srcPeakScans.Count * dstPeakScans.Count;

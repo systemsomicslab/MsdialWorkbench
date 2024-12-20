@@ -63,7 +63,6 @@ namespace CompMs.MsdialCore.Export.Tests
             {
                 MasterAlignmentID = 100,
                 Name = "AAA",
-                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 FillParcentage = 0.67f,
                 RepresentativeFileID = 1,
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
@@ -79,6 +78,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 IsotopicPeaks = new List<IsotopicPeak> { new IsotopicPeak { Mass = 701.12345, AbsoluteAbundance = 345, }, new IsotopicPeak { Mass = 702.12345, AbsoluteAbundance = 12, } },
                 IonAbundanceUnit = IonAbundanceUnit.nmol_per_mg_tissue,
             };
+            spot.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
             var matchResult = new MsScanMatchResult
             {
                 Source = SourceType.Manual | SourceType.MspDB,

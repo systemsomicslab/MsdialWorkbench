@@ -1,18 +1,23 @@
-﻿<Window x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
-        xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
-        mc:Ignorable="d"
-        Title="Internal MSFINDER Setting" Height="575" Width="620">
-    <Window.Resources>
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+             xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
+             mc:Ignorable="d"
+             d:DesignHeight="575" d:DesignWidth="620">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
@@ -54,8 +59,6 @@
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
 
-
-
             <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="Black" />
@@ -64,88 +67,10 @@
                 <Setter Property="IsReadOnly" Value="True" />
             </Style>
         </ResourceDictionary>
-    </Window.Resources>
+    </UserControl.Resources>
     <Grid>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="40" />
-            </Grid.RowDefinitions>
             <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" Grid.ColumnSpan="2">
-                <TabItem Name="TabItem_BatchProcess" Header="Batch" Height="20" VerticalAlignment="Bottom">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10,10,0,0">
-                            <CheckBox Content="Molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
-                            <CheckBox Content="Structure finder" IsChecked="{Binding IsStructureFinder.Value}" VerticalAlignment="Center" Margin="20,0,0,0" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="10,10,0,0">
-                            <Label Content="Top N hits:"  FontStyle="Italic" VerticalAlignment="Center" Height="25" Margin="5,0,0,0"/>
-                            <TextBox Text="{Binding TryTopNmolecularFormulaSearch.Value}" VerticalAlignment="Center" Width="90" Height="25" Margin="5,0,0,0"/>
-
-                            <Label Content="(automatically applied to structure finder program)" VerticalAlignment="Center" Height="25" Margin="0,0,0,0"/>
-                        </StackPanel>
-                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,20,0,0">
-                            <GroupBox.Header>
-                                <Label Content="Project path" FontStyle="Italic"/>
-                            </GroupBox.Header>
-                            <StackPanel Margin="8,0">
-                                <StackPanel Margin="8,0">
-                                    <RadioButton Content="Create a project"
-                                                 IsChecked="{Binding IsCreateNewProject.Value}"
-                                                 d:IsChecked="True"/>
-                                    <StackPanel Margin="20,8,0,0"
-                                                IsEnabled="{Binding IsCreateNewProject.Value}">
-                                        <CheckBox Content="Use automatically determined folder name"
-                                                  IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
-                                        <ui:LabeledContent PrependLabel="Folder name:"
-                                                           Margin="0,8,0,0"
-                                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
-                                            <TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
-                                        </ui:LabeledContent>
-                                    </StackPanel>
-                                </StackPanel>
-                                <StackPanel Margin="8,10,8,0">
-                                    <RadioButton Content="Load a project"
-                                                 IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
-                                    <Grid Margin="20,8,0,0"
-                                          IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="210"/>
-                                            <ColumnDefinition Width="274"/>
-                                            <ColumnDefinition Width="60"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0"
-                                                           Content="File path:"
-                                                           FontStyle="Italic"
-                                                           Margin="8,0,0,0"/>
-                                        <TextBox Grid.Column="1"
-                                                 Name="TextBox_ExistProjectPath"
-                                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                                 Height="18"
-                                                 VerticalAlignment="Center">
-                                            <TextBox.ToolTip>
-                                                <TextBlock></TextBlock>
-                                            </TextBox.ToolTip>
-                                        </TextBox>
-                                        <Button Grid.Column="2"
-                                                Name="Button_ExistProjectPath_Browse"
-                                                Content="Select"
-                                                Click="Button_ExistProjectPath_Browse_Click"
-                                                Margin="8,0,0,0"/>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-
-                        </GroupBox>
-                    </Grid>
-                </TabItem>
                 <TabItem Name="TabItem_MassSpectrum" Header="Basic">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -247,7 +172,7 @@
                             <StackPanel Margin="8,0,0,0">
                                 <ui:LabeledContent PrependLabel="LEWIS and SENIOR check:"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This valence rule will reduce candidates.">
+                                                   ToolTip="Candidates will be reduced based on these valence rules.">
                                     <CheckBox IsChecked="{Binding IsLewisAndSeniorCheck.Value}"/>
                                 </ui:LabeledContent>
                                 <ui:LabeledContent PrependLabel="Isotopic ratio tolerance:"
@@ -259,7 +184,7 @@
                                 <ui:LabeledContent PrependLabel="Element ratio check:"
                                                    AppendLabel="covering"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This rule is based on the current report statistics. Please see http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
                                     <ComboBox SelectedValue="{Binding CoverRange.Value}" SelectedValuePath="DataContext">
                                         <ComboBox.Items>
                                             <ComboBoxItem Content="Common range (99.7%)" DataContext="{x:Static enum:CoverRange.CommonRange}"/>
@@ -270,7 +195,7 @@
                                 </ui:LabeledContent>
                                 <ui:LabeledContent PrependLabel="Element probability check:"
                                                    Style="{StaticResource AlignedContent}"
-                                                   ToolTip="This rule is based on the current report statistics. Please see http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
                                     <CheckBox IsChecked="{Binding IsElementProbabilityCheck.Value}"/>
                                 </ui:LabeledContent>
                             </StackPanel>
@@ -435,7 +360,7 @@
                                 <Label Content="FSEA setting" FontStyle="Italic"/>
                             </GroupBox.Header>
                             <StackPanel Margin="8,0,0,0">
-                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%] (significant peak):"
+                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%]:"
                                                    AppendLabel="%"
                                                    Style="{StaticResource AlignedContent}"
                                                    ToolTip="Add the cut off value for removing noise effects.">
@@ -657,7 +582,7 @@
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="ui:LabeledContent">
                                                                 <Grid HorizontalAlignment="Stretch">
-                                                                    
+
                                                                 </Grid>
                                                             </ControlTemplate>
                                                         </Setter.Value>
@@ -667,9 +592,8 @@
                                             <GroupBox Header="User-defined InChIKey-RT text library"
                                                       IsEnabled="{Binding IsUseRtInchikeyLibrary.Value}"
                                                       BorderThickness="0"
-                                                      FontStyle="Italic"
-                                                      Margin="0,8,0,0">
-                                                <Grid Margin="0,8,0,0">
+                                                      FontStyle="Italic">
+                                                <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="210"/>
                                                         <ColumnDefinition Width="274"/>
@@ -707,9 +631,8 @@
                                             <GroupBox Header="XLogP based RT prediction and cut off setting for structure elucidation"
                                                       IsEnabled="{Binding IsUseXlogpPrediction.Value}"
                                                       BorderThickness="0"
-                                                      FontStyle="Italic"
-                                                      Margin="0,8,0,0">
-                                                <Grid Margin="0,8,0,0">
+                                                      FontStyle="Italic">
+                                                <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="210"/>
                                                         <ColumnDefinition Width="274"/>
@@ -747,19 +670,18 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
-                                <GroupBox Header="Summary:" BorderThickness="0" Margin="0,8,0,0" >
+                                <GroupBox Header="Summary:" BorderThickness="0">
                                     <TextBox Name="TextBox_RtPredictionSummary" 
                                              Text="{Binding RtPredictionSummaryReport.Value}"
                                              Height="25"
                                              HorizontalAlignment="Stretch"
                                              VerticalAlignment="Top"
                                              VerticalContentAlignment="Center"
-                                             Margin="30,8,5,0"
                                              Style="{StaticResource ReadOnlyTextBox}"/>
                                 </GroupBox>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,5,0,0">
+                        <GroupBox Grid.Row="1" BorderThickness="0">
                             <GroupBox.Header>
                                 <CheckBox IsChecked="{Binding IsUseExperimentalRtForSpectralSearching.Value}"
                                           VerticalContentAlignment="Center">
@@ -888,14 +810,6 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <StackPanel Grid.Row="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Height="24"
-                        Margin="0,0,10,0">
-                <Button Content="Run" Command="{Binding Run}" Width="64"/>
-                <Button Content="Cancel" Click="Click_Cancel" Command="{Binding Cancel}" Width="64" Margin="10,0,0,0"/>
-            </StackPanel>
         </Grid>
     </Grid>
-</Window>
+</UserControl>

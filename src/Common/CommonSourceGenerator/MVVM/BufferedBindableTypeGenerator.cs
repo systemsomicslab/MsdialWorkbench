@@ -98,6 +98,8 @@ using System.ComponentModel;
 {{string.Join("\r\n", properties.Select(p => $$"""
             {{p.Name}} = innerModel.{{p.Name}};
 """))}}
+
+            Initialized();
         }
 
 {{sb}}
@@ -106,10 +108,14 @@ using System.ComponentModel;
 {{string.Join("\r\n", properties.Select(p => $$"""
             _innerModel.{{p.Name}} = {{p.Name}};
 """))}}
+            Committed();
         }
 
         protected virtual void RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
         protected void RaisePropertyChanged(string propertyname) => RaisePropertyChanged(new PropertyChangedEventArgs(propertyname));
+
+        partial void Initialized();
+        partial void Committed();
     }
 }
 """;
@@ -133,7 +139,7 @@ using System.ComponentModel;
             }
             set {
                 if (!Equals({{field}}, value)) {
-                     {{field}} = value;
+                    {{field}} = value;
 {{additional}}
                 }
             }

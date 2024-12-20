@@ -341,7 +341,6 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 MSRawID2MspBasedMatchResult = mspResults,
                 TextDbBasedMatchResult = textDbResult,
                 PeakCharacter = BuildIonFeatureCharacter(),
-                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
@@ -351,6 +350,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                     BuildAlignmentChromPeakFeature(fileid: 3, peak: 9500),
                 }
             };
+            result.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
             result.Name = result.TextDbBasedMatchResult.Name;
             result.HeightAverage = (float)result.AlignedPeakProperties.Average(peak => peak.PeakHeightTop);
             result.MatchResults.AddMspResults(mspResults);

@@ -71,6 +71,8 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
 
     public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
+    public PeakLinkModel PeakLinks => _model.PeakLinkModel;
+
     public IAxisManager<double> HorizontalAxis { get; }
 
     public ReadOnlyReactivePropertySlim<IAxisManager<double>?> VerticalAxis { get; }

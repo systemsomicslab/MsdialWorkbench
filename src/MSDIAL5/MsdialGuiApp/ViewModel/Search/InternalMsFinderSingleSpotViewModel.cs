@@ -18,8 +18,8 @@ namespace CompMs.App.Msdial.ViewModel.Search {
                 _model = model ?? throw new ArgumentNullException(nameof(model));
                 Disposables.Add(model);
                 _broker = broker;
-                SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1).AddTo(Disposables);
-                SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2).AddTo(Disposables);
+                SpectrumMs1ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs1, broker).AddTo(Disposables);
+                SpectrumMs2ViewModel = new SingleSpectrumViewModel(model.SpectrumModelMs2, broker).AddTo(Disposables);
                 
                 if (model.MoleculeStructureModel is not null) {
                     MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);

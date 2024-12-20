@@ -85,7 +85,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var results = references.Select(reference => reference.AdductType).ToList();
             var expected = data.Split('\n').Skip(1).Select(row => AdductIon.GetAdductIon(row.TrimEnd('\r').Split('\t')[3])).ToList();
 
-            foreach ((AdductIon a, AdductIon b) in expected.Zip(results))
+            foreach ((AdductIon a, AdductIon b) in expected.ZipInternal(results))
             {
                 Debug.WriteLine($"{a.AdductIonName}\t{b.AdductIonName}");
                 Assert.AreEqual(a.AdductIonAccurateMass, b.AdductIonAccurateMass);
@@ -127,7 +127,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             });
             results.Sort((a, b) => a.Mass.CompareTo(b.Mass));
             expected.Sort((a, b) => a.Mass.CompareTo(b.Mass));
-            foreach ((Formula a, Formula b) in expected.Zip(results))
+            foreach ((Formula a, Formula b) in expected.ZipInternal(results))
             {
                 Assert.AreEqual(a.FormulaString, b.FormulaString);
                 Assert.AreEqual(a.Mass, b.Mass);
@@ -160,7 +160,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var expected = formulas.Select(formula => IsotopeCalculator.GetAccurateIsotopeProperty(formula.FormulaString, 2, iupacDb).IsotopeProfile).ToList();
             results.Sort((a, b) => a.Sum(e => e.MassDifferenceFromMonoisotopicIon).CompareTo(b.Sum(e => e.MassDifferenceFromMonoisotopicIon)));
             expected.Sort((a, b) => a.Sum(e => e.MassDifferenceFromMonoisotopicIon).CompareTo(b.Sum(e => e.MassDifferenceFromMonoisotopicIon)));
-            foreach ((List<IsotopicPeak> a, List<IsotopicPeak> b) in expected.Zip(results))
+            foreach ((List<IsotopicPeak> a, List<IsotopicPeak> b) in expected.ZipInternal(results))
             {
                 CollectionAssert.AreEqual(a.Select(peak => peak.RelativeAbundance).ToArray(), b.Select(peak => peak.RelativeAbundance).ToArray());
                 CollectionAssert.AreEqual(a.Select(peak => peak.Mass).ToArray(), b.Select(peak => peak.Mass).ToArray());

@@ -1,12 +1,15 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -15,6 +18,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -28,9 +32,10 @@ namespace CompMs.App.Msdial.Model.Core {
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
         private readonly MolecularSpectrumNetworkingBaseParameter _molecularSpectrumNetworkingParameter;
+        private readonly PeakSpotFiltering<ChromatogramPeakFeatureModel>.PeakSpotFilter _filter;
         private readonly IMessageBroker _broker;
 
-        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, MolecularSpectrumNetworkingBaseParameter molecularSpectrumNetworkingParameter, IMessageBroker broker) {
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, MolecularSpectrumNetworkingBaseParameter molecularSpectrumNetworkingParameter, PeakSpotFiltering<ChromatogramPeakFeatureModel> peakSpotFiltering, PeakFilterModel peakFilterModel, IMatchResultEvaluator<ChromatogramPeakFeatureModel> evaluator, IMessageBroker broker) {
             AnalysisFileModel = analysisFileModel;
             _molecularSpectrumNetworkingParameter = molecularSpectrumNetworkingParameter;
             _broker = broker;
@@ -42,6 +47,7 @@ namespace CompMs.App.Msdial.Model.Core {
             if (Ms1Peaks.IsEmptyOrNull()) {
                 MessageBox.Show("No peak information. Check your polarity setting.");
             }
+            _filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator);
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
 
@@ -72,13 +78,13 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var network = GetMolecularNetworkInstance(parameter);
+        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
-        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var network = GetMolecularNetworkInstance(parameter);
+        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
@@ -91,10 +97,13 @@ namespace CompMs.App.Msdial.Model.Core {
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
-        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
-                var spots = Ms1Peaks;
+                IReadOnlyList<ChromatogramPeakFeatureModel> spots = Ms1Peaks;
+                if (useCurrentFiltering) {
+                    spots = _filter.Filter(spots).ToList();
+                }
                 var loader = AnalysisFileModel.MSDecLoader;
                 var peaks = loader.LoadMSDecResults();
 
@@ -106,6 +115,10 @@ namespace CompMs.App.Msdial.Model.Core {
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterPeakID, s => s.InnerModel.PeakCharacter));
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);

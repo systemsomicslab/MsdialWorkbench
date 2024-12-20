@@ -37,6 +37,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="25"/>
+
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Label Content="Molecular formula finder" 
@@ -105,8 +107,19 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
+                <Grid Grid.Row="2" Width="200" HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Label Content="Formula hit count: " Height="30"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBox Name="TextBox_FormulaHitCount" Text="{Binding Path=_model.FormulaList.Count, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                    </StackPanel>
+                </Grid>
             </Grid>
-
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -187,7 +200,7 @@
             </Grid>
             <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
         </Grid>
-        <GridSplitter Width="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+        <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
         <Grid Grid.Column="1" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -197,12 +210,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="25"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Label Content="Structure finder" FontStyle="Normal" Height="25" Grid.Row="0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" />
-                    <Button Content="Reflect to MS-DIAL" Command="{Binding _model.ReflectToMsdial}" 
+                    <Button Content="Reflect to MS-DIAL" Command="{Binding _model.ReflectToMsdialCommand}" 
                             Background="IndianRed" BorderThickness="2" FontWeight="Bold"
-                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Find molecular formula button"/>
+                            Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
@@ -239,7 +253,20 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
+                <Grid Grid.Row="2" Width="200" HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Label Content="Structure hit count: " Height="30"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBox Name="TextBox_StructureHitCount" Text="{Binding Path=_model.StructureList.Count, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                    </StackPanel>
+                </Grid>
             </Grid>
+            <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             <TabControl Grid.Row="1">
                 <TabItem Header="Spectrum">
                     <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel}"/>
