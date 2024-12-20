@@ -181,7 +181,7 @@ public sealed class Ms2Dec
         var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, peaks.First().ID, peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
 
         var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>(ms2ChromPeaksList.Count);
-        foreach (var (chromPeaks, mz) in ms2ChromPeaksList.Zip(productMz)) {
+        foreach (var (chromPeaks, mz) in ms2ChromPeaksList.ZipInternal(productMz)) {
             var sChromPeaks = new ExtractedIonChromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec, mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
             smoothedMs2ChromPeaksList.Add(sChromPeaks);
         }

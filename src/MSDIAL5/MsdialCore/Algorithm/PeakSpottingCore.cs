@@ -774,7 +774,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var minDatapoint = 3;
             // var counter = 0;
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type);
-            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.Zip(chromPeakFeatures)) {
+            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.ZipInternal(chromPeakFeatures)) {
                 //get EIC chromatogram
                 var peakWidth = peak.PeakWidth();
                 var peakWidthMargin = peakWidth * .5;

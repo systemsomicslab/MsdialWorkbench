@@ -126,7 +126,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             List<double> productMzs = curatedSpectra.Select(x => (double)x.Mass).ToList();
             var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, productMzs, param, file.AcquisitionType, targetCE);
             var sMs2Chromatograms = new List<ExtractedIonChromatogram>();
-            foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.Zip(productMzs)) {
+            foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.ZipInternal(productMzs)) {
                 ExtractedIonChromatogram chromatogram = new ExtractedIonChromatogram(ms2Peaks, ChromXType.RT, ChromXUnit.Min, productMz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 sMs2Chromatograms.Add(chromatogram);
             }

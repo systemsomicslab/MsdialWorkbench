@@ -100,7 +100,7 @@ public class PeakAligner {
         // from 40 to 80
         var counter = 0;
         ReportProgress reporter = ReportProgress.FromLength(Progress, 40.0, 40.0);
-        foreach (var (analysisFile, file_) in analysisFiles.Zip(tempFiles)) {
+        foreach (var (analysisFile, file_) in analysisFiles.ZipInternal(tempFiles)) {
             var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
             foreach (var spot in spots) {
                 peaks.Add(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == analysisFile.AnalysisFileId));
@@ -133,7 +133,7 @@ public class PeakAligner {
         }
         var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
         var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
-        var peakInfos = peaks.Zip(spots)
+        var peakInfos = peaks.ZipInternal(spots)
             .AsParallel()
             .AsOrdered()
             .WithDegreeOfParallelism(Param.NumThreads)

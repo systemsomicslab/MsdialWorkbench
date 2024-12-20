@@ -45,7 +45,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var dtRange = new ChromatogramRange(double.MinValue, double.MaxValue, ChromXType.Drift, ChromXUnit.Msec);
 
             var peakInfos = new List<ChromatogramPeakInfo>();
-            foreach ((var peak, var spot) in peaks.Zip(spots)) {
+            foreach ((var peak, var spot) in peaks.ZipInternal(spots)) {
                 var rawSpectra = rawSpectras[peak.IonMode].Value;
                 if (spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                     Filler3d.GapFillFirst(rawSpectra, spot, analysisFile.AnalysisFileId);
