@@ -10483,10 +10483,10 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (sphCarbon >= 24 || sphCarbon <= 14) continue;
 
-                            var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph2 = sph1 - H2O;
-                            var sph3 = sph1 - 2 * H2O;
-                            var sph4 = sph1 - 3 * H2O;
+                            var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
+                            var sph2 = sph1 + H2O;
+                            var sph3 = sph1 - 1 * H2O;
+                            var sph4 = sph1 - 2 * H2O;
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
