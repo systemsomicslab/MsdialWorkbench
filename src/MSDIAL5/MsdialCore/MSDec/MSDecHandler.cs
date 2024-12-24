@@ -188,7 +188,7 @@ namespace CompMs.MsdialCore.MSDec {
     public static class MSDecHandler {
         #region gcms
         public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, ReportProgress reporter) {
-            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
+            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakFeature.ChromScanIdTop).ThenBy(n => n.PeakFeature.Mass).ToList();
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
             //note that there is a possibility that raw data contains MS/MS information as well.

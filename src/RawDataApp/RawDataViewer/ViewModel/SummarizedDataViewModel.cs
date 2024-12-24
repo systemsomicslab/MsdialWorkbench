@@ -38,7 +38,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
 
             MsPeakSpotsCheckViewModel.Where(vm => vm != null).Select(vm => vm.SelectedPeakSpectrumID).Switch()
                 .CombineLatest(RawMsSpectrumCheckViewModel.Where(vm => vm != null), (id, vm) => {
-                    var spec = vm.Spectra.FirstOrDefault(s => s.ScanNumber == id);
+                    var spec = vm.Spectra.FirstOrDefault(s => (int)s.RawSpectrumID.ID == id);
                     vm.SelectedSpectrum.Value = spec;
                     return Unit.Default;
                 }).Subscribe().AddTo(Disposables);
