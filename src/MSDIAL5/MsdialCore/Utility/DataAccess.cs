@@ -540,7 +540,7 @@ namespace CompMs.MsdialCore.Utility
                 var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
                     out basepeakMz, out basepeakIntensity);
                 if (!driftBinToPeak.ContainsKey(driftBin)) {
-                    driftBinToPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), spectrum.RawSpectrumID.IDType);
+                    driftBinToPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec)) { IDType = spectrum.RawSpectrumID.IDType, };
                     driftBinToBasePeak[driftBin] = new SpectrumPeak() { Mass = basepeakMz, Intensity = basepeakIntensity };
                 }
                 else {
