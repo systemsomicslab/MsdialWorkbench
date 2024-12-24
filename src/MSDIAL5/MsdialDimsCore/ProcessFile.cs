@@ -120,7 +120,8 @@ public sealed class ProcessFile : IFileProcessor {
             peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
             peak.ChromXsTop = new ChromXs(peakFeature.PeakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
 
-            peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
+            peakFeature.MS1RawSpectrumIdTop = (int)ms1Spectrum.RawSpectrumID.ID;
+            peakFeature.RawDataIDType = ms1Spectrum.RawSpectrumID.IDType;
             peakFeature.ScanID = ms1Spectrum.ScanNumber;
             switch (type) {
                 case AcquisitionType.AIF:
@@ -166,7 +167,7 @@ public sealed class ProcessFile : IFileProcessor {
             if (spec.Precursor.IsolationTargetMz - precursorMz < - spec.Precursor.IsolationWindowUpperOffset - mzTolerance) continue;
             if (spec.Precursor.IsolationTargetMz - precursorMz > spec.Precursor.IsolationWindowLowerOffset + mzTolerance) break;
 
-            ID2CE[spec.Index] = spec.CollisionEnergy;
+            ID2CE[(int)spec.RawSpectrumID.ID] = spec.CollisionEnergy;
         }
         return ID2CE; /// maybe, in msmsall, the id count is always one but for just in case
     }
@@ -192,7 +193,7 @@ public sealed class ProcessFile : IFileProcessor {
             if (spec.Precursor.IsolationTargetMz - precursorMz < - mzTolerance) continue;
             if (spec.Precursor.IsolationTargetMz - precursorMz > + mzTolerance) break;
 
-            ID2CE[spec.Index] = spec.CollisionEnergy;
+            ID2CE[(int)spec.RawSpectrumID.ID] = spec.CollisionEnergy;
         }
         return ID2CE;
     }

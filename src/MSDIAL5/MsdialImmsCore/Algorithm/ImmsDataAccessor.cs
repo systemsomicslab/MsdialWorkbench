@@ -74,7 +74,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var massSpectra = spectrum.Spectrum;
                 //bin intensities for focused MZ +- ms1Tolerance
                 (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
-                peaklist.Add(new ChromatogramPeak(spectrum.Index, basepeakMz, summedIntensity, new ChromXs(chromX, ChromXType.Drift, ChromXUnit.Msec)));
+                peaklist.Add(new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, summedIntensity, new ChromXs(chromX, ChromXType.Drift, ChromXUnit.Msec)) { IDType = spectrum.RawSpectrumID.IDType });
             }
 
             return peaklist;

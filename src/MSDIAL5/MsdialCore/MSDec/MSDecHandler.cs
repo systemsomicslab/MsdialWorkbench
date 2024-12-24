@@ -1322,7 +1322,7 @@ namespace CompMs.MsdialCore.MSDec {
                     }
                     else if (massSpectra[j].Mz >= focusedMass + massTol) break;
                 }
-                peaklist[i - chromLeft] = new ValuePeak(spectrum.Index, spectrum.ScanStartTime, maxMass, sum);
+                peaklist[i - chromLeft] = new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.ScanStartTime, maxMass, sum, spectrum.RawSpectrumID.IDType);
             }
 
             using var smoothedChromatogram = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);

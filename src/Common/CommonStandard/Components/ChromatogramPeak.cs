@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.Interfaces;
 using MessagePack;
 
 namespace CompMs.Common.Components
@@ -15,6 +16,8 @@ namespace CompMs.Common.Components
         public double Intensity { get; set; }
         [Key(3)]
         public ChromXs ChromXs { get; set; }
+        [Key(4)]
+        public SpectrumIDType IDType { get; set; } = SpectrumIDType.Index;
 
         [SerializationConstructor]
         public ChromatogramPeak(int id, double mass, double intensity, ChromXs chromXs) {
@@ -31,8 +34,8 @@ namespace CompMs.Common.Components
             ChromXs = new ChromXs(time);
         }
 
-        public static ChromatogramPeak Create<T>(int id, double mass, double intensity, T time) where T: IChromX {
-            return new ChromatogramPeak(id, mass, intensity, ChromXs.Create(time));
+        public static ChromatogramPeak Create<T>(int id, double mass, double intensity, T time, SpectrumIDType idType = SpectrumIDType.Index) where T: IChromX {
+            return new ChromatogramPeak(id, mass, intensity, ChromXs.Create(time)) { IDType = idType, };
         }
     }
 }

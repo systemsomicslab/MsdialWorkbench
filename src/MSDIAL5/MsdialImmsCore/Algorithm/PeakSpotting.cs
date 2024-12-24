@@ -139,8 +139,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .Select(group => group.Argmax(spec => spec.TotalIonCurrent)) // choose largest ion current, for each ce
                 .ToList();
             if (representatives.Any()) {
-                feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.Index, spec => spec.CollisionEnergy);
-                feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).Index;
+                feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => (int)spec.RawSpectrumID.ID, spec => spec.CollisionEnergy);
+                feature.MS2RawSpectrumID = (int)representatives.Argmax(spec => spec.TotalIonCurrent).RawSpectrumID.ID;
             }
         }
 

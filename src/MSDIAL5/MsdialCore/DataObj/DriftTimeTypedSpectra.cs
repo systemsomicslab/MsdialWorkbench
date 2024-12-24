@@ -41,7 +41,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, basePeakIntensity, _) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, basePeakIntensity, new DriftTime(spectrum.DriftTime)));
+            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, basePeakIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -54,7 +54,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime)));
+            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -67,7 +67,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(new ValuePeak(spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity));
+            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, mz);
     }
@@ -75,7 +75,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
         var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
         var enumerables = new List<IEnumerable<Spectrum.SummarizedSpectrum>>();
-        var indexs = new List<int>();
+        var ids = new List<ISpectrumIdentifier>();
         var times = new List<double>();
         var mzs_ = mzs.ToList();
         foreach (var spectrum in spectra) {
@@ -83,11 +83,11 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             enumerables.Add(new Spectrum(spectrum.Spectrum).RetrieveBins(mzs_, tolerance));
-            indexs.Add(spectrum.Index);
+            ids.Add(spectrum.RawSpectrumID);
             times.Add(spectrum.DriftTime);
         }
         return enumerables.Sequence()
-            .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.BasePeakMz, peak.SummedIntensity)).ToArray())
+            .Select(peaks => peaks.Zip(ids, times, (peak, index, time) => new ValuePeak((int)index.ID, time, peak.BasePeakMz, peak.SummedIntensity, index.IDType)).ToArray())
             .Zip(mzs_, (peaks, mz) => new ExtractedIonChromatogram(peaks, ChromXType.Drift, _unit, mz));
     }
 
@@ -99,7 +99,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create(spectrum.Index, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime)));
+            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -125,7 +125,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak(spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity));
+            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
     }
@@ -147,7 +147,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak(spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity));
+            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -170,7 +170,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak(spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity));
+            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
         }
         return new SpecificExperimentChromatogram(results, ChromXType.Drift, _unit, experimentID);
     }
@@ -194,7 +194,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak(spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity));
+            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
     }

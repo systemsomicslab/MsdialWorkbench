@@ -289,8 +289,8 @@ namespace CompMs.MsdialCore.Utility
                     if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
                         (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
-                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
-                        chromPeaks.Add(new ChromatogramPeak(id, basepeakMz, summedIntensity, chromX));
+                        var id = type == ChromXType.Drift && spec.RawSpectrumID is IModifiedSpectrumIdentifier modified ? modified.OriginalIDs[0] : spec.RawSpectrumID;
+                        chromPeaks.Add(new ChromatogramPeak((int)id.ID, basepeakMz, summedIntensity, chromX) { IDType = id.IDType, });
                     }
                 }
             }
@@ -314,11 +314,11 @@ namespace CompMs.MsdialCore.Utility
 
                     if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
                         var chromX = type == ChromXType.Drift ? spec.DriftTime : spec.ScanStartTime;
-                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
+                        var id = type == ChromXType.Drift && spec.RawSpectrumID is IModifiedSpectrumIdentifier modified ? modified.OriginalIDs[0] : spec.RawSpectrumID;
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
 
                         for (int j = 0; j < pMzValues.Count; j++) { 
-                            valuePeakArrayList[j][counter] = new ValuePeak(id, chromX, pMzValues[j], intensities[j]);
+                            valuePeakArrayList[j][counter] = new ValuePeak((int)id.ID, chromX, pMzValues[j], intensities[j], id.IDType);
                         }
                         counter++;
                     }
@@ -409,7 +409,7 @@ namespace CompMs.MsdialCore.Utility
                     }
                     else if (massSpectra[j].Mz >= quantMass + sliceWidth) break;
                 }
-                peaklist.Add(new ChromatogramPeak(spectrum.Index, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)));
+                peaklist.Add(new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)) { IDType = spectrum.RawSpectrumID.IDType });
             }
 
             var minLeftIntensity = double.MaxValue;
@@ -481,7 +481,7 @@ namespace CompMs.MsdialCore.Utility
                     }
                 }
                 else {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.Index, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToChromPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec)) { IDType = spectrum.RawSpectrumID.IDType, };
                     driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
                 }
             }
@@ -540,7 +540,7 @@ namespace CompMs.MsdialCore.Utility
                 var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
                     out basepeakMz, out basepeakIntensity);
                 if (!driftBinToPeak.ContainsKey(driftBin)) {
-                    driftBinToPeak[driftBin] = new ChromatogramPeak(spectrum.Index, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), spectrum.RawSpectrumID.IDType);
                     driftBinToBasePeak[driftBin] = new SpectrumPeak() { Mass = basepeakMz, Intensity = basepeakIntensity };
                 }
                 else {

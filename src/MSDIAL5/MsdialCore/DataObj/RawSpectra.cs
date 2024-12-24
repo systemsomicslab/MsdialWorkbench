@@ -191,7 +191,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
             else {
-                driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.Index, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec)));
+                driftBinToChromPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec))) { IDType = spectrum.RawSpectrumID.IDType, };
                 driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
             }
         }

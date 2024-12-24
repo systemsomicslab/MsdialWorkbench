@@ -48,13 +48,14 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
-                var chromScanID = peakFeature.ChromScanIdTop;
+                var chromScanID = peakFeature.PeakFeature.ChromScanIdTop;
 
                 IChromatogramPeakFeature peak = peakFeature;
                 peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peak.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
+                peak.ChromXsTop = new ChromXs(peakFeature.PeakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
 
-                peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
+                peakFeature.MS1RawSpectrumIdTop = (int)ms1Spectrum.RawSpectrumID.ID;
+                peakFeature.RawDataIDType = ms1Spectrum.RawSpectrumID.IDType;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 switch (type) {
                     case AcquisitionType.AIF:
@@ -95,7 +96,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 if (spec.Precursor.IsolationTargetMz - precursorMz < - spec.Precursor.IsolationWindowUpperOffset - mzTolerance) continue;
                 if (spec.Precursor.IsolationTargetMz - precursorMz > spec.Precursor.IsolationWindowLowerOffset + mzTolerance) break;
 
-                ID2CE[spec.Index] = spec.CollisionEnergy;
+                ID2CE[(int)spec.RawSpectrumID.ID] = spec.CollisionEnergy;
             }
             return ID2CE; /// maybe, in msmsall, the id count is always one but for just in case
         }
@@ -121,7 +122,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 if (spec.Precursor.IsolationTargetMz - precursorMz < - mzTolerance) continue;
                 if (spec.Precursor.IsolationTargetMz - precursorMz > + mzTolerance) break;
 
-                ID2CE[spec.Index] = spec.CollisionEnergy;
+                ID2CE[(int)spec.RawSpectrumID.ID] = spec.CollisionEnergy;
             }
             return ID2CE;
         }
