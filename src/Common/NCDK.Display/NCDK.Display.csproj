@@ -25,7 +25,7 @@
     <PackageProjectUrl>https://github.com/kazuyaujihara/NCDK</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/kazuyaujihara/NCDK/blob/master/LICENSE</PackageLicenseUrl>
     <PackageReleaseNotes>This release is based on [cdk 2019-11-27](https://github.com/cdk/cdk/tree/c76443e0a69a4110c6a0fe65704abccce8a435ff) snapshot.</PackageReleaseNotes>
-    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <Configurations>Debug;Release</Configurations>
 
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

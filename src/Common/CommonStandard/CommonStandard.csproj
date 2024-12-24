@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net48;net472;net6.0</TargetFrameworks>
     <AssemblyName>Common</AssemblyName>
     <RootNamespace>CompMs.Common</RootNamespace>
-    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <LangVersion>latest</LangVersion>
     <Nullable>annotations</Nullable>
   </PropertyGroup>
