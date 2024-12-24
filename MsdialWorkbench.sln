@@ -164,6 +164,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{8F2A6ADB-FAED-4EE3-994E-3B1724CD5800}"
 	ProjectSection(SolutionItems) = preProject
 		build.ps1 = build.ps1
+		build_console.ps1 = build_console.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompareAnnotationResult", "src\CompMs.App\CompareAnnotationResult\CompareAnnotationResult.csproj", "{13BA3523-AD0E-4A8D-B1AD-C9A4E8527166}"
