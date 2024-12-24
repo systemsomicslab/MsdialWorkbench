@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>CompMs.MsdialIntegrate</RootNamespace>
-    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
