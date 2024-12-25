@@ -33,6 +33,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -177,12 +178,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (t is null) {
                     return Observable.Return(new List<SpectrumPeakWrapper>());
                 }
-                return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
-                    .Select(spectrums =>
-                        {
-                            var spectra = DataAccess.GetCentroidMassSpectra(spectrums[t.MS1RawSpectrumIdTop], msdataType, 0, float.MinValue, float.MaxValue);
-                            return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                        });
+                var result = Task.Run(async () => {
+                    var spectrum = await provider.LoadSpectrumAsync((ulong)t.MS1RawSpectrumIdTop, t.InnerModel.RawDataIDType);
+                    if (spectrum is null) {
+                        return [];
+                    }
+                    var centroided = DataAccess.GetCentroidMassSpectra(spectrum, msdataType, 0, float.MinValue, float.MaxValue);
+                    return centroided.Select(p => new SpectrumPeakWrapper(p)).ToList();
+                }).ToObservable();
+                return result;
             }).AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";

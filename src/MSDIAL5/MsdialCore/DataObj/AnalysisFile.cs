@@ -111,9 +111,9 @@ namespace CompMs.MsdialCore.DataObj
             return MsdecResultsReader.ReadMSDecResults(DeconvolutionFilePath, out var _, out var _);
         }
 
-        public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
-            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+        public Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
             ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
+            return Task.CompletedTask;
         }
 
         public Dictionary<int, float> GetRiDictionary(Dictionary<int, RiDictionaryInfo> riDictionaries) {
