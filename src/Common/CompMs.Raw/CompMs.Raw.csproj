@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\CompMs.Raw\CompMs.Raw.csproj" />
   </ItemGroup>
 
 </Project>
