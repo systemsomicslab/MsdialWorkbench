@@ -1920,6 +1920,20 @@ namespace CompMs.Common.Lipidomics
             averageIntensity /= (double)queries.Count;
         }
 
+        public static bool checkFragmentExistence(List<SpectrumPeak> spectrum, SpectrumPeak query, double ms2Tolerance)
+        {
+            foreach (var peak in spectrum)
+            {
+                var mz = peak.Mass;
+                var intensity = peak.Intensity; // relative intensity
+                if (query.Intensity < intensity && Math.Abs(query.Mass - mz) < ms2Tolerance)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static double acylCainMass(int carbon, int dbBond)
         {
             var hydrogenMass = (double)((carbon * 2) - 1 - (dbBond * 2)) * MassDiffDictionary.HydrogenMass;
@@ -9136,7 +9150,8 @@ AdductIon adduct)
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
+                            if (foundCount >= 2||
+                                (sphCarbon == 18 && LipidMsmsCharacterizationUtility.checkFragmentExistence(spectrum, new SpectrumPeak() { Mass = sph2, Intensity = 20 }, ms2Tolerance)))
                             { // 
                                 var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("HexCer", LbmClass.HexCer_NS, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
@@ -9322,9 +9337,9 @@ AdductIon adduct)
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
+                            if (foundCount >= 2 || 
+                                (sphCarbon == 18 && LipidMsmsCharacterizationUtility.checkFragmentExistence(spectrum, new SpectrumPeak() { Mass = sph2, Intensity = 15 }, ms2Tolerance)))
                             { // 
-
                                 //var header = sphDouble == 0 ? "HexCer-HDS" : "HexCer-HS";
                                 var header = "HexCer";
                                 var lbm = sphDouble == 0 ? LbmClass.HexCer_HDS : LbmClass.HexCer_HS;
@@ -9333,6 +9348,7 @@ AdductIon adduct)
                                             acylCarbon, acylDouble, 1, averageIntensity);
                                 candidates.Add(molecule);
                             }
+
                         }
                     }
 
@@ -10483,10 +10499,10 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (sphCarbon >= 24 || sphCarbon <= 14) continue;
 
-                            var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph2 = sph1 - H2O;
-                            var sph3 = sph1 - 2 * H2O;
-                            var sph4 = sph1 - 3 * H2O;
+                            var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
+                            var sph2 = sph1 + H2O;
+                            var sph3 = sph1 - 1 * H2O;
+                            var sph4 = sph1 - 2 * H2O;
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
@@ -12272,12 +12288,12 @@ AdductIon adduct)
                                     var ceramideQuery = new List<SpectrumPeak>() {
                                         new SpectrumPeak() { Mass = ceramideIon, Intensity = 1 },
                                         new SpectrumPeak() { Mass = ceramideIon_1WaterLoss, Intensity = 1 },
-                                        new SpectrumPeak() { Mass = ceramideIon_2WaterLoss, Intensity = 1 }
+                                        new SpectrumPeak() { Mass = ceramideIon_2WaterLoss, Intensity = 10 }
                                     };
 
                                     var sphQuery = new List<SpectrumPeak>() {
                                         new SpectrumPeak() { Mass = sphIon, Intensity = 1 },
-                                        new SpectrumPeak() { Mass = sphIon_1H2OLoss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sphIon_1H2OLoss, Intensity = 15 },
                                         new SpectrumPeak() { Mass = sphIon_CH2OLoss, Intensity = 1 }
                                     };
 
@@ -12294,13 +12310,13 @@ AdductIon adduct)
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, ceramideQuery, ms2Tolerance, out ceramideQueryFoundCount, out ceramideQueryAverageInt);
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, sphQuery, ms2Tolerance, out sphQueryFoundCount, out sphQueryAverageInt);
 
-                                    if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
+                                    if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
                                         acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, acylOxidized);
                                         candidates.Add(molecule);
                                     }
-                                    else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
+                                    else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
                                         extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, acylOxidized);
