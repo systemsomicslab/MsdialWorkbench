@@ -17,6 +17,7 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.Raw.Sciex.Wiff2;
 using CompMs.RawDataHandler.DataProvider;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -267,7 +268,13 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt)), _fileProperties, _studyContext, _broker);
+            var factory = new FacadeDataProviderFactory(file => {
+                if (file.AnalysisFilePath.EndsWith(".wiff2")) {
+                    return new Wiff2DataProviderFactory().ContraMap((AnalysisFileBean file) => file.AnalysisFilePath);
+                }
+                return new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
+            });
+            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, factory, _fileProperties, _studyContext, _broker);
         }
     }
 

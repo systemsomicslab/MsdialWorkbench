@@ -83,10 +83,12 @@
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="R.NET" Version="1.9.0" />
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
-	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="2.0.*-*" Condition="'$(Configuration)'=='Release'" />
 	  <PackageReference Include="RawDataHandler" Version="2.0.*-*" Condition="'$(Configuration)'=='Debug'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
+	  <PackageReference Include="CompMs.Raw.Sciex.Wiff2" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="CompMs.Raw.Sciex.Wiff2" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
