@@ -120,4 +120,8 @@ internal sealed class CachedDataProvider: IDataProvider
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
         return _provider.LoadSpectrumAsync(id, idType);
     }
+
+    public Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+        return _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token);
+    }
 }

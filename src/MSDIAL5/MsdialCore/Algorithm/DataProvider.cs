@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm;
 
-public static class DataProvider {
+public static class DataProvider
+{
+    [Obsolete("This method is not recommended for frequent use. It will be removed in the future.")]
     public static RawSpectrum LoadMsSpectrumFromIndex(this IDataProvider provider, int index) {
         if (index < 0) {
             return null;
@@ -19,6 +21,7 @@ public static class DataProvider {
         return provider.LoadMsSpectrums()[index];
     }
 
+    [Obsolete("This method is not recommended for frequent use. It will be removed in the future.")]
     public static async Task<RawSpectrum> LoadMsSpectrumFromIndexAsync(this IDataProvider provider, int index, CancellationToken token) {
         if (index < 0) {
             return null;
@@ -27,6 +30,7 @@ public static class DataProvider {
         return spectra[index];
     }
 
+    [Obsolete("This method is not recommended for frequent use. It will be removed in the future.")]
     public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
         return provider.LoadMs1Spectrums()[index];
     }
@@ -74,17 +78,7 @@ public static class DataProvider {
     /// This method is useful for analyzing or processing subsets of spectra data based on their retention times, particularly in contexts where the temporal dimension of the data is of interest.
     /// </remarks>
     public static async Task<RawSpectrum[]> LoadMs1SpectraWithRtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
-        var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
-        var lower = spectra.LowerBound(start, (t, s) => t.ScanStartTime.CompareTo(s));
-        var upper = lower;
-        while (upper < spectra.Count && spectra[upper].ScanStartTime < end) {
-            ++upper;
-        }
-        var result = new RawSpectrum[upper - lower];
-        for (int i = 0; i < result.Length; i++) {
-            result[i] = spectra[i + lower];
-        }
-        return result;
+        return await provider.LoadMSSpectraWithRtRangeAsync(1, start, end, token).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -96,17 +90,7 @@ public static class DataProvider {
     /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation and returns an array of <see cref="RawSpectrum"/> objects within the specified retention time range.</returns>
     public static async Task<RawSpectrum[]> LoadMs2SpectraWithRtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
-        var spectra = await provider.LoadMsNSpectrumsAsync(2, token).ConfigureAwait(false);
-        var lower = spectra.LowerBound(start, (t, s) => t.ScanStartTime.CompareTo(s));
-        var upper = lower;
-        while (upper < spectra.Count && spectra[upper].ScanStartTime < end) {
-            ++upper;
-        }
-        var result = new RawSpectrum[upper - lower];
-        for (int i = 0; i < result.Length; i++) {
-            result[i] = spectra[i + lower];
-        }
-        return result;
+        return await provider.LoadMSSpectraWithRtRangeAsync(2, start, end, token).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -206,7 +190,7 @@ public static class DataProvider {
     public static double GetMinimumCollisionEnergy(this IDataProvider provider) {
         return provider.LoadMsSpectrums().DefaultIfEmpty().Min(s => s?.CollisionEnergy) ?? -1d;
     }
-    
+
     public static (int, int) GetScanNumberRange(this IDataProvider provider) {
         var spectra = provider.LoadMsSpectrums();
         return (spectra.FirstOrDefault()?.ScanNumber ?? 0, spectra.LastOrDefault()?.ScanNumber ?? 0);

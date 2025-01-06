@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Algorithm
 {
-    public class ImmsRepresentativeDataProvider : IDataProvider {
+    public sealed class ImmsRepresentativeDataProvider : IDataProvider {
         private readonly IDataProvider _provider;
         private readonly List<RawSpectrum> _spectra;
         private readonly double _begin, _end;
@@ -84,6 +84,22 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return Task.FromResult(_spectra[(int)id]);
             }
             return Task.FromResult<RawSpectrum?>(null);
+        }
+
+        public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+            if (msLevel == 1) {
+                var spectra = await _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+                if (spectra.Length == 0) {
+                    return [];
+                }
+                var representatives = SelectRepresentative(spectra.Select(s => s.ShallowCopy()).ToList()).ToArray();
+                for (int i = 0; i < representatives.Length; i++) {
+                    representatives[i].RawSpectrumID = new IndexedSpectrumIdentifier(int.MaxValue);
+                }
+                return representatives;
+            }
+            var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+            return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
         }
     }
 
@@ -190,6 +206,22 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return Task.FromResult(_spectra[(int)id]);
             }
             return Task.FromResult<RawSpectrum?>(null);
+        }
+
+        public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+            if (msLevel == 1) {
+                var spectra = await _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+                if (spectra.Length == 0) {
+                    return [];
+                }
+                var accumulated = AccumulateSpectrum(spectra.Select(s => s.ShallowCopy()).ToList(), _mzTolerance, _driftTolerance).ToArray();
+                for (int i = 0; i < accumulated.Length; i++) {
+                    accumulated[i].RawSpectrumID = new IndexedSpectrumIdentifier(int.MaxValue);
+                }
+                return accumulated;
+            }
+            var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+            return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
         }
     }
 

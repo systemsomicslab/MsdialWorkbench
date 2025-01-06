@@ -34,13 +34,14 @@ class LcimmsAccumulatedSpectrumIdentifier(ulong id, SpectrumIDType idType, ISpec
 public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : IDataProvider
 {
     private readonly IDataProvider _dataProvider = dataProvider;
+    private readonly List<RawSpectrum> _accumulatedMs1Spectra = GetAccumulatedMs1Spectrum(dataProvider.LoadMs1Spectrums());
 
     public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-        return LoadMs1Spectrums().Concat(LoadMsSpectrums().Where(s => s.MsLevel != 1)).ToList().AsReadOnly(); 
+        return _accumulatedMs1Spectra.Concat(LoadMsSpectrums().Where(s => s.MsLevel != 1)).ToList().AsReadOnly(); 
     }
 
     public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-        return GetAccumulatedMs1Spectrum(_dataProvider.LoadMs1Spectrums()).AsReadOnly();
+        return _accumulatedMs1Spectra.AsReadOnly();
     }
 
     public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
@@ -55,9 +56,8 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
         return spectras[0].Concat(spectras[1].Where(s => s.MsLevel != 1)).ToList().AsReadOnly(); 
     }
 
-    public async Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
-        var spectra = await _dataProvider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
-        return GetAccumulatedMs1Spectrum(spectra).AsReadOnly();
+    public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
+        return Task.FromResult(_accumulatedMs1Spectra.AsReadOnly());
     }
 
     public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
@@ -195,7 +195,18 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
     }
 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
-        throw new NotImplementedException();
+        if (id < (ulong)_accumulatedMs1Spectra.Count) {
+            return Task.FromResult(_accumulatedMs1Spectra[(int)id]);
+        }
+        return Task.FromResult<RawSpectrum?>(null);
+    }
+
+    public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+        if (msLevel == 1) {
+            return _accumulatedMs1Spectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
+        var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+        return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
     }
 
     sealed class MassBin

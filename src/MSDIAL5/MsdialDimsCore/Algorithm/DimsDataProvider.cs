@@ -103,6 +103,24 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             return Task.FromResult<RawSpectrum?>(null);
         }
+
+        public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+            if (msLevel == 1) {
+                var spectrum = await LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                if (spectrum[0].IsInScanTimeRange(rtStart, rtEnd)) {
+                    return [spectrum[0]];
+                }
+                var spectra = await _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+                if (spectra.Length == 0) {
+                    return [];
+                }
+                var baseSpectrum = spectra.Argmax(s => s.BasePeakIntensity).ShallowCopy();
+                baseSpectrum.RawSpectrumID = new IndexedSpectrumIdentifier(int.MaxValue);
+                return [baseSpectrum];
+            }
+            var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+            return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
     }
 
     public sealed class DimsTicDataProvider : IDataProvider
@@ -157,22 +175,43 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             return Task.FromResult<RawSpectrum?>(null);
         }
+
+        public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+            if (msLevel == 1) {
+                var spectrum = await LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                if (spectrum[0].IsInScanTimeRange(rtStart, rtEnd)) {
+                    return [spectrum[0]];
+                }
+                var spectra = await _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+                if (spectra.Length == 0) {
+                    return [];
+                }
+                var baseSpectrum = spectra.Argmax(s => s.TotalIonCurrent).ShallowCopy();
+                baseSpectrum.RawSpectrumID = new IndexedSpectrumIdentifier(int.MaxValue);
+                return [baseSpectrum];
+            }
+            var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+            return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
     }
 
-    public class DimsAverageDataProvider : IDataProvider
+    public sealed class DimsAverageDataProvider : IDataProvider
     {
         private readonly IDataProvider _provider;
+        private readonly double _mzTolerance;
         private readonly List<RawSpectrum> _spectra;
         private readonly DimsBaseDataProvider _baseProvider;
 
         public DimsAverageDataProvider(IDataProvider provider, double mzTolerance) {
             _provider = provider;
+            _mzTolerance = mzTolerance;
             _spectra = AccumulateRawSpectrums(provider.LoadMsSpectrums().Select(spec => spec.ShallowCopy()).ToList(), mzTolerance);
             _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
 
         public DimsAverageDataProvider(IDataProvider provider, double mzTolerance, double timeBegin, double timeEnd) {
             _provider = provider;
+            _mzTolerance = mzTolerance;
             _spectra = AccumulateRawSpectrums(provider.LoadMsSpectrums().Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd).Select(spec => spec.ShallowCopy()).ToList(), mzTolerance);
             _baseProvider = new DimsBaseDataProvider(provider, _spectra);
         }
@@ -217,6 +256,20 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 return Task.FromResult(_spectra[(int)id]);
             }
             return Task.FromResult<RawSpectrum?>(null);
+        }
+
+        public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+            if (msLevel == 1) {
+                var spectra = await _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+                if (spectra.Length == 0) {
+                    return [];
+                }
+                var baseSpectrum = AccumulateRawSpectrums(spectra.Select(s => s.ShallowCopy()).ToList(), _mzTolerance)[0];
+                baseSpectrum.RawSpectrumID = new IndexedSpectrumIdentifier(int.MaxValue);
+                return [baseSpectrum];
+            }
+            var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
+            return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
         }
     }
 

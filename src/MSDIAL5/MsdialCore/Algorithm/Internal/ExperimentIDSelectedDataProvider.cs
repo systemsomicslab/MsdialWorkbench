@@ -64,6 +64,11 @@ internal sealed class ExperimentIDSelectedDataProvider(IDataProvider other, int 
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.ExperimentID == experimentID).ToArray());
     }
 
+    public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+        var spectra = await other.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+        return spectra.Where(s => s.ExperimentID == experimentID).ToArray();
+    }
+
     /// <summary>
     /// Synchronously loads and returns all MS spectrums associated with the specified experiment ID.
     /// </summary>

@@ -49,4 +49,8 @@ public sealed class StubDataProvider : IDataProvider
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
         return Task.FromResult(LoadMsSpectrums()[(int)id]);
     }
+
+    public Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+        return Task.FromResult(Spectra.Where(s => s.MsLevel == msLevel && s.ScanStartTime >= rtStart && s.ScanStartTime <= rtEnd).ToArray());
+    }
 }

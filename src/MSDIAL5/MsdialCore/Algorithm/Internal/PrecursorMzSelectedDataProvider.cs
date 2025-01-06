@@ -46,6 +46,11 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
     }
 
+    public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
+        var spectra = await _other.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token).ConfigureAwait(false);
+        return spectra.Where(s => s.MsLevel <= 1 || Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray();
+    }
+
     public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
         var spectra = _other.LoadMsSpectrums();
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
