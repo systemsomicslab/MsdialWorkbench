@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Lipidomics;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -44,7 +46,21 @@ namespace CompMs.Common.Components {
         [Key(3)]
         public IonMode IonMode { get; set; }
         [Key(4)]
-        public List<SpectrumPeak> Spectrum { get; set; }
+        public List<SpectrumPeak> Spectrum {
+            get {
+                if (string.IsNullOrEmpty(CompoundClass) && cacheSpectrum is null) {
+                    cacheSpectrum = ReadSpectrum();
+                    return cacheSpectrum;
+                }
+                return cacheSpectrum;
+            }
+            set; }
+
+        private List<SpectrumPeak> ReadSpectrum() {
+            return Lipid2Spec.Convert2SpecPeaks(Name, CompoundClass, AdductType, null);
+        }
+
+        private List<SpectrumPeak> cacheSpectrum = null;
 
         // set for IMoleculeProperty
         [Key(5)]
@@ -111,5 +127,8 @@ namespace CompMs.Common.Components {
 
         [IgnoreMember]
         public string OntologyOrCompoundClass => string.IsNullOrEmpty(Ontology) ? CompoundClass : Ontology;
+        [IgnoreMember]
+        private ILipidSpectrumGenerator Generator;
+        public void SetLipidSpectrumGenerator(ILipidSpectrumGenerator generator) { Generator = generator; }
     }
 }
