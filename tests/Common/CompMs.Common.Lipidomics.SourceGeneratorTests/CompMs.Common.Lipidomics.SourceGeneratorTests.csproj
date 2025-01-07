@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj">
+      <OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="MsdialLipidCidSpectrumModel.xml">
+      <Category>Cid</Category>
+    </AdditionalFiles>
+  </ItemGroup>
+
+</Project>
