@@ -101,13 +101,13 @@
           <MZ>M-NL+Proton</MZ>
           <NL>
             <Carbon>5</Carbon>
-            <Hydrogen>15</Hydrogen>
+            <Hydrogen>14</Hydrogen>
             <Oxygen>4</Oxygen>
             <Nitrogen>1</Nitrogen>
             <Phosphorus>1</Phosphorus>
           </NL>
           <Intensity>400</Intensity>
-          <Comment>[M+H-C5H15NO4P]+</Comment>
+          <Comment>[M+H-C5H14NO4P]+</Comment>
         </ClassIon>
         <ClassIon>
           <MZ>PI</MZ>
@@ -124,11 +124,11 @@
           <MZ>PI</MZ>
           <PI>
             <Carbon>2</Carbon>
-            <Hydrogen>6</Hydrogen>
+            <Hydrogen>4</Hydrogen>
             <Oxygen>4</Oxygen>
-            <Nitrogen>1</Nitrogen>
             <Phosphorus>1</Phosphorus>
             <Sodium>1</Sodium>
+            <Proton>1</Proton>
           </PI>
           <Intensity>400</Intensity>
           <Comment>C2H5O4PNa+</Comment>
