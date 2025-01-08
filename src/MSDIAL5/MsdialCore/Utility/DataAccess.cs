@@ -23,6 +23,8 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Utility
 {
@@ -295,6 +297,40 @@ namespace CompMs.MsdialCore.Utility
                 }
             }
             return chromPeaks;
+        }
+
+        public static async Task<List<ValuePeak[]>> GetMs2ValuePeaksAsync(IDataProvider provider, double precursorMz,
+            double startTime, double endTime, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
+            double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, CancellationToken token = default) {
+
+            IEnumerable<RawSpectrum> spectra = type switch
+            {
+                ChromXType.RT => await provider.LoadMs2SpectraWithRtRangeAsync(startTime, endTime, token).ConfigureAwait(false),
+                ChromXType.Drift => await provider.LoadMs2SpectraWithDtRangeAsync(startTime, endTime, token).ConfigureAwait(false),
+                _ => throw new NotSupportedException()
+            };
+            spectra = spectra.Where(s => s.Precursor?.ContainsMz(precursorMz, param.CentroidMs1Tolerance, acquisitionType) ?? false);
+            if (targetCE >= 0) {
+                // for AIF mode
+                spectra = spectra.Where(s => Math.Abs(s.CollisionEnergy - targetCE) < 1);
+            }
+            var filtered = spectra.ToList();
+
+            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
+            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[filtered.Count]));
+
+            var counter = 0;
+            foreach (var spec in filtered) {
+                var chromX = type == ChromXType.Drift ? spec.DriftTime : spec.ScanStartTime;
+                var id = type == ChromXType.Drift && spec.RawSpectrumID is IModifiedSpectrumIdentifier modified ? modified.OriginalIDs[0] : spec.RawSpectrumID;
+                var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
+
+                for (int j = 0; j < pMzValues.Count; j++) { 
+                    valuePeakArrayList[j][counter] = new ValuePeak((int)id.ID, chromX, pMzValues[j], intensities[j], id.IDType);
+                }
+                counter++;
+            }
+            return valuePeakArrayList;
         }
 
         

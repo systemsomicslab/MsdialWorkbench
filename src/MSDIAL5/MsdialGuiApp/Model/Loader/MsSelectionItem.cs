@@ -1,20 +1,17 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.DataObj;
+using CompMs.CommonMVVM;
 
-namespace CompMs.App.Msdial.Model.Loader
+namespace CompMs.App.Msdial.Model.Loader;
+
+internal sealed class MsSelectionItem(int id, SpectrumIDType idType, double collisionEnergy) : BindableBase
 {
-    internal sealed class MsSelectionItem : BindableBase
-    {
-        private readonly double _collisionEnergy;
+    private readonly double _collisionEnergy = collisionEnergy;
 
-        public MsSelectionItem(int id, double collisionEnergy) {
-            Id = id;
-            _collisionEnergy = collisionEnergy;
-        }
+    public int Id { get; } = id;
 
-        public int Id { get; }
+    public SpectrumIDType IDType { get; } = idType;
 
-        public override string ToString() {
-            return $"{Id}(CE:{_collisionEnergy})";
-        }
+    public override string ToString() {
+        return $"{Id}(CE:{_collisionEnergy})";
     }
 }

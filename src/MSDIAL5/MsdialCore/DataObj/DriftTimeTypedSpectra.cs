@@ -7,6 +7,7 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj;
 
@@ -34,7 +35,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public Chromatogram GetMs1BasePeakChromatogram(double start, double end) {
-        var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
@@ -47,7 +48,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, double start, double end) {
-        var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
@@ -60,7 +61,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
-        var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
@@ -73,7 +74,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
-        var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var enumerables = new List<IEnumerable<Spectrum.SummarizedSpectrum>>();
         var ids = new List<ISpectrumIdentifier>();
         var times = new List<double>();
@@ -92,7 +93,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
-        var spectra = _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
@@ -118,7 +119,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// over the selected drift time range, which is useful for analyzing the behavior of ions with different mobility characteristics.
     /// </remarks>
     public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
-        var spectra = _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (!spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
@@ -140,7 +141,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     public Chromatogram GetMs2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
@@ -163,7 +164,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
@@ -187,7 +188,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// </remarks>
     public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
+        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {

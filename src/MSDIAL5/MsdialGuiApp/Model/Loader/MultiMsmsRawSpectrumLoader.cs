@@ -40,18 +40,21 @@ namespace CompMs.App.Msdial.Model.Loader
 
         private IObservable<IMSScanProperty?> LoadScanAsObservableCore(ChromatogramPeakFeatureModel target) {
             if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
-                _ms2List.OnNext(new List<MsSelectionItem>(0));
+                _ms2List.OnNext([]);
                 Ms2IdSelector.Value = null;
                 return Observable.Return<IMSScanProperty?>(null);
             }
-            var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, pair.Value)).ToList();
+            var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, target.InnerModel.RawDataIDType, pair.Value)).ToList();
             _ms2List.OnNext(items);
             var defaultValue = items.FirstOrDefault(item => item.Id == target.MS2RawSpectrumId) ?? items.First();
             Ms2IdSelector.Value = defaultValue;
 
-            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => item is not null).Select(item => item!.Id), (msSpectra, ms2Id) =>
+            return Ms2IdSelector.Where(item => item is not null).Select(item =>
             {
-                var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
+                var ms2Id = item!.Id;
+                var spectrum = _provider.LoadSpectrumAsync((ulong)ms2Id, item.IDType).Result;
+
+                var spectra = DataAccess.GetCentroidMassSpectra(spectrum!, _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
                 if (_parameter.RemoveAfterPrecursor) {
                     spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
                 }

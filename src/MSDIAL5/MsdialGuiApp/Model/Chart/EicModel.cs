@@ -8,6 +8,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -42,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            var sources = targetSource.DefaultIfNull(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)), Observable.Never<PeakChromatogram>()).Switch();
+            var sources = targetSource.DefaultIfNull(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).SubscribeOn(ThreadPoolScheduler.Instance), Observable.Never<PeakChromatogram>()).Switch();
             ReactiveProperty<PeakChromatogram> chromatogram_ = sources
                 .ToReactiveProperty(loader.EmptyChromatogram)
                 .AddTo(Disposables);
