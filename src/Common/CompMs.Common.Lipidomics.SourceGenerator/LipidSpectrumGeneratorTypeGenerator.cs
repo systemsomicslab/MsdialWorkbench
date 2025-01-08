@@ -94,7 +94,8 @@ namespace CompMs.Common.Lipidomics {
         public static readonly double Electron = MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass;
         public static readonly double HCOO = H * 2.0 + C * 1 + O * 2.0 - Proton;
         public static readonly double CH3COO = H * 4.0 + C * 2 + O * 2.0 - Proton;
-        public static readonly double Na = 22.98976928 - Electron;
+        public static readonly double Sodium = 22.98976928;
+        public static readonly double Na = Sodium - Electron;
     }
 }
 """);
@@ -139,10 +140,22 @@ namespace CompMs.Common.Lipidomics {
             var lipidMSs = group.Select(ToLipidMS).ToList();
 
             result.AppendLine();
-            result.AppendLine($"    public sealed class {lipidClass}{category ?? string.Empty}SpectrumGenerator  {{");
+            result.AppendLine($"    public sealed class {lipidClass}{category ?? string.Empty}LipidSpectrumGenerator  {{");
 
             result.AppendLine("""
         public List<SpectrumPeak>? Generate(Lipid lipid, AdductIon adduct) {
+            double M;
+            var chains = lipid.Chains.GetDeterminedChains();
+""");
+
+            var def = defs.FirstOrDefault(d => d.Name == lipidClass);
+            if (def is not null) {
+                result.AppendLine($"""
+            double {string.Join(", ", Enumerable.Range(1, def.NumOfChains).Select(i => "SN" + i))};
+""");
+            }
+
+            result.AppendLine("""
             var peaks = new List<SpectrumPeak>();
             switch (adduct.AdductIonName) {
 """);
@@ -150,32 +163,30 @@ namespace CompMs.Common.Lipidomics {
             foreach (var lipidMS in lipidMSs) {
                 result.AppendLine($"""
                 case "{lipidMS.Adduct}":
-                    var M = lipid.Mass;
-                    var chains = lipid.Chains.GetDeterminedChains();
+                    M = lipid.Mass;
 """);
 
-                if (defs.FirstOrDefault(d => d.Name == lipidClass) is { } def) {
-                    for (int i = 0; i < def.NumOfChains; i++) {
-                        result.AppendLine($"""
-                    var SN{i + 1} = chains[{i}].Mass;
-""");
-                    }
+                if (def is not null && lipidMS.Ions.SelectMany(ions => ions.Value).Any(ion => ion.Mz.Contains("SN"))) {
+                    result.AppendLine(ForEachLine("                    ", Enumerable.Range(0, def.NumOfChains).Select(i => $"SN{i + 1} = chains[{i}].Mass;")));
                 }
 
                 foreach (var ions in lipidMS.Ions) {
+                    if (!ions.Value.Any()) {
+                        continue;
+                    }
+
                     result.AppendLine($"""
 
                     // {ions.Key}
+                    peaks.AddRange([
+{ForEachLine("                        ", ions.Value.Select(ion => $"new SpectrumPeak({ion.Mz}, {ion.Intensity}, \"{ion.Comment}\"),"))}
+                    ]);
 """);
-                    foreach (var ion in ions.Value) {
-                        result.AppendLine($"""
-                    peaks.Add(new SpectrumPeak({ion.Mz}, {ion.Intensity}, "{ion.Comment}"));
-""");
-                    }
                 }
 
                 result.AppendLine("""
                     return peaks;
+
 """);
             }
 
@@ -193,11 +204,15 @@ namespace CompMs.Common.Lipidomics {
         spc.AddSource($"{category}LipidSpectrumGenerator.g.cs", SourceText.From(result.ToString(), Encoding.UTF8));
     }
 
+    private static string ForEachLine(string indent, IEnumerable<string> contents) {
+        return indent + string.Join(Environment.NewLine + indent, contents);
+    }
+
     readonly static List<string> _specialElements = ["LipidClass", "LSILevel", "Adduct"];
 
     private static LipidMS ToLipidMS(XElement element) {
         var adduct = element.Element("Adduct")?.Value ?? string.Empty;
-        var LSILevel = element.Element("LSILevel")?.Value ?? string.Empty;
+        var lsiLevel = Enum.TryParse<LSILevel>(element.Element("LSILevel")?.Value, out var lsi) ? lsi : LSILevel.None;
         var ions = new Dictionary<string, List<Ion>>();
 
 
@@ -212,7 +227,7 @@ namespace CompMs.Common.Lipidomics {
             list.AddRange(ionGroup.Elements().Select(ToIon).ToList());
         }
 
-        return new(adduct, LSILevel, ions);
+        return new(adduct, lsiLevel, ions);
     }
 
     readonly static List<string> _peakElements = ["MZ", "Intensity", "Comment"];
@@ -232,9 +247,15 @@ namespace CompMs.Common.Lipidomics {
         return new() { Mz = mz, Intensity = intensity, Comment = comment };
     }
 
-    class LipidMS(string adduct, string lsiLevel, Dictionary<string, List<Ion>> ions) {
+    enum LSILevel {
+        None,
+        SpeciesLevel,
+        MolecularSpeciesLevel,
+    }
+
+    class LipidMS(string adduct, LSILevel lsiLevel, Dictionary<string, List<Ion>> ions) {
         public string Adduct { get; } = adduct;
-        public string LSILevel { get; } = lsiLevel;
+        public LSILevel LSILevel { get; } = lsiLevel;
         public Dictionary<string, List<Ion>> Ions { get; } = ions;
     }
 
