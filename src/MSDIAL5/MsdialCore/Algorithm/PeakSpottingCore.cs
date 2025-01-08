@@ -721,19 +721,27 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AcquisitionType type) {
+            if (chromPeakFeatures is not { Count: > 0}) {
+                return chromPeakFeatures;
+            }
             // var spectrumList = param.MachineCategory == MachineCategory.LCIMMS ? rawObj.AccumulatedSpectrumList : rawObj.SpectrumList;
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
             // var counter = 0;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type, provider);
-            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.ZipInternal(chromPeakFeatures)) {
+            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, type);
+            chromPeakFeatures = chromPeakFeatures.OrderBy(p => p.PeakFeature.Mass).ToList();
+            IReadOnlyList<IChromatogramPeakFeature> peaks = chromPeakFeatures;
+            var mzs = peaks.Select(p => p.Mass);
+            var range = peaks.Aggregate((ChromatogramRange)null, (acc, p) => ChromatogramRange.FromTimes(p.ChromXsLeft.GetRepresentativeXAxis().Add(-p.PeakWidth() * .5), p.ChromXsRight.GetRepresentativeXAxis().Add(p.PeakWidth() * .5)).Union(acc));
+            foreach (var (chromatogram, peakFeature) in rawSpectra.GetMS1ExtractedChromatograms(mzs, _parameter.CentroidMs1Tolerance, range).ZipInternal(chromPeakFeatures)) {
+                IChromatogramPeakFeature peak = peakFeature;
                 //get EIC chromatogram
                 var peakWidth = peak.PeakWidth();
                 var peakWidthMargin = peakWidth * .5;
                 var chromatogramRange = new ChromatogramRange(peak.ChromXsLeft.Value - peakWidthMargin, peak.ChromXsRight.Value + peakWidthMargin, peak.ChromXsTop.Type, peak.ChromXsTop.Unit);
-                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, _parameter.CentroidMs1Tolerance), chromatogramRange);
+                using var trimmedChromatogram = chromatogram.GetTrimmedChromatogram(chromatogramRange.Begin, chromatogramRange.End);
 
-                var sPeaklist = ((Chromatogram)chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel)).AsPeakArray();
+                var sPeaklist = trimmedChromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel).AsPeakArray();
                 var maxID = -1;
                 var maxInt = double.MinValue;
                 var minRtId = -1;
