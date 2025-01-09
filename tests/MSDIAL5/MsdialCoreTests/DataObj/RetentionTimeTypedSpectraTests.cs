@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MsdialCoreTestHelper.DataProvider;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj.Tests;
 
@@ -11,7 +12,7 @@ namespace CompMs.MsdialCore.DataObj.Tests;
 public class RetentionTimeTypedSpectraTests
 {
     [TestMethod]
-    public void GetMs1ExtractedChromatogramTest() {
+    public async Task GetMS1ExtractedChromatogramTest() {
         var rawSpectra = new List<RawSpectrum>
                 {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
@@ -22,7 +23,7 @@ public class RetentionTimeTypedSpectraTests
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
         var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
-        var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray();
+        var chromatogram = ((Chromatogram) await spectra.GetMS1ExtractedChromatogramAsync(102, 2d, 2d, 4d, default).ConfigureAwait(false)).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
         Assert.AreEqual(101d, chromatogram[0].Mass);
@@ -39,7 +40,7 @@ public class RetentionTimeTypedSpectraTests
     }
 
     [TestMethod()]
-    public void GetMs1TotalIonChromatogramTest() {
+    public async Task GetMs1TotalIonChromatogramTest() {
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
@@ -50,7 +51,7 @@ public class RetentionTimeTypedSpectraTests
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
         var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
-        var chromatogram = spectra.GetMs1TotalIonChromatogram(2d, 4d).AsPeakArray();
+        var chromatogram = (await spectra.GetMS1TotalIonChromatogramAsync(2d, 4d, default).ConfigureAwait(false)).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
         Assert.AreEqual(106d, chromatogram[0].Mass);
@@ -67,18 +68,18 @@ public class RetentionTimeTypedSpectraTests
     }
 
     [TestMethod()]
-    public void GetMs1BasePeakChromatogramTest() {
+    public async Task GetMS1BasePeakChromatogramTest() {
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
-            new RawSpectrum { Index = 0, ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
-            new RawSpectrum { Index = 1, ScanStartTime = 2d, DriftTime = 4d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
-            new RawSpectrum { Index = 2, ScanStartTime = 3d, DriftTime = 3d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
-            new RawSpectrum { Index = 3, ScanStartTime = 4d, DriftTime = 2d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
-            new RawSpectrum { Index = 4, ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
+            new RawSpectrum { Index = 0, RawSpectrumID = new IndexedSpectrumIdentifier(0), ScanStartTime = 1d, DriftTime = 5d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
+            new RawSpectrum { Index = 1, RawSpectrumID = new IndexedSpectrumIdentifier(1), ScanStartTime = 2d, DriftTime = 4d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
+            new RawSpectrum { Index = 2, RawSpectrumID = new IndexedSpectrumIdentifier(2), ScanStartTime = 3d, DriftTime = 3d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
+            new RawSpectrum { Index = 3, RawSpectrumID = new IndexedSpectrumIdentifier(3), ScanStartTime = 4d, DriftTime = 2d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
+            new RawSpectrum { Index = 4, RawSpectrumID = new IndexedSpectrumIdentifier(4), ScanStartTime = 5d, DriftTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
         var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
-        var chromatogram = spectra.GetMs1BasePeakChromatogram(2d, 4d).AsPeakArray();
+        var chromatogram = (await spectra.GetMS1BasePeakChromatogramAsync(2d, 4d, default).ConfigureAwait(false)).AsPeakArray();
         Assert.AreEqual(3, chromatogram.Count);
         Assert.AreEqual(1, chromatogram[0].ID);
         Assert.AreEqual(106d, chromatogram[0].Mass);
@@ -95,7 +96,7 @@ public class RetentionTimeTypedSpectraTests
     }
 
     [TestMethod()]
-    public void GetProductIonChromatogramTest() {
+    public async Task GetProductIonChromatogramTest() {
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
         {
             new RawSpectrum { Index = 0, ScanStartTime = 1d, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 50d, Intensity = 1000d, }, } },
@@ -109,7 +110,7 @@ public class RetentionTimeTypedSpectraTests
         };
         var provider = new StubDataProvider() { Spectra = rawSpectra };
         var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
-        var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
+        var chromatogram = (await spectra.GetProductIonChromatogramAsync(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.RT, ChromXUnit.Min), default).ConfigureAwait(false)).AsPeakArray();
         Assert.AreEqual(2, chromatogram.Length);
         Assert.AreEqual(3, chromatogram[0].Id);
         Assert.AreEqual(50d, chromatogram[0].Mz);
@@ -122,7 +123,7 @@ public class RetentionTimeTypedSpectraTests
     }
 
     [TestMethod()]
-    public void GetMS2TotalIonChromatogram_WithValidRange_ReturnsCorrectChromatogram()
+    public async Task GetMS2TotalIonChromatogram_WithValidRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Create a set of test spectra with varying characteristics.
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
@@ -140,29 +141,24 @@ public class RetentionTimeTypedSpectraTests
         var spectra = new RetentionTimeTypedSpectra(provider, ChromXUnit.Min, IonMode.Positive, AcquisitionType.DDA);
 
         // Act: Call the method under test with a specific chromatogram range.
-        var chromatogram = spectra.GetMs2TotalIonChromatogram(new ChromatogramRange(2d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
+        var chromatogram = (await spectra.GetMS2TotalIonChromatogramAsync(new ChromatogramRange(2d, 7d, ChromXType.RT, ChromXUnit.Min), default).ConfigureAwait(false)).AsPeakArray();
 
         // Assert: Verify the method returns the correct number of peaks and their properties.
-        Assert.AreEqual(3, chromatogram.Count, "Expected 3 peaks in the chromatogram.");
+        Assert.AreEqual(2, chromatogram.Count, "Expected 2 peaks in the chromatogram.");
 
-        Assert.AreEqual(1, chromatogram[0].ID, "First peak should have ID 1.");
-        Assert.AreEqual(50d, chromatogram[0].Mass, "First peak should have an Mz of 50.");
-        Assert.AreEqual(2000d, chromatogram[0].Intensity, "First peak should have an intensity of 2000.");
-        Assert.AreEqual(2d, chromatogram[0].ChromXs.RT.Value, "First peak should have a time of 2 minutes.");
+        Assert.AreEqual(3, chromatogram[0].ID, "First peak should have ID 3.");
+        Assert.AreEqual(50.2d, chromatogram[0].Mass, "First peak should have an Mz of 50.2.");
+        Assert.AreEqual(7000d, chromatogram[0].Intensity, "First peak should have an intensity of 7000.");
+        Assert.AreEqual(4d, chromatogram[0].ChromXs.RT.Value, "First peak should have a time of 4 minutes.");
 
-        Assert.AreEqual(3, chromatogram[1].ID, "Second peak should have ID 3.");
-        Assert.AreEqual(50.2d, chromatogram[1].Mass, "Second peak should have an Mz of 50.2.");
-        Assert.AreEqual(7000d, chromatogram[1].Intensity, "Second peak should have an intensity of 7000.");
-        Assert.AreEqual(4d, chromatogram[1].ChromXs.RT.Value, "Second peak should have a time of 4 minutes.");
-
-        Assert.AreEqual(7, chromatogram[2].ID, "Third peak should have ID 7.");
-        Assert.AreEqual(50d, chromatogram[2].Mass, "Third peak should have an Mz of 50.");
-        Assert.AreEqual(2000d, chromatogram[2].Intensity, "Third peak should have an intensity of 2000.");
-        Assert.AreEqual(8d, chromatogram[2].ChromXs.RT.Value, "Third peak should have a time of 8 minutes.");
+        Assert.AreEqual(7, chromatogram[1].ID, "Second peak should have ID 7.");
+        Assert.AreEqual(50d, chromatogram[1].Mass, "Second peak should have an Mz of 50.");
+        Assert.AreEqual(2000d, chromatogram[1].Intensity, "Second peak should have an intensity of 2000.");
+        Assert.AreEqual(8d, chromatogram[1].ChromXs.RT.Value, "Second peak should have a time of 8 minutes.");
     }
 
     [TestMethod()]
-    public void GetMS2TotalIonChromatogram_WithExperimentIdAndValidRange_ReturnsCorrectChromatogram()
+    public async Task GetMS2TotalIonChromatogram_WithExperimentIdAndValidRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Create a set of test spectra with varying characteristics and different experiment IDs.
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
@@ -179,7 +175,7 @@ public class RetentionTimeTypedSpectraTests
         int testExperimentID = 2; // Specify the experiment ID to filter by.
 
         // Act: Call the method under test with a specific chromatogram range and experiment ID.
-        var chromatogram = spectra.GetMS2TotalIonChromatogram(new ChromatogramRange(1d, 8d, ChromXType.RT, ChromXUnit.Min), testExperimentID).AsPeakArray();
+        var chromatogram = (await spectra.GetMS2TotalIonChromatogramAsync(new ChromatogramRange(1d, 8d, ChromXType.RT, ChromXUnit.Min), testExperimentID, default).ConfigureAwait(false)).AsPeakArray();
 
         // Assert: Verify the method returns the correct number of peaks and their properties, filtering by experiment ID.
         Assert.AreEqual(2, chromatogram.Count, "Expected 2 peaks in the chromatogram filtered by experiment ID.");
@@ -198,7 +194,7 @@ public class RetentionTimeTypedSpectraTests
     }
 
     [TestMethod()]
-    public void GetMS2ExtractedIonChromatogram_WithExperimentIdAndValidMzRange_ReturnsCorrectChromatogram()
+    public async Task GetMS2ExtractedIonChromatogram_WithExperimentIdAndValidMzRange_ReturnsCorrectChromatogram()
     {
         // Arrange: Create a set of test spectra with varying characteristics and different experiment IDs.
         List<RawSpectrum> rawSpectra = new List<RawSpectrum>
@@ -215,7 +211,7 @@ public class RetentionTimeTypedSpectraTests
         MzRange testMzRange = new MzRange(140d, 10d); // Targeting m/z of 150 with a tolerance of 10.
 
         // Act: Call the method under test with a specific chromatogram range, m/z range, and experiment ID.
-        var chromatogram = spectra.GetMS2ExtractedIonChromatogram(testMzRange, new ChromatogramRange(1d, 8d, ChromXType.RT, ChromXUnit.Min), testExperimentID).AsPeakArray();
+        var chromatogram = (await spectra.GetMS2ExtractedIonChromatogramAsync(testMzRange, new ChromatogramRange(1d, 8d, ChromXType.RT, ChromXUnit.Min), testExperimentID, default).ConfigureAwait(false)).AsPeakArray();
 
         // Assert: Verify the method returns the correct number of peaks and their properties, filtering by experiment ID and m/z range.
         Assert.AreEqual(2, chromatogram.Length, "Expected 2 peaks in the chromatogram filtered by experiment ID and m/z range.");

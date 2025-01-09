@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, default).Result;
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {

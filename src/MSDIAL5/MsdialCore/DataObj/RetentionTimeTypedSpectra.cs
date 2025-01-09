@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj;
@@ -30,34 +31,22 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
         };
     }
 
-    public Chromatogram GetMs1BasePeakChromatogram(double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default)).Result;
+    public async Task<Chromatogram> GetMS1BasePeakChromatogramAsync(double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, basePeakIntensity, _) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, basePeakIntensity, new RetentionTime(spectrum.ScanStartTime, _unit), spectrum.RawSpectrumID.IDType));
+            results.Add(ChromatogramPeak.Create((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, basePeakMz, basePeakIntensity, new RetentionTime(spectrum.ScanStartTime, _unit), spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
     }
 
-    public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default)).Result;
-        var results = new List<ChromatogramPeak>();
-        foreach (var spectrum in spectra) {
-            if (spectrum.ScanPolarity != _polarity) {
-                continue;
-            }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new RetentionTime(spectrum.ScanStartTime, _unit), spectrum.RawSpectrumID.IDType));
-        }
-        return new Chromatogram(results, ChromXType.RT, _unit);
-    }
-
-    public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default)).Result;
+    public async Task<ExtractedIonChromatogram> GetMS1ExtractedChromatogramAsync(double mz, double tolerance, double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var arrayPool = ArrayPool<ValuePeak>.Shared;
         var results = arrayPool.Rent(spectra.Length);
         var idc = 0;
@@ -66,13 +55,14 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
                 spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results[idc++] = new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType);
+            results[idc++] = new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index);
         }
         return new ExtractedIonChromatogram(results, idc, ChromXType.RT, _unit, mz, arrayPool);
     }
 
-    public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
+    public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, double start, double end) {
         var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default)).Result;
         var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[spectra.Length];
         var indexs = new ISpectrumIdentifier[spectra.Length];
@@ -104,16 +94,17 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
         }
     }
 
-    public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, default)).Result;
+    public async Task<Chromatogram> GetMS1TotalIonChromatogramAsync(double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.MsLevel != 1 ||
                 spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new RetentionTime(spectrum.ScanStartTime, _unit), spectrum.RawSpectrumID.IDType));
+            results.Add(ChromatogramPeak.Create((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, basePeakMz, summedIntensity, new RetentionTime(spectrum.ScanStartTime, _unit), spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
     }
@@ -131,15 +122,16 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// creating a chromatogram peak for each qualifying spectrum. The resulting chromatogram provides a visualization of
     /// how the intensity of specified product ions changes over the selected range of retention times.
     /// </remarks>
-    public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+    public async Task<ExtractedIonChromatogram> GetProductIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (!spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
     }
@@ -152,12 +144,12 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// This method processes only MS2 level spectra, filtering out spectra based on the predefined scan polarity and the specified retention time range. It aggregates the total ion intensity from each selected MS2 spectrum to construct the chromatogram. The method is optimized for performance by utilizing an array pool for efficient memory management during the grouping of spectra.
     /// </remarks>
-    public Chromatogram GetMs2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+    public async Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
         var results = new List<ValuePeak>();
         var arrayPool = ArrayPool<RawSpectrum>.Shared;
-        foreach (var spectra in GroupedSpectrum(chromatogramRange, arrayPool)) {
+        foreach (var spectra in await GroupedSpectrumAsync(chromatogramRange, arrayPool, token).ConfigureAwait(false)) {
             var (basePeakMz, basePeakIntensity, summedIntensity) = spectra.Select(s => new Spectrum(s.Spectrum).RetrieveTotalIntensity()).Aggregate(AccumulateSpectra);
-            results.Add(new ValuePeak((int)spectra.Array[0].RawSpectrumID.ID, spectra.Array[0].ScanStartTime, basePeakMz, summedIntensity, spectra.Array[0].RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectra.Array[0].RawSpectrumID?.ID ?? spectra.Array[0].Index, spectra.Array[0].ScanStartTime, basePeakMz, summedIntensity, spectra.Array[0].RawSpectrumID?.IDType ?? SpectrumIDType.Index));
             arrayPool.Return(spectra.Array);
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
@@ -183,38 +175,46 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// </summary>
     /// <param name="chromatogramRange">The chromatogram range based on retention time.</param>
     /// <param name="arrayPool">An array pool for reusing arrays and reducing GC pressure.</param>
+    /// <param name="token"></param>
     /// <returns>An enumerable of grouped spectra segments, ready for processing.</returns>
     /// <remarks>
     /// This method organizes spectra into groups suitable for generating a total ion chromatogram. It filters spectra by scan polarity and groups adjacent MS2 level spectra together, skipping over MS1 level spectra and ensuring all returned groups are relevant for TIC generation.
     /// </remarks>
-    private IEnumerable<ArraySegment<RawSpectrum>> GroupedSpectrum(ChromatogramRange chromatogramRange, ArrayPool<RawSpectrum> arrayPool) {
+    private async Task<IEnumerable<ArraySegment<RawSpectrum>>> GroupedSpectrumAsync(ChromatogramRange chromatogramRange, ArrayPool<RawSpectrum> arrayPool, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
 
-        var spectra1Task = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default));
-        var spectra2Task = Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default));
-        Task.WaitAll(spectra1Task, spectra2Task);
-        var spectra1 = spectra1Task.Result;
-        var spectra2 = spectra2Task.Result;
+        var spectra1Task = Task.Run(() => _spectraProvider.LoadMs1SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token);
+        var spectra2Task = Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End + 1d, token), token);
+        await Task.WhenAll(spectra1Task, spectra2Task).ConfigureAwait(false);
 
-        if (spectra1.Length == 0) {
-            yield break;
-        } 
-        var buffer = new List<RawSpectrum>();
-        var idx = 0;
-        while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectra1[0].ScanStartTime) {
-            ++idx;
-        }
-        foreach (var spectrum1 in spectra1) {
-            while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectrum1.ScanStartTime) {
-                buffer.Add(spectra2[idx++]);
+        static IEnumerable<ArraySegment<RawSpectrum>> f(RawSpectrum[] spectra1, RawSpectrum[] spectra2, ArrayPool<RawSpectrum> arrayPool) {
+            if (spectra1.Length == 0) {
+                yield break;
+            } 
+            var buffer = new List<RawSpectrum>();
+            var idx = 0;
+            while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectra1[0].ScanStartTime) {
+                ++idx;
             }
-            if (buffer.Count > 0) {
-                var result = arrayPool.Rent(buffer.Count);
-                buffer.CopyTo(result);
-                yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
-                buffer.Clear();
+            foreach (var spectrum1 in spectra1) {
+                while (idx < spectra2.Length && spectra2[idx].ScanStartTime < spectrum1.ScanStartTime) {
+                    buffer.Add(spectra2[idx++]);
+                }
+                if (buffer.Count > 0) {
+                    var result = arrayPool.Rent(buffer.Count);
+                    buffer.CopyTo(result);
+                    yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
+                    buffer.Clear();
+                }
+            }
+            if (idx < spectra2.Length) {
+                var result = arrayPool.Rent(spectra2.Length - idx);
+                Array.Copy(spectra2, idx, result, 0, spectra2.Length - idx);
+                yield return new ArraySegment<RawSpectrum>(result, 0, spectra2.Length - idx);
             }
         }
+
+        return f(spectra1Task.Result, spectra2Task.Result, arrayPool);
     }
 
     /// <summary>
@@ -226,16 +226,17 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// In addition to filtering by MS level (MS2) and scan polarity, this method also filters spectra by the specified experiment ID, allowing for more targeted analysis within complex datasets. It calculates the total ion chromatogram by summing the intensities of all ions in each selected spectrum.
     /// </remarks>
-    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+    public async Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, int experimentID, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new SpecificExperimentChromatogram(results, ChromXType.RT, _unit, experimentID);
     }
@@ -250,16 +251,17 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// This method filters spectra based on MS level (MS2), scan polarity, specified experiment ID, and the targeted m/z range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This approach enables targeted analysis of specific ions within complex datasets, providing insights into the presence and behavior of particular molecules across the experiment.
     /// </remarks>
-    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+    public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(MzRange product, ChromatogramRange chromatogramRange, int experimentID, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.ScanStartTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
     }

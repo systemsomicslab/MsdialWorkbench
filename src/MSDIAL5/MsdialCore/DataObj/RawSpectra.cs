@@ -63,28 +63,28 @@ namespace CompMs.MsdialCore.DataObj
 
         public ExtractedIonChromatogram GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatogram_temp2(mzRange.Mz, mzRange.Tolerance, chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1ExtractedChromatogramAsync(mzRange.Mz, mzRange.Tolerance, chromatogramRange.Begin, chromatogramRange.End, default).Result;
         }
 
         public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatograms_temp2(mzs, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1ExtractedChromatograms(mzs, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
         public Chromatogram GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1TotalIonChromatogram(chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1TotalIonChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
         }
 
         public Chromatogram GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1BasePeakChromatogram(chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1BasePeakChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, default).Result;
         }
 
         public Chromatogram GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
             var mz = peaks.Argmax(feature => feature.Intensity).Mass;
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, default).Result;
         }
 
         public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
@@ -126,7 +126,7 @@ namespace CompMs.MsdialCore.DataObj
         /// </remarks>
         public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs2TotalIonChromatogram(chromatogramRange);
+            return impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, default).Result;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace CompMs.MsdialCore.DataObj
         /// </remarks>
         public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMS2TotalIonChromatogram(chromatogramRange, experimentID);
+            return impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, experimentID, default).Result;
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.DataObj
         /// </remarks>
         public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetProductIonChromatogram(precursor, product, chromatogramRange);
+            return impl.GetProductIonChromatogramAsync(precursor, product, chromatogramRange, default).Result;
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace CompMs.MsdialCore.DataObj
         /// </remarks>
         public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMS2ExtractedIonChromatogram(product, chromatogramRange, experimentID);
+            return impl.GetMS2ExtractedIonChromatogramAsync(product, chromatogramRange, experimentID, default).Result;
         }
 
         private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {

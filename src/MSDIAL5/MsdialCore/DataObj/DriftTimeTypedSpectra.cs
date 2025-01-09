@@ -7,6 +7,7 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj;
@@ -34,46 +35,35 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
         }
     }
 
-    public Chromatogram GetMs1BasePeakChromatogram(double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
+    public async Task<Chromatogram> GetMS1BasePeakChromatogramAsync(double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, basePeakIntensity, _) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, basePeakIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
+            results.Add(ChromatogramPeak.Create((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, basePeakMz, basePeakIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
 
-    public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
-        var results = new List<ChromatogramPeak>();
-        foreach (var spectrum in spectra) {
-            if (spectrum.ScanPolarity != _polarity) {
-                continue;
-            }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
-        }
-        return new Chromatogram(results, ChromXType.Drift, _unit);
-    }
-
-    public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
+    public async Task<ExtractedIonChromatogram> GetMS1ExtractedChromatogramAsync(double mz, double tolerance, double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(mz, tolerance);
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, mz);
     }
 
-    public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
+    public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, double start, double end) {
         var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
         var enumerables = new List<IEnumerable<Spectrum.SummarizedSpectrum>>();
         var ids = new List<ISpectrumIdentifier>();
@@ -84,7 +74,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
                 continue;
             }
             enumerables.Add(new Spectrum(spectrum.Spectrum).RetrieveBins(mzs_, tolerance));
-            ids.Add(spectrum.RawSpectrumID);
+            ids.Add(spectrum.RawSpectrumID ?? new IndexedSpectrumIdentifier(spectrum.Index));
             times.Add(spectrum.DriftTime);
         }
         return enumerables.Sequence()
@@ -92,15 +82,16 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
             .Zip(mzs_, (peaks, mz) => new ExtractedIonChromatogram(peaks, ChromXType.Drift, _unit, mz));
     }
 
-    public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, default)).Result;
+    public async Task<Chromatogram> GetMS1TotalIonChromatogramAsync(double start, double end, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs1SpectraWithDtRangeAsync(start, end, token), token).ConfigureAwait(false);
         var results = new List<ChromatogramPeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(ChromatogramPeak.Create((int)spectrum.RawSpectrumID.ID, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID.IDType));
+            results.Add(ChromatogramPeak.Create((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, basePeakMz, summedIntensity, new DriftTime(spectrum.DriftTime), spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -118,15 +109,16 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// associating each intensity with its corresponding drift time. The resulting chromatogram provides insights into how the intensity of specified product ions changes
     /// over the selected drift time range, which is useful for analyzing the behavior of ions with different mobility characteristics.
     /// </remarks>
-    public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+    public async Task<ExtractedIonChromatogram> GetProductIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (!spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
     }
@@ -139,16 +131,17 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// This method specifically filters for MS2 level spectra and matches the defined scan polarity of the instance. It calculates the total ion chromatogram based on the drift time range provided, making it particularly useful for analyses that require ion mobility considerations.
     /// </remarks>
-    public Chromatogram GetMs2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+    public async Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new Chromatogram(results, ChromXType.Drift, _unit);
     }
@@ -162,16 +155,17 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// In addition to filtering by MS level (MS2) and scan polarity, this method also filters spectra by the specified experiment ID. This allows for targeted analysis within complex datasets where ion mobility (drift time) is a key factor.
     /// </remarks>
-    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+    public async Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, int experimentID, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new SpecificExperimentChromatogram(results, ChromXType.Drift, _unit, experimentID);
     }
@@ -186,16 +180,17 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// <remarks>
     /// This method filters spectra based on MS level (MS2), scan polarity, specified experiment ID, and the targeted m/z range within a specific ion mobility (drift time) window. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This approach allows for targeted analysis of specific ions across different mobility profiles, providing insights into their behavior within the experimental setup.
     /// </remarks>
-    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+    public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(MzRange product, ChromatogramRange chromatogramRange, int experimentID, CancellationToken token) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
-        var spectra = Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, default)).Result;
+        var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithDtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
             if (spectrum.ExperimentID != experimentID || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
+            token.ThrowIfCancellationRequested();
             var (basePeakMz, _, summedIntensity) = new Spectrum(spectrum.Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-            results.Add(new ValuePeak((int)spectrum.RawSpectrumID.ID, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID.IDType));
+            results.Add(new ValuePeak((int?)spectrum.RawSpectrumID?.ID ?? spectrum.Index, spectrum.DriftTime, basePeakMz, summedIntensity, spectrum.RawSpectrumID?.IDType ?? SpectrumIDType.Index));
         }
         return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
     }
