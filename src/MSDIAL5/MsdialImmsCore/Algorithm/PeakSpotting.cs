@@ -80,13 +80,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return result;
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, float focusedMass, PeakDetection peakDetector) {
-            var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), _chromatogramRange);
+            using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), _chromatogramRange, default).Result;
             if (chromatogram.IsEmpty) {
-                return new List<ChromatogramPeakFeature>(0);
+                return [];
             }
 
-            ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
+            using ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
             var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, peakDetector, smoothedChromatogram);
             var subtractedFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             var collection = new ChromatogramPeakFeatureCollection(subtractedFeatures);
@@ -144,6 +145,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> ReevaluateChromPeakFeatures(IEnumerable<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AnalysisFileBean analysisFile) {
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
@@ -152,8 +154,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 //get EIC chromatogram
                 var peakFeature = spot.PeakFeature;
                 var peakRange = new ChromatogramRange(peakFeature, ChromXType.Drift, ChromXUnit.Msec);
-                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peakFeature.Mass, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), peakRange.ExtendRelative(0.5d));
-                var smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
+                using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(peakFeature.Mass, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), peakRange.ExtendRelative(0.5d), default).Result;
+                using var smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
                 var peakOfChromatogram = smoothedChromatogram.FindPeak(minDatapoint, peakRange.Width, peakFeature);
                 if (!peakOfChromatogram.IsValid(_parameter.PeakPickBaseParam.MinimumAmplitude)) {
                     continue;

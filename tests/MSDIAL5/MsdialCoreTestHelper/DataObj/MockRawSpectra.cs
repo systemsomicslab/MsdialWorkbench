@@ -4,6 +4,8 @@ using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj.Tests.Helper;
 
@@ -13,20 +15,20 @@ public class MockRawSpectra : IRawSpectra
     public Chromatogram ExpectedChromatogram2 { get; set; }
     public SpecificExperimentChromatogram ExpectedChromatogram3 { get; set; }
 
-    ExtractedIonChromatogram IRawSpectra.GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
+    Task<ExtractedIonChromatogram> IRawSpectra.GetMS2ExtractedIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token)
     {
-        return ExpectedChromatogram;
+        return Task.FromResult(ExpectedChromatogram);
     }
 
-    Chromatogram IRawSpectra.GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol) {
+    Task<Chromatogram> IRawSpectra.GetDriftChromatogramByScanRtMzAsync(int scanID, float rt, float rtWidth, float mz, float mztol, CancellationToken token) {
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
+    Task<Chromatogram> IRawSpectra.GetMS1BasePeakChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
+    Task<Chromatogram> IRawSpectra.GetMS1ExtractedChromatogramByHighestBasePeakMzAsync(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange, CancellationToken token) {
         throw new NotImplementedException();
     }
 
@@ -34,27 +36,27 @@ public class MockRawSpectra : IRawSpectra
         throw new NotImplementedException();
     }
 
-    ExtractedIonChromatogram IRawSpectra.GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
+    Task<ExtractedIonChromatogram> IRawSpectra.GetMS1ExtractedChromatogramAsync(MzRange mzRange, ChromatogramRange chromatogramRange, CancellationToken token) {
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+    Task<Chromatogram> IRawSpectra.GetMS1TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
         throw new NotImplementedException();
     }
 
-    PeakMs2Spectra IRawSpectra.GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
+    Task<PeakMs2Spectra> IRawSpectra.GetPeakMs2SpectraAsync(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime, CancellationToken token) {
         throw new NotImplementedException();
     }
 
-    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
-        return ExpectedChromatogram2;
+    public Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
+        return Task.FromResult(ExpectedChromatogram2);
     }
 
-    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
-        return ExpectedChromatogram3;
+    public Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(int experimentID, ChromatogramRange chromatogramRange, CancellationToken token) {
+        return Task.FromResult(ExpectedChromatogram3);
     }
 
-    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
-        return ExpectedChromatogram;
+    public Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(int experimentID, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
+        return Task.FromResult(ExpectedChromatogram);
     }
 }

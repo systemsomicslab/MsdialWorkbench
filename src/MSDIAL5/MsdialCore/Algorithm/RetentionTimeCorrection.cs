@@ -36,6 +36,7 @@ namespace CompMs.MsdialCore.Algorithm
             return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
+        [Obsolete("zzz")]
         private static List<StandardPair> GetStdPair(
             AnalysisFileBean file,
             IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
@@ -53,16 +54,16 @@ namespace CompMs.MsdialCore.Algorithm
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
                     foreach (var p in pabCollection) {
-                        if (Math.Abs(p.ChromXs.RT.Value - i.ChromXs.RT.Value) < i.RetentionTimeTolerance && p.PeakHeightTop > i.MinimumPeakHeight)
+                        if (Math.Abs(p.ChromXs.RT.Value - i.ChromXs.RT.Value) < i.RetentionTimeTolerance && p.PeakFeature.PeakHeightTop > i.MinimumPeakHeight)
                             if (pab == null)
                                 pab = p;
                             else
-                                if (pab.PeakHeightTop < p.PeakHeightTop) pab = p;
+                                if (pab.PeakFeature.PeakHeightTop < p.PeakFeature.PeakHeightTop) pab = p;
 
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
+                using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(startMass, i.MassTolerance), chromatogramRange, default).Result;
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }

@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader.Tests;
 
@@ -77,15 +79,15 @@ public class MS2TicLoaderTests
     {
         public int ExperimentID = -1;
 
-        public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol) {
+        public Task<Chromatogram> GetDriftChromatogramByScanRtMzAsync(int scanID, float rt, float rtWidth, float mz, float mztol, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
+        public Task<Chromatogram> GetMS1BasePeakChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
+        public Task<Chromatogram> GetMS1ExtractedChromatogramByHighestBasePeakMzAsync(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
@@ -93,32 +95,32 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
-        public ExtractedIonChromatogram GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
+        public Task<ExtractedIonChromatogram> GetMS1ExtractedChromatogramAsync(MzRange mzRange, ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+        public Task<Chromatogram> GetMS1TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
+        public Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(int experimentID, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new NotImplementedException();
         }
 
-        public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+        public Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
+        public Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(int experimentID, ChromatogramRange chromatogramRange, CancellationToken token) {
             ExperimentID = experimentID;
-            return new SpecificExperimentChromatogram(Array.Empty<ValuePeak>(), ChromXType.RT, ChromXUnit.Min, experimentID);
+            return Task.FromResult(new SpecificExperimentChromatogram(Array.Empty<ValuePeak>(), ChromXType.RT, ChromXUnit.Min, experimentID));
         }
 
-        public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
+        public Task<PeakMs2Spectra> GetPeakMs2SpectraAsync(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime, CancellationToken token) {
             throw new System.NotImplementedException();
         }
 
-        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
             throw new System.NotImplementedException();
         }
     }

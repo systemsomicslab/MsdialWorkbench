@@ -284,23 +284,26 @@ public sealed class PeakCharacterEstimator {
     }
 
     // currently, only pure peaks are evaluated by this way.
+    [Obsolete("zzz")]
     private void assignLinksBasedOnChromatogramCorrelation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param, AcquisitionType type) {
         if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
         var rawSpectra = new RawSpectra(provider, param.IonMode, type);
         foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
             
-            var tTopRt = peak.ChromXsTop.RT.Value;
-            var tLeftRt = peak.ChromXsLeft.RT.Value;
-            var tRightRt = peak.ChromXsRight.RT.Value;
+            var tTopRt = peak.PeakFeature.ChromXsTop.RT.Value;
+            var tLeftRt = peak.PeakFeature.ChromXsLeft.RT.Value;
+            var tRightRt = peak.PeakFeature.ChromXsRight.RT.Value;
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-            var tPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
-            var tChrom = tPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+            using var tPeaklist = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(peak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            using var tSmoothed = tPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var tChrom = tSmoothed.AsPeakArray();
 
-            foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
+            foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0
             && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                var cPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(cPeak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
-                var cChrom = cPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+                using var cPeaklist = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(cPeak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+                using var cSmoothed = cPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var cChrom = cSmoothed.AsPeakArray();
 
                 var col = BasicMathematics.Coefficient(cChrom.Select(chrom => chrom.Intensity).ToArray(), tChrom.Select(chrom => chrom.Intensity).ToArray());
                 if (col > 0.95) {

@@ -1,9 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -24,6 +22,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             AccumulateDataProviderFactory = accumulatedDataProviderFactory;
         }
 
+        [Obsolete("zzz")]
         protected override string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks, List<AlignmentSpotProperty> spots,
             string tempFile, ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
@@ -74,7 +73,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 }
                 var rtRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
                 var mzRange = new MzRange(peak.Mass, Param.CentroidMs1Tolerance);
-                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(mzRange, rtRange);
+                using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(mzRange, rtRange, default).Result;
                 var peakInfo = new ChromatogramPeakInfo(
                     peak.FileID, ((Chromatogram)chromatogram).ChromatogramSmoothing(Param.SmoothingMethod, Param.SmoothingLevel).AsPeakArray(),
                     (float)peak.ChromXsTop.Value,

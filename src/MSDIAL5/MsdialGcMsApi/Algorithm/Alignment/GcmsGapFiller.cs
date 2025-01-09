@@ -75,6 +75,7 @@ public class GcmsRTGapFiller : GcmsGapFiller
     /// <param name="spectrumList"></param>
     /// <param name="fileID"></param>
     /// <returns></returns>
+    [System.Obsolete("zzz")]
     protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
         var centralMz = center.Mz.Value;
         // RT conversion
@@ -83,10 +84,9 @@ public class GcmsRTGapFiller : GcmsGapFiller
         var minRt = centralRT - peakWidth * 2d; // temp
 
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
-        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
-        using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
-            return smoothed.AsPeakArray();
-        }
+        using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range, default).Result;
+        using Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel);
+        return smoothed.AsPeakArray();
     }
 }
 
@@ -130,6 +130,7 @@ public class GcmsRIGapFiller : GcmsGapFiller
     /// <param name="smoothingMethod"></param>
     /// <param name="smoothingLevel"></param>
     /// <returns></returns>
+    [System.Obsolete("zzz")]
     protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
         var centralMz = center.Mz.Value;
         // RT conversion
@@ -140,14 +141,13 @@ public class GcmsRIGapFiller : GcmsGapFiller
         var rtTol = maxRt.Value - minRt.Value;
 
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
-        using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
-        using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
-            var peaks = smoothed.AsPeakArray();
-            foreach (var peak in peaks) {
-                peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
-                peak.ChromXs.MainType = ChromXType.RI;
-            }
-            return peaks;
+        using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range, default).Result;
+        using Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel);
+        var peaks = smoothed.AsPeakArray();
+        foreach (var peak in peaks) {
+            peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
+            peak.ChromXs.MainType = ChromXType.RI;
         }
+        return peaks;
     }
 }

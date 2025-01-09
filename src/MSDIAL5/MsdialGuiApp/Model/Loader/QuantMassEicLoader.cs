@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private async Task<Chromatogram> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
-            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peakFeature.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(peakFeature));
+            return await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(peakFeature.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(peakFeature), token).ConfigureAwait(false);
         }
 
         PeakChromatogram IChromatogramLoader<Ms1BasedSpectrumFeature?>.EmptyChromatogram  => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromXType, _chromXUnit), null, string.Empty, Colors.Black);

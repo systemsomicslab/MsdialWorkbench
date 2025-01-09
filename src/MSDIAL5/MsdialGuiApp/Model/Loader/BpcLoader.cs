@@ -15,11 +15,11 @@ namespace CompMs.App.Msdial.Model.Loader
             _peakPickParameter = peakPickParameter;
         }
 
+        [System.Obsolete("zzz")]
         DisplayChromatogram IWholeChromatogramLoader.LoadChromatogram() {
-            var chromatogram = _rawSpectra
-                .GetMS1BasePeakChromatogram(_chromatogramRange)
-                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
-            return new DisplayChromatogram(chromatogram);
+            using var chromatogram = _rawSpectra.GetMS1BasePeakChromatogramAsync(_chromatogramRange, default).Result;
+            var smoothed = chromatogram.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
+            return new DisplayChromatogram(smoothed);
         }
     }
 }

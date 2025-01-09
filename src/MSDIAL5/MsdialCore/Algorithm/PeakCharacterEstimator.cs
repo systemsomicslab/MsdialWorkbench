@@ -413,15 +413,16 @@ public class PeakCharacterEstimator {
     }
 
     // currently, only pure peaks are evaluated by this way.
+    [Obsolete("zzz")]
     private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, RawSpectra rawSpectra) {
         if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
         var pureFeatures = chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9).ToList();
         var tempFeatures = new List<ChromFeatureTemp>();
         foreach (var feature in pureFeatures) {
-            var leftRt = feature.ChromXsLeft.RT.Value;
-            var rightRt = feature.ChromXsRight.RT.Value;
+            var leftRt = feature.PeakFeature.ChromXsLeft.RT.Value;
+            var rightRt = feature.PeakFeature.ChromXsRight.RT.Value;
             var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-            using var peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(feature.Mass, param.CentroidMs1Tolerance), chromatogramRange);
+            using var peaks = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(feature.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
             using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
         }

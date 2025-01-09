@@ -64,6 +64,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
 
         }
 
+        [Obsolete("zzz")]
         public MSDecResult GetMS2DecResult(AnalysisFileBean file,
             IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
@@ -109,7 +110,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectrum = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
-            var ms1Peaklist = ((Chromatogram)rawSpectrum.GetMS1ExtractedChromatogram(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange)).AsPeakArray();
+            using ExtractedIonChromatogram eic = rawSpectrum.GetMS1ExtractedChromatogramAsync(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            var ms1Peaklist = ((Chromatogram)eic).AsPeakArray();
 
             var startIndex = ms1Peaklist[0].ID;
             var endIndex = ms1Peaklist[ms1Peaklist.Count - 1].ID;

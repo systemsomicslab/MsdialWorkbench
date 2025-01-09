@@ -66,8 +66,8 @@ namespace CompMs.MsdialCore.Algorithm
             return cmbinedFeatures;
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeBySingleThread(AnalysisFileBean file, IDataProvider provider, ReportProgress reporter, ChromatogramRange chromatogramRange) {
-
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             (float startMass, float endMass) = provider.GetMs1Range(_parameter.IonMode);
             if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
@@ -87,7 +87,7 @@ namespace CompMs.MsdialCore.Algorithm
                 if (focusedMass > _parameter.MassRangeEnd) break;
 
                 //get EIC chromatogram
-                ExtractedIonChromatogram chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.MassSliceWidth), chromatogramRange);
+                using ExtractedIonChromatogram chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.MassSliceWidth), chromatogramRange, default).Result;
                 var chromPeakFeatures = GetChromatogramPeakFeatures(provider, detector, chromatogram, file.AcquisitionType);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
@@ -227,10 +227,11 @@ namespace CompMs.MsdialCore.Algorithm
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, file.AcquisitionType);
         }
 
+        [Obsolete("zzz")]
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, IDataProvider provider, float focusedMass, ChromatogramRange chromatogramRange) {
 
             //get EIC chromatogram
-            var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.MassSliceWidth), chromatogramRange);
+            using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.MassSliceWidth), chromatogramRange, default).Result;
             if (chromatogram.IsEmpty) return null;
 
             //get peak detection result
@@ -261,6 +262,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         #region ion mobility utilities
+        [Obsolete("zzz")]
         public List<ChromatogramPeakFeature> ExecutePeakDetectionOnDriftTimeAxis(List<ChromatogramPeakFeature> chromPeakFeatures, RawSpectra rawSpectra, float accumulatedRtRange) {
             var newSpots = new List<ChromatogramPeakFeature>();
             foreach (var peakSpot in chromPeakFeatures) {
@@ -271,7 +273,7 @@ namespace CompMs.MsdialCore.Algorithm
                 //if (rtWidth < 0.2) rtWidth = 0.2F;
 
                 // accumulatedRtRange can be replaced by rtWidth actually, but for alignment results, we have to adjust the RT range to equally estimate the peaks on drift axis
-                var chromatogram = rawSpectra.GetDriftChromatogramByScanRtMz(peakSpot.MS1RawSpectrumIdTop, (float)peakSpot.ChromXs.Value, accumulatedRtRange, (float)peakSpot.PeakFeature.Mass, _parameter.CentroidMs1Tolerance);
+                var chromatogram = rawSpectra.GetDriftChromatogramByScanRtMzAsync(peakSpot.MS1RawSpectrumIdTop, (float)peakSpot.ChromXs.Value, accumulatedRtRange, (float)peakSpot.PeakFeature.Mass, _parameter.CentroidMs1Tolerance, default).Result;
                 if (chromatogram.IsEmpty) continue;
                 var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(chromatogram, peakSpot, rawSpectra, accumulatedRtRange);
                 if (peaksOnDriftTime == null || peaksOnDriftTime.Count == 0) continue;
@@ -303,6 +305,7 @@ namespace CompMs.MsdialCore.Algorithm
             return peaks;
         }
 
+        [Obsolete("zzz")]
         private ChromatogramPeakFeature BuildDriftPeakFeature(PeakDetectionResult result, ChromatogramPeakFeature rtPeakFeature, int peakId, Chromatogram chromatogram, RawSpectra rawSpectra, double accumulatedRtRange) {
             var driftFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, rtPeakFeature.PeakFeature.Mass);
             driftFeature.PeakID = peakId;
@@ -312,7 +315,7 @@ namespace CompMs.MsdialCore.Algorithm
             driftFeature.PeakFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value, unit: driftFeature.PeakFeature.ChromXsTop.RT.Unit);
             driftFeature.PeakFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.PeakFeature.ChromXsRight.RT.Unit);
             var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.PeakFeature.Mass);
-            var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, rawSpectra.AcquisitionType, driftFeature.ChromXs.Drift);
+            var spectra = rawSpectra.GetPeakMs2SpectraAsync(rtPeakFeature, ms2Tol, rawSpectra.AcquisitionType, driftFeature.ChromXs.Drift, default).Result;
             driftFeature.SetMs2SpectrumId(spectra);
             return driftFeature;
         }

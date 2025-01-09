@@ -24,10 +24,11 @@ internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chr
     /// This method applies the smoothing method and level defined in the peak picking parameters to the MS2 TIC,
     /// enhancing the clarity and interpretability of the chromatographic output.
     /// </remarks>
+    [System.Obsolete("zzz")]
     public DisplayChromatogram LoadChromatogram() {
-        var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(chromatogramRange)
-            .ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
-        return new DisplayChromatogram(chromatogram);
+        using var tic = rawSpectra.GetMS2TotalIonChromatogramAsync(chromatogramRange, default).Result;
+        var smoothed = tic.ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
+        return new DisplayChromatogram(smoothed);
     }
 
 
@@ -41,9 +42,10 @@ internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chr
     /// It then applies the same smoothing method and level defined in the peak picking parameters to enhance the clarity and interpretability of the chromatographic output, 
     /// allowing for focused analysis on data from a specific experiment.
     /// </remarks>
+    [System.Obsolete("zzz")]
     public DisplayChromatogram LoadChromatogram(int experimentID) {
-        var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(experimentID, chromatogramRange)
-            .ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
-        return new DisplaySpecificExperimentChromatogram(chromatogram);
+        using var tic = rawSpectra.GetMS2TotalIonChromatogramAsync(experimentID, chromatogramRange, default).Result;
+        var smoothed = tic.ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
+        return new DisplaySpecificExperimentChromatogram(smoothed);
     }
 }

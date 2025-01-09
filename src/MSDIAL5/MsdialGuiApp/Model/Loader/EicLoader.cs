@@ -66,14 +66,14 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual async Task<Chromatogram> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
-            var ms1Peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(target.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(target));
+            using var ms1Peaks = await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(target.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(target), token).ConfigureAwait(false);
             return ms1Peaks.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
+        [Obsolete("zzz")]
         protected ExtractedIonChromatogram LoadEicCore(double mass, double massTolerance) {
-            return RawSpectra
-                .GetMS1ExtractedChromatogram(new MzRange(mass, massTolerance), _chromatogramRange)
-                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
+            using var eic = RawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(mass, massTolerance), _chromatogramRange, default).Result;
+            return eic.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
         DisplayChromatogram IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {

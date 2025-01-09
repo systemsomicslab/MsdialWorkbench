@@ -150,7 +150,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
             //get EIC chromatogram
-            var chromatogram = accSpectra.GetMS1ExtractedChromatogram(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange);
+            using var chromatogram = accSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange, default).Result;
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;

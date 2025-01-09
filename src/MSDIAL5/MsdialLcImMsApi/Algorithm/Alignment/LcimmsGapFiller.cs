@@ -48,12 +48,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return peaks.Max(peak => peak.PeakWidth(ChromXType.Drift));
         }
 
+        [Obsolete("zzz")]
         protected override List<ChromatogramPeak> GetPeaksFirst(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             peakWidth = Math.Max(peakWidth, 0.2f);
-
             var chromatogramRange = new ChromatogramRange(center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5, ChromXType.RT, ChromXUnit.Min);
-            var peaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(center.Mz.Value, this.mzTol), chromatogramRange);
-            return ((Chromatogram)peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel)).AsPeakArray();
+            using var peaklist = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(center.Mz.Value, this.mzTol), chromatogramRange, default).Result;
+            using var smoothed = peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel);
+            return ((Chromatogram)smoothed).AsPeakArray();
         }
 
         protected override List<ChromatogramPeak> GetPeaksSecond(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {

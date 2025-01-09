@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using MsdialCoreTestHelper.DataProvider;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj.Tests
 {
@@ -12,7 +13,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     public class RawSpectraTests
     {
         [TestMethod]
-        public void GetMs1ChromatogramRtTest() {
+        public async Task GetMs1ChromatogramRtTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
                 new RawSpectrum { Index = 0, ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
@@ -24,7 +25,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new RawSpectra(rawSpectra, IonMode.Positive, AcquisitionType.DDA, provider);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMS1ExtractedChromatogram(new MzRange(102, 2d), chromatogramRange).AsPeakArray();
+            var chromatogram = (await spectra.GetMS1ExtractedChromatogramAsync(new MzRange(102, 2d), chromatogramRange, default)).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Length);
             Assert.AreEqual(1, chromatogram[0].Id);
             Assert.AreEqual(101d, chromatogram[0].Mz);
@@ -41,7 +42,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod]
-        public void GetMs1ChromatogramDtTest() {
+        public async Task GetMs1ChromatogramDtTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
                 new RawSpectrum { Index = 0, DriftTime = 1d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
@@ -53,7 +54,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new RawSpectra(rawSpectra, IonMode.Negative, AcquisitionType.DDA, provider);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.Drift, ChromXUnit.Msec);
-            var chromatogram = spectra.GetMS1ExtractedChromatogram(new MzRange(102, 2d), chromatogramRange).AsPeakArray();
+            var chromatogram = (await spectra.GetMS1ExtractedChromatogramAsync(new MzRange(102, 2d), chromatogramRange, default)).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Length);
             Assert.AreEqual(1, chromatogram[0].Id);
             Assert.AreEqual(101d, chromatogram[0].Mz);
@@ -70,7 +71,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
-        public void GetMs1TotalIonChromatogramTest() {
+        public async Task GetMs1TotalIonChromatogramTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
                 new RawSpectrum { Index = 0, ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
@@ -82,7 +83,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new RawSpectra(rawSpectra, IonMode.Positive, AcquisitionType.DDA, provider);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMS1TotalIonChromatogram(chromatogramRange).AsPeakArray();
+            var chromatogram = (await spectra.GetMS1TotalIonChromatogramAsync(chromatogramRange, default).ConfigureAwait(false)).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(106d, chromatogram[0].Mass);
@@ -99,7 +100,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
-        public void GetMs1BasePeakChromatogramTest() {
+        public async Task GetMs1BasePeakChromatogramTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
                 new RawSpectrum { Index = 0, ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
@@ -111,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new RawSpectra(rawSpectra, IonMode.Positive, AcquisitionType.DDA, provider);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMS1BasePeakChromatogram(chromatogramRange).AsPeakArray();
+            var chromatogram = (await spectra.GetMS1BasePeakChromatogramAsync(chromatogramRange, default)).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(106d, chromatogram[0].Mass);
@@ -128,7 +129,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
-        public void GetMs1ExtractedChromatogramByHighestBasePeakMzTest() {
+        public async Task GetMs1ExtractedChromatogramByHighestBasePeakMzTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
                 new RawSpectrum { Index = 0, ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, },  } },
@@ -148,7 +149,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 101d, PeakHeightTop = 1000d, }),
             };
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMS1ExtractedChromatogramByHighestBasePeakMz(features, 2d, chromatogramRange).AsPeakArray();
+            var chromatogram = (await spectra.GetMS1ExtractedChromatogramByHighestBasePeakMzAsync(features, 2d, chromatogramRange, default)).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);

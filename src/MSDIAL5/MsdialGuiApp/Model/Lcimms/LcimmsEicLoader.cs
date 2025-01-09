@@ -32,9 +32,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (target is null) {
                 return Task.FromResult(new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), ChromXType.Drift, ChromXUnit.Msec), null, string.Empty, Colors.Black));
             }
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
-                var ms1Peaks = _rawSpectra.GetDriftChromatogramByScanRtMz(target.InnerModel.MS1RawSpectrumIdTop, (float)target.InnerModel.PeakFeature.ChromXsTop.RT.Value, (float)_parameter.AccumulatedRtRange, (float)target.Mass, _parameter.CentroidMs1Tolerance);
+                using var ms1Peaks = await _rawSpectra.GetDriftChromatogramByScanRtMzAsync(target.InnerModel.MS1RawSpectrumIdTop, (float)target.InnerModel.PeakFeature.ChromXsTop.RT.Value, (float)_parameter.AccumulatedRtRange, (float)target.Mass, _parameter.CentroidMs1Tolerance, token).ConfigureAwait(false);
                 var smoothedPeaks = ms1Peaks.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
                 var eic = smoothedPeaks.AsPeakArray()
                     .Where(peak => peak != null)
@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 var peak = smoothedPeaks.AsPeak(target.ChromXLeftValue, target.Drift.Value, target.ChromXRightValue);
                 var title = $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {_parameter.CentroidMs1Tolerance:F} RT [min]: {target.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} tolerance [min]: {_parameter.AccumulatedRtRange} Max intensity: {peak?.GetTop().Intensity ?? 0d}";
                 return new PeakChromatogram(smoothedPeaks, peak, string.Empty, Colors.Black, title);
-            });
+            }, token);
         }
         PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram { get; } = new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), ChromXType.Drift, ChromXUnit.Msec), null, string.Empty, Colors.Black);
     }
