@@ -80,6 +80,14 @@ public class RawSpectrum
         this.Spectrum = [];
     }
 
+    public bool IsInScanTimeRange(double start, double end) {
+        return start <= ScanStartTime && ScanStartTime <= end;
+    }
+
+    public bool IsInScanTimeRange(RetentionTime start, RetentionTime end) {
+        return start.Value <= ScanStartTime && ScanStartTime <= end.Value;
+    }
+
     public bool IsInDriftTimeRange(DriftTime start, DriftTime end) {
         return start.Value <= DriftTime && DriftTime <= end.Value;
     }
