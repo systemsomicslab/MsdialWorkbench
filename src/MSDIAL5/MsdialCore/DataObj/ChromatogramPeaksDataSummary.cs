@@ -114,6 +114,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public static RawSpectraSummary Summarize(IDataProvider provider) {
+            provider = provider.Cache();
             var (firstNo, lastNo) = provider.GetScanNumberRange();
             var (minRt, maxRt) = provider.GetRetentionTimeRange();
             var (minMz, maxMz) = provider.GetMassRange();

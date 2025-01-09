@@ -37,19 +37,23 @@ namespace CompMs.App.Msdial.Model.Setting
             analysisParam = projectParameter.AnalysisParameter;
         }
 
-        private readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
-            @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
-        private readonly List<NeutralLoss> neutralLossDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetNeutralLossDB(
-            @"Resources\msfinderLibrary\NeutralLossDB_vs2.ndb", out string _);
-        private readonly List<ExistFormulaQuery> existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(
-            @"Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd", out string _);
-        private readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
+        private List<ProductIon> productIonDB => _productIonDB ??= CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(@"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
+        private List<ProductIon>? _productIonDB;
+        private List<NeutralLoss> neutralLossDB => _neutralLossDB ??= CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetNeutralLossDB(@"Resources\msfinderLibrary\NeutralLossDB_vs2.ndb", out string _);
+        private List<NeutralLoss>? _neutralLossDB;
+        private List<ExistFormulaQuery> existFormulaDB => _existFormulaDB ??= ExistFormulaDbParcer.ReadExistFormulaDB(@"Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd", out string _);
+        private List<ExistFormulaQuery>? _existFormulaDB;
+        private List<ExistStructureQuery> existStructureDB => _existStructureDB ??= FileStorageUtility.GetExistStructureDB();
+        private List<ExistStructureQuery>? _existStructureDB;
 
-        private readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
-        private readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
+        private List<ExistStructureQuery> mineStructureDB => _mineStructureDB ??= FileStorageUtility.GetMinesStructureDB();
+        private List<ExistStructureQuery>? _mineStructureDB;
+        private List<FragmentOntology> fragmentOntologyDB => _fragmentOntologyDB ??= FileStorageUtility.GetUniqueFragmentDB();
+        private List<FragmentOntology>? _fragmentOntologyDB;
         private readonly List<MoleculeMsReference> mspDB = [];
         private List<ExistStructureQuery> userDefinedStructureDB = [];
-        private readonly List<FragmentLibrary>  eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
+        private List<FragmentLibrary> eiFragmentDB => _eiFragmentDB ??= FileStorageUtility.GetEiFragmentDB();
+        private List<FragmentLibrary>? _eiFragmentDB;
 
 
         public InternalMsFinder? Process() {
