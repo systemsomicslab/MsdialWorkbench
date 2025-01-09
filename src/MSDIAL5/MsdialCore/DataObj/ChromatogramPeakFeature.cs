@@ -397,8 +397,8 @@ namespace CompMs.MsdialCore.DataObj
             };
         }
 
-        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram, double mz, IonMode ionMode) {
-            if (peakDetectionResult == null) {
+        public static ChromatogramPeakFeature? FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram, double mz, IonMode ionMode) {
+            if (peakDetectionResult is null) {
                 return null;
             }
 
@@ -428,6 +428,7 @@ namespace CompMs.MsdialCore.DataObj
                 MS1RawSpectrumIdTop = chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop),
                 MS1RawSpectrumIdLeft = chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge),
                 MS1RawSpectrumIdRight = chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge),
+                RawDataIDType = chromatogram.IDType,
 
                 PeakShape = new ChromatogramPeakShape()
                 {

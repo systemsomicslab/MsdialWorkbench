@@ -48,7 +48,7 @@ public sealed class Ms2Dec
         ChromatogramPeakFeature chromPeakFeature, MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary,
         IupacDatabase iupac, double targetCE = -1) {
 
-        var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
+        var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
         var precursorMz = chromPeakFeature.Mass;
 
         if (targetSpecID < 0 || targetSpecID >= provider.Count())

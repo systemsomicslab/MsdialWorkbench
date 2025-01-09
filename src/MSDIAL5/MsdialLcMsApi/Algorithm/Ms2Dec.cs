@@ -74,7 +74,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             //}
 
             // check target CE ID
-            var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
+            var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
@@ -83,7 +83,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
             var curatedSpectra = new List<SpectrumPeak>(); // used for normalization of MS/MS intensities
-            var precursorMz = chromPeakFeature.Mass;
+            var precursorMz = chromPeakFeature.PeakFeature.Mass;
             var threshold = Math.Max(param.AmplitudeCutoff, 0.1);
 
             foreach (var peak in cSpectrum.Where(n => n.Intensity > threshold)) { //preparing MS/MS chromatograms -> peaklistList

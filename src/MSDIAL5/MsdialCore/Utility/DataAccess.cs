@@ -216,7 +216,7 @@ namespace CompMs.MsdialCore.Utility
             return startIndex;
         }
 
-        public static int GetTargetCEIndexForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
+        public static int GetTargetCEIDForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
             var targetSpecID = chromPeakFeature.MS2RawSpectrumID;
             if (targetCE >= 0) {
                 var targetCEs = chromPeakFeature.MS2RawSpectrumID2CE;

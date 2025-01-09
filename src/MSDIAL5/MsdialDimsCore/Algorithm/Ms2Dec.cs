@@ -35,7 +35,7 @@ public sealed class Ms2Dec
         MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
         double targetCE = -1) {
 
-        var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
+        var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
 
         if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
         var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);

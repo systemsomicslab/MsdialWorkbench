@@ -44,7 +44,7 @@ public sealed class Ms2Dec {
         if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
         // check target CE ID
-        var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(dtChromPeak, targetCE);
+        var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(dtChromPeak, targetCE);
 
         List<SpectrumPeak> cSpectrum = null;
         if (param.IsAccumulateMS2Spectra) {
