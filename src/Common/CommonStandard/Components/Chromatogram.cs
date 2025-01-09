@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -154,6 +155,36 @@ namespace CompMs.Common.Components
                         return new Chromatogram(smoothed, _size, _type, _unit, arrayPool);
                     }
             }
+        }
+
+        /// <summary>
+        /// Trims the chromatogram to include only the peaks within the specified time range.
+        /// </summary>
+        /// <param name="leftTime">The start time for trimming the chromatogram.</param>
+        /// <param name="rightTime">The end time for trimming the chromatogram.</param>
+        /// <returns>
+        /// A new <see cref="Chromatogram"/> object containing only the peaks within the specified time range.
+        /// If <paramref name="leftTime"/> is greater than <paramref name="rightTime"/>, an empty chromatogram is returned.
+        /// </returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
+        /// <remarks>
+        /// This method extracts a portion of the chromatogram by selecting peaks that fall within the given time range. 
+        /// It utilizes an array pool for efficient memory management when creating the new chromatogram instance.
+        /// </remarks>
+        public Chromatogram GetTrimmedChromatogram(double leftTime, double rightTime) {
+            if (leftTime > rightTime) {
+                return new Chromatogram(Array.Empty<ValuePeak>(), _type, _unit);
+            }
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
+            var left = _peaks.LowerBound(leftTime, 0, _size, (v, t) => v.Time.CompareTo(t));
+            var right = _peaks.UpperBound(rightTime, 0, _size, (v, t) => v.Time.CompareTo(t));
+            var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+            var size = right - left;
+            var copied = arrayPool.Rent(size);
+            Array.Copy(_peaks, left, copied, 0, size);
+            return new Chromatogram(copied, size, _type, _unit, arrayPool);
         }
 
         /// <summary>
@@ -724,7 +755,6 @@ namespace CompMs.Common.Components
             return _peaks[index].Mz;
         }
 
-
         /// <summary>
         /// Retrieves the ID of the peak at the specified index.
         /// </summary>
@@ -737,6 +767,8 @@ namespace CompMs.Common.Components
             } 
             return _peaks[index].Id;
         }
+
+        public SpectrumIDType IDType => _peaks.FirstOrDefault().IDType;
 
         /// <summary>
         /// Determines whether a specified peak is a valid peak top based on its intensity and position.
@@ -800,6 +832,10 @@ namespace CompMs.Common.Components
             _arrayPool.Return((ValuePeak[])_peaks);
             _peaks = null;
             _arrayPool = null;
+        }
+
+        private int FindByTime(double time) {
+            return _peaks.LowerBound(time, (v, t) => v.Time.CompareTo(t));
         }
     }
 }
