@@ -2,6 +2,8 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader;
 
@@ -37,10 +39,10 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// Loads a chromatogram based on the specified precursor and product m/z ranges within the previously defined chromatogram range.
     /// </summary>
     /// <param name="state">A tuple containing the precursor and product m/z ranges for which the chromatogram is to be loaded.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A <see cref="DisplayChromatogram"/> representing the peaks within the loaded chromatogram.</returns>
-    [System.Obsolete("zzz")]
-    DisplayChromatogram IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>.LoadChromatogram((MzRange Precursor, MzRange Product) state) {
-        var chromatogram = _rawSpectra.GetMS2ExtractedIonChromatogramAsync(state.Precursor, state.Product, _range, default).Result;
+    async Task<DisplayChromatogram> IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>.LoadChromatogramAsync((MzRange Precursor, MzRange Product) state, CancellationToken token) {
+        var chromatogram = await _rawSpectra.GetMS2ExtractedIonChromatogramAsync(state.Precursor, state.Product, _range, token).ConfigureAwait(false);
         return new DisplayExtractedIonChromatogram(chromatogram, state.Product.Tolerance, _ionMode);
     }
 
@@ -48,13 +50,13 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// Loads a chromatogram of product ions for a specific experiment ID and product m/z range within the defined chromatogram range.
     /// </summary>
     /// <param name="state">A tuple containing the experiment ID and the product m/z range for which the chromatogram is to be loaded.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A <see cref="DisplayChromatogram"/> representing the chromatogram of extracted ions filtered by the specified experiment ID and product m/z range. This chromatogram provides a detailed view of the product ions' presence and behavior within the specified conditions.</returns>
     /// <remarks>
     /// This method fetches the MS2 spectra associated with a specified experiment ID and filters those spectra based on the provided product m/z range. It then constructs a chromatogram from these filtered spectra, illustrating the intensity and distribution of product ions across the chromatogram range. This functionality is particularly useful for analyzing the behavior of specific ions in complex mixtures or experimental conditions.
     /// </remarks>
-    [System.Obsolete("zzz")]
-    DisplayChromatogram IWholeChromatogramLoader<(int ExperimentID, MzRange Product)>.LoadChromatogram((int ExperimentID, MzRange Product) state) {
-        var chromatogram = _rawSpectra.GetMS2ExtractedIonChromatogramAsync(state.ExperimentID, state.Product, _range, default).Result;
+    async Task<DisplayChromatogram> IWholeChromatogramLoader<(int ExperimentID, MzRange Product)>.LoadChromatogramAsync((int ExperimentID, MzRange Product) state, CancellationToken token) {
+        var chromatogram = await _rawSpectra.GetMS2ExtractedIonChromatogramAsync(state.ExperimentID, state.Product, _range, token).ConfigureAwait(false);
         return new DisplayExtractedIonChromatogram(chromatogram, state.Product.Tolerance, _ionMode);
     }
 }

@@ -1,12 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IWholeChromatogramLoader {
-        DisplayChromatogram LoadChromatogram();
+        Task<DisplayChromatogram> LoadChromatogramAsync(CancellationToken token);
     }
 
     public interface IWholeChromatogramLoader<T> {
-        DisplayChromatogram LoadChromatogram(T state);
+        Task<DisplayChromatogram> LoadChromatogramAsync(T state, CancellationToken token);
     }
 }

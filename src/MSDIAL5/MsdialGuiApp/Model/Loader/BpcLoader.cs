@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
@@ -15,9 +17,8 @@ namespace CompMs.App.Msdial.Model.Loader
             _peakPickParameter = peakPickParameter;
         }
 
-        [System.Obsolete("zzz")]
-        DisplayChromatogram IWholeChromatogramLoader.LoadChromatogram() {
-            using var chromatogram = _rawSpectra.GetMS1BasePeakChromatogramAsync(_chromatogramRange, default).Result;
+        async Task<DisplayChromatogram> IWholeChromatogramLoader.LoadChromatogramAsync(CancellationToken token) {
+            using var chromatogram = await _rawSpectra.GetMS1BasePeakChromatogramAsync(_chromatogramRange, token).ConfigureAwait(false);
             var smoothed = chromatogram.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
             return new DisplayChromatogram(smoothed);
         }

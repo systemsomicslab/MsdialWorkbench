@@ -2,7 +2,6 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.Raw.Abstractions;
@@ -70,18 +69,19 @@ namespace CompMs.App.Msdial.Model.Loader
             return ms1Peaks.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
-        [Obsolete("zzz")]
-        protected ExtractedIonChromatogram LoadEicCore(double mass, double massTolerance) {
-            using var eic = RawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(mass, massTolerance), _chromatogramRange, default).Result;
+        private async Task<ExtractedIonChromatogram> LoadEicCoreAsync(double mass, double massTolerance, CancellationToken token) {
+            using var eic = await RawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(mass, massTolerance), _chromatogramRange, token).ConfigureAwait(false);
             return eic.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
-        DisplayChromatogram IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {
-            return new DisplayExtractedIonChromatogram(LoadEicCore(state.mass, state.tolerance), state.tolerance, _ionMode);
+        async Task<DisplayChromatogram> IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogramAsync((double mass, double tolerance) state, CancellationToken token) {
+            var eic = await LoadEicCoreAsync(state.mass, state.tolerance, token).ConfigureAwait(false);
+            return new DisplayExtractedIonChromatogram(eic, state.tolerance, _ionMode);
         }
 
-        DisplayChromatogram IWholeChromatogramLoader<MzRange>.LoadChromatogram(MzRange state) {
-            return new DisplayExtractedIonChromatogram(LoadEicCore(state.Mz, state.Tolerance), state.Tolerance, _ionMode);
+        async Task<DisplayChromatogram> IWholeChromatogramLoader<MzRange>.LoadChromatogramAsync(MzRange state, CancellationToken token) {
+            var eic = await LoadEicCoreAsync(state.Mz, state.Tolerance, token).ConfigureAwait(false);
+            return new DisplayExtractedIonChromatogram(eic, state.Tolerance, _ionMode);
         }
 
         PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromatogramRange.Type, _chromatogramRange.Unit), null, string.Empty, Colors.Black);

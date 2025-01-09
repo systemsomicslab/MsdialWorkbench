@@ -5,6 +5,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.DataObj.Tests.Helper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader.Tests;
 
@@ -12,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Loader.Tests;
 public class ProductIonChromatogramLoaderTests
 {
     [TestMethod()]
-    public void LoadChromatogramTest() {
+    public async Task LoadChromatogramTest() {
         // Arrange
         var mockRawSpectra = new MockRawSpectra();
         var testRange = new ChromatogramRange(0, 100, ChromXType.RT, ChromXUnit.Min);
@@ -29,7 +30,7 @@ public class ProductIonChromatogramLoaderTests
         var loader = new ProductIonChromatogramLoader(mockRawSpectra, CompMs.Common.Enum.IonMode.Positive, testRange);
 
         // Act
-        var result = ((IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>)loader).LoadChromatogram(testState);
+        var result = await ((IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>)loader).LoadChromatogramAsync(testState, default);
 
         // Assert
         Assert.AreEqual(expectedPeakItems.Count, result.ChromatogramPeaks.Count);
@@ -41,7 +42,7 @@ public class ProductIonChromatogramLoaderTests
     }
 
     [TestMethod()]
-    public void LoadChromatogramExperimentIDTest() {
+    public async Task LoadChromatogramExperimentIDTest() {
         // Arrange
         var mockRawSpectra = new MockRawSpectra();
         var testRange = new ChromatogramRange(0, 100, ChromXType.RT, ChromXUnit.Min);
@@ -59,7 +60,7 @@ public class ProductIonChromatogramLoaderTests
         var loader = new ProductIonChromatogramLoader(mockRawSpectra, CompMs.Common.Enum.IonMode.Positive, testRange);
 
         // Act
-        var result = ((IWholeChromatogramLoader<(int ExperimentID, MzRange Product)>)loader).LoadChromatogram(testState);
+        var result = await ((IWholeChromatogramLoader<(int ExperimentID, MzRange Product)>)loader).LoadChromatogramAsync(testState, default);
 
         // Assert
         Assert.AreEqual(expectedPeakItems.Count, result.ChromatogramPeaks.Count, "The number of peaks in the loaded chromatogram should match the expected number.");

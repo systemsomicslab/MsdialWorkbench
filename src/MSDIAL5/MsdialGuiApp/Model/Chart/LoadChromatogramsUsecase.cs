@@ -65,33 +65,38 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private bool _insertMS2Tic;
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadMS2Tic() {
-            var displayChromatogram = _productTicLoader.LoadChromatogram();
+            var displayChromatogram = _productTicLoader.LoadChromatogramAsync(default).Result;
             displayChromatogram.Name = $"Total ion chromatogram, MS2";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadMS2Tic(int experimentID) {
-            var displayChromatogram = _productExperimentTicLoader.LoadChromatogram(experimentID);
+            var displayChromatogram = _productExperimentTicLoader.LoadChromatogramAsync(experimentID, default).Result;
             displayChromatogram.Name = $"Total ion chromatogram, ExperimentID: {experimentID}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadMS2Eic(MzRange product) {
             var range = MzRange.FromRange(0d, 1e10);
-            var displayChromatogram = _productEicLoader.LoadChromatogram((range, product));
+            var displayChromatogram = _productEicLoader.LoadChromatogramAsync((range, product), default).Result;
             displayChromatogram.Name = $"Fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
-            var displayChromatogram = _productExperimentEicLoader.LoadChromatogram((experimentID, product));
+            var displayChromatogram = _productExperimentEicLoader.LoadChromatogramAsync((experimentID, product), default).Result;
             displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
-            var displayChromatogram = _productEicLoader.LoadChromatogram((precursor, product));
+            var displayChromatogram = _productEicLoader.LoadChromatogramAsync((precursor, product), default).Result;
             displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{Math.Round(precursor.Tolerance, 5)}";
             if (product.Tolerance < 10000) {
                 displayChromatogram.Name += $" fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
@@ -99,14 +104,16 @@ namespace CompMs.App.Msdial.Model.Chart
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadTic() {
-            var displayChromatogram = _ticLoader.LoadChromatogram();
+            var displayChromatogram = _ticLoader.LoadChromatogramAsync(default).Result;
             displayChromatogram.Name = "Total ion chromatoram";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        [Obsolete("zzz")]
         public ChromatogramsModel LoadEic(MzRange mzRange) {
-            var displayChromatogram = _eicLoader.LoadChromatogram((mzRange.Mz, mzRange.Tolerance));
+            var displayChromatogram = _eicLoader.LoadChromatogramAsync((mzRange.Mz, mzRange.Tolerance), default).Result;
             displayChromatogram.Name = $"m/z: {mzRange.Mz:F5}±{Math.Round(mzRange.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
@@ -160,8 +167,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
             public ChromatogramsModel? ChromatogramsModel { get; private set; }
 
+            [Obsolete("zzz")]
             public void AddTic() {
-                var tic = _ticLoader.LoadChromatogram();
+                var tic = _ticLoader.LoadChromatogramAsync(default).Result;
                 var pen = tic.LinePen = new Pen(Brushes.Black, 1.0);
                 pen.Freeze();
                 tic.Name = "TIC";
@@ -169,8 +177,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("TIC");
             }
 
+            [Obsolete("zzz")]
             public void AddBpc() {
-                var bpc = _bpcLoader.LoadChromatogram();
+                var bpc = _bpcLoader.LoadChromatogramAsync(default).Result;
                 var pen = bpc.LinePen = new Pen(Brushes.Red, 1.0);
                 pen.Freeze();
                 bpc.Name = "BPC";
@@ -178,12 +187,13 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("BPC");
             }
 
+            [Obsolete("zzz")]
             public void AddHighestEic() {
                 var maxPeakMz = _peaks.DefaultIfEmpty().Argmax(peak => peak?.Intensity ?? -1d)?.Mass;
                 if (maxPeakMz is null) {
                     return;
                 }
-                var eic = _eicLoader.LoadChromatogram((maxPeakMz.Value, _peakPickParameter.CentroidMs1Tolerance));
+                var eic = _eicLoader.LoadChromatogramAsync((maxPeakMz.Value, _peakPickParameter.CentroidMs1Tolerance), default).Result;
                 var pen = eic.LinePen = new Pen(Brushes.Blue, 1.0);
                 pen.Freeze();
                 eic.Name = "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString();
@@ -191,8 +201,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("most abundant ion's EIC");
             }
 
+            [Obsolete("zzz")]
             public void AddMS2Tic(IWholeChromatogramLoader productTicLoader) {
-                var tic = productTicLoader.LoadChromatogram();
+                var tic = productTicLoader.LoadChromatogramAsync(default).Result;
                 var pen = tic.LinePen = new Pen(Brushes.DarkGray, 1.0);
                 pen.Freeze();
                 tic.Name = "MS2 TIC";
@@ -200,8 +211,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("MS2 TIC");
             }
 
+            [Obsolete("zzz")]
             public void AddMS2Tic(IWholeChromatogramLoader<int> productTicLoader, int experimentID, Brush? brush = null) {
-                var tic = productTicLoader.LoadChromatogram(experimentID);
+                var tic = productTicLoader.LoadChromatogramAsync(experimentID, default).Result;
                 var pen = tic.LinePen = new Pen(brush ?? Brushes.Cyan, 1.0);
                 pen.Freeze();
                 tic.Name = $"MS2 TIC of experiment {experimentID}";
@@ -209,10 +221,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add($"MS2 TIC of experiment {experimentID}");
             }
 
+            [Obsolete("zzz")]
             public void AddEics(List<PeakFeatureSearchValue> displayEICs) {
                 var counter = 0;
                 foreach (var set in displayEICs) {
-                    var eic = _eicLoader.LoadChromatogram((set.Mass, set.MassTolerance));
+                    var eic = _eicLoader.LoadChromatogramAsync((set.Mass, set.MassTolerance), default).Result;
                     var title = set.Title;
                     if (!string.IsNullOrEmpty(title)) {
                         title += "; ";

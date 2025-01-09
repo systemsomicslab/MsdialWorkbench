@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader;
 
@@ -19,32 +21,31 @@ internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chr
     /// <summary>
     /// Loads and processes an MS2 total ion chromatogram from the provided raw spectra, applying smoothing based on the specified peak picking parameters.
     /// </summary>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A <see cref="DisplayChromatogram"/> that represents the processed chromatogram, ready for display or further analysis.</returns>
     /// <remarks>
     /// This method applies the smoothing method and level defined in the peak picking parameters to the MS2 TIC,
     /// enhancing the clarity and interpretability of the chromatographic output.
     /// </remarks>
-    [System.Obsolete("zzz")]
-    public DisplayChromatogram LoadChromatogram() {
-        using var tic = rawSpectra.GetMS2TotalIonChromatogramAsync(chromatogramRange, default).Result;
+    public async Task<DisplayChromatogram> LoadChromatogramAsync(CancellationToken token) {
+        using var tic = await rawSpectra.GetMS2TotalIonChromatogramAsync(chromatogramRange, token).ConfigureAwait(false);
         var smoothed = tic.ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
         return new DisplayChromatogram(smoothed);
     }
-
 
     /// <summary>
     /// Loads and processes an MS2 total ion chromatogram for a specific experiment from the provided raw spectra, applying smoothing based on the specified peak picking parameters.
     /// </summary>
     /// <param name="experimentID">The ID of the experiment to filter the MS2 spectra by. Only spectra associated with this experiment ID will be included in the chromatogram.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A <see cref="DisplayChromatogram"/> that represents the processed chromatogram for the specified experiment, ready for display or further analysis.</returns>
     /// <remarks>
-    /// This method extends the functionality of <see cref="LoadChromatogram"/> by adding the capability to filter the raw spectra based on an experiment ID before generating the chromatogram. 
+    /// This method extends the functionality of <see cref="LoadChromatogramAsync"/> by adding the capability to filter the raw spectra based on an experiment ID before generating the chromatogram. 
     /// It then applies the same smoothing method and level defined in the peak picking parameters to enhance the clarity and interpretability of the chromatographic output, 
     /// allowing for focused analysis on data from a specific experiment.
     /// </remarks>
-    [System.Obsolete("zzz")]
-    public DisplayChromatogram LoadChromatogram(int experimentID) {
-        using var tic = rawSpectra.GetMS2TotalIonChromatogramAsync(experimentID, chromatogramRange, default).Result;
+    public async Task<DisplayChromatogram> LoadChromatogramAsync(int experimentID, CancellationToken token) {
+        using var tic = await rawSpectra.GetMS2TotalIonChromatogramAsync(experimentID, chromatogramRange, token).ConfigureAwait(false);
         var smoothed = tic.ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
         return new DisplaySpecificExperimentChromatogram(smoothed);
     }

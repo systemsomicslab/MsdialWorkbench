@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Loader.Tests;
 public class MS2TicLoaderTests
 {
      [TestMethod()]
-    public void LoadChromatogram_ReturnsProcessedChromatogram()
+    public async Task LoadChromatogram_ReturnsProcessedChromatogram()
     {
         // Arrange
         var mockRawSpectra = new MockRawSpectra();
@@ -42,7 +42,7 @@ public class MS2TicLoaderTests
         var loader = new MS2TicLoader(mockRawSpectra, chromatogramRange, peakPickParameter);
 
         // Act
-        var result = loader.LoadChromatogram();
+        var result = await loader.LoadChromatogramAsync(default);
 
         // Assert
         Assert.AreEqual(expectedChromatogram.Length, result.ChromatogramPeaks.Count, "The number of peaks in the chromatogram does not match the expected count.");
@@ -54,7 +54,7 @@ public class MS2TicLoaderTests
     }
 
     [TestMethod()]
-    public void LoadChromatogram_CallsGetMs2TotalIonChromatogramWithCorrectExperimentId()
+    public async Task LoadChromatogram_CallsGetMs2TotalIonChromatogramWithCorrectExperimentId()
     {
         // Arrange
         var mockRawSpectra = new MockRawSpectra_GetMS2TotalIonChromatogram();
@@ -69,7 +69,7 @@ public class MS2TicLoaderTests
         var loader = new MS2TicLoader(mockRawSpectra, chromatogramRange, peakPickParameter);
 
         // Act
-        loader.LoadChromatogram(experimentID);
+        await loader.LoadChromatogramAsync(experimentID, default);
 
         // Assert
         Assert.AreEqual(experimentID, mockRawSpectra.ExperimentID); // Verifies that GetMS2TotalIonChromatogram was called with the specified parameters
