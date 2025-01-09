@@ -102,10 +102,12 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
             chromPeakFeature.MSDecResultIdUsed = chromPeakFeature.MasterPeakID;
         }
         foreach (var factory in _queryFactories) {
+            token.ThrowIfCancellationRequested();
+            var spectrum = await provider.LoadSpectrumAsync((ulong)chromPeakFeature.MS1RawSpectrumIdTop, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
             var query = factory.Create(
                 chromPeakFeature,
                 msdecResult,
-                provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
+                spectrum?.Spectrum,
                 chromPeakFeature.PeakCharacter,
                 factory.PrepareParameter());
             token.ThrowIfCancellationRequested();

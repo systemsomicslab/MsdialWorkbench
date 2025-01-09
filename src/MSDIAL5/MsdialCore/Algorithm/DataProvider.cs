@@ -99,7 +99,7 @@ public static class DataProvider
     /// </summary>
     /// <param name="provider">The data provider instance used to access spectra data.</param>
     /// <param name="start">The lower bound of the DriftTime range, inclusive. Spectra with a DriftTime equal to or greater than this value are included.</param>
-    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime less than this value are included.</param>
+    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime equal to or less than this value are included.</param>
     /// <param name="token">A cancellation token that can be used to cancel the operation if needed.</param>
     /// <returns>
     /// A task representing the asynchronous operation. On completion, the task returns an array of <see cref="RawSpectrum"/> objects that fall within the specified DriftTime range.
@@ -113,7 +113,7 @@ public static class DataProvider
         var sorted = spectra.OrderBy(s => s.DriftTime).ToList();
         var lower = sorted.LowerBound(start, (t, s) => t.DriftTime.CompareTo(s));
         var upper = lower;
-        while (upper < sorted.Count && sorted[upper].DriftTime < end) {
+        while (upper < sorted.Count && sorted[upper].DriftTime <= end) {
             ++upper;
         }
         var result = new RawSpectrum[upper - lower];
@@ -129,7 +129,7 @@ public static class DataProvider
     /// </summary>
     /// <param name="provider">The data provider instance used to access spectra data.</param>
     /// <param name="start">The lower bound of the DriftTime range, inclusive. Spectra with a DriftTime equal to or greater than this value are included.</param>
-    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime less than this value are included.</param>
+    /// <param name="end">The upper bound of the DriftTime range, exclusive. Spectra with a DriftTime equal to or less than this value are included.</param>
     /// <param name="token">A cancellation token that can be used to cancel the operation if needed.</param>
     /// <returns>
     /// A task representing the asynchronous operation. Upon completion, the task returns an array of <see cref="RawSpectrum"/> objects that fall within the specified DriftTime range.
@@ -141,14 +141,14 @@ public static class DataProvider
     public static async Task<RawSpectrum[]> LoadMs2SpectraWithDtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
         var spectra = await provider.LoadMsNSpectrumsAsync(2, token).ConfigureAwait(false);
         var sorted = spectra.OrderBy(s => s.DriftTime).ToList();
-        var lower = spectra.LowerBound(start, (t, s) => t.DriftTime.CompareTo(s));
+        var lower = sorted.LowerBound(start, (t, s) => t.DriftTime.CompareTo(s));
         var upper = lower;
-        while (upper < spectra.Count && spectra[upper].DriftTime < end) {
+        while (upper < sorted.Count && sorted[upper].DriftTime <= end) {
             ++upper;
         }
         var result = new RawSpectrum[upper - lower];
         for (int i = 0; i < result.Length; i++) {
-            result[i] = spectra[i + lower];
+            result[i] = sorted[i + lower];
         }
         return result;
     }

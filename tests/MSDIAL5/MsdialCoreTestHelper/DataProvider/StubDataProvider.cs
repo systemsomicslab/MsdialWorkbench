@@ -10,7 +10,7 @@ namespace MsdialCoreTestHelper.DataProvider;
 
 public sealed class StubDataProvider : IDataProvider
 {
-    public List<RawSpectrum> Spectra { get; set; }
+    public List<RawSpectrum> Spectra { get; set; } = [];
     public List<double> CollisionEnergyTargets { get; set; }
 
     public void SetSpectra(List<RawSpectrum> spectra) {
@@ -47,7 +47,10 @@ public sealed class StubDataProvider : IDataProvider
     }
 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
-        return Task.FromResult(LoadMsSpectrums()[(int)id]);
+        if (id < (ulong)Spectra.Count) {
+            return Task.FromResult(LoadMsSpectrums()[(int)id]);
+        }
+        return Task.FromResult<RawSpectrum?>(null);
     }
 
     public Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {

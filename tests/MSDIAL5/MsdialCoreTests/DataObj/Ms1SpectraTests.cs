@@ -14,11 +14,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1ChromatogramRtTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
-                new RawSpectrum { Index = 0, ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
-                new RawSpectrum { Index = 1, ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
-                new RawSpectrum { Index = 2, ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
-                new RawSpectrum { Index = 3, ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
-                new RawSpectrum { Index = 4, ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
+                new RawSpectrum { Index = 0, RawSpectrumID = new IndexedSpectrumIdentifier(0), ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
+                new RawSpectrum { Index = 1, RawSpectrumID = new IndexedSpectrumIdentifier(1), ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
+                new RawSpectrum { Index = 2, RawSpectrumID = new IndexedSpectrumIdentifier(2), ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
+                new RawSpectrum { Index = 3, RawSpectrumID = new IndexedSpectrumIdentifier(3), ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
+                new RawSpectrum { Index = 4, RawSpectrumID = new IndexedSpectrumIdentifier(4), ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
             };
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new Ms1Spectra(IonMode.Positive, AcquisitionType.DDA, provider);
@@ -43,11 +43,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1ChromatogramDtTest() {
             List<RawSpectrum> rawSpectra = new List<RawSpectrum>
             {
-                new RawSpectrum { Index = 0, DriftTime = 1d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
-                new RawSpectrum { Index = 1, DriftTime = 2d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
-                new RawSpectrum { Index = 2, DriftTime = 3d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
-                new RawSpectrum { Index = 3, DriftTime = 4d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
-                new RawSpectrum { Index = 4, DriftTime = 5d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
+                new RawSpectrum { Index = 0, RawSpectrumID = new IndexedSpectrumIdentifier(0), DriftTime = 1d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
+                new RawSpectrum { Index = 1, RawSpectrumID = new IndexedSpectrumIdentifier(1), DriftTime = 2d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
+                new RawSpectrum { Index = 2, RawSpectrumID = new IndexedSpectrumIdentifier(2), DriftTime = 3d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
+                new RawSpectrum { Index = 3, RawSpectrumID = new IndexedSpectrumIdentifier(3), DriftTime = 4d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
+                new RawSpectrum { Index = 4, RawSpectrumID = new IndexedSpectrumIdentifier(4), DriftTime = 5d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
             };
             var provider = new StubDataProvider { Spectra = rawSpectra };
             var spectra = new Ms1Spectra(IonMode.Negative, AcquisitionType.DDA, provider);

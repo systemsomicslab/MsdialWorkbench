@@ -102,6 +102,7 @@ namespace CompMs.MsdialCore.Export.Tests
                     new RawSpectrum
                     {
                         OriginalIndex = 2,
+                        MsLevel = 1,
                         Spectrum = new[]
                         {
                             new RawPeakElement { Mz = 700d, Intensity = 1000d, },
@@ -110,6 +111,7 @@ namespace CompMs.MsdialCore.Export.Tests
                     },
                     new RawSpectrum
                     {
+                        MsLevel = 1,
                         Spectrum = new[]
                         {
                             new RawPeakElement { Mz = 200.00003, Intensity = 50, },
