@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Algorithm
                 endMass = (float)Math.Ceiling(endMass);
                 focusedMass = startMass;
             }
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
+            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             while (focusedMass < endMass) {
                 if (focusedMass < _parameter.MassRangeBegin) { focusedMass += massStep; continue; }
@@ -196,7 +196,7 @@ namespace CompMs.MsdialCore.Algorithm
         public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(AnalysisFileBean file, IDataProvider provider, List<MoleculeMsReference> targetedScans, ChromatogramRange chromatogramRange) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             if (targetedScans.IsEmptyOrNull()) return null;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
+            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, file.AcquisitionType);
             foreach (var targetComp in targetedScans) {
                 var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, provider, (float)targetComp.PrecursorMz, chromatogramRange);
                 if (!chromPeakFeatures.IsEmptyOrNull())
@@ -214,7 +214,7 @@ namespace CompMs.MsdialCore.Algorithm
         public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(AnalysisFileBean file, IDataProvider provider, List<MoleculeMsReference> targetedScans, int numThreads, CancellationToken token, ChromatogramRange chromatogramRange) {
             var spectrumList = provider.LoadMs1Spectrums();
             if (targetedScans.IsEmptyOrNull()) return null;
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType, provider);
+            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, file.AcquisitionType);
             var chromPeakFeaturesList = targetedScans
                 .AsParallel()
                 .AsOrdered()

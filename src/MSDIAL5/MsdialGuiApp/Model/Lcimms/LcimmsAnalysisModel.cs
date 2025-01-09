@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .Subscribe(title => RtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
-            _rawSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType, accSpectrumProvider);
+            _rawSpectra = new RawSpectra(accSpectrumProvider, parameter.IonMode, analysisFileModel.File.AcquisitionType);
             var rtEicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(accumulatedTarget, rtEicLoader)

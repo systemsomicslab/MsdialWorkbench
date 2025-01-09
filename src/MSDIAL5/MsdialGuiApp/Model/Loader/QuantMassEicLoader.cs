@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromXUnit = chromXUnit;
             _isConstantRange = isConstantRange;
 
-            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), ionMode, file.AcquisitionType, provider));
+            _rawSpectraTask = Task.Run(() => new RawSpectra(provider, ionMode, file.AcquisitionType));
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 

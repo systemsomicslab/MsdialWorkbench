@@ -14,14 +14,15 @@ namespace CompMs.MsdialCore.DataObj
     public class RawSpectra : IRawSpectra
     {
         private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
-        private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
         private readonly AcquisitionType _acquisitionType;
         private readonly IDataProvider _spectraProvider;
         public AcquisitionType AcquisitionType { get => _acquisitionType; }
 
+        private IReadOnlyList<RawSpectrum> Spectra => _spectra ??= _spectraProvider.LoadMsSpectrums();
+        private IReadOnlyList<RawSpectrum>? _spectra;
+
         public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
-            _spectra = provider.LoadMsSpectrums();
             _spectraProvider = provider;
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
@@ -38,22 +39,22 @@ namespace CompMs.MsdialCore.DataObj
 
         public double StartRt { 
             get {
-                if (_spectra.IsEmptyOrNull()) return 0;
-                else return _spectra[0].ScanStartTime;
+                if (Spectra.IsEmptyOrNull()) return 0;
+                else return Spectra[0].ScanStartTime;
             } 
         }
 
         public double EndRt {
             get {
-                if (_spectra.IsEmptyOrNull()) return 0;
-                else return _spectra[_spectra.Count - 1].ScanStartTime;
+                if (Spectra.IsEmptyOrNull()) return 0;
+                else return Spectra[Spectra.Count - 1].ScanStartTime;
             }
         }
 
         public (int MsLevel, int ExperimentID)[] ExperimentIDs {
             get {
                 var result = new HashSet<(int MsLevel, int ExperimentID)>();
-                foreach (var spec in _spectra) {
+                foreach (var spec in Spectra) {
                     result.Add((spec.MsLevel, spec.ExperimentID));
                 }
                 return [.. result];
@@ -92,7 +93,7 @@ namespace CompMs.MsdialCore.DataObj
 
             //accumulating peaks from peak top to peak left
             for (int i = scanID + 1; i >= 0; i--) {
-                var spectrum = _spectra[i];
+                var spectrum = Spectra[i];
                 if (spectrum.MsLevel != 1) continue;
                 if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
                 if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
@@ -100,8 +101,8 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             //accumulating peaks from peak top to peak right
-            for (int i = scanID + 2; i < _spectra.Count; i++) {
-                var spectrum = _spectra[i];
+            for (int i = scanID + 2; i < Spectra.Count; i++) {
+                var spectrum = Spectra[i];
                 if (spectrum.MsLevel != 1) continue;
                 if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
                 if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
@@ -199,10 +200,10 @@ namespace CompMs.MsdialCore.DataObj
         public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
             var scanPolarity = rtPeakFeature.IonMode.ToPolarity();
             var spectra = Enumerable.Range(rtPeakFeature.MS1RawSpectrumIdLeft, rtPeakFeature.MS1RawSpectrumIdRight - rtPeakFeature.MS1RawSpectrumIdLeft + 1)
-                .Select(i => _spectra[i])
+                .Select(i => Spectra[i])
                 .Where(spectrum => spectrum.MsLevel == 2)
                 .Where(spectrum => spectrum.ScanPolarity == scanPolarity)
-                .Where(spectrum => spectrum.Precursor.ContainsMz(rtPeakFeature.Mass, ms2Tolerance, acquisitionType)) // mz is in range
+                .Where(spectrum => spectrum.Precursor.ContainsMz(rtPeakFeature.PeakFeature.Mass, ms2Tolerance, acquisitionType)) // mz is in range
                 .Where(spectrum => spectrum.Precursor.ContainsDriftTime(driftTime) || spectrum.Precursor.IsNotDiapasefData) // in drift time range for diapasef or normal dia
                 .ToArray();
             return new PeakMs2Spectra(spectra, scanPolarity, acquisitionType);

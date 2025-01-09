@@ -116,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Eic chart
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            _rawSpectra = new RawSpectra(provider.LoadMsSpectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType, provider);
+            _rawSpectra = new RawSpectra(provider, parameter.IonMode, analysisFileModel.File.AcquisitionType);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
