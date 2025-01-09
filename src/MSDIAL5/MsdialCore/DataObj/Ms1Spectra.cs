@@ -3,6 +3,8 @@ using CompMs.Common.Enum;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -20,9 +22,9 @@ namespace CompMs.MsdialCore.DataObj
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
         }
 
-        public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+        public async Task<Chromatogram> GetMS1ExtractedChromatogramAsync(double mz, double tolerance, ChromatogramRange chromatogramRange, CancellationToken token) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, default).Result;
+            return await impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {

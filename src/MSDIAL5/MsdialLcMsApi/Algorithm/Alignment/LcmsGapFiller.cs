@@ -43,7 +43,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             peakWidth = Math.Max(peakWidth, 0.2f);
 
             var chromatogramRange = new ChromatogramRange(center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5, ChromXType.RT, ChromXUnit.Min);
-            var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
+            var peaklist = ms1Spectra.GetMS1ExtractedChromatogramAsync(center.Mz.Value, this.mzTol, chromatogramRange, default).Result;
             return peaklist.ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
         }
     }

@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             }
             
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-            var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
+            var peaklist = ms1Spectra.GetMS1ExtractedChromatogramAsync(peak.Mass, ms1MassTolerance, chromatogramRange, default).Result;
             return new ChromatogramPeakInfo(
                 peak.FileID, peaklist.ChromatogramSmoothing(this.lcmsParameter.SmoothingMethod, this.lcmsParameter.SmoothingLevel).AsPeakArray(),
                 (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
