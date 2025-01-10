@@ -165,86 +165,101 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildView<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView() {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            view.Show();
+            Dispatcher.Invoke(() => {
+                var view = new TView()
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                view.Show();
+            });
         }
 
         private Action<object> ShowChildContent<TView>(string? title = null, double? height = null, double? width = null, bool needDispose = false) where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
-                var view = new Window
-                {
-                    Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    DataContext = viewmodel,
-                    Content = new TView(),
-                };
-                if ((title ?? (viewmodel as IDialogPropertiesViewModel)?.Title) is string t) {
-                    view.Title = t;
-                }
-                if ((height ?? (viewmodel as IDialogPropertiesViewModel)?.Height) is double h) {
-                    view.Height = h;
-                }
-                if ((width ?? (viewmodel as IDialogPropertiesViewModel)?.Width) is double w) {
-                    view.Width = w;
-                }
-                if (needDispose) {
-                    DataContextCleanupBehavior.SetIsEnabled(view, true);
-                }
-                view.Show();
+                Dispatcher.Invoke(()=> {
+                    var view = new Window
+                    {
+                        Owner = this,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                        DataContext = viewmodel,
+                        Content = new TView(),
+                    };
+                    if ((title ?? (viewmodel as IDialogPropertiesViewModel)?.Title) is string t) {
+                        view.Title = t;
+                    }
+                    if ((height ?? (viewmodel as IDialogPropertiesViewModel)?.Height) is double h) {
+                        view.Height = h;
+                    }
+                    if ((width ?? (viewmodel as IDialogPropertiesViewModel)?.Width) is double w) {
+                        view.Width = w;
+                    }
+                    if (needDispose) {
+                        DataContextCleanupBehavior.SetIsEnabled(view, true);
+                    }
+                    view.Show();
+                });
             }
             return InnerShowDialog;
         }
 
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
-            Window view = new TView()
-            {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            DataContextCleanupBehavior.SetIsEnabled(view, true);
-            view.Show();
+            Dispatcher.Invoke(() => {
+                Window view = new TView()
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                DataContextCleanupBehavior.SetIsEnabled(view, true);
+                view.Show();
+            });
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView() {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            view.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var view = new TView()
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                view.ShowDialog();
+            });
         }
 
         private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
-                var dialog = new SettingDialog() {
-                    Height = height, Width = width,
-                    Title = title,
-                    Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    DataContext = viewmodel,
-                    Content = new TView(),
-                };
-                if (finishCommandContent is not null) {
-                    dialog.FinishCommandContent = finishCommandContent;
-                }
-                dialog.ShowDialog();
-                if (needDispose)
-                {
-                    (viewmodel as IDisposable)?.Dispose();
-                }
+                Dispatcher.Invoke(() => {
+                    var dialog = new SettingDialog()
+                    {
+                        Height = height,
+                        Width = width,
+                        Title = title,
+                        Owner = this,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                        DataContext = viewmodel,
+                        Content = new TView(),
+                    };
+                    if (finishCommandContent is not null) {
+                        dialog.FinishCommandContent = finishCommandContent;
+                    }
+                    dialog.ShowDialog();
+                    if (needDispose) {
+                        (viewmodel as IDisposable)?.Dispose();
+                    }
+                });
             }
             return InnerShowDialog;
         }
 
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
-            using (var viewmodel = new ProgressBarMultiContainerVM(request)) {
-                var dialog = new ProgressBarMultiContainerWindow() {
+            Dispatcher.Invoke(() => {
+                using var viewmodel = new ProgressBarMultiContainerVM(request);
+                var dialog = new ProgressBarMultiContainerWindow()
+                {
                     DataContext = viewmodel,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -255,12 +270,14 @@ namespace CompMs.App.Msdial.View.Core
                     dialog.Dispatcher.Invoke(dialog.Close);
                 };
                 dialog.ShowDialog();
-            }
+            });
         }
 
         private void ShowProgressBarWindow(ProgressBarRequest request) {
-            using (var viewmodel = new ProgressBarVM(request)) {
-                var dialog = new ProgressBarWindow() {
+            Dispatcher.Invoke(() => {
+                using var viewmodel = new ProgressBarVM(request);
+                var dialog = new ProgressBarWindow()
+                {
                     DataContext = viewmodel,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -271,7 +288,7 @@ namespace CompMs.App.Msdial.View.Core
                     dialog.Dispatcher.Invoke(dialog.Close);
                 };
                 dialog.ShowDialog();
-            }
+            });
         }
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
@@ -287,66 +304,81 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {
-            var dialog = new ShortMessageWindow() {
-                DataContext = request.Content,
-                Text = request.Content,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            dialog.Loaded += async (s, e) => {
-                await request.AsyncAction();
-                dialog.Dispatcher.Invoke(() => {
-                    dialog.DialogResult = true;
-                    dialog.Close();
-                });
-            };
-            request.Result = dialog.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var dialog = new ShortMessageWindow()
+                {
+                    DataContext = request.Content,
+                    Text = request.Content,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.Loaded += async (s, e) => {
+                    await request.AsyncAction();
+                    dialog.Dispatcher.Invoke(() => {
+                        dialog.DialogResult = true;
+                        dialog.Close();
+                    });
+                };
+                request.Result = dialog.ShowDialog();
+            });
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
-            var dialog = new Window() {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new MultivariateAnalysisResultView(),
-            };
-            dialog.Show();
+            Dispatcher.Invoke(() => {
+                var dialog = new Window()
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new MultivariateAnalysisResultView(),
+                };
+                dialog.Show();
+            });
         }
 
         private void GetSaveFilePath(SaveFileNameRequest request) {
-            var sfd = new SaveFileDialog() {
-                Title = request.Title,
-                Filter = request.Filter,
-                RestoreDirectory = request.RestoreDirectory,
-                AddExtension = request.AddExtension,
-            };
+            Dispatcher.Invoke(() => {
+                var sfd = new SaveFileDialog()
+                {
+                    Title = request.Title,
+                    Filter = request.Filter,
+                    RestoreDirectory = request.RestoreDirectory,
+                    AddExtension = request.AddExtension,
+                };
 
-            request.Result = sfd.ShowDialog(this);
-            if (request.Result == true) {
-                request.Run(sfd.FileName);
-            }
+                request.Result = sfd.ShowDialog(this);
+                if (request.Result == true) {
+                    request.Run(sfd.FileName);
+                }
+            });
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            var ofd = new OpenFileDialog() {
-                Title = request.Title,
-                Filter = request.Filter,
-            };
+            Dispatcher.Invoke(() => {
+                var ofd = new OpenFileDialog()
+                {
+                    Title = request.Title,
+                    Filter = request.Filter,
+                };
 
-            if (ofd.ShowDialog(this) == true) {
-                request.Run(ofd.FileName);
-            }
+                if (ofd.ShowDialog(this) == true) {
+                    request.Run(ofd.FileName);
+                }
+            });
         }
 
         private void SelectFolderPath(SelectFolderRequest request) {
-            var sfd = new SelectFolderDialog() {
-                Title = request.Title,
-                SelectedPath = request.SelectedPath,
-            };
+            Dispatcher.Invoke(() => {
+                var sfd = new SelectFolderDialog()
+                {
+                    Title = request.Title,
+                    SelectedPath = request.SelectedPath,
+                };
 
-            if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
-                request.Run(sfd.SelectedPath!);
-            }
+                if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
+                    request.Run(sfd.SelectedPath!);
+                }
+            });
         }
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
