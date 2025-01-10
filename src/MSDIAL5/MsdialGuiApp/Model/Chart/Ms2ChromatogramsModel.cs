@@ -7,7 +7,6 @@ using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -16,7 +15,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -46,11 +44,16 @@ namespace CompMs.App.Msdial.Model.Chart
                         var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
                         var unit = ChromXUnit.Min;
                         double[] pMzValues = topPeaks.Select(peak_ => peak_.Mass).ToArray();
-                        return Observable.FromAsync(token => Task.Run(async () => {
-                            var chromatograms = await DataAccess.GetMs2ValuePeaksAsync(provider, p.Mass, p.ChromXLeftValue, p.ChromXRightValue, pMzValues, parameter, acquisitionType, type: type, unit: unit, token: token);
-                            var smootheds = chromatograms.Select(c => smoother.LinearWeightedMovingAverage(c, parameter.SmoothingLevel)).ToList();
-                            return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
-                        }));
+                        return Observable.FromAsync(async token => {
+                            try {
+                                var chromatograms = await DataAccess.GetMs2ValuePeaksAsync(provider, p.Mass, p.ChromXLeftValue, p.ChromXRightValue, pMzValues, parameter, acquisitionType, type: type, unit: unit, token: token).ConfigureAwait(false);
+                                var smootheds = chromatograms.Select(c => smoother.LinearWeightedMovingAverage(c, parameter.SmoothingLevel)).ToList();
+                                return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
+                            }
+                            catch (OperationCanceledException) {
+                                return [];
+                            }
+                        });
                     });
                 })
                 .Select(chromatograms => new ChromatogramsModel(

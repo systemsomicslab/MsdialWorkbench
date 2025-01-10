@@ -43,7 +43,10 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            var sources = targetSource.DefaultIfNull(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).SubscribeOn(ThreadPoolScheduler.Instance), Observable.Never<PeakChromatogram>()).Switch();
+            var sources = targetSource.DefaultIfNull(t =>
+                Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).SubscribeOn(ThreadPoolScheduler.Instance),
+                Observable.Never<PeakChromatogram>()
+            ).Switch();
             ReactiveProperty<PeakChromatogram> chromatogram_ = sources
                 .ToReactiveProperty(loader.EmptyChromatogram)
                 .AddTo(Disposables);
