@@ -261,6 +261,10 @@ public static class DataProvider
         return new CachedDataProvider(provider);
     }
 
+    public static IDataProvider CacheMS1(this IDataProvider provider) {
+        return new MS1CachedDataProvider(provider);
+    }
+
     public static IDataProviderFactory<object> AsFactory(this IDataProvider provider) {
         return new IdentityFactory<object>(provider);
     }

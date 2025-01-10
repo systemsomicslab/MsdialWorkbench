@@ -1,4 +1,5 @@
-﻿using CompMs.Raw.Abstractions;
+﻿using CompMs.MsdialCore.Algorithm.Internal;
+using CompMs.Raw.Abstractions;
 using System;
 
 namespace CompMs.MsdialCore.Algorithm;
@@ -11,6 +12,10 @@ public static class DataProviderFactory
 
     public static IImagingDataProviderFactory<U> ContraMap<T, U>(this IImagingDataProviderFactory<T> factory, Func<U, T> map) {
         return new MappedImagingFactory<U, T>(factory, map);
+    }
+
+    public static IDataProviderFactory<T> CacheMS1<T>(this IDataProviderFactory<T> factory) {
+        return new MS1CachedDataProviderFactory<T>(factory);
     }
 
     sealed class MappedFactory<T, U> : IDataProviderFactory<T>
