@@ -20,6 +20,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
+        [Obsolete("zzz")]
         public List<ChromatogramPeakFeature> Run(AnalysisFileBean analysisFile, IDataProvider provider, ReportProgress reporter, CancellationToken token) {
             var coreProcess = new PeakSpottingCore(_parameter);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);

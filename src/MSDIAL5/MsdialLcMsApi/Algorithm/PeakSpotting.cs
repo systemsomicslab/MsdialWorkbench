@@ -22,6 +22,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             _analysisFile = file;
         }
 
+        [Obsolete("zzz")]
         public List<ChromatogramPeakFeature> Run(IDataProvider provider, MsdialLcmsParameter param, IProgress<int>? progress, CancellationToken token) {
             var coreProcess = new PeakSpottingCore(param);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);

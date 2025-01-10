@@ -55,6 +55,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             }
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var mzRange = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
@@ -84,7 +85,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token = default) {
             var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
@@ -117,6 +118,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             return _peakSpottingCore.FinalizePeakSpottingResultAsync(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType, token).Result;
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider) {
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
@@ -129,6 +131,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
             AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider,
             int numThreads, CancellationToken token) {
@@ -149,6 +152,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
+        [Obsolete("zzz")]
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
             //get EIC chromatogram
             using var chromatogram = accSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange, default).Result;

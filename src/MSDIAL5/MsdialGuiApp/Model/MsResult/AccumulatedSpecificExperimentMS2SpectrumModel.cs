@@ -161,6 +161,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         CalculateExtractedIonTotalIonChromatogram();
     }
 
+    [Obsolete("zzz")]
     public void CalculateExtractedIonTotalIonChromatogram() {
         if (PlotComparedSpectrum is null) {
             return;
@@ -171,6 +172,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         }
     }
 
+    [Obsolete("zzz")]
     public void CalculateExtractedIonChromatogram() {
         if (PlotComparedSpectrum is null || SelectedRange is null) {
             return;

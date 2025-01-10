@@ -169,6 +169,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
         CalculateProductIonTotalIonChromatogram();
     }
 
+    [Obsolete("zzz")]
     public void CalculateProductIonTotalIonChromatogram() {
         if (PlotComparedSpectrum is null) {
             return;
@@ -181,6 +182,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
         }
     }
 
+    [Obsolete("zzz")]
     public void CalculateProductIonChromatogram() {
         if (PlotComparedSpectrum is null || SelectedRange is null) {
             return;

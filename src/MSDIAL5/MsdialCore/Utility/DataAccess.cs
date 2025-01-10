@@ -920,6 +920,7 @@ namespace CompMs.MsdialCore.Utility
         }
 
         // get spectrum
+        [Obsolete("zzz")]
         public static List<SpectrumPeak> GetMassSpectrum(IDataProvider provider, MSDecResult msdecResult, ExportspectraType type, ulong rawSpectrumId, SpectrumIDType idType, ParameterBase param, AcquisitionType acquisitionType) {
             if (type == ExportspectraType.deconvoluted) return msdecResult?.Spectrum ?? [];
             if (type == ExportspectraType.centroid && acquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;

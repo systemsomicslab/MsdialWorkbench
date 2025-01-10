@@ -162,6 +162,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         CalculateTotalIonChromatogram();
     }
 
+    [Obsolete("zzz")]
     public void CalculateTotalIonChromatogram() {
         ExtractedIonChromatogram = _loadingChromatograms.LoadTicAsync(default).Result;
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
@@ -169,6 +170,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         }
     }
 
+    [Obsolete("zzz")]
     public void CalculateExtractedIonChromatogram() {
         if (PlotComparedSpectrum is null || SelectedRange is null) {
             return;
