@@ -15,6 +15,7 @@ using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -162,7 +163,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     }
 
     public void CalculateTotalIonChromatogram() {
-        ExtractedIonChromatogram = _loadingChromatograms.LoadTic();
+        ExtractedIonChromatogram = _loadingChromatograms.LoadTicAsync(default).Result;
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
@@ -175,7 +176,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
-        ExtractedIonChromatogram = _loadingChromatograms.LoadEic(range);
+        ExtractedIonChromatogram = _loadingChromatograms.LoadEicAsync(range, default).Result;
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }

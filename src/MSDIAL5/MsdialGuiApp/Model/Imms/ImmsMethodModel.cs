@@ -138,7 +138,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
             MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
@@ -330,7 +330,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
-        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public async Task<CheckChromatogramsModel?> PrepareChromatogramsAsync(bool tic, bool bpc, bool highestEic, CancellationToken token) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -341,7 +341,7 @@ namespace CompMs.App.Msdial.Model.Imms
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, analysisModel.CompoundSearcher, _storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.AnalysisFileModel, _broker);
-            model.Update();
+            await model.UpdateAsync(token).ConfigureAwait(false);
             return model;
         }
     }

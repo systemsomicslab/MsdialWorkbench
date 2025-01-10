@@ -138,14 +138,14 @@ internal sealed class CheckChromatogramsModel : BindableBase
         return Chromatograms?.ExportAsync(stream, separator) ?? Task.CompletedTask;
     }
 
-    public void Update() {
+    public async Task UpdateAsync(CancellationToken token) {
         foreach (var m in DisplayEicSettingValues) {
             m.Commit();
         }
         _advancedProcessParameter.DiplayEicSettingValues.Clear();
         _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
         var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
-        Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
+        Chromatograms = await LoadChromatogramsUsecase.LoadAsync(displayEICs, token).ConfigureAwait(false);
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }

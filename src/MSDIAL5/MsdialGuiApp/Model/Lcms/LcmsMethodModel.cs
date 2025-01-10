@@ -151,7 +151,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var notameExportModel = new AlignmentExportGroupModel(
                 "Peaks",
@@ -421,7 +421,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
-        public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+        public async Task<CheckChromatogramsModel?> ShowChromatogramsAsync(bool tic = false, bool bpc = false, bool highestEic = false, CancellationToken token = default) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -432,7 +432,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, analysisModel.CompoundSearcher, _storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.AnalysisFileModel, _broker);
-            model.Update();
+            await model.UpdateAsync(token).ConfigureAwait(false);
             return model;
         }
 

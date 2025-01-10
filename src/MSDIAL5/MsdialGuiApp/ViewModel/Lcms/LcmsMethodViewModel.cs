@@ -79,6 +79,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
 
             NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
+
+            ShowTicCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowBpcCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowEicCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowTicBpcRepEICCommand = new ReactiveCommand().AddTo(Disposables);
+
+            var showTic = Observable.FromAsync(ShowChromatograms(tic: true));
+            var showBpc = Observable.FromAsync(ShowChromatograms(bpc: true));
+            var showEic = Observable.FromAsync(ShowChromatograms());
+            var showAll = Observable.FromAsync(ShowChromatograms(tic: true, bpc: true, highestEic: true));
+
+            new[]
+            {
+                ShowTicCommand.Select(_ => showTic),
+                ShowBpcCommand.Select(_ => showBpc),
+                ShowEicCommand.Select(_ => showEic),
+                ShowTicBpcRepEICCommand.Select(_ => showAll),
+            }.Merge().Switch().Subscribe().AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -114,21 +132,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
-        private DelegateCommand? _showTicCommand;
+        public ReactiveCommand ShowTicCommand { get; }
+        public ReactiveCommand ShowBpcCommand { get; }
+        public ReactiveCommand ShowEicCommand { get; }
+        public ReactiveCommand ShowTicBpcRepEICCommand { get; }
 
-        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
-        private DelegateCommand? _showBpcCommand;
-
-        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
-        private DelegateCommand? _showEicCommand;
-
-        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
-        private DelegateCommand? _showTicBpcRepEIC;
-
-        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
-            void InnerShowChromatorams() {
-                var m = _model.ShowChromatograms(tic, bpc, highestEic);
+        private Func<CancellationToken, Task> ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            async Task InnerShowChromatorams(CancellationToken token) {
+                var m = await _model.ShowChromatogramsAsync(tic, bpc, highestEic, token).ConfigureAwait(false);
                 if (m is null) {
                     return;
                 }

@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -65,38 +67,33 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private bool _insertMS2Tic;
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadMS2Tic() {
-            var displayChromatogram = _productTicLoader.LoadChromatogramAsync(default).Result;
+        public async Task<ChromatogramsModel> LoadMS2TicAsync(CancellationToken token) {
+            var displayChromatogram = await _productTicLoader.LoadChromatogramAsync(token).ConfigureAwait(false);
             displayChromatogram.Name = $"Total ion chromatogram, MS2";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadMS2Tic(int experimentID) {
-            var displayChromatogram = _productExperimentTicLoader.LoadChromatogramAsync(experimentID, default).Result;
+        public async Task<ChromatogramsModel> LoadMS2TicAsync(int experimentID, CancellationToken token) {
+            var displayChromatogram = await _productExperimentTicLoader.LoadChromatogramAsync(experimentID, token).ConfigureAwait(false);
             displayChromatogram.Name = $"Total ion chromatogram, ExperimentID: {experimentID}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadMS2Eic(MzRange product) {
+        public async Task<ChromatogramsModel> LoadMS2EicAsync(MzRange product, CancellationToken token) {
             var range = MzRange.FromRange(0d, 1e10);
-            var displayChromatogram = _productEicLoader.LoadChromatogramAsync((range, product), default).Result;
+            var displayChromatogram = await _productEicLoader.LoadChromatogramAsync((range, product), token).ConfigureAwait(false);
             displayChromatogram.Name = $"Fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
-            var displayChromatogram = _productExperimentEicLoader.LoadChromatogramAsync((experimentID, product), default).Result;
+        public async Task<ChromatogramsModel> LoadMS2EicAsync(int experimentID, MzRange product, CancellationToken token) {
+            var displayChromatogram = await _productExperimentEicLoader.LoadChromatogramAsync((experimentID, product), token).ConfigureAwait(false);
             displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
-            var displayChromatogram = _productEicLoader.LoadChromatogramAsync((precursor, product), default).Result;
+        public async Task<ChromatogramsModel> LoadMS2EicAsync(MzRange precursor, MzRange product, CancellationToken token) {
+            var displayChromatogram = await _productEicLoader.LoadChromatogramAsync((precursor, product), token).ConfigureAwait(false);
             displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{Math.Round(precursor.Tolerance, 5)}";
             if (product.Tolerance < 10000) {
                 displayChromatogram.Name += $" fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
@@ -104,43 +101,43 @@ namespace CompMs.App.Msdial.Model.Chart
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadTic() {
-            var displayChromatogram = _ticLoader.LoadChromatogramAsync(default).Result;
+        public async Task<ChromatogramsModel> LoadTicAsync(CancellationToken token) {
+            var displayChromatogram = await _ticLoader.LoadChromatogramAsync(token).ConfigureAwait(false);
             displayChromatogram.Name = "Total ion chromatoram";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        [Obsolete("zzz")]
-        public ChromatogramsModel LoadEic(MzRange mzRange) {
-            var displayChromatogram = _eicLoader.LoadChromatogramAsync((mzRange.Mz, mzRange.Tolerance), default).Result;
+        public async Task<ChromatogramsModel> LoadEicAsync(MzRange mzRange, CancellationToken token) {
+            var displayChromatogram = await _eicLoader.LoadChromatogramAsync((mzRange.Mz, mzRange.Tolerance), token).ConfigureAwait(false);
             displayChromatogram.Name = $"m/z: {mzRange.Mz:F5}±{Math.Round(mzRange.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
-        public ChromatogramsModel Load(List<PeakFeatureSearchValue> displayEICs) {
+        public async Task<ChromatogramsModel> LoadAsync(List<PeakFeatureSearchValue> displayEICs, CancellationToken token) {
             var builder = new ChromatogramsBuilder(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
+            var tasks = new List<Task>();
             if (InsertTic) {
-                builder.AddTic();
+                tasks.Add(builder.AddTicAsync(token));
             }
             if (InsertBpc) {
-                builder.AddBpc();
+                tasks.Add(builder.AddBpcAsync(token));
             }
             if (InsertHighestEic) {
-                builder.AddHighestEic();
+                tasks.Add(builder.AddHighestEicAsync(token));
             }
             if (InsertMS2Tic) {
-                builder.AddMS2Tic(_productTicLoader);
+                tasks.Add(builder.AddMS2TicAsync(_productTicLoader, token));
                 var counter = 0;
                 foreach (var (level, ID) in _rawSpectra.ExperimentIDs) {
                     if (level == 2) {
-                        builder.AddMS2Tic(_productExperimentTicLoader, ID, ChartBrushes.GetChartBrush(counter++));
+                        tasks.Add(builder.AddMS2TicAsync(_productExperimentTicLoader, ID, ChartBrushes.GetChartBrush(counter++), token));
                     }
                 }
             }
             if (!displayEICs.IsEmptyOrNull()) {
-                builder.AddEics(displayEICs);
+                tasks.Add(builder.AddEicsAsync(displayEICs, token));
             }
+            await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
             builder.Build();
             return builder.ChromatogramsModel!;
         }
@@ -153,11 +150,12 @@ namespace CompMs.App.Msdial.Model.Chart
             private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
             private readonly IReadOnlyList<ChromatogramPeakFeatureModel> _peaks;
             private readonly PeakPickBaseParameter _peakPickParameter;
+            private readonly object _lock = new();
 
             public ChromatogramsBuilder(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, IReadOnlyList<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter)
             {
-                _displayChroms = new List<DisplayChromatogram>();
-                _contents = new List<string>();
+                _displayChroms = [];
+                _contents = [];
                 _ticLoader = ticLoader;
                 _bpcLoader = bpcLoader;
                 _eicLoader = eicLoader;
@@ -167,65 +165,69 @@ namespace CompMs.App.Msdial.Model.Chart
 
             public ChromatogramsModel? ChromatogramsModel { get; private set; }
 
-            [Obsolete("zzz")]
-            public void AddTic() {
-                var tic = _ticLoader.LoadChromatogramAsync(default).Result;
+            public async Task AddTicAsync(CancellationToken token) {
+                var tic = await _ticLoader.LoadChromatogramAsync(token).ConfigureAwait(false);
                 var pen = tic.LinePen = new Pen(Brushes.Black, 1.0);
                 pen.Freeze();
                 tic.Name = "TIC";
-                _displayChroms.Add(tic);
-                _contents.Add("TIC");
+                lock (_lock) {
+                    _displayChroms.Add(tic);
+                    _contents.Add("TIC");
+                }
             }
 
-            [Obsolete("zzz")]
-            public void AddBpc() {
-                var bpc = _bpcLoader.LoadChromatogramAsync(default).Result;
+            public async Task AddBpcAsync(CancellationToken token) {
+                var bpc = await _bpcLoader.LoadChromatogramAsync(token).ConfigureAwait(false);
                 var pen = bpc.LinePen = new Pen(Brushes.Red, 1.0);
                 pen.Freeze();
                 bpc.Name = "BPC";
-                _displayChroms.Add(bpc);
-                _contents.Add("BPC");
+                lock (_lock) {
+                    _displayChroms.Add(bpc);
+                    _contents.Add("BPC");
+                }
             }
 
-            [Obsolete("zzz")]
-            public void AddHighestEic() {
+            public async Task AddHighestEicAsync(CancellationToken token) {
                 var maxPeakMz = _peaks.DefaultIfEmpty().Argmax(peak => peak?.Intensity ?? -1d)?.Mass;
                 if (maxPeakMz is null) {
                     return;
                 }
-                var eic = _eicLoader.LoadChromatogramAsync((maxPeakMz.Value, _peakPickParameter.CentroidMs1Tolerance), default).Result;
+                var eic = await _eicLoader.LoadChromatogramAsync((maxPeakMz.Value, _peakPickParameter.CentroidMs1Tolerance), token).ConfigureAwait(false);
                 var pen = eic.LinePen = new Pen(Brushes.Blue, 1.0);
                 pen.Freeze();
                 eic.Name = "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString();
-                _displayChroms.Add(eic);
-                _contents.Add("most abundant ion's EIC");
+                lock (_lock) {
+                    _displayChroms.Add(eic);
+                    _contents.Add("most abundant ion's EIC");
+                }
             }
 
-            [Obsolete("zzz")]
-            public void AddMS2Tic(IWholeChromatogramLoader productTicLoader) {
-                var tic = productTicLoader.LoadChromatogramAsync(default).Result;
+            public async Task AddMS2TicAsync(IWholeChromatogramLoader productTicLoader, CancellationToken token) {
+                var tic = await productTicLoader.LoadChromatogramAsync(token).ConfigureAwait(false);
                 var pen = tic.LinePen = new Pen(Brushes.DarkGray, 1.0);
                 pen.Freeze();
                 tic.Name = "MS2 TIC";
-                _displayChroms.Add(tic);
-                _contents.Add("MS2 TIC");
+                lock (_lock) {
+                    _displayChroms.Add(tic);
+                    _contents.Add("MS2 TIC");
+                }
             }
 
-            [Obsolete("zzz")]
-            public void AddMS2Tic(IWholeChromatogramLoader<int> productTicLoader, int experimentID, Brush? brush = null) {
-                var tic = productTicLoader.LoadChromatogramAsync(experimentID, default).Result;
+            public async Task AddMS2TicAsync(IWholeChromatogramLoader<int> productTicLoader, int experimentID, Brush? brush = null, CancellationToken token = default) {
+                var tic = await productTicLoader.LoadChromatogramAsync(experimentID, token).ConfigureAwait(false);
                 var pen = tic.LinePen = new Pen(brush ?? Brushes.Cyan, 1.0);
                 pen.Freeze();
                 tic.Name = $"MS2 TIC of experiment {experimentID}";
-                _displayChroms.Add(tic);
-                _contents.Add($"MS2 TIC of experiment {experimentID}");
+                lock (_lock) {
+                    _displayChroms.Add(tic);
+                    _contents.Add($"MS2 TIC of experiment {experimentID}");
+                }
             }
 
-            [Obsolete("zzz")]
-            public void AddEics(List<PeakFeatureSearchValue> displayEICs) {
+            public async Task AddEicsAsync(List<PeakFeatureSearchValue> displayEICs, CancellationToken token) {
                 var counter = 0;
                 foreach (var set in displayEICs) {
-                    var eic = _eicLoader.LoadChromatogramAsync((set.Mass, set.MassTolerance), default).Result;
+                    var eic = await _eicLoader.LoadChromatogramAsync((set.Mass, set.MassTolerance), token).ConfigureAwait(false);
                     var title = set.Title;
                     if (!string.IsNullOrEmpty(title)) {
                         title += "; ";
@@ -235,13 +237,17 @@ namespace CompMs.App.Msdial.Model.Chart
                     var pen = eic.LinePen = new Pen(ChartBrushes.GetChartBrush(counter), 1.0);
                     pen.Freeze();
                     counter++;
-                    _displayChroms.Add(eic);
+                    lock (_lock) {
+                        _displayChroms.Add(eic);
+                    }
                 }
-                if (counter == 1) {
-                    _contents.Add("selected EIC");
-                }
-                else if (counter > 1) {
-                    _contents.Add("selected EICs");
+                lock (_lock) {
+                    if (counter == 1) {
+                        _contents.Add("selected EIC");
+                    }
+                    else if (counter > 1) {
+                        _contents.Add("selected EICs");
+                    }
                 }
             }
 

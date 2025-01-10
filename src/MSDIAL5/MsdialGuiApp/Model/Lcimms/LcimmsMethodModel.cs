@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
@@ -290,7 +290,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ChromatogramShapeMetadataAccessorDecorator(new LcimmsAnalysisMetadataAccessor(Storage.DataBaseMapper, Storage.Parameter, ExportspectraType.deconvoluted)),
-                    (IDataProviderFactory<AnalysisFileBean>?)providerFactory),
+                    providerFactory),
             };
             var spectraFormats = new[]
             {
@@ -327,7 +327,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentModel?.SaveProject();
         }
 
-        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public async Task<CheckChromatogramsModel?> PrepareChromatogramsAsync(bool tic, bool bpc, bool highestEic, CancellationToken token) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -338,7 +338,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, analysisModel.CompoundSearcher, Storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.AnalysisFileModel, _broker);
-            model.Update();
+            await model.UpdateAsync(token).ConfigureAwait(false);
             return model;
         }
     }

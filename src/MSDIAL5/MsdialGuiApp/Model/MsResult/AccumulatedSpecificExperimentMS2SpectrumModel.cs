@@ -165,7 +165,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         if (PlotComparedSpectrum is null) {
             return;
         }
-        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Tic(_chromatogram.Chromatogram.ExperimentID);
+        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2TicAsync(_chromatogram.Chromatogram.ExperimentID, default).Result;
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
@@ -178,7 +178,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
 
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
-        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Eic(_chromatogram.Chromatogram.ExperimentID, MzRange.FromRange(start, end));
+        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2EicAsync(_chromatogram.Chromatogram.ExperimentID, MzRange.FromRange(start, end), default).Result;
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }

@@ -90,8 +90,9 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
 
         ApplyCommand = ObserveHasErrors.Inverse()
            .ToReactiveCommand()
-           .WithSubscribe(Apply)
            .AddTo(Disposables);
+        var apply = Observable.FromAsync(ApplyAsync);
+        ApplyCommand.Select(_ => apply).Switch().Subscribe().AddTo(Disposables);
         ClearCommand = new ReactiveCommand()
             .WithSubscribe(model.Clear)
             .AddTo(Disposables);
@@ -206,11 +207,11 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
     public ReactiveCommand ApplyCommand { get; }
     public ReactiveCommand ClearCommand { get; }
 
-    private void Apply() {
+    private Task ApplyAsync(CancellationToken token) {
         foreach (var value in DiplayEicSettingValues) {
             value.Commit();
         }
-        _model.Update();
+        return _model.UpdateAsync(token);
     }
 
     public ReadOnlyReactivePropertySlim<IDockLayoutElement> Layout { get; }

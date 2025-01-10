@@ -175,7 +175,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
         }
 
         var range = MzRange.FromRange(0d, double.MaxValue);
-        ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(Chromatogram.MzRange, range);
+        ProductIonChromatogram = _loadingChromatograms.LoadMS2EicAsync(Chromatogram.MzRange, range, default).Result;
         if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
@@ -189,7 +189,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
-        ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(Chromatogram.MzRange, range);
+        ProductIonChromatogram = _loadingChromatograms.LoadMS2EicAsync(Chromatogram.MzRange, range, default).Result;
         if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }

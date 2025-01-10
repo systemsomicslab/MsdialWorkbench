@@ -1,10 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -19,7 +17,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -55,6 +52,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var batchMsfinder = model.InternalMsfinderSettingModel;
             var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
+
+            ShowTicCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowBpcCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowEicCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowTicBpcRepEICCommand = new ReactiveCommand().AddTo(Disposables);
+
+            var showTic = Observable.FromAsync(ShowChromatograms(tic: true));
+            var showBpc = Observable.FromAsync(ShowChromatograms(bpc: true));
+            var showEic = Observable.FromAsync(ShowChromatograms());
+            var showAll = Observable.FromAsync(ShowChromatograms(tic: true, bpc: true, highestEic: true));
+
+            new[]
+            {
+                ShowTicCommand.Select(_ => showTic),
+                ShowBpcCommand.Select(_ => showBpc),
+                ShowEicCommand.Select(_ => showEic),
+                ShowTicBpcRepEICCommand.Select(_ => showAll),
+            }.Merge().Switch().Subscribe().AddTo(Disposables);
         }
 
         public AsyncReactiveCommand ExportParameterCommand { get; }
@@ -92,21 +107,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _broker.Publish(vm);
         }
 
-        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
-        private DelegateCommand? _showTicCommand;
+        public ReactiveCommand ShowTicCommand { get; }
+        public ReactiveCommand ShowBpcCommand { get; }
+        public ReactiveCommand ShowTicBpcRepEICCommand { get; }
+        public ReactiveCommand ShowEicCommand { get; }
 
-        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
-        private DelegateCommand? _showBpcCommand;
-
-        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
-        private DelegateCommand? _showTicBpcRepEIC;
-
-        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
-        private DelegateCommand? _showEicCommand;
-
-        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
-            void InnerShowChromatograms() {
-                var m = _model.PrepareChromatograms(tic, bpc, highestEic);
+        private Func<CancellationToken, Task> ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            async Task InnerShowChromatograms(CancellationToken token) {
+                var m = await _model.PrepareChromatogramsAsync(tic, bpc, highestEic, token).ConfigureAwait(false);
                 if (m is null) {
                     return;
                 }

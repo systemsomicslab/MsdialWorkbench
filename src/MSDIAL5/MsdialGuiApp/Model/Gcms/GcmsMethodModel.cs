@@ -143,7 +143,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
             MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
@@ -253,7 +253,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }
 
-        public CheckChromatogramsModel? ShowChromatograms(bool tic, bool bpc, bool highestEic) {
+        public async Task<CheckChromatogramsModel?> ShowChromatogramsAsync(bool tic, bool bpc, bool highestEic, CancellationToken token) {
             var analysisModel = SelectedAnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -264,7 +264,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, null, _storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.AnalysisFileModel, _broker);
-            model.Update();
+            await model.UpdateAsync(token).ConfigureAwait(false);
             return model;
         }
 
