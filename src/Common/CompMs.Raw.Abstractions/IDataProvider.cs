@@ -20,5 +20,7 @@ public interface IDataProvider
     Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType);
     Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token);
 
+    Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token);
+
     List<double> LoadCollisionEnergyTargets();
 }

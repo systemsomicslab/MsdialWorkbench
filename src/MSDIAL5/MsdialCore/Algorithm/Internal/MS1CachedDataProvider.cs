@@ -59,6 +59,36 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
     public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => _dataProvider.LoadMsSpectrumsAsync(token);
 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) => _dataProvider.LoadSpectrumAsync(id, idType);
+    
+    public async Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+        if (query.MSLevel != 1) {
+            return await _dataProvider.LoadMSSpectraAsync(query, token).ConfigureAwait(false);
+        }
+
+        switch (query.Flags)
+        {
+            case SpectraLoadingFlag.MSLevel:
+                return await _dataProvider.LoadMsNSpectrumsAsync(query.MSLevel!.Value, token).ContinueWith(t => t.Result.ToArray(), token).ConfigureAwait(false);
+            case SpectraLoadingFlag.MSLevel | SpectraLoadingFlag.ScanTimeRange:
+                return await LoadMSSpectraWithRtRangeAsync(query.MSLevel!.Value, query.ScanTimeRange!.Start, query.ScanTimeRange!.End, token).ConfigureAwait(false);
+        }
+
+        IEnumerable<RawSpectrum> results = await LoadMs1CoreAsync(token).ConfigureAwait(false);
+        if (query.CollisionEnergy.HasValue) {
+            results = results.Where(s => s.Precursor is not { } precursor || precursor.CollisionEnergy == query.CollisionEnergy);
+        }
+        if (query.PrecursorMzRange is { } mzRange) {
+            results = results.Where(s => s.Precursor is not { } precursor || Math.Abs(mzRange.Mz - precursor.SelectedIonMz) < mzRange.Tolerance);
+        }
+        if (query.ScanTimeRange is not null) {
+            results = results.Where(s => query.ScanTimeRange.Start - s.ScanStartTime <= 0d  && s.ScanStartTime - query.ScanTimeRange.End <= 0d);
+        }
+        if (query.DriftTimeRange is { } driftTimeRange) {
+            results = results.Where(s => s.DriftTime == 0d || driftTimeRange.Start - s.DriftTime <= 0d && s.DriftTime - driftTimeRange.End <= 0d);
+        }
+
+        return results.OrderBy(s => s.ScanStartTime).ToArray();
+    }
 
     private async Task<RawSpectrum[]> LoadMs1CoreAsync(CancellationToken token) {
         if (_ms1SpectraCache is not null) {

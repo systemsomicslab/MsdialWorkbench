@@ -121,6 +121,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
             var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
             return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
         }
+
+        public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+            return _provider.LoadMSSpectraAsync(query, token);
+        }
     }
 
     public sealed class DimsTicDataProvider : IDataProvider
@@ -192,6 +196,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
             return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
+
+        public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+            return _provider.LoadMSSpectraAsync(query, token);
         }
     }
 
@@ -270,6 +278,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
             var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
             return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
+
+        public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+            return _provider.LoadMSSpectraAsync(query, token);
         }
     }
 

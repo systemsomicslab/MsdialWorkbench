@@ -209,6 +209,10 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
         return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
     }
 
+    public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+        return _dataProvider.LoadMSSpectraAsync(query, token);
+    }
+
     sealed class MassBin
     {
         public MassBin(double mz, double intensity) {

@@ -91,4 +91,11 @@ internal sealed class ExperimentIDSelectedDataProvider(IDataProvider other, int 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
         return other.LoadSpectrumAsync(id, idType);
     }
+    
+    public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+        if (query.ExperimentID != experimentID) {
+            return Task.FromResult<RawSpectrum[]>([]);
+        }
+        return other.LoadMSSpectraAsync(query, token);
+    }
 }

@@ -101,6 +101,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
             return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
         }
+
+        public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+            return _provider.LoadMSSpectraAsync(query, token);
+        }
     }
 
     public sealed class ImmsAverageDataProvider : IDataProvider {
@@ -222,6 +226,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
             var msNSpectra = await LoadMsNSpectrumsAsync(msLevel, token).ConfigureAwait(false);
             return msNSpectra.Where(s => s.IsInScanTimeRange(rtStart, rtEnd)).ToArray();
+        }
+
+        public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+            return _provider.LoadMSSpectraAsync(query, token);
         }
     }
 

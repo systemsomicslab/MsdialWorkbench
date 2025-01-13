@@ -1,7 +1,9 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Raw.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -124,4 +126,39 @@ internal sealed class CachedDataProvider: IDataProvider
     public Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
         return _provider.LoadMSSpectraWithRtRangeAsync(msLevel, rtStart, rtEnd, token);
     }
+    
+    public async Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+        switch (query.Flags)
+        {
+            case SpectraLoadingFlag.None:
+                return await LoadMsSpectrumsAsync(token).ContinueWith(t => t.Result.ToArray(), token).ConfigureAwait(false);
+            case SpectraLoadingFlag.MSLevel:
+                return await LoadMsNSpectrumsAsync(query.MSLevel!.Value, token).ContinueWith(t => t.Result.ToArray(), token).ConfigureAwait(false);
+            case SpectraLoadingFlag.MSLevel | SpectraLoadingFlag.ScanTimeRange:
+                return await LoadMSSpectraWithRtRangeAsync(query.MSLevel!.Value, query.ScanTimeRange!.Start, query.ScanTimeRange!.End, token).ConfigureAwait(false);
+        }
+
+        IEnumerable<RawSpectrum> results = [];
+        if (query.MSLevel.HasValue) {
+            results = await LoadMsNSpectrumsAsync(query.MSLevel.Value, token).ConfigureAwait(false);
+        }
+        else {
+            results = await LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+        }
+        if (query.CollisionEnergy.HasValue) {
+            results = results.Where(s => s.Precursor is not { } precursor || precursor.CollisionEnergy == query.CollisionEnergy);
+        }
+        if (query.PrecursorMzRange is { } mzRange) {
+            results = results.Where(s => s.Precursor is not { } precursor || Math.Abs(mzRange.Mz - precursor.SelectedIonMz) < mzRange.Tolerance);
+        }
+        if (query.ScanTimeRange is not null) {
+            results = results.Where(s => query.ScanTimeRange.Start - s.ScanStartTime <= 0d  && s.ScanStartTime - query.ScanTimeRange.End <= 0d);
+        }
+        if (query.DriftTimeRange is { } driftTimeRange) {
+            results = results.Where(s => s.DriftTime == 0d || driftTimeRange.Start - s.DriftTime <= 0d && s.DriftTime - driftTimeRange.End <= 0d);
+        }
+
+        return results.OrderBy(s => s.ScanStartTime).ToArray();
+    }
+
 }

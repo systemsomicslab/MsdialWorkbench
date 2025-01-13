@@ -64,4 +64,11 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
         return _other.LoadSpectrumAsync(id, idType);
     }
+
+    public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
+        if (query.PrecursorMzRange is null) {
+            query.PrecursorMzRange = new PrecursorMzRange { Mz = _mz, Tolerance = _tolerance };
+        }
+        return _other.LoadMSSpectraAsync(query, token);
+    }
 }
