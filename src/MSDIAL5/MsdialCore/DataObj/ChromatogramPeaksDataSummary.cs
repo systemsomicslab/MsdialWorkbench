@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.Algorithm;
@@ -114,10 +113,10 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public static RawSpectraSummary Summarize(IDataProvider provider) {
-            provider = provider.Cache();
+            provider = provider.CacheMS1();
             var (firstNo, lastNo) = provider.GetScanNumberRange();
             var (minRt, maxRt) = provider.GetRetentionTimeRange();
-            var (minMz, maxMz) = provider.GetMassRange();
+            var (minMz, maxMz) = provider.GetMassRange(msLevel: 1);
             var (minInt, maxInt) = provider.GetIntensityRange();
             var (minDt, maxDt) = provider.GetDriftTimeRange();
             return new RawSpectraSummary(
@@ -224,7 +223,7 @@ namespace CompMs.MsdialCore.DataObj
             var maxPeakWidthOnRtAxis = (float)peakWidthArray.Max();
             var stdevPeakWidthOnRtAxis = (float)BasicMathematics.Stdev(peakWidthArray);
 
-            var peakHeightArray = chromatogramPeakFeatures.Select(chromatogramPeakFeature => chromatogramPeakFeature.PeakHeightTop).ToArray();
+            var peakHeightArray = chromatogramPeakFeatures.Select(chromatogramPeakFeature => chromatogramPeakFeature.PeakFeature.PeakHeightTop).ToArray();
             var minPeakHeightOnRtAxis = (float)peakHeightArray.Min();
             var averagePeakHeightOnRtAxis = (float)peakHeightArray.Average();
             var medianPeakHeightOnRtAxis = (float)BasicMathematics.Median(peakHeightArray);
@@ -343,7 +342,7 @@ namespace CompMs.MsdialCore.DataObj
             var maxPeakWidthOnDtAxis = (float)dtPeakWidths.Max();
             var stdevPeakWidthOnDtAxis = (float)BasicMathematics.Stdev(dtPeakWidths);
 
-            var dtPeakHeights = dtChromatogramPeakFeatures.Select(dtChromatogramPeakFeature => dtChromatogramPeakFeature.PeakHeightTop).ToArray();
+            var dtPeakHeights = dtChromatogramPeakFeatures.Select(dtChromatogramPeakFeature => dtChromatogramPeakFeature.PeakFeature.PeakHeightTop).ToArray();
             var minPeakHeightOnDtAxis = (float)dtPeakHeights.Min();
             var averagePeakHeightOnDtAxis = (float)dtPeakHeights.Average();
             var medianPeakHeightOnDtAxis = (float)BasicMathematics.Median(dtPeakHeights);
@@ -390,7 +389,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public (double start, double end) GetPeakRange(ChromatogramPeakFeature chromatogramPeakFeature) {
             var peakWidth = _rtChromatogramPeakSummary.CoercePeakWidth(chromatogramPeakFeature.PeakWidth(ChromXType.RT));
-            var topRt = chromatogramPeakFeature.ChromXsTop.RT.Value;
+            var topRt = chromatogramPeakFeature.PeakFeature.ChromXsTop.RT.Value;
             var startRt = topRt - peakWidth * 1.5d;
             var endRt = topRt + peakWidth * 1.5d;
             return (startRt, endRt);

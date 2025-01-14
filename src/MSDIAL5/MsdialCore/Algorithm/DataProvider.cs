@@ -192,27 +192,27 @@ public static class DataProvider
     }
 
     public static (int, int) GetScanNumberRange(this IDataProvider provider) {
-        var spectra = provider.LoadMsSpectrums();
+        var spectra = provider.LoadMs1Spectrums();
         return (spectra.FirstOrDefault()?.ScanNumber ?? 0, spectra.LastOrDefault()?.ScanNumber ?? 0);
     }
 
     public static (double, double) GetRetentionTimeRange(this IDataProvider provider) {
-        var spectra = provider.LoadMsSpectrums();
+        var spectra = provider.LoadMs1Spectrums();
         return ((float)(spectra.FirstOrDefault()?.ScanStartTime ?? 0d), (float)(spectra.LastOrDefault()?.ScanStartTime ?? 0d));
     }
 
-    public static (double, double) GetMassRange(this IDataProvider provider) {
-        var spectra = provider.LoadMsSpectrums();
+    public static (double, double) GetMassRange(this IDataProvider provider, int msLevel) {
+        var spectra = provider.LoadMsNSpectrums(msLevel);
         return ((float)(spectra.Min(spectrum => spectrum?.LowestObservedMz) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.HighestObservedMz) ?? 0d));
     }
 
     public static (double, double) GetIntensityRange(this IDataProvider provider) {
-        var spectra = provider.LoadMsSpectrums();
+        var spectra = provider.LoadMs1Spectrums();
         return ((float)(spectra.Min(spectrum => spectrum?.MinIntensity) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.BasePeakIntensity) ?? 0d));
     }
 
     public static (double, double) GetDriftTimeRange(this IDataProvider provider) {
-        var spectra = provider.LoadMsSpectrums();
+        var spectra = provider.LoadMs1Spectrums();
         return ((float)(spectra.Min(spectrum => spectrum?.DriftTime) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.DriftTime) ?? 0d));
     }
 

@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.MsResult
             var subPeaks = DataAccess.GetAverageSpectrum(subs.SelectMany(s => s).ToArray(), _parameter.CentroidMs2Tolerance);
             var subtracted = DataAccess.GetSubtractSpectrum(peaks, subPeaks, _parameter.CentroidMs2Tolerance);
 
-            var (hi, lo) = provider.GetMassRange();
+            var (hi, lo) = provider.GetMassRange(msLevel: 2);
             var rt = new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min);
             var scan = new MSScanProperty
             {
