@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -8,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialImmsCore.Export
@@ -134,14 +134,14 @@ namespace CompMs.MsdialImmsCore.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList,
             AnalysisFileBean analysisFile,
-            ExportStyle exportStyle) {
+            ExportStyle exportStyle,
+            IDataProvider provider) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
-            content["Mobility left"] = string.Format("{0:F3}", feature.ChromXsLeft.Drift.Value);
-            content["Mobility"] = string.Format("{0:F3}", feature.ChromXs.Drift.Value);
-            content["Mobility right"] = string.Format("{0:F3}", feature.ChromXsRight.Drift.Value);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, analysisFile, exportStyle, provider);
+            content["Mobility left"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsLeft.Drift.Value);
+            content["Mobility"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsTop.Drift.Value);
+            content["Mobility right"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsRight.Drift.Value);
             content["CCS"] = NullIfNegative(feature.CollisionCrossSection, "F3");
             content["Precursor m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
             content["Reference CCS"] = ValueOrNull(reference?.CollisionCrossSection, "F3");

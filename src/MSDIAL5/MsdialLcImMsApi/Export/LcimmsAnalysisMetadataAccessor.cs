@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -7,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialLcImMsApi.Export
@@ -82,20 +82,21 @@ namespace CompMs.MsdialLcImMsApi.Export
         /// <param name="msdec">The MSDec result.</param>
         /// <param name="reference">The molecule MS reference.</param>
         /// <param name="matchResult">The match result.</param>
-        /// <param name="spectrumList">The list of raw spectra.</param>
         /// <param name="analysisFile">The analysis file bean.</param>
-        /// <returns>A dictionary containing the metadata content.</returns>
         /// <param name="exportStyle"></param>
+        /// <returns>A dictionary containing the metadata content.</returns>
+        /// <param name="provider"></param>
+        /// 
         protected override Dictionary<string, string> GetContentCore(
             ChromatogramPeakFeature feature,
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList,
             AnalysisFileBean analysisFile,
-            ExportStyle exportStyle) {
+            ExportStyle exportStyle,
+            IDataProvider provider) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, analysisFile, exportStyle, provider);
             content["RT left(min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsLeft.RT.Value);
             content["RT (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsTop.RT.Value);
             content["RT right (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsRight.RT.Value);

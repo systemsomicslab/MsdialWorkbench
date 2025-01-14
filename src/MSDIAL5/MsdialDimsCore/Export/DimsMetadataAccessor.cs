@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -8,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialDimsCore.Export
@@ -117,13 +117,14 @@ namespace CompMs.MsdialDimsCore.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile, ExportStyle exportStyle) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle,
+            IDataProvider provider) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
-            content["m/z left"] = string.Format("{0:F5}", feature.ChromXsLeft.Mz.Value);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, analysisFile, exportStyle, provider);
+            content["m/z left"] = string.Format("{0:F5}", feature.PeakFeature.ChromXsLeft.Mz.Value);
             content["m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
-            content["m/z right"] = string.Format("{0:F5}", feature.ChromXsRight.Mz.Value);
+            content["m/z right"] = string.Format("{0:F5}", feature.PeakFeature.ChromXsRight.Mz.Value);
             content["m/z matched"] = (matchResult?.IsPrecursorMzMatch ?? false).ToString();
             content["m/z similarity"] = ValueOrNull(matchResult?.AcurateMassSimilarity, "F2");
             content["Reference m/z"] = ValueOrNull(reference?.PrecursorMz, "F5");

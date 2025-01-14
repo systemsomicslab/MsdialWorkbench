@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -7,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialLcMsApi.Export
@@ -64,14 +64,14 @@ namespace CompMs.MsdialLcMsApi.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList,
             AnalysisFileBean analysisFile,
-            ExportStyle exportStyle) {
+            ExportStyle exportStyle,
+            IDataProvider provider) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
-            content["RT left(min)"] = string.Format("{0:F3}", feature.ChromXsLeft.RT.Value);
-            content["RT (min)"] = string.Format("{0:F3}", feature.ChromXsTop.RT.Value);
-            content["RT right (min)"] = string.Format("{0:F3}", feature.ChromXsRight.RT.Value);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, analysisFile, exportStyle, provider);
+            content["RT left(min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsLeft.RT.Value);
+            content["RT (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsTop.RT.Value);
+            content["RT right (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsRight.RT.Value);
             content["Precursor m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
             content["Reference RT"] = ValueOrNull(reference?.ChromXs.RT.Value, "F3");
             content["Reference m/z"] = ValueOrNull(reference?.PrecursorMz, "F5");

@@ -1,9 +1,7 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -44,7 +42,7 @@ namespace CompMs.MsdialCore.Export
         public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var matchResult = NullIfUnknown(feature.MatchResults.Representative);
             var reference = matchResult is null ? null : refer.Refer(matchResult);
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, exportStyle);
+            return GetContentCore(feature, msdec, reference, matchResult, analysisFile, exportStyle, provider);
         }
 
         protected virtual string[] GetHeadersCore() {
@@ -84,9 +82,9 @@ namespace CompMs.MsdialCore.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList,
             AnalysisFileBean analysisFile,
-            ExportStyle exportStyle) {
+            ExportStyle exportStyle,
+            IDataProvider provider) {
 
             IEnumerable<string> comments = Enumerable.Empty<string>();
             if (!string.IsNullOrEmpty(feature.Comment)) {
@@ -104,8 +102,8 @@ namespace CompMs.MsdialCore.Export
                 { "Name", UnknownIfEmpty(feature.Name) },
                 { "Scan", feature.MS1RawSpectrumIdTop.ToString() },
                 // "m/z left", "m/z", "m/z right",
-                { "Height", string.Format("{0:0}", feature.PeakHeightTop) },
-                { "Area", string.Format("{0:0}", feature.PeakAreaAboveZero) },
+                { "Height", string.Format("{0:0}", feature.PeakFeature.PeakHeightTop) },
+                { "Area", string.Format("{0:0}", feature.PeakFeature.PeakAreaAboveZero) },
                 { "Model masses", string.Join(" ", msdec.ModelMasses) },
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
@@ -126,13 +124,13 @@ namespace CompMs.MsdialCore.Export
                 { "Matched peaks percentage", ValueOrNull(matchResult?.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
-                { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) }
+                { "MS1 isotopes", GetIsotopesListContent(feature, provider) },
+                { "MSMS spectrum", GetSpectrumListContent(msdec, feature, provider, analysisFile, exportStyle) }
             };
         }
 
-        private string GetIsotopesListContent(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> spectrumList) {
-            var spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
+        private string GetIsotopesListContent(ChromatogramPeakFeature feature, IDataProvider provider) {
+            var spectrum = provider.LoadSpectrumAsync((ulong)feature.MS1RawSpectrumIdTop, feature.RawDataIDType).Result;
             if (spectrum is null) {
                 return "null";
             }
@@ -143,8 +141,8 @@ namespace CompMs.MsdialCore.Export
             return string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
-        private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
-            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, parameter, analysisFile.AcquisitionType);
+        private string GetSpectrumListContent(MSDecResult msdec, ChromatogramPeakFeature feature, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
+            var spectrum = DataAccess.GetMassSpectrum(provider, msdec, type, (ulong)feature.MS2RawSpectrumID, feature.RawDataIDType, parameter, analysisFile.AcquisitionType);
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
