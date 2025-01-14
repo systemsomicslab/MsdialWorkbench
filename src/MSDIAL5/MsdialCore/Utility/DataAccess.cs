@@ -303,12 +303,24 @@ namespace CompMs.MsdialCore.Utility
             double startTime, double endTime, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, CancellationToken token = default) {
 
-            IEnumerable<RawSpectrum> spectra = type switch
+            var query = new SpectraLoadingQuery
             {
-                ChromXType.RT => await provider.LoadMs2SpectraWithRtRangeAsync(startTime, endTime, token).ConfigureAwait(false),
-                ChromXType.Drift => await provider.LoadMs2SpectraWithDtRangeAsync(startTime, endTime, token).ConfigureAwait(false),
-                _ => throw new NotSupportedException()
+                MSLevel = 2,
+                PrecursorMzRange = new PrecursorMzRange { Mz = precursorMz, Tolerance = param.CentroidMs1Tolerance },
             };
+            switch (type) {
+                case ChromXType.RT:
+                    query.ScanTimeRange = new ScanTimeRange { Start = startTime, End = endTime };
+                    break;
+                case ChromXType.Drift:
+                    query.DriftTimeRange = new DriftTimeRange { Start = startTime, End = endTime };
+                    break;
+            }
+            if (targetCE >= 0) {
+                query.CollisionEnergy = targetCE;
+            }
+
+            IEnumerable<RawSpectrum> spectra = await provider.LoadMSSpectraAsync(query, token).ConfigureAwait(false);
             spectra = spectra.Where(s => s.Precursor?.ContainsMz(precursorMz, param.CentroidMs1Tolerance, acquisitionType) ?? false);
             if (targetCE >= 0) {
                 // for AIF mode

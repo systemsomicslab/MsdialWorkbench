@@ -430,10 +430,10 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        public void SetRawDataAccessID2ChromatogramPeakFeatures(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AcquisitionType type) {
-            foreach (var feature in chromPeakFeatures.OrderBy(p => p.PeakFeature.ChromXsLeft.RT.Value)) {
+        private void SetRawDataAccessID2ChromatogramPeakFeatures(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AcquisitionType type) {
+            Parallel.ForEach(chromPeakFeatures.OrderBy(p => p.PeakFeature.ChromXsLeft.RT.Value), feature => {
                 SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.PeakFeature.ChromXsLeft.RT.Value, feature.PeakFeature.ChromXsTop.RT.Value, feature.PeakFeature.ChromXsRight.RT.Value, type);
-            }
+            });
         }
 
         public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, IReadOnlyList<IChromatogramPeak> peaklist, AcquisitionType type) {
@@ -456,7 +456,13 @@ namespace CompMs.MsdialCore.Algorithm
             var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, mass);
 
             var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
-            var spectra = provider.LoadMs2SpectraWithRtRangeAsync(scanBeginTime, scanEndTime, default).Result;
+            var query = new SpectraLoadingQuery
+            {
+                ScanTimeRange = new ScanTimeRange { Start = scanBeginTime, End = scanEndTime, },
+                PrecursorMzRange = new PrecursorMzRange { Mz = mass, Tolerance = ms2Tol, },
+                MSLevel = 2,
+            };
+            var spectra = provider.LoadMSSpectraAsync(query, default).Result;
             foreach (var spec in spectra) {
                 if (spec.MsLevel != 2 || spec.Precursor is null || scanPolarity != spec.ScanPolarity || !spec.Precursor.ContainsMz(mass, ms2Tol, type) || spec.Spectrum.Length == 0) {
                     continue;
@@ -868,9 +874,9 @@ namespace CompMs.MsdialCore.Algorithm
 
                 var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
                 peakFeature.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / peakFeature.PeakShape.EstimatedNoise);
-                peakFeature.MS1RawSpectrumIdLeft = chromatogram.Id(minLeftId);
-                peakFeature.MS1RawSpectrumIdTop = chromatogram.Id(maxID);
-                peakFeature.MS1RawSpectrumIdRight = chromatogram.Id(minRightId);
+                peakFeature.MS1RawSpectrumIdLeft = sPeaklist[minLeftId].ID;
+                peakFeature.MS1RawSpectrumIdTop = sPeaklist[maxID].ID;
+                peakFeature.MS1RawSpectrumIdRight = sPeaklist[minRightId].ID;
 
                 recalculatedPeakspots.Add(peakFeature);
 

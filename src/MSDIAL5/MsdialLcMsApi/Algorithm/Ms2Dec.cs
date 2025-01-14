@@ -113,8 +113,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             using ExtractedIonChromatogram eic = rawSpectrum.GetMS1ExtractedChromatogramAsync(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
             var ms1Peaklist = ((Chromatogram)eic).AsPeakArray();
 
-            var startIndex = ms1Peaklist[0].ID;
-            var endIndex = ms1Peaklist[ms1Peaklist.Count - 1].ID;
+            var startTime = ms1Peaklist[0].ChromXs.RT.Value;
+            var endTime = ms1Peaklist[ms1Peaklist.Count - 1].ChromXs.RT.Value;
             var minimumDiff = double.MaxValue;
             var minimumID = (int)(ms1Peaklist.Count / 2);
 
@@ -128,7 +128,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             int topScanNum = minimumID;
 
             List<double> productMzs = curatedSpectra.Select(x => (double)x.Mass).ToList();
-            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, productMzs, param, file.AcquisitionType, targetCE);
+            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaksAsync(provider, precursorMz, startTime, endTime, productMzs, param, file.AcquisitionType, targetCE).Result;
             var sMs2Chromatograms = new List<ExtractedIonChromatogram>();
             foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.ZipInternal(productMzs)) {
                 ExtractedIonChromatogram chromatogram = new ExtractedIonChromatogram(ms2Peaks, ChromXType.RT, ChromXUnit.Min, productMz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
@@ -140,8 +140,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
 
                 if (ms2ValuePeaksList[0].Length > 1 && ms2ValuePeaksList[0].Length < ms1Peaklist.Count - 1) {
                     var ms2peaklist = ms2ValuePeaksList[0];
-                    startIndex = ms2peaklist[0].Id;
-                    endIndex = ms2peaklist[ms2peaklist.Length - 1].Id;
+                    startTime = ms2peaklist[0].Id;
+                    endTime = ms2peaklist[ms2peaklist.Length - 1].Id;
                     minimumDiff = double.MaxValue;
                     minimumID = (int)(ms2peaklist.Length / 2);
 

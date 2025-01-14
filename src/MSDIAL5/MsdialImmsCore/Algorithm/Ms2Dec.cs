@@ -4,7 +4,6 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -49,12 +48,13 @@ public sealed class Ms2Dec
         IupacDatabase iupac, double targetCE = -1) {
 
         var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
-        var precursorMz = chromPeakFeature.Mass;
-
-        if (targetSpecID < 0 || targetSpecID >= provider.Count())
+        var spectrum = provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).Result;
+        if (spectrum is null) {
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
+        }
 
-        var curatedSpectra = GetCuratedSpectrum(provider.LoadMsSpectrumFromIndex(targetSpecID), precursorMz, parameter);
+        var precursorMz = chromPeakFeature.PeakFeature.Mass;
+        var curatedSpectra = GetCuratedSpectrum(spectrum, precursorMz, parameter);
         if (curatedSpectra.IsEmptyOrNull())
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
@@ -68,7 +68,7 @@ public sealed class Ms2Dec
         //    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
         //}
 
-        var ms2obj = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS2RawSpectrumID);
+        var ms2obj = provider.LoadSpectrumAsync((ulong)chromPeakFeature.MS2RawSpectrumID, chromPeakFeature.RawDataIDType).Result;
         var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
 
         if (isDiaPasef) {
