@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Abstractions;
@@ -11,7 +9,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -23,12 +20,10 @@ namespace CompMs.App.Msdial.Model.Loader
     {
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
-        private readonly Task<ReadOnlyCollection<RawSpectrum>> _msSpectra;
 
         public MultiMsmsRawSpectrumLoader(IDataProvider provider, ParameterBase parameter) {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _msSpectra = _provider.LoadMsSpectrumsAsync(default);
             _ms2List = new Subject<List<MsSelectionItem>>().AddTo(Disposables);
             Ms2IdSelector = new ReactivePropertySlim<MsSelectionItem?>().AddTo(Disposables);
         }
@@ -52,17 +47,23 @@ namespace CompMs.App.Msdial.Model.Loader
             return Ms2IdSelector.Where(item => item is not null).Select(item =>
             {
                 var ms2Id = item!.Id;
-                var spectrum = _provider.LoadSpectrumAsync((ulong)ms2Id, item.IDType).Result;
+                var spectrumOx = Observable.FromAsync(() => Task.Run(() => _provider.LoadSpectrumAsync((ulong)ms2Id, item.IDType)));
 
-                var spectra = DataAccess.GetCentroidMassSpectra(spectrum!, _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
-                if (_parameter.RemoveAfterPrecursor) {
-                    spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
-                }
-                return new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
-                {
-                    Spectrum = spectra,
-                };
-            });
+                return spectrumOx.Select(spectrum => {
+                    if (spectrum is null) {
+                        return null;
+                    }
+
+                    var spectra = DataAccess.GetCentroidMassSpectra(spectrum!, _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
+                    if (_parameter.RemoveAfterPrecursor) {
+                        spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
+                    }
+                    return new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
+                    {
+                        Spectrum = spectra,
+                    };
+                });
+            }).Switch();
         }
 
         public IObservable<IMSScanProperty?> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {
