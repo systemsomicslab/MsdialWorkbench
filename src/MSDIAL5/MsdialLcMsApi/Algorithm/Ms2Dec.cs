@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -69,10 +68,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
             IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
-
-            //if (Math.Abs(chromPeakFeature.PeakFeature.ChromXsTop.RT.Value - 9.795) < 0.01 && Math.Abs(chromPeakFeature.Mass - 609.59631) < 0.01) {
-            //    Console.WriteLine();
-            //}
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
