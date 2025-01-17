@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -211,6 +212,11 @@ public sealed class LcimmsAccumulateDataProvider(IDataProvider dataProvider) : I
 
     public Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
         return _dataProvider.LoadMSSpectraAsync(query, token);
+    }
+    public async IAsyncEnumerable<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery[] queries, [EnumeratorCancellation]CancellationToken token) {
+        foreach (var query in queries) {
+            yield return await LoadMSSpectraAsync(query, token).ConfigureAwait(false);
+        }
     }
 
     sealed class MassBin

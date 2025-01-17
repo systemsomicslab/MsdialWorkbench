@@ -161,4 +161,7 @@ internal sealed class CachedDataProvider: IDataProvider
         return results.OrderBy(s => s.ScanStartTime).ToArray();
     }
 
+    public IAsyncEnumerable<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery[] queries, CancellationToken token) {
+        return _provider.LoadMSSpectraAsync(queries, token);
+    }
 }

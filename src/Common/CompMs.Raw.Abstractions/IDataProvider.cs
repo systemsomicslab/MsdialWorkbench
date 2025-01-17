@@ -21,6 +21,7 @@ public interface IDataProvider
     Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token);
 
     Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token);
+    IAsyncEnumerable<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery[] queries, CancellationToken token);
 
     List<double> LoadCollisionEnergyTargets();
 }

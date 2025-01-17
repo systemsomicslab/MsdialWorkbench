@@ -90,6 +90,10 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
         return results.OrderBy(s => s.ScanStartTime).ToArray();
     }
 
+    public IAsyncEnumerable<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery[] queries, CancellationToken token) {
+        return _dataProvider.LoadMSSpectraAsync(queries, token);
+    }
+
     private async Task<RawSpectrum[]> LoadMs1CoreAsync(CancellationToken token) {
         if (_ms1SpectraCache is not null) {
             return _ms1SpectraCache;

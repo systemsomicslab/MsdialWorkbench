@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\CompMs.Raw\CompMs.Raw.csproj" />
   </ItemGroup>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,5 +71,11 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
             query.PrecursorMzRange = new PrecursorMzRange { Mz = _mz, Tolerance = _tolerance };
         }
         return _other.LoadMSSpectraAsync(query, token);
+    }
+
+    public async IAsyncEnumerable<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery[] queries, [EnumeratorCancellation]CancellationToken token) {
+        foreach (var query in queries) {
+            yield return await LoadMSSpectraAsync(query, token).ConfigureAwait(false);
+        }
     }
 }
