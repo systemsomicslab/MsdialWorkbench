@@ -26,7 +26,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             var coreProcess = new PeakSpottingCore(param);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             //return coreProcess.Execute3DFeatureDetection(provider, param.NumThreads, token, reportAction?.FromRange(_initialProgress, _progressMax), chromatogramRange);
-            return coreProcess.Execute3DFeatureDetection(_analysisFile, provider, param.NumThreads == 1 ? 1 : 2, token, ReportProgress.FromRange(progress, _initialProgress, _progressMax), chromatogramRange);
+            return coreProcess.Execute3DFeatureDetectionAsync(_analysisFile, provider, chromatogramRange, param.NumThreads == 1 ? 1 : 2, ReportProgress.FromRange(progress, _initialProgress, _progressMax), token).Result;
         }
     }
 }

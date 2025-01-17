@@ -81,10 +81,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
 
                 chromPeakFeaturesList.Add(chromPeakFeatures);
             }
-            return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType);
+            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token = default) {
             var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
             float endMass = mzMax > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzMax;
@@ -113,7 +114,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
                 .ToArray();
 
             // finalization
-            return _peakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType);
+            return _peakSpottingCore.FinalizePeakSpottingResultAsync(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType, token).Result;
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider) {
@@ -125,7 +126,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
                     .Select(targetComp => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetComp.PrecursorMz, chromatogramRange, peakDetector))
                     .Where(chromPeakFeatures => !chromPeakFeatures.IsEmptyOrNull())
                     .ToList();
-            return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType);
+            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
@@ -145,7 +146,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
                 .Select(targetedScan => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, targetedScan.PrecursorMz, chromatogramRange, peakDetector))
                 .Where(features => !features.IsEmptyOrNull())
                 .ToList();
-            return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType);
+            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
         }
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
@@ -160,7 +161,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             var backgroundSubtracted = _peakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             if (backgroundSubtracted == null || backgroundSubtracted.Count == 0) return null;
 
-            var driftAxisPeaks = _peakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(backgroundSubtracted, rawSpectra, _parameter.AccumulatedRtRange);
+            var driftAxisPeaks = _peakSpottingCore.ExecutePeakDetectionOnDriftTimeAxisAsync(backgroundSubtracted, rawSpectra, _parameter.AccumulatedRtRange).Result;
             if (driftAxisPeaks == null || driftAxisPeaks.Count == 0) return null;
             return driftAxisPeaks;
         }

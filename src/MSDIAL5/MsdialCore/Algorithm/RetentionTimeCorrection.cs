@@ -4,13 +4,11 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialCore.Algorithm
 {
@@ -49,7 +47,7 @@ namespace CompMs.MsdialCore.Algorithm
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
+                var pabCollection = peakpickCore.GetChromatogramPeakFeaturesAsync(rawSpectra, provider, (float)startMass, chromatogramRange).Result;
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
