@@ -270,7 +270,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public IMethodModel BuildMethod() {
             var factory = new FacadeDataProviderFactory(file => {
                 if (file.AnalysisFilePath.EndsWith(".wiff2")) {
-                    return new Wiff2DataProviderFactory().ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
+                    return new Wiff2DataProviderFactory() { NumThreads = 40, }.ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
                 }
                 return new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             });
