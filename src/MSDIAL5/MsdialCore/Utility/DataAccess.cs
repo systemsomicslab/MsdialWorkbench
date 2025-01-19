@@ -920,34 +920,29 @@ namespace CompMs.MsdialCore.Utility
         }
 
         // get spectrum
-        [Obsolete("zzz")]
-        public static List<SpectrumPeak> GetMassSpectrum(IDataProvider provider, MSDecResult msdecResult, ExportspectraType type, ulong rawSpectrumId, SpectrumIDType idType, ParameterBase param, AcquisitionType acquisitionType) {
+        public static async Task<List<SpectrumPeak>> GetMassSpectrumAsync(IDataProvider provider, MSDecResult msdecResult, ExportspectraType type, ulong rawSpectrumId, SpectrumIDType idType, ParameterBase param, AcquisitionType acquisitionType, CancellationToken token = default) {
             if (type == ExportspectraType.deconvoluted) return msdecResult?.Spectrum ?? [];
             if (type == ExportspectraType.centroid && acquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;
 
-            var spectra = new List<SpectrumPeak>();
-            var spectrum = provider.LoadSpectrumAsync(rawSpectrumId, idType).Result;
+            var spectrum = await provider.LoadSpectrumAsync(rawSpectrumId, idType).ConfigureAwait(false);
             var massSpectra = spectrum.Spectrum;
 
             var mzBegin = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeBegin : param.Ms2MassRangeBegin;
             var mzEnd = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeEnd : param.Ms2MassRangeEnd;
 
+            var spectra = new List<SpectrumPeak>();
             for (int i = 0; i < massSpectra.Length; i++) {
                 if (massSpectra[i].Mz < mzBegin) continue;
                 if (massSpectra[i].Mz > mzEnd) continue;
                 spectra.Add(new SpectrumPeak() { Mass = massSpectra[i].Mz, Intensity = massSpectra[i].Intensity });
             }
 
+            if (spectra.Count == 0) return [];
             if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
-            if (spectra.Count == 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.profile) return spectra;
 
-           // var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
             var centroidedSpectra = SpectralCentroiding.CentroidByLocalMaximumMethod(spectra);
-            if (centroidedSpectra != null && centroidedSpectra.Count != 0)
-                return centroidedSpectra;
-            else
-                return spectra;
+            return centroidedSpectra != null && centroidedSpectra.Count != 0 ? centroidedSpectra : spectra;
         }
 
         public static List<SpectrumPeak> GetCentroidMassSpectra(IReadOnlyList<RawSpectrum> spectrumList, MSDataType dataType,

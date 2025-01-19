@@ -16,6 +16,8 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm;
 
@@ -41,7 +43,7 @@ public class PeakCharacterEstimator {
     }
     public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-    public void Process(
+    public async Task ProcessAsync(
         AnalysisFileBean file,
         IDataProvider provider,
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -49,7 +51,8 @@ public class PeakCharacterEstimator {
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         ParameterBase parameter,
         IProgress<int>? progress,
-        bool isDriftAxis = false) {
+        bool isDriftAxis = false,
+        CancellationToken token = default) {
 
         var rtMargin = isDriftAxis ? 0.01F : 0.0177F;
         // some adduct features are automatically insearted even if users did not select any type of adduct
@@ -60,7 +63,7 @@ public class PeakCharacterEstimator {
         ResetAdductAndLink(chromPeakFeatures, evaluator);
 
         RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
-        chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
+        chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakFeature.Mass).ToList();
         ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
 
         var featurelimit = 
@@ -73,7 +76,7 @@ public class PeakCharacterEstimator {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var feature = chromPeakFeatures[i];
                 var peakRt = isDriftAxis ? feature.ChromXs.Drift.Value : feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
-                var peakMz = feature.Mass;
+                var peakMz = feature.PeakFeature.Mass;
                 var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, peakMz - parameter.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
                 var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
 
@@ -86,7 +89,7 @@ public class PeakCharacterEstimator {
                     }
                 }
 
-                CharacterAssigner(searchedPeakSpots, msdecResults, evaluator, parameter, rawSpectra, doChromCorr); // TODO: temporarily comment out. fix algorithm. Don't delete!
+                await CharacterAssignerAsync(searchedPeakSpots, msdecResults, evaluator, parameter, rawSpectra, doChromCorr, token).ConfigureAwait(false);
                 reporter.Report(i, chromPeakFeatures.Count);
             }
         }
@@ -273,13 +276,8 @@ public class PeakCharacterEstimator {
     // the RT deviations of peakspots should be less than 0.03 min
     // here, each peak is evaluated.
     // the purpose is to group the ions which are recognized as the same metabolite
-    public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, RawSpectra rawSpectra, bool doChromCorr = true) {
-        if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
-        //foreach (var feature in chromPeakFeatures) {
-        //    if (feature.MasterPeakID == 10999) {
-        //        Console.WriteLine();
-        //    }
-        //}
+    public async Task CharacterAssignerAsync(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, RawSpectra rawSpectra, bool doChromCorr = true, CancellationToken token = default) {
+        if (chromPeakFeatures is null || chromPeakFeatures.Count == 0) return;
 
         // if the first inchikey is same, it's recognized as the same metabolite.
         assignLinksBasedOnInChIKeys(chromPeakFeatures, evaluator);
@@ -297,8 +295,9 @@ public class PeakCharacterEstimator {
         assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
         // linkage by chromatogram correlations
-        if (doChromCorr)
-            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, param, rawSpectra);
+        if (doChromCorr) {
+            await AssignLinksBasedOnChromatogramCorrelationAsync(chromPeakFeatures, rawSpectra, param, token).ConfigureAwait(false);
+        }
 
         // linked by partial matching of MS1 and MS2
         //if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
@@ -413,8 +412,7 @@ public class PeakCharacterEstimator {
     }
 
     // currently, only pure peaks are evaluated by this way.
-    [Obsolete("zzz")]
-    private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, RawSpectra rawSpectra) {
+    private async Task AssignLinksBasedOnChromatogramCorrelationAsync(List<ChromatogramPeakFeature> chromPeakFeatures, RawSpectra rawSpectra, ParameterBase param, CancellationToken token = default) {
         if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
         var pureFeatures = chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9).ToList();
         var tempFeatures = new List<ChromFeatureTemp>();
@@ -422,12 +420,13 @@ public class PeakCharacterEstimator {
             var leftRt = feature.PeakFeature.ChromXsLeft.RT.Value;
             var rightRt = feature.PeakFeature.ChromXsRight.RT.Value;
             var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-            using var peaks = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(feature.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            using var peaks = await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(feature.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
             using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
         }
 
         for (int i = 0; i < tempFeatures.Count; i++) {
+            token.ThrowIfCancellationRequested();
             var tPeak = tempFeatures[i].Feature;
             var tChrom = tempFeatures[i].Peaks;
 

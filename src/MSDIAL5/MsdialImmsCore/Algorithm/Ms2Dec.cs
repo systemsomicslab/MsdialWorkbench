@@ -12,12 +12,14 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Algorithm;
 
 public sealed class Ms2Dec
 {
-    public List<MSDecResult> GetMS2DecResults(
+    public async Task<List<MSDecResult>> GetMS2DecResultsAsync(
         AnalysisFileBean file,
         IDataProvider provider,
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -27,28 +29,30 @@ public sealed class Ms2Dec
         double targetCE,
         int numThread,
         ReportProgress reporter,
-        System.Threading.CancellationToken token) {
+        CancellationToken token = default) {
 
-        return chromPeakFeatures
+        var tasks = chromPeakFeatures
             .AsParallel()
             .AsOrdered()
             .WithCancellation(token)
             .WithDegreeOfParallelism(numThread)
-            .Select(spot => {
-                var result = GetMS2DecResult(file, provider, spot, parameter, summary, iupac, targetCE);
+            .Select(async spot => {
+                var result = await GetMS2DecResultAsync(file, provider, spot, parameter, summary, iupac, targetCE, token).ConfigureAwait(false);
                 reporter.Report(spot.MasterPeakID, chromPeakFeatures.Count);
                 return result;
-            }).ToList();
+            }).ToArray();
+        var msdecs = await Task.WhenAll(tasks).ConfigureAwait(false);
+        return msdecs.ToList();
     }
 
-    public MSDecResult GetMS2DecResult(
+    public async Task<MSDecResult> GetMS2DecResultAsync(
         AnalysisFileBean file,
         IDataProvider provider,
         ChromatogramPeakFeature chromPeakFeature, MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary,
-        IupacDatabase iupac, double targetCE = -1) {
+        IupacDatabase iupac, double targetCE = -1, CancellationToken token = default) {
 
         var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
-        var spectrum = provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).Result;
+        var spectrum = await provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
         if (spectrum is null) {
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
         }
@@ -68,7 +72,7 @@ public sealed class Ms2Dec
         //    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
         //}
 
-        var ms2obj = provider.LoadSpectrumAsync((ulong)chromPeakFeature.MS2RawSpectrumID, chromPeakFeature.RawDataIDType).Result;
+        var ms2obj = await provider.LoadSpectrumAsync((ulong)chromPeakFeature.MS2RawSpectrumID, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
         var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
 
         if (isDiaPasef) {
@@ -144,7 +148,7 @@ public sealed class Ms2Dec
         //preparing MS1 and MS/MS chromatograms
         //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
         var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
-        return rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(chromPeakFeature.PeakFeature.Mass, centroidMs1Tolerance), chromatogramRange, default).Result;
+        return await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(chromPeakFeature.PeakFeature.Mass, centroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
     }
 
     //private static List<List<ChromatogramPeak>> GetMs2PeaksList(

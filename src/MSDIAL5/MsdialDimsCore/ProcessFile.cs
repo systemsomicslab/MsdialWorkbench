@@ -34,7 +34,7 @@ public sealed class ProcessFile : IFileProcessor {
         _evaluator = evaluator;
     }
 
-    public async Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? progress, CancellationToken token) {
+    public async Task RunAsync(AnalysisFileBean file, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
         if (!option.HasFlag(ProcessOption.PeakSpotting) && !option.HasFlag(ProcessOption.Identification)) {
             return;
         }
@@ -57,7 +57,7 @@ public sealed class ProcessFile : IFileProcessor {
             await _annotationProcess.RunAnnotationAsync(peakFeatures.Items, msdecResults, provider, parameter.NumThreads, reporter.Report, token).ConfigureAwait(false);
         }
         var characterEstimator = new Algorithm.PeakCharacterEstimator();
-        characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, parameter, provider, ReportProgress.FromLength(progress, initialProgress: 90d, progressLength: 10d));
+        await characterEstimator.ProcessAsync(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, parameter, provider, ReportProgress.FromLength(progress, initialProgress: 90d, progressLength: 10d), token).ConfigureAwait(false);
 
         await peakFeatures.SerializeAsync(file, token).ConfigureAwait(false);
 

@@ -4,8 +4,11 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.Raw.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
@@ -20,12 +23,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter);
         }
 
-        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults, IDataProvider spectraProvider) {
+        public async Task<SpectrumFeatureCollection> GetSpectrumFeaturesByQuantMassInformationAsync(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults, IDataProvider spectraProvider, CancellationToken token = default) {
             var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, file.AcquisitionType, spectraProvider);
 
             var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
             foreach (var annotatedMSDecResult in msdecResults) {
-                var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, annotatedMSDecResult.MSDecResult, annotatedMSDecResult.QuantMass, _parameter);
+                token.ThrowIfCancellationRequested();
+                var quantifiedChromatogramPeak = await MSDecHandler.GetChromatogramQuantInformationAsync(rawSpectra, annotatedMSDecResult.MSDecResult, annotatedMSDecResult.QuantMass, _parameter, token).ConfigureAwait(false);
                 if (quantifiedChromatogramPeak is null) {
                     continue;
                 }

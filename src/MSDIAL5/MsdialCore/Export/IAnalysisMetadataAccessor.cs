@@ -8,8 +8,11 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -77,6 +80,7 @@ namespace CompMs.MsdialCore.Export
                 "MSMS spectrum" };
         }
 
+        [Obsolete("zzz")]
         protected virtual Dictionary<string, string> GetContentCore(
             ChromatogramPeakFeature feature,
             MSDecResult msdec,
@@ -125,7 +129,7 @@ namespace CompMs.MsdialCore.Export
                 { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
                 { "MS1 isotopes", GetIsotopesListContent(feature, provider) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, feature, provider, analysisFile, exportStyle) }
+                { "MSMS spectrum", GetSpectrumListContentAsync(msdec, feature, provider, analysisFile, exportStyle).Result }
             };
         }
 
@@ -141,8 +145,8 @@ namespace CompMs.MsdialCore.Export
             return string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
-        private string GetSpectrumListContent(MSDecResult msdec, ChromatogramPeakFeature feature, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
-            var spectrum = DataAccess.GetMassSpectrum(provider, msdec, type, (ulong)feature.MS2RawSpectrumID, feature.RawDataIDType, parameter, analysisFile.AcquisitionType);
+        private async Task<string> GetSpectrumListContentAsync(MSDecResult msdec, ChromatogramPeakFeature feature, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle, CancellationToken token = default) {
+            var spectrum = await DataAccess.GetMassSpectrumAsync(provider, msdec, type, (ulong)feature.MS2RawSpectrumID, feature.RawDataIDType, parameter, analysisFile.AcquisitionType, token).ConfigureAwait(false);
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }

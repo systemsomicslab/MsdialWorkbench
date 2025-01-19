@@ -5,6 +5,8 @@ using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.Raw.Abstractions;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Process;
 
@@ -16,10 +18,10 @@ public sealed class PeakPickProcess
         _storage = storage ?? throw new ArgumentNullException(nameof(storage));
     }
 
-    public ChromatogramPeakFeatureCollection Pick(AnalysisFileBean file, IDataProvider provider, IProgress<int>? progress) {
+    public async Task<ChromatogramPeakFeatureCollection> PickAsync(AnalysisFileBean file, IDataProvider provider, IProgress<int>? progress, CancellationToken token = default) {
         var parameter = _storage.Parameter;
         parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
-        var chromPeakFeatures = new PeakSpotting(parameter).Run(file, provider, ReportProgress.FromLength(progress, 0, 30));
+        var chromPeakFeatures = await (new PeakSpotting(parameter)).RunAsync(file, provider, ReportProgress.FromLength(progress, 0, 30)).ConfigureAwait(false);
         IsotopeEstimator.Process(chromPeakFeatures.Items, parameter, _storage.IupacDatabase, true);
         CcsEstimator.Process(chromPeakFeatures.Items, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
         return chromPeakFeatures;

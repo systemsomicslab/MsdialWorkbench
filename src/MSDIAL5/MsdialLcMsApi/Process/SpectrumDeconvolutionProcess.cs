@@ -8,6 +8,7 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
@@ -19,7 +20,7 @@ namespace CompMs.MsdialLcMsApi.Process
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public List<MSDecResultCollection> Deconvolute(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, AnalysisFileBean analysisFile, ChromatogramPeaksDataSummaryDto summaryDto, IProgress<int>? progress, CancellationToken token) {
+        public async Task<List<MSDecResultCollection>> DeconvoluteAsync(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, AnalysisFileBean analysisFile, ChromatogramPeaksDataSummaryDto summaryDto, IProgress<int>? progress, CancellationToken token = default) {
             var mSDecREsultCollections = new List<MSDecResultCollection>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
@@ -34,13 +35,13 @@ namespace CompMs.MsdialLcMsApi.Process
                     }
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    var results = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token, targetCE);
+                    var results = await (new Ms2Dec(initial_msdec_aif, max_msdec_aif)).GetMS2DecResultsAsync(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, targetCE, token).ConfigureAwait(false);
                     mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
-                var results = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token);
+                var results = await (new Ms2Dec(initial_msdec, max_msdec)).GetMS2DecResultsAsync(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token: token).ConfigureAwait(false);
                 mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
             }
             return mSDecREsultCollections;

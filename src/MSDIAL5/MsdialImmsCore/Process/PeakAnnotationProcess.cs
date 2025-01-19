@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Process
 {
@@ -33,19 +34,19 @@ namespace CompMs.MsdialImmsCore.Process
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
 
-        public void Annotate(
+        public Task AnnotateAsync(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
             IProgress<int>? progress,
-            CancellationToken token) {
+            CancellationToken token = default) {
 
             var parameter = _storage.Parameter;
             PeakAnnotation(mSDecResultCollections, provider, chromPeakFeatures, _storage.DataBases.CreateQueryFactories().MoleculeQueryFactories, _mspAnnotator, _textDBAnnotator, _evaluator, _storage.DataBaseMapper, parameter, progress, token);
 
             // characterizatin
-            PeakCharacterization(analysisFile, mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, progress);
+            return PeakCharacterizationAsync(analysisFile, mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, progress, token);
         }
 
         private static void PeakAnnotation(
@@ -79,16 +80,17 @@ namespace CompMs.MsdialImmsCore.Process
             }
         }
 
-        private static void PeakCharacterization(
+        private static Task PeakCharacterizationAsync(
             AnalysisFileBean file,
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             MsdialImmsParameter parameter,
-            IProgress<int>? progress) {
+            IProgress<int>? progress,
+            CancellationToken token = default) {
 
-            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, evaluator, parameter, progress, true);
+            return new PeakCharacterEstimator(90, 10).ProcessAsync(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, evaluator, parameter, progress, true, token: token);
         }
     }
 }

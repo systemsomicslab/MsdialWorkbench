@@ -8,6 +8,7 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
@@ -20,11 +21,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        [Obsolete("zzz")]
-        public List<ChromatogramPeakFeature> Run(AnalysisFileBean analysisFile, IDataProvider provider, ReportProgress reporter, CancellationToken token) {
+        public async Task<List<ChromatogramPeakFeature>> RunAsync(AnalysisFileBean analysisFile, IDataProvider provider, ReportProgress reporter, CancellationToken token = default) {
             var coreProcess = new PeakSpottingCore(_parameter);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            var chromPeakFeatures = coreProcess.Execute3DFeatureDetectionAsync(analysisFile, provider, chromatogramRange, _parameter.NumThreads, reporter, token).Result;
+            var chromPeakFeatures = await coreProcess.Execute3DFeatureDetectionAsync(analysisFile, provider, chromatogramRange, _parameter.NumThreads, reporter, token).ConfigureAwait(false);
             IsotopeEstimator.Process(chromPeakFeatures, _parameter, _iupacDB);
             return chromPeakFeatures;
         }

@@ -44,7 +44,8 @@ namespace CompMs.MsdialLcMsApi.Process
             }
 
             // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, progress);
+            var estimator = new PeakCharacterEstimator(90, 10);
+            await estimator.ProcessAsync(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, progress, token: token).ConfigureAwait(false);
         }
     }
 }

@@ -50,7 +50,7 @@ public sealed class FileProcess : IFileProcessor
         var accSpectrumProvider = accSpectrumProviderFactory.Create(file);
 
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
-            ? FindPeakAndScans(file, spectrumProvider.Value, accSpectrumProvider, reporter, token)
+            ? await FindPeakAndScansAsync(file, spectrumProvider.Value, accSpectrumProvider, reporter, token).ConfigureAwait(false)
             : await LoadPeakAndScans(file, token).ConfigureAwait(false);
 
         if (option.HasFlag(ProcessOption.Identification)) {
@@ -60,7 +60,7 @@ public sealed class FileProcess : IFileProcessor
         }
 
         // characterizatin
-        PeakCharacterization(file, mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reporter);
+        await PeakCharacterizationAsync(file, mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reporter, token).ConfigureAwait(false);
 
         // file save
         await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
@@ -79,10 +79,9 @@ public sealed class FileProcess : IFileProcessor
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) FindPeakAndScans(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress, CancellationToken token) {
-        var reportAction = progress is not null ? progress.Report : (Action<int>)null;
+    private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> FindPeakAndScansAsync(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress, CancellationToken token = default) {
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures_ = PeakSpotting(file, spectrumProvider, accSpectrumProvider, progress, token);
+        var chromPeakFeatures_ = await PeakSpottingAsync(file, spectrumProvider, accSpectrumProvider, progress, token).ConfigureAwait(false);
         var chromPeakFeatures = new ChromatogramPeakFeatureCollection(chromPeakFeatures_);
 
         var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumProvider, chromPeakFeatures.Items);
@@ -95,20 +94,20 @@ public sealed class FileProcess : IFileProcessor
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    private List<ChromatogramPeakFeature> PeakSpotting(
+    private async Task<List<ChromatogramPeakFeature>> PeakSpottingAsync(
         AnalysisFileBean file,
         IDataProvider spectrumProvider,
         IDataProvider accSpectrumProvider,
         IProgress<int>? progress,
-        CancellationToken token) {
+        CancellationToken token = default) {
 
         var parameter = storage.Parameter;
         if (!parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff)) {
             coeff = null;
         }
 
-        var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(file, spectrumProvider,
-            accSpectrumProvider, parameter.NumThreads, progress, token);
+        PeakSpotting spotter = new PeakSpotting(0, 30, parameter);
+        var chromPeakFeatures = await spotter.Execute4DFeatureDetectionAsync(file, spectrumProvider, accSpectrumProvider, parameter.NumThreads, progress, token).ConfigureAwait(false);
         var iupacDB = storage.IupacDatabase;
         IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
         CopyIsotopeInformation2DriftFeatures(chromPeakFeatures);
@@ -181,16 +180,17 @@ public sealed class FileProcess : IFileProcessor
         }
     }
 
-    private static void PeakCharacterization(
+    private static Task PeakCharacterizationAsync(
         AnalysisFileBean file,
         MSDecResultCollection[] mSDecResultCollections,
         IDataProvider provider,
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         MsdialLcImMsParameter parameter,
-        IProgress<int>? progress) {
+        IProgress<int>? progress,
+        CancellationToken token = default) {
 
-        new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, evaluator, parameter, progress);
+        return new PeakCharacterEstimator(90, 10).ProcessAsync(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, evaluator, parameter, progress, token: token);
     }
 
     private static void SaveToFile(

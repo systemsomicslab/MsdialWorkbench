@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Process;
 
@@ -20,12 +21,12 @@ internal sealed class DeconvolutionProcess
         _storage = storage ?? throw new ArgumentNullException(nameof(storage));
     }
 
-    public MSDecResultCollection[] Deconvolute(AnalysisFileBean file, IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, IProgress<int>? progress, CancellationToken token) {
-        var targetCE2MSDecResults = SpectrumDeconvolution(file, provider, chromPeakFeatures, summary, _storage.Parameter, _storage.IupacDatabase, progress, token);
+    public async Task<MSDecResultCollection[]> DeconvoluteAsync(AnalysisFileBean file, IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, IProgress<int>? progress, CancellationToken token = default) {
+        var targetCE2MSDecResults = await SpectrumDeconvolutionAsync(file, provider, chromPeakFeatures, summary, _storage.Parameter, _storage.IupacDatabase, progress, token).ConfigureAwait(false);
         return targetCE2MSDecResults.Select(kvp => new MSDecResultCollection(kvp.Value, kvp.Key)).ToArray();
     }
 
-    private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
+    private static async Task<Dictionary<double, List<MSDecResult>>> SpectrumDeconvolutionAsync(
         AnalysisFileBean file,
         IDataProvider provider,
         IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -33,7 +34,7 @@ internal sealed class DeconvolutionProcess
         MsdialImmsParameter parameter,
         IupacDatabase iupac,
         IProgress<int>? progress,
-        CancellationToken token) {
+        CancellationToken token = default) {
 
         var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
         var initial_msdec = 30.0;
@@ -50,13 +51,13 @@ internal sealed class DeconvolutionProcess
                 }
                 var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                 MsdialCore.Utility.ReportProgress reporter = MsdialCore.Utility.ReportProgress.FromLength(progress, initial_msdec_aif, max_msdec_aif);
-                targetCE2MSDecResults[targetCE] = ms2Dec.GetMS2DecResults(file, provider, chromPeakFeatures, parameter, summary, iupac, targetCE, parameter.NumThreads, reporter, token);
+                targetCE2MSDecResults[targetCE] = await ms2Dec.GetMS2DecResultsAsync(file, provider, chromPeakFeatures, parameter, summary, iupac, targetCE, parameter.NumThreads, reporter, token).ConfigureAwait(false);
             }
         }
         else {
             var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
             MsdialCore.Utility.ReportProgress reporter = MsdialCore.Utility.ReportProgress.FromLength(progress, initial_msdec, max_msdec);
-            targetCE2MSDecResults[targetCE] = ms2Dec.GetMS2DecResults(file, provider, chromPeakFeatures, parameter, summary, iupac, -1, parameter.NumThreads, reporter, token);
+            targetCE2MSDecResults[targetCE] = await ms2Dec.GetMS2DecResultsAsync(file, provider, chromPeakFeatures, parameter, summary, iupac, -1, parameter.NumThreads, reporter, token).ConfigureAwait(false);
         }
         return targetCE2MSDecResults;
     }

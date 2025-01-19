@@ -76,7 +76,7 @@ public class PeakCharacterEstimatorTests
         var stubParameter = new ParameterBase();
         var stubFile = new AnalysisFileBean();
 
-        new PeakCharacterEstimator(0, 100).CharacterAssigner(peaks, stubDecs, evaluator, stubParameter, new RawSpectra(stubProvider, stubParameter.IonMode, stubFile.AcquisitionType));
+        new PeakCharacterEstimator(0, 100).CharacterAssignerAsync(peaks, stubDecs, evaluator, stubParameter, new RawSpectra(stubProvider, stubParameter.IonMode, stubFile.AcquisitionType)).Wait();
 
         Assert.IsTrue(peaks[0].PeakCharacter.IsLinked);
         Assert.AreEqual(1, peaks[0].PeakCharacter.AdductParent);

@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Core
             System.Threading.Tasks.Parallel.ForEach(files, parallelOptions, f => {
                 IDataProviderFactory<AnalysisFileBean> factory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
                 var provider = factory.Create(f);
-                RetentionTimeCorrection.Execute(f, param, provider);
+                RetentionTimeCorrection.ExecuteAsync(f, param, provider).Wait();
                 _bgWorker!.ReportProgress(1);
             });
 

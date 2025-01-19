@@ -49,13 +49,13 @@ public sealed class FileProcess : IFileProcessor
         var action = reporter is not null ? reporter.Report : (Action<int>)null;
         var provider = new Lazy<IDataProvider>(() => _dataProviderFactory.Create(file));
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
-            ? GetPeakAndScans(file, provider, reporter, token)
+            ? await GetPeakAndScansAsync(file, provider, reporter, token).ConfigureAwait(false)
             : await LoadPeakAndScans(file).ConfigureAwait(false);
 
         if (option.HasFlag(ProcessOption.Identification)) {
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(file, provider.Value, chromPeakFeatures.Items, mSDecResultCollections, reporter, token);
+            await _peakAnnotationProcess.AnnotateAsync(file, provider.Value, chromPeakFeatures.Items, mSDecResultCollections, reporter, token).ConfigureAwait(false);
         }
 
         // file save
@@ -75,32 +75,32 @@ public sealed class FileProcess : IFileProcessor
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) GetPeakAndScans(AnalysisFileBean file, Lazy<IDataProvider> provider, IProgress<int>? progress, CancellationToken token) {
+    private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> GetPeakAndScansAsync(AnalysisFileBean file, Lazy<IDataProvider> provider, IProgress<int>? progress, CancellationToken token = default) {
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures = _peakPickProcess.Pick(file, provider.Value, progress);
+        var chromPeakFeatures = await _peakPickProcess.PickAsync(file, provider.Value, progress).ConfigureAwait(false);
 
         var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider.Value, chromPeakFeatures.Items);
         file.ChromPeakFeaturesSummary = summary;
 
         Console.WriteLine("Deconvolution started");
-        var mSDecResultCollections = _deconvolutionProcess.Deconvolute(file, provider.Value, chromPeakFeatures.Items, summary, progress, token);
+        var mSDecResultCollections = await _deconvolutionProcess.DeconvoluteAsync(file, provider.Value, chromPeakFeatures.Items, summary, progress, token).ConfigureAwait(false);
 
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
     public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, IProgress<int>? progress, CancellationToken token = default) {
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures = _peakPickProcess.Pick(file, provider, progress);
+        var chromPeakFeatures = await _peakPickProcess.PickAsync(file, provider, progress, token).ConfigureAwait(false);
 
         var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
         file.ChromPeakFeaturesSummary = summary;
 
         Console.WriteLine("Deconvolution started");
-        var mSDecResultCollections = _deconvolutionProcess.Deconvolute(file, provider, chromPeakFeatures.Items, summary, progress, token);
+        var mSDecResultCollections = await _deconvolutionProcess.DeconvoluteAsync(file, provider, chromPeakFeatures.Items, summary, progress, token).ConfigureAwait(false);
 
         // annotations
         Console.WriteLine("Annotation started");
-        _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, progress, token);
+        await _peakAnnotationProcess.AnnotateAsync(file, provider, chromPeakFeatures.Items, mSDecResultCollections, progress, token).ConfigureAwait(false);
 
         // file save
         await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);

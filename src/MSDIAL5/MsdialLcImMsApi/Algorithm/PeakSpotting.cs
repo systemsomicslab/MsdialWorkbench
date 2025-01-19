@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm
 {
@@ -31,32 +32,31 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
 
 
         // feature detection for rt, ion mobility, m/z, and intensity (3D) data 
-        public List<ChromatogramPeakFeature> Execute4DFeatureDetection(
+        public async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionAsync(
             AnalysisFileBean file, IDataProvider spectrumProvider,
-            IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
+            IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token = default) {
 
             // used for rt, mz, intensity (3D) data
             var isTargetedMode = !_parameter.CompoundListInTargetMode.IsEmptyOrNull();
             if (isTargetedMode) {
                 if (numThreads <= 1) {
-                    return Execute4DFeatureDetectionTargetMode(file, spectrumProvider, accSpectrumProvider);
+                    return await Execute4DFeatureDetectionTargetModeAsync(file, spectrumProvider, accSpectrumProvider, token).ConfigureAwait(false);
                 }
                 else {
-                    return Execute4DFeatureDetectionTargetModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, token);
+                    return await Execute4DFeatureDetectionTargetModeByMultiThreadAsync(file, spectrumProvider, accSpectrumProvider, numThreads, token).ConfigureAwait(false);
                 }
             }
             else {
                 if (numThreads <= 1) {
-                    return Execute4DFeatureDetectionNormalMode(file, spectrumProvider, accSpectrumProvider, progress);
+                    return await Execute4DFeatureDetectionNormalMode(file, spectrumProvider, accSpectrumProvider, progress, token).ConfigureAwait(false);
                 }
                 else {
-                    return Execute4DFeatureDetectionNormalModeByMultiThread(file, spectrumProvider, accSpectrumProvider, numThreads, progress, token);
+                    return await Execute4DFeatureDetectionNormalModeByMultiThreadAsync(file, spectrumProvider, accSpectrumProvider, numThreads, progress, token).ConfigureAwait(false);
                 }
             }
         }
 
-        [Obsolete("zzz")]
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress) {
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress, CancellationToken token = default) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var mzRange = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = Math.Max(mzRange.Min, _parameter.MassRangeBegin);
@@ -69,7 +69,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
             for (var focusedMass = startMass; focusedMass < endMass; reporter.Report(focusedMass += massStep, endMass)) {
-                var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, focusedMass, chromatogramRange, peakDetector);
+                token.ThrowIfCancellationRequested();
+                var chromPeakFeatures = await GetChromatogramPeakFeaturesAsync(rawSpectra, accSpectra, accSpectrumProvider, focusedMass, chromatogramRange, peakDetector, token).ConfigureAwait(false);
                 if (chromPeakFeatures.IsEmptyOrNull()) {
                     continue;
                 }
@@ -82,11 +83,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
 
                 chromPeakFeaturesList.Add(chromPeakFeatures);
             }
-            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
+            return await _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType, token).ConfigureAwait(false);
         }
 
-        [Obsolete("zzz")]
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token = default) {
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionNormalModeByMultiThreadAsync(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token = default) {
             var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
             float endMass = mzMax > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzMax;
@@ -102,71 +102,74 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             var counter = 0;
             ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
-            var chromPeakFeaturesArray = targetMasses
+            var chromPeakFeaturesTasks = targetMasses
                 .AsParallel()
                 .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .Select(targetMass => {
-                    var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetMass, chromatogramRange, peakDetector);
+                .Select(async targetMass => {
+                    var chromPeakFeatures = await GetChromatogramPeakFeaturesAsync(rawSpectra, accSpectra, accSpectrumProvider, (float)targetMass, chromatogramRange, peakDetector, token).ConfigureAwait(false);
                     reporter.Report(Interlocked.Increment(ref counter), targetMasses.Count);
                     return chromPeakFeatures;
                 })
                 .ToArray();
-
+            var chromPeakFeaturesArray = await Task.WhenAll(chromPeakFeaturesTasks).ConfigureAwait(false);
+ 
             // finalization
-            return _peakSpottingCore.FinalizePeakSpottingResultAsync(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType, token).Result;
+            return await _peakSpottingCore.FinalizePeakSpottingResultAsync(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType, token).ConfigureAwait(false);
         }
 
-        [Obsolete("zzz")]
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider) {
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionTargetModeAsync(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, CancellationToken token = default) {
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-            var chromPeakFeaturesList = _parameter.CompoundListInTargetMode
-                    .Select(targetComp => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetComp.PrecursorMz, chromatogramRange, peakDetector))
-                    .Where(chromPeakFeatures => !chromPeakFeatures.IsEmptyOrNull())
-                    .ToList();
-            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
+            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
+            foreach (var targetComp in _parameter.CompoundListInTargetMode) {
+                var chromPeakFeatures = await GetChromatogramPeakFeaturesAsync(rawSpectra, accSpectra, accSpectrumProvider, (float)targetComp.PrecursorMz, chromatogramRange, peakDetector, token).ConfigureAwait(false);
+                if (chromPeakFeatures.IsEmptyOrNull()) {
+                    continue;
+                }
+                chromPeakFeaturesList.Add(chromPeakFeatures);
+            }
+            return await _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType, token).ConfigureAwait(false);
         }
 
-        [Obsolete("zzz")]
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionTargetModeByMultiThreadAsync(
             AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider,
-            int numThreads, CancellationToken token) {
+            int numThreads, CancellationToken token = default) {
             var targetedScans = _parameter.CompoundListInTargetMode;
             if (targetedScans.IsEmptyOrNull()) return null;
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-            var chromPeakFeaturesList = targetedScans
+            var chromPeakFeaturesListTasks = targetedScans
                 .AsParallel()
                 .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .Select(targetedScan => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, targetedScan.PrecursorMz, chromatogramRange, peakDetector))
-                .Where(features => !features.IsEmptyOrNull())
-                .ToList();
-            return _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType).Result;
+                .Select(targetedScan => GetChromatogramPeakFeaturesAsync(rawSpectra, accSpectra, accSpectrumProvider, targetedScan.PrecursorMz, chromatogramRange, peakDetector, token))
+                .ToArray();
+
+            var chromPeakFeaturesList = await Task.WhenAll(chromPeakFeaturesListTasks).ConfigureAwait(false);
+            return await _peakSpottingCore.GetCombinedChromPeakFeaturesAsync(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType, token).ConfigureAwait(false);
         }
 
-        [Obsolete("zzz")]
-        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
+        private async Task<List<ChromatogramPeakFeature>?> GetChromatogramPeakFeaturesAsync(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector, CancellationToken token = default) {
             //get EIC chromatogram
-            using var chromatogram = accSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange, default).Result;
+            using var chromatogram = await accSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(focusedMass, _parameter.PeakPickBaseParam.MassSliceWidth), chromatogramRange, token).ConfigureAwait(false);
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
+            if (chromPeakFeatures is null || chromPeakFeatures.Count == 0) return null;
             _peakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
             var backgroundSubtracted = _peakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
-            if (backgroundSubtracted == null || backgroundSubtracted.Count == 0) return null;
+            if (backgroundSubtracted is null || backgroundSubtracted.Count == 0) return null;
 
-            var driftAxisPeaks = _peakSpottingCore.ExecutePeakDetectionOnDriftTimeAxisAsync(backgroundSubtracted, rawSpectra, _parameter.AccumulatedRtRange).Result;
-            if (driftAxisPeaks == null || driftAxisPeaks.Count == 0) return null;
+            var driftAxisPeaks = await _peakSpottingCore.ExecutePeakDetectionOnDriftTimeAxisAsync(backgroundSubtracted, rawSpectra, _parameter.AccumulatedRtRange, token).ConfigureAwait(false);
+            if (driftAxisPeaks is null || driftAxisPeaks.Count == 0) return null;
             return driftAxisPeaks;
         }
     }

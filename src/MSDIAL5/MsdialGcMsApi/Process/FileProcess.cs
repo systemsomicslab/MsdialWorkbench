@@ -71,7 +71,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
             token.ThrowIfCancellationRequested();
             var annotatedMSDecResults = Identification(msdecResults, option, progress);
-            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults, provider);
+            var spectrumFeatureCollection = await _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformationAsync(analysisFile, spectra, annotatedMSDecResults, provider, token).ConfigureAwait(false);
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
@@ -94,11 +94,11 @@ namespace CompMs.MsdialGcMsApi.Process
             return (chromPeakFeatures, msdecResults, spectra);
         }
 
-        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>)> DetectScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
+        private async Task<(ChromatogramPeakFeatureCollection, List<MSDecResult>, ReadOnlyCollection<RawSpectrum>)> DetectScans(AnalysisFileBean analysisFile, RetentionIndexHandler riHandler, IDataProvider provider, IProgress<int>? progress, CancellationToken token = default) {
             // feature detections
             Console.WriteLine("Peak picking started");
             var reportSpotting = ReportProgress.FromRange(progress, PEAKSPOTTING_START, PEAKSPOTTING_END);
-            var chromPeakFeatures_ = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
+            var chromPeakFeatures_ = await _peakSpotting.RunAsync(analysisFile, provider, reportSpotting, token).ConfigureAwait(false);
             var chromPeakFeatures = new ChromatogramPeakFeatureCollection(chromPeakFeatures_);
             SetRetentionIndex(chromPeakFeatures_, riHandler);
             await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures_, token).ConfigureAwait(false);

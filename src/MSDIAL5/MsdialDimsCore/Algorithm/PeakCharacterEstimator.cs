@@ -17,14 +17,16 @@ using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Algorithm;
 
 public sealed class PeakCharacterEstimator {
     public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-    public void Process(AnalysisFileBean file, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-        IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, IDataProvider provider, ReportProgress reporeter) {
+    public async Task ProcessAsync(AnalysisFileBean file, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+        IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, IDataProvider provider, ReportProgress reporeter, CancellationToken token = default) {
         
         // some adduct features are automatically insearted even if users did not select any type of adduct
         SearchedAdductInitialize(parameter);
@@ -33,7 +35,7 @@ public sealed class PeakCharacterEstimator {
         chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
         new MsdialCore.Algorithm.PeakCharacterEstimator(0d, 100d).ResetAdductAndLink(chromPeakFeatures, evaluator);
 
-        CharacterAssigner(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter);
+        await CharacterAssignerAsync(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter, token).ConfigureAwait(false);
         reporeter.Report(chromPeakFeatures.Count, chromPeakFeatures.Count);
 
         FinalizationForAdduct(chromPeakFeatures, parameter);
@@ -149,9 +151,9 @@ public sealed class PeakCharacterEstimator {
     // the RT deviations of peakspots should be less than 0.03 min
     // here, each peak is evaluated.
     // the purpose is to group the ions which are recognized as the same metabolite
-    private void CharacterAssigner(AnalysisFileBean file,
-        IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
-        if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
+    private async Task CharacterAssignerAsync(AnalysisFileBean file,
+        IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, CancellationToken token = default) {
+        if (chromPeakFeatures is null || chromPeakFeatures.Count == 0) return;
 
         // if the first inchikey is same, it's recognized as the same metabolite.
         assignLinksBasedOnInChIKeys(chromPeakFeatures, evaluator);
@@ -293,14 +295,14 @@ public sealed class PeakCharacterEstimator {
             var tLeftRt = peak.PeakFeature.ChromXsLeft.RT.Value;
             var tRightRt = peak.PeakFeature.ChromXsRight.RT.Value;
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-            using var tPeaklist = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(peak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            using var tPeaklist = await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(peak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
             using var tSmoothed = tPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var tChrom = tSmoothed.AsPeakArray();
 
             foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0
             && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                using var cPeaklist = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(cPeak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+                using var cPeaklist = await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(cPeak.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
                 using var cSmoothed = cPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var cChrom = cSmoothed.AsPeakArray();
 

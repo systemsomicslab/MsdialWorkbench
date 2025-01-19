@@ -46,7 +46,7 @@ public sealed class FileProcess : IFileProcessor {
 
         var provider = _factory.Create(analysisFile);
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
-            ? FindPeakAndScans(analysisFile, provider, progress, token)
+            ? await FindPeakAndScansAsync(analysisFile, provider, progress, token).ConfigureAwait(false)
             : await LoadPeakAndScans(analysisFile, token).ConfigureAwait(false);
 
         if (option.HasFlag(ProcessOption.Identification)) {
@@ -72,11 +72,11 @@ public sealed class FileProcess : IFileProcessor {
         return (chromPeakFeatures, mSDecResultCollections);
     }
 
-    private (ChromatogramPeakFeatureCollection, MSDecResultCollection[]) FindPeakAndScans(AnalysisFileBean analysisFile, IDataProvider provider, IProgress<int>? progress, CancellationToken token) {
+    private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> FindPeakAndScansAsync(AnalysisFileBean analysisFile, IDataProvider provider, IProgress<int>? progress, CancellationToken token = default) {
         // feature detections
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, progress, token);
+        var chromPeakFeatures = await _peakPickProcess.PickAsync(analysisFile, provider, progress, token).ConfigureAwait(false);
 
         var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
         analysisFile.ChromPeakFeaturesSummary = summaryDto;
@@ -84,7 +84,7 @@ public sealed class FileProcess : IFileProcessor {
         // chrom deconvolutions
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Deconvolution started");
-        var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token);
+        var mSDecResultCollections = await _spectrumDeconvolutionProcess.DeconvoluteAsync(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token).ConfigureAwait(false);
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 

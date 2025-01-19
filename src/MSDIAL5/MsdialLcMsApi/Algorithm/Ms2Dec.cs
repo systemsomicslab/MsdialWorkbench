@@ -25,16 +25,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             this.ProgressMax = ProgressMax;
         }
        
-        public List<MSDecResult> GetMS2DecResults(AnalysisFileBean file, IDataProvider provider,
+        public async Task<List<MSDecResult>> GetMS2DecResultsAsync(AnalysisFileBean file, IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
-            IupacDatabase iupac, IProgress<int>? progress, CancellationToken token, double targetCE = -1) {
+            IupacDatabase iupac, IProgress<int>? progress, double targetCE = -1, CancellationToken token = default) {
 
             var msdecResults = new List<MSDecResult>();
             var numThreads = param.NumThreads == 1 ? 1 : 2;
             ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
             if (numThreads == 1) {
                 foreach (var spot in chromPeakFeatures) {
-                    var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
+                    var result = await GetMS2DecResultAsync(file, provider, spot, param, summary, iupac, targetCE, token).ConfigureAwait(false);
                     result.ScanID = spot.PeakID;
                     msdecResults.Add(result);
                     reporter.Report(result.ScanID, chromPeakFeatures.Count);
@@ -47,35 +47,36 @@ namespace CompMs.MsdialLcMsApi.Algorithm
                 var queue = new ConcurrentQueue<int>(Enumerable.Range(0, chromPeakFeatures.Count));
                 var tasks = new Task[numThreads];
                 for (int i = 0; i < numThreads; i++) {
-                    tasks[i] = Task.Run(() => { 
+                    tasks[i] = Task.Run(async () => { 
                         while (queue.TryDequeue(out var index)) {
                             var spot = chromPeakFeatures[index];
-                            var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
+                            var result = await GetMS2DecResultAsync(file, provider, spot, param, summary, iupac, targetCE, token).ConfigureAwait(false);
                             result.ScanID = spot.PeakID;
                             msdecResultArray[index] = result;
                             reporter.Report(Interlocked.Increment(ref counter), chromPeakFeatures.Count);
                         }
                     });
                 }
-                Task.WaitAll(tasks);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
                 return msdecResultArray.ToList();
             }
 
         }
 
-        [Obsolete("zzz")]
-        public MSDecResult GetMS2DecResult(AnalysisFileBean file,
+        public async Task<MSDecResult> GetMS2DecResultAsync(AnalysisFileBean file,
             IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
-            IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
+            IupacDatabase iupac,
+            double targetCE = -1,
+            CancellationToken token = default) { // targetCE is used in multiple CEs option
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIDForMS2RawSpectrum(chromPeakFeature, targetCE);
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).Result, param.MS2DataType,
-                param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+            RawSpectrum spectrum = await provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrum, param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
             var curatedSpectra = new List<SpectrumPeak>(); // used for normalization of MS/MS intensities
@@ -105,7 +106,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectrum = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
-            using ExtractedIonChromatogram eic = rawSpectrum.GetMS1ExtractedChromatogramAsync(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            using ExtractedIonChromatogram eic = await rawSpectrum.GetMS1ExtractedChromatogramAsync(new MzRange(precursorMz, param.CentroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
             var ms1Peaklist = ((Chromatogram)eic).AsPeakArray();
 
             var startTime = ms1Peaklist[0].ChromXs.RT.Value;
@@ -123,7 +124,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             int topScanNum = minimumID;
 
             List<double> productMzs = curatedSpectra.Select(x => (double)x.Mass).ToList();
-            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaksAsync(provider, precursorMz, startTime, endTime, productMzs, param, file.AcquisitionType, targetCE).Result;
+            var ms2ValuePeaksList = await DataAccess.GetMs2ValuePeaksAsync(provider, precursorMz, startTime, endTime, productMzs, param, file.AcquisitionType, targetCE, token: token).ConfigureAwait(false);
             var sMs2Chromatograms = new List<ExtractedIonChromatogram>();
             foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.ZipInternal(productMzs)) {
                 ExtractedIonChromatogram chromatogram = new ExtractedIonChromatogram(ms2Peaks, ChromXType.RT, ChromXUnit.Min, productMz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);

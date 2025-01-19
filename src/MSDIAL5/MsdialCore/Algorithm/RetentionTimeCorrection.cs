@@ -9,36 +9,35 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm
 {
     public static class RetentionTimeCorrection {
-        public static void Execute(
-            AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider) {
+        public static async Task ExecuteAsync(
+            AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider, CancellationToken token = default) {
             var iStandardLibrary = param.RetentionTimeCorrectionCommon.StandardLibrary;
             var rtParam = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
-            analysisFile.RetentionTimeCorrectionBean = DetectStdPeaks(provider, param, iStandardLibrary, analysisFile, rtParam);
-            return;
+            analysisFile.RetentionTimeCorrectionBean = await DetectStdPeaksAsync(provider, param, iStandardLibrary, analysisFile, rtParam, token).ConfigureAwait(false);
         }
 
-
-        public static RetentionTimeCorrectionBean DetectStdPeaks(IDataProvider provider, ParameterBase param,
-            List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam) {
+        public static async Task<RetentionTimeCorrectionBean> DetectStdPeaksAsync(IDataProvider provider, ParameterBase param,
+            List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam, CancellationToken token = default) {
             System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
             
-            var stdList = GetStdPair(property, provider, param, iStdLib);
+            var stdList = await GetStdPairAsync(property, provider, param, iStdLib, token).ConfigureAwait(false);
 
             // original RT array
-            var spectrumList = provider.LoadMsSpectrums();
+            var spectrumList = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToList();
             return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
-        [Obsolete("zzz")]
-        private static List<StandardPair> GetStdPair(
+        private static async Task<List<StandardPair>> GetStdPairAsync(
             AnalysisFileBean file,
-            IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
-            if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
+            IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib, CancellationToken token = default) {
+            if (iStdLib.IsEmptyOrNull()) return [];
 
             var targetList = new List<StandardPair>();
             var peakpickCore = new PeakSpottingCore(param);
@@ -47,7 +46,7 @@ namespace CompMs.MsdialCore.Algorithm
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeaturesAsync(rawSpectra, provider, (float)startMass, chromatogramRange).Result;
+                var pabCollection = await peakpickCore.GetChromatogramPeakFeaturesAsync(rawSpectra, provider, (float)startMass, chromatogramRange, token).ConfigureAwait(false);
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
@@ -61,7 +60,7 @@ namespace CompMs.MsdialCore.Algorithm
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                using var chromatogram = rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(startMass, i.MassTolerance), chromatogramRange, default).Result;
+                using var chromatogram = await rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(startMass, i.MassTolerance), chromatogramRange, token).ConfigureAwait(false);
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
@@ -71,7 +70,6 @@ namespace CompMs.MsdialCore.Algorithm
               */
             return targetList.OrderBy(x => x.Reference.ChromXs.RT.Value).ToList();
         }
-
 
         public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBean_SampleMinusAverage(
             RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,

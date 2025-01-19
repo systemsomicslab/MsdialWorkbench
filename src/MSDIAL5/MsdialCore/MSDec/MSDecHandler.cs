@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.MSDec {
 
@@ -258,8 +260,7 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecResults;
         }
 
-        [Obsolete("zzz")]
-        public static QuantifiedChromatogramPeak? GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
+        public static async Task<QuantifiedChromatogramPeak?> GetChromatogramQuantInformationAsync(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param, CancellationToken token = default) {
             var model = result.ModelPeakChromatogram;
             System.Diagnostics.Debug.Assert(model is null || model.Count > 0, "No model peak chromatogram");
             var startID = model[0].ID;
@@ -269,7 +270,7 @@ namespace CompMs.MsdialCore.MSDec {
             var offset = .5d;
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             //targetMz = (int)targetMz;
-            using var chrom = spectra.GetMS1ExtractedChromatogramAsync(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange, default).Result;
+            using var chrom = await spectra.GetMS1ExtractedChromatogramAsync(new MzRange(targetMz, param.CentroidMs1Tolerance), chromatogramRange, token).ConfigureAwait(false);
             using var smoothedchrom = chrom.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var peakResult = smoothedchrom.GetPeakDetectionResultFromRange(startID, endID);
             System.Diagnostics.Debug.Assert(peakResult is not null);
