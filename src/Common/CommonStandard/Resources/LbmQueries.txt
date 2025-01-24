@@ -178,6 +178,7 @@ LPA	[M-H]-	Negative	TRUE
 PA	[M-H]-	Negative	TRUE
 PC	[M+CH3COO]-	Negative	TRUE
 PC	[M+HCOO]-	Negative	TRUE
+PC	[M+HCO3]-	Negative	FALSE
 PE	[M-H]-	Negative	TRUE
 PG	[M-H]-	Negative	TRUE
 PI	[M-H]-	Negative	TRUE
