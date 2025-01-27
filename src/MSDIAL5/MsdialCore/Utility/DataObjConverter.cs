@@ -63,9 +63,11 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop;
             alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
             alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
+            alignmentPeak.RawDataIDType = peak.RawDataIDType;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft;
             alignmentPeak.MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight;
+            alignmentPeak.AccumulatedDataIDType = peak.AccumulatedDataIDType;
             alignmentPeak.ChromXsLeft = peak.PeakFeature.ChromXsLeft;
             alignmentPeak.ChromXsTop = peak.PeakFeature.ChromXsTop;
             alignmentPeak.ChromXsRight = peak.PeakFeature.ChromXsRight;
