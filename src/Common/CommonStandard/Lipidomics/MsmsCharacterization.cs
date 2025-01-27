@@ -6271,7 +6271,7 @@ AdductIon adduct)
             }
             else if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
@@ -6327,7 +6327,7 @@ AdductIon adduct)
             }
             else if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+"|| adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
