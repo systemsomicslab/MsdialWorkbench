@@ -5,7 +5,9 @@ LPC	[M+Na]+	Positive	TRUE
 LPE	[M+H]+	Positive	TRUE
 LPS	[M+H]+	Positive	FALSE
 LPG	[M+H]+	Positive	FALSE
+LPG	[M+NH4]+	Positive	FALSE
 LPI	[M+H]+	Positive	FALSE
+LPI	[M+NH4]+	Positive	FALSE
 PC	[M+H]+	Positive	TRUE
 PC	[M+Na]+	Positive	TRUE
 PE	[M+H]+	Positive	TRUE
