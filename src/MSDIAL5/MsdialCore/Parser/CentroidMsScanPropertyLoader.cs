@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.Raw.Abstractions;
@@ -20,7 +19,7 @@ namespace CompMs.MsdialCore.Parser
         }
 
         IMSScanProperty IMsScanPropertyLoader<ChromatogramPeakFeature>.Load(ChromatogramPeakFeature source) {
-            var rawSpectrum = _provider.LoadMsSpectrumFromIndex(source.MS2RawSpectrumID);
+            var rawSpectrum = _provider.LoadSpectrumAsync((ulong)source.MS2RawSpectrumID, source.RawDataIDType).Result;
             var spectrum = DataAccess.GetCentroidMassSpectra(rawSpectrum, _msDataType, 0, float.MinValue, float.MaxValue);
             return new MSScanProperty(source.MasterPeakID, source.PrecursorMz, source.PeakFeature.ChromXsTop.GetRepresentativeXAxis(), source.IonMode)
             {
