@@ -13,11 +13,12 @@ namespace CompMs.MsdialCore.Algorithm.Internal;
 internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataProvider
 {
     private readonly IDataProvider _dataProvider = dataProvider;
-
-    private RawSpectrum[]? _ms1SpectraCache;
+    private readonly object _lock = new();
+    private TaskCompletionSource<MS1CacheObject>? _taskCompletionSource;
 
     private async Task<ReadOnlyCollection<RawSpectrum>> GetReadonlyMs1SpectraCache(CancellationToken token) {
-        return _readonlyMs1SpectraCache ??= new ReadOnlyCollection<RawSpectrum>(await LoadMs1CoreAsync(token).ConfigureAwait(false));
+        var ms1Spectra = await LoadMs1CoreAsync(token).ConfigureAwait(false);
+        return _readonlyMs1SpectraCache ??= new ReadOnlyCollection<RawSpectrum>(ms1Spectra.Spectra);
     }
     private ReadOnlyCollection<RawSpectrum>? _readonlyMs1SpectraCache;
 
@@ -46,10 +47,10 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
         return Task.Run(async () => {
             var spectra = await LoadMs1CoreAsync(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
-            var lo = spectra.LowerBound(rtStart, (s, t) => s.ScanStartTime.CompareTo(t));
-            var hi = spectra.UpperBound(rtEnd, (s, t) => s.ScanStartTime.CompareTo(t));
+            var lo = spectra.Spectra.LowerBound(rtStart, (s, t) => s.ScanStartTime.CompareTo(t));
+            var hi = spectra.Spectra.UpperBound(rtEnd, (s, t) => s.ScanStartTime.CompareTo(t));
             var result = new RawSpectrum[hi - lo];
-            Array.Copy(_ms1SpectraCache, lo, result, 0, hi - lo);
+            Array.Copy(spectra.Spectra, lo, result, 0, hi - lo);
             return result;
         }, token);
     }
@@ -58,8 +59,14 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
 
     public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => _dataProvider.LoadMsSpectrumsAsync(token);
 
-    public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) => _dataProvider.LoadSpectrumAsync(id, idType);
-    
+    public async Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {
+        var spectra = await LoadMs1CoreAsync(default).ConfigureAwait(false);
+        if (idType == spectra.IDType && spectra.Map.TryGetValue(id, out var s)) {
+            return s;
+        }
+        return await _dataProvider.LoadSpectrumAsync(id, idType).ConfigureAwait(false);
+    }
+
     public async Task<RawSpectrum[]> LoadMSSpectraAsync(SpectraLoadingQuery query, CancellationToken token) {
         if (query.MSLevel != 1) {
             return await _dataProvider.LoadMSSpectraAsync(query, token).ConfigureAwait(false);
@@ -73,7 +80,8 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
                 return await LoadMSSpectraWithRtRangeAsync(query.MSLevel!.Value, query.ScanTimeRange!.Start, query.ScanTimeRange!.End, token).ConfigureAwait(false);
         }
 
-        IEnumerable<RawSpectrum> results = await LoadMs1CoreAsync(token).ConfigureAwait(false);
+        var ms1Spectra = await LoadMs1CoreAsync(token).ConfigureAwait(false);
+        IEnumerable<RawSpectrum> results = ms1Spectra.Spectra;
         if (query.CollisionEnergy.HasValue) {
             results = results.Where(s => s.Precursor is not { } precursor || precursor.CollisionEnergy == query.CollisionEnergy);
         }
@@ -94,17 +102,23 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
         return _dataProvider.LoadMSSpectraAsync(queries, token);
     }
 
-    private async Task<RawSpectrum[]> LoadMs1CoreAsync(CancellationToken token) {
-        if (_ms1SpectraCache is not null) {
-            return _ms1SpectraCache;
+    private Task<MS1CacheObject> LoadMs1CoreAsync(CancellationToken token) {
+        lock(_lock) {
+            if (_taskCompletionSource is null) {
+                _taskCompletionSource = new TaskCompletionSource<MS1CacheObject>();
+                _dataProvider.LoadMs1SpectrumsAsync(token).ContinueWith(task => {
+                    var spectra = task.Result;
+                    if (IsSorted(spectra)) {
+                        _taskCompletionSource.SetResult(new(spectra.ToArray()));
+                    }
+                    else {
+                        _taskCompletionSource.SetResult(new(spectra.OrderBy(s => s.ScanStartTime).ToArray()));
+                    }
+                });
+            }
         }
-        var spectra = await _dataProvider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
-        if (IsSorted(spectra)) {
-            return _ms1SpectraCache = spectra.ToArray();
-        }
-        else {
-            return _ms1SpectraCache = spectra.OrderBy(s => s.ScanStartTime).ToArray();
-        }
+
+        return _taskCompletionSource.Task;
     }
 
     private static bool IsSorted(ReadOnlyCollection<RawSpectrum> ms) {
@@ -114,5 +128,12 @@ internal sealed class MS1CachedDataProvider(IDataProvider dataProvider) : IDataP
             }
         }
         return true;
+    }
+
+    class MS1CacheObject(RawSpectrum[] spectra)
+    {
+        public RawSpectrum[] Spectra { get; set; } = spectra;
+        public Dictionary<ulong, RawSpectrum> Map { get; set; } = spectra.ToDictionary(s => s.RawSpectrumID.ID, s => s);
+        public SpectrumIDType IDType { get; set; } = spectra.FirstOrDefault()?.RawSpectrumID?.IDType ?? SpectrumIDType.Index;
     }
 }
