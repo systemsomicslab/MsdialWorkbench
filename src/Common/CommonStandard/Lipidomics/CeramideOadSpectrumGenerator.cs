@@ -65,6 +65,9 @@ namespace CompMs.Common.Lipidomics {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
             }
+            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance, oadId));
+            }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
                 .OrderBy(peak => peak.Mass)
