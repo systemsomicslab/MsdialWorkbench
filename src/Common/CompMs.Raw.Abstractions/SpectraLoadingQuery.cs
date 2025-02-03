@@ -21,6 +21,8 @@ public sealed class SpectraLoadingQuery
     public ScanTimeRange? ScanTimeRange { get; set; }
     public DriftTimeRange? DriftTimeRange { get; set; }
 
+    public bool EnableQ1Deconvolution { get; set; } = false;
+
     public SpectraLoadingFlag Flags {
         get {
             var flag = SpectraLoadingFlag.None;
