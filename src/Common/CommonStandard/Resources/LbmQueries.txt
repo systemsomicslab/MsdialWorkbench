@@ -441,7 +441,9 @@ NGcGM3	[M+NH4]+	Positive	TRUE
 #LPE_d5	[M-H]-	Negative	FALSE
 #LPS_d5	[M+H]+	Positive	FALSE
 #LPG_d5	[M+H]+	Positive	FALSE
+#LPG_d5	[M+NH4]+	Positive	FALSE
 #LPI_d5	[M+H]+	Positive	FALSE
+#LPI_d5	[M+NH4]+	Positive	FALSE
 #LPS_d5	[M-H]-	Negative	FALSE
 #LPG_d5	[M-H]-	Negative	FALSE
 #LPI_d5	[M-H]-	Negative	FALSE
