@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Loader = loader as MultiMsmsRawSpectrumLoader;
 
-            var isSwath = acquisitionType == AcquisitionType.SWATH || acquisitionType == AcquisitionType.AIF;
+            var isSwath = acquisitionType == AcquisitionType.SWATH || acquisitionType == AcquisitionType.AIF || acquisitionType == AcquisitionType.ZTScan;
             IsRawSelected = new ReactivePropertySlim<bool>(!isSwath).AddTo(Disposables);
             IsDeconvolutedSelected = new ReactivePropertySlim<bool>(isSwath).AddTo(Disposables);
             IsBothSelected = new ReactivePropertySlim<bool>(false).AddTo(Disposables);

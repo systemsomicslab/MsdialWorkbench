@@ -175,6 +175,7 @@ namespace CompMs.Common.DataObj
             switch (acquisitionType) {
                 case AcquisitionType.AIF:
                 case AcquisitionType.SWATH:
+                case AcquisitionType.ZTScan:
                     var lowerOffset = IsolationWindowLowerOffset;
                     var upperOffset = IsolationWindowUpperOffset;
                     return (double)SelectedIonMz - lowerOffset - tolerance < mz && (double)mz < (double)SelectedIonMz + upperOffset + (double)tolerance;

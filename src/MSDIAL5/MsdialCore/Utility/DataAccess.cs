@@ -415,6 +415,7 @@ namespace CompMs.MsdialCore.Utility
             switch (type) {
                 case AcquisitionType.AIF:
                 case AcquisitionType.SWATH:
+                case AcquisitionType.ZTScan:
                     var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
                     var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
                     return specPreMz - lowerOffset <= mass && mass < specPreMz + upperOffset;

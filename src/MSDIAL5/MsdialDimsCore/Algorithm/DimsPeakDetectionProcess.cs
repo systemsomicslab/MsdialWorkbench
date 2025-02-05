@@ -60,6 +60,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 switch (type) {
                     case AcquisitionType.AIF:
                     case AcquisitionType.SWATH:
+                    case AcquisitionType.ZTScan:
                         peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDsDIA(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
                         break;
                     case AcquisitionType.DDA:
