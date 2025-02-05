@@ -85,7 +85,7 @@ namespace CompMs.MsdialCore.Algorithm
                 //get EIC chromatogram
                 var mzRange = new MzRange(focusedMass, _parameter.MassSliceWidth);
                 using ExtractedIonChromatogram chromatogram = await rawSpectra.GetMS1ExtractedChromatogramAsync(mzRange, chromatogramRange, token).ConfigureAwait(false);
-                var chromPeakFeatures = GetChromatogramPeakFeatures(provider, detector, chromatogram, file.AcquisitionType);
+                var chromPeakFeatures = GetChromatogramPeakFeatures(detector, chromatogram);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
                     reporter?.Report(focusedMass - startMass, endMass - startMass);
@@ -130,7 +130,7 @@ namespace CompMs.MsdialCore.Algorithm
                 tasks[0] = ProduceChromatogramAsync(bc, rawSpectra, chromatogramRange, targetMasses, token);
                 for (int i = 1; i < numThreads; i++) {
                     var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-                    tasks[i] = ConsumeChromatogramAsync(bc, provider, detector, chromPeakFeaturesArray, file.AcquisitionType, () => reporter?.Report(Interlocked.Increment(ref counter), targetMasses.Count), token);
+                    tasks[i] = ConsumeChromatogramAsync(bc, detector, chromPeakFeaturesArray, () => reporter?.Report(Interlocked.Increment(ref counter), targetMasses.Count), token);
                 }
                 await Task.WhenAll(tasks).ConfigureAwait(false);
             }
@@ -149,12 +149,12 @@ namespace CompMs.MsdialCore.Algorithm
             }, token);
         }
 
-        private Task ConsumeChromatogramAsync(BlockingCollection<(ExtractedIonChromatogram, int)> bc, IDataProvider provider, PeakDetection detector, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, AcquisitionType type, Action report, CancellationToken token) {
+        private Task ConsumeChromatogramAsync(BlockingCollection<(ExtractedIonChromatogram, int)> bc, PeakDetection detector, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, Action report, CancellationToken token) {
             return Task.Run(() =>
             {
                 foreach (var (chromatogram, index) in bc.GetConsumingEnumerable(token)) {
                     using (chromatogram) {
-                        chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures(provider, detector, chromatogram, type);
+                        chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures(detector, chromatogram);
                         report?.Invoke();
                     }
                 }
@@ -248,7 +248,7 @@ namespace CompMs.MsdialCore.Algorithm
             return chromPeakFeatures;
         }
 
-        public List<ChromatogramPeakFeature>? GetChromatogramPeakFeatures(IDataProvider provider, PeakDetection detector, ExtractedIonChromatogram chromatogram, AcquisitionType type) {
+        public List<ChromatogramPeakFeature>? GetChromatogramPeakFeatures(PeakDetection detector, ExtractedIonChromatogram chromatogram) {
             if (chromatogram.IsEmpty) return null;
 
             //get peak detection result

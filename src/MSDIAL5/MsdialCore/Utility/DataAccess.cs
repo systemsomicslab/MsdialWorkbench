@@ -288,7 +288,7 @@ namespace CompMs.MsdialCore.Utility
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
+                    if (spec.Precursor.ContainsMz(precursorMz, param.CentroidMs1Tolerance, acquisitionType)) {
                         (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
                         var id = type == ChromXType.Drift && spec.RawSpectrumID is IModifiedSpectrumIdentifier modified ? modified.OriginalIDs[0] : spec.RawSpectrumID;
@@ -360,7 +360,7 @@ namespace CompMs.MsdialCore.Utility
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
+                    if (spec.Precursor.ContainsMz(precursorMz, param.CentroidMs1Tolerance, acquisitionType)) {
                         var chromX = type == ChromXType.Drift ? spec.DriftTime : spec.ScanStartTime;
                         var id = type == ChromXType.Drift && spec.RawSpectrumID is IModifiedSpectrumIdentifier modified ? modified.OriginalIDs[0] : spec.RawSpectrumID;
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
@@ -381,7 +381,7 @@ namespace CompMs.MsdialCore.Utility
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, type)) {
+                    if (spec.Precursor.ContainsMz(precursorMz, param.CentroidMs1Tolerance, type)) {
                         counter++;
                     }
                 }
@@ -408,22 +408,6 @@ namespace CompMs.MsdialCore.Utility
                 if (remaindIndexM == peaks.Count - 1) break;
             }
             return searchedPeaks;
-        }
-
-        private static bool IsInMassWindow(double mass, RawSpectrum spec, double msTol, AcquisitionType type) {
-            var specPreMz = spec.Precursor.IsolationTargetMz;
-            switch (type) {
-                case AcquisitionType.AIF:
-                case AcquisitionType.SWATH:
-                case AcquisitionType.ZTScan:
-                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
-                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
-                    return specPreMz - lowerOffset <= mass && mass < specPreMz + upperOffset;
-                case AcquisitionType.DDA:
-                    return Math.Abs(specPreMz - mass) <= msTol;
-                default:
-                    throw new NotSupportedException(nameof(type));
-            }
         }
 
         public static Chromatogram GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,

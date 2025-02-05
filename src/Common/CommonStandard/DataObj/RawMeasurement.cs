@@ -178,7 +178,7 @@ namespace CompMs.Common.DataObj
                 case AcquisitionType.ZTScan:
                     var lowerOffset = IsolationWindowLowerOffset;
                     var upperOffset = IsolationWindowUpperOffset;
-                    return (double)SelectedIonMz - lowerOffset - tolerance < mz && (double)mz < (double)SelectedIonMz + upperOffset + (double)tolerance;
+                    return (double)IsolationTargetMz - lowerOffset - tolerance < mz && (double)mz < (double)IsolationTargetMz + upperOffset + (double)tolerance;
                 case AcquisitionType.DDA:
                     return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
                 default:
