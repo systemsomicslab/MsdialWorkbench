@@ -169,7 +169,8 @@ public sealed class PeakCharacterEstimator {
         assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
         // linkage by chromatogram correlations
-        assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, provider, param, file.AcquisitionType);
+        RawSpectra rawSpectra = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
+        await AssignLinksBasedOnChromatogramCorrelationAsync(chromPeakFeatures, rawSpectra, param, token).ConfigureAwait(false);
 
         // linked by partial matching of MS1 and MS2
         if (file.AcquisitionType == AcquisitionType.AIF) return;
@@ -284,10 +285,8 @@ public sealed class PeakCharacterEstimator {
     }
 
     // currently, only pure peaks are evaluated by this way.
-    [Obsolete("zzz")]
-    private void assignLinksBasedOnChromatogramCorrelation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param, AcquisitionType type) {
+    private async Task AssignLinksBasedOnChromatogramCorrelationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, RawSpectra rawSpectra, ParameterBase param, CancellationToken token = default) {
         if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
-        var rawSpectra = new RawSpectra(provider, param.IonMode, type);
         foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
             
             var tTopRt = peak.PeakFeature.ChromXsTop.RT.Value;

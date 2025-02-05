@@ -80,13 +80,8 @@ public sealed class Ms2Dec
             }
         }
 
-        var ms1Chromatogram = GetMs1Peaklist(
-            provider,
-            chromPeakFeature,
-            parameter.CentroidMs1Tolerance,
-            summary,
-            parameter.IonMode,
-            parameter, file.AcquisitionType);
+        RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
+        var ms1Chromatogram = await GetMs1PeaklistAsync(chromPeakFeature, rawSpectra, parameter.CentroidMs1Tolerance, summary, token).ConfigureAwait(false);
 
         //var ms2ChromPeaksList = GetMs2PeaksList(provider, precursorMz, curatedSpectra.Select(x => x.Mass).ToList(), ms1Chromatogram, parameter, targetCE);
         var ms2ChromPeaksList = GetMs2PeaksList(provider, precursorMz, curatedSpectra.Select(x => x.Mass).ToList(), ms1Chromatogram, parameter, targetCE, file.AcquisitionType);
@@ -136,11 +131,7 @@ public sealed class Ms2Dec
         return curatedSpectra.ToList();
     }
 
-    [Obsolete("zzz")]
-    private static Chromatogram GetMs1Peaklist(
-        IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
-        double centroidMs1Tolerance, ChromatogramPeaksDataSummaryDto summary, IonMode ionMode, MsdialImmsParameter parameter, AcquisitionType type) {
-
+    private static async Task<Chromatogram> GetMs1PeaklistAsync(ChromatogramPeakFeature chromPeakFeature, RawSpectra rawSpectra, double centroidMs1Tolerance, ChromatogramPeaksDataSummaryDto summary, CancellationToken token = default) {
         //check the Drift time range to be considered for chromatogram deconvolution
         var peakWidth = chromPeakFeature.PeakWidth();
         if (peakWidth >= summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3)
@@ -152,7 +143,6 @@ public sealed class Ms2Dec
 
         //preparing MS1 and MS/MS chromatograms
         //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-        var rawSpectra = new RawSpectra(provider, ionMode, type);
         var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
         return rawSpectra.GetMS1ExtractedChromatogramAsync(new MzRange(chromPeakFeature.PeakFeature.Mass, centroidMs1Tolerance), chromatogramRange, default).Result;
     }

@@ -52,7 +52,9 @@ namespace CompMs.MsdialCore.Algorithm
 
         public async Task<List<ChromatogramPeakFeature>> GetCombinedChromPeakFeaturesAsync(IReadOnlyList<List<ChromatogramPeakFeature>> featuresList, IDataProvider provider, AcquisitionType type, CancellationToken token = default) {
             var cmbinedFeatures = GetCombinedChromPeakFeatures(featuresList);
-            cmbinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, provider, type);
+
+            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, type);
+            cmbinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, rawSpectra);
             await SetRawDataAccessID2ChromatogramPeakFeaturesAsync(cmbinedFeatures, provider, type, token).ConfigureAwait(false);
 
             // test
@@ -717,15 +719,13 @@ namespace CompMs.MsdialCore.Algorithm
             return combinedFeatures;
         }
 
-        public List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AcquisitionType type) {
+        public List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, RawSpectra rawSpectra) {
             if (chromPeakFeatures is not { Count: > 0}) {
                 return chromPeakFeatures;
             }
             // var spectrumList = param.MachineCategory == MachineCategory.LCIMMS ? rawObj.AccumulatedSpectrumList : rawObj.SpectrumList;
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
-            // var counter = 0;
-            var rawSpectra = new RawSpectra(provider, _parameter.IonMode, type);
             chromPeakFeatures = chromPeakFeatures.OrderBy(p => p.PeakFeature.Mass).ToList();
             IReadOnlyList<IChromatogramPeakFeature> peaks = chromPeakFeatures;
             var mzs = peaks.Select(p => p.Mass);
