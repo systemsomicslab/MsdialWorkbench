@@ -448,6 +448,7 @@ namespace CompMs.MsdialCore.Algorithm
                     ScanTimeRange = new ScanTimeRange { Start = p.PeakFeature.ChromXsLeft.RT.Value, End = p.PeakFeature.ChromXsRight.RT.Value, },
                     PrecursorMzRange = new PrecursorMzRange { Mz = mass, Tolerance = ms2Tol, },
                     MSLevel = 2,
+                    EnableQ1Deconvolution = type == AcquisitionType.ZTScan,
                 };
                 return query;
             }).ToArray();

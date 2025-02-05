@@ -8,7 +8,8 @@ public enum SpectraLoadingFlag {
     CollisionEnergy = 4,
     PrecursorMzRange = 8,
     ScanTimeRange = 16,
-    DriftTimeRange = 32
+    DriftTimeRange = 32,
+    EnableQ1Deconvolution = 64,
 }
 
 public sealed class SpectraLoadingQuery
@@ -43,6 +44,9 @@ public sealed class SpectraLoadingQuery
             }
             if (DriftTimeRange is not null) {
                 flag |= SpectraLoadingFlag.DriftTimeRange;
+            }
+            if (EnableQ1Deconvolution) {
+                flag |= SpectraLoadingFlag.EnableQ1Deconvolution;
             }
             return flag;
         }

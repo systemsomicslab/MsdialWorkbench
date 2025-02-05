@@ -307,6 +307,7 @@ namespace CompMs.MsdialCore.Utility
             {
                 MSLevel = 2,
                 PrecursorMzRange = new PrecursorMzRange { Mz = precursorMz, Tolerance = param.CentroidMs1Tolerance },
+                EnableQ1Deconvolution = acquisitionType == AcquisitionType.ZTScan,
             };
             switch (type) {
                 case ChromXType.RT:
