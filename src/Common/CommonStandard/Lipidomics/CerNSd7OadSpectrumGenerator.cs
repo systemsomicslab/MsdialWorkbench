@@ -80,11 +80,6 @@ namespace CompMs.Common.Lipidomics {
                 "SphOAD-CO"
             };
 
-            if (lipid.Chains is MolecularSpeciesLevelChains) {
-                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass - sphD7MassBalance, 30d, oadId));
-                }
-            }
             if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass - sphD7MassBalance, 30d, oadId));
             }
