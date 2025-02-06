@@ -27,6 +27,13 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.CarbonMass,
         }.Sum();
+
+        private static readonly double C5H9PO5 = new[] {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * 9,
+            MassDiffDictionary.PhosphorusMass,
+            MassDiffDictionary.OxygenMass * 5
+        }.Sum();
         private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
@@ -42,7 +49,8 @@ namespace CompMs.Common.Lipidomics {
             return adduct.AdductIonName == "[M+H]+" ||
                 adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M+HCOO]-" ||
-                adduct.AdductIonName == "[M+CH3COO]-";
+                adduct.AdductIonName == "[M+CH3COO]-" ||
+                adduct.AdductIonName == "[M+HCO3]-";
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
@@ -55,43 +63,44 @@ namespace CompMs.Common.Lipidomics {
                 new string[] {
                 "OAD01",
                 "OAD02",
-                "OAD02+O",
+                //"OAD02+O",
                 "OAD03",
-                "OAD04",
+                //"OAD04",
                 //"OAD05",
                 //"OAD06",
                 //"OAD07",
-                "OAD08",
+                //"OAD08",
                 //"OAD09",
                 //"OAD10",
                 //"OAD11",
-                "OAD12",
+                //"OAD12",
                 //"OAD13",
                 "OAD14",
                 "OAD15",
-                "OAD15+O",
+                //"OAD15+O",
                 "OAD16",
-                "OAD17",
+                //"OAD17",
                 "OAD12+O",
                 "OAD12+O+H",
                 "OAD12+O+2H",
-                "OAD01+H"  } :
+                //"OAD01+H"  
+                } :
             new string[] {
                 "OAD01",
                 "OAD02",
                 //"OAD02+O",
                 "OAD03",
-                "OAD04",
-                "OAD05",
+                //"OAD04",
+                //"OAD05",
                 //"OAD06",
                 //"OAD07",
                 //"OAD08",
                 //"OAD09",
-                "OAD10",
+                //"OAD10",
                 //"OAD11",
                 //"OAD12",
-                "OAD13",
-                //"OAD14",
+                //"OAD13",
+                "OAD14",
                 "OAD15",
                 //"OAD15+O",
                 "OAD16",
@@ -137,14 +146,15 @@ namespace CompMs.Common.Lipidomics {
                     }
                 }
             }
-            else if (adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-") {
-                spectrum.AddRange(
-                    new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                        new SpectrumPeak(lipid.Mass-CH3, 100d, "[M-CH3]-") { SpectrumComment = SpectrumComment.metaboliteclass, },
-                    }
-                );
+            else if (adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+HCO3]-") {
+                spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor});
                 if (lipid.Chains is SeparatedChains) {
+                    if (adduct.AdductIonName == "[M+HCO3]-") {
+                        var positionLevelChains = new PositionLevelChains(lipid.Chains.GetDeterminedChains());
+                        foreach (AcylChain chain in positionLevelChains.GetDeterminedChains()) {
+                            spectrum.Add(new SpectrumPeak(chain.Mass + C5H9PO5, 500d, $"sn-1 {chain}") { SpectrumComment = SpectrumComment.snposition });
+                        }
+                    } 
                     foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                         spectrum.AddRange(
                             new[] {
