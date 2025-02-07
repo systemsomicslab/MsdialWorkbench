@@ -175,8 +175,6 @@ public sealed class PeakCharacterEstimator {
         await AssignLinksBasedOnChromatogramCorrelationAsync(chromPeakFeatures, rawSpectra, param, token).ConfigureAwait(false);
 
         // linked by partial matching of MS1 and MS2
-        if (file.AcquisitionType == AcquisitionType.AIF) return;
-        // In dims, there are too many peaks that are falsely detected.
         // assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
     }
 

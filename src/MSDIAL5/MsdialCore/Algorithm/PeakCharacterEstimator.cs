@@ -300,9 +300,9 @@ public class PeakCharacterEstimator {
         }
 
         // linked by partial matching of MS1 and MS2
-        //if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
-        if (rawSpectra.AcquisitionType == AcquisitionType.AIF || rawSpectra.AcquisitionType == AcquisitionType.SWATH || rawSpectra.AcquisitionType == AcquisitionType.ZTScan) return;
-        assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
+        if (MsmsAcquisition.GetOrDefault(rawSpectra.AcquisitionType).IsDda) {
+            assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
+        }
     }
 
     private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, ParameterBase param) {

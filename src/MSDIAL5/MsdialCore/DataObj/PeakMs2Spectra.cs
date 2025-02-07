@@ -11,12 +11,12 @@ namespace CompMs.MsdialCore.DataObj
     {
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly ScanPolarity _scanPolarity;
-        private readonly AcquisitionType _acquisitionType;
+        private readonly MsmsAcquisition _msmsAcquisition;
 
         public PeakMs2Spectra(IReadOnlyList<RawSpectrum> spectra, ScanPolarity scanPolarity, AcquisitionType acquisitionType) {
             _spectra = spectra ?? throw new ArgumentNullException(nameof(spectra));
             _scanPolarity = scanPolarity;
-            _acquisitionType = acquisitionType;
+            _msmsAcquisition = MsmsAcquisition.GetOrDefault(acquisitionType);
         }
 
         public bool IsEmpty => _spectra.Count == 0;
@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public Dictionary<int, double> FindOriginalIndexToCollisionEnergyAtPeakTop(int peakTopOriginalIndex) {
-            if (_acquisitionType == AcquisitionType.AIF) {
+            if (_msmsAcquisition.MultipleCollisionEnergy) {
                 var result = new Dictionary<int, double>();
                 foreach (var group in _spectra.GroupBy(spec => Math.Round(spec.CollisionEnergy, 2))) { // must be rounded by 2 decimal points
                     var nearTop = group.Argmin(spec => Math.Abs(spec.OriginalIndex - peakTopOriginalIndex));

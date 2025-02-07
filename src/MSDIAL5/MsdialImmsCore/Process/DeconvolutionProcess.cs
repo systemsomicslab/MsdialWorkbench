@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -40,7 +41,7 @@ internal sealed class DeconvolutionProcess
         var initial_msdec = 30.0;
         var max_msdec = 30.0;
         Ms2Dec ms2Dec = new Ms2Dec();
-        if (file.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+        if (MsmsAcquisition.GetOrDefault(file.AcquisitionType).MultipleCollisionEnergy) {
             var ceList = provider.LoadCollisionEnergyTargets();
             var max_msdec_aif = max_msdec / ceList.Count;
             for (int i = 0; i < ceList.Count; i++) {

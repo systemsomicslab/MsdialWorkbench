@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.MSDec;
@@ -74,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Loader = loader as MultiMsmsRawSpectrumLoader;
 
-            var isSwath = acquisitionType == AcquisitionType.SWATH || acquisitionType == AcquisitionType.AIF || acquisitionType == AcquisitionType.ZTScan;
+            var isSwath = MsmsAcquisition.GetOrDefault(acquisitionType).IsDia;
             IsRawSelected = new ReactivePropertySlim<bool>(!isSwath).AddTo(Disposables);
             IsDeconvolutedSelected = new ReactivePropertySlim<bool>(isSwath).AddTo(Disposables);
             IsBothSelected = new ReactivePropertySlim<bool>(false).AddTo(Disposables);

@@ -46,6 +46,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
             IonMode ionMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
 
+            var acquisition = MsmsAcquisition.GetOrDefault(type);
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
                 var chromScanID = peakFeature.PeakFeature.ChromScanIdTop;
@@ -57,18 +58,11 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 peakFeature.MS1RawSpectrumIdTop = (int)ms1Spectrum.RawSpectrumID.ID;
                 peakFeature.RawDataIDType = ms1Spectrum.RawSpectrumID.IDType;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
-                switch (type) {
-                    case AcquisitionType.AIF:
-                    case AcquisitionType.SWATH:
-                    case AcquisitionType.ZTScan:
-                        peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDsDIA(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
-                        break;
-                    case AcquisitionType.DDA:
-                        peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDsDDA(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
-                        break;
-                    default:
-                        throw new NotSupportedException(nameof(type));
-                }
+
+                // maybe, in msmsall, the id count is always one but for just in case
+                peakFeature.MS2RawSpectrumID2CE = acquisition.IsDia
+                    ? GetMS2RawSpectrumIDsDIA(peakFeature.PrecursorMz, ms2SpecObjects)  
+                    : GetMS2RawSpectrumIDsDDA(peakFeature.PrecursorMz, ms2SpecObjects);
                 peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, provider);
                 peakFeatures.Add(peakFeature);
             }

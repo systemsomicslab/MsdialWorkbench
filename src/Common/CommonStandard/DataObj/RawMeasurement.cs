@@ -172,17 +172,15 @@ namespace CompMs.Common.DataObj
         }
 
         public bool ContainsMz(double mz, double tolerance, AcquisitionType acquisitionType) {
-            switch (acquisitionType) {
-                case AcquisitionType.AIF:
-                case AcquisitionType.SWATH:
-                case AcquisitionType.ZTScan:
-                    var lowerOffset = IsolationWindowLowerOffset;
-                    var upperOffset = IsolationWindowUpperOffset;
-                    return (double)IsolationTargetMz - lowerOffset - tolerance < mz && (double)mz < (double)IsolationTargetMz + upperOffset + (double)tolerance;
-                case AcquisitionType.DDA:
-                    return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
-                default:
-                    throw new NotSupportedException(nameof(acquisitionType));
+            var msmsAcquisition = MsmsAcquisition.Get(acquisitionType) ?? throw new NotSupportedException(nameof(acquisitionType));
+            if (msmsAcquisition.IsDda) {
+                return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
+            }
+            else {
+                var lowerOffset = IsolationWindowLowerOffset;
+                var upperOffset = IsolationWindowUpperOffset;
+                return (double)IsolationTargetMz - lowerOffset - tolerance < mz
+                    && (double)mz < (double)IsolationTargetMz + upperOffset + (double)tolerance;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -135,12 +136,13 @@ public sealed class FileProcess : IFileProcessor
         IupacDatabase iupac,
         IProgress<int>? progress, CancellationToken token) {
 
+        var acquisition = MsmsAcquisition.GetOrDefault(file.AcquisitionType);
         var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
         var initial_msdec = 30.0;
         var max_msdec = 30.0;
         var ceList = provider.LoadCollisionEnergyTargets();
         Ms2Dec ms2Dec = new Ms2Dec(file);
-        if (file.AcquisitionType == AcquisitionType.AIF) {
+        if (acquisition.MultipleCollisionEnergy) {
             for (int i = 0; i < ceList.Count; i++) {
                 var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                 if (targetCE <= 0) {

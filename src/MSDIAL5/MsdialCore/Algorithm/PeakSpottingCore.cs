@@ -450,7 +450,7 @@ namespace CompMs.MsdialCore.Algorithm
                     ScanTimeRange = new ScanTimeRange { Start = p.PeakFeature.ChromXsLeft.RT.Value, End = p.PeakFeature.ChromXsRight.RT.Value, },
                     PrecursorMzRange = new PrecursorMzRange { Mz = mass, Tolerance = ms2Tol, },
                     MSLevel = 2,
-                    EnableQ1Deconvolution = type == AcquisitionType.ZTScan,
+                    EnableQ1Deconvolution = MsmsAcquisition.GetOrDefault(type).NeedQ1Deconvolution,
                 };
                 return query;
             }).ToArray();
@@ -482,7 +482,7 @@ namespace CompMs.MsdialCore.Algorithm
 
                 var ce = spec.CollisionEnergy;
 
-                if (type == AcquisitionType.AIF) {
+                if (MsmsAcquisition.GetOrDefault(type).MultipleCollisionEnergy) {
                     var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points
                     if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.ScanStartTime - scanTopTime)) {
                         ce2MinDiff[ceRounded] = Math.Abs(spec.ScanStartTime - scanTopTime);

@@ -37,6 +37,7 @@
                 <common:AcquisitionType>DDA</common:AcquisitionType>
                 <common:AcquisitionType>SWATH</common:AcquisitionType>
                 <common:AcquisitionType>AIF</common:AcquisitionType>
+                <common:AcquisitionType>ZTScan</common:AcquisitionType>
             </x:Array>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -164,7 +165,7 @@
                                     <TextBlock>
                                         DDA:<LineBreak />
                                         When you analyze a data set from data dependent MS/MS, select this option.
-                                        SWATH, AIF:<LineBreak />
+                                        SWATH, AIF, ZTScan:<LineBreak />
                                         When you analyze a data set from data independent MS/MS, select this option. <LineBreak />
                                     </TextBlock>  
                                 </Setter.Value>

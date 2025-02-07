@@ -1,5 +1,5 @@
-﻿using CompMs.Common.Extension;
-using CompMs.MsdialCore.Algorithm;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -26,7 +26,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var max_msdec = 30.0;
             var ceList = provider.LoadCollisionEnergyTargets();
             var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
-            if (analysisFile.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+            if (MsmsAcquisition.GetOrDefault(analysisFile.AcquisitionType).MultipleCollisionEnergy) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                     if (targetCE <= 0) {
