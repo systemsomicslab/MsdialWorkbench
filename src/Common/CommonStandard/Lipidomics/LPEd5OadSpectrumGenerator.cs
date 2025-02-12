@@ -16,9 +16,10 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        private static readonly double C5H11NO5P = new[] {
+        private static readonly double C5H6D5NO5P = new[] {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * 11,
+            MassDiffDictionary.HydrogenMass * 6,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 5,
             MassDiffDictionary.PhosphorusMass
@@ -122,7 +123,7 @@ namespace CompMs.Common.Lipidomics {
                 spectrum.AddRange(
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H11NO5P),100d, "Precursor -C5H11NO5P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H6D5NO5P),100d, "Precursor -C5H6D5NO5P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {
