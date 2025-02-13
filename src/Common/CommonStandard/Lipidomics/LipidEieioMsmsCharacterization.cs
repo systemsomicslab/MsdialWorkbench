@@ -3739,7 +3739,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C3H6O5P-
 
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    //var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    var diagnosticMz1 = 158.0249;
                     var threshold1 = 5.0;
                     var diagnosticMz2 = theoreticalMz - 87.032029; // seek -C3H6NO2-H
                     var threshold2 = 1.0;
