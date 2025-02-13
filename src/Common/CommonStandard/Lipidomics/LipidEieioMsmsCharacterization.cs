@@ -2754,6 +2754,45 @@ namespace CompMs.Common.Lipidomics
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE_d5", LbmClass.PE_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
+            } else {
+                if (adduct.AdductIonName == "[M-H]-") {
+                    // seek C5H11NO5P-
+                    var threshold = 5.0;
+                    var diagnosticMz = 196.03803;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+
+                    var threshold2 = 5.0;
+                    var diagnosticMz2 = 152.995833871; // seek C3H6O5P- (maybe LNAPE)
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    if (isClassIon2Found == true) return null;
+
+
+                    // from here, acyl level annotation is executed.
+                    var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                    var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
+
+                    var query = new List<SpectrumPeak> {
+                            new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
+                    };
+
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 2)
+                    { // now I set 2 as the correct level
+                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1Carbon, sn1Double,
+                            sn2Carbon, sn2Double, averageIntensity);
+                        candidates.Add(molecule);
+                    }
+
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (foundCount == 0) return null;
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE_d5", LbmClass.PE_d5, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
             }
             return null;
         }
