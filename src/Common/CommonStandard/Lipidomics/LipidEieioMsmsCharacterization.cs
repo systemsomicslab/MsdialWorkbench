@@ -3605,6 +3605,25 @@ namespace CompMs.Common.Lipidomics
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPE_d5", LbmClass.LPE_d5, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
+            } else {
+                if (adduct.AdductIonName == "[M-H]-") {
+                    if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
+                    // seek PreCursor -197(C5H12NO5P)
+                    var threshold = 10.0;
+                    //var diagnosticMz = theoreticalMz - 197.04475958;
+                    var diagnosticMz = theoreticalMz - 159.0691;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+                    
+                    var candidates = new List<LipidMolecule>();
+                    //var score = 0.0;
+                    //if (totalCarbon < 30) score = score + 1.0;
+                    //var molecule = getSingleacylchainMoleculeObjAsLevel2("LPE_d5", LbmClass.LPE_d5, totalCarbon, totalDoubleBond,
+                    //score);
+                    //candidates.Add(molecule);
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPE_d5", LbmClass.LPE_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+            }
             }
             return null;
         }
