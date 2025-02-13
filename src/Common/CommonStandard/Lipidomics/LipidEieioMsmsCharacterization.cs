@@ -3485,6 +3485,32 @@ namespace CompMs.Common.Lipidomics
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC_d5", LbmClass.LPC_d5, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
+            } else {
+                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-") {
+                    if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
+
+                    // seek [M-CH3]-
+                    var threshold = 1.0;
+                    var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                    var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
+                    if (isClassIon1Found != true || isClassIon2Found != true) return null;
+
+                    //
+                    var candidates = new List<LipidMolecule>();
+                    //var score = 0.0;
+                    //if (totalCarbon < 30) score = score + 1.0;
+                    //var molecule = getSingleacylchainMoleculeObjAsLevel2("LPC_d5", LbmClass.LPC_d5, totalCarbon, totalDoubleBond,
+                    //score);
+                    //candidates.Add(molecule);
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC_d5", LbmClass.LPC_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+
+                }
             }
             return null;
         }
