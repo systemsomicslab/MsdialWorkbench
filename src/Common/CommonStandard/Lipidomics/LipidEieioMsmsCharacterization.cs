@@ -3687,15 +3687,16 @@ namespace CompMs.Common.Lipidomics
                     // seek C3H6O5P-
 
                     var diagnosticMz1 = 241.0118806 + Electron;  // seek C3H6O5P-
-                    var threshold1 = 1.0;
-                    var diagnosticMz2 = 315.048656; // seek C9H16O10P-
-                    var threshold2 = 1.0;
+                    var threshold1 = 0;
+                    //var diagnosticMz2 = 315.048656; // seek C9H16O10P-
+                    var diagnosticMz2 = 320.087237; // seek C9H11D5O10P-
+                    var threshold2 = 0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
-                    var threshold3 = 10.0;
+                    var threshold3 = 0;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+                    if (isClassIon1Found != true || isClassIon2Found != true) return null;
 
                     //
                     var candidates = new List<LipidMolecule>();
