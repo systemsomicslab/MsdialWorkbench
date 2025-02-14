@@ -145,7 +145,7 @@ namespace CompMs.Common.Lipidomics
                         if (chain.CarbonCount != 0) {
                             spectrum.AddRange(
                                 new[] {
-                                    new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
+                                    new SpectrumPeak(adduct.ConvertToMz(chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"{chain}") { SpectrumComment = SpectrumComment.acylchain },
                                 }
                             );
                         }

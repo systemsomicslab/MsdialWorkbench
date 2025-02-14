@@ -224,7 +224,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var name = reference.Name;
             bool isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch;
 
-            if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.EID) {
+            if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.EID || collisionType == CollisionType.OAD) {
                 name = MsScanMatching.GetRefinedLipidAnnotationLevelForEIEIO(scan, reference, parameter.Ms2Tolerance,
                     out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             }
