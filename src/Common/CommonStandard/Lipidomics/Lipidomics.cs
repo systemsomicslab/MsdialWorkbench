@@ -939,7 +939,7 @@ namespace CompMs.Common.Lipidomics
                     molecules.Add(result);
                 }
 
-                if (result != null && result.AnnotationLevel == 2)
+                if (result != null && result.AnnotationLevel >= 2)
                 {
                     //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
                 }

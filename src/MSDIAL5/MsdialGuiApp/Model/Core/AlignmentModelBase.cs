@@ -1,14 +1,18 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,9 +22,10 @@ namespace CompMs.App.Msdial.Model.Core
     public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
         protected readonly AlignmentFileBeanModel _alignmentFileModel;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
         private readonly IMessageBroker _broker;
 
-        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
+        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering, PeakFilterModel peakFilterModel, IMatchResultEvaluator<AlignmentSpotPropertyModel> evaluator, IMessageBroker broker) {
             _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
             _broker = broker;
             _container = alignmentFileModel.LoadAlignmentResultAsync().Result;
@@ -31,6 +36,8 @@ namespace CompMs.App.Msdial.Model.Core
                     AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(),
                 };
             }
+
+            _filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator);
         }
 
         public AlignmentResultContainer Container {
@@ -48,10 +55,16 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
 
-        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            if (AlignmentSpotSource.Spots is null) {
+                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
+            }
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
-                var spots = Container.AlignmentSpotProperties;
+                IReadOnlyList<AlignmentSpotPropertyModel> spots = AlignmentSpotSource.Spots.Items;
+                if (useCurrentFiltering) {
+                    spots = _filter.Filter(spots).ToList();
+                }
                 var peaks = _alignmentFileModel.LoadMSDecResults();
 
                 void notify(double progressRate) {
@@ -62,21 +75,25 @@ namespace CompMs.App.Msdial.Model.Core
                 var builder = new MoleculerNetworkingBase();
                 var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
                 var rootObj = network.Root;
+
+                var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));
+                rootObj.edges.AddRange(ionfeature_edges);
+
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(s => s.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);
                 }
                 return network;
             }
         }
 
-        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var network = GetMolecularNetworkInstance(parameter);
+        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
-        public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var network = GetMolecularNetworkInstance(parameter);
+        public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
+            var network = GetMolecularNetworkInstance(parameter, useCurrentFiltering);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 

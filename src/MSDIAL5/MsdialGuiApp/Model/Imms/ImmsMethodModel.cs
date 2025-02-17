@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
@@ -41,7 +42,9 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
         private readonly FilePropertiesModel _fileProperties;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
-        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _spotFiltering;
+        private readonly PeakSpotFiltering<ChromatogramPeakFeatureModel> _peakFiltering;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
@@ -64,8 +67,9 @@ namespace CompMs.App.Msdial.Model.Imms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 filterEnabled |= FilterEnableStatus.Protein;
             }
-            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
-            var filter = _peakSpotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
+            _peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
+            _spotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
+            var filter = _spotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
             var metadataAccessorFactory = new ImmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             ReadOnlyReactivePropertySlim<ImmsAlignmentModel?> currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFileBeanModelCollection.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
@@ -113,8 +117,32 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
-        }
 
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter) {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter))
+                {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
+        }
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
         public ImmsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             set {
@@ -225,7 +253,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBaseMapper,
                 _storage.Parameter,
                 PeakFilterModel,
+                _peakFiltering,
                 _fileProperties,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
             return AnalysisModel;
@@ -243,11 +273,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 _matchResultEvaluator,
                 _storage.DataBases,
                 _storage.DataBaseMapper,
-                _peakSpotFiltering,
+                _spotFiltering,
                 PeakFilterModel,
                 _fileProperties,
                 _storage.Parameter,
                 _storage.AnalysisFiles,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }

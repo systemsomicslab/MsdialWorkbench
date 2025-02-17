@@ -21,9 +21,14 @@ namespace CompMs.Common.Extension {
             yield return value;
         }
 
-#if NETSTANDARD || NETFRAMEWORK
-        public static IEnumerable<(T1, T2)> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
+#if !NET6_0_OR_GREATER
+        public static IEnumerable<(T1, T2)> ZipInternal<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
             return xs.Zip(ys, (x, y) => (x, y));
+        }
+#else
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<(T1, T2)> ZipInternal<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
+            return xs.Zip(ys);
         }
 #endif
 

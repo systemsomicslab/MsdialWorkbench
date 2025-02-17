@@ -5,6 +5,7 @@
     <TargetFrameworks>net472;net48;net8</TargetFrameworks>
     <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -15,6 +16,9 @@
     <AssemblyName>MSDIALCUI</AssemblyName>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="Resources\msdial_icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

@@ -82,7 +82,7 @@ public class SmoothingTests
         Console.WriteLine($"new method: {timer.ElapsedMilliseconds}");
         timer.Reset();
 
-        foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+        foreach ((var peak1, var peak2) in expected.ZipInternal(actual)) {
             Assert.AreEqual(peak1.ID, peak2.ID);
             Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
             Assert.AreEqual(peak1.Mass, peak2.Mass);
@@ -102,7 +102,7 @@ public class SmoothingTests
         var expected = Original_SimpleMovingAverage(chrom, 5);
         var actual = Smoothing.SimpleMovingAverage(chrom, 5);
 
-        foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+        foreach ((var peak1, var peak2) in expected.ZipInternal(actual)) {
             Assert.AreEqual(peak1.ID, peak2.ID);
             Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
             Assert.AreEqual(peak1.Mass, peak2.Mass);
@@ -132,7 +132,7 @@ public class SmoothingTests
         Console.WriteLine($"new method: {timer.ElapsedMilliseconds}");
         timer.Reset();
 
-        foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+        foreach ((var peak1, var peak2) in expected.ZipInternal(actual)) {
             Assert.AreEqual(peak1.ID, peak2.ID);
             Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
             Assert.AreEqual(peak1.Mass, peak2.Mass);
@@ -153,7 +153,7 @@ public class SmoothingTests
         var expected = Original_LinearWeightedMovingAverage(chrom, 5);
         var actual = Smoothing.LinearWeightedMovingAverage(chrom, 5);
 
-        foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+        foreach ((var peak1, var peak2) in expected.ZipInternal(actual)) {
             Assert.AreEqual(peak1.ID, peak2.ID);
             Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
             Assert.AreEqual(peak1.Mass, peak2.Mass);
@@ -189,7 +189,7 @@ public class SmoothingTests
         }
 
         // Simple width ∘ Simple width equals to LinearWeighted (width * 2) except at the begins and ends width * 2.
-        foreach ((var peak1, var peak2) in expected.Zip(actual).Skip(width * 2).Take(actual.Count - width * 4)) {
+        foreach ((var peak1, var peak2) in expected.ZipInternal(actual).Skip(width * 2).Take(actual.Count - width * 4)) {
             Assert.AreEqual(peak1.ID, peak2.ID);
             Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
             Assert.AreEqual(peak1.Mass, peak2.Mass);

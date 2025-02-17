@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -31,13 +32,17 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ImmsAnalysisModel _analysisModel;
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly AnalysisFileBeanModel _file;
         private readonly MaldiFrames _maldiFrames;
         private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
-            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, projectBaseParameterModel, broker).AddTo(Disposables);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
+            var peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, peakFiltering, projectBaseParameterModel, _msfinderSearcherFactory, broker).AddTo(Disposables);
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();

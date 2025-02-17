@@ -2,7 +2,7 @@
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal sealed class ValueFilterModel : BindableBase
+    public sealed class ValueFilterModel : BindableBase
     {
         public ValueFilterModel(string label, double minimum, double maximum) {
             Label = label;

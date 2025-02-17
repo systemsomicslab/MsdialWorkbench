@@ -45,7 +45,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
-        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _spotFiltering;
+        private readonly PeakSpotFiltering<ChromatogramPeakFeatureModel> _peakFiltering;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public LcmsMethodModel(
@@ -72,8 +73,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 filterEnabled |= FilterEnableStatus.Protein;
             }
-            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
-            var filter = _peakSpotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
+            _peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
+            _spotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
+            var filter = _spotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
             var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFileBeanModelCollection.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
 
@@ -149,7 +151,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(storage.Parameter.ProjectParam, exportMatForMsfinder, currentAlignmentFile);
 
             var notameExportModel = new AlignmentExportGroupModel(
                 "Peaks",
@@ -178,9 +179,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             Notame = new Notame(alignmentFilesForExport, peakSpotSupplyer, notameExportModel, storage.Parameter.DataExportParam, storage.Parameter);
 
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
 
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
+
         public PeakFilterModel PeakFilterModel { get; }
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
@@ -215,6 +221,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _matchResultEvaluator,
                 _storage.Parameter,
                 PeakFilterModel,
+                _peakFiltering,
                 _fileProperties,
                 _msfinderSearcherFactory,
                 _broker)
@@ -231,13 +238,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 alignmentFileModel,
                 _matchResultEvaluator,
                 _storage.DataBases,
-                _peakSpotFiltering,
+                _spotFiltering,
                 PeakFilterModel,
                 _storage.DataBaseMapper,
                 _storage.Parameter,
                 _fileProperties,
                 _storage.AnalysisFiles,
                 AnalysisFileModelCollection,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }

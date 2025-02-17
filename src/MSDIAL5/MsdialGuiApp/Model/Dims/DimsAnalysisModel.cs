@@ -41,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly IMessageBroker _broker;
 
         public DimsAnalysisModel(
@@ -51,9 +52,11 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
+            PeakSpotFiltering<ChromatogramPeakFeatureModel> peakFiltering,
             FilePropertiesModel projectBaseParameterModel,
+            MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
-            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, peakFiltering, peakFilterModel, evaluator.Contramap((ChromatogramPeakFeatureModel peak) => peak.ScanMatchResult), broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -65,16 +68,13 @@ namespace CompMs.App.Msdial.Model.Dims
             _dataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _msfinderSearcherFactory = msfinderSearcherFactory;
             _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             _undoManager = new UndoManager().AddTo(Disposables);
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks, new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled)).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks, peakFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(Ms1Peaks, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt));
 
@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var vAxis = Observable.Return(new AxisRange(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, new PeakLinkModel(Ms1Peaks), verticalAxis: vAxis)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, PeakLinkModel.Build(Ms1Peaks, Ms1Peaks.Select(p => p.InnerModel.PeakCharacter).ToList()), verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
@@ -100,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Abundance"
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
 
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
@@ -122,8 +122,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
             var refGraphLabels = new GraphLabels("Reference spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Red);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
-            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, referenceExporter).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
+            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), refLoader, referenceExporter).AddTo(Disposables);
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(Disposables);
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
@@ -178,6 +178,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
             if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not MSDecResult msdecResult) {
@@ -211,6 +212,18 @@ namespace CompMs.App.Msdial.Model.Dims
                 _provider.LoadMs1Spectrums(),
                 _dataBaseMapper,
                 _parameter);
+        }
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not { } msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return null;
+            } try {
+                return _msfinderSearcherFactory.CreateModelForAnalysisPeak(MsfinderParameterSetting, peak, msdec, _provider, _undoManager);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         public override void SearchFragment() {

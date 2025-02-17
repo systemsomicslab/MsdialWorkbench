@@ -23,6 +23,10 @@
             <RowDefinition Height="*" MinHeight="100"/>
             <RowDefinition Height="*" MinHeight="35"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="32"/>
+        </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0">
             <TextBox Name="TextBox_Original" 
@@ -46,5 +50,36 @@
             <local:PeakModUCLegacy x:Name="PickingUC" Content="{Binding Path=PickingUC}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="3, 25, 3, 5"/>
         </Grid>
         <Button Name="Button_UpdatePeakInfo" Click="Button_UpdatePeakInfo_Click" Grid.Row="2" Width="100" Height="20" Content="Update" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,13,0" />
+
+        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2">
+            <Expander ExpandDirection="Left" d:IsExpanded="False" HorizontalAlignment="Right">
+                <Expander.Header>
+                    <TextBlock Text="Advanced">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="90" />
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </Expander.Header>
+                <Grid Background="White">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0">
+                        <Button Content="Apply" Command="{Binding UpdateChromsCommand, Mode=OneWay}" Margin="8" Width="64"/>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Path=PeakPropertyList.Value}"
+                              AutoGenerateColumns="False"
+                              Grid.Row="1">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Model.FileID}" IsReadOnly="True" Width="24"/>
+                            <DataGridTextColumn Header="File" Binding="{Binding Model.FileName}" IsReadOnly="True" Width="Auto"/>
+                            <DataGridTextColumn Header="Peak name" Binding="{Binding Model.Name}" IsReadOnly="True" Width="*"/>
+                            <DataGridCheckBoxColumn Header="Include" Binding="{Binding Include, Mode=TwoWay}" Width="48"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Expander>
+        </Grid>
     </Grid>
 </Window>

@@ -302,6 +302,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 peaks.Add(driftFeature);
                 counter++;
             }
+            peaks = GetBackgroundSubtractedPeaks(peaks, chromatogram);
+            if (peaks == null || peaks.Count == 0) return null;
             return peaks;
         }
 
@@ -652,7 +654,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return sPeakAreaList;
         }
 
-        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, ExtractedIonChromatogram chromatogram) {
+        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram chromatogram) {
             var counterThreshold = 4;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
@@ -772,7 +774,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var minDatapoint = 3;
             // var counter = 0;
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type);
-            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.Zip(chromPeakFeatures)) {
+            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.ZipInternal(chromPeakFeatures)) {
                 //get EIC chromatogram
                 var peakWidth = peak.PeakWidth();
                 var peakWidthMargin = peakWidth * .5;

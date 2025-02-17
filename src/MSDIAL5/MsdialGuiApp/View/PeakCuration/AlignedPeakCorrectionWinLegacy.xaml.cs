@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CompMs.App.Msdial.View.PeakCuration
 {
@@ -69,7 +70,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 if (peaks is null) {
                     return null;
                 }
-                var peakPropArr = files.Zip(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
+                var peakPropArr = files.ZipInternal(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
                         var brush = classnameToBrushes.TryGetValue(pair.Item1.AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId);
                         using var smoothed = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);

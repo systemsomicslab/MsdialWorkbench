@@ -15091,7 +15091,7 @@
                                 updateAncestryBoundaries(n, layoutInfo);
                             }
 
-                            // Update size, position of compund nodes
+                            // Update size, position of compound nodes
                             for (var i = 0; i < layoutInfo.nodeSize; i++) {
                                 var n = layoutInfo.layoutNodes[i];
                                 if (0 < n.children.length && !n.isLocked) {

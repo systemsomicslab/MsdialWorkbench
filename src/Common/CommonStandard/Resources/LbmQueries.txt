@@ -5,7 +5,9 @@ LPC	[M+Na]+	Positive	TRUE
 LPE	[M+H]+	Positive	TRUE
 LPS	[M+H]+	Positive	FALSE
 LPG	[M+H]+	Positive	FALSE
+LPG	[M+NH4]+	Positive	FALSE
 LPI	[M+H]+	Positive	FALSE
+LPI	[M+NH4]+	Positive	FALSE
 PC	[M+H]+	Positive	TRUE
 PC	[M+Na]+	Positive	TRUE
 PE	[M+H]+	Positive	TRUE
@@ -178,6 +180,7 @@ LPA	[M-H]-	Negative	TRUE
 PA	[M-H]-	Negative	TRUE
 PC	[M+CH3COO]-	Negative	TRUE
 PC	[M+HCOO]-	Negative	TRUE
+PC	[M+HCO3]-	Negative	FALSE
 PE	[M-H]-	Negative	TRUE
 PG	[M-H]-	Negative	TRUE
 PI	[M-H]-	Negative	TRUE
@@ -438,7 +441,9 @@ NGcGM3	[M+NH4]+	Positive	TRUE
 #LPE_d5	[M-H]-	Negative	FALSE
 #LPS_d5	[M+H]+	Positive	FALSE
 #LPG_d5	[M+H]+	Positive	FALSE
+#LPG_d5	[M+NH4]+	Positive	FALSE
 #LPI_d5	[M+H]+	Positive	FALSE
+#LPI_d5	[M+NH4]+	Positive	FALSE
 #LPS_d5	[M-H]-	Negative	FALSE
 #LPG_d5	[M-H]-	Negative	FALSE
 #LPI_d5	[M-H]-	Negative	FALSE

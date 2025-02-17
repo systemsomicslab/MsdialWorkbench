@@ -102,7 +102,8 @@
                     <ui:LabeledContent PrependLabel="m/z tolerance:">
                         <TextBox Text="{Binding SearchParameter.Ms1Tolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="EI similarity cut off:">
+                    <ui:LabeledContent PrependLabel="Weighted dot product score cut off:"
+                                       ToolTip="EI similarity">
                         <TextBox Text="{Binding SearchParameter.WeightedDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Dot product score cut off:">

@@ -6,6 +6,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -101,6 +102,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var findTargetCompoundsSpotViewModel = new FindTargetCompoundsSpotViewModel(model.FindTargetCompoundSpotModel, broker).AddTo(Disposables);
             ShowFindCompoundSpotViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(findTargetCompoundsSpotViewModel)).AddTo(Disposables);
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -147,12 +163,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
+        public ReactiveCommand GoToMsfinderCommand {  get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;

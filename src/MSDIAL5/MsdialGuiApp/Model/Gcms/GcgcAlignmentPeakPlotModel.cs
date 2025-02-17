@@ -21,9 +21,9 @@ internal sealed class GcgcAlignmentPeakPlotModel : AlignmentPeakPlotModel
         IObservable<string?> labelSource,
         BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
         IList<BrushMapData<AlignmentSpotPropertyModel>> brushes,
-        IAxisManager<double>? horizontalAxis = null) 
-        : base(spots, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, horizontalAxis)
-    {
+        PeakLinkModel peakLinkModel,
+        IAxisManager<double>? horizontalAxis = null)
+        : base(spots, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes, peakLinkModel, horizontalAxis) {
         var disposable = new SerialDisposable();
         _serialDisposable = disposable;
         Disposables.Add(disposable);

@@ -27,7 +27,7 @@ namespace CompMs.Common.DataObj
             CollisionCrossSection = -1;
             Links = string.Empty;
             Intensity = -1;
-            AdductIon = new AdductIon();
+            AdductIon = AdductIon.Default;
             IsotopeRatioList = new List<float>();
             Spectrum = new List<SpectrumPeak>();
             Instrument = string.Empty;

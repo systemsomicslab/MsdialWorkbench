@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -57,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
-            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel, broker).AddTo(Disposables);
 
             SurveyScanViewModel = new SurveyScanViewModel(
                 model.SurveyScanModel,
@@ -81,6 +82,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
+
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
@@ -103,7 +119,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
@@ -121,12 +138,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

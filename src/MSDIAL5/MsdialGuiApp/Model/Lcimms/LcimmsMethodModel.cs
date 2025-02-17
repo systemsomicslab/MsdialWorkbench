@@ -3,6 +3,8 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
@@ -39,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift)!;
         }
 
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
             if (storage is null) {
@@ -111,6 +114,33 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
+
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter)
+            {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter))
+                {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
+            var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -141,7 +171,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakFilterModel PeakFilterModel { get; }
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public ParameterExportModel ParameterExportModel { get; }
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
 
+        public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
@@ -159,6 +192,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
                 _fileProperties,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }
@@ -180,6 +214,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _peakSpotFiltering,
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }

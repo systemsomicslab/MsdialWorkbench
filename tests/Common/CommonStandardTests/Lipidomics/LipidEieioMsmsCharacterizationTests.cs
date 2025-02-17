@@ -2700,7 +2700,7 @@ namespace CompMs.Common.Lipidomics.Tests
         {
             var target = MspFileParser.MspFileReader(path)[0];
             NormalizeSpectrum(target);
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 746.6058f, 34, 1, 16, 18, 0, 1, adduct: new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 746.6058f, 34, 1, 16, 18, 0, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}: {result.Score}");
             Assert.AreEqual(expected, result.LipidName);
         }
