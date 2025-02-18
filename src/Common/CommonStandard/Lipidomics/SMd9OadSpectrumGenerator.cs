@@ -31,7 +31,7 @@ namespace CompMs.Common.Lipidomics
         }.Sum();
 
         private static readonly double CH3COO = new[] {
-            MassDiffDictionary.CarbonMass * 1,
+            MassDiffDictionary.CarbonMass * 2,
             MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.OxygenMass *2,
         }.Sum();
@@ -123,6 +123,11 @@ namespace CompMs.Common.Lipidomics
                         new SpectrumPeak(C5H5D9NO4P-CD3, 300d, "Characteristic fragment") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
+                if (lipid.Chains is SeparatedChains) {
+                    if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                        spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH3COO - CD3 - acyl.Mass + MassDiffDictionary.HydrogenMass), 10d, $"NL of CD3 and{acyl}"){ SpectrumComment = SpectrumComment.acylchain});
+                    }
+                }
             }
             return spectrum.ToArray();
         }
