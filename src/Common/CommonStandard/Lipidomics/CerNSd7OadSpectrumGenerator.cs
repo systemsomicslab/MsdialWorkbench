@@ -20,6 +20,18 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
+        private static readonly double CH4O2 = new[] {
+            MassDiffDictionary.CarbonMass,
+            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.OxygenMass * 2,
+        }.Sum();
+
+        private static readonly double C2H3N = new[] {
+            MassDiffDictionary.CarbonMass * 2,
+            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.NitrogenMass,
+        }.Sum();
+
         private static readonly double CH3COO = new[] {
             MassDiffDictionary.CarbonMass * 2,
             MassDiffDictionary.HydrogenMass * 3,
@@ -97,13 +109,22 @@ namespace CompMs.Common.Lipidomics {
                 new SpectrumPeak(adduct.ConvertToMz(lipidD7mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
             };
 
-            if (adduct.AdductIonName == "[M+H]+") {                
+            if (adduct.AdductIonName == "[M+H]+") {
                 spectrum.AddRange(
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O*2, 100d, "Precursor-2H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O, 200d, "Precursor-H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
+                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sph) {
+                    spectrum.AddRange(
+                        new[] {
+                            new SpectrumPeak(sph.Mass + sphD7MassBalance - CH4O2 + MassDiffDictionary.HydrogenMass*2, 200d, $"{sph}-CH4O2") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(sph.Mass + sphD7MassBalance - H2O + MassDiffDictionary.HydrogenMass*2, 200d, $"{sph}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(sph.Mass + sphD7MassBalance - 2*H2O + MassDiffDictionary.HydrogenMass*2, 500d, $"{sph}-2H2O") { SpectrumComment = SpectrumComment.acylchain },
+                        }
+                    );
+                }
             }
             else if (adduct.AdductIonName == "[M+CH3COO]-") {                
                 spectrum.AddRange(
@@ -112,6 +133,14 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - CH3COO - CH5O, 200d, "Precursor-CH3COO-CH5O") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
+                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                    spectrum.AddRange(
+                        new[] {
+                            new SpectrumPeak(acyl.Mass - MassDiffDictionary.HydrogenMass*2, 50d, $"{acyl}-CH4O2") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(acyl.Mass + C2H3N, 100d, $"{acyl}-C2H3N") { SpectrumComment = SpectrumComment.acylchain },
+                        }
+                    );
+                }
             }
             else if (adduct.AdductIonName == "[M-H]-") {                
                 spectrum.AddRange(
@@ -120,6 +149,14 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O - MassDiffDictionary.HydrogenMass*2, 200d, "Precursor-H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
+                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {
+                    spectrum.AddRange(
+                        new[] {
+                            new SpectrumPeak(acyl.Mass - MassDiffDictionary.HydrogenMass*2, 50d, $"{acyl}-CH4O2") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(acyl.Mass + C2H3N, 100d, $"{acyl}-C2H3N") { SpectrumComment = SpectrumComment.acylchain },
+                        }
+                    );
+                }
             } else {
                 spectrum.AddRange(
                     new[] {
