@@ -34,6 +34,11 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
+        private static readonly double H2O = new[] {
+            MassDiffDictionary.HydrogenMass * 2,
+            MassDiffDictionary.OxygenMass,
+        }.Sum();
+
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public SMOadSpectrumGenerator() {
             spectrumGenerator = new OadSpectrumPeakGenerator();
@@ -105,6 +110,9 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
+                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sph) {
+                    spectrum.Add(new SpectrumPeak(sph.Mass - 2 * H2O + MassDiffDictionary.HydrogenMass * 2, 50d, $"{sph}-CH4O2") { SpectrumComment = SpectrumComment.acylchain });
+                }
             }
             if (adduct.AdductIonName == "[M+Na]+") {
                 spectrum.AddRange(
