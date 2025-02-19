@@ -47,11 +47,13 @@ public class GcmsRTGapFiller : GcmsGapFiller
 
 
     private readonly double rtTol;
+    private readonly Dictionary<int, RetentionIndexHandler> _fileIdToHandler;
     protected override double AxTol => rtTol;
 
     public GcmsRTGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) : base(files, mspDB, parameter) {
         _parameter = parameter;
         rtTol = parameter.RetentionTimeAlignmentTolerance;
+        _fileIdToHandler = parameter.GetRIHandlers();
     }
 
     protected override ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
@@ -85,7 +87,15 @@ public class GcmsRTGapFiller : GcmsGapFiller
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
         using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
         using (Chromatogram smoothed = chromatogram.ChromatogramSmoothing(smoothingMethod, smoothingLevel)) {
-            return smoothed.AsPeakArray();
+            var peaks = smoothed.AsPeakArray();
+
+            if (_fileIdToHandler.TryGetValue(fileID, out var riHandler)) {
+                // RT conversion
+                foreach (var peak in peaks) {
+                    peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
+                }
+            }
+            return peaks;
         }
     }
 }
