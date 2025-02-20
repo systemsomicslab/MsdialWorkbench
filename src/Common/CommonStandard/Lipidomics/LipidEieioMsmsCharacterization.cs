@@ -3360,7 +3360,7 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz2 = 297.037548 + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    //if (!isClassIon1Found && !isClassIon2Found) return null;
+                    if (!isClassIon1Found && !isClassIon2Found) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
