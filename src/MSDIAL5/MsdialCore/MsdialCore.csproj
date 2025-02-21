@@ -12,7 +12,7 @@
     <PackageReference Include="Accord" Version="3.8.0" />
     <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
-	  <PackageReference Include="RawDataHandler" Version="1.2.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.2.9180.705" Condition="'$(Configuration)'=='Release'" />
 	  <PackageReference Include="RawDataHandler" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />

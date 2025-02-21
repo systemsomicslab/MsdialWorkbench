@@ -1,5 +1,4 @@
-﻿using Accord.Diagnostics;
-using CompMs.Common.Algorithm.PeakPick;
+﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
