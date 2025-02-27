@@ -42,6 +42,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             MaxEdgeNumberPerNode = _parameter.MaxEdgeNumberPerNode;
             MaxPrecursorDifference = _parameter.MaxPrecursorDifference;
             MaxPrecursorDifferenceAsPercent = _parameter.MaxPrecursorDifferenceAsPercent;
+            IntensityPreScalingExponent = _parameter.IntensityPreScalingExponent;
+            if (IntensityPreScalingExponent == 0d) {
+                IntensityPreScalingExponent = .5d;
+            }
             MsmsSimilarityCalc = _parameter.MsmsSimilarityCalc;
             ExportFolderPath = _parameter.ExportFolderPath;
 
@@ -121,6 +125,12 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private double maxPrecursorDifferenceAsPercent;
 
+        public double IntensityPreScalingExponent {
+            get => _intensityPreScalingExponent;
+            set => SetProperty(ref _intensityPreScalingExponent, value);
+        }
+        private double _intensityPreScalingExponent;
+
         public MsmsSimilarityCalc MsmsSimilarityCalc {
             get => msmsSimilarityCalc;
             set => SetProperty(ref msmsSimilarityCalc, value);
@@ -179,6 +189,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             _parameter.MaxEdgeNumberPerNode = MaxEdgeNumberPerNode;
             _parameter.MaxPrecursorDifference = MaxPrecursorDifference;
             _parameter.MaxPrecursorDifferenceAsPercent = MaxPrecursorDifferenceAsPercent;
+            _parameter.IntensityPreScalingExponent = IntensityPreScalingExponent;
             _parameter.MsmsSimilarityCalc = MsmsSimilarityCalc;
             _parameter.ExportFolderPath = ExportFolderPath;
         }

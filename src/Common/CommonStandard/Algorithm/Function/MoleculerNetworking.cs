@@ -21,6 +21,7 @@ namespace CompMs.Common.Algorithm.Function
         public double MaxEdgeNumberPerNode { get; set; }
         public double MaxPrecursorDifference { get; set; }
         public double MaxPrecursorDifferenceAsPercent { get; set; }
+        public double IntensityPreScalingExponent { get; set; }
     }
 
     public sealed class MoleculerNetworkingBase {
@@ -93,7 +94,7 @@ namespace CompMs.Common.Algorithm.Function
         private static void RefineScans(IEnumerable<IMSScanProperty> scans, MolecularNetworkingQuery query) {
             foreach (var scan in scans) {
                 if (scan.Spectrum.Count > 0) {
-                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff);
+                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff, intensityScaleFactor: query.IntensityPreScalingExponent);
                 }
             }
         }

@@ -87,6 +87,13 @@ internal sealed class MolecularNetworkingSettingViewModel : SettingDialogViewMod
            ignoreValidationErrorValue: true
         ).SetValidateAttribute(() => MaxPrecursorDifferenceAsPercent).AddTo(Disposables);
 
+        IntensityPreScalingExponent = model.ToReactivePropertyAsSynchronized(
+            m => m.IntensityPreScalingExponent,
+            m => m.ToString(),
+            vm => double.Parse(vm),
+            ignoreValidationErrorValue: true
+        ).SetValidateAttribute(() => IntensityPreScalingExponent).AddTo(Disposables);
+
         IsExportIonCorrelation = model.ToReactivePropertySlimAsSynchronized(m => m.IsExportIonCorrelation).AddTo(Disposables);
 
         MsmsSimilarityCalc = model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
@@ -168,6 +175,11 @@ internal sealed class MolecularNetworkingSettingViewModel : SettingDialogViewMod
     [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
     [Range(0d, double.MaxValue, ErrorMessage = "The percent value should be positive value.")]
     public ReactiveProperty<string> MaxPrecursorDifferenceAsPercent { get; }
+
+    [Required(ErrorMessage = "Required field")]
+    [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
+    [Range(0.01d, double.MaxValue, ErrorMessage = "This value should be positive value.")]
+    public ReactiveProperty<string> IntensityPreScalingExponent { get; }
 
     public ReactivePropertySlim<bool> IsExportIonCorrelation { get; }
 

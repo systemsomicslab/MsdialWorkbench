@@ -37,6 +37,7 @@
                                      HorizontalAlignment="Right"
                                      VerticalAlignment="Center"
                                      VerticalContentAlignment="Center"
+                                     ToolTip="{Binding Path=Tooltip, RelativeSource={RelativeSource TemplatedParent}}"
                                      Width="120"
                                      Height="24"
                                      Margin="0,0,16,0"/>
@@ -108,6 +109,21 @@
         <ui:LabeledBar Label="Max edge number per node:" Content="{Binding MaxEdgeNumberPerNode}" />
         <ui:LabeledBar Label="Max precursor difference:" Content="{Binding MaxPrecursorDifference}" />
         <ui:LabeledBar Label="Retention time tolerance [min]:" Content="{Binding RtTolerance}" />
+        <ui:LabeledBar Label="Intensity scaling exponent:" Content="{Binding IntensityPreScalingExponent}">
+            <ui:LabeledBar.ToolTip>
+                <ToolTip>
+                    <StackPanel MaxWidth="320">
+                        <TextBlock Text="Adjust the exponent applied before intensity normalization." TextWrapping="Wrap"/>
+                        <TextBlock Text="The intensity I is transformed using the formula:" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                        <TextBlock FontFamily="Consolas" FontSize="12" Text="I' = (I^p) / max(I^p) × 100" Margin="0,4,0,0"/>
+                        <TextBlock Text="where p is the scaling exponent." TextWrapping="Wrap" Margin="0,4,0,0"/>
+                        <TextBlock Text="- Default: p = 0.5 (square root transformation)" TextWrapping="Wrap" Margin="4,4,0,0"/>
+                        <TextBlock Text="- Setting p = 1.0 keeps intensities unchanged before normalization." TextWrapping="Wrap" Margin="4,2,0,0"/>
+                        <TextBlock Text="- Increasing p enhances high-intensity peaks, while decreasing it reduces contrast." TextWrapping="Wrap" Margin="4,2,0,0"/>
+                    </StackPanel>
+                </ToolTip>
+            </ui:LabeledBar.ToolTip>
+        </ui:LabeledBar>
 
         <CheckBox Content="Export ion abundance correlation among samples"
                   IsChecked="{Binding Path=IsExportIonCorrelation.Value}"

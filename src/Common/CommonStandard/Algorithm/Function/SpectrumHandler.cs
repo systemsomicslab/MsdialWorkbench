@@ -59,9 +59,9 @@ namespace CompMs.Common.Algorithm.Function {
         }
 
         public static List<SpectrumPeak> GetNormalizedPeaks(List<SpectrumPeak> spectrum, double powFactor, double maxValue) {
-            if (spectrum.Count == 0) return new List<SpectrumPeak>();
-            var maxIntensity = Math.Pow(spectrum.Max(n => n.Intensity), powFactor);
-            return spectrum.Select(n => new SpectrumPeak { Mass = n.Mass, Intensity = Math.Pow(n.Intensity, powFactor) / maxIntensity * maxValue }).ToList();
+            if (spectrum.Count == 0) return [];
+            var maxIntensity = Math.Pow(spectrum.Max(s => s.Intensity), powFactor);
+            return spectrum.Select(s => new SpectrumPeak { Mass = s.Mass, Intensity = Math.Pow(s.Intensity, powFactor) / maxIntensity * maxValue }).ToList();
         }
 
         public static List<SpectrumPeak> GetBinnedSpectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
@@ -75,7 +75,7 @@ namespace CompMs.Common.Algorithm.Function {
                 if (range2Peaks.ContainsKey(massframe))
                     range2Peaks[massframe].Add(peak);
                 else
-                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
+                    range2Peaks[massframe] = [peak];
             }
 
             foreach (var pair in range2Peaks) {

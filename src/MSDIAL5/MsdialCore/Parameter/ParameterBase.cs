@@ -1353,6 +1353,8 @@ namespace CompMs.MsdialCore.Parameter
         public string ExportFolderPath { get; set; } = string.Empty;
         [Key(12)]
         public double MnAbsoluteAbundanceCutOff { get; set; } = 0.0;
+        [Key(13)]
+        public double IntensityPreScalingExponent { get; set; } = 0.5;
     }
 
     [MessagePackObject]
