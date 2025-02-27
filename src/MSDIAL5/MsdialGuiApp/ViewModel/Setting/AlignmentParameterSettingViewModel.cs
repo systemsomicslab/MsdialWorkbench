@@ -57,6 +57,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsKeepSuggestedMetaboliteFeatures = Model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepSuggestedMetaboliteFeatures).AddTo(Disposables);
             IsKeepRemovableFeaturesAndAssignedTagForChecking = Model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRemovableFeaturesAndAssignedTagForChecking).AddTo(Disposables);
             IsForceInsertForGapFilling = Model.ToReactivePropertySlimAsSynchronized(m => m.IsForceInsertForGapFilling).AddTo(Disposables);
+            UseRefMatchedPeaksOnly = model.ToReactivePropertySlimAsSynchronized(m => m.UseRefMatchedPeaksOnly).AddTo(Disposables);
             ShouldRunAlignment = Model.ToReactivePropertySlimAsSynchronized(m => m.ShouldRunAlignment).AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -87,6 +88,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsKeepSuggestedMetaboliteFeatures.ToUnit(),
                 IsKeepRemovableFeaturesAndAssignedTagForChecking.ToUnit(),
                 IsForceInsertForGapFilling.ToUnit(),
+                UseRefMatchedPeaksOnly.ToUnit(),
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -140,6 +142,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> IsKeepRemovableFeaturesAndAssignedTagForChecking { get; }
 
         public ReactivePropertySlim<bool> IsForceInsertForGapFilling { get; }
+
+        public ReactivePropertySlim<bool> UseRefMatchedPeaksOnly { get; }
 
         public ReactivePropertySlim<bool> ShouldRunAlignment { get; }
 
