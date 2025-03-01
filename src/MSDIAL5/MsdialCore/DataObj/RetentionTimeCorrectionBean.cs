@@ -215,20 +215,24 @@ namespace CompMs.MsdialCore.DataObj {
             if (rtParam.RtDiffCalcMethod == RtDiffCalcMethod.SampleMinusSampleAverage) {
                 Parallel.ForEach(files, parallelOptions, f => {
                     if (f.RetentionTimeCorrectionBean.StandardList != null && f.RetentionTimeCorrectionBean.StandardList.Count > 0) {
-                        var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
-                            rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray(), commonStdList);
-                        SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                        var originalRts = f.RetentionTimeCorrectionBean.OriginalRt;
+                        if (originalRts != null) {
+                            var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
+                                rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray(), commonStdList);
+                            SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                        }
                     }
                 });
             }
             else {
                 Parallel.ForEach(files, parallelOptions, f => {
                     if (f.RetentionTimeCorrectionBean.StandardList != null && f.RetentionTimeCorrectionBean.StandardList.Count > 0) {
-
-                        var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
-                            rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray());
-
-                        SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                        var originalRts = f.RetentionTimeCorrectionBean.OriginalRt;
+                        if (originalRts != null) {
+                            var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
+                                rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray());
+                            SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                        }
                     }
                 });
             }
