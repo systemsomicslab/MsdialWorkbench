@@ -10,18 +10,11 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Internal;
 
-internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
+internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance) : IDataProvider
 {
-    private readonly IDataProvider _other;
-    private readonly double _mz;
-    private readonly double _tolerance;
-
-    public PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance)
-    {
-        _other = other;
-        _mz = mz;
-        _tolerance = tolerance;
-    }
+    private readonly IDataProvider _other = other;
+    private readonly double _mz = mz;
+    private readonly double _tolerance = tolerance;
 
     public List<double> LoadCollisionEnergyTargets() {
         return LoadMsSpectrums().Select(s => s.CollisionEnergy).Distinct().ToList();
@@ -36,7 +29,7 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
         if (level <= 1) {
             return spectra;
         }
-        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
+        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => IsNearBy(s.Precursor, _mz, _tolerance)).ToArray());
     }
 
     public async Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
@@ -44,7 +37,7 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
         if (level <= 1) {
             return spectra;
         }
-        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
+        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => IsNearBy(s.Precursor, _mz, _tolerance)).ToArray());
     }
 
     public async Task<RawSpectrum[]> LoadMSSpectraWithRtRangeAsync(int msLevel, double rtStart, double rtEnd, CancellationToken token) {
@@ -54,12 +47,16 @@ internal sealed class PrecursorMzSelectedDataProvider : IDataProvider
 
     public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
         var spectra = _other.LoadMsSpectrums();
-        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
+        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || IsNearBy(s.Precursor, _mz, _tolerance)).ToArray());
     }
 
     public async Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
         var spectra = await _other.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
-        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || Math.Abs(s.Precursor.SelectedIonMz - _mz) <= _tolerance).ToArray());
+        return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || IsNearBy(s.Precursor, _mz, _tolerance)).ToArray());
+    }
+
+    private static bool IsNearBy(RawPrecursorIon p, double mz, double tolerance) {
+        return p is not null && Math.Abs(p.SelectedIonMz - mz) <= tolerance;
     }
 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {

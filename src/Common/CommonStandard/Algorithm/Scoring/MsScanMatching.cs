@@ -1145,7 +1145,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                             return resultArray; // add bonus
                         }
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel >= 2) {
                         resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
@@ -1191,7 +1191,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                             return resultArray; // add bonus
                         }
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel >= 2) {
                         resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
@@ -1271,7 +1271,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         isLipidChainMatched = false;
                         isLipidPositionMatched = false;
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel >= 2) {
                         isLipidClassMatched = true;
                         isLipidChainMatched = true;
                         isLipidPositionMatched = false;
@@ -1339,7 +1339,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         isLipidChainMatched = false;
                         isLipidPositionMatched = false;
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel >= 2) {
                         isLipidClassMatched = true;
                         isLipidChainMatched = true;
                         isLipidPositionMatched = false;

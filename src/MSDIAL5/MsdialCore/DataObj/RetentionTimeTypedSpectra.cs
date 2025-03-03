@@ -126,7 +126,7 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
         var spectra = await Task.Run(() => _spectraProvider.LoadMs2SpectraWithRtRangeAsync(chromatogramRange.Begin, chromatogramRange.End, token), token).ConfigureAwait(false);
         var results = new List<ValuePeak>();
         foreach (var spectrum in spectra) {
-            if (!spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
+            if (spectrum.Precursor is null || !spectrum.Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) || spectrum.ScanPolarity != _polarity) {
                 continue;
             }
             token.ThrowIfCancellationRequested();

@@ -1,4 +1,6 @@
-﻿using Msdial.Lcms.Dataprocess.Algorithm.Clustering;
+﻿using CompMs.Common.Parser;
+using Msdial.Lcms.Dataprocess.Algorithm.Clustering;
+using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,12 +52,17 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.edge");
             //MspManager.MergeMspFiles(@"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\input_msn_neg",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp");
-            MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
-                @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+            //MspManager.Msp2TextAsMsdialAlignmentResultFormat(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\mtbks\neg\mtbks_neg.txt");
+
             //MspManager.Msp2TextAsMsdialAlignmentResultFormat(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp",
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.txt",
             //    "casmi_neg");
+
+            MspFileParser.SeializedLbmObjToAsciiMspAsPublicUse(
+                @"E:\0_SourceCode\lbm_versions\Msp20250124141632_NCDK_converted_dev\Msp20250124141632_NCDK-TUAT-LC25_converted_dev.lbm2",
+                @"E:\0_SourceCode\lbm_versions\Msp20250124141632_NCDK_converted_dev\Msp20250124141632_NCDK-TUAT-LC25_converted_dev.msp");
 
             //mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp";
             //new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15-For-Statistics.msp";
