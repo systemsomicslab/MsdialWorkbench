@@ -3334,33 +3334,57 @@ namespace CompMs.Common.Algorithm.Scoring {
                     while (focusedMz <= maxMz) {
                         sumM = 0;
                         for (int k = remaindIndexM; k < peaks1.Count; k++) {
-                            if (peaks1[k].Mass < focusedMz - bin) { continue; }
-                            else if (focusedMz - bin <= peaks1[k].Mass && peaks1[k].Mass < focusedMz + bin) sumM += peaks1[k].Intensity;
-                            else { remaindIndexM = k; break; }
+                            if (peaks1[k].Mass < focusedMz - bin) {
+                                continue;
+                            }
+                            else if (focusedMz - bin <= peaks1[k].Mass && peaks1[k].Mass < focusedMz + bin) {
+                                sumM += peaks1[k].Intensity;
+                            }
+                            else {
+                                remaindIndexM = k;
+                                break;
+                            }
                         }
 
                         sumR = 0;
                         for (int k = remaindIndexL; k < peaks2.Count; k++) {
-                            if (peaks2[k].Mass < focusedMz - bin) continue;
-                            else if (focusedMz - bin <= peaks2[k].Mass && peaks2[k].Mass < focusedMz + bin)
+                            if (peaks2[k].Mass < focusedMz - bin) {
+                                continue;
+                            }
+                            else if (focusedMz - bin <= peaks2[k].Mass && peaks2[k].Mass < focusedMz + bin) {
                                 sumR += peaks2[k].Intensity;
-                            else { remaindIndexL = k; break; }
+                            }
+                            else {
+                                remaindIndexL = k;
+                                break;
+                            }
                         }
 
                         measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
-                        if (sumM > baseM) baseM = sumM;
+                        if (sumM > baseM) {
+                            baseM = sumM;
+                        }
 
                         referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumR);
-                        if (sumR > baseR) baseR = sumR;
+                        if (sumR > baseR) {
+                            baseR = sumR;
+                        }
+
                         size++;
 
-                        if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
-                        if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
+                        if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) {
+                            break;
+                        }
+
+                        if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass) {
                             focusedMz = peaks1[remaindIndexM].Mass;
-                        else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
+                        }
+                        else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass) {
                             focusedMz = peaks2[remaindIndexL].Mass;
-                        else
+                        }
+                        else {
                             focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+                        }
                     }
 
                     if (baseM == 0 || baseR == 0) {
