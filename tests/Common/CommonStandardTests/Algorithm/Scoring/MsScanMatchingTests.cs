@@ -25,9 +25,12 @@ public class MsScanMatchingTests
         Assert.AreEqual(expected, actual, .001, "The similarity between scan[0] and scan[1] should be the same as scan[1] and scan[0].");
     }
 
-    [TestMethod()]
-    public void GetBatchSimpleDotProduct_MatchesIndividual() {
-        var scans = CreateScanBatch([10, 15, 10, 20], 1, 42);
+    [DataTestMethod()]
+    [DataRow(5, 20, 5, 42)]
+    [DataRow(5, 20, 5, 1412)]
+    public void GetBatchSimpleDotProduct_MatchesIndividual(int size, int nPeak, int vPeak, int seed) {
+        var rng = new Random(seed);
+        var scans = CreateScanBatch(Enumerable.Repeat(0, size).Select(_ => rng.Next(-vPeak,vPeak) + nPeak).ToArray(), 1, rng.Next());
         var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, .05, 0, double.MaxValue);
         for (int i = 0; i < scans.Length; i++) {
             for (int j = 0; j < scans.Length; j++) {
