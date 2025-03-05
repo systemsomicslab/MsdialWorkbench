@@ -10,19 +10,23 @@ namespace CompMs.Common.Algorithm.Scoring.Tests;
 [TestClass()]
 public class MsScanMatchingTests
 {
+    private readonly double _mzTolerance = .05;
+    private readonly double _mzMin = 0;
+    private readonly double _mzMax = double.MaxValue;
+
     [TestMethod()]
     public void GetSimpleDotProduct_SelfComparison() {
         var scan = CreateScan(20, 1, 42);
-        var actual = MsScanMatching.GetSimpleDotProduct(scan, scan, .05, 0, double.MaxValue);
-        Assert.AreEqual(1d, actual, .001, "The similarity between a scan and itself should be 1.");
+        var actual = MsScanMatching.GetSimpleDotProduct(scan, scan, _mzTolerance, _mzMin, _mzMax);
+        Assert.AreEqual(1d, actual, .00001, "The similarity between a scan and itself should be 1.");
     }
 
     [TestMethod()]
     public void GetSimpleDotProduct_IsCummutative() {
         var scans = CreateScanBatch([20, 15], 1, 42);
-        var actual = MsScanMatching.GetSimpleDotProduct(scans[0], scans[1], .05, 0, double.MaxValue);
-        var expected = MsScanMatching.GetSimpleDotProduct(scans[1], scans[0], .05, 0, double.MaxValue);
-        Assert.AreEqual(expected, actual, .001, "The similarity between scan[0] and scan[1] should be the same as scan[1] and scan[0].");
+        var actual = MsScanMatching.GetSimpleDotProduct(scans[0], scans[1], _mzTolerance, _mzMin, _mzMax);
+        var expected = MsScanMatching.GetSimpleDotProduct(scans[1], scans[0], _mzTolerance, _mzMin, _mzMax);
+        Assert.AreEqual(expected, actual, .00001, "The similarity between scan[0] and scan[1] should be the same as scan[1] and scan[0].");
     }
 
     [DataTestMethod()]
@@ -31,18 +35,16 @@ public class MsScanMatchingTests
     public void GetBatchSimpleDotProduct_MatchesIndividual(int size, int nPeak, int vPeak, int seed) {
         var rng = new Random(seed);
         var scans = CreateScanBatch(Enumerable.Repeat(0, size).Select(_ => rng.Next(-vPeak,vPeak) + nPeak).ToArray(), 1, rng.Next());
-        var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, .05, 0, double.MaxValue);
+        var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, _mzTolerance, _mzMin, _mzMax);
         for (int i = 0; i < scans.Length; i++) {
             for (int j = 0; j < scans.Length; j++) {
-                var expected = MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], .05, 0, double.MaxValue);
-                Assert.AreEqual(expected, actuals[i][j], .001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
+                var expected = MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
+                Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
             }
         }
     }
 
     private IMSScanProperty CreateScan(int size, double mzScale, int seed) {
-        var scan = new MSScanProperty();
-
         var rng = new Random(seed);
         var peaks = new List<SpectrumPeak>(size);
         for (int j = 0; j < size; j++) {
@@ -53,9 +55,21 @@ public class MsScanMatchingTests
             });
         }
         peaks.Sort((a, b) => a.Mass.CompareTo(b.Mass));
-        scan.Spectrum = peaks;
 
-        return scan;
+        var merged = new List<SpectrumPeak>();
+        for (int i = 0; i < peaks.Count;) {
+            var k = i;
+            ++i;
+            while (i < peaks.Count && peaks[i].Mass - peaks[k].Mass < _mzTolerance) {
+                peaks[k].Intensity += peaks[i++].Intensity;
+            }
+            merged.Add(peaks[k]);
+        }
+
+        return new MSScanProperty
+        {
+            Spectrum = merged
+        };
     }
 
     private IMSScanProperty[] CreateScanBatch(int[] sizes, double mzScale, int seed) {
