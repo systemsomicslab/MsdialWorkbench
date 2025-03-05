@@ -3321,8 +3321,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                     var peaks1 = props[i].Spectrum;
                     var peaks2 = props[j].Spectrum;
 
-                    SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
-                    SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+                    double[] measuredIntensityBuffer = ArrayPool<double>.Shared.Rent(peaks1.Count + peaks2.Count);
+                    double[] referenceIntensityBuffer = ArrayPool<double>.Shared.Rent(peaks1.Count + peaks2.Count);
                     int size = 0;
 
                     double focusedMz = Math.Min(peaks1[0].Mass, peaks2[0].Mass);
@@ -3359,12 +3359,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                             }
                         }
 
-                        measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
+                        measuredIntensityBuffer[size] = sumM;
                         if (sumM > baseM) {
                             baseM = sumM;
                         }
 
-                        referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumR);
+                        referenceIntensityBuffer[size] = sumR;
                         if (sumR > baseR) {
                             baseR = sumR;
                         }
@@ -3387,33 +3387,28 @@ namespace CompMs.Common.Algorithm.Scoring {
                     }
 
                     if (baseM == 0 || baseR == 0) {
-                        ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
-                        ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                        ArrayPool<double>.Shared.Return(measuredIntensityBuffer);
+                        ArrayPool<double>.Shared.Return(referenceIntensityBuffer);
                         result[j][i] = result[i][j] = 0;
                         continue;
                     }
 
-                    for (int k = 0; k < size; k++) {
-                        measuredMassBuffer[k] = new SummedPeak(focusedMz: measuredMassBuffer[k].FocusedMz, intensity: measuredMassBuffer[k].Intensity / baseM * 999);
-                        referenceMassBuffer[k] = new SummedPeak(focusedMz: referenceMassBuffer[k].FocusedMz, intensity: referenceMassBuffer[k].Intensity / baseR * 999);
-                    }
-
                     double scalarM = 0, scalarR = 0, covariance = 0;
                     for (int k = 0; k < size; k++) {
-                        scalarM += measuredMassBuffer[k].Intensity;
-                        scalarR += referenceMassBuffer[k].Intensity;
-                        covariance += Math.Sqrt(measuredMassBuffer[k].Intensity * referenceMassBuffer[k].Intensity);
+                        scalarM += measuredIntensityBuffer[k];
+                        scalarR += referenceIntensityBuffer[k];
+                        covariance += Math.Sqrt(measuredIntensityBuffer[k] * referenceIntensityBuffer[k]);
                     }
+                    scalarM *= 999d / baseM;
+                    scalarR *= 999d / baseR;
+                    covariance *= 999d / Math.Sqrt(baseM * baseR);
 
-                    ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
-                    ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                    ArrayPool<double>.Shared.Return(measuredIntensityBuffer);
+                    ArrayPool<double>.Shared.Return(referenceIntensityBuffer);
 
-                    if (scalarM == 0d || scalarR == 0d) {
-                        result[j][i] = result[i][j] = 0;
-                    }
-                    else {
-                        result[j][i] = result[i][j] = Math.Pow(covariance, 2) / scalarM / scalarR;
-                    }
+                    result[j][i] = result[i][j] = scalarM != 0d && scalarR != 0d
+                        ? Math.Pow(covariance, 2) / scalarM / scalarR
+                        : 0;
                 }
             }
 
