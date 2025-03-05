@@ -3329,10 +3329,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                     double maxMz = Math.Min(massEnd, Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass));
 
                     double baseM = double.MinValue, baseR = double.MinValue;
-                    double sumM = 0, sumR = 0;
                     int remaindIndexM = 0, remaindIndexL = 0;
                     while (focusedMz <= maxMz) {
-                        sumM = 0;
+                        var sumM = 0d;
                         for (int k = remaindIndexM; k < peaks1.Count; k++) {
                             if (peaks1[k].Mass < focusedMz - bin) {
                                 continue;
@@ -3346,7 +3345,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                             }
                         }
 
-                        sumR = 0;
+                        var sumR = 0d;
                         for (int k = remaindIndexL; k < peaks2.Count; k++) {
                             if (peaks2[k].Mass < focusedMz - bin) {
                                 continue;
