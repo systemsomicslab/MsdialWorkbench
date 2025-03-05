@@ -3308,6 +3308,22 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
+        public static double[][] GetBatchSimpleDotProduct(IMSScanProperty[] props, double bin, double massBegin, double massEnd) {
+            var result = new double[props.Length][];
+            for (int i = 0; i < result.Length; i++) {
+                result[i] = new double[props.Length];
+                result[i][i] = 1d;
+            }
+
+            for (int i = 0; i < props.Length; i++) {
+                for (int j = i + 1; j < props.Length; j++) {
+                    result[j][i] = result[i][j] = GetSimpleDotProduct(props[i], props[j], bin, massBegin, massEnd);
+                }
+            }
+
+            return result;
+        }
+
         public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance) {
             isInTolerance = false;
             if (actual == null || reference == null) return -1;
