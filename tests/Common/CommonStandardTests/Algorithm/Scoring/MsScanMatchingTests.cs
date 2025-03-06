@@ -63,7 +63,22 @@ public class MsScanMatchingTests
         var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, _mzTolerance, _mzMin, _mzMax);
         for (int i = 0; i < scans.Length; i++) {
             for (int j = 0; j < scans.Length; j++) {
-                var expected = MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
+                var expected = i == j ? 1d : MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
+                Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
+            }
+        }
+    }
+
+    [TestMethod()]
+    public void GetBatchSimpleDotProduct_ContainsNoPeakScan() {
+        var rng = new Random(42);
+        var scans = CreateScanBatch(Enumerable.Repeat(0, 5).Select(_ => rng.Next(15, 25)).ToArray(), 1, rng.Next());
+        scans[2].Spectrum = null;
+        scans[3].Spectrum = null;
+        var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, _mzTolerance, _mzMin, _mzMax);
+        for (int i = 0; i < scans.Length; i++) {
+            for (int j = 0; j < scans.Length; j++) {
+                var expected = i == j ? 1d : MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
                 Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
             }
         }
