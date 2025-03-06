@@ -3326,14 +3326,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                     var peaks1 = props[i].Spectrum;
                     var peaks2 = props[j].Spectrum;
 
-                    double[] measuredIntensityBuffer = ArrayPool<double>.Shared.Rent(peaks1.Count + peaks2.Count);
-                    double[] referenceIntensityBuffer = ArrayPool<double>.Shared.Rent(peaks1.Count + peaks2.Count);
-                    int size = 0;
-
                     double focusedMz = Math.Max(Math.Min(peaks1[0].Mass, peaks2[0].Mass), massBegin);
                     double maxMz = Math.Min(massEnd, Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass));
 
-                    double baseM = double.MinValue, baseR = double.MinValue;
+                    double scalarM = 0, scalarR = 0, covariance = 0;
                     int remaindIndexM = 0, remaindIndexL = 0;
                     while (focusedMz <= maxMz) {
                         var sumM = 0d;
@@ -3364,17 +3360,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                             }
                         }
 
-                        measuredIntensityBuffer[size] = sumM;
-                        if (sumM > baseM) {
-                            baseM = sumM;
-                        }
-
-                        referenceIntensityBuffer[size] = sumR;
-                        if (sumR > baseR) {
-                            baseR = sumR;
-                        }
-
-                        size++;
+                        scalarM += sumM;
+                        scalarR += sumR;
+                        covariance += Math.Sqrt(sumM * sumR);
 
                         if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) {
                             break;
@@ -3396,26 +3384,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                             focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
                         }
                     }
-
-                    if (baseM == 0 || baseR == 0) {
-                        ArrayPool<double>.Shared.Return(measuredIntensityBuffer);
-                        ArrayPool<double>.Shared.Return(referenceIntensityBuffer);
-                        result[j][i] = result[i][j] = 0;
-                        continue;
-                    }
-
-                    double scalarM = 0, scalarR = 0, covariance = 0;
-                    for (int k = 0; k < size; k++) {
-                        scalarM += measuredIntensityBuffer[k];
-                        scalarR += referenceIntensityBuffer[k];
-                        covariance += Math.Sqrt(measuredIntensityBuffer[k] * referenceIntensityBuffer[k]);
-                    }
-                    scalarM *= 999d / baseM;
-                    scalarR *= 999d / baseR;
-                    covariance *= 999d / Math.Sqrt(baseM * baseR);
-
-                    ArrayPool<double>.Shared.Return(measuredIntensityBuffer);
-                    ArrayPool<double>.Shared.Return(referenceIntensityBuffer);
 
                     result[j][i] = result[i][j] = scalarM != 0d && scalarR != 0d
                         ? Math.Pow(covariance, 2) / scalarM / scalarR
