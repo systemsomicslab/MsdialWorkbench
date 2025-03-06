@@ -122,19 +122,9 @@ public class MsScanMatchingTests
         }
         peaks.Sort((a, b) => a.Mass.CompareTo(b.Mass));
 
-        var merged = new List<SpectrumPeak>();
-        for (int i = 0; i < peaks.Count;) {
-            var k = i++;
-            while (i < peaks.Count && peaks[i].Mass - peaks[k].Mass < _mzTolerance) {
-                peaks[k].Intensity += peaks[i].Intensity;
-                ++i;
-            }
-            merged.Add(peaks[k]);
-        }
-
         return new MSScanProperty
         {
-            Spectrum = merged
+            Spectrum = peaks,
         };
     }
 
