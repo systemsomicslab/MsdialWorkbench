@@ -31,6 +31,18 @@ public class MsScanMatchingTests
     }
 
     [TestMethod()]
+    public void GetSimpleDotProduct_MergeIfClose() {
+        var scan1 = new MSScanProperty { Spectrum = [ new() { Mass = 100.00, Intensity = 1d, }, new() { Mass = 100.06, Intensity = 1d, }, ], };
+        var scan2 = new MSScanProperty { Spectrum = [ new() { Mass = 99.98, Intensity = 1d, }, new() { Mass = 100.02, Intensity = 1d, }, ], };
+        var actual = MsScanMatching.GetSimpleDotProduct(scan1, scan2, .05, _mzMin, _mzMax);
+        Console.WriteLine("scan1:");
+        scan1.Spectrum.ShowForTest();
+        Console.WriteLine("scan2:");
+        scan2.Spectrum.ShowForTest();
+        Assert.AreEqual(.5, actual, .00001);
+    }
+
+    [TestMethod()]
     public void GetSimpleDotProduct_MassBeginWorks() {
         var scan1 = CreateScan(20, 1, 42);
         var scan2 = CreateScan(20, .4, 1412);
