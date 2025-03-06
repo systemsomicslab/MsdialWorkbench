@@ -31,6 +31,10 @@ namespace CompMs.Common.Algorithm.Scoring {
             return obj1.Spectrum is not null && obj2.Spectrum is not null && obj1.Spectrum.Count != 0 && obj2.Spectrum.Count != 0;
         }
 
+        private static bool IsAvailableSpectrum(IMSScanProperty obj) {
+            return obj.Spectrum is { Count: > 0 };
+        }
+
         public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
             float tolerance, float mzBegin, float mzEnd) {
 
@@ -3311,19 +3315,27 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static double[][] GetBatchSimpleDotProduct(IMSScanProperty[] props, double bin, double massBegin, double massEnd) {
             var result = new double[props.Length][];
-            for (int i = 0; i < result.Length; i++) {
+            for (int i = 0; i < props.Length; i++) {
                 result[i] = new double[props.Length];
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+                Array.Fill(result[i], -1);
+#else
+                for (int j = 0; j < result[i].Length; j++) {
+                    result[i][j] = -1;
+                }
+#endif
                 result[i][i] = 1d;
             }
 
-            for (int i = 0; i < props.Length; i++) {
-                for (int j = i + 1; j < props.Length; j++) {
-                    if (!IsComparedAvailable(props[i], props[j])) {
-                        result[j][i] = result[i][j] = -1;
-                        continue;
-                    }
+            var availableIndex = Enumerable.Range(0, props.Length).Where(i => IsAvailableSpectrum(props[i])).ToList();
 
-                    var peaks1 = props[i].Spectrum;
+            for (int ii = 0; ii < availableIndex.Count; ii++) {
+                var i = availableIndex[ii];
+                var peaks1 = props[i].Spectrum;
+
+                for (int jj = ii + 1; jj < availableIndex.Count; jj++) {
+                    var j = availableIndex[jj];
+
                     var peaks2 = props[j].Spectrum;
 
                     double focusedMz = Math.Max(Math.Min(peaks1[0].Mass, peaks2[0].Mass), massBegin);
