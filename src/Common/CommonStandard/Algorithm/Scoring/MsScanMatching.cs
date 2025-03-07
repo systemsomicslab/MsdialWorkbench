@@ -3335,73 +3335,70 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var availableIndex = Enumerable.Range(0, props.Length).Where(i => IsAvailableSpectrum(props[i])).ToList();
 
-            for (int ii = 0; ii < availableIndex.Count; ii++) {
-                var i = availableIndex[ii];
-                var peaks1 = props[i].Spectrum;
+            var totPeaks = availableIndex.Select(k => props[k].Spectrum.Count).Sum();
+            var mergedPeaks = new (double Mz, double Intensity, int ID)[totPeaks];
+            var used = 0;
+            for (int k = 0; k < availableIndex.Count; k++) {
+                var peaks = props[availableIndex[k]].Spectrum;
+                for (int l = 0; l < peaks.Count; l++) {
+                    mergedPeaks[l + used] = (peaks[l].Mass, peaks[l].Intensity, k);
+                }
+                used += peaks.Count;
+            }
+            Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
 
-                for (int jj = ii + 1; jj < availableIndex.Count; jj++) {
-                    var j = availableIndex[jj];
-                    var peaks2 = props[j].Spectrum;
+            double[][] focusedlasts = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(double.MinValue, availableIndex.Count).ToArray()).ToArray();
+            double[] summed = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
+            bool[] isExists = Enumerable.Repeat(false, availableIndex.Count).ToArray();
+            int[] existsID = Enumerable.Repeat(0, availableIndex.Count).ToArray();
+            double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
+            double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
 
-                    var mergedPeaks = new (double Mz, double Intensity, int ID)[peaks1.Count + peaks2.Count];
-                    for (int k = 0; k < peaks1.Count; k++) {
-                        mergedPeaks[k] = (peaks1[k].Mass, peaks1[k].Intensity, 0);
+            double focusedMz = Math.Max(mergedPeaks[0].Mz, massBegin);
+            double maxMz = Math.Min(massEnd, mergedPeaks[mergedPeaks.Length - 1].Mz);
+
+            for (int k = 0; k < mergedPeaks.Length; k++) {
+                if (mergedPeaks[k].Mz < massBegin - bin) {
+                    continue;
+                }
+                var focus = mergedPeaks[k];
+                scalars[focus.ID] += focus.Intensity;
+
+                var p = k;
+                var existsIDIdx = 0;
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, intensity, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        existsID[existsIDIdx++] = ID;
+                        summed[ID] = 0d;
                     }
-                    for (int k = 0; k < peaks2.Count; k++) {
-                        mergedPeaks[peaks1.Count + k] = (peaks2[k].Mass, peaks2[k].Intensity, 1);
+                    summed[ID] += intensity;
+                }
+
+                while (--existsIDIdx >= 0) {
+                    var anotherID = existsID[existsIDIdx];
+                    isExists[anotherID] = false;
+                    if (anotherID != focus.ID && focus.Mz - bin < focusedlasts[anotherID][focus.ID]) {
+                        continue;
                     }
-                    Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
-
-                    double[][] focusedlasts = [[ double.MinValue, double.MinValue ], [ double.MinValue, double.MinValue ]];
-                    double[] summed = [0d, 0d];
-                    bool[] isExists = [false, false];
-                    int[] existsID = [0, 0];
-                    double[] scalars = [0d, 0d];
-                    double[][] covariances = [[0d, 0d], [0d, 0d]];
-
-                    double focusedMz = Math.Max(mergedPeaks[0].Mz, massBegin);
-                    double maxMz = Math.Min(massEnd, mergedPeaks[mergedPeaks.Length - 1].Mz);
-
-                    for (int k = 0; k < mergedPeaks.Length; k++) {
-                        if (mergedPeaks[k].Mz < massBegin - bin) {
-                            continue;
-                        }
-                        var focus = mergedPeaks[k];
-                        scalars[focus.ID] += focus.Intensity;
-
-                        var p = k;
-                        var existsIDIdx = 0;
-                        while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
-                            var (_, intensity, ID) = mergedPeaks[p++];
-                            if (!isExists[ID]) {
-                                isExists[ID] = true;
-                                existsID[existsIDIdx++] = ID;
-                                summed[ID] = 0d;
+                    focusedlasts[anotherID][focus.ID] = focusedlasts[focus.ID][anotherID] = focus.Mz;
+                    if (anotherID == focus.ID) {
+                        for (int l = 0; l < availableIndex.Count; l++) {
+                            if (focusedlasts[l][focus.ID] < focus.Mz - bin) {
+                                focusedlasts[focus.ID][l] = focusedlasts[l][focus.ID] = focus.Mz;
                             }
-                            summed[ID] += intensity;
-                        }
-
-                        while (--existsIDIdx >= 0) {
-                            var anotherID = existsID[existsIDIdx];
-                            isExists[anotherID] = false;
-                            if (anotherID != focus.ID && focus.Mz - bin < focusedlasts[anotherID][focus.ID]) {
-                                continue;
-                            }
-                            focusedlasts[anotherID][focus.ID] = focusedlasts[focus.ID][anotherID] = focus.Mz;
-                            if (anotherID == focus.ID) {
-                                for (int l = 0; l < 2; l++) {
-                                    if (focusedlasts[l][focus.ID] < focus.Mz - bin) {
-                                        focusedlasts[focus.ID][l] = focusedlasts[l][focus.ID] = focus.Mz;
-                                    }
-                                }
-                            }
-                            var cov = Math.Sqrt(summed[anotherID] * summed[focus.ID]);
-                            covariances[focus.ID][anotherID] = (covariances[anotherID][focus.ID] += cov);
                         }
                     }
+                    var cov = Math.Sqrt(summed[anotherID] * summed[focus.ID]);
+                    covariances[focus.ID][anotherID] = (covariances[anotherID][focus.ID] += cov);
+                }
+            }
 
-                    result[j][i] = result[i][j] = scalars[0] != 0d && scalars[1] != 0d
-                        ? Math.Pow(covariances[0][1], 2) / scalars[0] / scalars[1]
+            for (int i = 0; i < availableIndex.Count; i++) {
+                for (int j = i + 1; j < availableIndex.Count; j++) {
+                    result[availableIndex[j]][availableIndex[i]] = result[availableIndex[i]][availableIndex[j]] = scalars[i] != 0d && scalars[j] != 0d
+                        ? Math.Pow(covariances[i][j], 2) / scalars[i] / scalars[j]
                         : 0;
                 }
             }
