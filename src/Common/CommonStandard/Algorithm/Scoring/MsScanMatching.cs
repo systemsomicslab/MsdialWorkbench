@@ -3236,12 +3236,19 @@ namespace CompMs.Common.Algorithm.Scoring {
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
 
-            double minMz = Math.Min(peaks1[0].Mass, peaks2[0].Mass);
             double maxMz = Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass);
-            if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
+            int remaindIndexM = 0, remaindIndexL = 0;
+            while (remaindIndexM < peaks1.Count && peaks1[remaindIndexM].Mass < massBegin - bin) {
+                ++remaindIndexM;
+            }
+            while (remaindIndexL < peaks2.Count && peaks2[remaindIndexL].Mass < massBegin - bin) {
+                ++remaindIndexL;
+            }
 
-            double focusedMz = minMz;
+            double focusedMz = Math.Min(
+                peaks1.ElementAtOrDefault(remaindIndexM)?.Mass ?? double.MaxValue,
+                peaks2.ElementAtOrDefault(remaindIndexL)?.Mass ?? double.MaxValue);
 
             SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
             SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
@@ -3249,7 +3256,6 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
-            int remaindIndexM = 0, remaindIndexL = 0;
             while (focusedMz <= maxMz) {
                 sumM = 0;
                 for (int i = remaindIndexM; i < peaks1.Count; remaindIndexM = ++i) {
@@ -3335,70 +3341,67 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 for (int jj = ii + 1; jj < availableIndex.Count; jj++) {
                     var j = availableIndex[jj];
-
                     var peaks2 = props[j].Spectrum;
 
-                    double focusedMz = Math.Max(Math.Min(peaks1[0].Mass, peaks2[0].Mass), massBegin);
-                    double maxMz = Math.Min(massEnd, Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass));
+                    var mergedPeaks = new (double Mz, double Intensity, int ID)[peaks1.Count + peaks2.Count];
+                    for (int k = 0; k < peaks1.Count; k++) {
+                        mergedPeaks[k] = (peaks1[k].Mass, peaks1[k].Intensity, 0);
+                    }
+                    for (int k = 0; k < peaks2.Count; k++) {
+                        mergedPeaks[peaks1.Count + k] = (peaks2[k].Mass, peaks2[k].Intensity, 1);
+                    }
+                    Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
 
-                    double scalarM = 0, scalarR = 0, covariance = 0;
-                    int remaindIndexM = 0, remaindIndexL = 0;
-                    while (focusedMz <= maxMz) {
-                        var sumM = 0d;
-                        for (int k = remaindIndexM; k < peaks1.Count; remaindIndexM = ++k) {
-                            if (peaks1[k].Mass < focusedMz - bin) {
-                                continue;
-                            }
-                            else if (focusedMz - bin <= peaks1[k].Mass && peaks1[k].Mass < focusedMz + bin) {
-                                sumM += peaks1[k].Intensity;
-                            }
-                            else {
-                                remaindIndexM = k;
-                                break;
-                            }
-                        }
+                    double[][] focusedlasts = [[ double.MinValue, double.MinValue ], [ double.MinValue, double.MinValue ]];
+                    double[] summed = [0d, 0d];
+                    bool[] isExists = [false, false];
+                    int[] existsID = [0, 0];
+                    double[] scalars = [0d, 0d];
+                    double[][] covariances = [[0d, 0d], [0d, 0d]];
 
-                        var sumR = 0d;
-                        for (int k = remaindIndexL; k < peaks2.Count; remaindIndexL = ++k) {
-                            if (peaks2[k].Mass < focusedMz - bin) {
-                                continue;
-                            }
-                            else if (focusedMz - bin <= peaks2[k].Mass && peaks2[k].Mass < focusedMz + bin) {
-                                sumR += peaks2[k].Intensity;
-                            }
-                            else {
-                                remaindIndexL = k;
-                                break;
-                            }
-                        }
+                    double focusedMz = Math.Max(mergedPeaks[0].Mz, massBegin);
+                    double maxMz = Math.Min(massEnd, mergedPeaks[mergedPeaks.Length - 1].Mz);
 
-                        scalarM += sumM;
-                        scalarR += sumR;
-                        covariance += Math.Sqrt(sumM * sumR);
-
-                        if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) {
-                            break;
-                        }
-
-                        if (remaindIndexM >= peaks1.Count || remaindIndexL >= peaks2.Count) {
-                            focusedMz = remaindIndexL >= peaks2.Count
-                                ? peaks1[remaindIndexM].Mass
-                                : peaks2[remaindIndexL].Mass;
+                    for (int k = 0; k < mergedPeaks.Length; k++) {
+                        if (mergedPeaks[k].Mz < massBegin - bin) {
                             continue;
                         }
-                        if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass) {
-                            focusedMz = peaks1[remaindIndexM].Mass;
+                        var focus = mergedPeaks[k];
+                        scalars[focus.ID] += focus.Intensity;
+
+                        var p = k;
+                        var existsIDIdx = 0;
+                        while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                            var (_, intensity, ID) = mergedPeaks[p++];
+                            if (!isExists[ID]) {
+                                isExists[ID] = true;
+                                existsID[existsIDIdx++] = ID;
+                                summed[ID] = 0d;
+                            }
+                            summed[ID] += intensity;
                         }
-                        else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass) {
-                            focusedMz = peaks2[remaindIndexL].Mass;
-                        }
-                        else {
-                            focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+
+                        while (--existsIDIdx >= 0) {
+                            var anotherID = existsID[existsIDIdx];
+                            isExists[anotherID] = false;
+                            if (anotherID != focus.ID && focus.Mz - bin < focusedlasts[anotherID][focus.ID]) {
+                                continue;
+                            }
+                            focusedlasts[anotherID][focus.ID] = focusedlasts[focus.ID][anotherID] = focus.Mz;
+                            if (anotherID == focus.ID) {
+                                for (int l = 0; l < 2; l++) {
+                                    if (focusedlasts[l][focus.ID] < focus.Mz - bin) {
+                                        focusedlasts[focus.ID][l] = focusedlasts[l][focus.ID] = focus.Mz;
+                                    }
+                                }
+                            }
+                            var cov = Math.Sqrt(summed[anotherID] * summed[focus.ID]);
+                            covariances[focus.ID][anotherID] = (covariances[anotherID][focus.ID] += cov);
                         }
                     }
 
-                    result[j][i] = result[i][j] = scalarM != 0d && scalarR != 0d
-                        ? Math.Pow(covariance, 2) / scalarM / scalarR
+                    result[j][i] = result[i][j] = scalars[0] != 0d && scalars[1] != 0d
+                        ? Math.Pow(covariances[0][1], 2) / scalars[0] / scalars[1]
                         : 0;
                 }
             }

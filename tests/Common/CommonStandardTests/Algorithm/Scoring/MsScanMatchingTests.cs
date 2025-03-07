@@ -55,6 +55,49 @@ public class MsScanMatchingTests
     }
 
     [DataTestMethod()]
+    [DynamicData(nameof(GetBatchSimpleDotProduct_Failed_Cases_Data), DynamicDataSourceType.Property)]
+    public void GetBatchSimpleDotProduct_Failed_Cases(IMSScanProperty[] scans) {
+        var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, _mzTolerance, _mzMin, _mzMax);
+        for (int i = 0; i < actuals.Length; i++) {
+            for (int j = 0; j < actuals[i].Length; j++) {
+                var expected = i == j ? 1d : MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
+                try {
+                    Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
+                }
+                catch (AssertFailedException) {
+                    Console.WriteLine("scan[{0}]:", i);
+                    scans[i].Spectrum.ShowForTest();
+                    Console.WriteLine("scan[{0}]:", j);
+                    scans[j].Spectrum.ShowForTest();
+                    throw;
+                }
+            }
+        }
+    }
+
+    public static IEnumerable<object[]> GetBatchSimpleDotProduct_Failed_Cases_Data {
+        get {
+            yield return [
+                new[]
+                {
+                    new MSScanProperty { Spectrum = [ new() { Mass = 100.00, Intensity = 1d, }, new() { Mass = 100.06, Intensity = 1d, }, ], },
+                    new MSScanProperty { Spectrum = [ new() { Mass = 99.98, Intensity = 1d, }, new() { Mass = 100.02, Intensity = 1d, }, ], },
+                },
+            ];
+            yield return [
+                new[]
+                {
+                    new MSScanProperty { Spectrum = [ new() { Mass = 99.97, Intensity = 1d, }, new() { Mass = 100.00, Intensity = 1d, }, ], },
+                    new MSScanProperty { Spectrum = [ new() { Mass = 99.93, Intensity = 1d, }, new() { Mass = 100.03, Intensity = 1d, }, ], },
+                },
+            ];
+        }
+    }
+
+    [DataTestMethod()]
+    [DataRow(2, 6, 1, 170)]
+    [DataRow(7, 10, 5, 385)]
+    [DataRow(2, 1, 0, 82)]
     [DataRow(5, 20, 5, 42)]
     [DataRow(5, 20, 5, 1412)]
     public void GetBatchSimpleDotProduct_MatchesIndividual(int size, int nPeak, int vPeak, int seed) {
@@ -64,7 +107,16 @@ public class MsScanMatchingTests
         for (int i = 0; i < scans.Length; i++) {
             for (int j = 0; j < scans.Length; j++) {
                 var expected = i == j ? 1d : MsScanMatching.GetSimpleDotProduct(scans[i], scans[j], _mzTolerance, _mzMin, _mzMax);
-                Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
+                try {
+                    Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
+                }
+                catch (AssertFailedException) {
+                    Console.WriteLine("scan[{0}]:", i);
+                    scans[i].Spectrum.ShowForTest();
+                    Console.WriteLine("scan[{0}]:", j);
+                    scans[j].Spectrum.ShowForTest();
+                    throw;
+                }
             }
         }
     }
@@ -85,13 +137,13 @@ public class MsScanMatchingTests
     }
 
     [DataTestMethod()]
-    [DataRow(.0, 42)]
-    [DataRow(.1, 42)]
-    [DataRow(.5, 42)]
-    [DataRow(.9, 42)]
-    public void GetBatchSimpleDotProduct_MassBeginWorks(double massBegin, int seed) {
+    [DataRow(15, 25, .0, 42)]
+    [DataRow(15, 25, .1, 42)]
+    [DataRow(15, 25, .5, 42)]
+    [DataRow(15, 25, .9, 42)]
+    public void GetBatchSimpleDotProduct_MassBeginWorks(int nPeakMin, int nPeakMax, double massBegin, int seed) {
         var rng = new Random(seed);
-        var scans = CreateScanBatch(Enumerable.Repeat(0, 5).Select(_ => rng.Next(15, 25)).ToArray(), 1, rng.Next());
+        var scans = CreateScanBatch(Enumerable.Repeat(0, 5).Select(_ => rng.Next(nPeakMin, nPeakMax)).ToArray(), 1, rng.Next());
         var actuals = MsScanMatching.GetBatchSimpleDotProduct(scans, _mzTolerance, massBegin, _mzMax);
         for (int i = 0; i < scans.Length; i++) {
             for (int j = 0; j < scans.Length; j++) {
@@ -99,7 +151,7 @@ public class MsScanMatchingTests
                 try {
                     Assert.AreEqual(expected, actuals[i][j], .00001, $"The similarity between scan[{i}] and scan[{j}] is inconsistent.");
                 }
-                catch (AssertFailedException ex) {
+                catch (AssertFailedException) {
                     Console.WriteLine("scan[{0}]:", i);
                     scans[i].Spectrum.ShowForTest();
                     Console.WriteLine("scan[{0}]:", j);
