@@ -3348,9 +3348,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
 
             double[][] focusedlasts = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(double.MinValue, availableIndex.Count).ToArray()).ToArray();
-            double[] summed = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
+            double[] summed = ArrayPool<double>.Shared.Rent(availableIndex.Count);
             bool[] isExists = Enumerable.Repeat(false, availableIndex.Count).ToArray();
-            int[] existsID = Enumerable.Repeat(0, availableIndex.Count).ToArray();
+            int[] existsID = ArrayPool<int>.Shared.Rent(availableIndex.Count);
             double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
             double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
 
@@ -3402,6 +3402,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                         : 0;
                 }
             }
+
+            ArrayPool<double>.Shared.Return(summed);
+            ArrayPool<int>.Shared.Return(existsID);
 
             return result;
         }
