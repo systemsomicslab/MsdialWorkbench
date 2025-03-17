@@ -120,6 +120,9 @@ namespace CompMs.MsdialCore.DataObj
         [Key(5)]
         public string RetentionTimeCorrectionResultFilePath { get; set; } = string.Empty; // *.rtc
 
+        [IgnoreMember]
+        public bool IsLoaded => originalRt is not null;
+
         [SerializationConstructor]
         public RetentionTimeCorrectionBean() { }
 
