@@ -3353,6 +3353,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             int[] existsID = ArrayPool<int>.Shared.Rent(availableIndex.Count);
             double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
             double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
+            int klo = 0, khi = 0;
 
             double focusedMz = Math.Max(mergedPeaks[0].Mz, massBegin);
             double maxMz = Math.Min(massEnd, mergedPeaks[mergedPeaks.Length - 1].Mz);
@@ -3370,10 +3371,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                     var (_, intensity, ID) = mergedPeaks[p++];
                     if (!isExists[ID]) {
                         isExists[ID] = true;
-                        existsID[existsIDIdx++] = ID;
                         summed[ID] = 0d;
                     }
                     summed[ID] += intensity;
+                }
+
+                p = k;
+                existsIDIdx = 0;
+                for (int l = 0; l < isExists.Length; l++) {
+                    isExists[l] = false;
+                }
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, _, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        existsID[existsIDIdx++] = ID;
+                    }
                 }
 
                 while (--existsIDIdx >= 0) {

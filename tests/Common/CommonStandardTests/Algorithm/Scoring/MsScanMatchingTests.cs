@@ -100,6 +100,7 @@ public class MsScanMatchingTests
     [DataRow(2, 1, 0, 82)]
     [DataRow(5, 20, 5, 42)]
     [DataRow(5, 20, 5, 1412)]
+    //[DataRow(1000, 100, 50, 42)]
     public void GetBatchSimpleDotProduct_MatchesIndividual(int size, int nPeak, int vPeak, int seed) {
         var rng = new Random(seed);
         var scans = CreateScanBatch(Enumerable.Repeat(0, size).Select(_ => rng.Next(-vPeak, vPeak) + nPeak).ToArray(), 1, rng.Next());
