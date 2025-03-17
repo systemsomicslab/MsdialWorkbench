@@ -34,7 +34,6 @@ public class PeakAligner {
         Refiner = factory.CreateAlignmentRefiner();
         Param = factory.Parameter;
         Progress = progress;
-            
     }
 
     public AlignmentResultContainer Alignment(
