@@ -3319,10 +3319,10 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static double[][] GetBatchSimpleDotProduct(IMSScanProperty[] props, double bin, double massBegin, double massEnd) {
-            var result = new double[props.Length][];
-            for (int i = 0; i < props.Length; i++) {
-                result[i] = new double[props.Length];
+        public static double[][] GetBatchSimpleDotProduct(IReadOnlyList<IMSScanProperty> props, double bin, double massBegin, double massEnd) {
+            var result = new double[props.Count][];
+            for (int i = 0; i < props.Count; i++) {
+                result[i] = new double[props.Count];
 #if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
                 Array.Fill(result[i], -1);
 #else
@@ -3333,7 +3333,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result[i][i] = 1d;
             }
 
-            var availableIndex = Enumerable.Range(0, props.Length).Where(i => IsAvailableSpectrum(props[i])).ToList();
+            var availableIndex = Enumerable.Range(0, props.Count).Where(i => IsAvailableSpectrum(props[i])).ToList();
 
             var totPeaks = availableIndex.Select(k => props[k].Spectrum.Count).Sum();
             var mergedPeaks = new (double Mz, double Intensity, int ID)[totPeaks];
