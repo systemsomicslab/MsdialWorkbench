@@ -254,6 +254,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
+
+            SpectraSimilarityMapModel = new SpectraSimilarityMapModel(fileCollection, _parameter.ProjectParam);
+            Target.Subscribe(t => SpectraSimilarityMapModel.UpdateSimilaritiesAsync())
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -280,6 +283,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ProteinResultContainerModel? ProteinResultContainerModel { get; }
         public override AlignmentSpotSource AlignmentSpotSource { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
+        public SpectraSimilarityMapModel SpectraSimilarityMapModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
