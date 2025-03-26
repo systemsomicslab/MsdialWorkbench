@@ -154,7 +154,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum deconvolutedObservableMsSpectrum = ObservableMsSpectrum.Create(Target, msDecSpectrumLoader, spectraExporter).AddTo(Disposables);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
-            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
+            var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(fileCollection);
+            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(alignmentPeaksSpectraLoader, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
                 Target, MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
@@ -256,7 +257,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
 
             SpectraSimilarityMapModel = new SpectraSimilarityMapModel(fileCollection, _parameter.ProjectParam);
-            Target.Subscribe(t => SpectraSimilarityMapModel.UpdateSimilaritiesAsync())
+            Target.Subscribe(async t => {
+                if (t is null) {
+                    SpectraSimilarityMapModel.ClearSimilarities();
+                    return;
+                }
+                var scans = await alignmentPeaksSpectraLoader.GetCurrentScansAsync(fileCollection.AnalysisFiles, t);
+                if (scans is null) {
+                    SpectraSimilarityMapModel.ClearSimilarities();
+                    return;
+                }
+                await SpectraSimilarityMapModel.UpdateSimilaritiesAsync(scans);
+            });
         }
 
         public UndoManager UndoManager => _undoManager;

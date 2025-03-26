@@ -31,8 +31,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             return obj1.Spectrum is not null && obj2.Spectrum is not null && obj1.Spectrum.Count != 0 && obj2.Spectrum.Count != 0;
         }
 
-        private static bool IsAvailableSpectrum(IMSScanProperty obj) {
-            return obj.Spectrum is { Count: > 0 };
+        private static bool IsAvailableSpectrum(IMSScanProperty? obj) {
+            return obj?.Spectrum is { Count: > 0 };
         }
 
         public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
@@ -3319,7 +3319,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static double[][] GetBatchSimpleDotProduct(IReadOnlyList<IMSScanProperty> props, double bin, double massBegin, double massEnd) {
+        public static double[][] GetBatchSimpleDotProduct(IReadOnlyList<IMSScanProperty?> props, double bin, double massBegin, double massEnd) {
             var result = new double[props.Count][];
             for (int i = 0; i < props.Count; i++) {
                 result[i] = new double[props.Count];

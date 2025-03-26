@@ -117,6 +117,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
                 }
             }).AddTo(Disposables);
+
+            var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
+            SpectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -162,6 +165,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
+
+        public ReactiveCommand SpectraSimilarityMapCommand { get; }
 
         public ReactiveCommand GoToMsfinderCommand {  get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }

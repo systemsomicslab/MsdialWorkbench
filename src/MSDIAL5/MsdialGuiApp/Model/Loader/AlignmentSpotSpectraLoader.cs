@@ -20,6 +20,17 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly AnalysisFileBeanModelCollection _analysisFiles;
 
+        public AlignmentSpotSpectraLoader(AlignmentPeaksSpectraLoader loaders, IMsSpectrumLoader<MsScanMatchResult> referenceLoader, CompoundSearcherCollection compoundSearchers, AnalysisFileBeanModelCollection analysisFiles) {
+            if (loaders is null) {
+                throw new ArgumentNullException(nameof(loaders));
+            }
+
+            _loaders = loaders;
+            _referenceLoader = referenceLoader ?? throw new ArgumentNullException(nameof(referenceLoader));
+            _compoundSearchers = compoundSearchers ?? throw new ArgumentNullException(nameof(compoundSearchers));
+            _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
+        }
+
         public AlignmentSpotSpectraLoader(AnalysisFileBeanModelCollection files, IMsSpectrumLoader<MsScanMatchResult> referenceLoader, CompoundSearcherCollection compoundSearchers, AnalysisFileBeanModelCollection analysisFiles) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));

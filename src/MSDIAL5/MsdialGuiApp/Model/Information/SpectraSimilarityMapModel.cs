@@ -97,7 +97,7 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
         Result = result;
     }
 
-    public async Task UpdateSimilaritiesAsync(IReadOnlyList<IMSScanProperty> scans, CancellationToken token = default) {
+    public async Task UpdateSimilaritiesAsync(IReadOnlyList<IMSScanProperty?> scans, CancellationToken token = default) {
         _scans = scans;
         var (bin, begin, end) = (MzBin, MzBegin, MzEnd);
         var matrix = await Task.Run(() => MsScanMatching.GetBatchSimpleDotProduct(scans, bin, begin, end), token).ConfigureAwait(false);
@@ -109,5 +109,10 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
             }
         }
         Result = result;
+    }
+
+    public void ClearSimilarities() {
+        _scans = null;
+        Result = [];
     }
 }
