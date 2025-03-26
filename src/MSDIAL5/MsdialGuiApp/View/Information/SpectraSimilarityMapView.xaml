@@ -17,17 +17,19 @@
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
 
-        <ItemsControl ItemsSource="{Binding Path=Result.Value}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Similarity}"/>
-                        <TextBlock Text="{Binding Path=Left.AnalysisFileName}"/>
-                        <TextBlock Text="{Binding Path=Right.AnalysisFileName}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Path=Result.Value}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Similarity}" Margin="8,0"/>
+                            <TextBlock Text="{Binding Path=Left.AnalysisFileName}" Margin="8,0"/>
+                            <TextBlock Text="{Binding Path=Right.AnalysisFileName}" Margin="8,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
             <StackPanel.Resources>

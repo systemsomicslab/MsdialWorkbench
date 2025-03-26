@@ -3355,8 +3355,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
             int klo = 0, khi = 0;
 
-            double focusedMz = Math.Max(mergedPeaks[0].Mz, massBegin);
-            double maxMz = Math.Min(massEnd, mergedPeaks[mergedPeaks.Length - 1].Mz);
+            double focusedMz = mergedPeaks.Any() ? Math.Max(mergedPeaks.First().Mz, massBegin) : massBegin;
+            double maxMz = mergedPeaks.Any() ? Math.Min(massEnd, mergedPeaks.Last().Mz) : massEnd;
 
             for (int k = 0; k < mergedPeaks.Length; k++) {
                 if (mergedPeaks[k].Mz < massBegin - bin) {

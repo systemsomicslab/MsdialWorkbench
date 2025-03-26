@@ -33,6 +33,9 @@
                           BorderBrush="Black">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Peak spectra alignment"
+                              Command="{Binding Path=SpectraSimilarityMapCommand}"/>
+                    <Separator/>
                     <MenuItem Header="Save image using dialog"
                               Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
