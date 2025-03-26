@@ -38,6 +38,8 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
         _mzEnd = _parameter.MassRangeEnd;
     }
 
+    public AnalysisFileBeanModelCollection Files => _files;
+
     public double MzBin {
         get => _mzBin;
         set {

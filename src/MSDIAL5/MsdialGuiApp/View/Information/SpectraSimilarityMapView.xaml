@@ -7,6 +7,7 @@
              xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:view="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type viewmodel:SpectraSimilarityMapViewModel}}"
              d:Background="White"
@@ -17,6 +18,38 @@
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
 
+        <chart:SimpleChartControl VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
+                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}">
+            <chart:HeatmapControl ItemsSource="{Binding Path=Result.Value, Mode=OneWay}"
+                                  DataType="{x:Type model:SimilarityMatrixItem}"
+                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}"
+                                  VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
+                                  HorizontalPropertyName="Right"
+                                  VerticalPropertyName="Left"
+                                  DegreePropertyName="Similarity">
+                <chart:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,20"
+                             HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
+                             VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Sample1: {0}, Sample2: {1}">
+                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).AnalysisFileName"/>
+                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).AnalysisFileName"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Similarity),
+                                                      StringFormat=Similarity: {0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
+        </chart:SimpleChartControl>
+        <!--
         <ScrollViewer>
             <ItemsControl ItemsSource="{Binding Path=Result.Value}">
                 <ItemsControl.ItemTemplate>
@@ -30,6 +63,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+        -->
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
             <StackPanel.Resources>
