@@ -151,7 +151,13 @@ namespace CompMs.App.Msdial.Model.Search
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
-                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out string error);
+
+                string error = string.Empty;
+                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out error);
+                if (error != string.Empty) {
+                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
@@ -214,7 +220,13 @@ namespace CompMs.App.Msdial.Model.Search
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
-                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out string error);
+
+                string error = string.Empty;
+                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out error); 
+                if (error != string.Empty) {
+                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
                 _adduct = AdductIon.GetAdductIon(_rawData.PrecursorType);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
