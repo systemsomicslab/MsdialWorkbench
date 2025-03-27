@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.View.Search;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
@@ -52,16 +53,12 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly SetAnnotationUsecase _setAnnotationUsecase;
         private readonly AdductIon _adduct;
 
-        private static readonly List<ProductIon> productIonDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetProductIonDB(
-            @"Resources\msfinderLibrary\ProductIonLib_vs1.pid", out string _);
-        private static readonly List<NeutralLoss> neutralLossDB = CompMs.Common.FormulaGenerator.Parser.FragmentDbParser.GetNeutralLossDB(
-            @"Resources\msfinderLibrary\NeutralLossDB_vs2.ndb", out string _);
-        private static readonly List<ExistFormulaQuery> existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(
-            @"Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd", out string _);
-
+        private static readonly List<ProductIon> productIonDB = FileStorageUtility.GetProductIonDB();
+        private static readonly List<NeutralLoss> neutralLossDB = FileStorageUtility.GetNeutralLossDB();
+        private static readonly List<ExistFormulaQuery> existFormulaDB = FileStorageUtility.GetExistFormulaDB();
         private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
-        private static readonly List<MoleculeMsReference> mspDB = [];
+        private readonly List<MoleculeMsReference> mspDB = [];
         private readonly List<ExistStructureQuery> userDefinedStructureDB = [];
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
@@ -146,7 +143,15 @@ namespace CompMs.App.Msdial.Model.Search
                 _filePath = filePath;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
+                if (fragmentOntologyDB != null && productIonDB != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
+                if (fragmentOntologyDB != null && neutralLossDB != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
+                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
+
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
+                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out string error);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
 
@@ -201,7 +206,15 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
+                if (fragmentOntologyDB != null && productIonDB != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
+                if (fragmentOntologyDB != null && neutralLossDB != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
+                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                    ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
+
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
+                mspDB = FileStorageUtility.GetMspDB(parameter.AnalysisParameter, _rawData.IonMode, out string error);
                 _adduct = AdductIon.GetAdductIon(_rawData.PrecursorType);
                 _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms1Spectrum)).AddTo(Disposables);
                 _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_rawData.Ms2Spectrum)).AddTo(Disposables);
