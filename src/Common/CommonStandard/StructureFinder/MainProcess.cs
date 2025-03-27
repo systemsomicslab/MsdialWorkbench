@@ -170,6 +170,7 @@ namespace CompMs.Common.StructureFinder
 
                 fragmenterResult = new FragmenterResult(structure, peakFragmentPairs, -1, -1, -1, adduct.ConvertToMz(structure.ExactMass));
                 FragmenterScoring.CalculateFragmenterScores(fragmenterResult, originalPeaks.Count);
+                fragmenterResult.FragmenterScore = FragmenterScoring.CalculateFragmenterScore(fragmenterResult);
                 fragmenterResult.DatabaseScore = FragmenterScoring.CalculateDatabaseScore(structure.ResourceNames, structure.ResourceNumber, structure.DatabaseQueries);
 
                 var uniqueMsmsOntologiesCount = 0;

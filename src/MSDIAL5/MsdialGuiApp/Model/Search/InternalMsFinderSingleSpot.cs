@@ -68,14 +68,37 @@ namespace CompMs.App.Msdial.Model.Search
         private static readonly List<ChemicalOntology> chemicalOntologies = FileStorageUtility.GetChemicalOntologyDB();
 
         public List<FormulaResult>? FormulaList { get; private set; }
+        private FormulaResult? _selectedFormula;
+        public FormulaResult? SelectedFormula {
+            get => _selectedFormula;
+            set {
+                if (SetProperty(ref _selectedFormula, value)) {
+                    OnSelectedFormulaChanged();
+                }
+            }
+        }
 
-        private List<FragmenterResult> _structureList = [];
-        public List<FragmenterResult> StructureList {
+        private void OnSelectedFormulaChanged() {
+            if (SelectedFormula is not null && StructureList?.Count > 0) {
+                FilteredStructureList = StructureList.Where(s => s.Formula == SelectedFormula.Formula.FormulaString).ToList();
+            } else {
+                FilteredStructureList = [];
+            }
+        }
+
+        private List<FragmenterResultVM> _filteredStructureList;
+        public List<FragmenterResultVM> FilteredStructureList {
+            get => _filteredStructureList;
+            set => SetProperty(ref _filteredStructureList, value);
+        }
+
+        private List<FragmenterResultVM> _structureList = [];
+        public List<FragmenterResultVM> StructureList {
             get => _structureList;
             set => SetProperty(ref _structureList, value);
         }
-        private FragmenterResult? _selectedStructure;
-        public FragmenterResult? SelectedStructure {
+        private FragmenterResultVM? _selectedStructure;
+        public FragmenterResultVM? SelectedStructure {
             get => _selectedStructure;
             set {
                 if (SetProperty(ref _selectedStructure, value)) {
@@ -91,14 +114,14 @@ namespace CompMs.App.Msdial.Model.Search
                 };
                 MoleculeStructureModel.UpdateMolecule(molecule);
                 
-                if (SelectedStructure.FragmentPics is not null) {
-                    var msSpectrum = new MsSpectrum(SelectedStructure.FragmentPics.Select(p => p.Peak).ToList());
+                if (SelectedStructure.FragmenterResult.FragmentPics is not null) {
+                    var msSpectrum = new MsSpectrum(SelectedStructure.FragmenterResult.FragmentPics.Select(p => p.Peak).ToList());
                     _refSpectrum.Value = msSpectrum;
                     var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
                     _spectrumRange.OnNext(new AxisRange(min, max));
                 }
-                else if (SelectedStructure.ReferenceSpectrum is not null) {
-                    var msSpectrum = new MsSpectrum(SelectedStructure.ReferenceSpectrum);
+                else if (SelectedStructure.FragmenterResult.ReferenceSpectrum is not null) {
+                    var msSpectrum = new MsSpectrum(SelectedStructure.FragmenterResult.ReferenceSpectrum);
                     _refSpectrum.Value = msSpectrum;
                     var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
                     _spectrumRange.OnNext(new AxisRange(min, max));
@@ -259,16 +282,18 @@ namespace CompMs.App.Msdial.Model.Search
             var process = new StructureFinderBatchProcess();
             process.DirectSingleSearchOfStructureFinder(_rawData, FormulaList, _parameter.AnalysisParameter, _folderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             var structureFilePaths = Directory.GetFiles(_folderPath, "*.sfd");
-            var updatedStructureList = new List<FragmenterResult>();
+            var updatedStructureList = new List<FragmenterResultVM>();
             foreach (var file in structureFilePaths) {
                 var formula = Path.GetFileNameWithoutExtension(file);
                 var fragmenterResults = FragmenterResultParser.FragmenterResultReader(file);
                 foreach (var result in fragmenterResults.Where(r => !string.IsNullOrEmpty(r.Title))) {
                     result.Formula = formula;
-                    updatedStructureList.Add(result);
+                    var resultVM = new FragmenterResultVM(false, result);
+                    updatedStructureList.Add(resultVM);
                 }
             }
             StructureList = updatedStructureList;
+            FilteredStructureList = StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula).ToList();
             Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {
                 MessageBox.Show("No structure found");
@@ -385,13 +410,13 @@ namespace CompMs.App.Msdial.Model.Search
             if (SelectedStructure is not null) {
                 var moleculeMsReference = new MoleculeMsReference() {
                     ScanID = _molecules.Database.Count + 1,
-                    ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.RetentionTime) },
+                    ChromXs = new ChromXs() { RT = new RetentionTime(SelectedStructure.FragmenterResult.RetentionTime) },
                     Spectrum = _refSpectrum.Value?.Spectrum ?? [],
-                    Formula = new Formula() { FormulaString = SelectedStructure.Formula },
+                    Formula = new Formula() { FormulaString = SelectedStructure.FragmenterResult.Formula },
                     AdductType = _adduct,
-                    PrecursorMz = SelectedStructure.PrecursorMz,
-                    Name = SelectedStructure.Title,
-                    InChIKey = SelectedStructure.Inchikey,
+                    PrecursorMz = SelectedStructure.FragmenterResult.PrecursorMz,
+                    Name = SelectedStructure.FragmenterResult.Title,
+                    InChIKey = SelectedStructure.FragmenterResult.Inchikey,
                     SMILES = SelectedStructure.Smiles,
                     Ontology = SelectedStructure.Ontology,
                 };
@@ -399,11 +424,11 @@ namespace CompMs.App.Msdial.Model.Search
                 var matchResult = new MsScanMatchResult {
                     AnnotatorID = _molecules.Id,
                     Source = _molecules.SourceType | SourceType.Manual,
-                    Name = SelectedStructure.Title,
-                    InChIKey = SelectedStructure.Inchikey,
+                    Name = SelectedStructure.FragmenterResult.Title,
+                    InChIKey = SelectedStructure.FragmenterResult.Inchikey,
                     TotalScore = ((float)SelectedStructure.TotalScore),
-                    RtSimilarity = ((float)SelectedStructure.RtSimilarityScore),
-                    RiSimilarity = ((float)SelectedStructure.RiSimilarityScore),
+                    RtSimilarity = ((float)SelectedStructure.FragmenterResult.RtSimilarityScore),
+                    RiSimilarity = ((float)SelectedStructure.FragmenterResult.RiSimilarityScore),
                     LibraryID = moleculeMsReference.ScanID,
                 };
                 _setAnnotationUsecase.SetConfidence(moleculeMsReference, matchResult);
