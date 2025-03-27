@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using Accord.Statistics.Models.Fields.Learning;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Enum;
 using MessagePack;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     public enum InterpolationMethod { Linear }
     public enum ExtrapolationMethodBegin { UserSetting, FirstPoint, LinearExtrapolation }
     public enum ExtrapolationMethodEnd { LastPoint, LinearExtrapolation }
@@ -24,8 +22,20 @@ namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class RetentionTimeCorrectionBean
     {
+        /// <summary>
+        /// This property is intended for MessagePack serialization only.
+        /// Do not use this property directly; instead, use <see cref="OriginalRt"/>.
+        /// 
+        /// This property exists solely for ensuring compatibility with older data.
+        /// </summary>
         [Key(0)]
-        //public List<double> OriginalRt { get; set; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public List<double> OriginalRtForSerialization {
+            get => originalRt;
+            set => originalRt = value;
+        }
+
+        [IgnoreMember]
         public List<double> OriginalRt { 
             get {
                 if (originalRt.IsEmptyOrNull()) {
@@ -42,8 +52,21 @@ namespace CompMs.MsdialCore.DataObj {
             } 
         }
         private List<double> originalRt;
+
+        /// <summary>
+        /// This property is intended for MessagePack serialization only.
+        /// Do not use this property directly; instead, use <see cref="RtDiff"/>.
+        /// 
+        /// This property exists solely for ensuring compatibility with older data.
+        /// </summary>
         [Key(1)]
-        //public List<double> RtDiff { get; set; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public List<double> RtDiffForSerialization {
+            get => rtDiff;
+            set => rtDiff = value;
+        }
+
+        [IgnoreMember]
         public List<double> RtDiff { 
             get {
                 if (rtDiff.IsEmptyOrNull()) {
@@ -59,8 +82,21 @@ namespace CompMs.MsdialCore.DataObj {
             } 
         }
         private List<double> rtDiff;
+
+        /// <summary>
+        /// This property is intended for MessagePack serialization only.
+        /// Do not use this property directly; instead, use <see cref="PredictedRt"/>.
+        /// 
+        /// This property exists solely for ensuring compatibility with older data.
+        /// </summary>
         [Key(2)]
-        //public List<double> PredictedRt { get; set; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public List<double> PredictedRtForSerialization {
+            get => predictedRt;
+            set => predictedRt = value;
+        }
+
+        [IgnoreMember]
         public List<double> PredictedRt {
             get {
                 if (predictedRt.IsEmptyOrNull()) {
@@ -76,6 +112,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
         private List<double> predictedRt;
+
         [Key(3)]
         public List<StandardPair> StandardList { get; set; } = new List<StandardPair>();
         [Key(4)]
@@ -83,7 +120,12 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(5)]
         public string RetentionTimeCorrectionResultFilePath { get; set; } = string.Empty; // *.rtc
 
+        [IgnoreMember]
+        public bool IsLoaded => originalRt is not null;
+
+        [SerializationConstructor]
         public RetentionTimeCorrectionBean() { }
+
         public RetentionTimeCorrectionBean(string retentionTimeCorrectionResultFilePath) {
             RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
         }
@@ -91,13 +133,6 @@ namespace CompMs.MsdialCore.DataObj {
         public RetentionTimeCorrectionBean(string retentionTimeCorrectionResultFilePath, List<double> originalRt) {
             RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
             this.originalRt = originalRt;
-        }
-
-        [SerializationConstructor]
-        public RetentionTimeCorrectionBean(List<double> OriginalRt, List<double> RtDiff, List<double> PredictedRt) {
-            this.originalRt = OriginalRt;
-            this.rtDiff = RtDiff;
-            this.predictedRt = PredictedRt;
         }
 
         public void ClearCache() {
