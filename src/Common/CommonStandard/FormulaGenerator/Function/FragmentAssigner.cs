@@ -22,7 +22,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
         /// <param name="peaklist"></param>
         /// <param name="formula"></param>
         /// <param name="analysisParam"></param>
-        public static List<ProductIon> FastFragmnetAssigner(List<SpectrumPeak> peaklist, List<ProductIon> productIonDB, 
+        public static List<ProductIon> FastFragmentAssigner(List<SpectrumPeak> peaklist, List<ProductIon> productIonDB, 
             Formula formula, double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
         {
             var productIons = new List<ProductIon>();
