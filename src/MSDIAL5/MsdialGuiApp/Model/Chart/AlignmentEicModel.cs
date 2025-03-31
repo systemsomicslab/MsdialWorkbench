@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Switch().ToReactiveProperty().AddTo(Disposables);
 
             SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
-            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter).AddTo(Disposables);
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
         }
 
         public IObservable<bool> CanShow { get; }
