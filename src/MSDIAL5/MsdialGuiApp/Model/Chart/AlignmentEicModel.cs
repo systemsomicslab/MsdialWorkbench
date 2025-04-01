@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<AlignedChromatograms?> spotChromatograms,
             List<AnalysisFileBean> analysisFiles,
             ParameterBase parameter,
+            FilePropertiesModel filePropertiesModel,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
 
@@ -70,8 +71,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 }.CombineLatestValuesAreAllTrue().StartWith(false), Observable.Return(false))
                 .Switch().ToReactiveProperty().AddTo(Disposables);
 
-            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatograms, analysisFiles, parameter).AddTo(Disposables);
-            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter).AddTo(Disposables);
+            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
         }
 
         public IObservable<bool> CanShow { get; }
@@ -92,6 +93,7 @@ namespace CompMs.App.Msdial.Model.Chart
             AlignmentEicLoader loader,
             List<AnalysisFileBean> AnalysisFiles,
             ParameterBase Param,
+            FilePropertiesModel filePropertiesModel,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
 
@@ -99,9 +101,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 source.DefaultIfNull(s => new AlignedChromatograms(s, loader.LoadEicAsObservable(s))),
                 AnalysisFiles,
                 Param,
+                filePropertiesModel,
                 horizontalSelector,
-                verticalSelector
-            );
+                verticalSelector);
         }
     }
 }

@@ -164,8 +164,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
     }
 
     internal sealed class SampleTableViewerInAlignmentModelLegacy : DisposableModelBase {
-        public SampleTableViewerInAlignmentModelLegacy(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
-            Source = GetSourceOfAlignedSampleTableViewer(spotChromatograms, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        public SampleTableViewerInAlignmentModelLegacy(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
+            Source = GetSourceOfAlignedSampleTableViewer(spotChromatograms, files, parameter, filePropertiesModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Parameter = parameter;
             switch (parameter) {
                 case MsdialGcMsApi.Parameter.MsdialGcmsParameter gcparameter:
@@ -194,20 +194,32 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
         }
 
-        private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
+        private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             return spotChromatograms.ObserveOn(TaskPoolScheduler.Default).DefaultIfNull(s =>
-            s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, (peaks, chromatograms) => {
-                if (peaks is null) {
-                    return new SampleTableRows(new ObservableCollection<SampleTableRow>());
-                }
-                var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
-                var rows = files.Zip(peaks, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
-                    .Zip(chromatograms, (triple, chromatogram) =>
-                        GetSampleTableRow(s.Spot, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
-                return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
-            }), Observable.Return(new SampleTableRows(new ObservableCollection<SampleTableRow>()))).Switch();
+                s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, (peaks, chromatograms) => {
+                    if (peaks is null) {
+                        return Observable.Return(new SampleTableRows([]));
+                    }
+                    var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
+                    var cls2clr = filePropertiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
+                    var rows = files.Zip(peaks, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
+                        .Zip(chromatograms, (triple, chromatogram) => {
+                            var brush = Observable.Return(triple.Item3);
+                            if (cls2clr.TryGetValue(triple.Item1.AnalysisFileClass, out var c)) {
+                                brush = c.Select(c_ => {
+                                    var b = new SolidColorBrush(c_);
+                                    b.Freeze();
+                                    return b;
+                                });
+                            }
+                            var row = brush.Select(b => GetSampleTableRow(s.Spot, triple.Item2, chromatogram, triple.Item1, b, parameter.CentroidMs1Tolerance));
+                            return row;
+                        }).CombineLatest();
+                    var rows_ = rows.Select(rs_ => new SampleTableRows(new ObservableCollection<SampleTableRow>(rs_)));
+                    return rows_;
+                }).Switch(), Observable.Return(new SampleTableRows([]))).Switch();
         }
 
         private static SampleTableRow GetSampleTableRow(
