@@ -112,6 +112,10 @@ namespace CompMs.App.Msdial.Model.Search
                 MoleculeStructureModel.UpdateMolecule(molecule);
                 
                 if (SelectedStructure.FragmenterResult.FragmentPics is not null) {
+                    foreach (var frag in SelectedStructure.FragmenterResult.FragmentPics) {
+                        frag.Peak.FragmentationScore = frag.MatchedFragmentInfo.TotalLikelihood;
+                        var label = MsfinderUtility.GetLabelForInsilicoSpectrum(frag.MatchedFragmentInfo.Formula, frag.MatchedFragmentInfo.RearrangedHydrogen, _adduct.IonMode, frag.MatchedFragmentInfo.AssignedAdductString);
+                    }
                     var msSpectrum = new MsSpectrum(SelectedStructure.FragmenterResult.FragmentPics.Select(p => p.Peak).ToList());
                     _refSpectrum.Value = msSpectrum;
                     var (min, max) = msSpectrum.GetSpectrumRange(p => p.Mass);
@@ -335,18 +339,12 @@ namespace CompMs.App.Msdial.Model.Search
         public DelegateCommand ShowIsotopeSpectrumCommand => _showIsotopeSpectrumCommand ??= new DelegateCommand(ShowIsotopeSpectrum);
         private DelegateCommand? _showIsotopeSpectrumCommand;
         public void ShowIsotopeSpectrum() {
-            if (_rawData?.NominalIsotopicPeakList is null) { return; }
-            var isotopeList = _rawData.NominalIsotopicPeakList;
-            var peakList = new List<SpectrumPeak>();
-            foreach (var isotope in isotopeList) {
-                var spec = new SpectrumPeak() {
-                    Mass = isotope.Mass,
-                    Intensity = isotope.RelativeAbundance,
-                    Comment = isotope.Comment,
-                };
-                peakList.Add(spec);
+            if (SelectedFormula is null|| _rawData is null) { return; }
+            MsfinderUtility.GetExperimentalIsotopicIons(_rawData.PrecursorMz, _rawData.Ms1Spectrum, out var precursorIntensity);
+            var isotopicIons = MsfinderUtility.GetTheoreticalIsotopicIons(SelectedFormula, _rawData.PrecursorType, precursorIntensity);
+            if (isotopicIons is not null) {
+                _ms1SpectrumSubject.OnNext(new MsSpectrum(isotopicIons));
             }
-            _ms1SpectrumSubject.OnNext(new MsSpectrum(peakList));
         }
 
         public DelegateCommand ShowRawMs2SpectrumCommand => _showRawMs2SpectrumCommand ??= new DelegateCommand(ShowRawMs2Spectrum);
