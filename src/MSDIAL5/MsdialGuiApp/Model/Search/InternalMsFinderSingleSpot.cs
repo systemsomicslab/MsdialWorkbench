@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Search
 
                 _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null).AddTo(Disposables);
                 var observableRefSpectrum = new ObservableMsSpectrum(_refSpectrum, null, Observable.Return<ISpectraExporter?>(null));
-                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.FragmentationScore), "fragmentation score");
 
                 _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d)).AddTo(Disposables);
                 var horizontalAxis = _spectrumRange.Select(range => AxisRange.Union(range, rawMs2Range) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
@@ -187,6 +187,7 @@ namespace CompMs.App.Msdial.Model.Search
                 var refMs2HorizontalAxis = propertySelectors;
 
                 FindFormula();
+                SelectedFormula = FormulaList.FirstOrDefault();
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -246,7 +247,7 @@ namespace CompMs.App.Msdial.Model.Search
 
                 _refSpectrum = new ReactivePropertySlim<MsSpectrum?>(null).AddTo(Disposables);
                 var observableRefSpectrum = new ObservableMsSpectrum(_refSpectrum, null, Observable.Return<ISpectraExporter?>(null));
-                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var refVerticalAxis = observableRefSpectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.FragmentationScore), "fragmentation score");
 
                 _spectrumRange = new BehaviorSubject<AxisRange?>(new AxisRange(0d, 1d)).AddTo(Disposables);
                 var horizontalAxis = _spectrumRange.Select(range => AxisRange.Union(range, rawMs2Range) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
@@ -256,6 +257,7 @@ namespace CompMs.App.Msdial.Model.Search
                 var refMs2HorizontalAxis = propertySelectors;
 
                 FindFormula();
+                SelectedFormula = FormulaList.FirstOrDefault();
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
@@ -317,6 +319,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             StructureList = updatedStructureList;
             FilteredStructureList = StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula).ToList();
+            SelectedStructure = StructureList.FirstOrDefault();
             Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {
                 MessageBox.Show("No structure found");
