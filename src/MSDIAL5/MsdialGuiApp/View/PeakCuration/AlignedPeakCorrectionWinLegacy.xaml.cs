@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             ObservablePeakProperties.Value?.ClearRtAlignment();
         }
        
-        public static IObservable<PeakPropertiesLegacy?> LoadPeakProperty(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel fileProeprtiesModel) {
+        public static IObservable<PeakPropertiesLegacy?> LoadPeakProperty(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             var handlers = (parameter as MsdialGcmsParameter)?.GetRIHandlers();
@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 if (peaks is null) {
                     return Observable.Return<PeakPropertiesLegacy?>(null);
                 }
-                var cls2clr = fileProeprtiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
+                var cls2clr = filePropertiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
                 var peakPropArr = files.ZipInternal(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
                         var brush = Observable.Return(ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId));
