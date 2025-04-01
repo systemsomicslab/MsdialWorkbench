@@ -60,7 +60,7 @@ namespace CompMs.Common.StructureFinder
             FormulaResult formulaResult, AnalysisParamOfMsfinder param,
             List<FragmentLibrary> fragmentDB, List<FragmentOntology> fragmentOntologies)
         {
-            var dbQueries = getDabaseQueries(param.DatabaseQuery);
+            var dbQueries = GetDabaseQueries(param.DatabaseQuery);
             var structures = MoleculeConverter.QueriesToStructures(queries, dbQueries,
                 formulaResult.Formula.TmsCount, formulaResult.Formula.MeoxCount);
 
@@ -96,7 +96,7 @@ namespace CompMs.Common.StructureFinder
             return fragments;
         }
 
-        private static string getDabaseQueries(DatabaseQuery databaseQuery)
+        private static string GetDabaseQueries(DatabaseQuery databaseQuery)
         {
             var queryStrings = string.Empty;
             var infoArray = databaseQuery.GetType().GetProperties();
@@ -170,7 +170,6 @@ namespace CompMs.Common.StructureFinder
 
                 fragmenterResult = new FragmenterResult(structure, peakFragmentPairs, -1, -1, -1, adduct.ConvertToMz(structure.ExactMass));
                 FragmenterScoring.CalculateFragmenterScores(fragmenterResult, originalPeaks.Count);
-                fragmenterResult.FragmenterScore = FragmenterScoring.CalculateFragmenterScore(fragmenterResult);
                 fragmenterResult.DatabaseScore = FragmenterScoring.CalculateDatabaseScore(structure.ResourceNames, structure.ResourceNumber, structure.DatabaseQueries);
 
                 var uniqueMsmsOntologiesCount = 0;
