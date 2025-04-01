@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        private List<FragmenterResultVM> _filteredStructureList;
+        private List<FragmenterResultVM> _filteredStructureList = [];
         public List<FragmenterResultVM> FilteredStructureList {
             get => _filteredStructureList;
             set => SetProperty(ref _filteredStructureList, value);
@@ -133,8 +133,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, AdductIon adductType, SetAnnotationUsecase setAnnotationUsecase)
-        {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, AdductIon adductType, SetAnnotationUsecase setAnnotationUsecase) {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
@@ -163,14 +162,14 @@ namespace CompMs.App.Msdial.Model.Search
 
                 var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
                 var internalMsFinderMs2 = new ObservableMsSpectrum(_ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");                             
+                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");                             
 
                 var ms2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_rawData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
-                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
                 var rawMs2Range = _rawData.Ms2Spectrum.IsEmptyOrNull()
                     ? null
@@ -203,8 +202,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, SetAnnotationUsecase setAnnotationUsecase)
-        {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, SetAnnotationUsecase setAnnotationUsecase) {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
@@ -233,14 +231,14 @@ namespace CompMs.App.Msdial.Model.Search
 
                 var internalMsFinderMs1 = new ObservableMsSpectrum(_ms1SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
                 var internalMsFinderMs2 = new ObservableMsSpectrum(_ms2SpectrumSubject, null, Observable.Return<ISpectraExporter?>(null));
                 var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
                 var ms2Spectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_rawData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
-                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+                var ms2VerticalAxis2 = ms2Spectrum.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
                 var rawMs2Range = _rawData.Ms2Spectrum.IsEmptyOrNull()
                     ? null
