@@ -42,10 +42,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         protected override double GetAveragePeakWidthFirst(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
+            return peaks.DefaultIfEmpty().Max(peak => peak?.PeakWidth(ChromXType.RT) ?? 0d);
         }
         protected override double GetAveragePeakWidthSecond(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return peaks.Max(peak => peak.PeakWidth(ChromXType.Drift));
+            return peaks.DefaultIfEmpty().Max(peak => peak?.PeakWidth(ChromXType.Drift) ?? 0d);
         }
 
         protected override List<ChromatogramPeak> GetPeaksFirst(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
