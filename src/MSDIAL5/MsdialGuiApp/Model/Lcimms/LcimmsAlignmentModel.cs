@@ -182,7 +182,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             var eicLoader = alignmentFileBean.CreateEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
-                accumulatedTarget, eicLoader, files, parameter,
+                accumulatedTarget,
+                eicLoader,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             RtAlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
@@ -208,7 +212,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .AddTo(Disposables);
             var dtEicLoader = alignmentFileBean.CreateEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
-                target, dtEicLoader, files, parameter,
+                target,
+                dtEicLoader,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             DtAlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";

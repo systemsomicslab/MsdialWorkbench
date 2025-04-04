@@ -34,8 +34,8 @@ NAE	[M+H]+	Positive	TRUE
 GPNAE	[M+H]+	Positive	TRUE
 MGDG	[M+NH4]+	Positive	TRUE
 DGDG	[M+NH4]+	Positive	TRUE
-#MGMG	[M+NH4]+	Positive	TRUE
-#DGMG	[M+NH4]+	Positive	TRUE
+MGMG	[M+NH4]+	Positive	TRUE
+DGMG	[M+NH4]+	Positive	TRUE
 EtherMGDG	[M+NH4]+	Positive	TRUE
 EtherDGDG	[M+NH4]+	Positive	TRUE
 LDGTS	[M+H]+	Positive	FALSE
@@ -144,9 +144,9 @@ TDCAE	[M+NH4]+	Positive	TRUE
 TLCAE	[M+NH4]+	Positive	TRUE
 FA	[M-H]-	Negative	TRUE
 FAHFA	[M-H]-	Negative	TRUE
-#DMEDFAHFA	[M+H]+	Positive	FALSE
-#DMEDFA	[M+H]+	Positive	FALSE
-#DMEDOxFA	[M+H]+	Positive	FALSE
+DMEDFAHFA	[M+H]+	Positive	FALSE
+DMEDFA	[M+H]+	Positive	FALSE
+DMEDOxFA	[M+H]+	Positive	FALSE
 NAGly	[M-H]-	Negative	TRUE
 NAGly	[M+H]+	Positive	TRUE
 NAGly	[M+NH4]+	Positive	TRUE

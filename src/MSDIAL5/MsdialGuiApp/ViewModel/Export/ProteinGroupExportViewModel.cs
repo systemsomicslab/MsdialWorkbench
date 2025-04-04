@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
     {
         public ProteinGroupExportViewModel(ProteinGroupExportModel model) {
             IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
-            CanExport = Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CanExport = new ReactivePropertySlim<bool>(initialValue: true).AddTo(Disposables);
         }
 
         public ReactivePropertySlim<bool> IsSelected { get; }

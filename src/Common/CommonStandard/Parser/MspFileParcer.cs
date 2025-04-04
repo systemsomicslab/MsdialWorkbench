@@ -190,14 +190,15 @@ namespace CompMs.Common.Parser
         }
 
         public static void SeializedLbmObjToAsciiMspAsPublicUse(string input, string output) {
-            var mspDB = ReadSerializedMspObject(input);
             var queries = LbmQueryParcer.GetLbmQueries(false);
+            var mspDB = ReadSerializedMspObject(input);
             foreach (var query in queries) { query.IsSelected = true; }
             var tQueries = getTrueQueryStrings(queries);
 
             var usedMspDB = new List<MoleculeMsReference>();
             var counter = 0;
             foreach (var mspRecord in mspDB) {
+                //if (!mspRecord.CompoundClass.Contains("FAHFA")) continue;
                 if (tQueries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) {
                     mspRecord.ScanID = counter;
                     usedMspDB.Add(mspRecord);
