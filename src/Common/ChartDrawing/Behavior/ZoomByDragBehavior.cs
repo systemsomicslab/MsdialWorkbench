@@ -145,20 +145,19 @@ public static class ZoomByDragBehavior
                 var current = e.GetPosition(fe);
                 var initial = GetInitialPoint(fe);
 
-                if (Math.Abs((current - initial).X) < SystemParameters.MinimumHorizontalDragDistance ||
-                    Math.Abs((current - initial).Y) < SystemParameters.MinimumVerticalDragDistance)
-                    return;
+                var ignoreVertical = GetStrechVertical(fe);
+                var ignoreHorizontal = GetStrechHorizontal(fe);
+                var movedHozirontal = Math.Abs(current.X - initial.X) > SystemParameters.MinimumHorizontalDragDistance;
+                var movedVertical = Math.Abs(current.Y - initial.Y) > SystemParameters.MinimumVerticalDragDistance;
 
-                var haxis = ChartBaseControl.GetHorizontalAxis(fe);
-                if (haxis != null) {
+                if (!ignoreHorizontal && movedHozirontal && (ignoreVertical || movedVertical) && ChartBaseControl.GetHorizontalAxis(fe) is { } haxis) {
                     var flippedX = ChartBaseControl.GetFlippedX(fe);
                     var rangeX = RenderPointsToRange(initial.X, current.X, fe.ActualWidth, haxis, flippedX);
                     if (rangeX.Minimum < rangeX.Maximum)
                         haxis.Focus(rangeX);
                 }
 
-                var vaxis = ChartBaseControl.GetVerticalAxis(fe);
-                if (vaxis != null) {
+                if (!ignoreVertical && movedVertical && (ignoreHorizontal || movedHozirontal) && ChartBaseControl.GetVerticalAxis(fe) is { } vaxis) {
                     var flippedY = ChartBaseControl.GetFlippedY(fe);
                     var rangeY = RenderPointsToRange(initial.Y, current.Y, fe.ActualHeight, vaxis, flippedY);
                     if (rangeY.Minimum < rangeY.Maximum)

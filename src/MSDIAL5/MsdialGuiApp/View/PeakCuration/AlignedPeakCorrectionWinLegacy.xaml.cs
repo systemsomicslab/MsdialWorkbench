@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.View.PeakCuration
 {
@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public List<AnalysisFileBean> Files { get; }
         public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy?> ObservablePeakProperties { get; }
 
-        public AlignedChromatogramModificationModelLegacy(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
+        public AlignedChromatogramModificationModelLegacy(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             IsRI = spotChromatograms.Select(s => s?.Spot.ChromXType == ChromXType.RI).ToReactiveProperty().AddTo(Disposables);
             IsDrift = spotChromatograms.Select(s => s?.Spot.ChromXType == ChromXType.Drift).ToReactiveProperty().AddTo(Disposables);
             Files = files;
-            ObservablePeakProperties = LoadPeakProperty(spotChromatograms, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ObservablePeakProperties = LoadPeakProperty(spotChromatograms, files, parameter, filePropertiesModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public void UpdatePeakInfo() {
@@ -62,27 +62,38 @@ namespace CompMs.App.Msdial.View.PeakCuration
             ObservablePeakProperties.Value?.ClearRtAlignment();
         }
        
-        public static IObservable<PeakPropertiesLegacy?> LoadPeakProperty(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter) {
+        public static IObservable<PeakPropertiesLegacy?> LoadPeakProperty(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             var handlers = (parameter as MsdialGcmsParameter)?.GetRIHandlers();
             return spotChromatograms.DefaultIfNull(s => s.Chromatograms.CombineLatest(s.Spot.AlignedPeakPropertiesModelProperty, (chromatograms, peaks) => {
                 if (peaks is null) {
-                    return null;
+                    return Observable.Return<PeakPropertiesLegacy?>(null);
                 }
+                var cls2clr = filePropertiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
                 var peakPropArr = files.ZipInternal(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
-                        var brush = classnameToBrushes.TryGetValue(pair.Item1.AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId);
+                        var brush = Observable.Return(ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId));
+                        if (cls2clr.TryGetValue(pair.Item1.AnalysisFileClass, out var c)) {
+                            brush = c.Select(c_ => {
+                                var b = new SolidColorBrush(c_);
+                                b.Freeze();
+                                return b;
+                            });
+                        }
                         using var smoothed = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                         var handler = (handlers?.TryGetValue(pair.Item1.AnalysisFileId, out var h) ?? false) ? h : null;
-                        var peakProp = new PeakPropertyLegacy(pair.Item2, brush, smoothed.AsPeakArray(), handler);
                         var offset = pair.Item2.ChromXsTop.Value - s.Spot.TimesCenter;
-                        peakProp.SetAlignOffSet(offset);
-                        peakProp.AverageRt = s.Spot.TimesCenter;
-                        return peakProp;
-                    }).ToArray();
-                return new PeakPropertiesLegacy(s.Spot, peakPropArr);
-            }).Prepend(null), Observable.Return<PeakPropertiesLegacy?>(null)).Switch();
+                        var speaks = smoothed.AsPeakArray();
+                        return brush.Select(b => {
+                            var peakProp = new PeakPropertyLegacy(pair.Item2, b, speaks, handler);
+                            peakProp.SetAlignOffSet(offset);
+                            peakProp.AverageRt = s.Spot.TimesCenter;
+                            return peakProp;
+                        });
+                    }).CombineLatest();
+                return peakPropArr.Select(arr => new PeakPropertiesLegacy(s.Spot, arr.ToArray()));
+            }).Switch().Prepend(null), Observable.Return<PeakPropertiesLegacy?>(null)).Switch();
         }
     }
 }

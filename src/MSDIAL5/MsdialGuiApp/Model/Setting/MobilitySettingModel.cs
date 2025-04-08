@@ -67,9 +67,11 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             if (immsParameter != null) {
                 immsParameter.IonMobilityType = IonMobilityType;
+                immsParameter.IsAllCalibrantDataImported = IsAllCalibrantDataImported;
             }
             else if (lcimmsParameter != null) {
                 lcimmsParameter.IonMobilityType = IonMobilityType;
+                lcimmsParameter.IsAllCalibrantDataImported = IsAllCalibrantDataImported;
             }
             return true;
         }
