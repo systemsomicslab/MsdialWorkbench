@@ -1694,7 +1694,452 @@ namespace CompMs.Common.Lipidomics.Tests
         //    //
         //}
         #endregion
+        [TestMethod()]
+        public void CerNsD7Test()
+        {
+            //Cer_d7 45:7;O2|Cer_d7 29:3;O2/16:4 
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 685.627,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =685.627006, Intensity =999, },
+                    new SpectrumPeak { Mass =655.616441, Intensity =300, },
+                    new SpectrumPeak { Mass =653.600791, Intensity =200, },
+                    new SpectrumPeak { Mass =637.605877, Intensity =200, },
+                    new SpectrumPeak { Mass =420.422827, Intensity =300, },
+                    new SpectrumPeak { Mass =394.407177, Intensity =300, },
+                    new SpectrumPeak { Mass =288.196903, Intensity =200, },
+                    new SpectrumPeak { Mass =272.201988, Intensity =500, },
+                    new SpectrumPeak { Mass =246.186338, Intensity =300, },
+                    new SpectrumPeak { Mass =229.159789, Intensity =300, },
+                }
+            };
 
+            var PRECURSORTYPE2 = "[M+H]+";
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 687.6416,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =687.641559, Intensity =50, },
+                    new SpectrumPeak { Mass =669.630994, Intensity =100, },
+                    new SpectrumPeak { Mass =651.62043, Intensity =100, },
+                    new SpectrumPeak { Mass =439.463929, Intensity =200, },
+                    new SpectrumPeak { Mass =421.453364, Intensity =999, },
+                    new SpectrumPeak { Mass =409.453364, Intensity =200, },
+                    new SpectrumPeak { Mass =248.200891, Intensity =100, },
+                }
+            };
+            var totalCarbon = 45;
+            var totalDbBond = 7;
+            var totalOxidized = 2;
+            var sn1Carbon = 29;
+            var sn1DbBond = 3;
+            var sn2Carbon = 16;
+            var sn2DbBond = 4;
+
+            //public static LipidMolecule JudgeIfHexceramidens(IMSScanProperty msScanProp, double ms2Tolerance,
+            //double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            //AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramidensD7(target, 0.025,
+                685.627f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            var result2 = LipidMsmsCharacterization.JudgeIfCeramidensD7(target2, 0.025,
+                687.6416f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
+            Console.WriteLine($"HexCer_NS test (Cer_d7 45:7;O2|Cer_d7 29:3;O2/16:4 ");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+            Console.WriteLine(PRECURSORTYPE2);
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+
+        [TestMethod()]
+        public void PCadductHCO3Test()
+        {
+            //PC 17:1(9)/18:1(9)
+            var PRECURSORTYPE = "[M+HCO3]-";
+
+
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 832.5709,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 832.570923, Intensity =200, },
+                    new SpectrumPeak { Mass = 711.49703, Intensity =600, },
+                    new SpectrumPeak { Mass = 431.256799, Intensity =200, },
+                    new SpectrumPeak { Mass = 281.248604, Intensity =200, },
+                    new SpectrumPeak { Mass = 267.232954, Intensity =100, },
+                }
+            };
+
+            var totalCarbon = 35;
+            var totalDbBond = 2;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfPhosphatidylcholine(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //    int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.025,
+                832.5709f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"PC [M+HCO3]- test (PC 17:1(9)_18:1(9)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
+        [TestMethod()]
+        public void EtherPCadductHCO3Test()
+        {
+            //PC O-18:1_16:0
+            var PRECURSORTYPE = "[M+HCO3]-";
+
+
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 806.5917,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 806.591658, Intensity =999, },
+                    new SpectrumPeak { Mass = 744.591264 , Intensity =100, },
+                    new SpectrumPeak { Mass = 730.575614, Intensity =100, },
+                    new SpectrumPeak { Mass = 685.517765 , Intensity =300, },
+                    new SpectrumPeak { Mass = 659.502115 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 431.293185 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 255.232954 , Intensity = 200, },
+                }
+            };
+
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            var result = LipidMsmsCharacterization.JudgeIfEtherpc(target, 0.025,
+                806.5917f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"EtherPC [M+HCO3]- test (PC O-18:1_16:0)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
+        [TestMethod()]
+        public void LPCadductHCO3Test()
+        {
+            //LPC 17:1
+            var PRECURSORTYPE = "[M+HCO3]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 568.3256,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 568.325607, Intensity =200, },
+                    new SpectrumPeak { Mass = 506.325213, Intensity =100, },
+                    new SpectrumPeak { Mass = 447.251714, Intensity =200, },
+                    new SpectrumPeak { Mass = 437.230978, Intensity =300, },
+                    new SpectrumPeak { Mass = 421.236064, Intensity =999, },
+                    new SpectrumPeak { Mass = 267.232954, Intensity =50, },
+                }
+            };
+
+            var totalCarbon = 17;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfLysopc(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // 
+            //    int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfLysopc(target, 0.025,
+                568.3256f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"LPC [M+HCO3]- test (LPC 17:1)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
+
+        [TestMethod()]
+        public void EtherLPCadductHCO3Test()
+        {
+            //LPC O-18:1
+            var PRECURSORTYPE = "[M+HCO3]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 570.3776,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 570.377643, Intensity =200, },
+                    new SpectrumPeak { Mass = 508.377249, Intensity =100, },
+                    new SpectrumPeak { Mass = 449.303749, Intensity =200, },
+                    new SpectrumPeak { Mass = 423.288099, Intensity =999, },
+                }
+            };
+
+            var totalCarbon = 18;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfLysopc(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // 
+            //    int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfEtherlysopc(target, 0.025,
+                570.3776f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"EtherLPC [M+HCO3]- test (LPC O-18:1)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void OxPCadductHCO3Test()
+        {
+            //PC 18:1/16:1;O2
+            var PRECURSORTYPE = "[M+HCO3]-";
+
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 850.5451,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 850.545102, Intensity =  200, },
+                    new SpectrumPeak { Mass = 729.471209 , Intensity = 999, },
+                    new SpectrumPeak { Mass = 445.272449 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 285.207133 , Intensity = 400, },
+                    new SpectrumPeak { Mass = 281.248604 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 267.196568 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 249.186004  , Intensity =100, },
+                }
+            };
+
+            //PC 16:1;O2/18:1
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 850.5451,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 850.545102, Intensity =  200, },
+                    new SpectrumPeak { Mass = 729.471209 , Intensity = 999, },
+                    new SpectrumPeak { Mass = 449.230978 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 285.207133 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 281.248604 , Intensity = 400, },
+                    new SpectrumPeak { Mass = 267.196568 , Intensity = 50, },
+                    new SpectrumPeak { Mass = 249.186004  , Intensity =50, },
+                }
+            };
+            var totalCarbon = 34;
+            var totalDbBond = 2;
+            var totalOxidized = 2;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+        //public static LipidMolecule JudgeIfOxpc(IMSScanProperty msScanProp, double ms2Tolerance,
+        //double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+        //int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+        //AdductIon adduct, int TotalOxidized, int sn1MaxOxidized, int sn2MaxOxidized)
+
+            var result = LipidMsmsCharacterization.JudgeIfOxpc(target, 0.025,
+                850.545102f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE),
+                         totalOxidized, totalOxidized, totalOxidized);
+
+            Console.WriteLine($"OxPC [M+HCO3]- test (PC 18:1/16:1;O2)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+            var result2 = LipidMsmsCharacterization.JudgeIfOxpc(target2, 0.025,
+                850.545102f, totalCarbon, totalDbBond,
+                 minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                 adduct = AdductIon.GetAdductIon(PRECURSORTYPE),
+                 totalOxidized, totalOxidized, totalOxidized);
+
+            Console.WriteLine($"OxPC [M+HCO3]- test (PC 16:1;O2/18:1)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void EtherOxPCadductHCO3Test()
+        {
+            //PC O-18:1_16:0;O2
+            var PRECURSORTYPE = "[M+HCO3]-";
+
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 838.5815,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 838.581487 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 717.507594 , Intensity = 999, },
+                    new SpectrumPeak { Mass = 431.293185 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 287.222783 , Intensity = 400, },
+                    new SpectrumPeak { Mass = 269.212218 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 267.269339 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 251.201654 , Intensity = 100, },
+                }
+            };
+
+            //PC O-16:0_18:1;O2
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 838.5815,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 838.581487, Intensity =  200, },
+                    new SpectrumPeak { Mass = 717.507594, Intensity =  999, },
+                    new SpectrumPeak { Mass = 405.277535 , Intensity = 200, },
+                    new SpectrumPeak { Mass = 313.238433, Intensity =400, },
+                    new SpectrumPeak { Mass = 295.227868 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 277.217304 , Intensity = 100, },
+                    new SpectrumPeak { Mass = 241.253689 , Intensity = 200, },
+                }
+            };
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 2;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfOxpc(IMSScanProperty msScanProp, double ms2Tolerance,
+            //double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+            //AdductIon adduct, int TotalOxidized, int sn1MaxOxidized, int sn2MaxOxidized)
+
+            var result = LipidMsmsCharacterization.JudgeIfEtheroxpc(target, 0.025,
+                838.5815f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE),
+                         totalOxidized, totalOxidized, totalOxidized);
+
+            Console.WriteLine($"EtherOxPC [M+HCO3]- test (PC O-18:1_16:0;O2)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+            var result2 = LipidMsmsCharacterization.JudgeIfEtheroxpc(target2, 0.025,
+                838.5815f, totalCarbon, totalDbBond,
+                 minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                 adduct = AdductIon.GetAdductIon(PRECURSORTYPE),
+                 totalOxidized, totalOxidized, totalOxidized);
+
+            Console.WriteLine($"EtherOxPC [M+HCO3]- test (PC O-16:0_18:1;O2)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void SMadductHCO3Test()
+        {
+            //SM 18:1;O2/12:0
+            var PRECURSORTYPE = "[M+HCO3]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 707.4981,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 122.9844, Intensity =    325, },
+                    new SpectrumPeak { Mass = 122.9974, Intensity =    340, },
+                    new SpectrumPeak { Mass = 124.9997, Intensity =    1399, },
+                    new SpectrumPeak { Mass = 125.0183, Intensity =    1121, },
+                    new SpectrumPeak { Mass = 168.0429, Intensity =    676, },
+                    new SpectrumPeak { Mass = 182.058, Intensity = 2395, },
+                    new SpectrumPeak { Mass = 224.2005, Intensity =    445, },
+                    new SpectrumPeak { Mass = 224.2109, Intensity =    257, },
+                    new SpectrumPeak { Mass = 348.1922, Intensity =    3159, },
+                    new SpectrumPeak { Mass = 348.2069 , Intensity =   679, },
+                    new SpectrumPeak { Mass = 348.2534  , Intensity =  707, },
+                    new SpectrumPeak { Mass = 349.1979  , Intensity =  1073, },
+                    new SpectrumPeak { Mass = 366.1406  , Intensity =  332, },
+                    new SpectrumPeak { Mass = 560.4058  , Intensity =  11505, },
+                    new SpectrumPeak { Mass = 560.5066 , Intensity =   1113, },
+                    new SpectrumPeak { Mass = 561.4075  , Intensity =  4201, },
+                    new SpectrumPeak { Mass = 561.4771  , Intensity =  1257, },
+                    new SpectrumPeak { Mass = 562.413, Intensity = 799, },
+                    new SpectrumPeak { Mass = 576.1116  , Intensity =  649, },
+                    new SpectrumPeak { Mass = 586.4232  , Intensity =  7438, },
+                    new SpectrumPeak { Mass = 587.4244  , Intensity =  3206, },
+                    new SpectrumPeak { Mass = 588.4245 , Intensity =   438, },
+                    new SpectrumPeak { Mass = 615.4467 , Intensity =   710, },
+                    new SpectrumPeak { Mass = 616.4508 , Intensity =   641, },
+                    new SpectrumPeak { Mass = 620.1649  , Intensity =  314, },
+                    new SpectrumPeak { Mass = 645.4954  , Intensity =  1695, },
+                    new SpectrumPeak { Mass = 645.6071  , Intensity =  315, },
+                    new SpectrumPeak { Mass = 646.503 , Intensity =986, },
+                    new SpectrumPeak { Mass = 646.6115   , Intensity = 327, },
+                    new SpectrumPeak { Mass = 647.5039   , Intensity = 440, },
+                    new SpectrumPeak { Mass = 705.5021  , Intensity =  423, },
+                }
+            };
+
+            var totalCarbon = 30;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfSphingomyelin(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfSphingomyelin(target, 0.025,
+                707.4981f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"SM [M+HCO3]- test (SM 18:1;O2/12:0)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
     }
- 
+
 }
