@@ -172,6 +172,7 @@ SL	[M+H]+	Positive	TRUE
 SL	[M+NH4]+	Positive	TRUE
 LPC	[M+CH3COO]-	Negative	TRUE
 LPC	[M+HCOO]-	Negative	TRUE
+LPC	[M+HCO3]-	Negative	TRUE
 LPE	[M-H]-	Negative	TRUE
 LPS	[M-H]-	Negative	TRUE
 LPG	[M-H]-	Negative	TRUE
@@ -180,7 +181,7 @@ LPA	[M-H]-	Negative	TRUE
 PA	[M-H]-	Negative	TRUE
 PC	[M+CH3COO]-	Negative	TRUE
 PC	[M+HCOO]-	Negative	TRUE
-PC	[M+HCO3]-	Negative	FALSE
+PC	[M+HCO3]-	Negative	TRUE
 PE	[M-H]-	Negative	TRUE
 PG	[M-H]-	Negative	TRUE
 PI	[M-H]-	Negative	TRUE
@@ -188,12 +189,14 @@ PS	[M-H]-	Negative	TRUE
 #PT	[M-H]-	Negative	FALSE
 OxPC	[M+CH3COO]-	Negative	TRUE
 OxPC	[M+HCOO]-	Negative	TRUE
+OxPC	[M+HCO3]-	Negative	TRUE
 OxPE	[M-H]-	Negative	TRUE
 OxPG	[M-H]-	Negative	TRUE
 OxPS	[M-H]-	Negative	TRUE
 OxPI	[M-H]-	Negative	TRUE
 EtherOxPC	[M+CH3COO]-	Negative	TRUE
 EtherOxPC	[M+HCOO]-	Negative	TRUE
+EtherOxPC	[M+HCO3]-	Negative	TRUE
 EtherOxPE	[M-H]-	Negative	TRUE
 PMeOH	[M-H]-	Negative	TRUE
 PEtOH	[M-H]-	Negative	TRUE
@@ -206,12 +209,14 @@ DLCL	[M-H]-	Negative	TRUE
 MLCL	[M-H]-	Negative	TRUE
 EtherPC	[M+CH3COO]-	Negative	TRUE
 EtherPC	[M+HCOO]-	Negative	TRUE
+EtherPC	[M+HCO3]-	Negative	TRUE
 EtherPE	[M-H]-	Negative	TRUE
 EtherPS	[M-H]-	Negative	TRUE
 EtherPI	[M-H]-	Negative	TRUE
 EtherPG	[M-H]-	Negative	TRUE
 EtherLPC	[M+CH3COO]-	Negative	TRUE
 EtherLPC	[M+HCOO]-	Negative	TRUE
+EtherLPC	[M+HCO3]-	Negative	TRUE
 EtherLPE	[M-H]-	Negative	TRUE
 EtherLPG	[M-H]-	Negative	TRUE
 MGDG	[M+CH3COO]-	Negative	TRUE
@@ -239,6 +244,7 @@ SMGDG	[M-H]-	Negative	TRUE
 SQDG	[M-H]-	Negative	FALSE
 SM	[M+CH3COO]-	Negative	TRUE
 SM	[M+HCOO]-	Negative	TRUE
+SM	[M+HCO3]-	Negative	TRUE
 Cer_NS	[M+H]+	Positive	True
 Cer_NS	[M+H-H2O]+	Positive	True
 Cer_NS	[M+Na]+	Positive	True
