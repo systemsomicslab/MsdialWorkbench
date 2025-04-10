@@ -89,8 +89,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     }
 
                     // UNDONE: retrieve spectrum data
-                    var ddetected = dspot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                    var dRawSpectra = dRawSpectras[peak.IonMode].Value;
+                    IReadOnlyList<AlignmentChromPeakFeature> ddetected = dspot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0).ToArray();
+                    System.Diagnostics.Debug.Assert(ddetected.Count > 0);
 
                     var dtimeMin = ddetected.Min(x => x.ChromXsTop.Drift.Value);
                     var dtimeMax = ddetected.Max(x => x.ChromXsTop.Drift.Value);
@@ -98,9 +98,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     var dtLeftRt = dtimeMin - dpeakWidth * 1.5F;
                     var dtRightRt = dtimeMax + dpeakWidth * 1.5F;
 
-                    var dChromatogram = dRawSpectra.GetDriftChromatogramByScanRtMz(dpeak.MS1RawSpectrumIdTop, (float)peak.ChromXsTop.RT.Value, (float)Filler3d.AxTolFirst, (float)peak.Mass, Param.CentroidMs1Tolerance, (float)dtLeftRt, (float)dtRightRt);
+                    var dRawSpectra = dRawSpectras[peak.IonMode].Value;
+                    using var dChromatogram = dRawSpectra.GetDriftChromatogramByScanRtMz(dpeak.MS1RawSpectrumIdTop, (float)peak.ChromXsTop.RT.Value, (float)Filler3d.AxTolFirst, (float)peak.Mass, Param.CentroidMs1Tolerance, (float)dtLeftRt, (float)dtRightRt);
+                    using var smoothed = dChromatogram.ChromatogramSmoothing(Param.SmoothingMethod, Param.SmoothingLevel);
                     var dpeakInfo = new ChromatogramPeakInfo(
-                        dpeak.FileID, dChromatogram.ChromatogramSmoothing(Param.SmoothingMethod, Param.SmoothingLevel).AsPeakArray(),
+                        dpeak.FileID, smoothed.AsPeakArray(),
                         (float)dpeak.ChromXsTop.Value,
                         (float)dpeak.ChromXsLeft.Value,
                         (float)dpeak.ChromXsRight.Value
