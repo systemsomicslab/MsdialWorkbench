@@ -3538,9 +3538,9 @@ namespace CompMs.Common.Lipidomics
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
-                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
-                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 5 }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
@@ -6534,9 +6534,9 @@ AdductIon adduct)
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + Proton;
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
-                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
-                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 5 }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
