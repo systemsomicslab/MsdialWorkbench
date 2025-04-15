@@ -1446,7 +1446,7 @@ namespace CompMs.Common.Lipidomics {
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
-                    if (acylCarbon > 8) return null;
+                    if (acylCarbon < 8) return null;
 
                     var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                     var query = new List<SpectrumPeak> { new() { Mass = sphFragment, Intensity = 0.01 } };
@@ -1476,7 +1476,7 @@ namespace CompMs.Common.Lipidomics {
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
                     var candidates = new List<LipidMolecule>();
-                    if (acylCarbon > 8) return null;
+                    if (acylCarbon < 8) return null;
 
                     var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass;
                     var query = new List<SpectrumPeak> { new() { Mass = sphFragment, Intensity = 0.01 } };
