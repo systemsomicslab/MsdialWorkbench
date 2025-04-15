@@ -44,8 +44,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
+            var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
+            var spectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
+
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker)
+            {
+                SpectraSimilarityMapCommand = spectraSmilarityMapCommand
+            }.AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);

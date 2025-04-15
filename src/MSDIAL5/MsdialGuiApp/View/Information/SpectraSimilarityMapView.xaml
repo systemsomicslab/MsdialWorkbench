@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Information.SpectraSimilarityMapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Information"
+             xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:view="clr-namespace:CompMs.App.Msdial.View.Information"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type viewmodel:SpectraSimilarityMapViewModel}}"
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="32" />
+        </Grid.RowDefinitions>
+
+        <chart:SimpleChartControl VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
+                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}">
+            <chart:HeatmapControl ItemsSource="{Binding Path=Result.Value, Mode=OneWay}"
+                                  DataType="{x:Type model:SimilarityMatrixItem}"
+                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}"
+                                  VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
+                                  HorizontalPropertyName="Right"
+                                  VerticalPropertyName="Left"
+                                  DegreePropertyName="Similarity">
+                <chart:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,20"
+                             HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
+                             VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Sample1: {0}, Sample2: {1}">
+                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).AnalysisFileName"/>
+                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).AnalysisFileName"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Similarity),
+                                                      StringFormat=Similarity: {0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
+        </chart:SimpleChartControl>
+        <!--
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Path=Result.Value}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Similarity}" Margin="8,0"/>
+                            <TextBlock Text="{Binding Path=Left.AnalysisFileName}" Margin="8,0"/>
+                            <TextBlock Text="{Binding Path=Right.AnalysisFileName}" Margin="8,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        -->
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="8,0"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="MinWidth" Value="64"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </StackPanel.Resources>
+            <ui:LabeledContent PrependLabel="m/z begin:">
+                <TextBox d:Text="0.0" Text="{Binding Path=MzBegin.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="m/z end:">
+                <TextBox d:Text="2000" Text="{Binding Path=MzEnd.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="m/z tolerance:">
+                <TextBox d:Text="0.01" Text="{Binding Path=MzBin.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </Grid>
+</UserControl>
