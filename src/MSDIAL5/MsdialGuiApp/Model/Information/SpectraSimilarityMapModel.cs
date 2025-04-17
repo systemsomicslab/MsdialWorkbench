@@ -1,5 +1,7 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -11,8 +13,11 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using CompMs.Graphics.Core.Base;
 
 namespace CompMs.App.Msdial.Model.Information;
 
@@ -41,6 +46,8 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
     private IReadOnlyList<IMSScanProperty?>? _scans;
     private AlignmentSpotPropertyModel? _spot;
     private readonly SerialDisposable _serialDisposable = new();
+    private readonly Subject<MsSpectrum?> _upper, _lower;
+    private readonly ObservableMsSpectrum _upperSpectrum, _lowerSpectrum;
 
     public SpectraSimilarityMapModel(AnalysisFileBeanModelCollection files, ProjectBaseParameter parameter) {
         _files = files;
@@ -54,6 +61,27 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         };
         _mzBegin = _parameter.MassRangeBegin;
         _mzEnd = _parameter.MassRangeEnd;
+
+        Disposables.Add(_serialDisposable);
+
+        _upper = new Subject<MsSpectrum?>().AddTo(Disposables);
+        _upperSpectrum = new ObservableMsSpectrum(_upper, null, null).AddTo(Disposables);
+
+        _lower = new Subject<MsSpectrum?>().AddTo(Disposables);
+        _lowerSpectrum = new ObservableMsSpectrum(_lower, null, null).AddTo(Disposables);
+
+        HorizontalAxis = new[] {
+            _upperSpectrum.GetRange(s => s.Mass),
+            _lowerSpectrum.GetRange(s => s.Mass),
+        }.CombineLatest(ab => (Math.Min(ab[0].Item1, ab[1].Item1), Math.Max(ab[0].Item2, ab[1].Item2)))
+        .ToReactiveContinuousAxisManager(new ConstantMargin(10))
+        .AddTo(Disposables);
+        UpperVerticalAxis = _upperSpectrum.GetRange(s => s.Intensity)
+            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 10))
+            .AddTo(Disposables);
+        LowerVerticalAxis = _lowerSpectrum.GetRange(s => s.Intensity)
+            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 10))
+            .AddTo(Disposables);
     }
 
     public AnalysisFileBeanModelCollection Files => _files;
@@ -101,6 +129,25 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
     }
     private SimilarityMatrixItem[] _result = [];
 
+    public SimilarityMatrixItem? SelectedMatrixItem {
+        get => _selectedMatrixItem;
+        set {
+            if (SetProperty(ref _selectedMatrixItem, value)) {
+                if (_selectedMatrixItem?.Right.Scan is { } rscan) {
+                    _lower.OnNext(new MsSpectrum(rscan.Spectrum));
+                }
+                if (_selectedMatrixItem?.Left.Scan is { } lscan) {
+                    _upper.OnNext(new MsSpectrum(lscan.Spectrum));
+                }
+            }
+        }
+    }
+    private SimilarityMatrixItem? _selectedMatrixItem;
+
+    public IAxisManager<double> HorizontalAxis { get; }
+    public IAxisManager<double> UpperVerticalAxis { get; }
+    public IAxisManager<double> LowerVerticalAxis { get; }
+
     public async Task UpdateSimilaritiesAsync(CancellationToken token = default) {
         var (bin, begin, end, scans, spot) = (MzBin, MzBegin, MzEnd, _scans, _spot);
         if (scans is null || spot is null) {
@@ -108,6 +155,9 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         }
         var matrix = await Task.Run(() => MsScanMatching.GetBatchSimpleDotProduct(scans, bin, begin, end), token).ConfigureAwait(false);
         token.ThrowIfCancellationRequested();
+
+        SelectedMatrixItem = null;
+
         var samplePeakScans = new SamplePeakScan[scans.Count];
         var disposables = new CompositeDisposable();
         for (int i = 0; i < samplePeakScans.Length; i++) {
@@ -130,6 +180,9 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         var (bin, begin, end) = (MzBin, MzBegin, MzEnd);
         var matrix = await Task.Run(() => MsScanMatching.GetBatchSimpleDotProduct(scans, bin, begin, end), token).ConfigureAwait(false);
         token.ThrowIfCancellationRequested();
+
+        SelectedMatrixItem = null;
+
         var samplePeakScans = new SamplePeakScan[scans.Count];
         var disposables = new CompositeDisposable();
         for (int i = 0; i < samplePeakScans.Length; i++) {
