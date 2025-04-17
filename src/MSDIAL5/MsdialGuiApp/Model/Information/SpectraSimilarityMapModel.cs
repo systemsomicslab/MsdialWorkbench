@@ -11,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Information;
 
-public sealed class SimilarityMatrixItem(AnalysisFileBeanModel left, AnalysisFileBeanModel right, double similarity) {
+public sealed class SimilarityMatrixItem(AnalysisFileBeanModel left, AnalysisFileBeanModel right, double similarity, IMSScanProperty? leftScan, IMSScanProperty? rightScan) {
     public AnalysisFileBeanModel Left { get; } = left;
     public AnalysisFileBeanModel Right { get; } = right;
     public double Similarity { get; } = similarity;
+    public IMSScanProperty? LeftScan { get; } = leftScan;
+    public IMSScanProperty? RightScan { get; } = rightScan;
 }
 
 internal sealed class SpectraSimilarityMapModel : BindableBase
@@ -22,7 +24,7 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
     private readonly AnalysisFileBeanModelCollection _files;
     private readonly MsRefSearchParameterBase _parameter;
     private readonly Ionization _ionization;
-    private IReadOnlyList<IMSScanProperty>? _scans;
+    private IReadOnlyList<IMSScanProperty?>? _scans;
 
     public SpectraSimilarityMapModel(AnalysisFileBeanModelCollection files, ProjectBaseParameter parameter) {
         _files = files;
@@ -84,16 +86,16 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
     private SimilarityMatrixItem[] _result = [];
 
     public async Task UpdateSimilaritiesAsync(CancellationToken token = default) {
-        if (_scans is null) {
+        var (bin, begin, end, scans) = (MzBin, MzBegin, MzEnd, _scans);
+        if (scans is null) {
             return;
         }
-        var (bin, begin, end, scans) = (MzBin, MzBegin, MzEnd, _scans);
         var matrix = await Task.Run(() => MsScanMatching.GetBatchSimpleDotProduct(scans, bin, begin, end), token).ConfigureAwait(false);
         token.ThrowIfCancellationRequested();
-        var result = new SimilarityMatrixItem[_scans.Count * _scans.Count];
-        for ( var i = 0; i < _scans.Count; i++) {
-            for (var j = 0; j < _scans.Count; j++) {
-                result[i * _scans.Count + j] = new SimilarityMatrixItem(_files.AnalysisFiles[i], _files.AnalysisFiles[j], matrix[i][j]);
+        var result = new SimilarityMatrixItem[scans.Count * scans.Count];
+        for ( var i = 0; i < scans.Count; i++) {
+            for (var j = 0; j < scans.Count; j++) {
+                result[i * scans.Count + j] = new SimilarityMatrixItem(_files.AnalysisFiles[i], _files.AnalysisFiles[j], matrix[i][j], scans[i], scans[j]);
             }
         }
         Result = result;
@@ -107,7 +109,7 @@ internal sealed class SpectraSimilarityMapModel : BindableBase
         var result = new SimilarityMatrixItem[_scans.Count * _scans.Count];
         for ( var i = 0; i < _scans.Count; i++) {
             for (var j = 0; j < _scans.Count; j++) {
-                result[i * _scans.Count + j] = new SimilarityMatrixItem(_files.AnalysisFiles[i], _files.AnalysisFiles[j], matrix[i][j]);
+                result[i * _scans.Count + j] = new SimilarityMatrixItem(_files.AnalysisFiles[i], _files.AnalysisFiles[j], matrix[i][j], scans[i], scans[j]);
             }
         }
         Result = result;
