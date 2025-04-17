@@ -5,28 +5,47 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Information"
              xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
-             xmlns:view="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Chart.Core;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type viewmodel:SpectraSimilarityMapViewModel}}"
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <design:ConstantBrushMapper x:Key="brush" Brush="Black"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="256" />
+        </Grid.ColumnDefinitions>
 
-        <chart:SimpleChartControl VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
-                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}">
+        <chart:SimpleChartControl VerticalAxis="{Binding Path=HeatmapVerticalAxis, Mode=OneTime}"
+                                  HorizontalAxis="{Binding Path=HeatmapHorizontalAxis, Mode=OneTime}">
             <chart:HeatmapControl ItemsSource="{Binding Path=Result.Value, Mode=OneWay}"
                                   DataType="{x:Type model:SimilarityMatrixItem}"
-                                  HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}"
-                                  VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
-                                  HorizontalPropertyName="Right"
-                                  VerticalPropertyName="Left"
-                                  DegreePropertyName="Similarity">
+                                  HorizontalAxis="{Binding Path=HeatmapHorizontalAxis, Mode=OneTime}"
+                                  VerticalAxis="{Binding Path=HeatmapVerticalAxis, Mode=OneTime}"
+                                  FlippedY="False"
+                                  HorizontalPropertyName="Right.File"
+                                  VerticalPropertyName="Left.File"
+                                  DegreePropertyName="Similarity"
+                                  DegreeMax="1"
+                                  DegreeMin="0"
+                                  SelectedItem="{Binding SelectedMatrixItem.Value, Mode=OneWayToSource}">
                 <chart:HeatmapControl.ToolTip>
                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                              Placement="Relative"
@@ -34,14 +53,10 @@
                              HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
                              VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="Sample1: {0}, Sample2: {1}">
-                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).AnalysisFileName"/>
-                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).AnalysisFileName"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).File.AnalysisFileName,
+                                                      StringFormat=Sample1: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).File.AnalysisFileName,
+                                                      StringFormat=Sample2: {0}}" />
                             <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Similarity),
                                                       StringFormat=Similarity: {0}}"/>
                         </StackPanel>
@@ -49,23 +64,110 @@
                 </chart:HeatmapControl.ToolTip>
             </chart:HeatmapControl>
         </chart:SimpleChartControl>
-        <!--
-        <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Path=Result.Value}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Path=Similarity}" Margin="8,0"/>
-                            <TextBlock Text="{Binding Path=Left.AnalysisFileName}" Margin="8,0"/>
-                            <TextBlock Text="{Binding Path=Right.AnalysisFileName}" Margin="8,0"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-        -->
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+        <TabControl Grid.Row="0" Grid.Column="1">
+            <TabItem Header="Matches">
+                <ContentControl >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding SelectedMatrixItem.Value.Left.File.AnalysisFileName}"
+                                       Grid.Row="0"/>
+                            <ListView ItemsSource="{Binding SelectedMatrixItem.Value.Left.Peak.Value.MatchResults.MatchResults}"
+                                      DisplayMemberPath="Name"
+                                      Grid.Row="1"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding SelectedMatrixItem.Value.Right.File.AnalysisFileName}"
+                                       Grid.Row="0"/>
+                            <ListView ItemsSource="{Binding SelectedMatrixItem.Value.Right.Peak.Value.MatchResults.MatchResults}"
+                                      DisplayMemberPath="Name"
+                                      Grid.Row="1"/>
+                        </Grid>
+                    </Grid>
+                </ContentControl>
+            </TabItem>
+
+            <TabItem Header="Spectra">
+                <chart:MultiChart HorizontalAxis="{Binding SpectrumHorizontalAxis}"
+                                  Style="{StaticResource VerticalConcatChart}">
+                    <Grid core:ChartBaseControl.VerticalAxis="{Binding SpectrumUpperVerticalAxis}">
+                        <chart:LineSpectrumControlSlim ItemsSource="{Binding SelectedMatrixItem.Value.Left.Scan.Spectrum}"
+                                                       DataType="{x:Type components:SpectrumPeak}"
+                                                       HorizontalProperty="Mass"
+                                                       VerticalProperty="Intensity"
+                                                       LineBrush="{StaticResource brush}"
+                                                       LineThickness="2">
+                            <chart:LineSpectrumControlSlim.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="m/z: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                        <TextBlock Text=" Intensity: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </chart:LineSpectrumControlSlim.ToolTip>
+                        </chart:LineSpectrumControlSlim>
+                        <chart:Annotator ItemsSource="{Binding SelectedMatrixItem.Value.Left.Scan.Spectrum}"
+                                         HorizontalPropertyName="Mass"
+                                         VerticalPropertyName="Intensity"
+                                         LabelPropertyName="Mass"
+                                         OrderingPropertyName="Intensity"
+                                         Brush="Black"
+                                         Overlap="Horizontal,Direct"
+                                         Format="F4"
+                                         ClipToBounds="True"/>
+                    </Grid>
+                    <Grid core:ChartBaseControl.VerticalAxis="{Binding SpectrumLowerVerticalAxis}"
+                          core:ChartBaseControl.FlippedY="False">
+                        <chart:LineSpectrumControlSlim ItemsSource="{Binding SelectedMatrixItem.Value.Right.Scan.Spectrum}"
+                                                       DataType="{x:Type components:SpectrumPeak}"
+                                                       HorizontalProperty="Mass"
+                                                       VerticalProperty="Intensity"
+                                                       LineBrush="{StaticResource brush}"
+                                                       LineThickness="2">
+                            <chart:LineSpectrumControlSlim.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="m/z: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                        <TextBlock Text=" Intensity: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </chart:LineSpectrumControlSlim.ToolTip>
+                        </chart:LineSpectrumControlSlim>
+                        <chart:Annotator ItemsSource="{Binding SelectedMatrixItem.Value.Right.Scan.Spectrum}"
+                                         HorizontalPropertyName="Mass"
+                                         VerticalPropertyName="Intensity"
+                                         LabelPropertyName="Mass"
+                                         OrderingPropertyName="Intensity"
+                                         Brush="Black"
+                                         Overlap="Horizontal,Direct"
+                                         Format="F4"
+                                         ClipToBounds="True"/>
+                    </Grid>
+                </chart:MultiChart>
+            </TabItem>
+        </TabControl>
+        <GridSplitter Width="2" HorizontalAlignment="Left" Foreground="DarkGray" Grid.Row="0" Grid.Column="1"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2">
             <StackPanel.Resources>
                 <Style TargetType="ui:LabeledContent">
                     <Setter Property="VerticalAlignment" Value="Center"/>

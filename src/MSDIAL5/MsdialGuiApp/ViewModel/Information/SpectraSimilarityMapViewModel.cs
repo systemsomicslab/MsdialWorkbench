@@ -22,20 +22,28 @@ internal sealed class SpectraSimilarityMapViewModel : ViewModelBase
 
         UpdateCommand = new AsyncReactiveCommand().WithSubscribe(() => model.UpdateSimilaritiesAsync()).AddTo(Disposables);
 
-        VerticalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d), }.AddTo(Disposables);
-        HorizontalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d) }.AddTo(Disposables);
+        HeatmapVerticalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d), }.AddTo(Disposables);
+        HeatmapHorizontalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d) }.AddTo(Disposables);
         ValueAxis = new ContinuousAxisManager<double>(0d, 1d).AddTo(Disposables);
+
+        SelectedMatrixItem = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedMatrixItem).AddTo(Disposables);
     }
 
     public ReactiveProperty<double> MzBin { get; }
     public ReactiveProperty<double> MzBegin { get; }
     public ReactiveProperty<double> MzEnd { get; }
 
+    public ReactivePropertySlim<SimilarityMatrixItem?> SelectedMatrixItem { get; }
+
     public ReadOnlyReactivePropertySlim<SimilarityMatrixItem[]> Result { get; }
 
-    public CategoryAxisManager<AnalysisFileBeanModel> VerticalAxis { get; }
-    public CategoryAxisManager<AnalysisFileBeanModel> HorizontalAxis { get; }
+    public CategoryAxisManager<AnalysisFileBeanModel> HeatmapVerticalAxis { get; }
+    public CategoryAxisManager<AnalysisFileBeanModel> HeatmapHorizontalAxis { get; }
     public ContinuousAxisManager<double> ValueAxis { get; }
+
+    public IAxisManager<double> SpectrumHorizontalAxis => _model.HorizontalAxis;
+    public IAxisManager<double> SpectrumUpperVerticalAxis => _model.UpperVerticalAxis;
+    public IAxisManager<double> SpectrumLowerVerticalAxis => _model.LowerVerticalAxis;
 
     public AsyncReactiveCommand UpdateCommand { get; }
 }
