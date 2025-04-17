@@ -20,9 +20,9 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class ObservableMsSpectrum : DisposableModelBase {
         private readonly Subject<Stream> _saveAsObservable;
-        private readonly IObservable<ISpectraExporter?> _exporter;
+        private readonly IObservable<ISpectraExporter?>? _exporter;
 
-        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?> exporter) {
+        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?>? exporter) {
             MsSpectrum = msSpectrum ?? throw new ArgumentNullException(nameof(msSpectrum));
             Loaded = loaded ?? Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _exporter = exporter;
