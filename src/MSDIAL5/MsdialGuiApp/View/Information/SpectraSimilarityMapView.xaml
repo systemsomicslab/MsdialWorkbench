@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Information"
              xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
-             xmlns:view="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
@@ -17,6 +16,10 @@
             <RowDefinition/>
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="256" />
+        </Grid.ColumnDefinitions>
 
         <chart:SimpleChartControl VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
                                   HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}">
@@ -24,11 +27,12 @@
                                   DataType="{x:Type model:SimilarityMatrixItem}"
                                   HorizontalAxis="{Binding Path=HorizontalAxis, Mode=OneTime}"
                                   VerticalAxis="{Binding Path=VerticalAxis, Mode=OneTime}"
-                                  HorizontalPropertyName="Right"
-                                  VerticalPropertyName="Left"
+                                  HorizontalPropertyName="Right.File"
+                                  VerticalPropertyName="Left.File"
                                   DegreePropertyName="Similarity"
                                   DegreeMax="1"
-                                  DegreeMin="0">
+                                  DegreeMin="0"
+                                  SelectedItem="{Binding SelectedMatrixItem.Value, Mode=OneWayToSource}">
                 <chart:HeatmapControl.ToolTip>
                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                              Placement="Relative"
@@ -36,14 +40,10 @@
                              HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
                              VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="Sample1: {0}, Sample2: {1}">
-                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).AnalysisFileName"/>
-                                        <Binding Path="(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).AnalysisFileName"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Left).File.AnalysisFileName,
+                                                      StringFormat=Sample1: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Right).File.AnalysisFileName,
+                                                      StringFormat=Sample2: {0}}" />
                             <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:SimilarityMatrixItem.Similarity),
                                                       StringFormat=Similarity: {0}}"/>
                         </StackPanel>
@@ -67,7 +67,44 @@
         </ScrollViewer>
         -->
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+        <TabControl Grid.Row="0" Grid.Column="1">
+            <TabItem Header="Matches">
+                <ContentControl >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding SelectedMatrixItem.Value.Left.File.AnalysisFileName}"
+                                       Grid.Row="0"/>
+                            <ListView ItemsSource="{Binding SelectedMatrixItem.Value.Left.Peak.Value.MatchResults.MatchResults}"
+                                      DisplayMemberPath="Name"
+                                      Grid.Row="1"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding SelectedMatrixItem.Value.Right.File.AnalysisFileName}"
+                                       Grid.Row="0"/>
+                            <ListView ItemsSource="{Binding SelectedMatrixItem.Value.Right.Peak.Value.MatchResults.MatchResults}"
+                                      DisplayMemberPath="Name"
+                                      Grid.Row="1"/>
+                        </Grid>
+                    </Grid>
+                </ContentControl>
+            </TabItem>
+        </TabControl>
+        <GridSplitter Width="2" HorizontalAlignment="Left" Foreground="DarkGray" Grid.Row="0" Grid.Column="1"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2">
             <StackPanel.Resources>
                 <Style TargetType="ui:LabeledContent">
                     <Setter Property="VerticalAlignment" Value="Center"/>

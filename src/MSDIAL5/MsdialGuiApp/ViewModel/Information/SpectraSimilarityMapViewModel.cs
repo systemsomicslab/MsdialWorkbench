@@ -25,11 +25,15 @@ internal sealed class SpectraSimilarityMapViewModel : ViewModelBase
         VerticalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d), }.AddTo(Disposables);
         HorizontalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d) }.AddTo(Disposables);
         ValueAxis = new ContinuousAxisManager<double>(0d, 1d).AddTo(Disposables);
+
+        SelectedMatrixItem = new ReactivePropertySlim<SimilarityMatrixItem?>(null).AddTo(Disposables);
     }
 
     public ReactiveProperty<double> MzBin { get; }
     public ReactiveProperty<double> MzBegin { get; }
     public ReactiveProperty<double> MzEnd { get; }
+
+    public ReactivePropertySlim<SimilarityMatrixItem?> SelectedMatrixItem { get; }
 
     public ReadOnlyReactivePropertySlim<SimilarityMatrixItem[]> Result { get; }
 

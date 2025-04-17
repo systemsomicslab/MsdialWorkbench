@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     SpectraSimilarityMapModel.ClearSimilarities();
                     return;
                 }
-                await SpectraSimilarityMapModel.UpdateSimilaritiesAsync(scans);
+                await SpectraSimilarityMapModel.UpdateSimilaritiesAsync(t, scans);
             });
         }
 
