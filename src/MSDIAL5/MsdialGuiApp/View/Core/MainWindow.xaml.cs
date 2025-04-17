@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
             broker.ToObservable<SpectraSimilarityMapViewModel>()
-                .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Alined peaks spectra similarity", height: 400, width: 600));
+                .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
