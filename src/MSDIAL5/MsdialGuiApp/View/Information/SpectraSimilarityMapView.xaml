@@ -51,21 +51,6 @@
                 </chart:HeatmapControl.ToolTip>
             </chart:HeatmapControl>
         </chart:SimpleChartControl>
-        <!--
-        <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Path=Result.Value}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Path=Similarity}" Margin="8,0"/>
-                            <TextBlock Text="{Binding Path=Left.AnalysisFileName}" Margin="8,0"/>
-                            <TextBlock Text="{Binding Path=Right.AnalysisFileName}" Margin="8,0"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-        -->
 
         <TabControl Grid.Row="0" Grid.Column="1">
             <TabItem Header="Matches">
