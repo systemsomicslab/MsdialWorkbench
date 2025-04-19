@@ -37,6 +37,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         public IObservable<List<PeakChromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
+            //return Observable.Return(new List<PeakChromatogram>(0));
             if (target != null) {
                 var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
                 var ps = Enumerable.Range(0, _fileChromatograms.Count)

@@ -67,6 +67,7 @@
     <Compile Include="CircosUtility.cs" />
     <Compile Include="CtraceCorrectCheck.cs" />
     <Compile Include="LipidomicsResultCuration.cs" />
+    <Compile Include="msdialpeaktableobjcuration.cs" />
     <Compile Include="MspManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
