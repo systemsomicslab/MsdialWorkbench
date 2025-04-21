@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Information"
              xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
-             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
-             xmlns:core="clr-namespace:CompMs.Graphics.Chart.Core;assembly=ChartDrawing"
-             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
+             xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type viewmodel:SpectraSimilarityMapViewModel}}"
              d:Background="White"
@@ -27,18 +28,38 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="256" />
         </Grid.ColumnDefinitions>
 
-        <chart:SimpleChartControl VerticalAxis="{Binding Path=HeatmapVerticalAxis, Mode=OneTime}"
-                                  HorizontalAxis="{Binding Path=HeatmapHorizontalAxis, Mode=OneTime}">
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Grid.Row="1">
+            <ComboBox x:Name="AxisOrderSelector" SelectedIndex="1">
+                <ComboBoxItem Content="No ordered">
+                    <ComboBoxItem.DataContext>
+                        <MultiBinding Converter="{StaticResource MultiId}">
+                            <Binding Path="HeatmapVerticalAxis" Mode="OneWay"/>
+                            <Binding Path="HeatmapHorizontalAxis" Mode="OneWay"/>
+                        </MultiBinding>
+                    </ComboBoxItem.DataContext>
+                </ComboBoxItem>
+                <ComboBoxItem Content="Ward2 clustered">
+                    <ComboBoxItem.DataContext>
+                        <MultiBinding Converter="{StaticResource MultiId}">
+                            <Binding Path="HeatmapClusteredVerticalAxis" Mode="OneWay"/>
+                            <Binding Path="HeatmapClusteredHorizontalAxis" Mode="OneWay"/>
+                        </MultiBinding>
+                    </ComboBoxItem.DataContext>
+                </ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
+        <chart:SimpleChartControl VerticalAxis="{Binding Path=SelectedItem.DataContext[0], ElementName=AxisOrderSelector}"
+                                  HorizontalAxis="{Binding Path=SelectedItem.DataContext[1], ElementName=AxisOrderSelector}">
             <chart:HeatmapControl ItemsSource="{Binding Path=Result.Value, Mode=OneWay}"
                                   DataType="{x:Type model:SimilarityMatrixItem}"
-                                  HorizontalAxis="{Binding Path=HeatmapHorizontalAxis, Mode=OneTime}"
-                                  VerticalAxis="{Binding Path=HeatmapVerticalAxis, Mode=OneTime}"
                                   FlippedY="False"
                                   HorizontalPropertyName="Right.File"
                                   VerticalPropertyName="Left.File"
@@ -157,6 +178,7 @@
                                          VerticalPropertyName="Intensity"
                                          LabelPropertyName="Mass"
                                          OrderingPropertyName="Intensity"
+                                         ContentAlignment="BottomCenter"
                                          Brush="Black"
                                          Overlap="Horizontal,Direct"
                                          Format="F4"
@@ -167,7 +189,7 @@
         </TabControl>
         <GridSplitter Width="2" HorizontalAlignment="Left" Foreground="DarkGray" Grid.Row="0" Grid.Column="1"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2">
             <StackPanel.Resources>
                 <Style TargetType="ui:LabeledContent">
                     <Setter Property="VerticalAlignment" Value="Center"/>
