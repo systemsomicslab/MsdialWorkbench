@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Internal;
 
-internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance, AcquisitionType acquisitonType) : IDataProvider
+internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance, AcquisitionType acquisitionType) : IDataProvider
 {
     private readonly IDataProvider _other = other;
     private readonly double _mz = mz;
     private readonly double _tolerance = tolerance;
-    private readonly AcquisitionType _acquisitonType = acquisitonType;
-
+    private readonly AcquisitionType _acquisitionType = acquisitionType;
     public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => _other.LoadMs1Spectrums();
 
     public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => _other.LoadMs1SpectrumsAsync(token);
