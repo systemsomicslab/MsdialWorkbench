@@ -45,6 +45,6 @@ internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, doubl
     }
 
     private bool IsNearBy(RawPrecursorIon p, double mz, double tolerance) {
-        return p is not null && p.ContainsMz(mz, tolerance, _acquisitonType);
+        return p is not null && p.ContainsMz(mz, tolerance, _acquisitionType);
     }
 }
