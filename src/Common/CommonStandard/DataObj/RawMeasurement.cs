@@ -252,7 +252,7 @@ namespace CompMs.Common.DataObj {
                     var upperOffset = IsolationWindowUpperOffset;
                     return (double)SelectedIonMz - lowerOffset - tolerance < mz && (double)mz < (double)SelectedIonMz + upperOffset + (double)tolerance;
                 case AcquisitionType.DDA:
-                    return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
+                    return Math.Abs((double)SelectedIonMz - (double)mz) <= (double)tolerance;
                 default:
                     throw new NotSupportedException(nameof(acquisitionType));
             }
