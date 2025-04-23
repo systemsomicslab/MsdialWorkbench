@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Internal.Tests
                     new() { MsLevel = 2, Precursor = new RawPrecursorIon { SelectedIonMz = 500d, } },
                 }
             };
-            var filtered = new PrecursorMzSelectedDataProvider(provider, 300d, 100d);
+            var filtered = new PrecursorMzSelectedDataProvider(provider, 300d, 100d, Common.Enum.AcquisitionType.DDA);
             var actual = filtered.LoadMsNSpectrums(2);
             var expected = provider.LoadMsNSpectrums(2).Where(s => Math.Abs(s.Precursor.SelectedIonMz - 300d) <= 100d).ToArray();
 
