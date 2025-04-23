@@ -34,9 +34,16 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
-            if (adduct.AdductIonName == "[M+H]+" ||
-                adduct.AdductIonName == "[M-H]-") {
-                return true;
+            if (lipid.Name.Contains("PE O-")) {
+                if (adduct.AdductIonName == "[M+H]+" ||
+                    adduct.AdductIonName == "[M-H]-") {
+                    return true;
+                }
+            }
+            if (lipid.Name.Contains("PE P-")) {
+                if (adduct.AdductIonName == "[M+H]+") {
+                    return true;
+                }
             }
             return false;
         }
