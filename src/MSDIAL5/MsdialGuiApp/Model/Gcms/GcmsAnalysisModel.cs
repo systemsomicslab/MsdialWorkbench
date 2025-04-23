@@ -152,7 +152,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(dbStorage, dbMapper);
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(compoundSearchers).Publish();
-            RawDecSpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching).AddTo(_disposables);
+            RawDecSpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, null, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, null).AddTo(_disposables);
             _disposables.Add(ms2ScanMatching.Connect());
 
             // Raw vs Purified spectrum model

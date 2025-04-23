@@ -161,8 +161,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), refLoader, referenceExporter).AddTo(Disposables);
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(Disposables);
 
+            MultiMsmsQ1DecSpectrumLoader? q1decLoader = null;
+            SingleSpectrumModel? q1decSpectrumModel = null;
+            if (analysisFileModel.AcquisitionType == AcquisitionType.ZTScan || analysisFileModel.AcquisitionType == AcquisitionType.SWATH) {
+                q1decLoader = new MultiMsmsQ1DecSpectrumLoader(provider).AddTo(Disposables);
+                var q1decGraphLabels = new GraphLabels("Q1 deconvoluted spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                ObservableMsSpectrum q1decObservableMsSpectrum = ObservableMsSpectrum.Create(Target, q1decLoader, spectraExporter).AddTo(Disposables);
+                q1decSpectrumModel = new SingleSpectrumModel(q1decObservableMsSpectrum, q1decObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), q1decObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredHueItem, q1decGraphLabels).AddTo(Disposables);
+            }
+
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
-            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawSpectrumLoader).AddTo(Disposables);
+            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, q1decSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, [rawSpectrumLoader, q1decLoader]).AddTo(Disposables);
             Disposables.Add(ms2ScanMatching.Connect());
             
             // Raw vs Purified spectrum model
@@ -233,7 +242,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
-            analysisFile = analysisFileModel;
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
@@ -241,7 +249,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
         private readonly UndoManager _undoManager;
-        public AnalysisFileBeanModel analysisFile { get; }
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }

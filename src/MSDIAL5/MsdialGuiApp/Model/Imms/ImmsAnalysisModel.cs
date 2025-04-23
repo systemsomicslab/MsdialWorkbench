@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.Model.Imms
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(Disposables);
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
-            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawLoader).AddTo(Disposables);
+            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, null, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, [rawLoader]).AddTo(Disposables);
             Disposables.Add(ms2ScanMatching.Connect());
 
             // Ms2 chromatogram
