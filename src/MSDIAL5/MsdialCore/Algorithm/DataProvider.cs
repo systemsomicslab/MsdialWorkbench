@@ -226,12 +226,15 @@ public static class DataProvider
     /// <param name="provider">The original data provider to filter.</param>
     /// <param name="mz">The target m/z value to filter by.</param>
     /// <param name="tolerance">The tolerance for the m/z filtering. Data points within this tolerance from the specified m/z value will be included in the filtered data.</param>
+    /// <param name="acquisitionType">The acquisition type for spectrum acquiring</param>
     /// <returns>A new <see cref="IDataProvider"/> instance that provides access to the data filtered based on the specified m/z value and tolerance.</returns>
     /// <remarks>
     /// This method creates an instance of <see cref="PrecursorMzSelectedDataProvider"/>, which implements the filtering logic based on the specified m/z value and tolerance.
     /// </remarks>
-    public static IDataProvider FilterByMz(this IDataProvider provider, double mz, double tolerance) {
-        return new PrecursorMzSelectedDataProvider(provider, mz, tolerance);
+    /// <param name="acquisitionType"></param>
+    public static IDataProvider FilterByMz(this IDataProvider provider, double mz, double tolerance, AcquisitionType acquisitionType)
+    {
+        return new PrecursorMzSelectedDataProvider(provider, mz, tolerance, acquisitionType);
     }
 
     /// <summary>
