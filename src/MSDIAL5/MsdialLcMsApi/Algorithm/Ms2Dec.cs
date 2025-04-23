@@ -76,6 +76,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
             RawSpectrum spectrum = await provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
+            var acquisition = MsmsAcquisition.Get(file.AcquisitionType) ?? MsmsAcquisition.None;
+            if (acquisition.NeedQ1Deconvolution) {
+                var query = new SpectraLoadingQuery
+                {
+                    MSLevel = spectrum.MsLevel,
+                    ExperimentID = spectrum.ExperimentID,
+                    CollisionEnergy = spectrum.Precursor?.CollisionEnergy,
+                    ScanTimeRange = new() { Start = spectrum.ScanStartTime, End = spectrum.ScanStartTime },
+                    EnableQ1Deconvolution = true,
+                };
+                var spectra = await provider.LoadMSSpectraAsync(query, token).ConfigureAwait(false);
+                spectrum = spectra.FirstOrDefault();
+            }
+
             var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrum, param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
