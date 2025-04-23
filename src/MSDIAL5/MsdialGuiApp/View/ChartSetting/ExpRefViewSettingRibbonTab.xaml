@@ -16,6 +16,14 @@
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>
+    <RibbonGroup Header="Q1Dec MS/MS spectrum">
+        <RibbonComboBox Label="Spectrum id"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding Q1DecSelectedMs2Id.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding Q1DecMs2IdList.Value, FallbackValue={x:Null}}"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+    </RibbonGroup>
     <RibbonGroup Header="Intensity axis type">
         <RibbonComboBox Label="Deconvoluted"
                         VerticalAlignment="Center">

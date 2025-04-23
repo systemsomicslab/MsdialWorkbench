@@ -50,6 +50,11 @@
                          ToolTip="Show centroid spectra vs. reference spectra"
                          Style="{StaticResource IconRadioButton}"/>
 
+            <RadioButton Name="Button_ShowQ1Deconvolution"
+                         Content="/Resources/RawChromatogram.ico"
+                         ToolTip="Show q1 deconvoluted spectra vs. reference spectra"
+                         Style="{StaticResource IconRadioButton}"/>
+
             <RadioButton Name="Button_ShowDeconvolution"
                          IsChecked="True"
                          Content="/Resources/Deconvoluted.ico"
@@ -139,6 +144,10 @@
             <local:MsSpectrumView DataContext="{Binding RawRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,
                                                        ElementName=Button_ShowCentroid,
+                                                       Converter={StaticResource BooleanToVisibility}}"/>
+            <local:MsSpectrumView DataContext="{Binding Q1DecRefSpectrumViewModels}"
+                                  Visibility="{Binding IsChecked,
+                                                       ElementName=Button_ShowQ1Deconvolution,
                                                        Converter={StaticResource BooleanToVisibility}}"/>
             <local:MsSpectrumView DataContext="{Binding DecRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,
