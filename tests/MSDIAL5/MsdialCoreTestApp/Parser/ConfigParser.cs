@@ -277,8 +277,8 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.ProjectParam.MachineCategory = (MachineCategory)Enum.Parse(typeof(MachineCategory), valueLower, true);
                     return true;
 
-                case "slovent type":
-                    if (value == "CH3COONH4" || value == "HCOONH4")
+                case "solvent type":
+                    if (value == "CH3COONH4" || value == "HCOONH4" || value == "NH4HCO3")
                         param.LipidQueryContainer.SolventType = (SolventType)Enum.Parse(typeof(SolventType), valueLower, true);
                     return true;
 
