@@ -14,15 +14,14 @@ using CompMs.Common.FormulaGenerator;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
-using CompMs.Common.Parameter;
 using CompMs.Common.StructureFinder.DataObj;
 using CompMs.Common.StructureFinder.Parser;
-using CompMs.Common.StructureFinder.Result;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -418,6 +417,13 @@ namespace CompMs.App.Msdial.Model.Search
         private DelegateCommand? _showSubstructureCommand;
         public void ShowSubstructure() {
             Mouse.OverrideCursor = Cursors.Wait;
+            var message = new ShortMessageWindow() {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Title = "Preparing the substructure view...",
+                Width = 400,
+                Height = 100
+            };
+            message.Show();
             if (_rawData is null || FormulaList is null) return;
             var vm = new InternalMsfinderSubstructure(FormulaList, fragmentOntologyDB);
             var substructure = new SubstructureView() {
@@ -425,6 +431,7 @@ namespace CompMs.App.Msdial.Model.Search
             };
             substructure.Closed += (s, e) => vm.Dispose();
             substructure.Show();
+            message.Close();
             Mouse.OverrideCursor = null;
         }
 
