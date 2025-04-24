@@ -330,10 +330,21 @@ namespace Rfx.Riken.OsakaUniv
                             break;
                         case "AC$MASS_SPECTROMETRY":
                             switch (subtag) {
+                                case "ION_MODE":
+                                    switch (subcontent)
+                                    {
+                                        case "POSITIVE":
+                                            rawData.IonMode = IonMode.Positive;
+                                            break;
+                                        case "NEGATIVE":
+                                            rawData.IonMode = IonMode.Negative;
+                                            break;
+                                    }
+                                    break;
                                 case "COLLISION_ENERGY":
                                     rawData.Assign(d => d.CollisionEnergy, subcontent.Split()[0]);
                                     break;
-                            }
+                                }
                             break;
                         case "AC$CHROMATOGRAPHY":
                             switch (subtag) {
@@ -352,6 +363,9 @@ namespace Rfx.Riken.OsakaUniv
                             break;
                         case "MS$FOCUSED_ION":
                             switch (subtag) {
+                                case "ION_TYPE":
+                                    rawData.PrecursorType = subcontent;
+                                    break;
                                 case "PRECURSOR_M/Z":
                                     rawData.Assign(d => d.PrecursorMz, subcontent);
                                     break;
