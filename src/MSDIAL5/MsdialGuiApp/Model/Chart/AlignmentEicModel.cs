@@ -38,8 +38,8 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             var spotChromatogramsHot = spotChromatograms.Publish();
-            var chromatoramSource = spotChromatogramsHot.DefaultIfNull(s => s.Chromatograms, Observable.Return(new List<PeakChromatogram>(0))).Switch();
-            EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
+            var chromatogramSource = spotChromatogramsHot.DefaultIfNull(s => s.Chromatograms, Observable.Return(new List<PeakChromatogram>(0))).Switch();
+            EicChromatograms = chromatogramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
 
             var peaksox = EicChromatograms
                 .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
