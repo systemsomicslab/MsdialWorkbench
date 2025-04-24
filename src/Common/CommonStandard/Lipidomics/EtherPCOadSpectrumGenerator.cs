@@ -70,7 +70,7 @@ namespace CompMs.Common.Lipidomics
                 //"OAD12",
                 //"OAD13",
                 //"OAD14",
-                //"OAD15",
+                "OAD15",
                 //"OAD15+O",
                 //"OAD16",
                 //"OAD17",
