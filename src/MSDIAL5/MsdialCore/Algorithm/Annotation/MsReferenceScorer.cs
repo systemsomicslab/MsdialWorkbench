@@ -65,7 +65,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                         matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                     }
                     else if (this.collisionType == CollisionType.OAD) {
-                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForOAD(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                     }
                     else {
                         matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
@@ -224,11 +224,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var name = reference.Name;
             bool isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch;
 
-            if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.EID || collisionType == CollisionType.OAD) {
+            if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.EID) {
                 name = MsScanMatching.GetRefinedLipidAnnotationLevelForEIEIO(scan, reference, parameter.Ms2Tolerance,
                     out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             }
-            else {
+            else if (collisionType == CollisionType.OAD) {
+                name = MsScanMatching.GetRefinedLipidAnnotationLevelForOAD(scan, reference, parameter.Ms2Tolerance,
+                    out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            } else {
                 name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance,
                     out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             }
