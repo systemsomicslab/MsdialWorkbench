@@ -516,9 +516,99 @@ namespace Rfx.Riken.OsakaUniv
                         sw.WriteLine(peak.Mz + "\t" + peak.Intensity + "\t\"" + peak.Comment + "\"");
                     }
                 }
-            }        
+            }
         }
 
+        public static void MassBankRecordWriter(string filePath, RawData rawData) {
+            List<string> lines;
+            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+                lines = new List<string>();
+                while (!sr.EndOfStream) {
+                    lines.Add(sr.ReadLine());
+                }
+            }
+
+            for (int i = 0; i < lines.Count; i++) { 
+                var line = lines[i];
+                if (line.StartsWith("CH$NAME: ")) {
+                    var newValue = "CH$NAME: " + rawData.Name;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("CH$NAME: ")) {
+                    var newValue = "CH$NAME: " + rawData.Name;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("CH$FORMULA: ")) {
+                    var newValue = "CH$FORMULA: " + rawData.Formula;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("CH$SMILES: ")) {
+                    var newValue = "CH$SMILES: " + rawData.Smiles;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("CH$IUPAC: ")) {
+                    var newValue = "CH$IUPAC: " + rawData.Inchi;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("CH$LINK: INCHIKEY ")) {
+                    var newValue = "CH$LINK: INCHIKEY " + rawData.InchiKey;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("AC$MASS_SPECTROMETRY: ION_MODE")) {
+                    var newValue = "AC$MASS_SPECTROMETRY: ION_MODE " + rawData.IonMode.ToString().ToUpper();
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("AC$CHROMATOGRAPHY: RETENTION_TIME ")) {
+                    var newValue = "AC$CHROMATOGRAPHY: RETENTION_TIME " + rawData.RetentionTime;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("AC$CHROMATOGRAPHY: CCS ")) {
+                    var newValue = "AC$CHROMATOGRAPHY: CCS " + rawData.Ccs;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("AC$CHROMATOGRAPHY: KOVATS_RTI ")) {
+                    var newValue = "AC$CHROMATOGRAPHY: KOVATS_RTI " + rawData.RetentionIndex;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("MS$FOCUSED_ION: ION_TYPE ")) {
+                    var newValue = "MS$FOCUSED_ION: ION_TYPE " + rawData.PrecursorType;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+                if (line.StartsWith("MS$FOCUSED_ION: PRECURSOR_TYPE ")) {
+                    var newValue = "MS$FOCUSED_ION: PRECURSOR_TYPE " + rawData.PrecursorType;
+                    if (line != newValue) {
+                        lines[i] = newValue;
+                    }
+                }
+            }
+            using (var sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+                foreach (var line in lines) {
+                    sw.WriteLine(line);
+                }
+            }
+        }
         private static void setIsotopicIons(RawData rawDataBean, double massTol, MassToleranceType massTolType)
         {
             var peaklist = new List<Peak>();
