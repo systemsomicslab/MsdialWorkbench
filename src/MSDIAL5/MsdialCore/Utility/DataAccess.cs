@@ -303,12 +303,11 @@ namespace CompMs.MsdialCore.Utility
             double startTime, double endTime, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, CancellationToken token = default) {
 
-            var acquisition = MsmsAcquisition.Get(acquisitionType) ?? MsmsAcquisition.None;
             var query = new SpectraLoadingQuery
             {
                 MSLevel = 2,
                 PrecursorMzRange = new PrecursorMzRange { Mz = precursorMz, Tolerance = param.CentroidMs1Tolerance },
-                EnableQ1Deconvolution = acquisition.NeedQ1Deconvolution,
+                EnableQ1Deconvolution = false,
             };
             switch (type) {
                 case ChromXType.RT:
