@@ -44,7 +44,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info))
                     .CombineLatest()
                     .Throttle(TimeSpan.FromSeconds(.05d))
-                    .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList());
+                    .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList())
+                    .Replay(1).RefCount();
             }
             else {
                 return Observable.Return(new List<PeakChromatogram>(0));

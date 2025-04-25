@@ -55,18 +55,18 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD06",
                 //"OAD07",
                 //"OAD08",
-                //"OAD09",
-                //"OAD10",
-                //"OAD11",
-                //"OAD12",
-                //"OAD13",
+                "OAD09",
+                "OAD10",
+                "OAD11",
+                "OAD12",
+                "OAD13",
                 "OAD14",
                 "OAD15",
                 //"OAD15+O",
                 "OAD16",
                 "OAD17",
-                "OAD12+O",
-                "OAD12+O+H",
+                //"OAD12+O",
+                //"OAD12+O+H",
                 //"OAD12+O+2H",
                 "OAD01+H" } :
             new string[] {
@@ -79,18 +79,18 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD06",
                 //"OAD07",
                 //"OAD08",
-                //"OAD09",
-                //"OAD10",
-                //"OAD11",
-                //"OAD12",
-                //"OAD13",
+                "OAD09",
+                "OAD10",
+                "OAD11",
+                "OAD12",
+                "OAD13",
                 "OAD14",
                 "OAD15",
                 "OAD15+O",
                 "OAD16",
                 //"OAD17",
-                "OAD12+O",
-                "OAD12+O+H",
+                //"OAD12+O",
+                //"OAD12+O+H",
                 "OAD12+O+2H",
                 //"OAD01+H"
             };
@@ -142,15 +142,10 @@ namespace CompMs.Common.Lipidomics {
                     }
                 }
             } else {
-                spectrum.AddRange(
-                    new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                    }
-                );
+                spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
             }
             return spectrum.ToArray();
         }
-
 
         private static MoleculeMsReference CreateReference(ILipid lipid, AdductIon adduct, List<SpectrumPeak> spectrum, IMoleculeProperty molecule) {
             return new MoleculeMsReference {
