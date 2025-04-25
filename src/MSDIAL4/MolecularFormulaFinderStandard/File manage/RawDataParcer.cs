@@ -536,12 +536,6 @@ namespace Rfx.Riken.OsakaUniv
                         lines[i] = newValue;
                     }
                 }
-                if (line.StartsWith("CH$NAME: ")) {
-                    var newValue = "CH$NAME: " + rawData.Name;
-                    if (line != newValue) {
-                        lines[i] = newValue;
-                    }
-                }
                 if (line.StartsWith("CH$FORMULA: ")) {
                     var newValue = "CH$FORMULA: " + rawData.Formula;
                     if (line != newValue) {
