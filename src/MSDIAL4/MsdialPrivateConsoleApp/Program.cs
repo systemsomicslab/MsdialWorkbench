@@ -46,13 +46,13 @@ namespace MsdialPrivateConsoleApp {
             //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\dda_result.txt");
 
-            var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
-            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\ztscan_vs_dda_result.txt");
+            //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\ztscan_vs_dda_result.txt");
 
-            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\swath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
-            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\swath_vs_dda_result.txt");
+            //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\swath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\swath_vs_dda_result.txt");
 
-           
+
             //MspManager.ExtractPositiveSpectra(
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\new_ontlogycasmi2022.msp", 
             //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\casmi2022_pos.msp");
@@ -78,8 +78,16 @@ namespace MsdialPrivateConsoleApp {
             //    "casmi_neg");
 
             //MspFileParser.SeializedLbmObjToAsciiMspAsPublicUse(
-            //    @"E:\0_SourceCode\lbm_versions\Msp20250124141632_NCDK_converted_dev\Msp20250124141632_NCDK-TUAT-LC25_converted_dev.lbm2",
-            //    @"E:\0_SourceCode\lbm_versions\Msp20250124141632_NCDK_converted_dev\Msp20250124141632_NCDK-TUAT-LC25_converted_dev.msp");
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.msp");
+
+            //MspFileParser.SeializedLbmObjToAsciiTextAsPublicUse(
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.txt");
+
+            MspFileParser.SeializedLbmObjToAsciiTextAsPublicUseBySummedLipidNames(
+                @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
+                @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev_summuedlipidname.txt");
 
             //mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp";
             //new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15-For-Statistics.msp";

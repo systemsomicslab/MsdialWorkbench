@@ -5,7 +5,9 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.MessagePack;
+using MathNet.Numerics.Statistics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -187,6 +189,79 @@ namespace CompMs.Common.Parser
         public static void SeializedMspObjToAsciiMsp(string input, string output) {
             var mspDB = ReadSerializedMspObject(input);
             WriteAsMsp(output, mspDB);
+        }
+
+        public static void SeializedLbmObjToAsciiTextAsPublicUse(string input, string output) {
+            var queries = LbmQueryParcer.GetLbmQueries(false);
+            var mspDB = ReadSerializedMspObject(input);
+            foreach (var query in queries) { query.IsSelected = true; }
+            var tQueries = getTrueQueryStrings(queries);
+
+            var usedMspDB = new List<MoleculeMsReference>();
+            var counter = 0;
+            foreach (var mspRecord in mspDB) {
+                if (tQueries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) {
+                    mspRecord.ScanID = counter;
+                    usedMspDB.Add(mspRecord);
+                    counter++;
+                }
+            }
+            WriteAsLbmText(output, usedMspDB);
+        }
+
+        public static void SeializedLbmObjToAsciiTextAsPublicUseBySummedLipidNames(string input, string output) {
+            var queries = LbmQueryParcer.GetLbmQueries(false);
+            var mspDB = ReadSerializedMspObject(input);
+            var mspDB_conv = Convert2SummuedLipidObjs(mspDB);
+            foreach (var query in queries) { query.IsSelected = true; }
+            var tQueries = getTrueQueryStrings(queries);
+
+            var usedMspDB = new List<MoleculeMsReference>();
+            var counter = 0;
+            foreach (var mspRecord in mspDB_conv) {
+                if (tQueries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) {
+                    mspRecord.ScanID = counter;
+                    usedMspDB.Add(mspRecord);
+                    counter++;
+                }
+            }
+            WriteAsLbmText(output, usedMspDB);
+        }
+
+        private static List<MoleculeMsReference> Convert2SummuedLipidObjs(List<MoleculeMsReference> mspDB) {
+            var convertedRecords = new List<MoleculeMsReference>();
+            var counter = 0;
+            var dict = new Dictionary<string, List<MoleculeMsReference>>();
+            foreach (var mspRecord in mspDB) {
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(mspRecord);
+                if (molecule == null) continue;
+
+                var summedName = molecule.SublevelLipidName;
+                var adduct = mspRecord.AdductType.ToString();
+                var key = summedName + "_" + adduct;
+                if (dict.ContainsKey(key)) {
+                    dict[key].Add(mspRecord);
+                }
+                else {
+                    dict[key] = new List<MoleculeMsReference>() { mspRecord };
+                }
+            }
+
+            foreach (var item in dict) {
+                var key = item.Key;
+                var value = item.Value;
+                var rtAve = value.Select(n => n.ChromXs.RT.Value).Mean();
+                var ccsAve = value.Select(n => n.CollisionCrossSection).Mean();
+
+                var refmol = new MoleculeMsReference() {
+                    Name = key.Split('_')[0], AdductType = AdductIon.GetAdductIon(key.Split('_')[1]),
+                    ChromXs = new ChromXs(rtAve, ChromXType.RT, ChromXUnit.Min),
+                    CollisionCrossSection = ccsAve,
+                    PrecursorMz = value[0].PrecursorMz, CompoundClass = value[0].CompoundClass
+                };
+                convertedRecords.Add(refmol);
+            }
+            return convertedRecords;
         }
 
         public static void SeializedLbmObjToAsciiMspAsPublicUse(string input, string output) {
@@ -536,6 +611,24 @@ namespace CompMs.Common.Parser
             }
         }
 
+        public static void WriteAsLbmText(string filePath, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write)) {
+                WriteAsLbmText(stream, mspRecords);
+            }
+        }
+
+        private static void WriteAsLbmText(FileStream stream, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
+                var header = GetLbmMspMetadataHeaderFields();
+                sw.WriteLine(String.Join("\t", header));
+                foreach (var record in mspRecords) {
+                    WriteLbmMspMetadataAsText(record, sw);
+                }
+            }
+        }
+
+        
+
         public static void WriteAsMsp(Stream stream, IEnumerable<MoleculeMsReference> mspRecords) {
             using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
                 foreach (var record in mspRecords) {
@@ -599,6 +692,18 @@ namespace CompMs.Common.Parser
                 sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
             }
             sw.WriteLine();
+        }
+
+        private static List<string> GetLbmMspMetadataHeaderFields() {
+            return new List<string>() { "Name", "PrecursorMz", "AdductForm", "Ontology", "RT", "CCS" };
+        }
+
+        private static void WriteLbmMspMetadataAsText(MoleculeMsReference record, StreamWriter sw) {
+            var fields = new List<string>() {
+                record.Name, Math.Round(record.PrecursorMz, 6).ToString(), record.AdductType.AdductIonName, record.CompoundClass,
+                Math.Round(record.ChromXs.RT.Value, 3).ToString(), Math.Round(record.CollisionCrossSection, 2).ToString()
+            };
+            sw.WriteLine(String.Join("\t", fields));
         }
 
         public static void WriteLbmMspFields(MoleculeMsReference record, StreamWriter sw) {
