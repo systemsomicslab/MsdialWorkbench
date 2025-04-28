@@ -99,6 +99,8 @@
         </ClassIon>
         <ClassIon>
           <MZ>M-NL+Proton</MZ>
+          <NL>C5H14O4NP</NL>
+          <!--
           <NL>
             <Carbon>5</Carbon>
             <Hydrogen>14</Hydrogen>
@@ -106,11 +108,16 @@
             <Nitrogen>1</Nitrogen>
             <Phosphorus>1</Phosphorus>
           </NL>
+          -->
           <Intensity>400</Intensity>
           <Comment>[M+H-C5H14NO4P]+</Comment>
         </ClassIon>
         <ClassIon>
           <MZ>PI</MZ>
+          <!--<charge>+</charge>-->
+          <!--
+          <PI>C5H12N</PI>
+          -->
           <PI>
             <Carbon>5</Carbon>
             <Hydrogen>11</Hydrogen>

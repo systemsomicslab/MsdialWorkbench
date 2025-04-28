@@ -237,14 +237,24 @@ namespace CompMs.Common.Lipidomics {
         var intensity = element.Element("Intensity")?.Value ?? "0";
         var comment = element.Element("Comment")?.Value ?? string.Empty;
 
-        foreach (var variable in element.Elements().Where(e => !_peakElements.Contains(e.Name.LocalName))) {
-            var name = variable.Name.LocalName;
-
-            var formula = string.Join(" + ", variable.Elements().Select(e => $"{e.Name.LocalName} * {e.Value}"));
+        foreach (var (name, pairs) in ParseElements(element)) {
+            var formula = string.Join(" + ", pairs.Select(e => $"{e.LocalName} * {e.Value}"));
             mz = mz.Replace(name, $"({formula})");
         }
 
         return new() { Mz = mz, Intensity = intensity, Comment = comment };
+    }
+
+    private static IEnumerable<(string LocalName, (string LocalName, string Value)[])> ParseElements(XElement element) {
+        foreach (var variable in element.Elements().Where(e => !_peakElements.Contains(e.Name.LocalName))) {
+            if (FormulaStringParser.CanConvertToFormulaDictionary(variable.Value)) {
+                var dict = FormulaStringParser.ConvertToFormulaDictionary(variable.Value);
+                yield return (variable.Name.LocalName, dict.Select(kvp => (kvp.Key, kvp.Value.ToString())).ToArray());
+                continue;
+            }
+
+            yield return (variable.Name.LocalName, variable.Elements().Select(e => (e.Name.LocalName, e.Value)).ToArray());
+        }
     }
 
     enum LSILevel {
