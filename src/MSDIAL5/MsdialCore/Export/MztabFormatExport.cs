@@ -19,11 +19,6 @@ namespace CompMs.MsdialCore.Export
 {
     public sealed class MztabFormatExporter// : BaseMetadataAccessor
     {
-        //public MztabFormatExporter(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, string separator = DEFAULT_SEPARATOR) : base(refer, parameter)
-        //{
-        //    Separator = separator;
-        //}
-
         public MztabFormatExporter(string separator = DEFAULT_SEPARATOR)
         {
             Separator = separator;
