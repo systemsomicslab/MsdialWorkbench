@@ -22,12 +22,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 
 public abstract class GcmsPeakJoiner : IPeakJoiner
 {
-    public static GcmsPeakJoiner CreateRTJoiner(MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-        return new GcmsRTPeakJoiner(parameter.RiCompoundType, msMatchParam, parameter, evaluator, refer);
+    public static GcmsPeakJoiner CreateRTJoiner(MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
+        return new GcmsRTPeakJoiner(parameter.RiCompoundType, msMatchParam, parameter, evaluator, refer, accessor, progress);
     }
 
-    public static GcmsPeakJoiner CreateRIJoiner(MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-        return new GcmsRIPeakJoiner(parameter.RiCompoundType, msMatchParam, riTol, parameter, evaluator, refer);
+    public static GcmsPeakJoiner CreateRIJoiner(MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
+        return new GcmsRIPeakJoiner(parameter.RiCompoundType, msMatchParam, riTol, parameter, evaluator, refer, accessor, progress);
     }
 
     protected readonly AlignmentIndexType _indextype;
@@ -52,7 +52,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         _binPrecision = _parameter.AccuracyType == AccuracyType.IsNominal ? 0 : 2;
     }
 
-    public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
+    public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor _) {
         var master = GetMasterList(analysisFiles, referenceId);
         var spots = JoinAll(master, analysisFiles);
         var loaders = analysisFiles.ToDictionary(f => f.AnalysisFileId, f => new MSDecLoader(f.DeconvolutionFilePath, f.DeconvolutionFilePathList));
@@ -152,7 +152,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     protected List<AlignmentSpotProperty> InitSpots(IEnumerable<SpectrumFeature> scanProps, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType, ref int masterId) {
-        if (scanProps == null) return new List<AlignmentSpotProperty>();
+        if (scanProps is null) return [];
 
         var spots = new List<AlignmentSpotProperty>();
         foreach ((var scanProp, var localId) in scanProps.WithIndex()) {
@@ -179,7 +179,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
                 });
             }
             spot.AlignedPeakProperties = peaks;
-            spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>();
+            spot.AlignmentDriftSpotFeatures = [];
             spots.Add(spot);
         }
 
@@ -192,36 +192,53 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     private readonly double _rtTol;
     private readonly double _rtBucket;
     private readonly int _rtWidth;
+    private readonly IFeatureAccessor<SpectrumFeature> _accessor;
+    private readonly IProgress<int> _progress;
+    private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+    private readonly AlignmentBaseParameter _alignmentParameter;
 
-    public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+    public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
         : base(AlignmentIndexType.RT, riCompoundType, msMatchParam, ChromXsComparer.RTComparer, parameter, evaluator, refer) {
+        _alignmentParameter = parameter.AlignmentBaseParam;
         _rtTol = parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance;
         _rtBucket = parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance * 2;
         _rtWidth = (int)Math.Ceiling(_rtTol / _rtBucket);
+        _evaluator = evaluator;
+        _accessor = accessor;
+        _progress = progress;
     }
 
     protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceID) {
         var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceID);
         if (referenceFile is null) {
-            return new List<SpectrumFeature>(0);
+            return [];
         }
-        var spectrumFeatures = referenceFile.LoadSpectrumFeatures();
-        var master = spectrumFeatures.Items
+        IEnumerable<SpectrumFeature> spectrumFeatures = _accessor.GetMSScanProperties(referenceFile);
+        if (_alignmentParameter.UseRefMatchedPeaksOnly) {
+            spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
+        }
+        var master = spectrumFeatures
             .GroupBy(prop => (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket))
             .ToDictionary(group => group.Key, group => group.ToList());
 
+        var reporter = ReportProgress.FromLength(_progress, 0d, 20d);
+        var counter = 0;
         foreach (var analysisFile in analysisFiles) {
+            reporter.Report(++counter, analysisFiles.Count);
             if (analysisFile.AnalysisFileId == referenceID) {
                 continue;
             }
-            var target = analysisFile.LoadSpectrumFeatures();
+            IEnumerable<SpectrumFeature> target = _accessor.GetMSScanProperties(analysisFile);
+            if (_alignmentParameter.UseRefMatchedPeaksOnly) {
+                target = target.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
+            }
             MergeSpectrumFeatures(master, target);
         }
         return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
-    private void MergeSpectrumFeatures(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeatureCollection targets) {
-        foreach (var target in targets.Items) {
+    private void MergeSpectrumFeatures(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
+        foreach (var target in targets) {
             SetToMaster(master, target);
         }
     }
@@ -238,7 +255,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
             }
         }
         if (!master.ContainsKey(rtTarget)) {
-            master[rtTarget] = new List<SpectrumFeature>();
+            master[rtTarget] = [];
         }
         master[rtTarget].Add(target);
         return true;
@@ -246,9 +263,12 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
 
     protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
         var result = GetSpots(master, analysisFiles, ChromXType.RT);
+        var counter = 0;
+        var reporter = ReportProgress.FromLength(_progress, 20d, 20d);
         foreach (var analysisFile in analysisFiles) {
-            var spectrumFeatures = analysisFile.LoadSpectrumFeatures();
-            AlignPeaksToMaster(result, master, spectrumFeatures.Items, analysisFile.AnalysisFileId);
+            reporter.Report(++counter, analysisFiles.Count);
+            var spectrumFeatures = _accessor.GetMSScanProperties(analysisFile);
+            AlignPeaksToMaster(result, master, spectrumFeatures, analysisFile.AnalysisFileId);
         }
         return result;
     }
@@ -284,32 +304,51 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
 internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
 {
     private readonly double _riTol;
+    private readonly IFeatureAccessor<SpectrumFeature> _accessor;
+    private readonly IProgress<int> _progress;
     private readonly double _riBucket;
     private readonly int _riWidth;
+    private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+    private readonly AlignmentBaseParameter _alignmentParameter;
 
-    public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+    public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
         : base(AlignmentIndexType.RI, riCompoundType, msMatchParam, ChromXsComparer.RIComparer, parameter, evaluator, refer) {
+        _alignmentParameter = parameter.AlignmentBaseParam;
+        _evaluator = evaluator;
         _riTol = riTol;
         _riBucket = riTol * 2;
         _riWidth = (int)Math.Ceiling(_riTol / _riBucket);
+        _accessor = accessor;
+        _progress = progress;
     }
 
     protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId) {
 
         var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
         if (referenceFile is null) {
-            return new List<SpectrumFeature>(0);
+            return [];
         }
 
-        var master = referenceFile.LoadSpectrumFeatures().Items
+        IEnumerable<SpectrumFeature> spectrumFeatures = _accessor.GetMSScanProperties(referenceFile);
+        if (_alignmentParameter.UseRefMatchedPeaksOnly) {
+            spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
+        }
+        var master = spectrumFeatures
             .GroupBy(spectrum => (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket))
-             .ToDictionary(group => group.Key, group => group.ToList());
+            .ToDictionary(group => group.Key, group => group.ToList());
 
+        var counter = 0;
+        var reporter = ReportProgress.FromLength(_progress, 0d, 20d);
         foreach (var analysisFile in analysisFiles) {
-            if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
+            reporter.Report(++counter, analysisFiles.Count);
+            if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId) {
                 continue;
-            var target = analysisFile.LoadSpectrumFeatures();
-            MergeChromatogramPeaks(master, target.Items);
+            }
+            IEnumerable<SpectrumFeature> target = _accessor.GetMSScanProperties(analysisFile);
+            if (_alignmentParameter.UseRefMatchedPeaksOnly) {
+                target = target.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
+            }
+            MergeChromatogramPeaks(master, target);
         }
 
         return master.Values.SelectMany(props => props).ToList();
@@ -333,7 +372,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
             }
         }
         if (!master.ContainsKey(riTarget)) {
-            master[riTarget] = new List<SpectrumFeature>();
+            master[riTarget] = [];
         }
         master[riTarget].Add(target);
         return true;
@@ -341,10 +380,13 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
 
     protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
         var result = GetSpots(master, analysisFiles, ChromXType.RI);
-        
+
+        var counter = 0;
+        var reporter = ReportProgress.FromLength(_progress, 20d, 20d);
         foreach (var analysisFile in analysisFiles) {
-            var spectrums = analysisFile.LoadSpectrumFeatures();
-            AlignPeaksToMaster(result, master, spectrums.Items, analysisFile.AnalysisFileId);
+            reporter.Report(++counter, analysisFiles.Count);
+            var spectrums = _accessor.GetMSScanProperties(analysisFile);
+            AlignPeaksToMaster(result, master, spectrums, analysisFile.AnalysisFileId);
         }
         
         return result;
