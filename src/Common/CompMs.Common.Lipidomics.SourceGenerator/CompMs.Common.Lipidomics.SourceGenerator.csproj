@@ -24,4 +24,8 @@
     <None Include="CompMs.Common.Lipidomics.SourceGenerator.props" Pack="true" PackagePath="build" Visible="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="CompMs.Common.Lipidomics.SourceGeneratorTests"/>     
+  </ItemGroup>
+
 </Project>
