@@ -442,15 +442,27 @@
                                    Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
                                    Grid.Row="3" Grid.Column="1" />
-                        <TextBlock Name="VerticalTitle"
-                                   Text="{TemplateBinding VerticalTitle}"
-                                   Style="{StaticResource AxisTitle}"
-                                   IsHitTestVisible="False"
-                                   Grid.Row="1" Grid.Column="0">
-                            <TextBlock.LayoutTransform>
-                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
-                            </TextBlock.LayoutTransform>
-                        </TextBlock>
+                        <ItemsControl DataContext="{Binding Path=VerticalTitles, RelativeSource={RelativeSource TemplatedParent}}"
+                                      ItemsSource="{Binding Path=Titles}"
+                                      IsHitTestVisible="False"
+                                      Grid.Row="1" Grid.Column="0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="1"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Name="VerticalTitle"
+                                               Text="{Binding}"
+                                               Style="{StaticResource AxisTitle}">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
