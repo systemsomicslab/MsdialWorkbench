@@ -37,8 +37,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
-            var chromatoramSource = spotChromatograms.DefaultIfNull(s => s.Chromatograms, Observable.Return(new List<PeakChromatogram>(0))).Switch();
-            EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
+            var spotChromatogramsHot = spotChromatograms.Publish();
+            var chromatogramSource = spotChromatogramsHot.DefaultIfNull(s => s.Chromatograms, Observable.Return(new List<PeakChromatogram>(0))).Switch();
+            EicChromatograms = chromatogramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
 
             var peaksox = EicChromatograms
                 .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
@@ -54,9 +55,9 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d)).AddTo(Disposables);
             VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d)).AddTo(Disposables);
 
-            var isSelected = spotChromatograms.Select(m => m is not null).ToReactiveProperty().AddTo(Disposables);
+            var isSelected = spotChromatogramsHot.Select(m => m is not null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
-            var isLoaded = spotChromatograms.SkipNull().SelectSwitch(m => m.Spot.AlignedPeakPropertiesModelProperty).Select(props => props?.Any() ?? false);
+            var isLoaded = spotChromatogramsHot.SkipNull().SelectSwitch(m => m.Spot.AlignedPeakPropertiesModelProperty).Select(props => props?.Any() ?? false);
             IsPeakLoaded = new[]
             {
                 isSelected,
@@ -64,15 +65,17 @@ namespace CompMs.App.Msdial.Model.Chart
             }.CombineLatestValuesAreAllTrue()
             .ToReactiveProperty().AddTo(Disposables);
 
-            CanShow = spotChromatograms.DefaultIfNull(
+            CanShow = spotChromatogramsHot.DefaultIfNull(
                 s => new[] {
                     s.Spot.AlignedPeakPropertiesModelProperty.Select(features => features?.Any() ?? false),
                     s.Chromatograms.Select(c => c.Any()),
                 }.CombineLatestValuesAreAllTrue().StartWith(false), Observable.Return(false))
                 .Switch().ToReactiveProperty().AddTo(Disposables);
 
-            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
-            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatograms, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
+            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(spotChromatogramsHot, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(spotChromatogramsHot, analysisFiles, parameter, filePropertiesModel).AddTo(Disposables);
+
+            Disposables.Add(spotChromatogramsHot.Connect());
         }
 
         public IObservable<bool> CanShow { get; }

@@ -220,20 +220,23 @@ namespace CompMs.Common.Parser
 
         private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
-            if (mspRecord.IonMode != ionMode) return false;
+            if (mspRecord.IonMode != ionMode) {
+                return false;
+            }
+
             if (ionMode == IonMode.Negative) {
-                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.IsFA) {
-                    return false;
-                }
-                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.IsHac) {
-                    return false;
+                switch (solventType)
+                {
+                    case SolventType.CH3COONH4 when !mspRecord.AdductType.IsHac:
+                    case SolventType.HCOONH4 when !mspRecord.AdductType.IsFA:
+                    case SolventType.NH4HCO3 when !mspRecord.AdductType.IsHco3:
+                        return false;
                 }
             }
-            if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
-                return true;
-            }
-            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) return true;
-            return false;
+            return mspRecord.CompoundClass == "Others"
+                || mspRecord.CompoundClass == "Unknown"
+                || mspRecord.CompoundClass == "SPLASH"
+                || queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString());
         }
 
         private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries) {
