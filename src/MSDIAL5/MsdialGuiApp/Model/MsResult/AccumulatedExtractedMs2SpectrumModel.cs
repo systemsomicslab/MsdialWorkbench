@@ -176,7 +176,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
 
         var range = MzRange.FromRange(0d, double.MaxValue);
         ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(Chromatogram.MzRange, range);
-        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
+        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem?.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
     }
@@ -186,11 +186,14 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
             return;
         }
 
-        var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
+        var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem?.AxisManager;
+        if (axis is null) {
+            return;
+        }
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
         ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(Chromatogram.MzRange, range);
-        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
+        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem?.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
     }
@@ -201,8 +204,8 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
     }
 
     public void AddPeak() {
-        if (ProductIonRange is not null && ProductIonChromatogram is not null) {
-            var range = new RangeSelection(ProductIonRange).ConvertBy(ProductIonChromatogram.ChromAxisItemSelector.SelectedAxisItem.AxisManager);
+        if (ProductIonRange is not null && ProductIonChromatogram is not null && ProductIonChromatogram.ChromAxisItemSelector.SelectedAxisItem is { } axisItem) {
+            var range = new RangeSelection(ProductIonRange).ConvertBy(axisItem.AxisManager);
             ProductIonChromatogram?.AddPeak(range.Item1, range.Item2);
             ProductIonRange = null;
         }

@@ -1,11 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive.Linq;
@@ -60,16 +62,18 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public SingleSpectrumViewModel LowerSpectrumViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<IAxisManager<double>?> HorizontalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
+        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
         public ReadOnlyObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
+        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
         public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
 
         public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
         public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
+        [Obsolete("Use VerticalTitles instead.")]
         public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles => _model.VerticalTitles;
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 
