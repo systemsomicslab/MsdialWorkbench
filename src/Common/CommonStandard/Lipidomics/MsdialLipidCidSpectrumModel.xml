@@ -6,43 +6,45 @@
     <Adduct>[M+H]+</Adduct>
     <ChainIons>
       <ChainIon>
-        <MZ>M-SN1+H+Proton</MZ>
+        <MZ>M-SN1+H2</MZ>
+		<Charge>+</Charge>
         <Intensity>50</Intensity>
         <Comment>M-SN1+H+Proton</Comment>
       </ChainIon>
       <ChainIon>
-        <MZ>M-SN2+H+Proton</MZ>
-        <Intensity>50</Intensity>
+        <MZ>M-SN2+H2</MZ>
+		<Charge>+</Charge>
+		<Intensity>50</Intensity>
         <Comment>M-SN2+H+Proton</Comment>
       </ChainIon>
       <ChainIon>
-        <MZ>M-SN1-H2O+H+Proton</MZ>
-        <Intensity>50</Intensity>
+        <MZ>M-SN1-O</MZ>
+		<Charge>+</Charge>
+    	<Intensity>50</Intensity>
         <Comment>M-SN1-H2O+H+Proton</Comment>
       </ChainIon>
       <ChainIon>
-        <MZ>M-SN2-H2O+H+Proton</MZ>
+        <MZ>M-SN2-O</MZ>
+		<Charge>+</Charge>
         <Intensity>50</Intensity>
         <Comment>M-SN2-H2O+H+Proton</Comment>
       </ChainIon>
     </ChainIons>
     <Precursors>
       <Precursor>
-        <MZ>M+Proton</MZ>
+        <MZ>M+H</MZ>
+		<Charge>+</Charge>
         <Intensity>300</Intensity>
         <Comment>[M+H]+</Comment>
       </Precursor>
     </Precursors>
     <ClassIons>
       <ClassIon>
-        <MZ>PI+Proton</MZ>
-        <PI>
-          <Carbon>5</Carbon>
-          <Hydrogen>14</Hydrogen>
-          <Oxygen>4</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-        </PI>
+        <MZ>PI</MZ>
+		<PI>
+			C5H15NO4P
+		</PI>
+		<Charge>+</Charge>
         <Intensity>999</Intensity>
         <Comment>C5H15NO4P+</Comment>      
       </ClassIon>
@@ -56,6 +58,7 @@
     <Precursors>
       <Precursor>
         <MZ>M+Na</MZ>
+		<Charge>+</Charge>
         <Intensity>999</Intensity>
         <Comment>[M+Na]+</Comment>
       </Precursor>
@@ -63,61 +66,46 @@
     <ClassIons>
       <ClassIon>
         <MZ>M+Na-NL</MZ>
+		<Charge>+</Charge>
         <NL>
-          <Carbon>3</Carbon>
-          <Hydrogen>9</Hydrogen>
-          <Oxygen>0</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>0</Phosphorus>
+			C3H9N
         </NL>
         <Intensity>500</Intensity>
         <Comment>[M+Na-C3H9N]+</Comment>
       </ClassIon>
       <ClassIon>
         <MZ>M+Na-NL</MZ>
+		<Charge>+</Charge>
         <NL>
-          <Carbon>5</Carbon>
-          <Hydrogen>14</Hydrogen>
-          <Oxygen>4</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-        </NL>
+			C5H14NO4P
+		</NL>
         <Intensity>600</Intensity>
         <Comment>[M+Na-C5H14NO4P]+</Comment>
       </ClassIon>
       <ClassIon>
-        <MZ>M-NL+Proton</MZ>
+        <MZ>M-NL</MZ>
+		<Charge>+</Charge>
         <NL>
-          <Carbon>5</Carbon>
-          <Hydrogen>15</Hydrogen>
-          <Oxygen>4</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-        </NL>
+			C5H14NO4P
+		</NL>
         <Intensity>400</Intensity>
         <Comment>[M+H-C5H15NO4P]+</Comment>
       </ClassIon>
       <ClassIon>
         <MZ>PI</MZ>
+		<Charge>+</Charge>
         <PI>
-          <Carbon>5</Carbon>
-          <Hydrogen>11</Hydrogen>
-          <Nitrogen>1</Nitrogen>
-          <Proton>1</Proton>
-        </PI>
+			C5H12N
+		</PI>
         <Intensity>100</Intensity>
         <Comment>C5H12N+</Comment>
       </ClassIon>
       <ClassIon>
         <MZ>PI</MZ>
+		<Charge>+</Charge>
         <PI>
-          <Carbon>2</Carbon>
-          <Hydrogen>6</Hydrogen>
-          <Oxygen>4</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-          <Sodium>1</Sodium>
-        </PI>
+			C2H5O4PNa
+		</PI>
         <Intensity>400</Intensity>
         <Comment>C2H5O4PNa+</Comment>
       </ClassIon>
@@ -129,52 +117,50 @@
     <Adduct>[M+HCOO]-</Adduct>
     <ChainIons>
       <ChainIon>
-        <MZ>SN1-Proton</MZ>
+        <MZ>SN1-H</MZ>
+		<Charge>-</Charge>
         <Intensity>600</Intensity>
         <Comment>SN1-H</Comment>
       </ChainIon>
       <ChainIon>
-        <MZ>SN2-Proton</MZ>
-        <Intensity>600</Intensity>
+		<MZ>SN2-H</MZ>
+		<Charge>-</Charge>
+		<Intensity>600</Intensity>
         <Comment>SN2-H</Comment>
       </ChainIon>
-      <ChainIon>
-        <MZ>M-SN1-NL</MZ>
-        <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
-        <Intensity>50</Intensity>
-        <Comment>M-CH3-SN1</Comment>
-      </ChainIon>
-      <ChainIon>
+	  <ChainIon>
+		<MZ>M-SN1-NL</MZ>
+		<Charge>-</Charge>
+		<NL>
+			CH3
+		</NL>
+		<Intensity>50</Intensity>
+		<Comment>M-CH3-SN1</Comment>
+	  </ChainIon>
+	  <ChainIon>
         <MZ>M-SN1+H2O-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN1-H2O</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN2-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN2</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN2+H2O-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN2-H2O</Comment>
       </ChainIon>
@@ -182,6 +168,7 @@
     <Precursors>
       <Precursor>
         <MZ>M+HCOO</MZ>
+		<charge>-</charge>
         <Intensity>200</Intensity>
         <Comment>"[M+HCOO]-"</Comment>
       </Precursor>
@@ -189,24 +176,19 @@
     <ClassIons>
       <ClassIon>
         <MZ>M-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>999</Intensity>
         <Comment>"[M-CH3]-</Comment>
       </ClassIon>
       <ClassIon>
         <MZ>PI</MZ>
+		<Charge>-</Charge>
         <PI>
-          <Carbon>7</Carbon>
-          <Hydrogen>15</Hydrogen>
-          <Oxygen>5</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-          <Electron>1</Electron>
-        </PI>
+			C7H15NO5P
+		</PI>
         <Intensity>100</Intensity>
         <Comment>C7H15NO5P-</Comment>
       </ClassIon>
@@ -218,52 +200,50 @@
     <Adduct>[M+CH3COO]-</Adduct>
     <ChainIons>
       <ChainIon>
-        <MZ>SN1-Proton</MZ>
+        <MZ>SN1-H</MZ>
+		<Charge>-</Charge>
         <Intensity>600</Intensity>
         <Comment>SN1-H</Comment>
       </ChainIon>
       <ChainIon>
-        <MZ>SN2-Proton</MZ>
+        <MZ>SN2-H</MZ>
+		<Charge>-</Charge>
         <Intensity>600</Intensity>
         <Comment>SN2-H</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN1-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN1</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN1+H2O-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN1-H2O</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN2-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN2</Comment>
       </ChainIon>
       <ChainIon>
         <MZ>M-SN2+H2O-NL</MZ>
+		<Charge>-</Charge>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>50</Intensity>
         <Comment>M-CH3-SN2-H2O</Comment>
       </ChainIon>
@@ -271,6 +251,7 @@
     <Precursors>
       <Precursor>
         <MZ>M+CH3COO</MZ>
+		<Charge>-</Charge>
         <Intensity>200</Intensity>
         <Comment>"[M+CH3COO]-"</Comment>
       </Precursor>
@@ -279,25 +260,63 @@
       <ClassIon>
         <MZ>M-NL</MZ>
         <NL>
-          <Carbon>1</Carbon>
-          <Hydrogen>2</Hydrogen>
-          <Proton>1</Proton>
-        </NL>
+			CH3
+		</NL>
         <Intensity>999</Intensity>
         <Comment>"[M-CH3]-</Comment>
       </ClassIon>
       <ClassIon>
         <MZ>PI</MZ>
+		<Charge>-</Charge>
         <PI>
-          <Carbon>7</Carbon>
-          <Hydrogen>15</Hydrogen>
-          <Oxygen>5</Oxygen>
-          <Nitrogen>1</Nitrogen>
-          <Phosphorus>1</Phosphorus>
-          <Electron>1</Electron>
-        </PI>
+			C7H15NO5P
+		</PI>
         <Intensity>100</Intensity>
         <Comment>C7H15NO5P-</Comment>
+      </ClassIon>
+    </ClassIons>
+  </LipidMS>
+  <LipidMS>
+    <LipidClass>PC</LipidClass>
+    <LSILevel>MSL</LSILevel>
+    <Adduct>[M+HCO3]-</Adduct>
+    <ChainIons>
+      <ChainIon>
+        <MZ>SN1-H</MZ>
+		<Charge>-</Charge>
+        <Intensity>100</Intensity>
+        <Comment>SN1-H</Comment>
+      </ChainIon>
+      <ChainIon>
+        <MZ>SN2-H</MZ>
+		<Charge>-</Charge>
+        <Intensity>200</Intensity>
+        <Comment>SN2-H</Comment>
+      </ChainIon>
+      <ChainIon>
+        <MZ>M-SN1+C5H9PO4</MZ>
+		<Charge>-</Charge>
+        <Intensity>200</Intensity>
+        <Comment>SN1 + C5H9PO4-</Comment>
+      </ChainIon>
+    </ChainIons>
+    <Precursors>
+      <Precursor>
+        <MZ>M+HCO3</MZ>
+		<Charge>-</Charge>
+        <Intensity>200</Intensity>
+        <Comment>"[M+HCO3]-"</Comment>
+      </Precursor>
+    </Precursors>
+    <ClassIons>
+      <ClassIon>
+        <MZ>M-NL</MZ>
+		<Charge>-</Charge>
+		<NL>
+			C3H10N
+		</NL>
+        <Intensity>999</Intensity>
+        <Comment>"[M-H-C3H9N]-</Comment>
       </ClassIon>
     </ClassIons>
   </LipidMS>
