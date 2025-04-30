@@ -30,11 +30,11 @@ namespace CompMs.Common.DataObj
         public double Tolerance { get; }
 
         /// <summary>
-        /// Determines whether the specified m/z value is within the range defined by this <see cref="MzRange"/>.
+        /// Determines whether the given m/z value falls within the range represented by this <see cref="MzRange"/>.
         /// </summary>
         /// <param name="mz">The m/z value to check.</param>
-        /// <returns><c>true</c> if the specified m/z value is within the range; otherwise, <c>false</c>.</returns>
-        public bool IsWithinRange(double mz) {
+        /// <returns><c>true</c> if the m/z value is within the range; otherwise, <c>false</c>.</returns>
+        public bool Includes(double mz) {
             return Mz - Tolerance <= mz && mz <= Mz + Tolerance;
         }
 

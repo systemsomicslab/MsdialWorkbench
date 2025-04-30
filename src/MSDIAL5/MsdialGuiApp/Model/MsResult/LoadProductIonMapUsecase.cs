@@ -27,7 +27,7 @@ internal sealed class LoadProductIonMapUsecase(IDataProvider provider)
 
         token.ThrowIfCancellationRequested();
         return spectra.SelectMany(
-            s => s.Spectrum.Where(p => productIonRange.IsWithinRange(p.Mz)),
+            s => s.Spectrum.Where(p => productIonRange.Includes(p.Mz)),
             (s, p) => new MappedIon(s.Id, s.ExperimentID, p.Intensity))
             .GroupBy(ion => (ion.ID, ion.ExperimentID))
             .Select(g => new MappedIon(g.Key.ID, g.Key.ExperimentID, g.Sum(ion => ion.Intensity)))
