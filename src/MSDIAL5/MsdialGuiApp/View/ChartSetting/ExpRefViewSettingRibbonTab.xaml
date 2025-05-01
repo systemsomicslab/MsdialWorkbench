@@ -45,4 +45,7 @@
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>
+    <RibbonGroup Header="Show PIs. (DIA)">
+        <RibbonButton Label="Show PIs" Command="{Binding ShowProductIonIntensityMapCommand}"/>
+    </RibbonGroup>
 </RibbonTab>
