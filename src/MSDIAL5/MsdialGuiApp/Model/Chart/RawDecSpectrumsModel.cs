@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
@@ -57,5 +58,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public MsSpectrumModel DecRefSpectrumModels { get; }
         public IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>? RawLoader { get; }
         public IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>? Q1DecLoader { get; }
+
+        public ProductIonIntensityMapModel? ProductIonIntensityMapModel { get; set; }
     }
 }

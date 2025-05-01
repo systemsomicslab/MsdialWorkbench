@@ -1,8 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         private readonly RawDecSpectrumsModel _model;
 
-        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused) {
+        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused, IMessageBroker? broker = null) {
             _model = model;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -42,6 +44,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 Q1DecRefSpectrumViewModels = new MsSpectrumViewModel(model.Q1DecRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
             }
             DecRefSpectrumViewModels = new MsSpectrumViewModel(model.DecRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
+
+            if (model.ProductIonIntensityMapModel is not null && broker is not null) {
+                ProductIonIntensityMapViewModel = new ProductIonIntensityMapViewModel(model.ProductIonIntensityMapModel).AddTo(Disposables);
+                ShowProductIonIntensityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(ProductIonIntensityMapViewModel)).AddTo(Disposables);
+            }
         }
 
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
@@ -54,6 +61,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<MsSelectionItem?> Q1DecSelectedMs2Id { get; }
         public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
         public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
+
+        public ProductIonIntensityMapViewModel? ProductIonIntensityMapViewModel { get; }
+
+        public ReactiveCommand? ShowProductIonIntensityMapCommand { get; }
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
