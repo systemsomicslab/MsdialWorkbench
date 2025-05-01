@@ -141,6 +141,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<FseaResultView>("FSEA Result Viewer", height: 600, width: 1000));
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
+            broker.ToObservable<ProductIonIntensityMapViewModel>()
+                .Subscribe(ShowChildContent<ProductIonIntensityMapView>("brahbrah", height: 600, width: 1000, needDispose: true));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
