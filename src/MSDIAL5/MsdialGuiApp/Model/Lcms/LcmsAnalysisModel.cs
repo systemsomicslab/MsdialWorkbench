@@ -11,6 +11,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -163,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             MultiMsmsQ1DecSpectrumLoader? q1decLoader = null;
             SingleSpectrumModel? q1decSpectrumModel = null;
-            if (analysisFileModel.AcquisitionType == AcquisitionType.ZTScan || analysisFileModel.AcquisitionType == AcquisitionType.SWATH) {
+            if (analysisFileModel.AcquisitionType == AcquisitionType.ZTScan) {
                 q1decLoader = new MultiMsmsQ1DecSpectrumLoader(provider).AddTo(Disposables);
                 var q1decGraphLabels = new GraphLabels("Q1 deconvoluted spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
                 ObservableMsSpectrum q1decObservableMsSpectrum = ObservableMsSpectrum.Create(Target, q1decLoader, spectraExporter).AddTo(Disposables);
@@ -173,7 +174,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
             Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, q1decSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, [rawSpectrumLoader, q1decLoader]).AddTo(Disposables);
             Disposables.Add(ms2ScanMatching.Connect());
-            
+
+            var acquisition = MsmsAcquisition.Get(analysisFileModel.AcquisitionType);
+            if (acquisition?.IsDia ?? false) {
+                var loadPIUsecase = new LoadProductIonMapUsecase(provider);
+                var piIntensityMapModel = new ProductIonIntensityMapModel(Target.Select(t => t?.InnerModel), Ms2SpectrumModel.RawRefSpectrumModels, loadPIUsecase);
+                Ms2SpectrumModel.ProductIonIntensityMapModel = piIntensityMapModel;
+            }
+
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(Ms2SpectrumModel.RawRefSpectrumModels.UpperSpectrumModel, Ms2SpectrumModel.DecRefSpectrumModels.UpperSpectrumModel).AddTo(Disposables);
 
