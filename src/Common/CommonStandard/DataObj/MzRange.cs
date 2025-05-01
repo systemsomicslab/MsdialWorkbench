@@ -30,6 +30,18 @@ namespace CompMs.Common.DataObj
         public double Tolerance { get; }
 
         /// <summary>
+        /// Gets the left boundary of the m/z range.
+        /// Equivalent to <c>Mz - Tolerance</c>.
+        /// </summary>
+        public double Left => Mz - Tolerance;
+
+        /// <summary>
+        /// Gets the right boundary of the m/z range.
+        /// Equivalent to <c>Mz + Tolerance</c>.
+        /// </summary>
+        public double Right => Mz + Tolerance;
+
+        /// <summary>
         /// Determines whether the given m/z value falls within the range represented by this <see cref="MzRange"/>.
         /// </summary>
         /// <param name="mz">The m/z value to check.</param>
@@ -46,6 +58,15 @@ namespace CompMs.Common.DataObj
         /// <returns>A new <see cref="MzRange"/> instance representing the specified range.</returns>
         public static MzRange FromRange(double left, double right) {
             return new MzRange((left + right) / 2, Math.Abs(right - left) / 2);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="MzRange"/> instance from the given range tuple.
+        /// </summary>
+        /// <param name="range">A tuple containing the left and right boundaries of the m/z range.</param>
+        /// <returns>A new <see cref="MzRange"/> instance representing the specified range.</returns>
+        public static MzRange FromRange((double left, double right) range) {
+            return FromRange(range.left, range.right);
         }
     }
 }
