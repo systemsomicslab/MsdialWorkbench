@@ -3,22 +3,140 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:viewchart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:model="clr-namespace:CompMs.App.Msdial.Model.MsResult"
+             xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.MsResult"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             d:Background="White">
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type viewmodel:ProductIonIntensityMapViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <design:ConstantBrushMapper x:Key="brush" Brush="Black"/>
+            <chart:RenderAreaControlState x:Key="DisableMove" MoveByDragIsEnabled="False"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="32"/>
+        </Grid.RowDefinitions>
 
-        <Grid Grid.Column="0">
-            
-        </Grid>
-
-        <Grid Grid.Column="1">
-            
-        </Grid>
+        <chart:SimpleChartControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                  HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  Grid.Row="0" Grid.Column="0">
+            <chart:HeatmapControl ItemsSource="{Binding Path=LoadedIons.Value, Mode=OneWay}"
+                                  DataType="{x:Type model:MappedIon}"
+                                  FlippedY="False"
+                                  HorizontalPropertyName="ID"
+                                  VerticalPropertyName="ExperimentID"
+                                  DegreePropertyName="Intensity">
+                <chart:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,20"
+                             HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
+                             VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ExperimentID),
+                                                      StringFormat=ExperimentID: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ID),
+                                                      StringFormat=CycleID: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Intensity),
+                                                      StringFormat=Intensity: {0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
+        </chart:SimpleChartControl>
+        
+        <chart:MultiChart HorizontalAxis="{Binding MsSpectrumViewModel.HorizontalAxis.Value}"
+                          RenderAreaControlState="{StaticResource DisableMove}"
+                          Style="{StaticResource VerticalConcatChart}"
+                          Grid.Row="0" Grid.Column="1">
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding MsSpectrumViewModel.UpperVerticalAxisItem.Value.AxisManager}">
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrumViewModel.UpperSpectraViewModel[0].MsSpectrum.Value.Spectrum}"
+                                               DataType="{x:Type components:SpectrumPeak}"
+                                               HorizontalProperty="Mass"
+                                               VerticalProperty="Intensity"
+                                               LineBrush="{StaticResource brush}"
+                                               LineThickness="2">
+                    <chart:LineSpectrumControlSlim.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                 d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>
+                                    <Run FontStyle="Italic">m/z</Run>: 
+                                </TextBlock> 
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
+                <chart:Annotator ItemsSource="{Binding MsSpectrumViewModel.UpperSpectraViewModel[0].MsSpectrum.Value.Spectrum}"
+                                 HorizontalPropertyName="Mass"
+                                 VerticalPropertyName="Intensity"
+                                 LabelPropertyName="Mass"
+                                 OrderingPropertyName="Intensity"
+                                 Brush="Black"
+                                 Overlap="Horizontal,Direct"
+                                 Format="F4"
+                                 ClipToBounds="True"/>
+                <AdornerDecorator>
+                    <chart:RangeSelector Background="Transparent"
+                                         SelectedRange="{Binding Path=SelectedMzRange.Value, Mode=TwoWay}"
+                                         ClipToBounds="True"/>
+                </AdornerDecorator>
+            </Grid>
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding MsSpectrumViewModel.LowerVerticalAxisItem.Value.AxisManager}"
+                  core:ChartBaseControl.FlippedY="False">
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrumViewModel.LowerSpectrumViewModel.MsSpectrum.Value.Spectrum}"
+                                               DataType="{x:Type components:SpectrumPeak}"
+                                               HorizontalProperty="Mass"
+                                               VerticalProperty="Intensity"
+                                               LineBrush="{StaticResource brush}"
+                                               LineThickness="2">
+                    <chart:LineSpectrumControlSlim.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                 d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>
+                                    <Run FontStyle="Italic">m/z</Run>: 
+                                </TextBlock> 
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
+                <chart:Annotator ItemsSource="{Binding MsSpectrumViewModel.LowerSpectrumViewModel.MsSpectrum.Value.Spectrum}"
+                                 HorizontalPropertyName="Mass"
+                                 VerticalPropertyName="Intensity"
+                                 LabelPropertyName="Mass"
+                                 OrderingPropertyName="Intensity"
+                                 ContentAlignment="BottomCenter"
+                                 Brush="Black"
+                                 Overlap="Horizontal,Direct"
+                                 Format="F4"
+                                 ClipToBounds="True"/>
+            </Grid>
+        </chart:MultiChart>
+        <Button Content="Load" Command="{Binding LoadProductIonsMapCommand, Mode=OneTime}" Grid.Row="1" Grid.Column="1"/>
     </Grid>
 </UserControl>
