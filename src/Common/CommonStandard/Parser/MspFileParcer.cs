@@ -218,7 +218,7 @@ namespace CompMs.Common.Parser
             return queries;
         }
 
-        private static bool queryCheck(MoleculeMsReference mspRecord, IReadOnlyCollection<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+        public static bool queryCheck(MoleculeMsReference mspRecord, IReadOnlyCollection<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
             if (mspRecord.IonMode != ionMode) {
                 return false;
