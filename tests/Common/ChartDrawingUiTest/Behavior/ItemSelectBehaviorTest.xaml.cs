@@ -18,7 +18,7 @@ public partial class ItemSelectBehaviorTest : Page, INotifyPropertyChanged
         get => _selectedItem;
         set {
             _selectedItem = value;
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
         }
     }
 
