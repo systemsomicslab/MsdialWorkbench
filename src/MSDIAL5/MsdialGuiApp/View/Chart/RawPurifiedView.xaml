@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -177,6 +178,25 @@
             <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
             <io:CopyImageAsCommand x:Key="CopyFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
             <ContextMenu x:Key="ChartContextMenu" d:DataContext="{d:DesignInstance Type={x:Type vm:SingleSpectrumViewModel}}">
+                <MenuItem Header="Change axis type into.."
+                          ItemsSource="{Binding Path=VerticalAxisItemSelector.AxisItems}"
+                          DisplayMemberPath="Label"
+                          behavior:ItemSelectBehavior.SelectedItem="{Binding VerticalAxisItemSelector.SelectedAxisItem}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}">
+                            <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                            <Setter Property="IsChecked">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
+                                        <Binding Path="."/>
+                                        <Binding Path="DataContext.VerticalAxisItemSelector.SelectedAxisItem" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <Separator/>
                 <MenuItem Header="Save spectra table as.."
                           Command="{Binding SaveCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
                 <MenuItem Header="Save image as...">
