@@ -128,7 +128,7 @@ namespace CompMs.Common.Parser
         /// <returns></returns>
         public static List<MoleculeMsReference> LbmFileReader(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueryStrings(queries);
+            var tQueries = new HashSet<string>(getTrueQueryStrings(queries));
             if (tQueries.Count == 0) return null;
 
             var mspDB = new List<MoleculeMsReference>();
@@ -167,7 +167,7 @@ namespace CompMs.Common.Parser
 
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueryStrings(queries);
+            var tQueries = new HashSet<string>(getTrueQueryStrings(queries));
             if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
@@ -218,7 +218,7 @@ namespace CompMs.Common.Parser
             return queries;
         }
 
-        private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+        public static bool queryCheck(MoleculeMsReference mspRecord, IReadOnlyCollection<string> queries, IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
             if (mspRecord.IonMode != ionMode) {
                 return false;
@@ -227,9 +227,9 @@ namespace CompMs.Common.Parser
             if (ionMode == IonMode.Negative) {
                 switch (solventType)
                 {
-                    case SolventType.CH3COONH4 when !mspRecord.AdductType.IsHac:
-                    case SolventType.HCOONH4 when !mspRecord.AdductType.IsFA:
-                    case SolventType.NH4HCO3 when !mspRecord.AdductType.IsHco3:
+                    case SolventType.CH3COONH4 when mspRecord.AdductType.IsFA || mspRecord.AdductType.IsHco3:
+                    case SolventType.HCOONH4 when mspRecord.AdductType.IsHac || mspRecord.AdductType.IsHco3:
+                    case SolventType.NH4HCO3 when mspRecord.AdductType.IsFA || mspRecord.AdductType.IsHac:
                         return false;
                 }
             }
