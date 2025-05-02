@@ -40,26 +40,56 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Label Content="{Binding Path=SelectedItem, Mode=OneWay}" ContentStringFormat="{}{0} (Right click here)" Background="Pink" Grid.Row="0" Grid.Column="1">
-            <Label.ContextMenu>
-                <ContextMenu ItemsSource="{Binding Path=Items}"
-                             behavior:ItemSelectBehavior.SelectedItem="{Binding Path=SelectedItem}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="IsChecked">
-                                <Setter.Value>
-                                    <MultiBinding Converter="{x:Static converter:AreEqualsConverter.Default}" Mode="OneWay">
-                                        <Binding Path="."/>
-                                        <Binding Path="DataContext.SelectedItem" RelativeSource="{RelativeSource AncestorType=ContextMenu}"/>
-                                    </MultiBinding>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
-                </ContextMenu>
-            </Label.ContextMenu>
-        </Label>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label Content="{Binding Path=SelectedItem, Mode=OneWay}" ContentStringFormat="{}{0} (Right click here)" Background="Pink" Grid.Row="0">
+                <Label.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding Path=Items}"
+                                 behavior:ItemSelectBehavior.SelectedItem="{Binding Path=SelectedItem}">
+                        <ContextMenu.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{x:Static converter:AreEqualsConverter.Default}" Mode="OneWay">
+                                            <Binding Path="."/>
+                                            <Binding Path="DataContext.SelectedItem" RelativeSource="{RelativeSource AncestorType=ContextMenu}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                            </Style>
+                        </ContextMenu.ItemContainerStyle>
+                    </ContextMenu>
+                </Label.ContextMenu>
+            </Label>
+
+            <Label Content="{Binding Path=SelectedItem, Mode=OneWay}" ContentStringFormat="{}{0} (Right click here)" Background="Pink" Grid.Row="1">
+                <Label.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Nested case"
+                                  ItemsSource="{Binding Path=Items}"
+                                  behavior:ItemSelectBehavior.SelectedItem="{Binding Path=SelectedItem}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="IsChecked">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{x:Static converter:AreEqualsConverter.Default}" Mode="OneWay">
+                                                <Binding Path="."/>
+                                                <Binding Path="DataContext.SelectedItem" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                    </ContextMenu>
+                </Label.ContextMenu>
+            </Label>
+        </Grid>
 
         <ItemsControl ItemsSource="{Binding Path=Items}"
                       behavior:ItemSelectBehavior.SelectedItem="{Binding Path=SelectedItem}"
