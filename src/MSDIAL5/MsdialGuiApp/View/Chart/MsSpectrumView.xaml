@@ -28,7 +28,7 @@
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          VerticalTitle="{Binding VerticalTitle.Value}"
+                          VerticalTitles="{Binding Path=VerticalTitles.Value}"
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>

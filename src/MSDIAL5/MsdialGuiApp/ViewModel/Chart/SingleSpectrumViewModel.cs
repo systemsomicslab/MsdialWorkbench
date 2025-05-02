@@ -8,6 +8,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -37,6 +38,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public GraphLabels Labels => _model.Labels;
         public string HorizontalProperty => _model.HorizontalProperty;
         public ReadOnlyReactivePropertySlim<IAxisManager?> VerticalAxis { get; }
+        public AxisItemSelector<double> VerticalAxisItemSelector => _model.VerticalPropertySelectors.AxisItemSelector;
+        public ObservableCollection<AxisItemModel<double>> VerticalAxisItems => _model.VerticalAxisItemSelector.AxisItems;
         public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> SelectedVerticalAxisItem { get; }
         public string VerticalProperty => _model.VerticalProperty;
         public ReadOnlyReactivePropertySlim<IBrushMapper> Brush { get; }
