@@ -115,18 +115,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
 
             GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
-                ShowShortMessageWindow("MS-FINDER running in the background...", 400, 100, () => {
-                    var msfinder = model.CreateSingleSearchMsfinderModel();
-                    if (msfinder is not null) {
-                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
-                    }
-                });
-            }).AddTo(Disposables);
-
-            ShowMsfinderSettingCommand = new ReactiveCommand().WithSubscribe(() => {
-                var msfinderSetting = model.MsfinderParameterSetting;
-                if (msfinderSetting is not null) {
-                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                var message = new ShortMessageWindow() {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "MS-FINDER running in the background...",
+                    Width = 400,
+                    Height = 100
+                };
+                message.Show();
+                var msfinder = model.CreateSingleSearchMsfinderModel();
+                message.Close();
+                if (msfinder is not null) {
+                    broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
                 }
             }).AddTo(Disposables);
         }
