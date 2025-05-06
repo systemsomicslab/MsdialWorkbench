@@ -116,9 +116,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem { get; }
+        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem { get; }
         public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
+        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem { get; }
         public ObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _spectraManager.Files;
         public ReactiveProperty<AnalysisFileBeanModel?> SelectedFile => _spectraManager.SelectedFile;

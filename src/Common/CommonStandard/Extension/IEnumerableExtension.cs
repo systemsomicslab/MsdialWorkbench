@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Parser;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,22 @@ namespace CompMs.Common.Extension {
 
         public static bool IsEmptyOrNull<T>(this IEnumerable<T>? collection) {
             return collection == null || !collection.Any();
+        }
+
+        public static bool AreAllEqual<T>(this IEnumerable<T> collection) {
+            using var enumerator = collection.GetEnumerator();
+            if (!enumerator.MoveNext()) {
+                return true;
+            }
+
+            var first = enumerator.Current;
+            var comparer = EqualityComparer<T>.Default;
+            while (enumerator.MoveNext()) {
+                if (!comparer.Equals(first, enumerator.Current)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public static IEnumerable<T> Return<T>(T value) {

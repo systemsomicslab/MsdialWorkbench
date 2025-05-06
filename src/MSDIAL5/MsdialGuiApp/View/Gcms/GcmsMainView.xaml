@@ -232,7 +232,7 @@
                         <DataTemplate>
                             <DataTemplate.Resources>
                                 <DataTemplate DataType="{x:Type chartvm:RawDecSpectrumsViewModel}">
-                                    <TextBlock Text="Exp. vs.Rep."
+                                    <TextBlock Text="Exp. vs. Ref."
                                                VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type chartvm:EiChromatogramsViewModel}">

@@ -2140,6 +2140,48 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
         }
+        [TestMethod()]
+        public void WaxEsterTest()
+        {
+            //WE 16:0/18:1
+            var PRECURSORTYPE = "[M+NH4]+";
+
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 524.540107,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 524.540107 , Intensity = 10, },
+                    new SpectrumPeak { Mass = 507.513558 , Intensity = 10, },
+                    new SpectrumPeak { Mass = 283.263157 , Intensity = 999, },
+                }
+            };
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+        //public static LipidMolecule JudgeIfWaxEster(IMSScanProperty msScanProp, double ms2Tolerance,
+        //    double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        //    int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+        //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfWaxEster(target, 0.025,
+                524.540107, totalCarbon, totalDbBond, totalOxidized,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE)
+                         );
+
+            Console.WriteLine($"WE [M+NH4]+ test (WE 16:0/18:1)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
+
     }
 
 }

@@ -411,7 +411,7 @@
                                 <ContentPresenter Content="{Binding}"/>
                                 <DataTemplate.Resources>
                                     <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
-                                        <TextBlock Text="Exp. vs.Rep." VerticalAlignment="Stretch"/>
+                                        <TextBlock Text="Exp. vs. Ref." VerticalAlignment="Stretch"/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
                                         <TextBlock Text="MS2 Chrom." VerticalAlignment="Stretch"/>

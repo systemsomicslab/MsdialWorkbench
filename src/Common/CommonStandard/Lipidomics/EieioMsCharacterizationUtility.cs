@@ -361,13 +361,11 @@ namespace CompMs.Common.Lipidomics
             result.IsChainIonsExisted = isChainIonExisted;
 
             // check lipid position ion's existence
-            //var positionIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
-            //var isPositionMustIonsExisted = positionIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched); 
-            //var positionIonsDetected = positionIons.Count(n => n.IsMatched);
-            //var isPositionIonExisted = isPositionMustIonsExisted && positionIonsDetected >= positionIonCutoff
-            //    ? true : false;
-            var positionIonsDetected = 0;
-            var isPositionIonExisted = false;
+            var positionIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
+            var isPositionMustIonsExisted = positionIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
+            var positionIonsDetected = positionIons.Count(n => n.IsMatched);
+            var isPositionIonExisted = isPositionMustIonsExisted && positionIonsDetected >= positionIonCutoff
+                ? true : false;
 
             result.PositionIonsDetected = positionIonsDetected;
             result.IsPositionIonsExisted = isPositionIonExisted;
