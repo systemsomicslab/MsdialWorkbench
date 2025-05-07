@@ -1,15 +1,14 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Ion;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
 using CompMs.Common.PugRestApiStandard;
 using CompMs.Common.StructureFinder.DataObj;
 using CompMs.Common.StructureFinder.Parser;
-using CompMs.Common.StructureFinder.Result;
 using CompMs.Common.StructureFinder.Utility;
 using System;
 using System.Collections.Generic;
@@ -400,7 +399,7 @@ namespace CompMs.Common.StructureFinder
         {
             if (queries == null || queries.Count == 0) return;
 
-            var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
+            var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
             var curetedPeaklist = getCuratedPeaklist(formulaResult.ProductIonResult);
 
             var centroidSpectrum = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
@@ -419,7 +418,7 @@ namespace CompMs.Common.StructureFinder
             List<FragmentLibrary> fragmentDB, List<FragmentOntology> fragmentOntologies)
         {
             var syncObj = new object();
-            var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
+            var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
             var curetedPeaklist = getCuratedPeaklist(formulaResult.ProductIonResult);
 
             var centroidSpectrum = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);

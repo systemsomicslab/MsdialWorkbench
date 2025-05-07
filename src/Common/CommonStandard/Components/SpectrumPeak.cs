@@ -66,6 +66,8 @@ namespace CompMs.Common.Components
         public SpectrumComment SpectrumComment { get; set; }
         [Key(12)]
         public bool IsAbsolutelyRequiredFragmentForAnnotation { get; set; }
+        [Key(13)]
+        public double FragmentationScore { get; set; } = 0;
 
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, 
