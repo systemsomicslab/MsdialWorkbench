@@ -192,6 +192,23 @@
             <LbmClass>LPS</LbmClass>
         </LbmClasses>
     </Lipid>
+	<Lipid>
+		<Name>LPA</Name>
+		<Abbreviation>LPA</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>2</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>3</Carbon>
+			<Hydrogen>7</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>LPA</LbmClass>
+		</LbmClasses>
+	</Lipid>
     <Lipid>
         <Name>TG</Name>
         <Abbreviation>TG</Abbreviation>

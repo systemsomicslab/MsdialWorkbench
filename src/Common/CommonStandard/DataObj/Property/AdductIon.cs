@@ -76,6 +76,8 @@ namespace CompMs.Common.DataObj.Property
         public bool IsFA => AdductIonName == "[M+HCOO]-" || AdductIonName == "[M+FA-H]-";
         [IgnoreMember]
         public bool IsHac => AdductIonName == "[M+CH3COO]-" || AdductIonName == "[M+Hac-H]-";
+        [IgnoreMember]
+        public bool IsHco3 => AdductIonName == "[M+HCO3]-";
 
         public override string ToString() {
             return AdductIonName;

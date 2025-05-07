@@ -57,7 +57,9 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
                     GcmsParameter.MspSearchParam,
                     GcmsParameter,
                     _evaluator,
-                    _refer);
+                    _refer,
+                    new GcmsDataAccessor(GcmsParameter),
+                    Progress);
             case Common.Enum.AlignmentIndexType.RI:
             default:
                 return GcmsPeakJoiner.CreateRIJoiner(
@@ -65,7 +67,9 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
                     GcmsParameter.RetentionIndexAlignmentTolerance,
                     GcmsParameter,
                     _evaluator,
-                    _refer);
+                    _refer,
+                    new GcmsDataAccessor(GcmsParameter),
+                    Progress);
         }
     }
 }

@@ -49,9 +49,11 @@ namespace CompMs.App.Msdial.Lipidomics
                 return false;
             if (query.IonMode == IonMode.Positive)
                 return true;
-            if (QueryVM.SolventType == SolventType.CH3COONH4 && query.IonMode == IonMode.Negative && !query.AdductType.IsFA)
+            if (QueryVM.SolventType == SolventType.CH3COONH4 && query.IonMode == IonMode.Negative && !query.AdductType.IsFA && !query.AdductType.IsHco3)
                 return true;
-            if (QueryVM.SolventType == SolventType.HCOONH4 && query.IonMode == IonMode.Negative && !query.AdductType.IsHac)
+            if (QueryVM.SolventType == SolventType.HCOONH4 && query.IonMode == IonMode.Negative && !query.AdductType.IsHac && !query.AdductType.IsHco3)
+                return true;
+            if (QueryVM.SolventType == SolventType.NH4HCO3 && query.IonMode == IonMode.Negative && !query.AdductType.IsHac && !query.AdductType.IsFA)
                 return true;
 
             return false;

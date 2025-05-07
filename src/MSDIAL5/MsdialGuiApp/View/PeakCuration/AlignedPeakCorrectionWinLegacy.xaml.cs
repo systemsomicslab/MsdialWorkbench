@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -66,27 +67,31 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             var handlers = (parameter as MsdialGcmsParameter)?.GetRIHandlers();
+            var cls2brsh = filePropertiesModel.ClassProperties.ToDictionary(
+                p => p.Name,
+                p => p.ObserveProperty(p_ => p_.Color).Select(c => {
+                    var b = new SolidColorBrush(c);
+                    b.Freeze();
+                    return b;
+                }).Replay(1).RefCount());
+            var fileProps = files.Select(f => {
+                if (!cls2brsh.TryGetValue(f.AnalysisFileClass, out var brush)) {
+                    brush = Observable.Return(ChartBrushes.GetChartBrush(f.AnalysisFileId));
+                }
+                var handler = (handlers?.TryGetValue(f.AnalysisFileId, out var h) ?? false) ? h : null;
+                return new FileProp(f, brush, handler);
+            }).ToList();
             return spotChromatograms.DefaultIfNull(s => s.Chromatograms.CombineLatest(s.Spot.AlignedPeakPropertiesModelProperty, (chromatograms, peaks) => {
                 if (peaks is null) {
                     return Observable.Return<PeakPropertiesLegacy?>(null);
                 }
-                var cls2clr = filePropertiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
-                var peakPropArr = files.ZipInternal(peaks).Where(pair => pair.Item1.AnalysisFileIncluded)
+                var peakPropArr = fileProps.ZipInternal(peaks).Where(pair => pair.Item1.File.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
-                        var brush = Observable.Return(ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId));
-                        if (cls2clr.TryGetValue(pair.Item1.AnalysisFileClass, out var c)) {
-                            brush = c.Select(c_ => {
-                                var b = new SolidColorBrush(c_);
-                                b.Freeze();
-                                return b;
-                            });
-                        }
                         using var smoothed = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
-                        var handler = (handlers?.TryGetValue(pair.Item1.AnalysisFileId, out var h) ?? false) ? h : null;
                         var offset = pair.Item2.ChromXsTop.Value - s.Spot.TimesCenter;
                         var speaks = smoothed.AsPeakArray();
-                        return brush.Select(b => {
-                            var peakProp = new PeakPropertyLegacy(pair.Item2, b, speaks, handler);
+                        return pair.Item1.Brush.Select(b => {
+                            var peakProp = new PeakPropertyLegacy(pair.Item2, b, speaks, pair.Item1.Handler);
                             peakProp.SetAlignOffSet(offset);
                             peakProp.AverageRt = s.Spot.TimesCenter;
                             return peakProp;
@@ -95,5 +100,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 return peakPropArr.Select(arr => new PeakPropertiesLegacy(s.Spot, arr.ToArray()));
             }).Switch().Prepend(null), Observable.Return<PeakPropertiesLegacy?>(null)).Switch();
         }
+    }
+
+    class FileProp(AnalysisFileBean file, IObservable<SolidColorBrush> brush, RetentionIndexHandler? handler)
+    {
+        public AnalysisFileBean File { get; } = file;
+        public IObservable<SolidColorBrush> Brush { get; } = brush;
+        public RetentionIndexHandler? Handler { get; } = handler;
     }
 }
