@@ -37,6 +37,8 @@
 
         <chart:SimpleChartControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
                                   HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  VerticalTitle="Experiment ID"
+                                  HorizontalTitle="Cycle ID"
                                   Grid.Row="0" Grid.Column="0">
             <chart:HeatmapControl ItemsSource="{Binding Path=LoadedIons.Value, Mode=OneWay}"
                                   DataType="{x:Type model:MappedIon}"
@@ -63,7 +65,10 @@
             </chart:HeatmapControl>
         </chart:SimpleChartControl>
         
-        <chart:MultiChart HorizontalAxis="{Binding MsSpectrumViewModel.HorizontalAxis.Value}"
+        <chart:MultiChart GraphTitle="Raw spectrum vs. Reference spectrum"
+                          HorizontalAxis="{Binding MsSpectrumViewModel.HorizontalAxis.Value}"
+                          VerticalTitles="{Binding Path=MsSpectrumViewModel.VerticalTitles.Value}"
+                          HorizontalTitle="{Binding Path=MsSpectrumViewModel.HorizontalTitle.Value}"
                           RenderAreaControlState="{StaticResource DisableMove}"
                           Style="{StaticResource VerticalConcatChart}"
                           Grid.Row="0" Grid.Column="1">
