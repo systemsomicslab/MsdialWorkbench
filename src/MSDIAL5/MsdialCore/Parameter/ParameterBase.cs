@@ -1156,6 +1156,8 @@ namespace CompMs.MsdialCore.Parameter
         public float AlignmentScoreCutOff { get; set; } = 50;
         [Key(8)]
         public bool TogetherWithAlignment { get; set; } = true;
+        [Key(9)]
+        public bool UseRefMatchedPeaksOnly { get; set; } = false;
     }
 
     [MessagePackObject]
@@ -1250,7 +1252,6 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsKeepSuggestedMetaboliteFeatures { get; set; } = false;
         [Key(11)]
         public float FoldChangeForBlankFiltering { get; set; } = 5;
-
     }
 
     [MessagePackObject]

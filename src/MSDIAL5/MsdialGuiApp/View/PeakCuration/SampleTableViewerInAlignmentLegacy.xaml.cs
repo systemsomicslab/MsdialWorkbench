@@ -197,24 +197,24 @@ namespace CompMs.App.Msdial.View.PeakCuration
         private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(IObservable<AlignedChromatograms?> spotChromatograms, List<AnalysisFileBean> files, ParameterBase parameter, FilePropertiesModel filePropertiesModel) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
+            var cls2brsh = filePropertiesModel.ClassProperties.ToDictionary(
+                p => p.Name,
+                p => p.ObserveProperty(p_ => p_.Color).Select(c => {
+                    var b = new SolidColorBrush(c);
+                    b.Freeze();
+                    return b;
+                }).Replay(1).RefCount());
             return spotChromatograms.ObserveOn(TaskPoolScheduler.Default).DefaultIfNull(s =>
                 s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, (peaks, chromatograms) => {
                     if (peaks is null) {
                         return Observable.Return(new SampleTableRows([]));
                     }
-                    var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
-                    var cls2clr = filePropertiesModel.ClassProperties.ToDictionary(p => p.Name, p => p.ObserveProperty(p_ => p_.Color));
-                    var rows = files.Zip(peaks, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
-                        .Zip(chromatograms, (triple, chromatogram) => {
-                            var brush = Observable.Return(triple.Item3);
-                            if (cls2clr.TryGetValue(triple.Item1.AnalysisFileClass, out var c)) {
-                                brush = c.Select(c_ => {
-                                    var b = new SolidColorBrush(c_);
-                                    b.Freeze();
-                                    return b;
-                                });
+                    var rows = files.ZipInternal(peaks).Where(triple => triple.Item1.AnalysisFileIncluded)
+                        .Zip(chromatograms, (pair, chromatogram) => {
+                            if (!cls2brsh.TryGetValue(pair.Item1.AnalysisFileClass, out var brush)) {
+                                brush = Observable.Return(ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId));
                             }
-                            var row = brush.Select(b => GetSampleTableRow(s.Spot, triple.Item2, chromatogram, triple.Item1, b, parameter.CentroidMs1Tolerance));
+                            var row = brush.Select(b => GetSampleTableRow(s.Spot, pair.Item2, chromatogram, pair.Item1, b, parameter.CentroidMs1Tolerance));
                             return row;
                         }).CombineLatest();
                     var rows_ = rows.Select(rs_ => new SampleTableRows(new ObservableCollection<SampleTableRow>(rs_)));

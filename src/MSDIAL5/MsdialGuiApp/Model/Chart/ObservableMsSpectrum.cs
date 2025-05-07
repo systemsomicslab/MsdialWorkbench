@@ -81,11 +81,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public AxisPropertySelectors<double> CreateAxisPropertySelectors2(PropertySelector<SpectrumPeak, double> propertySelector, string graphLabel) {
             var rangeProperty = GetRange(propertySelector.Selector).Publish();
+            var absoluteAxis = rangeProperty.ToReactiveContinuousAxisManager(new ConstantMargin(0, 30), 0d, 0d, LabelType.Standard).AddTo(Disposables);
             var continuousAxis = rangeProperty.ToReactiveContinuousAxisManager(new ConstantMargin(0, 30), 0d, 0d, LabelType.Percent).AddTo(Disposables);
             var logAxis = rangeProperty.ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d, labelType: LabelType.Percent).AddTo(Disposables);
             var sqrtAxis = rangeProperty.ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0, labelType: LabelType.Percent).AddTo(Disposables);
             var axisSelector = new AxisItemSelector<double>(
                     new AxisItemModel<double>("Relative", continuousAxis, $"Relative {graphLabel}"),
+                    new AxisItemModel<double>("Absolute", absoluteAxis, $"Absolute {graphLabel}"),
                     new AxisItemModel<double>("Log10", logAxis, $"Relative {graphLabel} (log10)"),
                     new AxisItemModel<double>("Sqrt", sqrtAxis, $"Relative {graphLabel} (^1/2)")).AddTo(Disposables);
             Disposables.Add(rangeProperty.Connect());

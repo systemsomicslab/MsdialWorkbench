@@ -51,7 +51,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                              ItemsSource="{Binding  Path=_model.FormulaList}">
+                              ItemsSource="{Binding  Path=_model.FormulaList}" SelectedItem="{Binding Path=_model.SelectedFormula}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -69,7 +69,7 @@
                             <DataGridTemplateColumn SortMemberPath="MassError" Width="2*" Header="Error [mDa]" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Path=MassDiff, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                        <TextBox Text="{Binding Path=MassDiffmDa, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -220,7 +220,7 @@
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                               ItemsSource="{Binding  Path=_model.StructureList}" SelectedItem="{Binding Path=_model.SelectedStructure, Mode=TwoWay}">
+                               ItemsSource="{Binding  Path=_model.FilteredStructureList}" SelectedItem="{Binding Path=_model.SelectedStructure, Mode=TwoWay}">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader" >
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -246,7 +246,7 @@
                             <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                        <TextBox Text="{Binding Path=InChIKey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -259,7 +259,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <Label Content="Structure hit count: " Height="30"/>
+                        <Label Content="Total structure hit count: " Height="30"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBox Name="TextBox_StructureHitCount" Text="{Binding Path=_model.StructureList.Count, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
@@ -304,15 +304,15 @@
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Grid.Column="1">
                             <TextBox Name="TextBox_Structure_Name" Text="{Binding Path=_model.SelectedStructure.Title, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_InChIKey" Text="{Binding Path=_model.SelectedStructure.Inchikey, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_SubstructureInChIKeys" Text="{Binding Path=_model.SelectedStructure.SubstructureInChIKeys, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_InChIKey" Text="{Binding Path=_model.SelectedStructure.InChIKey, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureInChIKeys" Text="{Binding Path=_model.SelectedStructure.SubstructureInChIkeys, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_Smiles" Text="{Binding Path=_model.SelectedStructure.Smiles, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=_model.SelectedStructure.BondEnergyOfUnfragmentedMolecule, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=_model.SelectedStructure.BondEnergy, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=_model.SelectedStructure.RetentionTime, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
-                            <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=_model.SelectedStructure.Ccs, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
-                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=_model.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=_model.SelectedStructure.CCS, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                            <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=_model.SelectedStructure.FragmenterScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=_model.SelectedStructure.DatabaseScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                            <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=_model.SelectedStructure.SubstructureAssignmentScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
+                            <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=_model.SelectedStructure.SubstructureScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                             <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=_model.SelectedStructure.Resources, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
                         </StackPanel>
                     </Grid>

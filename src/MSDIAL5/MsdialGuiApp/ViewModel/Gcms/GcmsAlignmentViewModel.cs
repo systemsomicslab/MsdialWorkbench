@@ -10,10 +10,12 @@ using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -80,7 +82,15 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
 
             GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
+                var message = new ShortMessageWindow() {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "MS-FINDER running in the background...",
+                    Width = 400,
+                    Height = 100
+                };
+                message.Show();
                 var msfinder = model.CreateSingleSearchMsfinderModel();
+                message.Close();
                 if (msfinder is not null)
                 {
                     broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
