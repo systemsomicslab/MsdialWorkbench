@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.MsResult;
-using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
@@ -29,10 +28,13 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
             vm => vm is null ? null : MzRange.FromRange(new RangeSelection(vm).ConvertBy(haxis))).AddTo(Disposables);
 
         LoadedIons = model.ObserveProperty(m => m.LoadedIons).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-        IntensityMapHorizontalAxis = LoadedIons.Select(ions => ions?.Select(ion => ion.ID).ToArray() ?? [])
-            .ToReactiveCategoryAxisManager().AddTo(Disposables);
-        IntensityMapVerticalAxis = LoadedIons.Select(ions => ions?.Select(ion => ion.ExperimentID).ToArray() ?? [])
-            .ToReactiveCategoryAxisManager().AddTo(Disposables);
+
+        IntensityMapHorizontalAxis = LoadedIons.Select(ions => ions?.Distinct(IDComparer.Default).ToArray() ?? [])
+            .ToReactiveCategoryAxisManager(ion => ion.ID, ion => ion.Time.ToString()).AddTo(Disposables);
+        ((BaseAxisManager<MappedIon>)IntensityMapHorizontalAxis).ChartMargin = new ConstantMargin(0d);
+        IntensityMapVerticalAxis = LoadedIons.Select(ions => ions?.Distinct(ExperimentIDComparer.Default).OrderBy(v => v.ExperimentID).ToArray() ?? [])
+            .ToReactiveCategoryAxisManager(ion => ion.ExperimentID, ion => ion.Mz.ToString("F2")).AddTo(Disposables);
+        ((BaseAxisManager<MappedIon>)IntensityMapVerticalAxis).ChartMargin = new ConstantMargin(0d);
 
         LoadProductIonsMapCommand = SelectedMzRange.Select(r => r is not null)
             .ToReactiveCommand()
@@ -45,10 +47,24 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
 
     public ReadOnlyReactivePropertySlim<List<MappedIon>?> LoadedIons { get; }
 
-    public IAxisManager<string> IntensityMapHorizontalAxis { get; }
-    public IAxisManager<int> IntensityMapVerticalAxis { get; }
+    public IAxisManager<MappedIon> IntensityMapHorizontalAxis { get; }
+    public IAxisManager<MappedIon> IntensityMapVerticalAxis { get; }
 
     public ReactivePropertySlim<AxisRange?> SelectedMzRange { get; }
 
     public ReactiveCommand LoadProductIonsMapCommand { get; }
+
+    class IDComparer : IEqualityComparer<MappedIon>
+    {
+        public static readonly IDComparer Default = new();
+        public bool Equals(MappedIon x, MappedIon y) => x.ID == y.ID;
+        public int GetHashCode(MappedIon obj) => obj.ID.GetHashCode();
+    }
+
+    class ExperimentIDComparer : IEqualityComparer<MappedIon>
+    {
+        public static readonly ExperimentIDComparer Default = new();
+        public bool Equals(MappedIon x, MappedIon y) => x.ExperimentID == y.ExperimentID;
+        public int GetHashCode(MappedIon obj) => obj.ExperimentID.GetHashCode();
+    }
 }

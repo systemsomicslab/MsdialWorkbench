@@ -37,14 +37,16 @@
 
         <chart:SimpleChartControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
                                   HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
-                                  VerticalTitle="Experiment ID"
-                                  HorizontalTitle="Cycle ID"
+                                  VerticalTitle="m/z of selected ion"
+                                  HorizontalTitle="Scan time"
+                                  Background="Black"
+                                  Style="{StaticResource ResizableChart}"
                                   Grid.Row="0" Grid.Column="0">
             <chart:HeatmapControl ItemsSource="{Binding Path=LoadedIons.Value, Mode=OneWay}"
                                   DataType="{x:Type model:MappedIon}"
                                   FlippedY="False"
-                                  HorizontalPropertyName="ID"
-                                  VerticalPropertyName="ExperimentID"
+                                  HorizontalPropertyName=""
+                                  VerticalPropertyName=""
                                   DegreePropertyName="Intensity">
                 <chart:HeatmapControl.ToolTip>
                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -53,12 +55,16 @@
                              HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
                              VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
                         <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Time),
+                                                      StringFormat=Time: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Mz),
+                                                      StringFormat=m/z: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Intensity),
+                                                      StringFormat=Intensity: {0}}"/>
                             <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ExperimentID),
                                                       StringFormat=ExperimentID: {0}}" />
                             <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ID),
                                                       StringFormat=CycleID: {0}}" />
-                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Intensity),
-                                                      StringFormat=Intensity: {0}}"/>
                         </StackPanel>
                     </ToolTip>
                 </chart:HeatmapControl.ToolTip>
