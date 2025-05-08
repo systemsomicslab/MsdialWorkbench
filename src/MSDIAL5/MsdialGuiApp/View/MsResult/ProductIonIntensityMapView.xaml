@@ -202,6 +202,7 @@
                 </Grid>
             </Border>
             <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                       TickPlacement="Left"
                                        LayoutTransform="{StaticResource rotateRight}"
                                        Grid.Column="4" Grid.Row="3"/>
             <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapVerticalAxis}"
