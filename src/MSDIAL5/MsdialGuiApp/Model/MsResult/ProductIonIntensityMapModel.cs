@@ -33,6 +33,12 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
     }
     private List<MappedIon>? _loadedIons;
 
+    public MappedIon? NearestIon {
+        get => _nearestIon;
+        set => SetProperty(ref _nearestIon, value);
+    }
+    private MappedIon? _nearestIon;
+
     public MappedIon? SelectedIon {
         get => _selectedIon;
         set => SetProperty(ref _selectedIon, value);
@@ -50,12 +56,13 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
         if (peak is null) {
             return;
         }
-        LoadedIons = await _loadPIUsecase.LoadProductIonSpectraAsync(peak, SelectedRange, token).ConfigureAwait(false);
+        (NearestIon, LoadedIons) = await _loadPIUsecase.LoadProductIonSpectraAsync(peak, SelectedRange, token).ConfigureAwait(false);
         SelectedIon = null;
     }
 
     public void Reset() {
         LoadedIons = null;
+        NearestIon = null;
         SelectedIon = null;
         SelectedRange = null;
     }

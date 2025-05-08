@@ -141,6 +141,21 @@
                            Canvas.Top="{Binding Path=Y}"/>
             </Canvas>
 
+            <chart:ScatterControl ItemsSource="{Binding Path=NearestIon.Value}"
+                                  HorizontalPropertyName=""
+                                  VerticalPropertyName=""
+                                  HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                  PointGeometry="M 0 1 L 9 10 H 11 L 1 0 L 11 -10 H 9 L 0 -1 L -9 -10 H -11 L -1 0 L -11 10 H -9 L 0 1 Z"
+                                  Radius="8"
+                                  ClipToBounds="True"
+                                  IsHitTestVisible="False"
+                                  Grid.Column="2" Grid.Row="2">
+                <chart:ScatterControl.BrushMapper>
+                    <design:ConstantBrushMapper Brush="Gray"/>
+                </chart:ScatterControl.BrushMapper>
+            </chart:ScatterControl>
+
             <Border Background="WhiteSmoke"
                     core:ChartBaseControl.HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
                     core:ChartBaseControl.VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"

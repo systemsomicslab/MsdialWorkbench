@@ -6,6 +6,7 @@ using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -28,6 +29,7 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
             vm => vm is null ? null : MzRange.FromRange(new RangeSelection(vm).ConvertBy(haxis))).AddTo(Disposables);
 
         LoadedIons = model.ObserveProperty(m => m.LoadedIons).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        NearestIon = model.ObserveProperty(m => m.NearestIon).Select(ion => ion is null ? Array.Empty<MappedIon>() : [ion]).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
 
         SelectedIon = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedIon).AddTo(Disposables);
 
@@ -61,6 +63,7 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
     public MsSpectrumViewModel MsSpectrumViewModel { get; }
 
     public ReadOnlyReactivePropertySlim<List<MappedIon>?> LoadedIons { get; }
+    public ReadOnlyReactivePropertySlim<MappedIon[]> NearestIon { get; }
 
     public IAxisManager<MappedIon> IntensityMapHorizontalAxis { get; }
     public IAxisManager<MappedIon> IntensityMapVerticalAxis { get; }
