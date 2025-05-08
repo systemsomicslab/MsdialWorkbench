@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Raw.Abstractions;
 using System.Collections.Generic;
@@ -21,12 +20,12 @@ internal sealed class LoadProductIonMapUsecase(IDataProvider provider)
         if (peak != _previousPeak) {
             _previousPeak = peak;
 
-        var query = new SpectraLoadingQuery
-        {
-            MSLevel = 2,
-            PrecursorMzRange = new() { Mz = peak.Mass, Tolerance = 20d, },
-            ScanTimeRange = new() { Start = peak.ChromXsLeft.RT.Value, End = peak.ChromXsRight.RT.Value, },
-        };
+            var query = new SpectraLoadingQuery
+            {
+                MSLevel = 2,
+                PrecursorMzRange = new() { Mz = peak.Mass, Tolerance = 20d, },
+                ScanTimeRange = new() { Start = peak.ChromXsLeft.RT.Value, End = peak.ChromXsRight.RT.Value, },
+            };
             _previousSpectra = await _provider.LoadMSSpectraAsync(query, token).ConfigureAwait(false);
         }
         var spectra = _previousSpectra;
@@ -34,9 +33,9 @@ internal sealed class LoadProductIonMapUsecase(IDataProvider provider)
         token.ThrowIfCancellationRequested();
         return spectra.SelectMany(
             s => s.Spectrum.Where(p => productIonRange.Includes(p.Mz)),
-            (s, p) => new MappedIon(s.Id, s.ExperimentID, p.Intensity))
+            (s, p) => new MappedIon(s.Id, s.ExperimentID, p.Intensity, s.ScanStartTime, s.Precursor.SelectedIonMz))
             .GroupBy(ion => (ion.ID, ion.ExperimentID))
-            .Select(g => new MappedIon(g.Key.ID, g.Key.ExperimentID, g.Sum(ion => ion.Intensity)))
+            .Select(g => new MappedIon(g.Key.ID, g.Key.ExperimentID, g.Sum(ion => ion.Intensity), g.Average(ion => ion.Time), g.Max(ion => (ion.Intensity, ion.Mz)).Mz))
             .ToList();
     }
 }
