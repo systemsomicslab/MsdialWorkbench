@@ -128,9 +128,7 @@ namespace CompMs.Graphics.Chart
         private Lazy<Func<object, IAxisManager, AxisValue>> xLambda, yLambda;
 
         private void CoerceXProperty(Type type, string hprop) {
-            if (type is null
-                || string.IsNullOrEmpty(hprop)
-                || !ExpressionHelper.ValidatePropertyString(type, hprop)) {
+            if (type is null || !ExpressionHelper.ValidatePropertyString(type, hprop)) {
                 xLambda = null;
                 return;
             }
@@ -138,9 +136,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void CoerceYProperty(Type type, string vprop) {
-            if (type is null
-                || string.IsNullOrEmpty(vprop)
-                || !ExpressionHelper.ValidatePropertyString(type, vprop)) {
+            if (type is null || !ExpressionHelper.ValidatePropertyString(type, vprop)) {
                 yLambda = null;
                 return;
             }

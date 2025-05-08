@@ -50,7 +50,7 @@ namespace CompMs.Graphics.Chart
             if (!enumerator.MoveNext()) return;
             chart.dataType = enumerator.Current.GetType();
 
-            if (chart.HorizontalPropertyName != null && ExpressionHelper.ValidatePropertyString(chart.dataType, chart.HorizontalPropertyName)) {
+            if (ExpressionHelper.ValidatePropertyString(chart.dataType, chart.HorizontalPropertyName)) {
                 chart.hGetter = ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, chart.HorizontalPropertyName).Compile();
             }
             if (chart.VerticalPropertyName != null)
@@ -63,7 +63,7 @@ namespace CompMs.Graphics.Chart
             if (dataType == null) {
                 dataType = cv.OfType<object>().FirstOrDefault()?.GetType();
                 if (dataType != null) {
-                    if (HorizontalPropertyName != null && ExpressionHelper.ValidatePropertyString(dataType, HorizontalPropertyName)) {
+                    if (ExpressionHelper.ValidatePropertyString(dataType, HorizontalPropertyName)) {
                         hGetter = ExpressionHelper.GetConvertToAxisValueExpression(dataType, HorizontalPropertyName).Compile();
                     }
                     if (VerticalPropertyName != null)
@@ -145,9 +145,9 @@ namespace CompMs.Graphics.Chart
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
-            if (chart == null) return;
+            if (chart is null) return;
 
-            if (chart.dataType != null && ExpressionHelper.ValidatePropertyString(chart.dataType, (string)e.NewValue)) {
+            if (chart.dataType is not null && ExpressionHelper.ValidatePropertyString(chart.dataType, (string)e.NewValue)) {
                 chart.hGetter = ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, (string)e.NewValue).Compile();
             }
         }
