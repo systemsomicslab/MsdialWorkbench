@@ -142,7 +142,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
             broker.ToObservable<ProductIonIntensityMapViewModel>()
-                .Subscribe(ShowChildContent<ProductIonIntensityMapView>("brahbrah", height: 600, width: 1000, needDispose: true));
+                .Subscribe(ShowChildContent<ProductIonIntensityMapView>("brahbrah", height: 600, width: 1000, needDispose: false));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
