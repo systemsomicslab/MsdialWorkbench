@@ -29,12 +29,27 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
 
         LoadedIons = model.ObserveProperty(m => m.LoadedIons).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
+        SelectedIon = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedIon).AddTo(Disposables);
+
+        SelectedIonExperiment = SelectedIon.WithLatestFrom(LoadedIons, (ion, ions) => {
+            return ion is null
+                ? []
+                : ions.Where(i => i.ExperimentID == ion.ExperimentID).ToArray();
+        }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+        SelectedIonCycle = SelectedIon.WithLatestFrom(LoadedIons, (ion, ions) => {
+            return ion is null
+                ? []
+                : ions.Where(i => i.ID == ion.ID).ToArray();
+        }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+
         IntensityMapHorizontalAxis = LoadedIons.Select(ions => ions?.Distinct(IDComparer.Default).ToArray() ?? [])
             .ToReactiveCategoryAxisManager(ion => ion.ID, ion => ion.Time.ToString()).AddTo(Disposables);
         ((BaseAxisManager<MappedIon>)IntensityMapHorizontalAxis).ChartMargin = new ConstantMargin(0d);
         IntensityMapVerticalAxis = LoadedIons.Select(ions => ions?.Distinct(ExperimentIDComparer.Default).OrderBy(v => v.ExperimentID).ToArray() ?? [])
             .ToReactiveCategoryAxisManager(ion => ion.ExperimentID, ion => ion.Mz.ToString("F2")).AddTo(Disposables);
         ((BaseAxisManager<MappedIon>)IntensityMapVerticalAxis).ChartMargin = new ConstantMargin(0d);
+        IntensityMapDegreeAxis = LoadedIons.Select(ions => (0d, ions?.DefaultIfEmpty().Max(ion => ion?.Intensity ?? 1d) ?? 1d))
+            .ToReactiveContinuousAxisManager(new AxisRange(0d, 0d)).AddTo(Disposables);
 
         LoadProductIonsMapCommand = SelectedMzRange.Select(r => r is not null)
             .ToReactiveCommand()
@@ -49,10 +64,15 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
 
     public IAxisManager<MappedIon> IntensityMapHorizontalAxis { get; }
     public IAxisManager<MappedIon> IntensityMapVerticalAxis { get; }
+    public IAxisManager<double> IntensityMapDegreeAxis { get; }
 
     public ReactivePropertySlim<AxisRange?> SelectedMzRange { get; }
 
     public ReactiveCommand LoadProductIonsMapCommand { get; }
+
+    public ReactivePropertySlim<MappedIon?> SelectedIon { get; }
+    public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonExperiment { get; }
+    public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonCycle { get; }
 
     class IDComparer : IEqualityComparer<MappedIon>
     {

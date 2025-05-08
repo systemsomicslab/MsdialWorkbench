@@ -35,6 +35,133 @@
             <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
 
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.Resources>
+                <RotateTransform x:Key="rotateRight" Angle="90" CenterX=".5" CenterY=".5"/>
+                <RotateTransform x:Key="rotateLeft" Angle="-90" CenterX=".5" CenterY=".5"/>
+                <Style x:Key="HorizontalSplitter" TargetType="GridSplitter">
+                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Width" Value="2"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="0,0,0,-2"/>
+                </Style>
+                <Style x:Key="VerticalSplitter" TargetType="GridSplitter">
+                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Height" Value="2"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="Margin" Value="-2,0,0,0"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="16"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Intensity"
+                       LayoutTransform="{StaticResource rotateLeft}"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" Grid.Row="0"/>
+            <TextBlock Text="m/z of selected ion"
+                       LayoutTransform="{StaticResource rotateLeft}"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" Grid.Row="2"/>
+            <TextBlock Text="Scan time"
+                       HorizontalAlignment="Center"
+                       Grid.Column="2" Grid.Row="4"/>
+            <TextBlock Text="Intensity"
+                       HorizontalAlignment="Center"
+                       Grid.Column="4" Grid.Row="4"/>
+
+            <chart:HeatmapControl ItemsSource="{Binding Path=LoadedIons.Value, Mode=OneWay}"
+                                  DataType="{x:Type model:MappedIon}"
+                                  HorizontalPropertyName=""
+                                  VerticalPropertyName=""
+                                  DegreePropertyName="Intensity"
+                                  HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                  SelectedItem="{Binding Path=SelectedIon.Value, Mode=TwoWay}"
+                                  Grid.Column="2" Grid.Row="2">
+                <chart:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,20"
+                             HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
+                             VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Time),
+                                                      StringFormat=Time: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Mz),
+                                                      StringFormat=m/z: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Intensity),
+                                                      StringFormat=Intensity: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ExperimentID),
+                                                      StringFormat=ExperimentID: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ID),
+                                                      StringFormat=CycleID: {0}}" />
+                        </StackPanel>
+                    </ToolTip>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                       Grid.Column="1" Grid.Row="2"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                         Grid.Column="2" Grid.Row="3"/>
+
+            <Border Background="WhiteSmoke" Grid.Column="2" Grid.Row="0">
+                <chart:LineChartControl ItemsSource="{Binding Path=SelectedIonExperiment.Value, Mode=OneWay}"
+                                        HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                        VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                        HorizontalPropertyName=""
+                                        VerticalPropertyName="Intensity"/>
+            </Border>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                       Grid.Column="1" Grid.Row="0"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                         Grid.Column="2" Grid.Row="1"/>
+
+            <Border Background="WhiteSmoke" Grid.Column="4" Grid.Row="2">
+                <chart:LineChartControl ItemsSource="{Binding Path=SelectedIonCycle.Value, Mode=OneWay}"
+                                        HorizontalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                        VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                        FlippedX="True"
+                                        HorizontalPropertyName=""
+                                        VerticalPropertyName="Intensity"
+                                        LayoutTransform="{StaticResource rotateRight}"/>
+            </Border>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                       LayoutTransform="{StaticResource rotateRight}"
+                                       Grid.Column="4" Grid.Row="3"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                         LayoutTransform="{StaticResource rotateRight}"
+                                         Grid.Column="3" Grid.Row="2"/>
+
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          Grid.Column="1" Grid.Row="0"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          Grid.Column="2" Grid.Row="1"/>
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          Grid.Column="1" Grid.Row="2"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          Grid.Column="2" Grid.Row="3"/>
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          Grid.Column="3" Grid.Row="2"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          Grid.Column="4" Grid.Row="3"/>
+        </Grid>
+
+        <!--
         <chart:SimpleChartControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
                                   HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
                                   VerticalTitle="m/z of selected ion"
@@ -70,6 +197,7 @@
                 </chart:HeatmapControl.ToolTip>
             </chart:HeatmapControl>
         </chart:SimpleChartControl>
+        -->
         
         <chart:MultiChart GraphTitle="Raw spectrum vs. Reference spectrum"
                           HorizontalAxis="{Binding MsSpectrumViewModel.HorizontalAxis.Value}"
@@ -148,6 +276,12 @@
                                  ClipToBounds="True"/>
             </Grid>
         </chart:MultiChart>
+
+        <GridSplitter HorizontalAlignment="Left"
+                      Width="3"
+                      Background="Gray"
+                      Grid.Column="1"/>
+
         <Button Content="Load" Command="{Binding LoadProductIonsMapCommand, Mode=OneTime}" Grid.Row="1" Grid.Column="1"/>
     </Grid>
 </UserControl>

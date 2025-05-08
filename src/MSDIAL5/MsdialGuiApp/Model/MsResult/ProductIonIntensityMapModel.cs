@@ -33,6 +33,12 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
     }
     private List<MappedIon>? _loadedIons;
 
+    public MappedIon? SelectedIon {
+        get => _selectedIon;
+        set => SetProperty(ref _selectedIon, value);
+    }
+    private MappedIon? _selectedIon;
+
     public MsSpectrumModel MsSpectrumModel { get; }
 
     public async Task LoadIonsAsync(CancellationToken token = default) {
@@ -45,5 +51,12 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
             return;
         }
         LoadedIons = await _loadPIUsecase.LoadProductIonSpectraAsync(peak, SelectedRange, token).ConfigureAwait(false);
+        SelectedIon = null;
+    }
+
+    public void Reset() {
+        LoadedIons = null;
+        SelectedIon = null;
+        SelectedRange = null;
     }
 }
