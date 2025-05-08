@@ -47,8 +47,11 @@ namespace CompMs.Graphics.Chart
                 if (ExpressionHelper.ValidatePropertyString(type, chart.DegreePropertyName)) {
                     chart._zGetter = ExpressionHelper.GetPropertyGetterExpression(type, chart.DegreePropertyName).Compile();
                 }
-                if (chart.SelectedItem != null) {
+                if (chart.SelectedItem is not null) {
                     chart._cv.MoveCurrentTo(chart.SelectedItem);
+                }
+                if (chart.SelectedPoint is not null) {
+                    chart.SelectedPoint = null;
                 }
             }
         }
@@ -198,15 +201,24 @@ namespace CompMs.Graphics.Chart
                 new PropertyMetadata(null, OnSelectedItemChanged));
 
         public object SelectedItem {
-            get { return GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
         }
 
         static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HeatmapControl chart) {
-                if (chart._cv != null)
-                    chart._cv.MoveCurrentTo(e.NewValue);
+                chart._cv?.MoveCurrentTo(e.NewValue);
             }
+        }
+
+        public static readonly DependencyProperty SelectedPointProperty =
+            DependencyProperty.Register(
+                nameof(SelectedPoint), typeof(Point?), typeof(HeatmapControl),
+                new PropertyMetadata(default(Point?)));
+
+        public Point? SelectedPoint {
+            get => (Point?)GetValue(SelectedPointProperty);
+            set => SetValue(SelectedPointProperty, value);
         }
 
         public static readonly DependencyProperty FocusedItemProperty =
@@ -284,6 +296,10 @@ namespace CompMs.Graphics.Chart
                 dc.DrawRectangle(brush, null, new Rect(xx - xwidth / 2, yy - ywidth / 2, xwidth, ywidth));
                 dc.Close();
                 visualChildren.Add(dv);
+
+                if (o == SelectedItem) {
+                    SelectedPoint = dv.Center;
+                }
             }
         }
 
@@ -356,7 +372,9 @@ namespace CompMs.Graphics.Chart
         }
 
         private HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
-            SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            AnnotatedDrawingVisual dv = (AnnotatedDrawingVisual)result.VisualHit;
+            SelectedItem = dv.Annotation;
+            SelectedPoint = dv.Center;
             return HitTestResultBehavior.Stop;
         }
     }
