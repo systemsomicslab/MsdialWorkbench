@@ -49,7 +49,7 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
             .ToReactiveCategoryAxisManager(ion => ion.ExperimentID, ion => ion.Mz.ToString("F2")).AddTo(Disposables);
         ((BaseAxisManager<MappedIon>)IntensityMapVerticalAxis).ChartMargin = new ConstantMargin(0d);
         IntensityMapDegreeAxis = LoadedIons.Select(ions => (0d, ions?.DefaultIfEmpty().Max(ion => ion?.Intensity ?? 1d) ?? 1d))
-            .ToReactiveContinuousAxisManager(new AxisRange(0d, 0d)).AddTo(Disposables);
+            .ToReactiveContinuousAxisManager(new ConstantMargin(0d, 20d), new AxisRange(0d, 0d)).AddTo(Disposables);
 
         LoadProductIonsMapCommand = SelectedMzRange.Select(r => r is not null)
             .ToReactiveCommand()
