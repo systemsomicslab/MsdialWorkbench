@@ -100,6 +100,83 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="ResizableChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Name="GraphTitle"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:SimpleChartControl}}}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="2"/>
+
+                        <Border Background="{TemplateBinding Background}"
+                                core:ChartBaseControl.HorizontalAxis="{TemplateBinding HorizontalAxis}"
+                                core:ChartBaseControl.VerticalAxis="{TemplateBinding VerticalAxis}"
+                                behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                Grid.Row="1" Grid.Column="2">
+                            <ContentPresenter behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
+                        </Border>
+
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="0"
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
+                        <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                                  HorizontalAxis="{x:Null}"
+                                                  Margin="0"
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        <GridSplitter Background="{TemplateBinding BorderBrush}"
+                                      Height="2"
+                                      VerticalAlignment="Top"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="-2,0,0,0"
+                                      Grid.Row="2" Grid.Column="2"/>
+                        <GridSplitter Background="{TemplateBinding BorderBrush}"
+                                      Width="2"
+                                      VerticalAlignment="Stretch"
+                                      HorizontalAlignment="Right"
+                                      Margin="0,0,0,-2"
+                                      Grid.Row="1" Grid.Column="1"/>
+
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="UnmoveBasicChart">
         <Setter Property="Background" Value="WhiteSmoke"/>
         <Setter Property="BorderBrush" Value="Black"/>
