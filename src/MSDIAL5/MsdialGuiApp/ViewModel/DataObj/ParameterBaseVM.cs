@@ -774,6 +774,15 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             }
         }
 
+        public float RelativeAmplitudeCutoff {
+            get => innerModel.ChromDecBaseParam.RelativeAmplitudeCutoff;
+            set {
+                if (innerModel.ChromDecBaseParam.RelativeAmplitudeCutoff == value) return;
+                innerModel.ChromDecBaseParam.RelativeAmplitudeCutoff = value;
+                OnPropertyChanged(nameof(RelativeAmplitudeCutoff));
+            }
+        }
+
         public float AveragePeakWidth {
             get => innerModel.AveragePeakWidth;
             set {
