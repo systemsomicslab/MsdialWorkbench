@@ -88,7 +88,7 @@
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
 	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.2.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
 	  <PackageReference Include="CompMs.Raw.Sciex.Wiff2" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug'" />
-	  <PackageReference Include="CompMs.Raw.Sciex.Wiff2" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="CompMs.Raw.Sciex.Wiff2" Version="1.0.9261.727" Condition="'$(Configuration)'=='Release'" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
