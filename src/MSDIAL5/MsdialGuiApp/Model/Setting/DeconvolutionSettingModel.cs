@@ -34,10 +34,10 @@ namespace CompMs.App.Msdial.Model.Setting
         private float _amplitudeCufoff;
 
         public float RelativeAmplitudeCutoff {
-            get => _relativeAmplitudeCufoff;
-            set => SetProperty(ref _relativeAmplitudeCufoff, value);
+            get => _relativeAmplitudeCutoff;
+            set => SetProperty(ref _relativeAmplitudeCutoff, value);
         }
-        private float _relativeAmplitudeCufoff;
+        private float _relativeAmplitudeCutoff;
 
         public bool RemoveAfterPrecursor {
             get => _removeAfterPrecurosr;
