@@ -77,12 +77,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
             var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType,
-                param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+                param.ChromDecBaseParam.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
             var curatedSpectra = new List<SpectrumPeak>(); // used for normalization of MS/MS intensities
             var precursorMz = chromPeakFeature.Mass;
-            var threshold = Math.Max(param.AmplitudeCutoff, 0.1);
+            var threshold = Math.Max(param.ChromDecBaseParam.AmplitudeCutoff, 0.1);
 
             foreach (var peak in cSpectrum.Where(n => n.Intensity > threshold)) { //preparing MS/MS chromatograms -> peaklistList
                 if (param.RemoveAfterPrecursor && precursorMz + param.KeptIsotopeRange < peak.Mass) continue;

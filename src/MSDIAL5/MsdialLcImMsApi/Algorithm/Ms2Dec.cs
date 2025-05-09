@@ -54,14 +54,14 @@ public sealed class Ms2Dec {
                 cSpectrum = new List<SpectrumPeak>();
             }
             else {
-                cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+                cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.ChromDecBaseParam.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             }
         }
         if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
         var precursorMz = rtChromPeak.Mass;
         var curatedSpectra = new List<SpectrumPeak>(); // used for normalization of MS/MS intensities
-        var threshold = Math.Max(param.AmplitudeCutoff, 0.1);
+        var threshold = Math.Max(param.ChromDecBaseParam.AmplitudeCutoff, 0.1);
         foreach (var peak in cSpectrum.Where(n => n.Intensity > threshold)) { //preparing MS/MS chromatograms -> peaklistList
             if (param.RemoveAfterPrecursor && precursorMz + param.KeptIsotopeRange < peak.Mass) continue;
             curatedSpectra.Add(peak);

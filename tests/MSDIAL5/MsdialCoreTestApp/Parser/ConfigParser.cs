@@ -383,7 +383,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //Deconvolution
                 case "sigma window valueLower": if (float.TryParse(valueLower, out float sigmaWindow)) param.SigmaWindowValue = sigmaWindow; return true;
-                case "amplitude cut off": if (float.TryParse(valueLower, out float ms2ampthreshold)) param.AmplitudeCutoff = ms2ampthreshold; return true;
+                case "amplitude cut off": if (float.TryParse(valueLower, out float ms2ampthreshold)) param.ChromDecBaseParam.AmplitudeCutoff = ms2ampthreshold; return true;
                 case "keep isotope range": if (float.TryParse(valueLower, out float keepisotoperange)) param.KeptIsotopeRange = keepisotoperange; return true;
                 case "exclude after precursor": if (valueLower == "false") param.RemoveAfterPrecursor = false; return true;
                 case "keep original precursor isotopes": if (valueLower == "false") param.KeepOriginalPrecursorIsotopes = false; return true;

@@ -914,7 +914,7 @@ namespace CompMs.MsdialCore.Utility {
                 spectra.Add(new SpectrumPeak() { Mass = massSpectra[i].Mz, Intensity = massSpectra[i].Intensity });
             }
 
-            if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
+            if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > param.ChromDecBaseParam.AmplitudeCutoff).ToList();
             if (spectra.Count == 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.profile) return spectra;
 

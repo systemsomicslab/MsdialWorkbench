@@ -122,12 +122,12 @@ public sealed class Ms2Dec
 
         //first, the MS/MS spectrum at the scan point of peak top is stored.
         var cSpectrum = DataAccess.GetCentroidMassSpectra(
-            ms2Spectrum, parameter.MS2DataType, parameter.AmplitudeCutoff,
+            ms2Spectrum, parameter.MS2DataType, parameter.ChromDecBaseParam.AmplitudeCutoff,
             parameter.Ms2MassRangeBegin, parameter.Ms2MassRangeEnd);
         if (cSpectrum.IsEmptyOrNull())
             return new List<SpectrumPeak>();
 
-        var threshold = Math.Max(parameter.AmplitudeCutoff, 0.1);
+        var threshold = Math.Max(parameter.ChromDecBaseParam.AmplitudeCutoff, 0.1);
         var curatedSpectra = cSpectrum.Where(n => n.Intensity > threshold);
 
         if (parameter.RemoveAfterPrecursor)
