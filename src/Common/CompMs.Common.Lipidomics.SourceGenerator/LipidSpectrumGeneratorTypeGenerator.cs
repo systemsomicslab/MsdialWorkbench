@@ -230,16 +230,27 @@ namespace CompMs.Common.Lipidomics {
         return new(adduct, lsiLevel, ions);
     }
 
-    readonly static List<string> _peakElements = ["MZ", "Intensity", "Comment"];
+    readonly static List<string> _peakElements = ["MZ", "Intensity", "Comment", "Charge", "Formula"];
 
     private static Ion ToIon(XElement element) {
         var mz = element.Element("MZ")?.Value ?? "0";
         var intensity = element.Element("Intensity")?.Value ?? "0";
         var comment = element.Element("Comment")?.Value ?? string.Empty;
+        var charge = element.Element("Charge")?.Value ?? "0";
+        var formula = element.Element("Formula")?.Value ?? string.Empty;
 
-        foreach (var (name, pairs) in ParseElements(element)) {
-            var formula = string.Join(" + ", pairs.Select(e => $"{e.LocalName} * {e.Value}"));
-            mz = mz.Replace(name, $"({formula})");
+        if (mz != "0") {
+            foreach (var (name, pairs) in ParseElements(element)) {
+                var f = string.Join(" + ", pairs.Select(e => $"{e.LocalName} * {e.Value}"));
+                mz = mz.Replace(name, $"({f})");
+            }
+        }
+        else if (formula != string.Empty && charge != "0" && int.TryParse(charge, out var c)) {
+            foreach (var (name, pairs) in ParseElements(element)) {
+                var f = string.Join(" + ", pairs.Select(e => $"{e.LocalName} * {e.Value}"));
+                formula = formula.Replace(name, $"({f})");
+            }
+            mz = $"(({formula}) - ({c} * Electron)) / {Math.Abs(c)}";
         }
 
         return new() { Mz = mz, Intensity = intensity, Comment = comment };

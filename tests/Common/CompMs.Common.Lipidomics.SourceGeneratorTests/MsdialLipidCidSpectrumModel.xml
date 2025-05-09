@@ -40,7 +40,9 @@
       </ChainIons>
       <Precursors>
         <Precursor>
-          <MZ>M+Proton</MZ>
+          <!-- test case of formula and charge -->
+          <Formula>M+H</Formula>
+          <Charge>1</Charge>
           <Intensity>300</Intensity>
           <Comment>[M+H]+</Comment>
         </Precursor>
