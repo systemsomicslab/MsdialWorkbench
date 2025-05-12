@@ -66,7 +66,8 @@ public class PeakCharacterEstimator {
             parameter.MachineCategory == MachineCategory.LCIMMS || 
             parameter.MachineCategory == MachineCategory.LCMS ||
             parameter.MachineCategory == MachineCategory.IMMS ||
-            parameter.MachineCategory == MachineCategory.GCMS ? int.MaxValue : 10000;
+            parameter.MachineCategory == MachineCategory.GCMS ||
+            parameter.MachineCategory == MachineCategory.GCGCMS ? int.MaxValue : 10000;
         var doChromCorr = chromPeakFeatures.Count < 10000 ? true : false;
         if (chromPeakFeatures.Count < featurelimit) {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {

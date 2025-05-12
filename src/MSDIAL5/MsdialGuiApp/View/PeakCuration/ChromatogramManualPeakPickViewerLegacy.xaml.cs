@@ -183,7 +183,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
                 this.carbonRtDict = Param.FileIdRiInfoDictionary[fileID].RiDictionary;
 
-                if (isRI && Param.MachineCategory == MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames && Param.FileIdRiInfoDictionary[fileID].RiDictionary is { } ridict) {
+                if (isRI && (Param.MachineCategory == MachineCategory.GCMS || Param.MachineCategory == MachineCategory.GCGCMS) && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames && Param.FileIdRiInfoDictionary[fileID].RiDictionary is { } ridict) {
                     this.fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDictionary, ridict);
                     this.revFiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(ridict, fiehnRiDictionary);
                 }
@@ -291,7 +291,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     var rtLeft = 0.0F;
                     var rtRight = 0.0F;
 
-                    var isFiehn = Param.MachineCategory == CompMs.Common.Enum.MachineCategory.GCMS && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames;
+                    var isFiehn = (Param.MachineCategory == MachineCategory.GCMS || Param.MachineCategory == MachineCategory.GCGCMS) && ((MsdialGcmsParameter)Param).RiCompoundType == RiCompoundType.Fames;
 
                     if (isFiehn && revFiehnRiCoeff is not null) {
                         rtTop = (float)RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, prop.RtTop);

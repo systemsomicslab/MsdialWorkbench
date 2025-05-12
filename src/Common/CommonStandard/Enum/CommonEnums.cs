@@ -19,7 +19,7 @@ namespace CompMs.Common.Enum
         }
     }
 
-    public enum MachineCategory { GCMS, LCMS, IMMS, LCIMMS, IFMS, IIMMS, IDIMS, }
+    public enum MachineCategory { GCMS, LCMS, IMMS, LCIMMS, IFMS, IIMMS, IDIMS, GCGCMS, }
     public enum MassToleranceType { Da, Ppm }
     public enum CollisionType { CID, HCD, EIEIO, ECD, HotECD, EID, OAD }
     public enum SolventType { CH3COONH4, HCOONH4, NH4HCO3 }

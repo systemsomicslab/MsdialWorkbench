@@ -18,6 +18,7 @@ namespace CompMs.MsdialIntegrate.Parser
             { MachineCategory.IMMS, MsdialImmsCore.DataObj.MsdialImmsDataStorage.Serializer },
             { MachineCategory.IFMS, MsdialDimsCore.DataObj.MsdialDimsDataStorage.Serializer },
             { MachineCategory.GCMS, MsdialGcMsApi.DataObj.MsdialGcmsDataStorage.Serializer },
+            { MachineCategory.GCGCMS, MsdialGcMsApi.DataObj.MsdialGcmsDataStorage.Serializer },
             { MachineCategory.IIMMS, MsdialImmsCore.DataObj.MsdialImmsDataStorage.Serializer },
             { MachineCategory.IDIMS, MsdialDimsCore.DataObj.MsdialDimsDataStorage.Serializer },
         };

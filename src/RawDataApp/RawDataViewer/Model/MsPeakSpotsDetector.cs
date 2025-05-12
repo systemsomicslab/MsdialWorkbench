@@ -58,6 +58,7 @@ namespace CompMs.App.RawDataViewer.Model
                         return (PeaksToSummary(flatten), new MsSnDistribution(peaks));
                     }
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                 default:
                     return (new MsPeakSpotsSummary(new DataPoint[0]), new MsSnDistribution(Array.Empty<ChromatogramPeakFeature>()));
             }

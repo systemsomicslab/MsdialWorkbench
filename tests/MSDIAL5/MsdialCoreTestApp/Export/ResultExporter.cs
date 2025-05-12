@@ -24,7 +24,7 @@ namespace CompMs.App.MsdialConsole.Export
 
             using (StreamWriter sw = new StreamWriter(outputfile, false, Encoding.ASCII)) {
                 ResultExport.WriteChromPeakFeatureExportHeader(sw, category);
-                if (category == Common.Enum.MachineCategory.GCMS) {
+                if (category == Common.Enum.MachineCategory.GCMS || category == Common.Enum.MachineCategory.GCGCMS) {
                     foreach (var msdec in msdecResults) {
                         ResultExport.WriteChromPeakFeatureMetadata(sw, file, null, msdec, spectrumList, param, mspDB, textDB);
                     }

@@ -27,6 +27,7 @@ namespace CompMs.MsdialCore.Export {
             var header = new List<string>();
             switch (category) {
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                     header = new List<string>() {
                         "Peak ID", "Name", "Scan", "RT (min)", "RI", 
                         "Quant mass", "Height", "Area", "Model masses", "Comment",
@@ -84,42 +85,42 @@ namespace CompMs.MsdialCore.Export {
             var category = param.MachineCategory;
             var type = param.ExportSpectraType;
             var ms1tol = param.CentroidMs1Tolerance;
-            var isotopes = category != MachineCategory.GCMS ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum) : new List<IsotopicPeak>();
+            var isotopes = (category != MachineCategory.GCMS && category != MachineCategory.GCGCMS) ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum) : new List<IsotopicPeak>();
             var isotopeString = isotopes.IsEmptyOrNull() ? "null" : String.Join(";", isotopes.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.AbsoluteAbundance) })));
             var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, param, file.AcquisitionType);
             var specString = spectrum.IsEmptyOrNull() ? "null" : String.Join(";", spectrum.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.Intensity) })));
-            var peakID = category == MachineCategory.GCMS ? msdec.ScanID.ToString() : feature.MasterPeakID.ToString();
-            var name = category == MachineCategory.GCMS ? MoleculeMsRefDataRetrieve.GetCompoundName(msdec.MspID, mspDB) : feature.Name;
-            var scanID = category == MachineCategory.GCMS ? msdec.RawSpectrumID.ToString() : feature.MS1RawSpectrumIdTop.ToString();
+            var peakID = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? msdec.ScanID.ToString() : feature.MasterPeakID.ToString();
+            var name = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? MoleculeMsRefDataRetrieve.GetCompoundName(msdec.MspID, mspDB) : feature.Name;
+            var scanID = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? msdec.RawSpectrumID.ToString() : feature.MS1RawSpectrumIdTop.ToString();
 
-            var rtLeft = category == MachineCategory.GCMS ? "null" : String.Format("{0:0.000}", feature.ChromXsLeft.RT.Value);
-            var rt = category == MachineCategory.GCMS ? String.Format("{0:0.000}", msdec.ChromXs.RT.Value) : String.Format("{0:0.000}", feature.ChromXsTop.RT.Value);
-            var rtRight = category == MachineCategory.GCMS ? "null" : String.Format("{0:0.000}", feature.ChromXsRight.RT.Value);
+            var rtLeft = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? "null" : String.Format("{0:0.000}", feature.ChromXsLeft.RT.Value);
+            var rt = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? String.Format("{0:0.000}", msdec.ChromXs.RT.Value) : String.Format("{0:0.000}", feature.ChromXsTop.RT.Value);
+            var rtRight = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? "null" : String.Format("{0:0.000}", feature.ChromXsRight.RT.Value);
 
-            var ri = category == MachineCategory.GCMS ? msdec.ChromXs.RI.Value <= 0 ? "null" : String.Format("{0:0.000}", msdec.ChromXs.RI.Value) : "null";
+            var ri = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? msdec.ChromXs.RI.Value <= 0 ? "null" : String.Format("{0:0.000}", msdec.ChromXs.RI.Value) : "null";
 
             var dtLeft = category == MachineCategory.IMMS || category == MachineCategory.LCIMMS ? String.Format("{0:0.000}", feature.ChromXsLeft.Drift.Value) : "null";
             var dt = category == MachineCategory.IMMS || category == MachineCategory.LCIMMS ? String.Format("{0:0.000}", msdec.ChromXs.Drift.Value) : "null";
             var dtRight = category == MachineCategory.IMMS || category == MachineCategory.LCIMMS ? String.Format("{0:0.000}", feature.ChromXsRight.Drift.Value) : "null";
 
-            var adduct = category == MachineCategory.GCMS ? "null" : feature.AdductType != null ? feature.AdductType.AdductIonName : "null";
+            var adduct = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? "null" : feature.AdductType != null ? feature.AdductType.AdductIonName : "null";
 
             var mzLeft = category == MachineCategory.IFMS ? String.Format("{0:0.00000}", feature.ChromXsLeft.Mz.Value) : "null";
-            var mz = category == MachineCategory.GCMS ? String.Format("{0:0.00000}", msdec.ModelPeakMz) : String.Format("{0:0.00000}", feature.PrecursorMz);
+            var mz = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? String.Format("{0:0.00000}", msdec.ModelPeakMz) : String.Format("{0:0.00000}", feature.PrecursorMz);
             var mzRight = category == MachineCategory.IFMS ? String.Format("{0:0.00000}", feature.ChromXsRight.Mz.Value) : "null";
 
-            var ccs = category == MachineCategory.GCMS ? "null" : feature.CollisionCrossSection <= 0 ? "null" : String.Format("{0:0.000}", feature.CollisionCrossSection);
-            var height =  category == MachineCategory.GCMS ? String.Format("{0:0}", msdec.ModelPeakHeight) : String.Format("{0:0}", feature.PeakHeightTop);
-            var area = category == MachineCategory.GCMS ? String.Format("{0:0}", msdec.ModelPeakArea) : String.Format("{0:0}", feature.PeakAreaAboveZero);
+            var ccs = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? "null" : feature.CollisionCrossSection <= 0 ? "null" : String.Format("{0:0.000}", feature.CollisionCrossSection);
+            var height =  (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? String.Format("{0:0}", msdec.ModelPeakHeight) : String.Format("{0:0}", feature.PeakHeightTop);
+            var area = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? String.Format("{0:0}", msdec.ModelPeakArea) : String.Format("{0:0}", feature.PeakAreaAboveZero);
             var modelmasses = String.Join(" ", msdec.ModelMasses);
-            var comment = category == MachineCategory.GCMS ? string.Empty : feature.Comment;
-            var isotope = category == MachineCategory.GCMS ? "null" : feature.PeakCharacter.IsotopeWeightNumber.ToString();
-            var sn = category == MachineCategory.GCMS ? String.Format("{0:0.00}", msdec.SignalNoiseRatio) : String.Format("{0:0.00}", feature.PeakShape.SignalToNoise);
+            var comment = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? string.Empty : feature.Comment;
+            var isotope = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? "null" : feature.PeakCharacter.IsotopeWeightNumber.ToString();
+            var sn = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? String.Format("{0:0.00}", msdec.SignalNoiseRatio) : String.Format("{0:0.00}", feature.PeakShape.SignalToNoise);
 
-            var matchedResult = category == MachineCategory.GCMS ? msdec.MspBasedMatchResult :
+            var matchedResult = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? msdec.MspBasedMatchResult :
                 feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult;
             var refID = matchedResult != null ? matchedResult.LibraryID : -1;
-            var matchedDB = category == MachineCategory.GCMS ? mspDB :
+            var matchedDB = (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) ? mspDB :
                 feature.TextDbBasedMatchResult != null ? textDB : mspDB;
 
             var refMz = MoleculeMsRefDataRetrieve.GetMzOrNull(refID, matchedDB);
@@ -150,6 +151,7 @@ namespace CompMs.MsdialCore.Export {
             var metadata = new List<string>();
             switch (category) {
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                     metadata = new List<string>() {
                         peakID, name, scanID, rt, ri, mz, height, area,
                         modelmasses, comment, refRT, refRI, formula, ontology, inchikey, smiles,
@@ -215,6 +217,7 @@ namespace CompMs.MsdialCore.Export {
             var header = new List<string>();
             switch (category) {
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                     header = new List<string>() {
                         "Alignment ID", "Average Rt(min)", "Average RI", "Quant mass", "Metabolite name", "Fill %",
                         "Reference RT", "Reference RI", "Formula", "Ontology", "INCHIKEY", "SMILES",
@@ -367,6 +370,7 @@ namespace CompMs.MsdialCore.Export {
             var metadata = new List<string>();
             switch (category) {
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                     metadata = new List<string>() {
                         peakID, rt, ri, quantmass, name, fill,
                         refRT, refRI, formula, ontology, inchikey, smiles,

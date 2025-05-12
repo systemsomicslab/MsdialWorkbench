@@ -905,8 +905,8 @@ namespace CompMs.MsdialCore.Utility {
             var spectrum = spectrumList[msScanPoint];
             var massSpectra = spectrum.Spectrum;
 
-            var mzBegin = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeBegin : param.Ms2MassRangeBegin;
-            var mzEnd = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeEnd : param.Ms2MassRangeEnd;
+            var mzBegin = (param.MachineCategory == MachineCategory.GCMS || param.MachineCategory == MachineCategory.GCGCMS) ? param.MassRangeBegin : param.Ms2MassRangeBegin;
+            var mzEnd = (param.MachineCategory == MachineCategory.GCMS || param.MachineCategory == MachineCategory.GCGCMS) ? param.MassRangeEnd : param.Ms2MassRangeEnd;
 
             for (int i = 0; i < massSpectra.Length; i++) {
                 if (massSpectra[i].Mz < mzBegin) continue;
@@ -1274,7 +1274,7 @@ namespace CompMs.MsdialCore.Utility {
         public static int GetAnnotationCode(MsScanMatchResult result, MachineCategory category) {
             var code = 999; // unknown
             if (result == null) return code;
-            if (category == MachineCategory.GCMS) {
+            if (category == MachineCategory.GCMS || category == MachineCategory.GCGCMS) {
                 if (result.IsSpectrumMatch) code = 440; //440: EI-MS matched
                 if (result.IsRiMatch || result.IsRtMatch) code = 340; //340: RT/RI+EI-MS matched
                 return code;

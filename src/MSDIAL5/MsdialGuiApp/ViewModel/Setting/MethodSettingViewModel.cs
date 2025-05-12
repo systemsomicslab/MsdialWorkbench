@@ -158,6 +158,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
             switch (category) {
                 case MachineCategory.GCMS:
+                case MachineCategory.GCGCMS:
                     return new GcmsDeconvolutionSettingViewModel(model, isEnabled);
                 default:
                     return new DeconvolutionSettingViewModel(model, isEnabled);

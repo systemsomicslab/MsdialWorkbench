@@ -34,6 +34,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
 
             IsLcms = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
             IsGcms = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
+            IsGcgcms = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
             IsDims = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
             IsImms = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
             IsLcimms = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
@@ -41,6 +42,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
             {
                 IsLcms.Where(isLcms => isLcms).Select(_ => MachineCategory.LCMS),
                 IsGcms.Where(isGcms => isGcms).Select(_ => MachineCategory.GCMS),
+                IsGcgcms.Where(isGcgcms => isGcgcms).Select(_ => MachineCategory.GCGCMS),
                 IsDims.Where(isDims => isDims).Select(_ => MachineCategory.IFMS),
                 IsImms.Where(isImms => isImms).Select(_ => MachineCategory.IMMS),
                 IsLcimms.Where(isLcimms => isLcimms).Select(_ => MachineCategory.LCIMMS),
@@ -75,6 +77,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
                 {
                     IsLcms,
                     IsGcms,
+                    IsGcgcms,
                     IsDims,
                     IsImms,
                     IsLcimms,
@@ -110,6 +113,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
 
         public ReactivePropertySlim<bool> IsLcms { get; }
         public ReactivePropertySlim<bool> IsGcms { get; }
+        public ReactivePropertySlim<bool> IsGcgcms { get; }
         public ReactivePropertySlim<bool> IsDims { get; }
         public ReactivePropertySlim<bool> IsImms { get; }
         public ReactivePropertySlim<bool> IsLcimms { get; }
