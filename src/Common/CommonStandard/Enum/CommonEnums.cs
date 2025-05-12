@@ -30,6 +30,7 @@ namespace CompMs.Common.Enum
         Chromatography = 0x1,
         IonMobility = 0x2,
         Imaging = 0x4,
+        Chromatography2d = 0x8,
     }
     public enum MSDataType { Centroid, Profile }
     public enum AcquisitionType { DDA, SWATH, AIF, None }
