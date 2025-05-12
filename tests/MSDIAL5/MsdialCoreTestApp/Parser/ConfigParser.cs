@@ -160,6 +160,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "is quant mass based on base peak mz":
                     if (value == "true")
                         param.IsRepresentativeQuantMassBasedOnBasePeakMz = true; return true;
+                case "modulation time in seconds":
+                    if (double.TryParse(value, out double modtime))
+                        param.ModulationTimeInSeconds = modtime; return true;
                 default: return false;
             }
         }

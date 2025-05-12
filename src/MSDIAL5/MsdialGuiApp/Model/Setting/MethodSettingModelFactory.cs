@@ -609,7 +609,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new GcmsPeakDetectionSettingModel(_peakPickBaseParameter, storage.Parameter.ChromDecBaseParam, process);
+            return new GcmsPeakDetectionSettingModel(_peakPickBaseParameter, storage.Parameter.ChromDecBaseParam, process, storage.Parameter);
         }
 
         public IMethodModel BuildMethod() {

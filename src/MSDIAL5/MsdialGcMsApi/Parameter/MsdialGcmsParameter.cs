@@ -30,6 +30,14 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         [Key(156)]
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
 
+        /// <summary>
+        /// Specifies the modulation time used in GC×GC analysis, in seconds.
+        /// This is the duration of each modulation cycle, during which effluent from the first column is periodically trapped and then injected into the second column.
+        /// Proper setting of this value is crucial for achieving effective separation in the second dimension.
+        /// </summary>
+        [Key(157)]
+        public double ModulationTimeInSeconds { get; set; }
+
         public Dictionary<int, RetentionIndexHandler> GetRIHandlers() {
             return RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(RiCompoundType, kvp.Value.RiDictionary));
         }
@@ -46,6 +54,7 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Retention index alignment tolerance", RetentionIndexAlignmentTolerance.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Replace quant mass by user defined value", IsReplaceQuantmassByUserDefinedValue.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
+            pStrings.Add($"Modulation time in seconds: {ModulationTimeInSeconds.ToString()}");
 
             return pStrings;
         }

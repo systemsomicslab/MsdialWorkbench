@@ -32,7 +32,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 m => m.AccuracyType,
                 op => op.Select(t => t == AccuracyType.IsAccurate),
                 op => op.Select(p => p ? AccuracyType.IsAccurate : AccuracyType.IsNominal)).AddTo(Disposables);
-                
+
+            ModulationTimeInSeconds = model.ToReactivePropertyAsSynchronized(
+                m => m.ModulationTimeInSeconds,
+                m => m.ToString(),
+                vm => double.Parse(vm),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => ModulationTimeInSeconds).AddTo(Disposables); 
             MassSliceWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
                 m => m.ToString(),
@@ -99,6 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 }.CombineLatestValuesAreAllTrue(),
                 SmoothingLevel.ObserveHasErrors,
                 AveragePeakWidth.ObserveHasErrors,
+                ModulationTimeInSeconds.ObserveHasErrors,
                 new[]
                 {
                     ExcludedMassList.ObserveElementPropertyChanged().ToUnit(),
@@ -116,6 +123,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsAccurateMS.ToUnit(),
                 MassSliceWidth.ToUnit(),
                 MassAccuracy.ToUnit(),
+                ModulationTimeInSeconds.ToUnit(),
                 SmoothingMethod.ToUnit(),
                 SmoothingLevel.ToUnit(),
                 AveragePeakWidth.ToUnit(),
@@ -140,6 +148,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> MinimumAmplitude { get; }
 
         public ReactivePropertySlim<bool> IsAccurateMS { get; }
+
+        [Required(ErrorMessage = "Modulation time is required.")]
+        [Range(.0001, double.MaxValue, ErrorMessage = "Modulation time should be positive value.")]
+        public ReactiveProperty<string> ModulationTimeInSeconds { get; }
+
+        public bool IsGcxgcProcess => _model.IsGcxgcProcess;
 
         [Required(ErrorMessage = "Mass slice width is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]

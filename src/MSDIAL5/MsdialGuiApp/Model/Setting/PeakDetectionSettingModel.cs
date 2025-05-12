@@ -7,7 +7,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public interface IPeakDetectionSettingModel {
         bool IsReadOnly { get; }
-        void LoadParameter(PeakPickBaseParameter parameter);
+        void LoadParameter(ParameterBase parameter);
         void Commit();
     }
 
@@ -35,6 +35,10 @@ namespace CompMs.App.Msdial.Model.Setting
                 return;
             }
             PeakPickSettingModel.LoadParameter(parameter);
+        }
+
+        public void LoadParameter(ParameterBase parameter) {
+            LoadParameter(parameter.PeakPickBaseParam);
         }
     }
 }

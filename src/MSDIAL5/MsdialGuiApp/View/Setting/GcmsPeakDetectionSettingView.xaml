@@ -29,10 +29,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="8,0,0,0">
-            <GroupBox BorderThickness="0">
-                <GroupBox.Header>
+            <HeaderedContentControl>
+                <HeaderedContentControl.Header>
                     <TextBlock Text="Peak detection parameters" FontStyle="Italic"/>
-                </GroupBox.Header>
+                </HeaderedContentControl.Header>
                 <StackPanel Margin="8,0,0,0">
                     <ui:LabeledContent PrependLabel="Minimum peak height:"
                                        AppendLabel="amplitude"
@@ -42,12 +42,12 @@
                                  IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                 </StackPanel>
-            </GroupBox>
+            </HeaderedContentControl>
 
-            <GroupBox BorderThickness="0">
-                <GroupBox.Header>
+            <HeaderedContentControl>
+                <HeaderedContentControl.Header>
                     <TextBlock Text="Peak spotting parameters" FontStyle="Italic"/>
-                </GroupBox.Header>
+                </HeaderedContentControl.Header>
                 <StackPanel Margin="8,0,0,0">
                     <ui:LabeledContent PrependLabel="Accurate MS:"
                                        Style="{StaticResource AlignedContent}">
@@ -73,7 +73,21 @@
                                  IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                 </StackPanel>
-            </GroupBox>
+            </HeaderedContentControl>
+            <HeaderedContentControl IsEnabled="{Binding Path=IsGcxgcProcess, Mode=OneTime}">
+                <HeaderedContentControl.Header>
+                    <TextBlock Text="GCxGC" FontStyle="Italic"/>
+                </HeaderedContentControl.Header>
+                <StackPanel Margin="8,0,0,0">
+                    <ui:LabeledContent PrependLabel="Modulation time in seconds"
+                                       AppendLabel="s"
+                                       ToolTip="Modulation time for GCxGC"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding ModulationTimeInSeconds.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </HeaderedContentControl>
         </StackPanel>
 
         <Expander Header="Advanced"

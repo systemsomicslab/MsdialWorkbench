@@ -116,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     using (var stream = File.Open(file, FileMode.Open)) {
                         var parameter = Storage.LoadParameter(stream);
                         DataCollectionSettingModel?.LoadParameter(parameter);
-                        PeakDetectionSettingModel?.LoadParameter(parameter.PeakPickBaseParam);
+                        PeakDetectionSettingModel?.LoadParameter(parameter);
                         DeconvolutionSettingModel?.LoadParameter(parameter.ChromDecBaseParam);
                         IdentifySettingModel?.LoadParameter(parameter);
                         AdductIonSettingModel?.LoadParameter(parameter);
