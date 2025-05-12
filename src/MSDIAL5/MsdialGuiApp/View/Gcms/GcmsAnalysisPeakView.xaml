@@ -45,7 +45,7 @@
             <TextBox Text="{Binding GcgcSpectrumPeakPlotViewModel.TimeStep.Value}"
                      VerticalAlignment="Top"
                      MinWidth="24"/>
-            <TextBlock Text="min" Margin="4,0"/>
+            <TextBlock Text="sec" Margin="4,0"/>
         </StackPanel>
     </Grid>
 </UserControl>

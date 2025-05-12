@@ -130,6 +130,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.RT),
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "2nd column retention time (min)",
+                TimeStep = parameter.ModulationTime,
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);

@@ -26,9 +26,9 @@ internal sealed class GcgcSpectrumPeakPlotModel : AnalysisPeakPlotModel<Ms1Based
     }
 
     public double TimeStep {
-        get => _timeStep;
+        get => _timeStep * 60;
         set {
-            if (SetProperty(ref _timeStep, value)) {
+            if (SetProperty(ref _timeStep, value / 60d)) {
                 if (_timeStep > 0d) {
                     SecondColumnAxis = new DefectAxisManager(_timeStep, _timeStep, new RelativeMargin(.05));
                 }
