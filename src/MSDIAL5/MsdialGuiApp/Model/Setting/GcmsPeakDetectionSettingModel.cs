@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             PeakPickSettingModel = peakPickBaseParameterModel;
             AccuracyType = chromDecBaseParameter.AccuracyType;
-            ModulationTimeInSeconds = gcmsParameter.ModulationTimeInSeconds;
+            ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
             IsGcxgcProcess = gcmsParameter.MachineCategory == MachineCategory.GCGCMS;
         }
 
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 PeakPickSettingModel.CentroidMs1Tolerance = .5f;
             }
             PeakPickSettingModel.Commit();
-            _gcmsParameter.ModulationTimeInSeconds = ModulationTimeInSeconds;
+            _gcmsParameter.ModulationTime = ModulationTimeInSeconds / 60d;
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {
@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Setting
             LoadParameter(parameter.PeakPickBaseParam);
 
             if (_gcmsParameter.MachineCategory == MachineCategory.GCGCMS && parameter is MsdialGcmsParameter gcmsParameter) {
-                ModulationTimeInSeconds = gcmsParameter.ModulationTimeInSeconds;
+                ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
             }
         }
     }
