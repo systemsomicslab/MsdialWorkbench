@@ -107,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 VerticalTitle = "2nd column retention time (min)",
                 VerticalProperty = $"{nameof(Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak)}.{nameof(QuantifiedChromatogramPeak.PeakFeature)}.{nameof(IChromatogramPeakFeature.ChromXsTop)}.{nameof(ChromXs.RT)}.{nameof(RetentionTime.Value)}",
                 HorizontalProperty = $"{nameof(Ms1BasedSpectrumFeature.QuantifiedChromatogramPeak)}.{nameof(QuantifiedChromatogramPeak.PeakFeature)}.{nameof(IChromatogramPeakFeature.ChromXsTop)}.{nameof(ChromXs.RT)}.{nameof(RetentionTime.Value)}",
-                TimeStep = parameter.ModulationTime,
+                TimeStep = parameter.ModulationTime * 60d,
             };
 
             IDataProvider provider = providerFactory.Create(file);
