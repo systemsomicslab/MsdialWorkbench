@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.Model.Setting
             PeakPickSettingModel = peakPickBaseParameterModel;
             AccuracyType = chromDecBaseParameter.AccuracyType;
             ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
+            FirstColumnRetentionTimeToleranceInSeconds = gcmsParameter.FirstColumnRetentionTimeTolerance * 60d;
             IsGcxgcProcess = gcmsParameter.MachineCategory == MachineCategory.GCGCMS;
         }
 
@@ -37,6 +38,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private double _modulationTimeInSeconds;
 
+        public double FirstColumnRetentionTimeToleranceInSeconds {
+            get => _firstColumnRetentionTimeToleranceInSeconds;
+            set => SetProperty(ref _firstColumnRetentionTimeToleranceInSeconds, value);
+        }
+        private double _firstColumnRetentionTimeToleranceInSeconds;
+
         public bool IsGcxgcProcess { get; }
 
         public void Commit() {
@@ -50,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             PeakPickSettingModel.Commit();
             _gcmsParameter.ModulationTime = ModulationTimeInSeconds / 60d;
+            _gcmsParameter.FirstColumnRetentionTimeTolerance = ModulationTimeInSeconds / 60d;
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {
@@ -65,6 +73,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
             if (_gcmsParameter.MachineCategory == MachineCategory.GCGCMS && parameter is MsdialGcmsParameter gcmsParameter) {
                 ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
+                FirstColumnRetentionTimeToleranceInSeconds = gcmsParameter.FirstColumnRetentionTimeTolerance;
             }
         }
     }

@@ -163,6 +163,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "modulation time":
                     if (double.TryParse(value, out double modtime))
                         param.ModulationTime = modtime; return true;
+                case "first column retention time tolerance":
+                    if (double.TryParse(value, out double fctol))
+                        param.FirstColumnRetentionTimeTolerance = fctol; return true;
                 default: return false;
             }
         }
