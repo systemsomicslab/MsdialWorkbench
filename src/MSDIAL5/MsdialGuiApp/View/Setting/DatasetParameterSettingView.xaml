@@ -56,61 +56,90 @@
         </GroupBox>
 
         <GroupBox Header="Separation type" Padding="4" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <Grid IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+                <Grid IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                <RadioButton Name="RadioButton_Separation_GCorLC"
-                             Content="Chromatography (GC, LC, CE, or SFC)"
-                             d:IsChecked="True"
-                             IsChecked="{Binding SeparationChromatography.Value, Mode=TwoWay}"
-                             Margin="8,0,0,0"
-                             ToolTip="Type 1: When you analyze GC or LC data, please select this option."
-                             Grid.Row="0" Grid.Column="0"/>
-                <RadioButton Name="RadioButton_Infusion"
-                             Content="Direct infusion"
-                             IsChecked="{Binding DirectInfution.Value, Mode=TwoWay}"
-                             Margin="8,0,0,0"
-                             ToolTip="Type 3: When you analyze direct infusion data, please select this option"
-                             Grid.Row="0" Grid.Column="1"/>
-                <CheckBox Name="RadioButton_Separation_LCIM"
-                          Content="Ion mobility (now coupled with liquid chromatography or direct infusion)"
-                          IsChecked="{Binding SeparationIonMobility.Value, Mode=TwoWay}"
-                          Margin="8,8,0,0"
-                          ToolTip="Type 2: When you analyze LC-IM or IM (ion mobility data), please select this option."
-                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+                    <RadioButton Name="RadioButton_Separation_GCorLC"
+                                 Content="Chromatography (GC, LC, CE, or SFC)"
+                                 d:IsChecked="True"
+                                 IsChecked="{Binding SeparationChromatography.Value, Mode=TwoWay}"
+                                 Margin="8,0,0,0"
+                                 ToolTip="Type 1: When you analyze GC or LC data, please select this option."
+                                 Grid.Row="0" Grid.Column="0"/>
+                    <RadioButton Name="RadioButton_Infusion"
+                                 Content="Direct infusion"
+                                 IsChecked="{Binding DirectInfution.Value, Mode=TwoWay}"
+                                 Margin="8,0,0,0"
+                                 ToolTip="Type 3: When you analyze direct infusion data, please select this option"
+                                 Grid.Row="0" Grid.Column="1"/>
+                    <CheckBox Name="RadioButton_Separation_LCIM"
+                              Content="Ion mobility (now coupled with liquid chromatography or direct infusion)"
+                              IsChecked="{Binding SeparationIonMobility.Value, Mode=TwoWay}"
+                              Margin="8,8,0,0"
+                              ToolTip="Type 2: When you analyze LC-IM or IM (ion mobility data), please select this option."
+                              Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                <CheckBox Content="Imaging"
-                          IsChecked="{Binding Imaging.Value, Mode=TwoWay}"
-                          Margin="8,8,0,0"
-                          Visibility="Visible"
-                          Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                    <CheckBox.IsEnabled>
-                        <MultiBinding Converter="{StaticResource BooleanAll}">
-                            <Binding Path="DirectInfution.Value"/>
-                            <Binding Path="SeparationIonMobility.Value"/>
-                        </MultiBinding> 
-                    </CheckBox.IsEnabled>
-                    <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding DirectInfution.Value}" Value="False">
-                                    <Setter Property="IsChecked" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding SeparationIonMobility.Value}" Value="False">
-                                    <Setter Property="IsChecked" Value="False"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
+                    <CheckBox Content="Imaging"
+                              IsChecked="{Binding Imaging.Value, Mode=TwoWay}"
+                              Margin="8,8,0,0"
+                              Visibility="Visible"
+                              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                        <CheckBox.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAll}">
+                                <Binding Path="DirectInfution.Value"/>
+                                <Binding Path="SeparationIonMobility.Value"/>
+                            </MultiBinding> 
+                        </CheckBox.IsEnabled>
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DirectInfution.Value}" Value="False">
+                                        <Setter Property="IsChecked" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SeparationIonMobility.Value}" Value="False">
+                                        <Setter Property="IsChecked" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <CheckBox Content="GCxGC"
+                              IsChecked="{Binding GCxGC.Value, Mode=TwoWay}"
+                              Margin="8,8,0,0"
+                              Visibility="Visible"
+                              Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <CheckBox.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAll}">
+                                <Binding Path="IsChecked" ElementName="RadioButton_EI"/>
+                                <Binding Path="SeparationChromatography.Value"/>
+                            </MultiBinding> 
+                        </CheckBox.IsEnabled>
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=SeparationChromatography.Value}" Value="False">
+                                        <Setter Property="IsChecked" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                </Grid>
             </Grid>
         </GroupBox>
 

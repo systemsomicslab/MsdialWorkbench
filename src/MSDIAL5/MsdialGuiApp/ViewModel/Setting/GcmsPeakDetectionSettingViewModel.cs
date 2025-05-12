@@ -39,6 +39,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => ModulationTimeInSeconds).AddTo(Disposables); 
+
+            FirstColumnRetentionTimeToleranceInSeconds = model.ToReactivePropertyAsSynchronized(
+                m => m.FirstColumnRetentionTimeToleranceInSeconds,
+                m => m.ToString(),
+                vm => double.Parse(vm),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => FirstColumnRetentionTimeToleranceInSeconds).AddTo(Disposables); 
+
             MassSliceWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
                 m => m.ToString(),
@@ -150,8 +158,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> IsAccurateMS { get; }
 
         [Required(ErrorMessage = "Modulation time is required.")]
-        [Range(.0001, double.MaxValue, ErrorMessage = "Modulation time should be positive value.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Modulation time should be positive value.")]
         public ReactiveProperty<string> ModulationTimeInSeconds { get; }
+
+        [Required(ErrorMessage = "Retention time tolerance is required.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Retention time tolerance should be positive value.")]
+        public ReactiveProperty<string> FirstColumnRetentionTimeToleranceInSeconds { get; }
 
         public bool IsGcxgcProcess => _model.IsGcxgcProcess;
 

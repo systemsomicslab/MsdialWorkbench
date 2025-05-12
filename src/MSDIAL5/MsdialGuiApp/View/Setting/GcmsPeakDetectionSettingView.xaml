@@ -79,11 +79,18 @@
                     <TextBlock Text="GCxGC" FontStyle="Italic"/>
                 </HeaderedContentControl.Header>
                 <StackPanel Margin="8,0,0,0">
-                    <ui:LabeledContent PrependLabel="Modulation time in seconds"
+                    <ui:LabeledContent PrependLabel="Modulation time"
                                        AppendLabel="s"
                                        ToolTip="Modulation time for GCxGC"
                                        Style="{StaticResource AlignedContent}">
                         <TextBox Text="{Binding ModulationTimeInSeconds.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Retention time tolerance of 1st column dimension"
+                                       AppendLabel="s"
+                                       ToolTip="Retention time tolerance of first column dimension for GCxGC"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding FirstColumnRetentionTimeToleranceInSeconds.Value}"
                                  IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                 </StackPanel>

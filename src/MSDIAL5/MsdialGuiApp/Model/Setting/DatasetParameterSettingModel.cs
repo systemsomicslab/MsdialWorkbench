@@ -223,7 +223,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private ParameterBase CreateParameter() {
             if (SeparationType == (SeparationType.Imaging | SeparationType.IonMobility))
                 return new MsdialImmsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
-            if (Ionization == Ionization.EI && SeparationType == SeparationType.Chromatography) {
+            if (Ionization == Ionization.EI && SeparationType.HasFlag(SeparationType.Chromatography)) {
                 var parameter = new MsdialGcmsParameter(GlobalResources.Instance.IsLabPrivate);
                 parameter.PeakPickBaseParam.MassRangeEnd = 1000;
                 parameter.PeakPickBaseParam.CentroidMs1Tolerance = .025f;
@@ -242,6 +242,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 parameter.RetentionIndexAlignmentTolerance = 20;
                 parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance = .075f;
                 parameter.AlignmentBaseParam.Ms1AlignmentTolerance = .7f;
+                if (SeparationType.HasFlag(SeparationType.Chromatography2d)) {
+                    parameter.MachineCategory = MachineCategory.GCGCMS;
+                }
                 return parameter;
             }
             if (Ionization == Ionization.ESI && SeparationType == SeparationType.Chromatography)

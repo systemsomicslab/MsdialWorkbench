@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             PeakPickSettingModel.Commit();
             _gcmsParameter.ModulationTime = ModulationTimeInSeconds / 60d;
-            _gcmsParameter.FirstColumnRetentionTimeTolerance = ModulationTimeInSeconds / 60d;
+            _gcmsParameter.FirstColumnRetentionTimeTolerance = FirstColumnRetentionTimeToleranceInSeconds / 60d;
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {
