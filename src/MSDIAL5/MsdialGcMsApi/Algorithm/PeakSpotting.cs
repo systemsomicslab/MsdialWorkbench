@@ -44,7 +44,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
 
                 chromPeakFeatures = topPeaks.Select(peaks => {
                     var topPeak = peaks.Key;
-                    topPeak.PeakFeature.PeakHeightTop = peaks.Value.Select(peak => peak.PeakFeature.PeakHeightTop).Sum();
+                    topPeak.PeakFeature.PeakAreaAboveZero = peaks.Value.Select(peak => peak.PeakFeature.PeakAreaAboveZero).Sum();
+                    topPeak.PeakFeature.PeakAreaAboveBaseline = peaks.Value.Select(peak => peak.PeakFeature.PeakAreaAboveBaseline).Sum();
                     return topPeak;
                 }).OrderBy(p => p.MasterPeakID)
                 .Select((p, i) => {
