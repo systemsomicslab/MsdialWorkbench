@@ -10,7 +10,7 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
     public void GenreratedGeneratorTest() {
         var lib = MspFileParser.MspFileReader("LipidSpectrumGeneratorTest.msp");
 
-        var generator = new PCLipidSpectrumGenerator();
+        var generator = new PCCidLipidSpectrumGenerator();
 
         foreach (var reference in lib) {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
