@@ -18,11 +18,10 @@ internal sealed class Context {
     }
 
     public string Resolve(Term term) {
-        if (double.TryParse(term.Raw, out _)) {
+        if (IsSpecialTerm(term)) {
             return term.Raw;
         }
-
-        if (IsSpecialTerm(term)) {
+        if (double.TryParse(term.Raw, out _)) {
             return term.Raw;
         }
 
