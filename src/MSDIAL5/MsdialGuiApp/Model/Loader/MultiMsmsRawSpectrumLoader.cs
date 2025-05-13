@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class MultiMsmsRawSpectrumLoader : DisposableModelBase, IMsSpectrumLoader<ChromatogramPeakFeatureModel>
+    internal sealed class MultiMsmsRawSpectrumLoader : DisposableModelBase, IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>
     {
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;

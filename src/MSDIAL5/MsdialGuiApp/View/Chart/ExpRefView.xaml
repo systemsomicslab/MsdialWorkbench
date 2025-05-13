@@ -50,6 +50,21 @@
                          ToolTip="Show centroid spectra vs. reference spectra"
                          Style="{StaticResource IconRadioButton}"/>
 
+            <RadioButton Name="Button_ShowQ1Deconvolution"
+                         Content="/Resources/RawChromatogram.ico"
+                         ToolTip="Show q1 deconvoluted spectra vs. reference spectra">
+                <RadioButton.Style>
+                    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource IconRadioButton}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=RawDecSpectrumsViewModel.Q1DecRefSpectrumViewModels}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RadioButton.Style>
+            </RadioButton>
+
             <RadioButton Name="Button_ShowDeconvolution"
                          IsChecked="True"
                          Content="/Resources/Deconvoluted.ico"
@@ -140,6 +155,24 @@
                                   Visibility="{Binding IsChecked,
                                                        ElementName=Button_ShowCentroid,
                                                        Converter={StaticResource BooleanToVisibility}}"/>
+            <local:MsSpectrumView DataContext="{Binding Q1DecRefSpectrumViewModels}"
+                                  Visibility="{Binding IsChecked,
+                                                       ElementName=Button_ShowQ1Deconvolution,
+                                                       Converter={StaticResource BooleanToVisibility}}">
+                <local:MsSpectrumView.Style>
+                    <Style TargetType="{x:Type local:MsSpectrumView}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsChecked, ElementName=Button_ShowQ1Deconvolution}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=.}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </local:MsSpectrumView.Style>
+            </local:MsSpectrumView>
             <local:MsSpectrumView DataContext="{Binding DecRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,
                                                        ElementName=Button_ShowDeconvolution,

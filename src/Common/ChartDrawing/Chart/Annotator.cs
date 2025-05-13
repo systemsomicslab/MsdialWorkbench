@@ -173,7 +173,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void UpdateHorizontalItems(LazyDatas lazyDatas) {
-            if (string.IsNullOrEmpty(HorizontalPropertyName) || dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, HorizontalPropertyName)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, HorizontalPropertyName)) {
                 WriteCleanFlag(PropertyClean.Horizontal, true);
                 return;
             }
@@ -206,7 +206,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void UpdateVerticalItems(LazyDatas lazyDatas) {
-            if (string.IsNullOrEmpty(VerticalPropertyName) || dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, VerticalPropertyName)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, VerticalPropertyName)) {
                 WriteCleanFlag(PropertyClean.Vertical, true);
                 return;
             }
@@ -239,7 +239,7 @@ namespace CompMs.Graphics.Chart
                 return;
             }
 
-            if (!string.IsNullOrEmpty(OrderingPropertyName) && dataType != null && ExpressionHelper.ValidatePropertyString(dataType, OrderingPropertyName)) {
+            if (dataType != null && ExpressionHelper.ValidatePropertyString(dataType, OrderingPropertyName)) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, OrderingPropertyName);
                 lazyDatas.UpdateOrderValue(expression);
             }
@@ -274,7 +274,7 @@ namespace CompMs.Graphics.Chart
                 return;
             }
 
-            if (dataType != null && !string.IsNullOrEmpty(LabelPropertyName) && ExpressionHelper.ValidatePropertyString(dataType, LabelPropertyName)) {
+            if (dataType is not null && ExpressionHelper.ValidatePropertyString(dataType, LabelPropertyName)) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, LabelPropertyName);
                 lazyDatas.UpdateLabelValue(expression, Format);
             }

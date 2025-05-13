@@ -1,20 +1,17 @@
-﻿using CompMs.App.Msdial.Model.Loader;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsmsRawSpectrumLoader loader) {
-            RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
-            DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
-            RawLoader = loader;
-        }
-
-        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null) {
+        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel? q1DecSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>?[]? loaders) {
             if (rawSpectrumModel is null) {
                 throw new ArgumentNullException(nameof(rawSpectrumModel));
             }
@@ -37,17 +34,31 @@ namespace CompMs.App.Msdial.Model.Chart
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
+            if (q1DecSpectrumModel is not null) {
+                Q1DecRefSpectrumModels = new MsSpectrumModel(q1DecSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
+                {
+                    GraphTitle = "Q1 Deconvolution vs. Reference",
+                    HorizontalTitle = "m/z",
+                    VerticalTitle = "Relative abundance",
+                }.AddTo(Disposables);
+            }
             DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
                 GraphTitle =  "Deconvolution vs. Reference",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Relative abundacne",
             }.AddTo(Disposables);
-            RawLoader = loader;
+
+            RawLoader = loaders?.ElementAtOrDefault(0);
+            Q1DecLoader = loaders?.ElementAtOrDefault(1);
         }
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
+        public MsSpectrumModel? Q1DecRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
-        public MultiMsmsRawSpectrumLoader? RawLoader { get; }
+        public IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>? RawLoader { get; }
+        public IMultiMsmsSpectrumLoader<ChromatogramPeakFeatureModel>? Q1DecLoader { get; }
+
+        public ProductIonIntensityMapModel? ProductIonIntensityMapModel { get; set; }
     }
 }

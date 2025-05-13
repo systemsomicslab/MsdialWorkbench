@@ -1,0 +1,44 @@
+﻿<Page x:Class="ChartDrawingUiTest.Chart.NoProperty"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance Type={x:Type local:NoProperty}}"
+      Title="NoProperty">
+    <Page.Resources>
+        <axis:ContinuousAxisManager x:Key="HorizontalAxis"
+                                    MinValue="0"
+                                    MaxValue="10"/>
+        <axis:ContinuousAxisManager x:Key="VerticalAxis"
+                                    MinValue="0"
+                                    MaxValue="10"/>
+    </Page.Resources>
+    <Grid>
+        <chart:SimpleChartControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                  VerticalAxis="{StaticResource VerticalAxis}"
+                                  HorizontalTitle="Value"
+                                  VerticalTitle="Value"
+                                  Grid.Column="0">
+            <Grid>
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding Values}"
+                                               HorizontalProperty=""
+                                               VerticalProperty=""
+                                               DataType="{x:Type system:Int64}"/>
+                <chart:ScatterControlSlim ItemsSource="{Binding Values}"
+                                          HorizontalProperty=""
+                                          VerticalProperty=""
+                                          DataType="{x:Type system:Int64}"/>
+                <chart:Annotator ItemsSource="{Binding Values}"
+                                 HorizontalPropertyName=""
+                                 VerticalPropertyName=""
+                                 LabelPropertyName=""/>
+            </Grid>
+        </chart:SimpleChartControl>
+    </Grid>
+</Page>

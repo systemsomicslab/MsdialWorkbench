@@ -69,6 +69,7 @@ namespace ChartDrawingUiTest
                 typeof(AreaSelector),
                 typeof(NumericUpDownTest),
                 typeof(NestedProperties),
+                typeof(NoProperty),
                 typeof(ResizableItemsControl),
                 typeof(DockItemsControl),
                 typeof(ReorderableItemsControlBehaviorTest),
