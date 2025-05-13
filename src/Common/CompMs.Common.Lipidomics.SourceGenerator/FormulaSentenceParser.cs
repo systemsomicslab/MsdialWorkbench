@@ -21,7 +21,7 @@ internal sealed class FormulaSentenceParser
         }
 
         var matches = _termRegex.Matches(value);
-        var result = new List<(string, int)>();
+        var result = new List<(Term, int)>();
         foreach (Match match in matches) {
             var sign = match.Groups[1].Value;
             if (string.IsNullOrEmpty(sign)) {
@@ -35,12 +35,12 @@ internal sealed class FormulaSentenceParser
                 }
                 var element = match.Groups[4].Value;
                 var factor = int.Parse(sign + number);
-                result.Add((element, factor));
+                result.Add((new() { Raw = element }, factor));
             }
             else if (!string.IsNullOrEmpty(match.Groups[5].Value)) {
                 var element = match.Groups[5].Value;
                 var factor = int.Parse(sign + '1');
-                result.Add((element, factor));
+                result.Add((new() { Raw = element }, factor));
             }
             else {
                 continue;
@@ -65,7 +65,11 @@ internal sealed class FormulaSentenceParser
 }
 
 internal sealed class Sentence {
-    public (string, int)[] Terms { get; set; } = [];
+    public (Term, int)[] Terms { get; set; } = [];
+}
+
+internal sealed class Term {
+    public string Raw { get; set; } = string.Empty;
 }
 
 internal sealed class Context {
