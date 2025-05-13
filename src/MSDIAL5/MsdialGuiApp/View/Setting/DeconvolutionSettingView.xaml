@@ -44,6 +44,13 @@
                     <TextBox Text="{Binding AmplitudeCutoff.Value}"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="MS/MS relative abundance cut off:"
+                                   AppendLabel="%"
+                                   ToolTip="Recommend: 0-100"
+                                   Style="{StaticResource AlignedContent}">
+                    <TextBox Text="{Binding RelativeAmplitudeCutoff.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                </ui:LabeledContent>
             </StackPanel>
         </GroupBox>
 
