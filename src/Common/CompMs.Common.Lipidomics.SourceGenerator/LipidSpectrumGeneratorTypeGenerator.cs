@@ -17,8 +17,7 @@ public partial class LipidSpectrumGeneratorTypeGenerator : IIncrementalGenerator
 
         var additionalFiles = context.AdditionalTextsProvider
             .Where(f => f.Path.EndsWith(".xml"));
-        var metadataProvider = context.AnalyzerConfigOptionsProvider
-            .Select((provider, _) => provider);
+        var metadataProvider = context.AnalyzerConfigOptionsProvider;
         var targetFiles = additionalFiles.Combine(metadataProvider)
             .SelectMany((pair, cancellationToken) => {
                 var (file, provider) = pair;
@@ -26,7 +25,7 @@ public partial class LipidSpectrumGeneratorTypeGenerator : IIncrementalGenerator
                 //metadata.TryGetValue("build_metadata.Category", out var xxx);
                 //metadata.TryGetValue("build_metadata.AdditionalFiles.Category", out var yyy);
 
-                return metadata.TryGetValue("build_metadata.Category", out var category)
+                return metadata.TryGetValue("build_metadata.AdditionalFiles.Category", out var category)
                     ? new[] { new { Path = file.Path, Category = category, File = file, } }
                     : new[] { new { Path = file.Path, Category = string.Empty, File = file, } };
             }).Collect();

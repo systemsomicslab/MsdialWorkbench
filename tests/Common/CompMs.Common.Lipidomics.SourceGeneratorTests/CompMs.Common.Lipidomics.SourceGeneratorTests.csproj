@@ -22,6 +22,8 @@
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
   </ItemGroup>
 
+  <Import Project="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.props"/>
+
   <ItemGroup>
     <AdditionalFiles Include="MsdialLipidCidSpectrumModel.xml">
       <Category>Cid</Category>
