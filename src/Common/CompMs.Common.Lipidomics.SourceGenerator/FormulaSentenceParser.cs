@@ -72,10 +72,6 @@ internal sealed class Term {
     public string Raw { get; set; } = string.Empty;
 }
 
-internal sealed class Context {
-
-}
-
 internal sealed class SubVar {
     public string Name { get; set; } = string.Empty;
     public string RawValue { get; set; } = string.Empty;
