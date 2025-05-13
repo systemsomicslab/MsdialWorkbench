@@ -63,16 +63,3 @@ internal sealed class FormulaSentenceParser
         };
     }
 }
-
-internal sealed class Sentence {
-    public (Term, int)[] Terms { get; set; } = [];
-}
-
-internal sealed class Term {
-    public string Raw { get; set; } = string.Empty;
-}
-
-internal sealed class SubVar {
-    public string Name { get; set; } = string.Empty;
-    public string RawValue { get; set; } = string.Empty;
-}
