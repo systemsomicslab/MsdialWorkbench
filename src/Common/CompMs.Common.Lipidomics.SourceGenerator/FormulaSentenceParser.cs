@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.SourceGenerator;
 
@@ -48,18 +47,14 @@ internal sealed class FormulaSentenceParser
 
         }
 
-        return new() { Terms = [.. result], };
-    }
-
-    public Sentence Parse(XElement element) {
-        throw new NotImplementedException();
+        return new() { Terms = [.. result], Raw = value, };
     }
 
     public SubVar Parse(string name, string value) {
         return new SubVar
         {
             Name = name,
-            RawValue = value
+            Sentence = new() { Raw = value },
         };
     }
 }
