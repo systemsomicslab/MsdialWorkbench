@@ -66,7 +66,7 @@ internal sealed class Context {
         }
 
         if (_constants.TryGetValue(term.Raw, out var val)) {
-            return val;
+            return $"({val})";
         }
 
         throw new InvalidOperationException($"Cannot resolve term: {term.Raw}.");

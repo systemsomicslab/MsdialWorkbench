@@ -25,6 +25,9 @@
   <Import Project="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.props"/>
 
   <ItemGroup>
+    <AdditionalFiles Include="Constants.xml" >
+      <IsConstants>true</IsConstants>
+    </AdditionalFiles>
     <AdditionalFiles Include="MsdialLipidCidSpectrumModel.xml">
       <Category>Cid</Category>
     </AdditionalFiles>
