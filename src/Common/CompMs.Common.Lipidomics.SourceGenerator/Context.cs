@@ -30,8 +30,9 @@ internal sealed class Context {
     public string Resolve(Sentence sentence) {
         return string.Join(
             " + ",
-            sentence.Terms
-                .Select(p => $"{p.Item2} * ({Resolve(p.Item1)})")
+            sentence.Terms.Select(p => p.Item2 == 1
+                ? $"({Resolve(p.Item1)})"
+                : $"({Resolve(p.Item1)}) * {p.Item2}")
         );
     }
 
@@ -56,7 +57,7 @@ internal sealed class Context {
             foreach (var kvp in dict) {
                 var (symbol, number) = (kvp.Key, kvp.Value);
                 if (_constants.ContainsKey(symbol)) {
-                    results.Add($"{symbol} * {number}");
+                    results.Add(number == 1 ? symbol : $"{symbol} * {number}");
                 }
                 else {
                     throw new InvalidOperationException($"Cannot resolve term: {symbol}.");
