@@ -12,4 +12,17 @@ public class FormulaStringParserTests
         var result = FormulaStringParser.CanConvertToFormulaDictionary(formulaString);
         Assert.AreEqual(expected, result);
     }
+
+    [DataTestMethod]
+    [DataRow(false, "C12H24O12")]
+    [DataRow(true, "<Carbon>12</Carbon>")]
+    [DataRow(true, "\n<Carbon>12</Carbon>\n")]
+    [DataRow(true, " <Carbon>12</Carbon> <Hydrogen>24</Hydrogen> ")]
+    [DataRow(false, " <Carbon>12</Carbon> <Hydrogen>24</Hydrogen> aaaa")]
+    [DataRow(false, " <Carbon>12</Hydrogen> ")]
+    [DataRow(false, " <Carbon>12</Carbon><Hydrogen>24</Carbon>")]
+    public void IsMarkupFormulaTest(bool expected, string markupFormula) {
+        var actual = FormulaStringParser.IsMarkupFormula(markupFormula, ["Carbon", "Hydrogen", "Oxygen"]);
+        Assert.AreEqual(expected, actual);
+    }
 }
