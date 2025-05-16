@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.SourceGenerator;
 
@@ -50,5 +51,11 @@ internal sealed class FormulaStringParser
 
     public static bool IsMarkupFormula(string rawMarkup, string[] constants) {
         return Regex.IsMatch(rawMarkup, @$"^\s*(:?<(:?{string.Join("|", constants)})>\s*\d+\s*</\2>\s*)+$");
+    }
+
+    public static Dictionary<string, int> ParseMarkupFormula(string rawMarkup) {
+        var elements = XDocument.Parse($"<root>{rawMarkup}</root>");
+        return elements.Element("root").Elements().GroupBy(e => e.Name.LocalName, e => int.Parse(e.Value))
+            .ToDictionary(g => g.Key, g => g.Sum());
     }
 }
