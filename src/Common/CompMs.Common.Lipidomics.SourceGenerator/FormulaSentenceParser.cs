@@ -15,6 +15,9 @@ internal sealed class FormulaSentenceParser
     }
 
     public Sentence? Parse(string value) {
+        if (FormulaStringParser.IsMarkupFormula(value)) {
+            return new Sentence { Raw = value, Terms = [(new Term() { Raw = value, }, 1)] };
+        }
         if (!_sentenceRegex.IsMatch(value)) {
             return null;
         }
