@@ -37,6 +37,10 @@ internal sealed class Context {
     }
 
     public string Resolve(Term term) {
+        if (FormulaStringParser.IsMarkupFormula(term.Raw, [.. _constants.Keys])) {
+            var dict = FormulaStringParser.ParseMarkupFormula(term.Raw);
+            return ConstructFormula(dict);
+        }
         if (IsSpecialTerm(term)) {
             return term.Raw;
         }
@@ -53,17 +57,7 @@ internal sealed class Context {
 
         if (FormulaStringParser.CanConvertToFormulaDictionary(term.Raw)) {
             var dict = FormulaStringParser.ConvertToFormulaDictionary(term.Raw);
-            var results = new List<string>();
-            foreach (var kvp in dict) {
-                var (symbol, number) = (kvp.Key, kvp.Value);
-                if (_constants.ContainsKey(symbol)) {
-                    results.Add(number == 1 ? symbol : $"{symbol} * {number}");
-                }
-                else {
-                    throw new InvalidOperationException($"Cannot resolve term: {symbol}.");
-                }
-            }
-            return string.Join(" + ", results);
+            return ConstructFormula(dict);
         }
 
         if (_constants.TryGetValue(term.Raw, out var val)) {
@@ -72,6 +66,22 @@ internal sealed class Context {
 
         throw new InvalidOperationException($"Cannot resolve term: {term.Raw}.");
     }
+
+    private string ConstructFormula(Dictionary<string, int> dict) {
+        var results = new List<string>();
+        foreach (var kvp in dict) {
+            var (symbol, number) = (kvp.Key, kvp.Value);
+            if (_constants.ContainsKey(symbol)) {
+                results.Add(number == 1 ? symbol : $"{symbol} * {number}");
+            }
+            else {
+                throw new InvalidOperationException($"Cannot resolve term: {symbol}.");
+            }
+        }
+        return string.Join(" + ", results);
+    }
+
+    public string[] GetConstants() => [.. _constants.Keys];
 
     private bool IsSpecialTerm(Term term) {
         return term.Raw == "M"

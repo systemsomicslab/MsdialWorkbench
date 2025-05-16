@@ -15,6 +15,7 @@ public class ContextTests
     [DataRow("H", "H")]
     [DataRow("C * 12 + H * 24 + O * 12", "C12H24O12")]
     [DataRow("22.98976928", "22.98976928")]
+    [DataRow("C + H * 2 + O", "<C>1</C><H>2</H><O>1</O>")]
     public void ResolveTest(string expected, string raw) {
         var term = new Term() { Raw = raw, };
         var actual = _ctx.Resolve(term);
