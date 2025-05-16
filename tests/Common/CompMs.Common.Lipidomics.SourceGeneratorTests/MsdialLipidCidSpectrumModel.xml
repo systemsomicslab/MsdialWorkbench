@@ -88,7 +88,8 @@
           <Comment>[M+Na-C3H9N]+</Comment>
         </ClassIon>
         <ClassIon>
-          <MZ>M+Na-NL</MZ>
+          <MZ>M+Na-C5H14O4NP</MZ>
+          <!--
           <NL>
             <Carbon>5</Carbon>
             <Hydrogen>14</Hydrogen>
@@ -96,6 +97,7 @@
             <Nitrogen>1</Nitrogen>
             <Phosphorus>1</Phosphorus>
           </NL>
+          -->
           <Intensity>600</Intensity>
           <Comment>[M+Na-C5H14NO4P]+</Comment>
         </ClassIon>
