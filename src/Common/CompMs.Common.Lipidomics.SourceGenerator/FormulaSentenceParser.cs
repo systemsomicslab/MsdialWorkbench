@@ -53,11 +53,14 @@ internal sealed class FormulaSentenceParser
         return new() { Terms = [.. result], Raw = value, };
     }
 
-    public SubVar Parse(string name, string value) {
+    public SubVar? Parse(string name, string value) {
+        if (Parse(value) is not { } sentence) {
+            return null;
+        }
         return new SubVar
         {
             Name = name,
-            Sentence = new() { Raw = value },
+            Sentence = sentence,
         };
     }
 }

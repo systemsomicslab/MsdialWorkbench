@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Constants>
     <Proton>MassDiffDictionary.ProtonMass</Proton>
-    <Electron>MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass</Electron>
-    <e>MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass</e>
+    <Electron>e</Electron>
 
     <Carbon>MassDiffDictionary.CarbonMass</Carbon>
     <Hydrogen>MassDiffDictionary.HydrogenMass</Hydrogen>
@@ -18,7 +17,7 @@
     <O>MassDiffDictionary.OxygenMass</O>
     <S>MassDiffDictionary.SulfurMass</S>
     <P>MassDiffDictionary.PhosphorusMass</P>
-    <Na>Sodium - Electron</Na>
+    <Na>Sodium - e</Na>
 
     <HCOO>H * 2.0 + C * 1 + O * 2.0 - Proton</HCOO>
     <CH3COO>H * 4.0 + C * 2 + O * 2.0 - Proton</CH3COO>
