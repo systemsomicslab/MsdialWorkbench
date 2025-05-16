@@ -44,8 +44,11 @@ internal sealed class FormulaStringParser
         return result;
     }
 
+    public static bool IsMarkupFormula(string rawMarkup) {
+        return Regex.IsMatch(rawMarkup, @$"^\s*(:?<(:?\w+)>\s*\d+\s*</\2>\s*)+$");
+    }
+
     public static bool IsMarkupFormula(string rawMarkup, string[] constants) {
-        var regex = new Regex(@$"^\s*(:?<(:?{string.Join("|", constants)})>\s*\d+\s*</\2>\s*)+$", RegexOptions.Compiled);
-        return regex.IsMatch(rawMarkup);
+        return Regex.IsMatch(rawMarkup, @$"^\s*(:?<(:?{string.Join("|", constants)})>\s*\d+\s*</\2>\s*)+$");
     }
 }
