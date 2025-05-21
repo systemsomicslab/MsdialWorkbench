@@ -77,7 +77,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
                 return;
             }
 
-            //System.IO.File.Create(exportFilePath).Close();
+            
 
             //by spectral databases
             if (formulaResult.Formula.FormulaString == "Spectral DB search") {
