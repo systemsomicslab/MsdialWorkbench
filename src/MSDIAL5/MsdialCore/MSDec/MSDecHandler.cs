@@ -229,7 +229,9 @@ namespace CompMs.MsdialCore.MSDec {
                     msdecResult.ScanID = counter;
                     msdecResult.RawSpectrumID = modelChromatograms[i].RdamScanOfPeakTop;
                     msdecResult.Spectrum = getRefinedMsDecSpectrum(msdecResult.Spectrum, param);
-                    msdecResult.Splash = calculateSplash(msdecResult.Spectrum);
+                    if (!msdecResult.Spectrum.IsEmptyOrNull()) {
+                        msdecResult.Splash = calculateSplash(msdecResult.Spectrum);
+                    }
                     msdecResults.Add(msdecResult);
 
                     if (msdecResult.ModelPeakHeight < minIntensity) minIntensity = msdecResult.ModelPeakHeight;
@@ -724,7 +726,9 @@ namespace CompMs.MsdialCore.MSDec {
                 var result = MSDecProcess.GetMsDecResult(modelChromVector, chromatograms);
                 if (result == null) return null;
                 result.Spectrum = getRefinedMsDecSpectrum(result.Spectrum, param);
-                result.Splash = calculateSplash(result.Spectrum);
+                if (!result.Spectrum.IsEmptyOrNull()) {
+                    result.Splash = calculateSplash(result.Spectrum);
+                }
                 return result;
             }
             else {
