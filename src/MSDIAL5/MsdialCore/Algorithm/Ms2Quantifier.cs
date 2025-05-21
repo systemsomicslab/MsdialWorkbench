@@ -1,3 +1,5 @@
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,22 +9,26 @@ namespace CompMs.MsdialCore.Algorithm
     public class Ms2Quantifier
     {
         /// <summary>
-        /// 各Quant massごとに、各サンプルでの定量値（abundance）のリストを返す
+        /// Returns a list of abundances for each quant mass in each sample.
         /// </summary>
-        /// <param name="mzList">定量対象のm/zリスト</param>
-        /// <param name="ms2DataList">各サンプルのMS2スペクトルデータ</param>
-        /// <returns>各m/zごとにサンプルごとの定量値リスト</returns>
-        public IEnumerable<Ms2QuantResult> Quantify(IEnumerable<double> mzList, IEnumerable<RawMs2Data> ms2DataList)
+        /// <param name="mzList">List of m/z values to quantify.</param>
+        /// <param name="ms2DataList">MS2 spectral data for each sample.</param>
+        /// <param name="features">AlignmentChromPeakFeature for each sample (for sample name).</param>
+        /// <returns>For each m/z, a list of abundances for each sample.</returns>
+        public IEnumerable<Ms2QuantResult> Quantify(IEnumerable<double> mzList, IEnumerable<MSDecResult> ms2DataList, IEnumerable<AlignmentChromPeakFeature> features)
         {
             var results = new List<Ms2QuantResult>();
+            var ms2DataArray = ms2DataList.ToArray();
+            var featureArray = features.ToArray();
+            if (ms2DataArray.Length != featureArray.Length) throw new ArgumentException("ms2DataList and features must have the same length.");
             foreach (var mz in mzList)
             {
                 var abundances = new List<SampleAbundance>();
-                foreach (var ms2Data in ms2DataList)
+                for (int i = 0; i < ms2DataArray.Length; i++)
                 {
-                    // サンプル名の取得方法はRawMs2Dataに依存（仮にSampleNameプロパティがあるとする）
-                    var sampleName = ms2Data.SampleName;
-                    // 指定m/zに最も近いピークを検索
+                    var ms2Data = ms2DataArray[i];
+                    var feature = featureArray[i];
+                    var sampleName = feature.FileName;
                     var peak = ms2Data.Spectrum
                         .OrderBy(p => Math.Abs(p.Mass - mz))
                         .FirstOrDefault();
