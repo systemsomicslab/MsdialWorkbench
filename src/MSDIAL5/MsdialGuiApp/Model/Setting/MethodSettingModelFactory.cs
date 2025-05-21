@@ -158,7 +158,7 @@ namespace CompMs.App.Msdial.Model.Setting
             else if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 parameter.MaxChargeNumber = 6;
                 parameter.MinimumAmplitude = 100000;
-                parameter.AmplitudeCutoff = 1000;
+                parameter.ChromDecBaseParam.AmplitudeCutoff = 1000;
             }
             return model;
         }
