@@ -740,7 +740,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             if (libCounter == 0) return new double[2] { 0, 0 };
             else
-                return new double[2] { (double)counter / (double)libCounter, libCounter };
+                return new double[2] { (double)counter / (double)libCounter, counter };
         }
 
         public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
