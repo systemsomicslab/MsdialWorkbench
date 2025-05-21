@@ -14,8 +14,9 @@
             <Label Content="{Binding Version}" Margin="10,0,0,0" />
             <Label Content="{Binding Date}" Margin="10,0,0,0" />
             <Label Content="Lead developer: Hiroshi Tsugawa" Margin="10,0,0,0" />
-            <Label Content="Main contributor: Diego Pedrosa" Margin="10,0,0,0" />
-            <Label Content="Contact: hiroshi.tsugawa@riken.jp" Margin="10,0,0,0" />
+            <Label Content="Main contributor: Bujinlkham Buyantogtokh" Margin="10,0,0,0" />
+            <Label Content="Contributor: Diego Pedrosa" Margin="10,0,0,0" />
+            <Label Content="Contact: msdial-jp-groups@go.tuat.ac.jp" Margin="10,0,0,0" />
         </StackPanel>
     </Grid>
 </Window>
