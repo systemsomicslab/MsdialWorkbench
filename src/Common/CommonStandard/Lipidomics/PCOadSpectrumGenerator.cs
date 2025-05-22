@@ -23,11 +23,6 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
-        private static readonly double CH3 = new[] {
-            MassDiffDictionary.HydrogenMass * 3,
-            MassDiffDictionary.CarbonMass,
-        }.Sum();
-
         private static readonly double C5H9PO5 = new[] {
             MassDiffDictionary.CarbonMass * 5,
             MassDiffDictionary.HydrogenMass * 9,
@@ -111,7 +106,7 @@ namespace CompMs.Common.Lipidomics {
                 //"OAD01+H" 
             };
  
-            if (lipid.Chains is MolecularSpeciesLevelChains) {
+            if (lipid.Chains is MolecularSpeciesLevelChains || lipid.Chains is PositionLevelChains) {
                 foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
@@ -133,17 +128,15 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 999d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
-                if (lipid.Chains is SeparatedChains) {
-                    foreach (AcylChain chain in lipid.Chains.GetDeterminedChains().Cast<AcylChain>()) {
-                        spectrum.AddRange(
-                            new[] {
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass-H2O), 15d, $"-{chain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass*2), 10d, $"-{chain}+H") { SpectrumComment = SpectrumComment.acylchain },
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass*2-H2O), 10d, $"-{chain}-H2O +H") { SpectrumComment = SpectrumComment.acylchain },
-                            }
-                        );
-                    }
+                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains().Cast<AcylChain>()) {
+                    spectrum.AddRange(
+                        new[] {
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass-H2O), 15d, $"-{chain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass*2), 10d, $"-{chain}+H") { SpectrumComment = SpectrumComment.acylchain },
+                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass*2-H2O), 10d, $"-{chain}-H2O +H") { SpectrumComment = SpectrumComment.acylchain },
+                        }
+                    );
                 }
             }
             else if (adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+HCO3]-") {
@@ -165,11 +158,7 @@ namespace CompMs.Common.Lipidomics {
                     }
                 }
             } else {
-                spectrum.AddRange(
-                    new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                    }
-                );
+                spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
             }
             return spectrum.ToArray();
         }

@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Internal;
 
-internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance) : IDataProvider
+internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, double mz, double tolerance, AcquisitionType acquisitionType) : IDataProvider
 {
     private readonly IDataProvider _other = other;
     private readonly double _mz = mz;
     private readonly double _tolerance = tolerance;
+    private readonly AcquisitionType _acquisitionType = acquisitionType;
 
     public List<double> LoadCollisionEnergyTargets() {
         return LoadMsSpectrums().Select(s => s.CollisionEnergy).Distinct().ToList();
@@ -55,8 +57,8 @@ internal sealed class PrecursorMzSelectedDataProvider(IDataProvider other, doubl
         return new ReadOnlyCollection<RawSpectrum>(spectra.Where(s => s.MsLevel <= 1 || IsNearBy(s.Precursor, _mz, _tolerance)).ToArray());
     }
 
-    private static bool IsNearBy(RawPrecursorIon p, double mz, double tolerance) {
-        return p is not null && Math.Abs(p.SelectedIonMz - mz) <= tolerance;
+    private bool IsNearBy(RawPrecursorIon p, double mz, double tolerance) {
+        return p is not null && p.ContainsMz(mz, tolerance, _acquisitionType);
     }
 
     public Task<RawSpectrum?> LoadSpectrumAsync(ulong id, SpectrumIDType idType) {

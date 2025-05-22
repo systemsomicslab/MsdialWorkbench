@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -24,7 +25,12 @@ internal sealed class SpectraSimilarityMapViewModel : ViewModelBase
 
         HeatmapVerticalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d), }.AddTo(Disposables);
         HeatmapHorizontalAxis = new CategoryAxisManager<AnalysisFileBeanModel>(model.Files.AnalysisFiles, toLabel: f => f.AnalysisFileName) { ChartMargin = new ConstantMargin(0d) }.AddTo(Disposables);
+        HeatmapClusteredVerticalAxis = model.ObserveProperty(m => m.OrderedFiles).ToReactiveCategoryAxisManager(toLabel: f => f.AnalysisFileName).AddTo(Disposables);
+        HeatmapClusteredVerticalAxis.ChartMargin = new ConstantMargin(0d);
+        HeatmapClusteredHorizontalAxis = model.ObserveProperty(m => m.OrderedFiles).ToReactiveCategoryAxisManager(toLabel: f => f.AnalysisFileName).AddTo(Disposables);
+        HeatmapClusteredHorizontalAxis.ChartMargin = new ConstantMargin(0d);
         ValueAxis = new ContinuousAxisManager<double>(0d, 1d).AddTo(Disposables);
+
 
         SelectedMatrixItem = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedMatrixItem).AddTo(Disposables);
     }
@@ -39,6 +45,8 @@ internal sealed class SpectraSimilarityMapViewModel : ViewModelBase
 
     public CategoryAxisManager<AnalysisFileBeanModel> HeatmapVerticalAxis { get; }
     public CategoryAxisManager<AnalysisFileBeanModel> HeatmapHorizontalAxis { get; }
+    public CategoryAxisManager<AnalysisFileBeanModel> HeatmapClusteredVerticalAxis { get; }
+    public CategoryAxisManager<AnalysisFileBeanModel> HeatmapClusteredHorizontalAxis { get; }
     public ContinuousAxisManager<double> ValueAxis { get; }
 
     public IAxisManager<double> SpectrumHorizontalAxis => _model.HorizontalAxis;

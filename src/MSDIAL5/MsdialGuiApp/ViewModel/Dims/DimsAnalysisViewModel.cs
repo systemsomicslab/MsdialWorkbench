@@ -11,11 +11,13 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -73,9 +75,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             GoToMsfinderCommand = model.CanSearchCompound
                 .ToReactiveCommand().WithSubscribe(() => {
+                    var message = new ShortMessageWindow() {
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        Title = "MS-FINDER running in the background...",
+                        Width = 400,
+                        Height = 100
+                    };
+                    message.Show();
                     var msfinder = model.CreateSingleSearchMsfinderModel();
-                    if (msfinder is not null)
-                    {
+                    message.Close();
+                    if (msfinder is not null) {
                         broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
                     }
                 }).AddTo(Disposables);

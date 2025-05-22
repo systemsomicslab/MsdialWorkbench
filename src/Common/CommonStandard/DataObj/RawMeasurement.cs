@@ -174,13 +174,13 @@ namespace CompMs.Common.DataObj
         public bool ContainsMz(double mz, double tolerance, AcquisitionType acquisitionType) {
             var msmsAcquisition = MsmsAcquisition.Get(acquisitionType) ?? throw new NotSupportedException(nameof(acquisitionType));
             if (msmsAcquisition.IsDda) {
-                return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
+                return Math.Abs((double)SelectedIonMz - (double)mz) <= (double)tolerance;
             }
             else {
                 var lowerOffset = IsolationWindowLowerOffset;
                 var upperOffset = IsolationWindowUpperOffset;
-                return (double)IsolationTargetMz - lowerOffset - tolerance < mz
-                    && (double)mz < (double)IsolationTargetMz + upperOffset + (double)tolerance;
+                return (double)IsolationTargetMz - lowerOffset - tolerance <= mz
+                    && (double)mz <= (double)IsolationTargetMz + upperOffset + (double)tolerance;
             }
         }
 

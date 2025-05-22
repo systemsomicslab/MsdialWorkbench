@@ -1,23 +1,25 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Mathematics.Statistics;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using CompMs.Graphics.Core.Base;
 
 namespace CompMs.App.Msdial.Model.Information;
 
@@ -77,10 +79,10 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         .ToReactiveContinuousAxisManager(new ConstantMargin(10))
         .AddTo(Disposables);
         UpperVerticalAxis = _upperSpectrum.GetRange(s => s.Intensity)
-            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 10))
+            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 30))
             .AddTo(Disposables);
         LowerVerticalAxis = _lowerSpectrum.GetRange(s => s.Intensity)
-            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 10))
+            .ToReactiveContinuousAxisManager(new ConstantMargin(0, 30))
             .AddTo(Disposables);
     }
 
@@ -144,6 +146,12 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
     }
     private SimilarityMatrixItem? _selectedMatrixItem;
 
+    public List<AnalysisFileBeanModel> OrderedFiles {
+        get => _orderedFiles;
+        set => SetProperty(ref _orderedFiles, value);
+    }
+    private List<AnalysisFileBeanModel> _orderedFiles = [];
+
     public IAxisManager<double> HorizontalAxis { get; }
     public IAxisManager<double> UpperVerticalAxis { get; }
     public IAxisManager<double> LowerVerticalAxis { get; }
@@ -171,7 +179,16 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
                 result[i * scans.Count + j] = new SimilarityMatrixItem(samplePeakScans[i], samplePeakScans[j], matrix[i][j]);
             }
         }
+
         Result = result;
+
+        var tree = StatisticsMathematics.ClusteringWard2Distance(matrix, StatisticsMathematics.CalculateSpearmanCorrelationDistance);
+        OrderedFiles = [];
+        tree.NodePreOrder(i => {
+            if (tree[i].Count() == 0) {
+                OrderedFiles.Add(Files.AnalysisFiles[i]);
+            }
+        });
     }
 
     public async Task UpdateSimilaritiesAsync(AlignmentSpotPropertyModel spot, IReadOnlyList<IMSScanProperty?> scans, CancellationToken token = default) {
@@ -197,6 +214,14 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
             }
         }
         Result = result;
+
+        var tree = StatisticsMathematics.ClusteringWard2Distance(matrix, StatisticsMathematics.CalculateSpearmanCorrelationDistance);
+        OrderedFiles = [];
+        tree.NodePreOrder(i => {
+            if (tree[i].Count() == 0) {
+                OrderedFiles.Add(Files.AnalysisFiles[i]);
+            }
+        });
     }
 
     private SamplePeakScan CreateSamplePeakScan(int i, IReadOnlyList<IMSScanProperty?> scans, AlignmentSpotPropertyModel spot) {
