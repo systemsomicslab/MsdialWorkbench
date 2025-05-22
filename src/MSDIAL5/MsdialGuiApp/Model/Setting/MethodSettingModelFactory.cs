@@ -267,10 +267,13 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
+        private static readonly object _wiff2FactoryLock = new object();
         public IMethodModel BuildMethod() {
             var factory = new FacadeDataProviderFactory(file => {
                 if (file.AnalysisFilePath.EndsWith(".wiff2")) {
-                    return new Wiff2DataProviderFactory() { NumThreads = 40, }.ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
+                    lock (_wiff2FactoryLock) {
+                        return new Wiff2DataProviderFactory() { NumThreads = 40 }.ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
+                    }
                 }
                 return new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));
             });
