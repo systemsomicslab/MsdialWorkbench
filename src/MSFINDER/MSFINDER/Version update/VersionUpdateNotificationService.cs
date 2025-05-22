@@ -70,13 +70,15 @@ namespace Rfx.Riken.OsakaUniv
 
         private static void ShowUpdatePopup(VersionDescriptionDocument vdd)
         {
-            if (Rfx.Riken.OsakaUniv.Properties.Resources.VERSION != vdd.LatestVersion) {
-                // TODO Show version update information in a popup
+            var currentVersionString = Rfx.Riken.OsakaUniv.Properties.Resources.VERSION;
+            var versionMatch = System.Text.RegularExpressions.Regex.Match(currentVersionString, @"\d+(\.\d+)+");
+            var currentVersion = versionMatch.Success ? versionMatch.Value : "0.0";
+
+            if (currentVersion != vdd.LatestVersion) {
                 if (MessageBox.Show("A new MS-FINDER is available: " + vdd.LatestVersion + "\r\n" +
                     "Click 'Yes' if you want to go MS-FINDER website.", "Update notification", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes) {
                     System.Diagnostics.Process.Start("https://github.com/systemsomicslab/MsdialWorkbench/releases");
                 }
-
             }
         }
 

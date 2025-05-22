@@ -90,7 +90,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
                 spectrum = spectra.FirstOrDefault();
             }
 
-            var intensityTop = spectrum.Spectrum.DefaultIfEmpty().Max(param => param.Intensity);
+            var intensityTop = spectrum.Spectrum.DefaultIfEmpty().Max(p => p.Intensity);
             var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrum, param.MS2DataType,
                 Math.Max((float)intensityTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff, param.ChromDecBaseParam.AmplitudeCutoff),
                 param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);

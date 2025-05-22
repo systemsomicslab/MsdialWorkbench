@@ -65,7 +65,19 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
         {
             if (rawData.Ms2PeakNumber <= 0) return;
             if (formulaResult == null || formulaResult.Formula == null || formulaResult.Formula.FormulaString == string.Empty) return;
-            System.IO.File.Create(exportFilePath).Close();
+            try {
+                string directoryPath = Path.GetDirectoryName(exportFilePath);
+                if (!Directory.Exists(directoryPath)) {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                File.Create(exportFilePath).Close();
+            }
+            catch (DirectoryNotFoundException ex) {
+                Console.WriteLine("DirectoryNotFoundException: " + ex.Message);
+                return;
+            }
+
+            
 
             //by spectral databases
             if (formulaResult.Formula.FormulaString == "Spectral DB search") {
