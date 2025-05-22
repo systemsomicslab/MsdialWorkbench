@@ -185,7 +185,9 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentEicModel = AlignmentEicModel.Create(
                 target,
                 alignmentFileBean.CreateEicLoader(chromatogramSpotSerializer, fileCollection, projectBaseParameter).AddTo(Disposables),
-                files, parameter,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "EIC";

@@ -605,7 +605,7 @@ namespace CompMs.Common.FormulaGenerator {
         {
             if (refinedPeaklist == null || neutralLosslist == null) return;
 
-            formulaResult.ProductIonResult = FragmentAssigner.FastFragmnetAssigner(refinedPeaklist, productIonDB, formulaResult.Formula, ms2Tol, massTolType, adductIon);
+            formulaResult.ProductIonResult = FragmentAssigner.FastFragmentAssigner(refinedPeaklist, productIonDB, formulaResult.Formula, ms2Tol, massTolType, adductIon);
             formulaResult.NeutralLossResult = FragmentAssigner.FastNeutralLossAssigner(neutralLosslist, neutralLossDB, formulaResult.Formula, ms2Tol, massTolType, adductIon);
 
             formulaResult.ProductIonNum = formulaResult.ProductIonResult.Count;

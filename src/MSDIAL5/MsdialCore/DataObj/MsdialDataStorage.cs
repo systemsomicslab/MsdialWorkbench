@@ -63,10 +63,25 @@ namespace CompMs.MsdialCore.DataObj
 
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
-                MspDB = new List<MoleculeMsReference>();
+                MspDB = [];
                 foreach (var file in AnalysisFiles) file.RetentionTimeCorrectionBean.ClearCache();
+                List<List<ChromatogramPeak>>[] tmp = new List<List<ChromatogramPeak>>[AnalysisFiles.Count];
+                for (int i = 0; i < AnalysisFiles.Count; i++) {
+                    var f = AnalysisFiles[i];
+                    tmp[i] = f.RetentionTimeCorrectionBean.StandardList.Select(s => s.Chromatogram).ToList();
+                    foreach (var s in f.RetentionTimeCorrectionBean.StandardList) {
+                        s.Chromatogram = null;
+                    }
+                }
+
                 SaveMsdialDataStorageCore(stream);
                 MspDB = mspList;
+                for (int i = 0; i < AnalysisFiles.Count; i++) {
+                    var f = AnalysisFiles[i];
+                    for (int j = 0; j < f.RetentionTimeCorrectionBean.StandardList.Count; j++) {
+                        f.RetentionTimeCorrectionBean.StandardList[j].Chromatogram = tmp[i][j];
+                    }
+                }
             }
         }
 

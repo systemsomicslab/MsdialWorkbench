@@ -18,6 +18,9 @@ namespace CompMs.Common.FormulaGenerator.DataObj {
 
         public double MatchedMass { get; set; }
         public double MassDiff { get; set; }
+        public double MassDiffmDa {
+            get => MassDiff * 1000;
+        }
         public double MassDiffPpm { 
             get => MassDiff / Formula.Mass*1000000;
         }
@@ -38,14 +41,14 @@ namespace CompMs.Common.FormulaGenerator.DataObj {
         public int ResourceRecords { get; set; }
         public double TotalScore { get; set; }
         public bool IsSelected { get; set; }
-        public List<ProductIon> ProductIonResult { get; set; } = new List<ProductIon>();
-        public List<NeutralLoss> NeutralLossResult { get; set; } = new List<NeutralLoss>();
-        public List<AnnotatedIon> AnnotatedIonResult { get; set; } = new List<AnnotatedIon>();
-        public List<int> PubchemResources { get; set; } = new List<int>();
-        public List<string> ChemicalOntologyDescriptions { get; set; } = new List<string>();
-        public List<string> ChemicalOntologyIDs { get; set; } = new List<string>();
-        public List<double> ChemicalOntologyScores { get; set; } = new List<double>();
-        public List<string> ChemicalOntologyRepresentativeInChIKeys { get; set; } = new List<string>();
+        public List<ProductIon> ProductIonResult { get; set; } = [];
+        public List<NeutralLoss> NeutralLossResult { get; set; } = [];
+        public List<AnnotatedIon> AnnotatedIonResult { get; set; } = [];
+        public List<int> PubchemResources { get; set; } = [];
+        public List<string> ChemicalOntologyDescriptions { get; set; } = [];
+        public List<string> ChemicalOntologyIDs { get; set; } = [];
+        public List<double> ChemicalOntologyScores { get; set; } = [];
+        public List<string> ChemicalOntologyRepresentativeInChIKeys { get; set; } = [];
 
         #endregion
     }
