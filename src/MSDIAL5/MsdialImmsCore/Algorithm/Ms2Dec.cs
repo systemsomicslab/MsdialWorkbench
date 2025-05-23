@@ -119,15 +119,17 @@ public sealed class Ms2Dec
     }
 
     private static List<SpectrumPeak> GetCuratedSpectrum(RawSpectrum ms2Spectrum, double precursorMz, MsdialImmsParameter parameter) {
-
         //first, the MS/MS spectrum at the scan point of peak top is stored.
+        var amplitudeTop = ms2Spectrum.Spectrum.DefaultIfEmpty().Max(p => p.Intensity);
+        var amplitudeThreshold = Math.Max((float)amplitudeTop * parameter.ChromDecBaseParam.RelativeAmplitudeCutoff, parameter.ChromDecBaseParam.AmplitudeCutoff);
         var cSpectrum = DataAccess.GetCentroidMassSpectra(
-            ms2Spectrum, parameter.MS2DataType, parameter.AmplitudeCutoff,
+            ms2Spectrum, parameter.MS2DataType, amplitudeThreshold,
             parameter.Ms2MassRangeBegin, parameter.Ms2MassRangeEnd);
         if (cSpectrum.IsEmptyOrNull())
-            return new List<SpectrumPeak>();
+            return [];
 
-        var threshold = Math.Max(parameter.AmplitudeCutoff, 0.1);
+        amplitudeTop = cSpectrum.DefaultIfEmpty().Max(p => p?.Intensity) ?? 0d;
+        var threshold = Math.Max(Math.Max(amplitudeTop * parameter.ChromDecBaseParam.RelativeAmplitudeCutoff, parameter.ChromDecBaseParam.AmplitudeCutoff), 0.1);
         var curatedSpectra = cSpectrum.Where(n => n.Intensity > threshold);
 
         if (parameter.RemoveAfterPrecursor)
