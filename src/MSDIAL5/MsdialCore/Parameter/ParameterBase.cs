@@ -605,7 +605,8 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add("\r\n");
             pStrings.Add("# Deconvolution");
             pStrings.Add(String.Join(": ", new string[] { "Sigma window value", SigmaWindowValue.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", AmplitudeCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", ChromDecBaseParam.AmplitudeCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cut off", ChromDecBaseParam.RelativeAmplitudeCutoff.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
@@ -1223,6 +1224,8 @@ namespace CompMs.MsdialCore.Parameter
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
         [Key(8)]
         public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
+        [Key(9)]
+        public float RelativeAmplitudeCutoff { get; set; } = 0;
     }
 
     [MessagePackObject]

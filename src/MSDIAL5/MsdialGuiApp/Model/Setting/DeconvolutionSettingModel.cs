@@ -13,6 +13,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
+            RelativeAmplitudeCutoff = parameter.RelativeAmplitudeCutoff;
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
@@ -31,6 +32,12 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref _amplitudeCufoff, value);
         }
         private float _amplitudeCufoff;
+
+        public float RelativeAmplitudeCutoff {
+            get => _relativeAmplitudeCutoff;
+            set => SetProperty(ref _relativeAmplitudeCutoff, value);
+        }
+        private float _relativeAmplitudeCutoff;
 
         public bool RemoveAfterPrecursor {
             get => _removeAfterPrecurosr;
@@ -56,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             _parameter.SigmaWindowValue = SigmaWindowValue;
             _parameter.AmplitudeCutoff = AmplitudeCutoff;
+            _parameter.RelativeAmplitudeCutoff = RelativeAmplitudeCutoff;
             _parameter.RemoveAfterPrecursor = RemoveAfterPrecursor;
             _parameter.KeptIsotopeRange = KeptIsotopeRange;
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
@@ -67,6 +75,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
+            RelativeAmplitudeCutoff = parameter.RelativeAmplitudeCutoff;
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
