@@ -115,12 +115,12 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("smiles", content["SMILES"]);
             Assert.AreEqual(DataAccess.GetAnnotationCode(feature.MatchResults.Representative, parameter).ToString(), content["Annotation tag (VS1.0)"]);
             Assert.AreEqual("True", content["MS/MS matched"]);
-            Assert.AreEqual("0.81", content["Simple dot product"]);
-            Assert.AreEqual("0.72", content["Weighted dot product"]);
-            Assert.AreEqual("0.63", content["Reverse dot product"]);
+            Assert.AreEqual("0.811", content["Simple dot product"]);
+            Assert.AreEqual("0.724", content["Weighted dot product"]);
+            Assert.AreEqual("0.631", content["Reverse dot product"]);
             Assert.AreEqual("4.00", content["Matched peaks count"]);
             Assert.AreEqual("0.90", content["Matched peaks percentage"]);
-            Assert.AreEqual("0.64", content["Total score"]);
+            Assert.AreEqual("0.638", content["Total score"]);
             Assert.AreEqual("6.78", content["S/N"]);
             Assert.AreEqual("700.00000:1000 701.00001:100", content["MS1 isotopes"]);
             Assert.AreEqual("700.00001:1000 500.00002:200 200.00003:50", content["MSMS spectrum"]);
