@@ -114,6 +114,7 @@ namespace CompMs.App.Msdial.Model.Search
                     foreach (var frag in SelectedStructure.FragmenterResult.FragmentPics) {
                         frag.Peak.FragmentationScore = frag.MatchedFragmentInfo.TotalLikelihood;
                         var label = MsfinderUtility.GetLabelForInsilicoSpectrum(frag.MatchedFragmentInfo.Formula, frag.MatchedFragmentInfo.RearrangedHydrogen, _adduct.IonMode, frag.MatchedFragmentInfo.AssignedAdductString);
+                        frag.Peak.Comment = frag.MatchedFragmentInfo.Smiles;
                     }
                     var msSpectrum = new MsSpectrum(SelectedStructure.FragmenterResult.FragmentPics.Select(p => p.Peak).ToList());
                     _refSpectrum.Value = msSpectrum;
