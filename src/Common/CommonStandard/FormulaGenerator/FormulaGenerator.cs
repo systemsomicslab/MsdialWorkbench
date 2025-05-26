@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.FormulaGenerator {
@@ -32,7 +31,7 @@ namespace CompMs.Common.FormulaGenerator {
         private const double brMass = 78.91833710000;
         private const double iMass = 126.90447300000;
 
-        private int isCheckedNum;
+        private readonly int isCheckedNum;
 
         private double hMinFold;
         private double hMaxFold;
@@ -48,18 +47,18 @@ namespace CompMs.Common.FormulaGenerator {
 
         private double maxMassFoldChange;
 
-        private bool oCheck;
-        private bool nCheck;
-        private bool pCheck;
-        private bool sCheck;
-        private bool fCheck;
-        private bool brCheck;
-        private bool clCheck;
-        private bool iCheck;
-        private bool siCheck;
-        private bool valenceCheck;
-        private bool probabilityCheck;
-        private CoverRange coverRange;
+        private readonly bool oCheck;
+        private readonly bool nCheck;
+        private readonly bool pCheck;
+        private readonly bool sCheck;
+        private readonly bool fCheck;
+        private readonly bool brCheck;
+        private readonly bool clCheck;
+        private readonly bool iCheck;
+        private readonly bool siCheck;
+        private readonly bool valenceCheck;
+        private readonly bool probabilityCheck;
+        private readonly CoverRange coverRange;
 
         /// <summary>
         /// This is the constructor of this program.
@@ -83,13 +82,12 @@ namespace CompMs.Common.FormulaGenerator {
             this.probabilityCheck = param.IsElementProbabilityCheck;
             this.isCheckedNum = param.TryTopNmolecularFormulaSearch;
 
-            maxFoldInitialize(this.coverRange, this.fCheck, this.clCheck, this.brCheck, this.iCheck, this.siCheck);
+            MaxFoldInitialize(this.coverRange, this.fCheck, this.clCheck, this.brCheck, this.iCheck, this.siCheck);
         }
 
-        private void maxFoldInitialize(CoverRange coverRange, bool fCheck, bool clCheck, bool brCheck, bool iCheck, bool siCheck)
+        private void MaxFoldInitialize(CoverRange coverRange, bool fCheck, bool clCheck, bool brCheck, bool iCheck, bool siCheck)
         {
-            switch (coverRange)
-            {
+            switch (coverRange) {
                 case CoverRange.CommonRange:
                     this.hMinFold = 0; this.hMaxFold = 4.0; this.fMaxFold = 1.5; this.clMaxFold = 1.0; this.brMaxFold = 1.0; this.nMaxFold = 2.0; this.oMaxFold = 2.5; this.pMaxFold = 0.5; this.sMaxFold = 1.0; this.iMaxFold = 0.5; this.siMaxFold = 0.5;
                     break;
@@ -147,7 +145,7 @@ namespace CompMs.Common.FormulaGenerator {
             var syncObj = new object();
             //var endID = getFormulaDbLastIndex(formulaDB, mass + ms1Tol);
 
-            formulaResults = getFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
+            formulaResults = GetFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
                 existFormulaDB, refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB);
 
             #region old
@@ -198,7 +196,7 @@ namespace CompMs.Common.FormulaGenerator {
             ////}
 #endregion
             if (formulaResults.Count > 0) {
-                formulaResults = formulaResults.OrderByDescending(n => Math.Abs(n.TotalScore)).ToList();
+                formulaResults = [.. formulaResults.OrderByDescending(n => Math.Abs(n.TotalScore))];
 
                 for (int i = 0; i < isCheckedNum; i++) { if (i > formulaResults.Count - 1) break; formulaResults[i].IsSelected = true; }
 
@@ -208,7 +206,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaResults;
         }
 
-        private List<FormulaResult> getFormulaResults(RawData rawData, AnalysisParamOfMsfinder param,
+        private List<FormulaResult> GetFormulaResults(RawData rawData, AnalysisParamOfMsfinder param,
             double mass, double ms1Tol, double m1Intensity, double m2Intensity, 
             AdductIon adduct, bool isotopeCheck, int maxReportNumber,
             List<ExistFormulaQuery> existFormulaDB, List<SpectrumPeak> refinedPeaklist, 
@@ -222,7 +220,7 @@ namespace CompMs.Common.FormulaGenerator {
             sw.Start();
 
             Parallel.For(1, maxCnum, (c, state) => {
-                var formulaResults = getFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck, 
+                var formulaResults = GetFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck, 
                     maxReportNumber, existFormulaDB, refinedPeaklist, neutralLosses, productIonDB, neutralLossDB);
 
                 if (formulaResults != null && formulaResults.Count != 0) {
@@ -234,7 +232,7 @@ namespace CompMs.Common.FormulaGenerator {
                         }
 
                         foreach (var result in formulaResults) {
-                            formulaResultsMaster = getFormulaResultCandidates(formulaResultsMaster, result, 100000000);
+                            formulaResultsMaster = GetFormulaResultCandidates(formulaResultsMaster, result, 100000000);
                         }
                     }
                 }
@@ -243,7 +241,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaResultsMaster;
         }
 
-        private List<FormulaResult> getFormulaResults(int c, RawData rawData, AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity, 
+        private List<FormulaResult> GetFormulaResults(int c, RawData rawData, AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity, 
             AdductIon adduct, bool isotopeCheck, int maxReportNumber, 
             List<ExistFormulaQuery> existFormulaDB, List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses, 
             List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
@@ -347,7 +345,7 @@ namespace CompMs.Common.FormulaGenerator {
 
                                                             var convertedFormula = MolecularFormulaUtility.ConvertTmsMeoxSubtractedFormula(formula);
                                                             if (!SevenGoldenRulesCheck.Check(convertedFormula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) continue;
-                                                            var formulaResult = tryGetFormulaResultCandidate(formula, param,
+                                                            var formulaResult = TryGetFormulaResultCandidate(formula, param,
                                                                                 mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
                                                                                 refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
                                                             if (formulaResult != null) formulaResults.Add(formulaResult);
@@ -355,7 +353,7 @@ namespace CompMs.Common.FormulaGenerator {
                                                     }
                                                     else {
                                                         var formula = new Formula(c, h, n, o, p, s, f, cl, br, i, si);
-                                                        var formulaResult = tryGetFormulaResultCandidate(formula, param,
+                                                        var formulaResult = TryGetFormulaResultCandidate(formula, param,
                                                                                mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
                                                                                refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
                                                         if (formulaResult != null) formulaResults.Add(formulaResult);
@@ -382,7 +380,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaResults;
         }
 
-        private List<FormulaResult> getFormulaSearchResults(Formula formula, RawData rawData, AnalysisParamOfMsfinder param, 
+        private List<FormulaResult> GetFormulaSearchResults(Formula formula, RawData rawData, AnalysisParamOfMsfinder param, 
             double mass, double ms1Tol, double m1Intensity, double m2Intensity, AdductIon adductIon, 
             bool isotopeCheck, int maxReportNumber, List<ExistFormulaQuery> existFormulaDB,
             List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosslist, List<ProductIon> productIonDB,
@@ -416,7 +414,7 @@ namespace CompMs.Common.FormulaGenerator {
             //if (FormulaStringParcer.OrganicElementsReader(formula.FormulaString).Cnum != formula.Cnum) return null;
 
 
-            var tempResults = getFormulaSearchResults(formula, param, mass, ms1Tol,
+            var tempResults = GetFormulaSearchResults(formula, param, mass, ms1Tol,
                 m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
                 existFormulaDB, refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB);
             return tempResults;
@@ -466,7 +464,7 @@ namespace CompMs.Common.FormulaGenerator {
             var formulaResults = new List<FormulaResult>();
             if (massTolType == MassToleranceType.Ppm) ms1Tol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ms1Tol);
 
-            formulaResults = getFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
+            formulaResults = GetFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
                 existFormulaDB, null, null, null, null);
 
 
@@ -488,7 +486,7 @@ namespace CompMs.Common.FormulaGenerator {
             //}
 
             if (formulaResults.Count > 0) {
-                formulaResults = formulaResults.OrderByDescending(n => Math.Abs(n.TotalScore)).ToList();
+                formulaResults = [.. formulaResults.OrderByDescending(n => Math.Abs(n.TotalScore))];
 
                 for (int i = 0; i < isCheckedNum; i++) { if (i > formulaResults.Count - 1) break; formulaResults[i].IsSelected = true; }
 
@@ -511,7 +509,7 @@ namespace CompMs.Common.FormulaGenerator {
             
             var formula = FormulaStringParcer.OrganicElementsReader(formulaString);
             if (massTolType == MassToleranceType.Ppm) ms1Tol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ms1Tol);
-            var formulaResult = getFormulaResult(formula, param, mass, ms1Tol, subtractedM1Intensity, subtractedM2Intensity, isotopeCheck, existFormulaDB);
+            var formulaResult = GetFormulaResult(formula, param, mass, ms1Tol, subtractedM1Intensity, subtractedM2Intensity, isotopeCheck, existFormulaDB);
 
             var ms2Peaklist = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
 
@@ -528,7 +526,7 @@ namespace CompMs.Common.FormulaGenerator {
                     }
                     refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(refinedPeaklist, rawData.PrecursorMz);
                 }
-                setFragmentProperties(formulaResult, refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB, ms2Tol, massTolType, adductIon);
+                SetFragmentProperties(formulaResult, refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB, ms2Tol, massTolType, adductIon);
             }
 
             formulaResult.TotalScore = Math.Round(Scoring.TotalScore(formulaResult), 3);
@@ -537,28 +535,24 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaResult;
         }
 
-        private void setExistFormulaDbInfo(FormulaResult formulaResult, List<ExistFormulaQuery> existFormulaDB)
+        private void SetExistFormulaDbInfo(FormulaResult formulaResult, List<ExistFormulaQuery> existFormulaDB)
         {
-            string resourceNames;
-            int resourceRecords;
-            List<int> pubchemCids;
-
-            tryExistFormulaDbSearch(formulaResult.Formula, existFormulaDB, out resourceNames, out resourceRecords, out pubchemCids);
+            TryExistFormulaDbSearch(formulaResult.Formula, existFormulaDB, out string resourceNames, out int resourceRecords, out List<int> pubchemCids);
             formulaResult.ResourceNames = resourceNames;
             formulaResult.ResourceRecords = resourceRecords;
             formulaResult.PubchemResources = pubchemCids;
         }
 
-        private void tryExistFormulaDbSearch(Formula formula, List<ExistFormulaQuery> queryDB, out string resourceNames, out int resourceRecords, out List<int> pubchemCIDs)
+        private void TryExistFormulaDbSearch(Formula formula, List<ExistFormulaQuery> queryDB, out string resourceNames, out int resourceRecords, out List<int> pubchemCIDs)
         {
-            pubchemCIDs = new List<int>();
+            pubchemCIDs = [];
             resourceNames = string.Empty;
             resourceRecords = 0;
 
             var cFormula = MolecularFormulaUtility.ConvertTmsMeoxSubtractedFormula(formula);
             var mass = cFormula.Mass;
             var tol = 0.00005;
-            var startID = getQueryStartIndex(mass, tol, queryDB);
+            var startID = GetQueryStartIndex(mass, tol, queryDB);
 
             for (int i = startID; i < queryDB.Count; i++)
             {
@@ -577,7 +571,7 @@ namespace CompMs.Common.FormulaGenerator {
             }
         }
 
-        private int getQueryStartIndex(double mass, double tol, List<ExistFormulaQuery> queryDB)
+        private static int GetQueryStartIndex(double mass, double tol, List<ExistFormulaQuery> queryDB)
         {
             if (queryDB == null || queryDB.Count == 0) return 0;
             double targetMass = mass - tol;
@@ -599,7 +593,7 @@ namespace CompMs.Common.FormulaGenerator {
             return startIndex;
         }
 
-        private void setFragmentProperties(FormulaResult formulaResult, List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosslist,
+        private void SetFragmentProperties(FormulaResult formulaResult, List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosslist,
             List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB, 
            double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
         {
@@ -611,15 +605,15 @@ namespace CompMs.Common.FormulaGenerator {
             formulaResult.ProductIonNum = formulaResult.ProductIonResult.Count;
             formulaResult.ProductIonHits = formulaResult.ProductIonResult.Count(n => n.CandidateOntologies.Count > 0);
 
-            formulaResult.NeutralLossHits = getUniqueNeutralLossCount(formulaResult.NeutralLossResult);
-            formulaResult.NeutralLossNum = getUniqueNeutralLossCountByMass(neutralLosslist, ms2Tol, massTolType);
+            formulaResult.NeutralLossHits = GetUniqueNeutralLossCount(formulaResult.NeutralLossResult);
+            formulaResult.NeutralLossNum = GetUniqueNeutralLossCountByMass(neutralLosslist, ms2Tol, massTolType);
 
             formulaResult.ProductIonScore = Math.Round(Scoring.FragmentHitsScore(refinedPeaklist, formulaResult.ProductIonResult, ms2Tol, massTolType), 3);
             formulaResult.NeutralLossScore = Math.Round(Scoring.NeutralLossScore(formulaResult.NeutralLossHits, formulaResult.NeutralLossNum), 3);
         }
 
 
-        private int getUniqueNeutralLossCount(List<NeutralLoss> neutralLosses) {
+        private static int GetUniqueNeutralLossCount(List<NeutralLoss> neutralLosses) {
 
             if (neutralLosses.Count == 0) return 0;
 
@@ -644,7 +638,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulas.Count;
         }
 
-        private int getUniqueNeutralLossCountByMass(List<NeutralLoss> neutralLosses, double ms2Tol, MassToleranceType massTolType) {
+        private static int GetUniqueNeutralLossCountByMass(List<NeutralLoss> neutralLosses, double ms2Tol, MassToleranceType massTolType) {
 
             if (neutralLosses.Count == 0) return 0;
 
@@ -760,11 +754,11 @@ namespace CompMs.Common.FormulaGenerator {
         //    return formulaCandidate;
         //}
 
-        private List<FormulaResult> getFormulaSearchResults(Formula formulaBean, AnalysisParamOfMsfinder param,
+        private List<FormulaResult> GetFormulaSearchResults(Formula formulaBean, AnalysisParamOfMsfinder param,
         double mass, double ms1Tol, double m1Intensity, double m2Intensity, AdductIon adduct, bool isotopeCheck, int maxFormulaNum,
         List<ExistFormulaQuery> existFormulaDB, List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses, List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
 
-            if (param.IsTmsMeoxDerivative && formulaBean.Nnum < param.MinimumMeoxCount) return new List<FormulaResult>();
+            if (param.IsTmsMeoxDerivative && formulaBean.Nnum < param.MinimumMeoxCount) return [];
 
             int minHnum = (int)(this.hMinFold * formulaBean.Cnum);
             int maxHnum = (int)(this.hMaxFold * formulaBean.Cnum);
@@ -820,26 +814,26 @@ namespace CompMs.Common.FormulaGenerator {
                                         var tmsCount = k;
                                         for (int n = param.MinimumMeoxCount; n <= formulaBean.Nnum; n++) {
                                             var meoxCount = n;
-                                            var formula = getCandidateFormulaBean(formulaBean, m, l, j, i, h, k, tmsCount, meoxCount);
+                                            var formula = GetCandidateFormulaBean(formulaBean, m, l, j, i, h, k, tmsCount, meoxCount);
 
                                             if (formula.Cnum - tmsCount * 3 - meoxCount <= 0) continue;
                                             var convertedFormula = MolecularFormulaUtility.ConvertTmsMeoxSubtractedFormula(formula);
                                             if (!SevenGoldenRulesCheck.Check(convertedFormula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) continue;
 
-                                            var formulaResult = tryGetFormulaResultCandidate(formula, param,
+                                            var formulaResult = TryGetFormulaResultCandidate(formula, param,
                                                 mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
                                                 refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
                                             if (formulaResult != null)
-                                                formulaCandidates = getFormulaResultCandidates(formulaCandidates, formulaResult, 100000000);
+                                                formulaCandidates = GetFormulaResultCandidates(formulaCandidates, formulaResult, 100000000);
                                         }
                                     }
                                     else {
-                                        var formula = getCandidateFormulaBean(formulaBean, m, l, j, i, h, k);
-                                        var formulaResult = tryGetFormulaResultCandidate(formula, param,
+                                        var formula = GetCandidateFormulaBean(formulaBean, m, l, j, i, h, k);
+                                        var formulaResult = TryGetFormulaResultCandidate(formula, param,
                                                 mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
                                                 refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
                                         if (formulaResult != null)
-                                            formulaCandidates = getFormulaResultCandidates(formulaCandidates, formulaResult, 100000000);
+                                            formulaCandidates = GetFormulaResultCandidates(formulaCandidates, formulaResult, 100000000);
                                     }
                                 }
                             }
@@ -851,7 +845,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaCandidates;
         }
 
-        private FormulaResult tryGetFormulaResultCandidate(Formula formula, AnalysisParamOfMsfinder param,
+        private FormulaResult TryGetFormulaResultCandidate(Formula formula, AnalysisParamOfMsfinder param,
             double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
             List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses, List<ExistFormulaQuery> existFormulaDB, List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
 
@@ -860,7 +854,7 @@ namespace CompMs.Common.FormulaGenerator {
 
             if (SevenGoldenRulesCheck.Check(formula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) {
 
-                var formulaResult = getFormulaResult(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, existFormulaDB);
+                var formulaResult = GetFormulaResult(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, existFormulaDB);
                 if (param.CanExcuteMS2AdductSearch) {
                     var precursorMz = (mass * (double)adduct.AdductIonXmer + adduct.AdductIonAccurateMass) / (double)adduct.ChargeNumber;
                     if (adduct.IonMode == IonMode.Positive) {
@@ -871,7 +865,7 @@ namespace CompMs.Common.FormulaGenerator {
                     }
                     refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(refinedPeaklist, precursorMz);
                 }
-                setFragmentProperties(formulaResult, refinedPeaklist, neutralLosses, productIonDB, neutralLossDB, ms2Tol, massTolType, adduct);
+                SetFragmentProperties(formulaResult, refinedPeaklist, neutralLosses, productIonDB, neutralLossDB, ms2Tol, massTolType, adduct);
                 formulaResult.TotalScore = Math.Round(Scoring.TotalScore(formulaResult), 3);
                 return formulaResult;
             }
@@ -903,7 +897,7 @@ namespace CompMs.Common.FormulaGenerator {
 
 
 
-        private List<FormulaResult> getFormulaResultCandidates(List<FormulaResult> formulaCandidate, FormulaResult formulaResult, int maxFormulaNum)
+        private static List<FormulaResult> GetFormulaResultCandidates(List<FormulaResult> formulaCandidate, FormulaResult formulaResult, int maxFormulaNum)
         {
             if (formulaCandidate.Count < maxFormulaNum - 1)
             {
@@ -912,14 +906,14 @@ namespace CompMs.Common.FormulaGenerator {
             else if (formulaCandidate.Count == maxFormulaNum - 1)
             {
                 formulaCandidate.Add(formulaResult);
-                formulaCandidate = formulaCandidate.OrderByDescending(n => Math.Abs(n.TotalScore)).ToList();
+                formulaCandidate = [.. formulaCandidate.OrderByDescending(n => Math.Abs(n.TotalScore))];
             }
             else if (formulaCandidate.Count > maxFormulaNum - 1)
             {
                 if (formulaCandidate[formulaCandidate.Count - 1].TotalScore < formulaResult.TotalScore)
                 {
-                    var startID = getFormulaResultStartIndex(formulaResult.TotalScore, 0.01, formulaCandidate);
-                    var insertID = getFormulaResultInsertID(formulaCandidate, formulaResult, startID);
+                    var startID = GetFormulaResultStartIndex(formulaResult.TotalScore, 0.01, formulaCandidate);
+                    var insertID = GetFormulaResultInsertID(formulaCandidate, formulaResult, startID);
                     formulaCandidate.Insert(insertID, formulaResult);
                     formulaCandidate.RemoveAt(formulaCandidate.Count - 1);
                 }
@@ -928,7 +922,7 @@ namespace CompMs.Common.FormulaGenerator {
             return formulaCandidate;
         }
 
-        private int getFormulaResultStartIndex(double score, double tol, List<FormulaResult> results)
+        private static int GetFormulaResultStartIndex(double score, double tol, List<FormulaResult> results)
         {
             if (results == null || results.Count == 0) return 0;
             double targetScore = score + tol;
@@ -950,7 +944,7 @@ namespace CompMs.Common.FormulaGenerator {
             return startIndex;
         }
 
-        private int getFormulaResultInsertID(List<FormulaResult> formulaCandidate, FormulaResult formulaResult, int startID)
+        private static int GetFormulaResultInsertID(List<FormulaResult> formulaCandidate, FormulaResult formulaResult, int startID)
         {
             var maxID = 0;
             for (int i = startID; i >= 0; i--)
@@ -961,16 +955,16 @@ namespace CompMs.Common.FormulaGenerator {
             return maxID;
         }
 
-        private FormulaResult getFormulaResult(Formula formula, AnalysisParamOfMsfinder param, double mass, double ms1MassTol, double m1Intensity, double m2Intensity, bool isotopeCheck, List<ExistFormulaQuery> existFormulaDB)
+        private FormulaResult GetFormulaResult(Formula formula, AnalysisParamOfMsfinder param, double mass, double ms1MassTol, double m1Intensity, double m2Intensity, bool isotopeCheck, List<ExistFormulaQuery> existFormulaDB) 
         {
             var isotopicAbundanceTolerance = param.IsotopicAbundanceTolerance;
-            var formulaResult = new FormulaResult();
-
-            formulaResult.Formula = formula;
-            formulaResult.MatchedMass = Math.Round(mass, 7);
-            formulaResult.MassDiff = Math.Round(formula.Mass - mass, 7);
-            formulaResult.M1IsotopicIntensity = Math.Round(SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula), 4);
-            formulaResult.M2IsotopicIntensity = Math.Round(SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula), 4);
+            var formulaResult = new FormulaResult {
+                Formula = formula,
+                MatchedMass = Math.Round(mass, 7),
+                MassDiff = Math.Round(formula.Mass - mass, 7),
+                M1IsotopicIntensity = Math.Round(SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula), 4),
+                M2IsotopicIntensity = Math.Round(SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula), 4)
+            };
             formulaResult.M1IsotopicDiff = Math.Round(SevenGoldenRulesCheck.GetIsotopicDifference(formulaResult.M1IsotopicIntensity, m1Intensity), 4);
             formulaResult.M2IsotopicDiff = Math.Round(SevenGoldenRulesCheck.GetIsotopicDifference(formulaResult.M2IsotopicIntensity, m2Intensity), 4);
 
@@ -981,12 +975,12 @@ namespace CompMs.Common.FormulaGenerator {
             else
                 formulaResult.IsotopicScore = 1;
 
-            setExistFormulaDbInfo(formulaResult, existFormulaDB);
+            SetExistFormulaDbInfo(formulaResult, existFormulaDB);
 
             return formulaResult;
         }
 
-        private Formula getCandidateFormulaBean(Formula originalFormula, int addHnum, int addFnum, int addClnum, int addBrnum, int addInum, int addSinum, int tmsCount = 0, int meoxCount = 0)
+        private static Formula GetCandidateFormulaBean(Formula originalFormula, int addHnum, int addFnum, int addClnum, int addBrnum, int addInum, int addSinum, int tmsCount = 0, int meoxCount = 0) 
         {
             var cNum = originalFormula.Cnum;
             var hNum = originalFormula.Hnum + addHnum;
