@@ -37,16 +37,19 @@ namespace MsdialPrivateConsoleApp {
             var new_mspfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated.msp";
             var new_resultfile = @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated_woms2.txt";
 
-            //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\ztscan", "*.txt", SearchOption.TopDirectoryOnly);
-            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\ztscan_result.txt");
+            var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\ztscan", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\ztscan_result_rev064.txt");
 
-            //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\swath", "*.txt", SearchOption.TopDirectoryOnly);
-            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\swath_result.txt");
+            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\ztscanasswath", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\ztscanasswath_result_rev064.txt");
 
-            //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\dda", "*.txt", SearchOption.TopDirectoryOnly);
-            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\dda_result.txt");
+            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\swath", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\swath_result_rev064.txt");
 
-            var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\dda", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\dda_result_rev064.txt");
+
+            //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\ztscan_vs_dda_result.txt");
 
             //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\ztscanAsSwath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
@@ -55,8 +58,8 @@ namespace MsdialPrivateConsoleApp {
             //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\swath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\swathasswath_vs_dda_result.txt");
 
-            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\dda_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
-            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\dda_vs_dda_result.txt");
+            //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\dda_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\dda_vs_dda_result.txt");
 
 
             //MspManager.ExtractPositiveSpectra(
