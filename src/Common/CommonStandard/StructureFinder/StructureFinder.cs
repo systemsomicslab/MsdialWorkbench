@@ -26,7 +26,7 @@ namespace CompMs.Common.StructureFinder
 
         public StructureFinder()
         {
-            tempFolderInitialize();
+            TempFolderInitialize();
         }
 
         public void InsilicoFragmentGenerator(string filepath, string output)
@@ -76,8 +76,8 @@ namespace CompMs.Common.StructureFinder
             List<MoleculeMsReference> mspDB)
         {
             if (rawData.Ms2PeakNumber <= 0) return;
-            if (formulaResult == null || formulaResult.Formula == null || formulaResult.Formula.FormulaString == string.Empty) return;
-            System.IO.File.Create(exportFilePath).Close();
+            if (formulaResult is null || formulaResult.Formula is null || formulaResult.Formula.FormulaString == string.Empty) return;
+            File.Create(exportFilePath).Close();
 
             //by spectral databases
             //if (formulaResult.Formula.FormulaString == "Spectral DB search")
@@ -95,38 +95,33 @@ namespace CompMs.Common.StructureFinder
             List<ExistStructureQuery> mQueries = null;
 
             //by user-defined DB
-            if (userDefinedDB != null && userDefinedDB.Count > 0)
-            {
+            if (userDefinedDB is not null && userDefinedDB.Count > 0) {
                 uQueries = DatabaseAccessUtility.GetStructureQueries(searchFormula, userDefinedDB);
                 GenerateFragmenterResult(uQueries, rawData, formulaResult, analysisParam, exportFilePath, fragmentDB, fragmentOntologies);
             }
 
             //by MINEs DB
             if (analysisParam.IsMinesAllTime ||
-                (analysisParam.IsMinesOnlyUseForNecessary && (eQueries == null || eQueries.Count == 0) && (uQueries == null || uQueries.Count == 0)))
-            {
+                (analysisParam.IsMinesOnlyUseForNecessary && (eQueries is null || eQueries.Count == 0) && (uQueries is null || uQueries.Count == 0))) {
                 mQueries = DatabaseAccessUtility.GetStructureQueries(searchFormula, mineStructureDB);
-                if (mQueries != null)
-                {
+                if (mQueries is not null) {
                     ExistStructureDbParser.SetExistStructureDbInfoToUserDefinedDB(existStructureDB, mQueries, true);
                     GenerateFragmenterResult(mQueries, rawData, formulaResult, analysisParam, exportFilePath, fragmentDB, fragmentOntologies);
                 }
             }
 
             //by PubChem
-            if (analysisParam.IsPubChemNeverUse == true) return;
-            if (analysisParam.IsPubChemOnlyUseForNecessary && ((eQueries != null && eQueries.Count != 0)
-                || (uQueries != null && uQueries.Count != 0) || (mQueries != null && mQueries.Count != 0))) return;
+            if (analysisParam.IsPubChemNeverUse is true) return;
+            if (analysisParam.IsPubChemOnlyUseForNecessary && ((eQueries is not null && eQueries.Count != 0)
+                || (uQueries is not null && uQueries.Count != 0) || (mQueries is not null && mQueries.Count != 0))) return;
 
             var formulaDirect = Path.Combine(tempSdfDirect, formulaResult.Formula.FormulaString);
             var ePubCIDs = DatabaseAccessUtility.GetExistingPubChemCIDs(eQueries);
 
-            if (!formulaFolderExistsCheck(formulaDirect))
-            {
+            if (!FormulaFolderExistsCheck(formulaDirect)) {
                 var pubRestSdfFinder = new PugRestProtocol();
                 if (!pubRestSdfFinder.SearchSdfByFormula(searchFormula.FormulaString,
-                    formulaDirect, analysisParam.StructureMaximumReportNumber - eQueries.Count, ePubCIDs))
-                {
+                    formulaDirect, analysisParam.StructureMaximumReportNumber - eQueries.Count, ePubCIDs)) {
                     return;
                 }
             }
@@ -164,60 +159,60 @@ namespace CompMs.Common.StructureFinder
         //    FragmenterResultParser.FragmenterResultWriter(exportFilePath, refinedResults, true);
         //}
 
-        private ObservableCollection<double[]> getExperimentalSpectrum(RawData rawData, AnalysisParamOfMsfinder param)
-        {
-            var eSpectrum = new ObservableCollection<double[]>();
-            var peaks = rawData.Ms2Spectrum;
-            var maxIntensity = rawData.Ms2Spectrum.Max(m => m.Intensity);
-            var cutoff = param.RelativeAbundanceCutOff * 0.01;
-            foreach (var peak in peaks)
-            {
-                if (peak.Intensity > maxIntensity * cutoff)
-                {
-                    eSpectrum.Add(new double[] { peak.Mass, peak.Intensity / maxIntensity * 100 });
-                }
-            }
-            return eSpectrum;
-        }
+        //private ObservableCollection<double[]> GetExperimentalSpectrum(RawData rawData, AnalysisParamOfMsfinder param)
+        //{
+        //    var eSpectrum = new ObservableCollection<double[]>();
+        //    var peaks = rawData.Ms2Spectrum;
+        //    var maxIntensity = rawData.Ms2Spectrum.Max(m => m.Intensity);
+        //    var cutoff = param.RelativeAbundanceCutOff * 0.01;
+        //    foreach (var peak in peaks)
+        //    {
+        //        if (peak.Intensity > maxIntensity * cutoff)
+        //        {
+        //            eSpectrum.Add(new double[] { peak.Mass, peak.Intensity / maxIntensity * 100 });
+        //        }
+        //    }
+        //    return eSpectrum;
+        //}
 
-        private static int getMspStartIndex(RawData rawData, List<MspRecord> mspDB, AnalysisParamOfMsfinder param)
-        {
-            int startIndex = 0, endIndex = mspDB.Count - 1;
-            if (param.RetentionType == RetentionType.RT && rawData.RetentionTime <= 0) return 0;
-            if (param.RetentionType == RetentionType.RI && rawData.RetentionIndex <= 0) return 0;
+        //private static int GetMspStartIndex(RawData rawData, List<MspRecord> mspDB, AnalysisParamOfMsfinder param)
+        //{
+        //    int startIndex = 0, endIndex = mspDB.Count - 1;
+        //    if (param.RetentionType == RetentionType.RT && rawData.RetentionTime <= 0) return 0;
+        //    if (param.RetentionType == RetentionType.RI && rawData.RetentionIndex <= 0) return 0;
 
-            var targetRT = rawData.RetentionIndex - param.RtToleranceForSpectralSearching;
-            if (param.RetentionType == RetentionType.RT) targetRT = rawData.RetentionTime - param.RtToleranceForSpectralSearching;
+        //    var targetRT = rawData.RetentionIndex - param.RtToleranceForSpectralSearching;
+        //    if (param.RetentionType == RetentionType.RT) targetRT = rawData.RetentionTime - param.RtToleranceForSpectralSearching;
 
-            int counter = 0;
-            while (counter < 5)
-            {
-                if (param.RetentionType == RetentionType.RT)
-                {
-                    if (mspDB[startIndex].RetentionTime <= targetRT && targetRT < mspDB[(startIndex + endIndex) / 2].RetentionTime)
-                    {
-                        endIndex = (startIndex + endIndex) / 2;
-                    }
-                    else if (mspDB[(startIndex + endIndex) / 2].RetentionTime <= targetRT && targetRT < mspDB[endIndex].RetentionTime)
-                    {
-                        startIndex = (startIndex + endIndex) / 2;
-                    }
-                }
-                else
-                {
-                    if (mspDB[startIndex].RetentionIndex <= targetRT && targetRT < mspDB[(startIndex + endIndex) / 2].RetentionIndex)
-                    {
-                        endIndex = (startIndex + endIndex) / 2;
-                    }
-                    else if (mspDB[(startIndex + endIndex) / 2].RetentionIndex <= targetRT && targetRT < mspDB[endIndex].RetentionIndex)
-                    {
-                        startIndex = (startIndex + endIndex) / 2;
-                    }
-                }
-                counter++;
-            }
-            return startIndex;
-        }
+        //    int counter = 0;
+        //    while (counter < 5)
+        //    {
+        //        if (param.RetentionType == RetentionType.RT)
+        //        {
+        //            if (mspDB[startIndex].RetentionTime <= targetRT && targetRT < mspDB[(startIndex + endIndex) / 2].RetentionTime)
+        //            {
+        //                endIndex = (startIndex + endIndex) / 2;
+        //            }
+        //            else if (mspDB[(startIndex + endIndex) / 2].RetentionTime <= targetRT && targetRT < mspDB[endIndex].RetentionTime)
+        //            {
+        //                startIndex = (startIndex + endIndex) / 2;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (mspDB[startIndex].RetentionIndex <= targetRT && targetRT < mspDB[(startIndex + endIndex) / 2].RetentionIndex)
+        //            {
+        //                endIndex = (startIndex + endIndex) / 2;
+        //            }
+        //            else if (mspDB[(startIndex + endIndex) / 2].RetentionIndex <= targetRT && targetRT < mspDB[endIndex].RetentionIndex)
+        //            {
+        //                startIndex = (startIndex + endIndex) / 2;
+        //            }
+        //        }
+        //        counter++;
+        //    }
+        //    return startIndex;
+        //}
 
         //private FragmenterResult getFragmenterResult(RawData rawData, ObservableCollection<double[]> eSpectrum, MoleculeMsReference query, AnalysisParamOfMsfinder param)
         //{
@@ -400,7 +395,7 @@ namespace CompMs.Common.StructureFinder
             if (queries == null || queries.Count == 0) return;
 
             var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
-            var curetedPeaklist = getCuratedPeaklist(formulaResult.ProductIonResult);
+            var curetedPeaklist = GetCuratedPeaklist(formulaResult.ProductIonResult);
 
             var centroidSpectrum = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
             var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(centroidSpectrum, analysisParam.RelativeAbundanceCutOff, 0.0,
@@ -419,7 +414,7 @@ namespace CompMs.Common.StructureFinder
         {
             var syncObj = new object();
             var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
-            var curetedPeaklist = getCuratedPeaklist(formulaResult.ProductIonResult);
+            var curetedPeaklist = GetCuratedPeaklist(formulaResult.ProductIonResult);
 
             var centroidSpectrum = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
             var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(centroidSpectrum, analysisParam.RelativeAbundanceCutOff, 0.0,
@@ -439,14 +434,11 @@ namespace CompMs.Common.StructureFinder
             });
         }
 
-        private List<SpectrumPeak> getCuratedPeaklist(List<ProductIon> productIons)
-        {
+        private List<SpectrumPeak> GetCuratedPeaklist(List<ProductIon> productIons) {
             var peaks = new List<SpectrumPeak>();
-            foreach (var ion in productIons)
-            {
+            foreach (var ion in productIons) {
                 peaks.Add(new SpectrumPeak() { Mass = ion.Mass, Intensity = ion.Intensity, Comment = ion.Formula.FormulaString });
             }
-
             return peaks;
         }
 
@@ -458,44 +450,32 @@ namespace CompMs.Common.StructureFinder
         //    }
         //}
 
-        private void tempFolderInitialize()
-        {
-            var currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
+        private void TempFolderInitialize() {
+            var currentDir = AppDomain.CurrentDomain.BaseDirectory;
             tempSdfDirect = currentDir + "TEMP_SDF";
             //tempSdfDirect = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\TEMP_SDF";
-            if (System.IO.Directory.Exists(tempSdfDirect))
-            {
+            if (Directory.Exists(tempSdfDirect)) {
 
-            }
-            else
-            {
-                var di = System.IO.Directory.CreateDirectory(tempSdfDirect);
+            } else {
+                Directory.CreateDirectory(tempSdfDirect);
             }
         }
 
-        private bool formulaFolderExistsCheck(string formulaDirect)
-        {
-            if (System.IO.Directory.Exists(formulaDirect))
-            {
-                if (sdfFileExistsCheck(formulaDirect))
-                {
+        private bool FormulaFolderExistsCheck(string formulaDirect) {
+            if (Directory.Exists(formulaDirect)) {
+                if (SdfFileExistsCheck(formulaDirect)) {
                     return true;
-                }
-                else
-                {
+                } else {
                     return false;
                 }
-            }
-            else
-            {
-                var di = System.IO.Directory.CreateDirectory(formulaDirect);
+            } else {
+                Directory.CreateDirectory(formulaDirect);
                 return false;
             }
         }
 
-        private bool sdfFileExistsCheck(string folderPath)
-        {
-            var files = System.IO.Directory.GetFiles(folderPath, "*.sdf", System.IO.SearchOption.TopDirectoryOnly);
+        private bool SdfFileExistsCheck(string folderPath) {
+            var files = Directory.GetFiles(folderPath, "*.sdf", SearchOption.TopDirectoryOnly);
             if (files.Length == 0) return false;
             else return true;
         }
