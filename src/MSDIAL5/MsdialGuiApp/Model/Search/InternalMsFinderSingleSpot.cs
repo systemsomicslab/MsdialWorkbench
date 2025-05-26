@@ -146,11 +146,11 @@ namespace CompMs.App.Msdial.Model.Search
                 _filePath = filePath;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                if (fragmentOntologyDB != null && productIonDB != null)
+                if (fragmentOntologyDB is not null && productIonDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && neutralLossDB != null)
+                if (fragmentOntologyDB is not null && neutralLossDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                if (fragmentOntologyDB is not null && chemicalOntologies is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
@@ -216,11 +216,11 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                if (fragmentOntologyDB != null && productIonDB != null)
+                if (fragmentOntologyDB is not null && productIonDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && neutralLossDB != null)
+                if (fragmentOntologyDB is not null && neutralLossDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                if (fragmentOntologyDB is not null && chemicalOntologies is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
@@ -325,7 +325,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             StructureList = updatedStructureList;
             FilteredStructureList = StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula).ToList();
-            SelectedStructure = StructureList.FirstOrDefault();
+            SelectedStructure = FilteredStructureList.FirstOrDefault();
             Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {
                 MessageBox.Show("No structure found");
