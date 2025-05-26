@@ -46,11 +46,15 @@ namespace MsdialPrivateConsoleApp {
             //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution\result\dda_result.txt");
 
-            //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
-            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\ztscan_vs_dda_result.txt");
+            var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\ztscan_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\ztscan_vs_dda_result.txt");
 
-            //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\swath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
-            //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution\result\swath_vs_dda_result.txt");
+            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\ztscanAsSwath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\ztscanasswath_vs_dda_result.txt");
+
+            files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\swath_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
+            msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda\result\swathasswath_vs_dda_result.txt");
+
 
 
             //MspManager.ExtractPositiveSpectra(
@@ -85,9 +89,9 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
             //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.txt");
 
-            MspFileParser.SeializedLbmObjToAsciiTextAsPublicUseBySummedLipidNames(
-                @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
-                @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev_summuedlipidname.txt");
+            //MspFileParser.SeializedLbmObjToAsciiTextAsPublicUseBySummedLipidNames(
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev.lbm2",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20250303164224_LBM2\Msp20250303164224_NCDK-TUAT-LC25_converted_dev_summuedlipidname.txt");
 
             //mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp";
             //new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15-For-Statistics.msp";
