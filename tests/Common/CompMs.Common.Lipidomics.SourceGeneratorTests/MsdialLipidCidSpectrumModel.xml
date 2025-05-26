@@ -325,9 +325,10 @@
       </ClassIons>
     </LipidMS>
   </LipidMSs>
+	<!--
 	<LipidMSs>
 		<LipidMS>
-			<LipidClass>EtherPE_O</LipidClass>
+			<LipidClass>EtherPE</LipidClass>
 			<LSILevel>None</LSILevel>
 			<Adduct>[M-H]-</Adduct>
 			<Precursors>
@@ -360,7 +361,7 @@
 			<ClassIons />
 		</LipidMS>
 		<LipidMS>
-			<LipidClass>EtherPE_O</LipidClass>
+			<LipidClass>EtherPE</LipidClass>
 			<LSILevel>None</LSILevel>
 			<Adduct>[M+H]+</Adduct>
 			<Precursors>
@@ -394,4 +395,5 @@
 			</ClassIons>
 		</LipidMS>
 	</LipidMSs>
+	-->
 </root>
