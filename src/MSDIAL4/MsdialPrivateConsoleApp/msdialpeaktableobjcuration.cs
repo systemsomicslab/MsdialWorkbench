@@ -60,7 +60,8 @@ namespace MsdialPrivateConsoleApp {
             var header = new List<string>() { "SimpleDotProduct", "WeightedDotProduct", "ReverseDotProduct", "MatchedPeaksCount", "MatchedPeaksPercentage" };
             using (StreamWriter sw = new StreamWriter(output)) {
                 sw.WriteLine(String.Join("\t", header));
-                foreach (var query in list.Where(n => n.SimpleDotProduct != "null" && n.SimpleDotProduct != "-1.00")) {
+                //foreach (var query in list.Where(n => n.SimpleDotProduct != "null" && n.SimpleDotProduct != "-1.00")) {
+                foreach (var query in list.Where(n => n.SimpleDotProduct != "null" && n.SimpleDotProduct != "-1.00" && double.Parse(n.MatchedPeaksPercentage) < 0.99999)) {
                 //foreach (var query in list.Where(n => n.SimpleDotProduct != "null" && n.SimpleDotProduct != "-1.00" && Math.Sqrt(double.Parse(n.ReverseDotProduct)) > 0.5 && Math.Sqrt(double.Parse(n.WeightedDotProduct)) > 0.0)) {
                         var values = new List<string>() { Math.Sqrt(double.Parse(query.SimpleDotProduct)).ToString(), Math.Sqrt(double.Parse(query.WeightedDotProduct)).ToString(),
                         Math.Sqrt(double.Parse(query.ReverseDotProduct)).ToString(), query.MatchedPeaksCount, query.MatchedPeaksPercentage };
