@@ -185,7 +185,7 @@
                             <DataGridTemplateColumn SortMemberPath="MassError" Width="2*" Header="Error [mDa]" IsReadOnly="True">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Path=MassDiff, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                        <TextBox Text="{Binding Path=MassDiffmDa, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -345,7 +345,7 @@
                         <DataGridTemplateColumn SortMemberPath="InChIKey" Width="1.5*" Header="InChIKey" IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                                    <TextBox Text="{Binding Path=InChIKey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
