@@ -302,11 +302,23 @@ namespace CompMs.App.Msdial.Model.Search {
 
             if (_queryFile.FormulaFileExists) {
                 _formulaList = FormulaResultParcer.FormulaResultReader(_queryFile.FormulaFilePath, out _);
+                SelectedFormula = _formulaList.FirstOrDefault();
             }
             if (_queryFile.StructureFileExists) {
                 var structureFilePath = Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
                 foreach (var file in structureFilePath) {
-                    FragmenterResultParser.FragmenterResultReader(file);
+                    var structures = FragmenterResultParser.FragmenterResultReader(file);
+                    foreach (var result in structures) {
+                        var structureVM = new FragmenterResultVM(false, result);
+                        StructureList = [structureVM];
+                    }
+                }
+                SelectedStructure = StructureList.FirstOrDefault();
+            }
+            if (parameter.IsFormulaFinder) {
+                FindFormula();
+                if (parameter.IsStructureFinder) {
+                    FindStructure();
                 }
             }
         }
@@ -325,6 +337,13 @@ namespace CompMs.App.Msdial.Model.Search {
             if (productIonDB is not null && neutralLossDB is not null) {
                 var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _spotData, _parameter);
                 FormulaList = formulaResults;
+                foreach (var formulaResult in formulaResults) {
+                    var folder = Path.GetDirectoryName(_queryFile.RawDataFilePath);
+                    var formulaFileName = Path.Combine(folder, formulaResult.Formula.FormulaString);
+                    var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
+                    FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
+                }
+                SelectedFormula = FormulaList.FirstOrDefault();
                 if (chemicalOntologies is not null) {
                     ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _spotData.IonMode, _parameter, _adduct, productIonDB, neutralLossDB);
                 }
