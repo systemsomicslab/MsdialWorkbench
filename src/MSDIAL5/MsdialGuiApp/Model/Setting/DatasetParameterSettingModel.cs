@@ -206,6 +206,7 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.License = License;
             projectParameter.CollisionEnergy = CollisionEnergy;
             projectParameter.Comment = Comment;
+            parameter.ChromDecBaseParam.ExecuteQ1Deconvolution = fileSettingModel.IncludedFileModels.Any(f => f.AcquisitionType == AcquisitionType.ZTScan);
 
             parameter.ProteomicsParam.CollisionType = CollisionType;
             if (projectParameter.TargetOmics == TargetOmics.Proteomics) parameter.ProteomicsParam.IsDoAndromedaMs2Deconvolution = true;
