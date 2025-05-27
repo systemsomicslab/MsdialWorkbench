@@ -17,6 +17,8 @@ namespace CompMs.App.Msdial.Model.Setting
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteQ1Deconvolution = parameter.ExecuteQ1Deconvolution;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
         }
 
         public bool IsReadOnly { get; }
@@ -57,6 +59,18 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _keepOriginalPrecurosrIsotopes;
 
+        public bool ExecuteChromDeconvolution {
+            get => _executeChromDeconvolution;
+            set => SetProperty(ref _executeChromDeconvolution, value);
+        }
+        private bool _executeChromDeconvolution;
+
+        public bool ExecuteQ1Deconvolution {
+            get => _executeQ1Deconvolution;
+            set => SetProperty(ref _executeQ1Deconvolution, value);
+        }
+        private bool _executeQ1Deconvolution;
+
         public void Commit() {
             if (IsReadOnly) {
                 return;
@@ -67,6 +81,8 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.RemoveAfterPrecursor = RemoveAfterPrecursor;
             _parameter.KeptIsotopeRange = KeptIsotopeRange;
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
+            _parameter.ExecuteChromDeconvolution = ExecuteChromDeconvolution;
+            _parameter.ExecuteQ1Deconvolution = ExecuteQ1Deconvolution;
         }
 
         public void LoadParameter(ChromDecBaseParameter parameter) {
@@ -79,6 +95,8 @@ namespace CompMs.App.Msdial.Model.Setting
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
+            ExecuteQ1Deconvolution = parameter.ExecuteQ1Deconvolution;
         }
     }
 }
