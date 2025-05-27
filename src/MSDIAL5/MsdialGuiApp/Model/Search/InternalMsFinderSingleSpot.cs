@@ -195,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Search
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
                 SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
@@ -266,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Search
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
                 SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
@@ -324,7 +324,7 @@ namespace CompMs.App.Msdial.Model.Search
                 }
             }
             StructureList = updatedStructureList;
-            FilteredStructureList = StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula).ToList();
+            FilteredStructureList = [.. StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula)];
             SelectedStructure = FilteredStructureList.FirstOrDefault();
             Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {

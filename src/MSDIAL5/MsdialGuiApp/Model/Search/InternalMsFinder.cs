@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Search {
             var refMs2HorizontalAxis = propertySelectors;
 
             var msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            var msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            var msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
             SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
             SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
 
