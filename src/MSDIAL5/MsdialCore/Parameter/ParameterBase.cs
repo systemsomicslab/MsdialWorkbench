@@ -1226,6 +1226,10 @@ namespace CompMs.MsdialCore.Parameter
         public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
         [Key(9)]
         public float RelativeAmplitudeCutoff { get; set; } = 0;
+        [Key(10)]
+        public bool ExecuteChromDeconvolution { get; } = true;
+        [Key(11)]
+        public bool ExecuteQ1Deconvolution { get; } = false;
     }
 
     [MessagePackObject]
