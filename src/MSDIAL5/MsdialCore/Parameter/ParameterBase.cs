@@ -1227,9 +1227,9 @@ namespace CompMs.MsdialCore.Parameter
         [Key(9)]
         public float RelativeAmplitudeCutoff { get; set; } = 0;
         [Key(10)]
-        public bool ExecuteChromDeconvolution { get; } = true;
+        public bool ExecuteChromDeconvolution { get; set; } = true;
         [Key(11)]
-        public bool ExecuteQ1Deconvolution { get; } = false;
+        public bool ExecuteQ1Deconvolution { get; set; } = false;
     }
 
     [MessagePackObject]
