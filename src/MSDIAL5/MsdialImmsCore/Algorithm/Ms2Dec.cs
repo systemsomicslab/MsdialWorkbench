@@ -62,7 +62,7 @@ public sealed class Ms2Dec
         if (curatedSpectra.IsEmptyOrNull())
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-        if (!file.IsDoMs2ChromDeconvolution) {
+        if (!file.IsDoMs2ChromDeconvolution || !parameter.ChromDecBaseParam.ExecuteChromDeconvolution) {
             if (parameter.IsDoAndromedaMs2Deconvolution)
                 return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, parameter, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
             else

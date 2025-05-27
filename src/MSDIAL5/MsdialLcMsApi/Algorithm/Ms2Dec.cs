@@ -107,7 +107,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (!file.IsDoMs2ChromDeconvolution) {
+            if (!file.IsDoMs2ChromDeconvolution || !param.ChromDecBaseParam.ExecuteChromDeconvolution) {
                 if (param.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
                 else
