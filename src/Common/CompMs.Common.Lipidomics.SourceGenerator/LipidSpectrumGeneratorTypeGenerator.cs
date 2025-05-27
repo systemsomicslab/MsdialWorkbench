@@ -144,6 +144,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
 using static CompMs.Common.Lipidomics.ConstantFormulas;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace CompMs.Common.Lipidomics {
