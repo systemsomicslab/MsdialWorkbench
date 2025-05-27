@@ -40,7 +40,7 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public MsScanMatchResultContainer MatchResults { get; }
         [IgnoreMember]
-        public IMoleculeProperty Molecule { get; }
+        public IMoleculeProperty? Molecule { get; }
         [IgnoreMember]
         public double QuantMass { get; }
 
