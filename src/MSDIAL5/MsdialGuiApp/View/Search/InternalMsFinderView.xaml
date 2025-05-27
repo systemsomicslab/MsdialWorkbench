@@ -319,7 +319,7 @@
                 <Button Content="Reflect to MS-DIAL"
                         Background="IndianRed" BorderThickness="2" 
                         Height="25" Width="120" HorizontalAlignment="Right" ToolTip="Reflect to MS-DIAL result" IsEnabled="False"/>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Model.SelectedObservedMetabolite.StructureList}" SelectedItem="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Model.SelectedObservedMetabolite.FilteredStructureList}" SelectedItem="{Binding Path=Model.SelectedObservedMetabolite.SelectedStructure, Mode=TwoWay}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" >
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
