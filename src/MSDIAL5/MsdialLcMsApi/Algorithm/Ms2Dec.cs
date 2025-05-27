@@ -77,7 +77,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
             RawSpectrum spectrum = await provider.LoadSpectrumAsync((ulong)targetSpecID, chromPeakFeature.RawDataIDType).ConfigureAwait(false);
             var acquisition = MsmsAcquisition.Get(file.AcquisitionType) ?? MsmsAcquisition.None;
-            if (acquisition.NeedQ1Deconvolution) {
+            if (acquisition.NeedQ1Deconvolution && param.ChromDecBaseParam.ExecuteQ1Deconvolution) {
                 var query = new SpectraLoadingQuery
                 {
                     MSLevel = spectrum.MsLevel,
