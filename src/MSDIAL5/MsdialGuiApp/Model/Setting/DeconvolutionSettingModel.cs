@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.Model.Setting
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
         }
 
         public bool IsReadOnly { get; }
@@ -57,6 +58,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _keepOriginalPrecurosrIsotopes;
 
+        public bool ExecuteChromDeconvolution {
+            get => _executeChromDeconvolution;
+            set => SetProperty(ref _executeChromDeconvolution, value);
+        }
+        private bool _executeChromDeconvolution;
+
         public void Commit() {
             if (IsReadOnly) {
                 return;
@@ -67,6 +74,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.RemoveAfterPrecursor = RemoveAfterPrecursor;
             _parameter.KeptIsotopeRange = KeptIsotopeRange;
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
+            _parameter.ExecuteChromDeconvolution = ExecuteChromDeconvolution;
         }
 
         public void LoadParameter(ChromDecBaseParameter parameter) {
@@ -79,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Setting
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
         }
     }
 }
