@@ -70,15 +70,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     MessageBox.Show("Please select the alignment result");
                 }
                 Mouse.OverrideCursor = null;
-            });
+            }).AddTo(Disposables);
 
             Apply = new ReactiveCommand().WithSubscribe(() => {
                 model.Commit();
-            });
+            }).AddTo(Disposables);
 
             Cancel = new ReactiveCommand().WithSubscribe(() => {
                 model.Cancel();
-            });
+            }).AddTo(Disposables);
         }
 
         public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; set; }
