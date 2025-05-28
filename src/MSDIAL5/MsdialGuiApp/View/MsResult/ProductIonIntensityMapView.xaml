@@ -6,6 +6,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
              xmlns:viewchart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:model="clr-namespace:CompMs.App.Msdial.Model.MsResult"
@@ -34,6 +35,27 @@
             <RowDefinition/>
             <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Save image as...">
+                    <MenuItem Header="Save as emf"
+                              Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save as png"
+                              Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                </MenuItem>
+                <MenuItem Header="Copy image as...">
+                    <MenuItem Header="Copy as emf"
+                              Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy as png"
+                              Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
 
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.Resources>
