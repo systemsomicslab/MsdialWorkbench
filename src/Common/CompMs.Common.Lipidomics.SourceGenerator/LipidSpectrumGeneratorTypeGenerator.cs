@@ -197,7 +197,14 @@ namespace CompMs.Common.Lipidomics {
 """);
 
                 if (def is not null && lipidMS.Ions.SelectMany(ions => ions.Value).Any(ion => ion.Mz.Contains("SN"))) {
-                    result.AppendLine(ForEachLine("                    ", Enumerable.Range(0, def.NumOfChains).Select(i => $"SN{i + 1} = chains[{i}].Mass;")));
+                    foreach (var i in Enumerable.Range(0, def.NumOfChains)) {
+                        if(def.NumOfChains > 1) {
+                            result.AppendLine($"                    SN{i + 1} = chains[{i}].Mass;");
+                        }
+                        else {
+                            result.AppendLine($"                    SN{i + 1} = chains[{i}].Mass == 0 ? 0 : chains[{i + 1}].Mass;");
+                        }
+                    }
                 }
 
                 foreach (var ions in lipidMS.Ions) {

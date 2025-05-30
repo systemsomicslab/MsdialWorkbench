@@ -36,26 +36,26 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                     var generatorPs = new PSCidLipidSpectrumGenerator();
                     spectrum = generatorPs.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
                     break;
-                //case LbmClass.LPC:
-                //    var generatorLpc = new LPCCidLipidSpectrumGenerator();
-                //    spectrum = generatorLpc.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
-                //    break;
-                //case LbmClass.LPE:
-                //    var generatorLpe = new LPECidLipidSpectrumGenerator();
-                //    spectrum = generatorLpe.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
-                //    break;
-                //case LbmClass.LPG:
-                //    var generatorLpg = new LPGCidLipidSpectrumGenerator();
-                //    spectrum = generatorLpg.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
-                //    break;
-                //case LbmClass.LPI:
-                //    var generatorLpi = new LPICidLipidSpectrumGenerator();
-                //    spectrum = generatorLpi.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
-                //    break;
-                //case LbmClass.LPS:
-                //    var generatorLps = new LPSCidLipidSpectrumGenerator();
-                //    spectrum = generatorLps.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
-                //    break;
+                case LbmClass.LPC:
+                    var generatorLpc = new LPCCidLipidSpectrumGenerator();
+                    spectrum = generatorLpc.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
+                case LbmClass.LPE:
+                    var generatorLpe = new LPECidLipidSpectrumGenerator();
+                    spectrum = generatorLpe.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
+                case LbmClass.LPG:
+                    var generatorLpg = new LPGCidLipidSpectrumGenerator();
+                    spectrum = generatorLpg.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
+                case LbmClass.LPI:
+                    var generatorLpi = new LPICidLipidSpectrumGenerator();
+                    spectrum = generatorLpi.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
+                case LbmClass.LPS:
+                    var generatorLps = new LPSCidLipidSpectrumGenerator();
+                    spectrum = generatorLps.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
                 default:
                     Assert.Inconclusive("Skip");
                     return;
