@@ -81,9 +81,9 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<Label Content="Batch analysis:" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,0" Height="30" Grid.Row="0"/>
-			<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="10,0,0,0">
-				<CheckBox Content="Run batch molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
+			<Label Content="Batch analysis (current filter will be applied):" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,0" Height="30" Grid.Row="0"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="10,0,0,0">
+                <CheckBox Content="Run batch molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
 				<CheckBox Content="Run batch structure finder" IsChecked="{Binding IsStructureFinder.Value}" VerticalAlignment="Center" Margin="20,0,0,0" />
 			</StackPanel>
 			<StackPanel Orientation="Horizontal" Grid.Row="2"  Margin="10,10,0,0">

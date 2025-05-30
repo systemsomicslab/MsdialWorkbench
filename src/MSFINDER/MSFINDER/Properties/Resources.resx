@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DATE" xml:space="preserve">
-    <value>July 1th, 2021</value>
+    <value>May 26th, 2025</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="IsotopeButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -134,7 +134,7 @@
     <value>..\Resources\RawDataButton.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-FINDER ver. 3.72</value>
+    <value>MS-FINDER ver. 3.73</value>
   </data>
   <data name="VDD_URI" xml:space="preserve">
     <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100</value>

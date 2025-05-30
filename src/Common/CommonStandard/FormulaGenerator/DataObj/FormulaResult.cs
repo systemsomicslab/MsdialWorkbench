@@ -1,9 +1,6 @@
 ﻿using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.FormulaGenerator.DataObj {
     public class FormulaResult
