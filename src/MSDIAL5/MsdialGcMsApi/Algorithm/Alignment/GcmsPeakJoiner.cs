@@ -251,7 +251,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                     var candidate = master[rtIdc][i];
                     if (IsSimilarTo(candidate, target)) {
                         if (!candidate.AnnotatedMSDecResult.IsReferenceMatched(_evaluator) && target.AnnotatedMSDecResult.IsReferenceMatched(_evaluator)) {
-                            master[rtIdc].Remove(candidate);
+                            master[rtIdc].RemoveAt(i);
                             master[rtTarget].Add(target);
                             return true;
                         }
