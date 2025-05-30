@@ -247,8 +247,14 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
         for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
             if (master.ContainsKey(rtIdc)) {
-                foreach (var candidate in master[rtIdc]) {
+                for (int i = 0; i < master[rtIdc].Count; i++) {
+                    var candidate = master[rtIdc][i];
                     if (IsSimilarTo(candidate, target)) {
+                        if (!candidate.AnnotatedMSDecResult.IsReferenceMatched(_evaluator) && target.AnnotatedMSDecResult.IsReferenceMatched(_evaluator)) {
+                            master[rtIdc].RemoveAt(i);
+                            master[rtTarget].Add(target);
+                            return true;
+                        }
                         return false;
                     }
                 }
