@@ -269,7 +269,7 @@
             <GridSplitter Height="2" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             <TabControl Grid.Row="1">
                 <TabItem Header="Spectrum">
-                    <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel}"/>
+                    <chart:MsSpectrumViewWithSubstructureImage DataContext="{Binding MsSpectrumViewModel}"/>
                 </TabItem>
                 <TabItem Header="Structure" Height="20" VerticalAlignment="Top">
                     <infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>
