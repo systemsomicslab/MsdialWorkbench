@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
                 ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{Capacity-1}}})"
                 : hasEther
                 ? $"(?<PositionLevel>({ChainsPattern}/?){{{Capacity}}})"
-                : $"(?<PositionLevel>({AcylChainsPattern}/?){{{Capacity}}})";
+                : $"(?<PositionLevel>((?<Nacyl>\\(FA )?{AcylChainsPattern}/?\\)?){{{Capacity}}})";
             if (Capacity == 1) {
                 var postionLevelExpression = new Regex(positionLevelPattern, RegexOptions.Compiled);
                 Pattern = positionLevelPattern;

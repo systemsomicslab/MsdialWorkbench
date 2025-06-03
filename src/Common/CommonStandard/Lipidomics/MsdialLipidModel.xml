@@ -36,7 +36,7 @@
             <LbmClass Oxidized="True">OxPE</LbmClass>
         </LbmClasses>
     </Lipid>
-    <Lipid>
+	<Lipid>
         <Name>PA</Name>
         <Abbreviation>PA</Abbreviation>
         <Chains>
@@ -104,7 +104,177 @@
             <LbmClass Oxidized="True">OxPS</LbmClass>
         </LbmClasses>
     </Lipid>
-    <Lipid>
+	<Lipid>
+		<Name>PT</Name>
+		<Abbreviation>PT</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>7</Carbon>
+			<Hydrogen>14</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>PT</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>EtherPG</Name>
+		<Abbreviation>PG</Abbreviation>
+		<Chains>
+			<Ether/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>13</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>EtherPG</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>EtherLPG</Name>
+		<Abbreviation>LPG</Abbreviation>
+		<Chains>
+			<Ether/>
+			<Total>1</Total>
+			<Capacity>2</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>13</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>EtherLPG</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>EtherPI</Name>
+		<Abbreviation>PI</Abbreviation>
+		<Chains>
+			<Ether/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>9</Carbon>
+			<Hydrogen>17</Hydrogen>
+			<Oxygen>11</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>EtherPI</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>EtherPS</Name>
+		<Abbreviation>PS</Abbreviation>
+		<Chains>
+			<Ether/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>12</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>EtherPS</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>MMPE</Name>
+		<Abbreviation>MMPE</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>14</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>MMPE</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>DMPE</Name>
+		<Abbreviation>DMPE</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>7</Carbon>
+			<Hydrogen>16</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>DMPE</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>bmPC</Name>
+		<Abbreviation>bmPC</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>9</Carbon>
+			<Hydrogen>20</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>bmPC</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>PMeOH</Name>
+		<Abbreviation>PMeOH</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>4</Carbon>
+			<Hydrogen>9</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>PMeOH</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>PEtOH</Name>
+		<Abbreviation>PEtOH</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>5</Carbon>
+			<Hydrogen>11</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>PEtOH</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
         <Name>LPC</Name>
         <Abbreviation>LPC</Abbreviation>
         <Chains>
@@ -192,7 +362,93 @@
             <LbmClass>LPS</LbmClass>
         </LbmClasses>
     </Lipid>
-    <Lipid>
+	<Lipid>
+		<Name>LPA</Name>
+		<Abbreviation>LPA</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>2</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>3</Carbon>
+			<Hydrogen>7</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>LPA</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>BisMeLPA</Name>
+		<Abbreviation>BisMeLPA</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>2</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>5</Carbon>
+			<Hydrogen>11</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>BisMeLPA</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>GPNAE</Name>
+		<Abbreviation>GPNAE</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>1</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>5</Carbon>
+			<Hydrogen>13</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>GPNAE</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>LNAPS</Name>
+		<Abbreviation>LPS-N</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>12</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>LNAPS</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>LNAPE</Name>
+		<Abbreviation>LPE-N</Abbreviation>
+		<Chains>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>5</Carbon>
+			<Hydrogen>12</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>LNAPE</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
         <Name>TG</Name>
         <Abbreviation>TG</Abbreviation>
         <Chains>
@@ -356,7 +612,8 @@
         </Skelton>
         <LbmClasses>
             <LbmClass>EtherPC</LbmClass>
-        </LbmClasses>
+			<LbmClass Oxidized="True">EtherOxPC</LbmClass>
+		</LbmClasses>
     </Lipid>
     <Lipid>
         <Name>EtherLPE</Name>
@@ -393,7 +650,8 @@
         </Skelton>
         <LbmClasses>
             <LbmClass>EtherPE</LbmClass>
-        </LbmClasses>
+			<LbmClass Oxidized="True">EtherOxPE</LbmClass>
+		</LbmClasses>
     </Lipid>
     <Lipid>
         <Name>BMP</Name>
