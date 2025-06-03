@@ -35,6 +35,8 @@
                 <ContextMenu>
                     <MenuItem Header="Peak spectra alignment"
                               Command="{Binding Path=SpectraSimilarityMapCommand}"/>
+                    <MenuItem Header="Peak spectra grouping"
+                              Command="{Binding Path=SpectraGroupingCommand}"/>
                     <Separator/>
                     <MenuItem Header="Save image using dialog"
                               Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"

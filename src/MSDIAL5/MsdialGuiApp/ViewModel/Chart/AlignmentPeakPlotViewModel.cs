@@ -116,4 +116,5 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
     }
 
     public ReactiveCommand? SpectraSimilarityMapCommand { get; set; }
+    public ReactiveCommand? SpectraGroupingCommand { get; set; }
 }

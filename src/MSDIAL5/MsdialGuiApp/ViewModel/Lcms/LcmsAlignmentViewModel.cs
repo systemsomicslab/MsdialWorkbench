@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.SpectraGrouping;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -48,11 +49,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
             var spectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
+            var spectraGroupingViewModel = new SpectraGroupingViewModel().AddTo(Disposables);
+            var spectraGroupingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraGroupingViewModel)).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker)
             {
-                SpectraSimilarityMapCommand = spectraSmilarityMapCommand
+                SpectraSimilarityMapCommand = spectraSmilarityMapCommand,
+                SpectraGroupingCommand = spectraGroupingCommand,
             }.AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();

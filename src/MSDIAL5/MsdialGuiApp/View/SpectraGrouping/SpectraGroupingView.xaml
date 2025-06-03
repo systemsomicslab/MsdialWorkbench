@@ -1,0 +1,91 @@
+<UserControl x:Class="CompMs.App.Msdial.View.SpectraGrouping.SpectraGroupingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.SpectraGrouping"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:SpectraGroupingViewModel}}"
+             d:DesignHeight="800" d:DesignWidth="1200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.Resources>
+            <Style TargetType="HeaderedContentControl">
+                <Setter Property="Margin" Value="8"/>
+                <Setter Property="Padding" Value="8"/>
+            </Style>
+        </Grid.Resources>
+
+        <HeaderedContentControl Header="Molecule group"
+                                Grid.Column="0">
+            <ListBox/>
+        </HeaderedContentControl>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <HeaderedContentControl Header="Product ion abundance of selected m/z"
+                                    Grid.Row="0">
+                <chart:SimpleChartControl />
+            </HeaderedContentControl>
+
+            <HeaderedContentControl Header="Product ion abundance table"
+                                    Grid.Row="1">
+                <DataGrid/>
+            </HeaderedContentControl>
+
+            <GridSplitter Height="2" Margin="0,-2"
+                          Background="Gray"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <HeaderedContentControl Header="Theoretical spectra"
+                                    Grid.Row="0">
+                <chart:SimpleChartControl>
+                    <chart:LineSpectrumControl/>
+                </chart:SimpleChartControl>
+            </HeaderedContentControl>
+
+            <HeaderedContentControl Header="Measured spectra"
+                                    Grid.Row="1">
+                <chart:SimpleChartControl>
+                    <chart:LineSpectrumControl />
+                </chart:SimpleChartControl>
+            </HeaderedContentControl>
+
+            <GridSplitter Height="2" Margin="0,-8"
+                          Background="Gray"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <GridSplitter Width="2" Margin="-2,0"
+                      Background="Gray"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      Grid.Column="0"/>
+
+        <GridSplitter Width="2" Margin="-2,0"
+                      Background="Gray"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      Grid.Column="1"/>
+    </Grid>
+</UserControl>

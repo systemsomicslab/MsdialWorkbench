@@ -8,6 +8,7 @@ using CompMs.App.Msdial.View.MsResult;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.View.SpectraGrouping;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -19,6 +20,7 @@ using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.SpectraGrouping;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.Common;
@@ -145,6 +147,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
             broker.ToObservable<SpectraSimilarityMapViewModel>()
                 .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
+            broker.ToObservable<SpectraGroupingViewModel>()
+                .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1200));
+
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
