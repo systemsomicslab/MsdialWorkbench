@@ -10,6 +10,7 @@
 	<Sulfur>MassDiffDictionary.SulfurMass</Sulfur>
 	<Phosphorus>MassDiffDictionary.PhosphorusMass</Phosphorus>
 	<Sodium>22.98976928</Sodium>
+	<Deuterium>MassDiffDictionary.Hydrogen2Mass</Deuterium>
 
 	<C>MassDiffDictionary.CarbonMass</C>
 	<H>MassDiffDictionary.HydrogenMass</H>
@@ -18,6 +19,7 @@
 	<S>MassDiffDictionary.SulfurMass</S>
 	<P>MassDiffDictionary.PhosphorusMass</P>
 	<Na>Sodium</Na>
+	<D>MassDiffDictionary.Hydrogen2Mass</D>
 
 	<HCOO>H * 1.0 + C * 1 + O * 2.0</HCOO>
 	<CH3COO>H * 3.0 + C * 2 + O * 2.0</CH3COO>
