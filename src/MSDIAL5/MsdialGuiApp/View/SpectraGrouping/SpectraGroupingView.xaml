@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.SpectraGrouping"
+             xmlns:component="clr-namespace:CompMs.Common.Components;assembly=Common"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:SpectraGroupingViewModel}}"
              d:DesignHeight="800" d:DesignWidth="1200">
@@ -25,30 +26,30 @@
 
         <HeaderedContentControl Header="Molecule group"
                                 Grid.Column="0">
-            <ListBox/>
+            <TreeView ItemsSource="{Binding MoleculeGroups}">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate ItemsSource="{Binding UniqueMzList}"
+                                              DataType="{x:Type vm:MoleculeGroupModel}">
+                        <TextBlock Text="{Binding Name}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
         </HeaderedContentControl>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="2*"/>
-            </Grid.RowDefinitions>
-
-            <HeaderedContentControl Header="Product ion abundance of selected m/z"
-                                    Grid.Row="0">
-                <chart:SimpleChartControl />
-            </HeaderedContentControl>
-
-            <HeaderedContentControl Header="Product ion abundance table"
-                                    Grid.Row="1">
-                <DataGrid/>
-            </HeaderedContentControl>
-
-            <GridSplitter Height="2" Margin="0,-2"
-                          Background="Gray"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Bottom"/>
-        </Grid>
+        <HeaderedContentControl Header="Product ion abundance of selected m/z"
+                                Grid.Column="1">
+            <ItemsControl ItemsSource="{Binding Path=ProductIonAbundances}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <chart:SimpleChartControl>
+                            <chart:BarControl ItemsSource="{Binding Path=.}"
+                                              HorizontalPropertyName="SampleName"
+                                              VerticalPropertyName="Intensity"/>
+                        </chart:SimpleChartControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </HeaderedContentControl>
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
@@ -59,14 +60,20 @@
             <HeaderedContentControl Header="Theoretical spectra"
                                     Grid.Row="0">
                 <chart:SimpleChartControl>
-                    <chart:LineSpectrumControl/>
+                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=TheoreticalSpectra.Value.Spectrum}"
+                                                   DataType="{x:Type component:SpectrumPeak}"
+                                                   HorizontalProperty="Mass"
+                                                   VerticalProperty="Intensity"/>
                 </chart:SimpleChartControl>
             </HeaderedContentControl>
 
             <HeaderedContentControl Header="Measured spectra"
                                     Grid.Row="1">
                 <chart:SimpleChartControl>
-                    <chart:LineSpectrumControl />
+                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
+                                                   DataType="{x:Type component:SpectrumPeak}"
+                                                   HorizontalProperty="Mass"
+                                                   VerticalProperty="Intensity"/>
                 </chart:SimpleChartControl>
             </HeaderedContentControl>
 
