@@ -13032,12 +13032,9 @@ AdductIon adduct)
                                 }
                             }
                         }
-                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("SHexCer", LbmClass.SHexCer, hydrogenString, theoreticalMz, adduct,
-                            totalCarbon, totalDoubleBond, acylOxidized, candidates, 2);
-
                     }
-
-
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SHexCer", LbmClass.SHexCer, hydrogenString, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, acylOxidized, candidates, 2);
                 }
             }
             else
