@@ -1,11 +1,12 @@
-<UserControl x:Class="CompMs.App.Msdial.View.SpectraGrouping.SpectraGroupingView"
+<UserControl x:Class="CompMs.App.Msdial.View.Spectra.SpectraGroupingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.SpectraGrouping"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Spectra"
+             xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Spectra"
              xmlns:component="clr-namespace:CompMs.Common.Components;assembly=Common"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:SpectraGroupingViewModel}}"
@@ -29,7 +30,7 @@
             <TreeView ItemsSource="{Binding MoleculeGroups}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate ItemsSource="{Binding UniqueMzList}"
-                                              DataType="{x:Type vm:MoleculeGroupModel}">
+                                              DataType="{x:Type model:MoleculeGroupModel}">
                         <TextBlock Text="{Binding Name}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
