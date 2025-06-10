@@ -27,14 +27,17 @@
 
         <HeaderedContentControl Header="Molecule group"
                                 Grid.Column="0">
-            <TreeView ItemsSource="{Binding MoleculeGroups}">
-                <TreeView.Resources>
-                    <HierarchicalDataTemplate ItemsSource="{Binding UniqueMzList}"
-                                              DataType="{x:Type model:MoleculeGroupModel}">
+            <ListBox ItemsSource="{Binding Path=MoleculeGroups}"
+                     SelectedItem="{Binding Path=SelectedMoleculeGroup.Value}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type model:MoleculeGroupModel}"
+                                              ItemsSource="{Binding UniqueMzList}">
                         <TextBlock Text="{Binding Name}"/>
+                        <!--<TreeViewItem Header="{Binding Name}" ItemsSource="{Binding UniqueMzList}"/>-->
                     </HierarchicalDataTemplate>
-                </TreeView.Resources>
-            </TreeView>
+                </ListBox.Resources>
+            </ListBox>
         </HeaderedContentControl>
 
         <HeaderedContentControl Header="Product ion abundance of selected m/z"

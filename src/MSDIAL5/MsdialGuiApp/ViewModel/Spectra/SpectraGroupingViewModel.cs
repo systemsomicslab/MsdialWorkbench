@@ -18,7 +18,7 @@ public class SpectraGroupingViewModel : ViewModelBase {
         _model = model;
         MoleculeGroups = new ReadOnlyObservableCollection<MoleculeGroupModel>(model.MoleculeGroups);
         SelectedMoleculeGroup = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedMoleculeGroup).AddTo(Disposables);
-        ProductIonAbundances = model.ObserveProperty(m => m.ProductIonAbundances).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        ProductIonAbundances = model.ObserveProperty(m => m.ProductIonAbundances).ToReadOnlyReactivePropertySlim(initialValue: []).AddTo(Disposables);
         TheoreticalSpectra = model.ObserveProperty(m => m.TheoreticalSpectra).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         SelectedSample = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedSample).AddTo(Disposables);
         MeasuredSpectra = model.ObserveProperty(m => m.MeasuredSpectra).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -27,7 +27,7 @@ public class SpectraGroupingViewModel : ViewModelBase {
     public ReadOnlyObservableCollection<MoleculeGroupModel> MoleculeGroups { get; }
     public ReactivePropertySlim<MoleculeGroupModel?> SelectedMoleculeGroup { get; }
 
-    public ReadOnlyReactivePropertySlim<ProductIonAbundanceModel[][]?> ProductIonAbundances { get; }
+    public ReadOnlyReactivePropertySlim<ProductIonAbundanceModel[][]> ProductIonAbundances { get; }
     public ReadOnlyReactivePropertySlim<MsSpectrum?> TheoreticalSpectra { get; }
     public AnalysisFileBeanModel[] Samples => _model.Samples;
     public ReactivePropertySlim<AnalysisFileBeanModel?> SelectedSample { get; }

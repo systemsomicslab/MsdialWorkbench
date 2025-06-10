@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -49,8 +51,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
             var spectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
-            var spectraGroupingViewModel = new SpectraGroupingViewModel(model.SpectraGroupingModel).AddTo(Disposables);
-            var spectraGroupingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraGroupingViewModel)).AddTo(Disposables);
+            var spectraGroupingCommand = new ReactiveCommand().WithSubscribe(async () => {
+                var m = await model.CreateSpectraGroupingModelAsync().ConfigureAwait(false);
+                if (m is null) {
+                    _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                    return;
+                }
+                var spectraGroupingViewModel = new SpectraGroupingViewModel(m);
+                await m.UpdateMoleculeGroupsAsync();
+                broker.Publish(spectraGroupingViewModel);
+            }).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker)

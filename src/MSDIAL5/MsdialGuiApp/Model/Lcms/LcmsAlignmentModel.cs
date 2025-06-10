@@ -8,6 +8,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Spectra;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
@@ -38,6 +39,8 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -56,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly FilePropertiesModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
+        private readonly AnalysisFileBeanModelCollection _fileCollection; 
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
@@ -96,6 +100,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _projectBaseParameter = projectBaseParameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
             _files = files ?? throw new ArgumentNullException(nameof(files));
+            _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -439,6 +444,20 @@ namespace CompMs.App.Msdial.Model.Lcms
 
                 return network;
             }
+        }
+
+        public async Task<SpectraGroupingModel?> CreateSpectraGroupingModelAsync(CancellationToken token = default) {
+            if (Target.Value is not AlignmentSpotPropertyModel spot) {
+                return null;
+            }
+            var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(_fileCollection);
+            var scans = await alignmentPeaksSpectraLoader.GetCurrentScansAsync(_fileCollection.AnalysisFiles, spot).ConfigureAwait(false);
+            if (scans is null) {
+                return null;
+            }
+
+            var model = new SpectraGroupingModel(_fileCollection, spot, scans, _dataBaseMapper);
+            return model;
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
