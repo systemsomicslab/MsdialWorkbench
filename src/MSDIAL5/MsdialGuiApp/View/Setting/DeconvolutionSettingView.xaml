@@ -81,6 +81,17 @@
                               IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                               ToolTip="If you want to keep the original precursor's isotopic ions, please check."/>
                 </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Run RT deconvolution:"
+                                   Style="{StaticResource AlignedContent}">
+                    <CheckBox IsChecked="{Binding Path=ExecuteChromDeconvolution.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}" />
+                    <ui:LabeledContent.ToolTip>
+                        <TextBlock>
+                            If unchecked, chromatogram based deconvolution will not be executed.
+                        </TextBlock>
+                    </ui:LabeledContent.ToolTip>
+                </ui:LabeledContent>
             </StackPanel>
         </Expander>
     </Grid>
