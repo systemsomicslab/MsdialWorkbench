@@ -16,6 +16,7 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
         {
             switch (lipid.LipidClass)
             {
+                // GP
                 case LbmClass.PC:
                     var generatorPc = new PCCidLipidSpectrumGenerator();
                     spectrum = generatorPc.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
@@ -216,14 +217,84 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                     var generatorLNAPS = new LNAPSCidLipidSpectrumGenerator();
                     spectrum = generatorLNAPS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
                     break;
+                case LbmClass.BMP:
+                    var generatorBmp = new BMPCidLipidSpectrumGenerator();
+                    spectrum = generatorBmp.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
+                case LbmClass.HBMP:
+                    var generatorHBMP = new HBMPCidLipidSpectrumGenerator();
+                    spectrum = generatorHBMP.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    break;
                 default:
-                    Assert.Inconclusive("Skip");
+                    //Assert.Inconclusive("Skip");
                     return;
             }
         }
 
         //// Lipid.Nameをテスト詳細の概要に表示
-        Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"}");
+        Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"} {reference.CompoundClass.ToString() ?? "null"}");
+
+        Assert.IsNotNull(spectrum);
+        Assert.AreEqual(reference.Spectrum.Count, spectrum.Count);
+        for (int i = 0; i < spectrum.Count; i++)
+        {
+            try
+            {
+                Assert.AreEqual(reference.Spectrum[i].Mass, spectrum[i].Mass, 1e-4);
+                Assert.AreEqual(reference.Spectrum[i].Intensity, spectrum[i].Intensity);
+            }
+            catch (AssertFailedException ex)
+            {
+                Console.WriteLine($"  Reference Mass: {reference.Spectrum[i].Mass}, Spectrum Mass: {spectrum[i].Mass}");
+                Console.WriteLine($"  Reference Intensity: {reference.Spectrum[i].Intensity}, Spectrum Intensity: {spectrum[i].Intensity}");
+                Console.WriteLine($"  Spectrum Comment: {spectrum[i].Comment}");
+                throw;
+            }
+        }
+    }
+    [DataTestMethod]
+    [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+    public void GenreratedGeneratorTest2(MoleculeMsReference reference, ILipid lipid)
+    {
+        var spectrum = new List<SpectrumPeak>();
+        if (lipid is not null)
+        {
+            switch (lipid.LipidClass)
+            {
+                // GL
+                case LbmClass.MG: var generatorMG = new MGCidLipidSpectrumGenerator(); spectrum = generatorMG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.MGMG: var generatorMGMG = new MGMGCidLipidSpectrumGenerator(); spectrum = generatorMGMG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DGMG: var generatorDGMG = new DGMGCidLipidSpectrumGenerator(); spectrum = generatorDGMG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DG: var generatorDG = new DGCidLipidSpectrumGenerator(); spectrum = generatorDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DGDG: var generatorDGDG = new DGDGCidLipidSpectrumGenerator(); spectrum = generatorDGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.MGDG: var generatorMGDG = new MGDGCidLipidSpectrumGenerator(); spectrum = generatorMGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.SMGDG: var generatorSMGDG = new SMGDGCidLipidSpectrumGenerator(); spectrum = generatorSMGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.SQDG: var generatorSQDG = new SQDGCidLipidSpectrumGenerator(); spectrum = generatorSQDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.EtherDG: var generatorEtherDG = new EtherDGCidLipidSpectrumGenerator(); spectrum = generatorEtherDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.EtherMGDG: var generatorEtherMGDG = new EtherMGDGCidLipidSpectrumGenerator(); spectrum = generatorEtherMGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.EtherDGDG: var generatorEtherDGDG = new EtherDGDGCidLipidSpectrumGenerator(); spectrum = generatorEtherDGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.EtherSMGDG: var generatorEtherSMGDG = new EtherSMGDGCidLipidSpectrumGenerator(); spectrum = generatorEtherSMGDG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DLCL: var generatorDLCL = new DLCLCidLipidSpectrumGenerator(); spectrum = generatorDLCL.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.MLCL: var generatorMLCL = new MLCLCidLipidSpectrumGenerator(); spectrum = generatorMLCL.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DGCC: var generatorDGCC = new DGCCCidLipidSpectrumGenerator(); spectrum = generatorDGCC.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.LDGCC: var generatorLDGCC = new LDGCCCidLipidSpectrumGenerator(); spectrum = generatorLDGCC.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DGGA: var generatorDGGA = new DGGACidLipidSpectrumGenerator(); spectrum = generatorDGGA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.DGTS: var generatorDGTS = new DGTSCidLipidSpectrumGenerator(); spectrum = generatorDGTS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.LDGTS: var generatorLDGTS = new LDGTSCidLipidSpectrumGenerator(); spectrum = generatorLDGTS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.ADGGA: var generatorADGGA = new ADGGACidLipidSpectrumGenerator(); spectrum = generatorADGGA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.TG: var generatorTG = new TGCidLipidSpectrumGenerator(); spectrum = generatorTG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.OxTG: var generatorOxTG = new OxTGCidLipidSpectrumGenerator(); spectrum = generatorOxTG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.EtherTG: var generatorEtherTG = new EtherTGCidLipidSpectrumGenerator(); spectrum = generatorEtherTG.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.TG_EST: var generatorTG_EST = new TG_ESTCidLipidSpectrumGenerator(); spectrum = generatorTG_EST.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //case LbmClass.CL: var generatorCL = new CLCidLipidSpectrumGenerator(); spectrum = generatorCL.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                default:
+                    //Assert.Inconclusive("Skip");
+                    return;
+            }
+        }
+
+        //// Lipid.Nameをテスト詳細の概要に表示
+        Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"} {reference.CompoundClass.ToString() ?? "null"}");
 
         Assert.IsNotNull(spectrum);
         Assert.AreEqual(reference.Spectrum.Count, spectrum.Count);

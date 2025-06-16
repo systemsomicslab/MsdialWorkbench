@@ -65,7 +65,8 @@ namespace CompMs.Common.Lipidomics
                         new PSLipidParser(),
                         new PTLipidParser(),
                         new TGLipidParser(),
-                        new DGLipidParser(),
+                        new EtherTGLipidParser(),
+                        new EtherDGLipidParser(),
                         new EtherPCLipidParser(),
                         new EtherPELipidParser(),
                         new EtherPGLipidParser(),
@@ -113,6 +114,23 @@ namespace CompMs.Common.Lipidomics
                         new BisMeLPALipidParser(),
                         new LNAPELipidParser(),
                         new LNAPSLipidParser(),
+                        new MGMGLipidParser(),
+                        new MGDGLipidParser(),
+                        new DGMGLipidParser(),
+                        new DGDGLipidParser(),
+                        new SMGDGLipidParser(),
+                        new SQDGLipidParser(),
+                        new EtherMGDGLipidParser(),
+                        new EtherDGDGLipidParser(),
+                        new EtherSMGDGLipidParser(),
+                        new DLCLLipidParser(),
+                        new MLCLLipidParser(),
+                        new DGCCLipidParser(),
+                        new LDGCCLipidParser(),
+                        new DGGALipidParser(),
+                        //new ADGGALipidParser(),
+
+
                     }.ForEach(parser.Add);
                     @default = parser;
                 }

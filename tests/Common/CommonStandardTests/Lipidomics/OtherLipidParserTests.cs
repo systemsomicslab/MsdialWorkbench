@@ -77,6 +77,35 @@ namespace CompMs.Common.Lipidomics.Tests
             //Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
         }
     }
+
+    [TestClass()]
+    public class MLCLLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new MLCLLipidParser();
+
+            var lipid = parser.Parse("MLCL 54:5");
+            Assert.AreEqual(1187.7509, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.MLCL, lipid.LipidClass);
+
+            lipid = parser.Parse("MLCL 16:0_18:1_20:4");
+            Assert.AreEqual(1187.7509, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.MLCL, lipid.LipidClass);
+
+            ////need to consider?
+            //lipid = parser.Parse("CL 16:0_18:1/16:0_18:1");
+            //Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
+            //Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
+
+            ////need to consider?
+            //lipid = parser.Parse("CL 34:1_34:1");
+            //Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
+            //Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
+        }
+    }
+
     [TestClass()]
     public class MGLipidParserTests
     {
