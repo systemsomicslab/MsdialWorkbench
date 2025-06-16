@@ -44,6 +44,12 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         [Key(158)]
         public double FirstColumnRetentionTimeTolerance { get; set; } = 1d;
 
+        /// <summary>
+        /// Specifies the retention time tolerance for the second column in GC×GC analysis, in minutes.
+        /// </summary>
+        [Key(159)]
+        public double SecondColumnRetentionTimeTolerance { get; set; } = .1d;
+
         public Dictionary<int, RetentionIndexHandler> GetRIHandlers() {
             return RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(RiCompoundType, kvp.Value.RiDictionary));
         }
@@ -62,6 +68,7 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
             pStrings.Add($"Modulation time: {ModulationTime.ToString()}");
             pStrings.Add($"First column retention time tolerance: {FirstColumnRetentionTimeTolerance.ToString()}");
+            pStrings.Add($"Second column retention time tolerance: {SecondColumnRetentionTimeTolerance.ToString()}");
 
             return pStrings;
         }

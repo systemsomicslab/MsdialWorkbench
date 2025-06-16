@@ -60,7 +60,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         private bool IsNearBy(IChromatogramPeakFeature p1, IChromatogramPeakFeature p2) {
             return Math.Abs(p1.Mass - p2.Mass) <= _parameter.CentroidMs1Tolerance
                 && Math.Abs(p1.ChromXsTop.RT.Value - p2.ChromXsTop.RT.Value) <= _parameter.FirstColumnRetentionTimeTolerance
-                && Math.Abs(p1.ChromXsTop.RT.Value % _parameter.ModulationTime - p2.ChromXsTop.RT.Value % _parameter.ModulationTime) <= _parameter.RetentionTimeAlignmentTolerance;
+                && Math.Abs(p1.ChromXsTop.RT.Value % _parameter.ModulationTime - p2.ChromXsTop.RT.Value % _parameter.ModulationTime) <= _parameter.SecondColumnRetentionTimeTolerance;
         }
     }
 }

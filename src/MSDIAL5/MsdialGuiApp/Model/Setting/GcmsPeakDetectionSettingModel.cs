@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AccuracyType = chromDecBaseParameter.AccuracyType;
             ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
             FirstColumnRetentionTimeToleranceInSeconds = gcmsParameter.FirstColumnRetentionTimeTolerance * 60d;
+            SecondColumnRetentionTimeToleranceInSeconds = gcmsParameter.SecondColumnRetentionTimeTolerance * 60d;
             IsGcxgcProcess = gcmsParameter.MachineCategory == MachineCategory.GCGCMS;
         }
 
@@ -44,6 +45,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private double _firstColumnRetentionTimeToleranceInSeconds;
 
+        public double SecondColumnRetentionTimeToleranceInSeconds {
+            get => _secondColumnRetentionTimeToleranceInSeconds;
+            set => SetProperty(ref _secondColumnRetentionTimeToleranceInSeconds, value);
+        }
+        private double _secondColumnRetentionTimeToleranceInSeconds;
+
         public bool IsGcxgcProcess { get; }
 
         public void Commit() {
@@ -58,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Setting
             PeakPickSettingModel.Commit();
             _gcmsParameter.ModulationTime = ModulationTimeInSeconds / 60d;
             _gcmsParameter.FirstColumnRetentionTimeTolerance = FirstColumnRetentionTimeToleranceInSeconds / 60d;
+            _gcmsParameter.SecondColumnRetentionTimeTolerance = SecondColumnRetentionTimeToleranceInSeconds / 60d;
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {
@@ -74,6 +82,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (_gcmsParameter.MachineCategory == MachineCategory.GCGCMS && parameter is MsdialGcmsParameter gcmsParameter) {
                 ModulationTimeInSeconds = gcmsParameter.ModulationTime * 60d;
                 FirstColumnRetentionTimeToleranceInSeconds = gcmsParameter.FirstColumnRetentionTimeTolerance;
+                SecondColumnRetentionTimeToleranceInSeconds = gcmsParameter.SecondColumnRetentionTimeTolerance;
             }
         }
     }

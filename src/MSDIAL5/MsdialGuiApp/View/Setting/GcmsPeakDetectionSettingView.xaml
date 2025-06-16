@@ -93,6 +93,13 @@
                         <TextBox Text="{Binding FirstColumnRetentionTimeToleranceInSeconds.Value}"
                                  IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Retention time tolerance of 2nd column dimension"
+                                       AppendLabel="s"
+                                       ToolTip="Retention time tolerance of second column dimension for GCxGC"
+                                       Style="{StaticResource AlignedContent}">
+                        <TextBox Text="{Binding SecondColumnRetentionTimeToleranceInSeconds.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
                 </StackPanel>
             </HeaderedContentControl>
         </StackPanel>

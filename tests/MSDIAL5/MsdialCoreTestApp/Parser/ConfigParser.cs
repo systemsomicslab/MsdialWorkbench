@@ -166,6 +166,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "first column retention time tolerance":
                     if (double.TryParse(value, out double fctol))
                         param.FirstColumnRetentionTimeTolerance = fctol; return true;
+                case "second column retention time tolerance":
+                    if (double.TryParse(value, out double sctol))
+                        param.SecondColumnRetentionTimeTolerance = sctol; return true;
                 default: return false;
             }
         }
