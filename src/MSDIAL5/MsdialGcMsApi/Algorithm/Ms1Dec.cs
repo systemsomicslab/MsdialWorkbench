@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -16,7 +17,34 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ReportProgress reporter) {
-            return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter);
+            var results = MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter);
+            if (_parameter.MachineCategory == Common.Enum.MachineCategory.GCGCMS) {
+                var removed = new bool[results.Count];
+                for (int i = 0; i < results.Count; i++) {
+                    for (int j = i + 1; j < results.Count; j++) {
+                        if (removed[i] || removed[j]) {
+                            continue;
+                        }
+                        var dotproduct = MsScanMatching.GetWeightedDotProduct(results[i], results[j], _parameter.CentroidMs1Tolerance, 0d, double.MaxValue);
+                        if (dotproduct > .64d) {
+                            if (chromPeakFeatures[i].PeakFeature.PeakHeightTop >= chromPeakFeatures[j].PeakFeature.PeakHeightTop) {
+                                removed[j] = true;
+                            }
+                            else {
+                                removed[i] = true;
+                            }
+                        }
+                    }
+                }
+                var repack = new List<MSDecResult>();
+                for (int i = 0; i < removed.Length; i++) {
+                    if (!removed[i]) {
+                       repack.Add(results[i]);
+                    }
+                }
+                results = repack;
+            }
+            return results;
         }
 
         public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {

@@ -100,16 +100,44 @@ namespace CompMs.MsdialGcMsApi.Process
             var chromPeakFeatures_ = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
             var chromPeakFeatures = new ChromatogramPeakFeatureCollection(chromPeakFeatures_);
             SetRetentionIndex(chromPeakFeatures_, riHandler);
-            await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures_, token).ConfigureAwait(false);
-            token.ThrowIfCancellationRequested();
 
             // chrom deconvolutions
+            token.ThrowIfCancellationRequested();
             Console.WriteLine("Deconvolution started");
             var reportDeconvolution = ReportProgress.FromRange(progress, DECONVOLUTION_START, DECONVOLUTION_END);
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             var msdecResults = _ms1Deconvolution.GetMSDecResults(spectra, chromPeakFeatures_, reportDeconvolution);
             SetRetentionIndex(msdecResults, riHandler);
+
+            if (chromPeakFeatures_.Count != msdecResults.Count) {
+                token.ThrowIfCancellationRequested();
+                var i = 0;
+                var repack = new List<ChromatogramPeakFeature>();
+                foreach (var msdec in msdecResults) {
+                    while (i < chromPeakFeatures_.Count && msdec.ScanID > chromPeakFeatures_[i].MasterPeakID) {
+                        i++;
+                    }
+                    if (chromPeakFeatures_[i].MasterPeakID == msdec.ScanID) {
+                        repack.Add(chromPeakFeatures_[i]);
+                    }
+                    else {
+                        // this should not happen, but just in case
+                        System.Diagnostics.Debug.Fail("Peak ID not found in ChromatogramPeakFeatures.");
+                    }
+                }
+
+                for (int k = 0; k < repack.Count; k++) {
+                    repack[k].MasterPeakID = k;
+                }
+                for (int k = 0; k < msdecResults.Count; k++) {
+                    msdecResults[k].ScanID = k;
+                }
+                chromPeakFeatures_ = repack;
+                chromPeakFeatures = new ChromatogramPeakFeatureCollection(chromPeakFeatures_);
+            }
+
             token.ThrowIfCancellationRequested();
+            await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures_, token).ConfigureAwait(false);
 
             return (chromPeakFeatures, msdecResults, spectra);
         }
