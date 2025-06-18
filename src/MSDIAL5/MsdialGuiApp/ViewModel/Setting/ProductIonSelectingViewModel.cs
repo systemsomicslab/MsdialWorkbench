@@ -19,12 +19,18 @@ internal sealed class ProductIonSelectingViewModel : SettingDialogViewModel
 
     public ProductIonSelectingViewModel(ProductIonSettingModel model) {
         _model = model;
+
         SettingIons = [..model.SettingIons];
+        ClearSettingsCommand = new ReactiveCommand()
+            .WithSubscribe(() => SettingIons.Clear())
+            .AddTo(Disposables);
 
         FinishCommand = new ReactiveCommand().WithSubscribe(ReflectSettingIons).AddTo(Disposables);
     }
 
     public ObservableCollection<SettingIon> SettingIons { get; }
+
+    public ReactiveCommand ClearSettingsCommand { get; }
 
     private void ReflectSettingIons() {
         _model.SettingIons = [.. SettingIons];

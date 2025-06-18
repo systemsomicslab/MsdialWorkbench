@@ -28,15 +28,12 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" Margin="8,0">
-                        <TextBlock Text="Ion selecting parameters" FontStyle="Italic"/>
-                        <Button Content="Reset" Margin="8,0,0,0" Command="{Binding ResetCommand}"/>
+                        <Button Content="Clear" Command="{Binding Path=ClearSettingsCommand}"/>
                     </StackPanel>
 
-                    <DataGrid ItemsSource="{Binding Path=SettingIons}">
+                    <DataGrid ItemsSource="{Binding Path=SettingIons}" Grid.Row="1">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Label" Binding="{Binding Path=Label}"/>
-                            <DataGridTextColumn Header="m/z" Binding="{Binding Path=Mz}"/>
-                            <DataGridTextColumn Header="Tolerance" Binding="{Binding Path=Tolerance}"/>
+                            <DataGridTextColumn Header="m/z" Binding="{Binding Path=Mz}" Width="Auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

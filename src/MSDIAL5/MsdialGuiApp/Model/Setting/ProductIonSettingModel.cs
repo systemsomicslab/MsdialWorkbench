@@ -19,10 +19,6 @@ internal sealed class ProductIonSettingModel : BindableBase
 
 internal sealed class SettingIon : ValidatableBase
 {
-    public string Label { get; set; } = string.Empty;
-
     public double Mz { get; set; } = 0d;
-
-    public double Tolerance { get; set; } = .01d;
 }
 
