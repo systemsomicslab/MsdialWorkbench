@@ -15,9 +15,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting;
 
 internal sealed class ProductIonSelectingViewModel : SettingDialogViewModel
 {
-    private readonly ProductIonSettingModel _model;
+    private readonly ProductIonSelectingModel _model;
 
-    public ProductIonSelectingViewModel(ProductIonSettingModel model) {
+    public ProductIonSelectingViewModel(ProductIonSelectingModel model) {
         _model = model;
 
         SettingIons = [..model.SettingIons];
