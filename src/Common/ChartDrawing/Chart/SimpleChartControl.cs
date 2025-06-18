@@ -44,6 +44,8 @@ namespace CompMs.Graphics.Chart
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SimpleChartControl), new FrameworkPropertyMetadata(typeof(SimpleChartControl)));
         }
 
+        private bool _isHorizontalTitleChanging = false, _isVerticalTitleChanging = false, _isHorizontalTitlesChanging = false, _isVerticalTitlesChanging = false;
+
         public SimpleChartControl()
         {
             SetValue(RenderAreaControlStateProperty, new RenderAreaControlState());
@@ -110,21 +112,81 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty HorizontalTitleProperty =
             DependencyProperty.Register(
                 nameof(HorizontalTitle), typeof(string), typeof(SimpleChartControl),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(
+                    string.Empty,
+                    OnHorizontalTitleChanged));
 
         public string HorizontalTitle {
             get => (string)GetValue(HorizontalTitleProperty);
             set => SetValue(HorizontalTitleProperty, value);
         }
 
+        private static void OnHorizontalTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is SimpleChartControl chart && !chart._isHorizontalTitlesChanging) {
+                chart._isHorizontalTitleChanging = true;
+                chart.SetCurrentValue(HorizontalTitlesProperty, new AxisTitles() { Titles = [(string)e.NewValue] });
+                chart._isHorizontalTitleChanging = false;
+            }
+        }
+
+        public static readonly DependencyProperty HorizontalTitlesProperty =
+            DependencyProperty.Register(
+                nameof(HorizontalTitles), typeof(AxisTitles), typeof(SimpleChartControl),
+                new PropertyMetadata(
+                    AxisTitles.Empty,
+                    OnHorizontalTitlesChanged));
+
+        public AxisTitles HorizontalTitles {
+            get => (AxisTitles)GetValue(HorizontalTitlesProperty);
+            set => SetValue(HorizontalTitlesProperty, value);
+        }
+
+        private static void OnHorizontalTitlesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is SimpleChartControl chart && !chart._isHorizontalTitleChanging) {
+                chart._isHorizontalTitlesChanging = true;
+                chart.SetCurrentValue(HorizontalTitleProperty, ((AxisTitles?)e.NewValue)?.ToString() ?? string.Empty);
+                chart._isHorizontalTitlesChanging = false;
+            }
+        }
+
         public static readonly DependencyProperty VerticalTitleProperty =
             DependencyProperty.Register(
                 nameof(VerticalTitle), typeof(string), typeof(SimpleChartControl),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(
+                    string.Empty,
+                    OnVerticalTitleChanged));
 
         public string VerticalTitle {
             get => (string)GetValue(VerticalTitleProperty);
             set => SetValue(VerticalTitleProperty, value);
+        }
+
+        private static void OnVerticalTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is SimpleChartControl chart && !chart._isVerticalTitlesChanging) {
+                chart._isVerticalTitleChanging = true;
+                chart.SetCurrentValue(VerticalTitlesProperty, new AxisTitles() { Titles = [(string)e.NewValue] });
+                chart._isVerticalTitleChanging = false;
+            }
+        }
+
+        public static readonly DependencyProperty VerticalTitlesProperty =
+            DependencyProperty.Register(
+                nameof(VerticalTitles), typeof(AxisTitles), typeof(SimpleChartControl),
+                new PropertyMetadata(
+                    AxisTitles.Empty,
+                    OnVerticalTitlesChanged));
+
+        public AxisTitles VerticalTitles {
+            get => (AxisTitles)GetValue(VerticalTitlesProperty);
+            set => SetValue(VerticalTitlesProperty, value);
+        }
+
+        private static void OnVerticalTitlesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is SimpleChartControl chart && !chart._isVerticalTitleChanging) {
+                chart._isVerticalTitlesChanging = true;
+                chart.SetCurrentValue(VerticalTitleProperty, ((AxisTitles)e.NewValue).ToString());
+                chart._isVerticalTitlesChanging = false;
+            }
         }
 
         public static readonly DependencyProperty RenderAreaControlStateProperty =

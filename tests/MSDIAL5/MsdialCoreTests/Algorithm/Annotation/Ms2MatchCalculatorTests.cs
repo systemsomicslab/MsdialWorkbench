@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.AreEqual(0.8550592192, result.SimpleDotProduct, 0.00001);
             Assert.AreEqual(0.7361639372, result.ReverseDotProduct, 0.00001);
             Assert.AreEqual(3f/6, result.MatchedPeaksPercentage);
-            Assert.AreEqual(6, result.MatchedPeaksCount);
+            Assert.AreEqual(3, result.MatchedPeaksCount);
             var expected = ((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3 + result.MatchedPeaksPercentage) / 2; 
             Assert.AreEqual(expected, result.TotalScore);
             Assert.IsTrue(result.IsSpectrumMatch);

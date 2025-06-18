@@ -172,7 +172,9 @@ namespace CompMs.App.Msdial.Model.Dims
             var eicLoader = alignmentFileModel.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 target, eicLoader,
-                files, parameter,
+                files,
+                parameter,
+                projectBaseParameter,
                 spot => spot.Time,
                 spot => spot.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC or BPC chromatograms";

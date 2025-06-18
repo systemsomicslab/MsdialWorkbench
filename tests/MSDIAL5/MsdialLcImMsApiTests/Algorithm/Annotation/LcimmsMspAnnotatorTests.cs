@@ -470,7 +470,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.SimpleDotProduct > 0);
             Assert.IsTrue(result.ReverseDotProduct > 0);
             Assert.AreEqual(3d/6, result.MatchedPeaksPercentage);
-            Assert.AreEqual(6, result.MatchedPeaksCount);
+            Assert.AreEqual(3, result.MatchedPeaksCount);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,

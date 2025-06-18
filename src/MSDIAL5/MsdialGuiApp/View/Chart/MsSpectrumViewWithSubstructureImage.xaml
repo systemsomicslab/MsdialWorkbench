@@ -1,0 +1,257 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.MsSpectrumViewWithSubstructureImage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter" 
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:MsSpectrumViewModel}}"
+             d:Background="White"
+             d:DesignHeight="600" d:DesignWidth="370" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
+            <io:SaveImageAsCommand x:Key="ReverseMsSpectrumSaveEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
+            <io:CopyImageAsCommand x:Key="ReverseMsSpectrumCopyEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
+            <converter:SmilesToStructureImageConverter x:Key="smiles2structure"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
+                          GraphTitle="{Binding GraphTitle.Value}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value}"
+                          VerticalTitles="{Binding Path=VerticalTitles.Value}"
+                          Style="{StaticResource VerticalConcatChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Change axis type of upper spectrum into.."
+                              ItemsSource="{Binding Path=UpperVerticalAxisItemCollection}"
+                              DisplayMemberPath="Label"
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding UpperVerticalAxisItem.Value}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
+                                            <Binding Path="."/>
+                                            <Binding Path="DataContext.UpperVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <MenuItem Header="Change axis type of lower spectrum into.."
+                              ItemsSource="{Binding Path=LowerVerticalAxisItemCollection}"
+                              DisplayMemberPath="Label"
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding LowerVerticalAxisItem.Value}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
+                                            <Binding Path="."/>
+                                            <Binding Path="DataContext.LowerVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Show all spectrum peak"
+                              Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Show matched spectrum peak"
+                              Command="{Binding PlacementTarget.DataContext.SwitchCompareSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save upper spectrum as nist format"
+                              Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save lower spectrum as nist format"
+                              Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save matched spectrum as table format"
+                              Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save formatted image"
+                                  Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static io:SaveImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy formatted image"
+                                  Command="{StaticResource ReverseMsSpectrumCopyEmfCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static io:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
+            <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
+                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisItem.Value.AxisManager}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}">
+                        <Grid Visibility="{Binding IsVisible.Value, Converter={StaticResource BooleanToVisibility}}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                            </StackPanel>
+                            <chart:LineSpectrumControlSlim x:Name="MS2Line"
+                                                           ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           HorizontalProperty="{Binding HorizontalProperty}"
+                                                           VerticalProperty="{Binding VerticalProperty}"
+                                                           LineBrush="{Binding Brush.Value}"
+                                                           LineThickness="{Binding LineThickness.Value}"
+                                                           HueProperty="SpectrumComment">
+                                <chart:LineSpectrumControlSlim.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="m/z: "/>
+                                            <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                            <TextBlock Text=" Intensity: "/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
+                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                                             VerticalPropertyName="{Binding VerticalProperty}"
+                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                             Brush="Black"
+                                             Overlap="Horizontal, Direct"
+                                             Format="F4"
+                                             ClipToBounds="True"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Grid core:ChartBaseControl.FlippedY="False" DataContext="{Binding LowerSpectrumViewModel}" core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}">
+                <TextBlock Text="No information" FontSize="24"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           DataContext="{Binding MsSpectrum.Value}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasSpectrum, Mode=OneTime}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <Grid>
+                    <chart:LineSpectrumControlSlim x:Name="MS2Ref"
+                                                   ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                   DataType="{x:Type components:SpectrumPeak}"
+                                                   HorizontalProperty="{Binding HorizontalProperty}"
+                                                   VerticalProperty="{Binding VerticalProperty}"
+                                                   LineBrush="{Binding Brush.Value}"
+                                                   HueProperty="SpectrumComment"
+                                                   FocusedItem="{Binding FocusedItem, Mode=OneWayToSource}"/>
+                    <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                 HorizontalPropertyName="{Binding HorizontalProperty}"
+                                 VerticalPropertyName="{Binding VerticalProperty}"
+                                 LabelPropertyName="Mass"
+                                 OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                 ContentAlignment="BottomCenter"
+                                 Brush="Black"
+                                 Overlap="Horizontal, Direct"
+                                 Format="F4"
+                                 ClipToBounds="True"/>
+                    <Canvas HorizontalAlignment="Stretch" IsHitTestVisible="False">
+                        <Viewbox  DataContext="{Binding Path=FocusedItem.Comment, ElementName=MS2Ref, Converter={StaticResource smiles2structure}}"
+                                  MaxWidth="200"  MaxHeight="{Binding Path=ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                 StretchDirection="DownOnly"
+                                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8">
+                            <Grid>
+                                <Border Background="White">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="&#xF16A;" FontFamily="Segoe MDL2 Assets"
+                                               FontSize="50"
+                                               Foreground="LightBlue"/>
+                                </Border>
+                                
+                                <Image Source="{Binding Path=Image.Result}"
+                                       Stretch="None">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsFailed}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Grid>
+                        </Viewbox>
+                    </Canvas>
+                </Grid>
+            </Grid>
+        </chart:MultiChart>
+        <TextBlock Text="Measurement" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Top" HorizontalAlignment="Right" />
+        <TextBlock Text="Reference" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                   Margin="0,0,5,5"/>
+    </Grid>
+</UserControl>

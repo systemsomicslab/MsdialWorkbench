@@ -239,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
 
-            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode);
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode, file.AcquisitionType);
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(projectParameter);
         }
 

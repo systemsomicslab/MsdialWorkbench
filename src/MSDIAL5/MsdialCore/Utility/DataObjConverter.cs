@@ -162,7 +162,7 @@ namespace CompMs.MsdialCore.Utility
             spot.TimesCenter = new ChromXs() {
                 MainType = chromXType,
                 RT = new RetentionTime(alignedPeaks.Average(peak => peak.ChromXsTop.RT.Value), representative.ChromXsTop.RT.Unit),
-                RI = new RetentionIndex(alignedPeaks.Average(peak => peak.ChromXsTop.RI.Value), representative.ChromXsTop.RI.Unit),
+                RI = new RetentionIndex(alignedPeaks.Select(peak => peak.ChromXsTop.RI.Value).Where(v => v >= 0).DefaultIfEmpty().Average(), representative.ChromXsTop.RI.Unit),
                 Mz = new MzValue(spot.MassCenter, representative.ChromXsTop.Mz.Unit),
                 Drift = new DriftTime(alignedPeaks.Average(peak => peak.ChromXsTop.Drift.Value), representative.ChromXsTop.Drift.Unit),
             };

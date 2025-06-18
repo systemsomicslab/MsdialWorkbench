@@ -3,12 +3,13 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
@@ -53,13 +54,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue();
 
             Run = new ReactiveCommand().WithSubscribe(() => {
-                Mouse.OverrideCursor = Cursors.Wait;
+                var message = new ShortMessageWindow() {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "MS-FINDER running in the background...",
+                    Width = 400,
+                    Height = 100
+                };
+                message.Show();
                 model.Commit();
                 var msfinder = batchMsfinder.Process();
+                message.Close();
                 if (msfinder is not null) {
                     broker.Publish(new InternalMsFinderViewModel(msfinder, broker));
                 } else {
-                    Debug.Assert(true, "Msfinder null!!");
+                    MessageBox.Show("Please select the alignment result");
                 }
                 Mouse.OverrideCursor = null;
             }).AddTo(Disposables);

@@ -40,6 +40,7 @@ namespace CompMs.Common.Lipidomics {
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
             return adduct.AdductIonName == "[M+NH4]+" ||
+                adduct.AdductIonName == "[M+H]+" ||
                 adduct.AdductIonName == "[M-H]-";
         }
 
@@ -89,12 +90,30 @@ namespace CompMs.Common.Lipidomics {
 
         private static SpectrumPeak[] GetLPId5OadSpectrum(ILipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>();
-            if (adduct.AdductIonName == "[M-H]-") {
+            if (adduct.AdductIonName == "[M+H]+") {
                 spectrum.AddRange(
                     new[] {
-                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                            new SpectrumPeak(adduct.ConvertToMz(C6H13O9P-H2O), 500d, "Phosphoinositol -H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                            new SpectrumPeak(adduct.ConvertToMz(C3H2D5O5P), 100d, "Characteristic fragment") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 50d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 50d, "Precursor -H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(lipid.Mass - C6H13O9P, 999d, "[M+H]+ -Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                    }
+                );
+            }
+            if (adduct.AdductIonName == "[M+NH4]+") {
+                spectrum.AddRange(
+                    new[] {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 50d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(lipid.Mass, 50d, "[M+H]+") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(lipid.Mass - C6H13O9P + MassDiffDictionary.HydrogenMass, 999d, "[M+H]+ -Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                    }
+                );
+            }
+            else if (adduct.AdductIonName == "[M-H]-") {
+                spectrum.AddRange(
+                    new[] {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                        new SpectrumPeak(adduct.ConvertToMz(C6H13O9P-H2O), 500d, "Phosphoinositol -H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(adduct.ConvertToMz(C3H2D5O5P), 100d, "Characteristic fragment") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {

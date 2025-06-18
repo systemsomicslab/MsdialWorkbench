@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace CompMs.Common.Parser
@@ -127,7 +128,7 @@ namespace CompMs.Common.Parser
         /// <returns></returns>
         public static List<MoleculeMsReference> LbmFileReader(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueryStrings(queries);
+            var tQueries = new HashSet<string>(getTrueQueryStrings(queries));
             if (tQueries.Count == 0) return null;
 
             var mspDB = new List<MoleculeMsReference>();
@@ -166,7 +167,7 @@ namespace CompMs.Common.Parser
 
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueryStrings(queries);
+            var tQueries = new HashSet<string>(getTrueQueryStrings(queries));
             if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
@@ -183,6 +184,30 @@ namespace CompMs.Common.Parser
             return usedMspDB;
         }
 
+        public static void SeializedMspObjToAsciiMsp(string input, string output) {
+            var mspDB = ReadSerializedMspObject(input);
+            WriteAsMsp(output, mspDB);
+        }
+
+        public static void SeializedLbmObjToAsciiMspAsPublicUse(string input, string output) {
+            var queries = LbmQueryParcer.GetLbmQueries(false);
+            var mspDB = ReadSerializedMspObject(input);
+            foreach (var query in queries) { query.IsSelected = true; }
+            var tQueries = getTrueQueryStrings(queries);
+
+            var usedMspDB = new List<MoleculeMsReference>();
+            var counter = 0;
+            foreach (var mspRecord in mspDB) {
+                //if (!mspRecord.CompoundClass.Contains("FAHFA")) continue;
+                if (tQueries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) {
+                    mspRecord.ScanID = counter;
+                    usedMspDB.Add(mspRecord);
+                    counter++;
+                }
+            }
+            WriteAsLbmMsp(output, usedMspDB);
+        }
+
         public static void AsciiMspToSerializedMspObj(string input, string output) {
             var queries = MspFileReader(input);
             MoleculeMsRefMethods.SaveMspToFile(queries, output);
@@ -193,22 +218,25 @@ namespace CompMs.Common.Parser
             return queries;
         }
 
-        private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+        public static bool queryCheck(MoleculeMsReference mspRecord, IReadOnlyCollection<string> queries, IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
-            if (mspRecord.IonMode != ionMode) return false;
+            if (mspRecord.IonMode != ionMode) {
+                return false;
+            }
+
             if (ionMode == IonMode.Negative) {
-                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.IsFA) {
-                    return false;
-                }
-                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.IsHac) {
-                    return false;
+                switch (solventType)
+                {
+                    case SolventType.CH3COONH4 when mspRecord.AdductType.IsFA || mspRecord.AdductType.IsHco3:
+                    case SolventType.HCOONH4 when mspRecord.AdductType.IsHac || mspRecord.AdductType.IsHco3:
+                    case SolventType.NH4HCO3 when mspRecord.AdductType.IsFA || mspRecord.AdductType.IsHac:
+                        return false;
                 }
             }
-            if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
-                return true;
-            }
-            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) return true;
-            return false;
+            return mspRecord.CompoundClass == "Others"
+                || mspRecord.CompoundClass == "Unknown"
+                || mspRecord.CompoundClass == "SPLASH"
+                || queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString());
         }
 
         private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries) {
@@ -505,6 +533,12 @@ namespace CompMs.Common.Parser
             }
         }
 
+        public static void WriteAsLbmMsp(string filePath, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write)) {
+                WriteAsLbmMsp(stream, mspRecords);
+            }
+        }
+
         public static void WriteAsMsp(Stream stream, IEnumerable<MoleculeMsReference> mspRecords) {
             using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
                 foreach (var record in mspRecords) {
@@ -512,7 +546,15 @@ namespace CompMs.Common.Parser
                 }
             }
         }
-       
+
+        public static void WriteAsLbmMsp(Stream stream, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
+                foreach (var record in mspRecords) {
+                    WriteLbmMspFields(record, sw);
+                }
+            }
+        }
+
         public static void ConvertMspToSeparatedMSPs(string filepath, string folderpath) {
             var mspRecords = MspFileReader(filepath);
             WriteAsSeparatedMSPs(folderpath, mspRecords);
@@ -558,6 +600,37 @@ namespace CompMs.Common.Parser
             sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
             foreach (var peak in record.Spectrum) {
                 sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            }
+            sw.WriteLine();
+        }
+
+        public static void WriteLbmMspFields(MoleculeMsReference record, StreamWriter sw) {
+            sw.WriteLine("NAME: " + record.Name);
+            sw.WriteLine("PRECURSORMZ: " + record.PrecursorMz);
+            sw.WriteLine("PRECURSORTYPE: " + record.AdductType.AdductIonName);
+            sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT.Value);
+            sw.WriteLine("CCS: " + record.CollisionCrossSection);
+            sw.WriteLine("FORMULA: " + record.Formula);
+            sw.WriteLine("ONTOLOGY: " + record.CompoundClass);
+            sw.WriteLine("SMILES: " + record.SMILES);
+            sw.WriteLine("INCHIKEY: " + record.InChIKey);
+            sw.WriteLine("IONMODE: " + record.IonMode);
+            sw.WriteLine("Comment: Computationally generated spectral record in MS-DIAL project");
+            sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
+
+            foreach (var peak in record.Spectrum) {
+                if (string.IsNullOrEmpty(peak.Comment)) {
+                    sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+                }
+                else {
+                    // tantative version; if user want to split exported msp file by MS-FINDER
+                    if (peak.Comment.Contains(";")) {
+                        sw.WriteLine(peak.Mass + "\t" + peak.Intensity + "\t" + "\"" + peak.Comment.Split(';')[0] + "\"");
+                    }
+                    else {
+                        sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+                    }
+                }
             }
             sw.WriteLine();
         }

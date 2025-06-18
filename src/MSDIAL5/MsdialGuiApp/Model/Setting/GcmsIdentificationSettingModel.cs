@@ -36,6 +36,10 @@ namespace CompMs.App.Msdial.Model.Setting
         private string _dictionaryPath = string.Empty;
 
         public List<RiDictionaryError> Validate(RiCompoundType compoundType) {
+            if (_dictionaryInfo.RiDictionary.Any()) {
+                return [];
+            }
+
             var result = new List<RiDictionaryError>();
             if (!System.IO.File.Exists(DictionaryPath)) {
                 result.Add(RiDictionaryError.FileNotFound(DictionaryPath));
@@ -54,9 +58,11 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public void Commit() {
-            var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
-            _dictionaryInfo.DictionaryFilePath = dictionary.DictionaryFilePath;
-            _dictionaryInfo.RiDictionary = dictionary.RiDictionary;
+            if (!string.IsNullOrWhiteSpace(DictionaryPath)) {
+                var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
+                _dictionaryInfo.DictionaryFilePath = dictionary.DictionaryFilePath;
+                _dictionaryInfo.RiDictionary = dictionary.RiDictionary;
+            }
         }
 
         public class RiDictionaryError {

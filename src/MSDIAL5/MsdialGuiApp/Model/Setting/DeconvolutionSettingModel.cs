@@ -13,9 +13,11 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
+            RelativeAmplitudeCutoff = parameter.RelativeAmplitudeCutoff;
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
         }
 
         public bool IsReadOnly { get; }
@@ -31,6 +33,12 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref _amplitudeCufoff, value);
         }
         private float _amplitudeCufoff;
+
+        public float RelativeAmplitudeCutoff {
+            get => _relativeAmplitudeCutoff;
+            set => SetProperty(ref _relativeAmplitudeCutoff, value);
+        }
+        private float _relativeAmplitudeCutoff;
 
         public bool RemoveAfterPrecursor {
             get => _removeAfterPrecurosr;
@@ -50,15 +58,23 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _keepOriginalPrecurosrIsotopes;
 
+        public bool ExecuteChromDeconvolution {
+            get => _executeChromDeconvolution;
+            set => SetProperty(ref _executeChromDeconvolution, value);
+        }
+        private bool _executeChromDeconvolution;
+
         public void Commit() {
             if (IsReadOnly) {
                 return;
             }
             _parameter.SigmaWindowValue = SigmaWindowValue;
             _parameter.AmplitudeCutoff = AmplitudeCutoff;
+            _parameter.RelativeAmplitudeCutoff = RelativeAmplitudeCutoff;
             _parameter.RemoveAfterPrecursor = RemoveAfterPrecursor;
             _parameter.KeptIsotopeRange = KeptIsotopeRange;
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
+            _parameter.ExecuteChromDeconvolution = ExecuteChromDeconvolution;
         }
 
         public void LoadParameter(ChromDecBaseParameter parameter) {
@@ -67,9 +83,11 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
+            RelativeAmplitudeCutoff = parameter.RelativeAmplitudeCutoff;
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+            ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
         }
     }
 }

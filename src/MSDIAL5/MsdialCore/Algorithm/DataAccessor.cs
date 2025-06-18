@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm
 {
-    public abstract class DataAccessor {
+    public abstract class DataAccessor : IFeatureAccessor<IMSScanProperty> {
         public abstract List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile);
         public abstract ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance);
     }
