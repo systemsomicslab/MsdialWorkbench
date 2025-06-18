@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance Type={x:Type vm:ProductIonSelectingViewModel}}">
     <Grid>
         <TabControl Grid.Row="1">
-            <TabItem Header="Select product ions">
+            <TabItem Header="Select product ions" IsEnabled="False">
                 <DataGrid>
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn/>
@@ -21,7 +21,7 @@
                 </DataGrid>
             </TabItem>
 
-            <TabItem Header="Set ions">
+            <TabItem Header="Set ions" IsSelected="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -31,7 +31,9 @@
                         <Button Content="Clear" Command="{Binding Path=ClearSettingsCommand}"/>
                     </StackPanel>
 
-                    <DataGrid ItemsSource="{Binding Path=SettingIons}" Grid.Row="1">
+                    <DataGrid ItemsSource="{Binding Path=SettingIons}"
+                              AutoGenerateColumns="False"
+                              Grid.Row="1">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="m/z" Binding="{Binding Path=Mz}" Width="Auto"/>
                         </DataGrid.Columns>
