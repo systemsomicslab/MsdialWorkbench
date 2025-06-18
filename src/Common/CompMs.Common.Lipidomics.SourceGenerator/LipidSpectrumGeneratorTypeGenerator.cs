@@ -277,8 +277,16 @@ namespace CompMs.Common.Lipidomics {
                 else if (def is not null && lipidClass.Contains("Ox"))
                 {
                     //now only one and two chains lipids are supported
-
-                    if (def.NumOfChains == 2)
+                    if (def.NumOfChains == 3)
+                    {
+                        result.AppendLine("                    if(chains[2].OxidizedCount > 0){");
+                        result.AppendLine("                         SN1Acyl = chains[0].Mass;");
+                        result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                        result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                        result.AppendLine("                         OxCount = chains[2].OxidizedCount;");
+                        result.AppendLine("                    }");
+                    }
+                    else if (def.NumOfChains == 2)
                     {
                         result.AppendLine("                    if(chains[0].OxidizedCount > 0){");
                         result.AppendLine("                         SN1Acyl = chains[1].Mass;");
