@@ -38,14 +38,21 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var smoother = new Smoothing();
             var rawChromatograms = peak.SkipNull()
-                .SelectSwitch(t => loader.LoadScanAsObservable(t).CombineLatest(NumberOfChromatograms, (scan, number) => (t, spectrum: (scan?.Spectrum ?? new List<SpectrumPeak>(0)).OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
+                .SelectSwitch(p => {
+                    return loader.LoadScanAsObservable(p).Select(scan => {
+                        var spectrum = (scan?.Spectrum ?? []);
+                        var ordered = spectrum.OrderByDescending(peak_ => peak_.Intensity);
+                        return ordered.Select(peak_ => peak_.Mass).ToArray();
+                    }).CombineLatest(NumberOfChromatograms, (mzs, number) =>
+                        (peak: p, mzs: mzs.Take(number).OrderBy(mz => mz).ToArray())
+                    );
+                })
                 .Select(pair => {
                     var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
                     var unit = ChromXUnit.Min;
-                    double[] pMzValues = pair.spectrum.Select(peak_ => peak_.Mass).ToArray();
-                    var chromatograms = DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pMzValues, parameter, acquisitionType, type: type, unit: unit);
+                    var chromatograms = DataAccess.GetMs2ValuePeaks(provider, pair.peak.Mass, pair.peak.MS1RawSpectrumIdLeft, pair.peak.MS1RawSpectrumIdRight, pair.mzs, parameter, acquisitionType, type: type, unit: unit);
                     var smootheds = chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel));
-                    return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
+                    return smootheds.Zip(pair.mzs, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
                 })
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
