@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="LipidSpectrumGeneratorTest_Cer.msp" />
+    <None Remove="LipidSpectrumGeneratorTest_GL.msp" />
+    <None Remove="LipidSpectrumGeneratorTest_GP.msp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj">
       <OutputItemType>Analyzer</OutputItemType>
@@ -34,9 +40,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="LipidSpectrumGeneratorTest.msp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="LipidSpectrumGeneratorTest_Cer.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LipidSpectrumGeneratorTest_GL.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LipidSpectrumGeneratorTest_GP.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

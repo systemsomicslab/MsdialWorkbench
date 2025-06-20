@@ -3,15 +3,16 @@
 namespace CompMs.Common.Lipidomics.SourceGenerator;
 
 internal sealed class Context {
-    private readonly static Regex _snRegex, _acylRegex, _alkylRegex;
+    private readonly static Regex _snRegex, _acylRegex, _alkylRegex, _sphingoRegex;
 
     private readonly Dictionary<string, string> _constants;
     private readonly Dictionary<string, SubVar> _vars;
 
     static Context() {
         _snRegex = new Regex(@"SN\d+", RegexOptions.Compiled);
-        _acylRegex = new Regex(@"Acyl\d+", RegexOptions.Compiled);
-        _alkylRegex = new Regex(@"Alkyl\d+", RegexOptions.Compiled);
+        _acylRegex = new Regex(@"Acyl(\d+)*", RegexOptions.Compiled);
+        _alkylRegex = new Regex(@"Alkyl(\d+)*", RegexOptions.Compiled);
+        _sphingoRegex = new Regex(@"Sph(\d+)*", RegexOptions.Compiled);
     }
 
     public Context((string Symbol, string Value)[] constants) {
@@ -87,7 +88,8 @@ internal sealed class Context {
         return term.Raw == "M"
             || _snRegex.IsMatch(term.Raw)
             || _acylRegex.IsMatch(term.Raw)
-            || _alkylRegex.IsMatch(term.Raw);
+            || _alkylRegex.IsMatch(term.Raw)
+            || _sphingoRegex.IsMatch(term.Raw);
     }
 
     public class RegisterHandle(Context ctx) : IDisposable

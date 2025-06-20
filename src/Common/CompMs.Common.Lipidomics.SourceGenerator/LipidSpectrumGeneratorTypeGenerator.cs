@@ -208,40 +208,32 @@ namespace CompMs.Common.Lipidomics {
                 if (lipidClass.Contains("Ether"))
                 {
                     result.AppendLine($"""
-                        double SN1Alkyl;
+                            double SN1Alkyl;
                     """);
                     if (def.NumOfChains > 1)
                     {
                         result.AppendLine($"""
                             double {string.Join(", ", Enumerable.Range(2, def.NumOfChains - 1).Select(i => "SN" + i + "Acyl"))};
                         """);
-                        if (lipidClass.Contains("Ox"))
-                        {
-                            result.AppendLine($"""                        double OxCount;""");
-                        }
                     }
+
                 }
-                else if (lipidClass.Contains("Cer"))
+                else if (lipidClass.Contains("Cer") || lipidClass == "SM")
                 {
                     result.AppendLine($"""
-                        double Sph;
-                        double Acyl;
+                            double Sph;
+                            double Acyl;
                     """);
                 }
                 else
                 {
                     result.AppendLine($"""
-                        double {string.Join(", ", Enumerable.Range(1, def.NumOfChains).Select(i => "SN" + i + "Acyl"))};
+                            double {string.Join(", ", Enumerable.Range(1, def.NumOfChains).Select(i => "SN" + i + "Acyl"))};
                     """);
-                    if (lipidClass.Contains("Ox"))
-                    {
-                        result.AppendLine($"""
-                        double OxCount;
-                    """);
-                    }
                 }
+
             }
-            if (def is not null && lipidClass.Contains("Ether"))
+            if (lipidClass.Contains("Ether") && def.NumOfChains <= 2)
             {
                 result.AppendLine($"                    (AlkylChain alkyl, AcylChain acyl) = lipid.Chains.Deconstruct<AlkylChain, AcylChain>();");
             }
@@ -256,65 +248,113 @@ namespace CompMs.Common.Lipidomics {
                 case "{lipidMS.Adduct}":
                     M = lipid.Mass;
 """);
-                if (def is not null && lipidClass.Contains("Ether"))
+                if (def is not null)
                 {
-                    //now only one and two chains lipids are supported
-                    if (def.NumOfChains == 1)
+                    if (lipidClass.Contains("Ether"))
                     {
-                        result.AppendLine($"                    SN1Alkyl = alkyl.Mass;");
-                    }
-                    else if (def.NumOfChains == 2)
-                    {
-                        result.AppendLine($"                    SN1Alkyl = alkyl.Mass;");
-                        result.AppendLine($"                    SN2Acyl = acyl.Mass;");
-                        if (lipidClass.Contains("Ox"))
+                        //now only one and two chains lipids are supported
+                        if (def.NumOfChains == 1)
                         {
-                            result.AppendLine($"                    OxCount = acyl.OxidizedCount;");
+                            result.AppendLine($"                    SN1Alkyl = alkyl.Mass;");
+                        }
+                        else if (def.NumOfChains == 2)
+                        {
+                            result.AppendLine($"                    SN1Alkyl = alkyl.Mass;");
+                            result.AppendLine($"                    SN2Acyl = acyl.Mass;");
+                            //if (lipidClass.Contains("Ox"))
+                            //{
+                            //    result.AppendLine($"                    OxCount = acyl.OxidizedCount;");
+                            //}
+                        }
+                        else if (def.NumOfChains == 3)
+                        {
+                            result.AppendLine("                    if(chains[0] is AlkylChain){");
+                            result.AppendLine("                         SN1Alkyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                            result.AppendLine("                    } else if (chains[1] is AlkylChain){        ");
+                            result.AppendLine("                         SN1Alkyl = chains[1].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                            result.AppendLine("                    } else if (chains[2] is AlkylChain){        ");
+                            result.AppendLine("                         SN1Alkyl = chains[2].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[1].Mass;");
+                            result.AppendLine("                    } else{        ");
+                            result.AppendLine("                         SN1Alkyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                            result.AppendLine("                    };");
                         }
                     }
+                    else if (lipidClass.Contains("Ox"))
+                    {
+                        //now only one and two chains lipids are supported
+                        if (def.NumOfChains == 3)
+                        {
+                            result.AppendLine("                    if(chains[0].OxidizedCount > 0){");
+                            result.AppendLine("                         SN1Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[2].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[0].Mass;");
+                            result.AppendLine("                    } else if (chains[1].OxidizedCount > 0){        ");
+                            result.AppendLine("                         SN1Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[2].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[1].Mass;");
+                            result.AppendLine("                    } else if (chains[2].OxidizedCount > 0){        ");
+                            result.AppendLine("                         SN1Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                            result.AppendLine("                    } else{        ");
+                            result.AppendLine("                         SN1Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN3Acyl = chains[2].Mass;");
+                            result.AppendLine("                    };");
+                        }
+                        else if (def.NumOfChains == 2)
+                        {
+                            result.AppendLine("                    if(chains[0].OxidizedCount > 0){");
+                            result.AppendLine("                         SN1Acyl = chains[1].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[0].Mass;");
+                            result.AppendLine("                    } else {        ");
+                            result.AppendLine("                         SN1Acyl = chains[0].Mass;");
+                            result.AppendLine("                         SN2Acyl = chains[1].Mass;");
+                            result.AppendLine("                    };");
 
-                }
-                else if (def is not null && lipidClass.Contains("Ox"))
-                {
-                    //now only one and two chains lipids are supported
-                    if (def.NumOfChains == 3)
-                    {
-                        result.AppendLine("                    if(chains[2].OxidizedCount > 0){");
-                        result.AppendLine("                         SN1Acyl = chains[0].Mass;");
-                        result.AppendLine("                         SN2Acyl = chains[1].Mass;");
-                        result.AppendLine("                         SN3Acyl = chains[2].Mass;");
-                        result.AppendLine("                         OxCount = chains[2].OxidizedCount;");
-                        result.AppendLine("                    }");
-                    }
-                    else if (def.NumOfChains == 2)
-                    {
-                        result.AppendLine("                    if(chains[0].OxidizedCount > 0){");
-                        result.AppendLine("                         SN1Acyl = chains[1].Mass;");
-                        result.AppendLine("                         SN2Acyl = chains[0].Mass;");
-                        result.AppendLine("                         OxCount = chains[0].OxidizedCount;");
-                        result.AppendLine("                    } else {        ");
-                        result.AppendLine("                         SN1Acyl = chains[0].Mass;");
-                        result.AppendLine("                         SN2Acyl = chains[1].Mass;");
-                        result.AppendLine("                         OxCount = chains[1].OxidizedCount;");
-                        result.AppendLine("                    }");
-                    }
-                    else if (def.NumOfChains == 1)
-                    {
-                        result.AppendLine("                    SN1Acyl = chains[0].CarbonCount == 0 ? chains[1].Mass : chains[0].Mass;");
-                        result.AppendLine("                    OxCount = chains[0].OxidizedCount == 0 ? chains[1].OxidizedCount : chains[0].OxidizedCount; ");
-                    }
-                }
-                else if (def is not null && lipidMS.Ions.SelectMany(ions => ions.Value).Any(ion => ion.Mz.Contains("SN")))
-                {
-                    foreach (var i in Enumerable.Range(0, def.NumOfChains))
-                    {
-                        if (def.NumOfChains > 1)
-                        {
-                            result.AppendLine($"                    SN{i + 1}Acyl = chains[{i}].Mass;");
                         }
-                        else
+                        else if (def.NumOfChains == 1)
                         {
                             result.AppendLine("                    SN1Acyl = chains[0].CarbonCount == 0 ? chains[1].Mass : chains[0].Mass;");
+                        }
+                    }
+                    else if (lipidMS.Ions.SelectMany(ions => ions.Value).Any(ion => ion.Mz.Contains("SN")))
+                    {
+                        foreach (var i in Enumerable.Range(0, def.NumOfChains))
+                        {
+                            if (def.NumOfChains > 1)
+                            {
+                                result.AppendLine($"                    SN{i + 1}Acyl = chains[{i}].Mass;");
+                            }
+                            else
+                            {
+                                result.AppendLine("                    SN1Acyl = chains[0].CarbonCount == 0 ? chains[1].Mass : chains[0].Mass;");
+                            }
+                        }
+                    }
+                    else if (lipidClass.Contains("Cer") || lipidClass == "SM")
+                    {
+
+                        if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel )
+                        {
+                            if (def.NumOfChains == 2)
+                            {
+                                result.AppendLine("                    if(chains[0] is SphingoChain){");
+                                result.AppendLine("                         Sph = chains[0].Mass;");
+                                result.AppendLine("                         Acyl = chains[1].Mass;");
+                                result.AppendLine("                    } else {        ");
+                                result.AppendLine("                         Sph = chains[1].Mass;");
+                                result.AppendLine("                         Acyl = chains[0].Mass;");
+                                result.AppendLine("                    };");
+                            }
                         }
                     }
                 }
@@ -365,7 +405,20 @@ namespace CompMs.Common.Lipidomics {
     private static LipidMS ToLipidMS(Context ctx, XElement element)
     {
         var adduct = element.Element("Adduct")?.Value ?? string.Empty;
-        var lsiLevel = Enum.TryParse<LSILevel>(element.Element("LSILevel")?.Value, out var lsi) ? lsi : LSILevel.None;
+        var lsiLevelValue = element.Element("LSILevel")?.Value;
+        LSILevel lsiLevel;
+        if (string.Equals(lsiLevelValue, "SL", StringComparison.OrdinalIgnoreCase))
+        {
+            lsiLevel = LSILevel.SpeciesLevel;
+        }
+        else if (string.Equals(lsiLevelValue, "MSL", StringComparison.OrdinalIgnoreCase))
+        {
+            lsiLevel = LSILevel.MolecularSpeciesLevel;
+        }
+        else if (!Enum.TryParse<LSILevel>(lsiLevelValue, out lsiLevel))
+        {
+            lsiLevel = LSILevel.None;
+        }
         var ions = new Dictionary<string, List<Ion>>();
 
         var ionElements = element.Elements().Where(e => !_specialElements.Contains(e.Name.LocalName));
