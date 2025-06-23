@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey) {
 
             var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = omics == TargetOmics.Lipidomics
                 ? MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
@@ -100,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var result = new MsScanMatchResult
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)sqweightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                WeightedDotProduct = (float)sqweightedDotProduct, SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = source, AnnotatorID = sourceKey, Priority = Priority,

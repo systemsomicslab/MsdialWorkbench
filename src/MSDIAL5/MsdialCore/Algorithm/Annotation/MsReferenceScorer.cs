@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes, MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes, MsRefSearchParameterBase parameter) {
             var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
@@ -87,7 +87,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 LibraryID = reference.ScanID,
                 InChIKey = reference.InChIKey,
                 WeightedDotProduct = (float)sqweightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct,
+                SimpleDotProduct = (float)sqsimpleDotProduct,
                 ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0],
                 MatchedPeaksCount = (float)matchedPeaksScores[1],

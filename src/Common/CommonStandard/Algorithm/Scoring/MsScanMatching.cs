@@ -589,7 +589,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var isMs1Match = false;
 
             var sqweightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var sqsimpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
@@ -604,7 +604,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var result = new MsScanMatchResult() {
                 LibraryID = refSpec.ScanID, 
                 WeightedDotProduct = (float)sqweightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
                 RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };
@@ -848,15 +848,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
 
-            var score = 0.0;
+            var sqscore = 0.0;
             var matched = 0.0;
             if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                score = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                sqscore = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 var matchedscores = GetMatchedPeaksScores(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 matched = matchedscores[1];
             }
             else {
-                score = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                sqscore = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 var matchedscores = GetMatchedPeaksScores(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 matched = matchedscores[1];
             }
@@ -864,7 +864,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (matched == 0) {
                 return new double[] { 0, 0 };
             }
-            return new double[] { score, matched };
+            return new double[] { sqscore, matched };
         }
 
         public static void SearchMatchedPeaks(
@@ -4077,6 +4077,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
 
+        /// <remarks>
+        /// This value represents the square of a typical dot product.
+        /// </remarks>>
         public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin, double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
