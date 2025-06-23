@@ -236,7 +236,6 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
             }
         }
 
-        //// Lipid.Nameをテスト詳細の概要に表示
         Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"} {reference.CompoundClass.ToString() ?? "null"}");
 
         Assert.IsNotNull(spectrum);
@@ -302,7 +301,6 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
             }
         }
 
-        //// Lipid.Nameをテスト詳細の概要に表示
         Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"} {reference.CompoundClass.ToString() ?? "null"}");
 
         Assert.IsNotNull(spectrum);
@@ -353,7 +351,6 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
             }
         }
 
-        //// Lipid.Nameをテスト詳細の概要に表示
         Console.WriteLine($"Lipid Name: {lipid?.Name.ToString() ?? "null"} {reference.AdductType.ToString() ?? "null"} {reference.CompoundClass.ToString() ?? "null"}");
 
         Assert.IsNotNull(spectrum);
