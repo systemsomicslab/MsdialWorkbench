@@ -12,12 +12,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public Ms2MatchResult Calculate(IMSScanMatchQuery query, IMSScanProperty reference) {
             var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
+            var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var matchedPeaksScores = MsScanMatching.GetMatchedPeaksScores(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
 
             if (sqweightedDotProduct == -1
                 || sqsimpleDotProduct == -1
-                || reverseDotProduct == -1
+                || sqreverseDotProduct == -1
                 || matchedPeaksScores[0] == -1
                 || matchedPeaksScores[1] == -1) {
                 return Ms2MatchResult.Empty;
@@ -26,11 +26,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var isSpectrumMatch =
                 sqweightedDotProduct >= query.WeightedDotProductCutOff
                 && sqsimpleDotProduct >= query.SimpleDotProductCutOff
-                && reverseDotProduct >= query.ReverseDotProductCutOff
+                && sqreverseDotProduct >= query.ReverseDotProductCutOff
                 && matchedPeaksScores[0] >= query.MatchedPeaksPercentageCutOff
                 && matchedPeaksScores[1] >= query.MinimumSpectrumMatch;
             return new Ms2MatchResult(
-                sqweightedDotProduct, sqsimpleDotProduct, reverseDotProduct,
+                sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
                 isSpectrumMatch);
         }

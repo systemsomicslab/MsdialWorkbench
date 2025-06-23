@@ -590,7 +590,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var sqweightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var sqsimpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var sqreverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
 
@@ -604,7 +604,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var result = new MsScanMatchResult() {
                 LibraryID = refSpec.ScanID, 
                 WeightedDotProduct = (float)sqweightedDotProduct,
-                SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
                 RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };
@@ -3822,6 +3822,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
+        /// <remarks>
+        /// This value represents the square of a typical dot product.
+        /// </remarks>>
         public static double GetReverseDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
             double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
