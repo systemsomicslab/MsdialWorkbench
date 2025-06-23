@@ -4,6 +4,7 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
            xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+           xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
            mc:Ignorable="d" 
            Header="MS/MS chromatogram"
            d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
@@ -19,5 +20,10 @@
 
         <RibbonTextBox Label="Number of chromatograms to display"
                        Text="{Binding NumberOfChromatograms.Value}"/>
+
+        <RibbonCheckBox Label="Use user selected product ion"
+                        IsChecked="{Binding Path=UseUserSelectedIons.Value}"/>
+        <RibbonButton Label="Select product ion m/z"
+                      Command="{Binding Path=ShowProductIonSelectingCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
     </RibbonGroup>
 </RibbonTab>

@@ -133,11 +133,12 @@ namespace CompMs.MsdialCore.DataObj
 
             if (projectDir != newProjectDir) {
                 try {
-                    using (var streamManager = datasetStreamManagerFactory?.Invoke(projectDir)) {
-                        var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
-                        streamManager?.Complete();
-                        return storage;
-                    }
+                    using var streamManager = datasetStreamManagerFactory?.Invoke(newProjectDir);
+                    var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
+                    streamManager?.Complete();
+                    storage.FixDatasetFolder(newProjectDir);
+                    KeepPreviousRtCorrectionResult(storage);
+                    return storage;
                 }
                 catch {
 
@@ -145,13 +146,10 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             try {
-                using (var streamManager = datasetStreamManagerFactory?.Invoke(newProjectDir)) {
-                    var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
-                    streamManager?.Complete();
-                    storage.FixDatasetFolder(newProjectDir);
-                    KeepPreviousRtCorrectionResult(storage);
-                    return storage;
-                }
+                using var streamManager = datasetStreamManagerFactory?.Invoke(projectDir);
+                var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
+                streamManager?.Complete();
+                return storage;
             }
             catch (FileNotFoundException) {
                 faultedHandle?.Invoke(projectParameter);
@@ -170,13 +168,12 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             try {
-                using (var streamManager = datasetStreamManagerFactory(projectDir)) {
-                    var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
-                    streamManager?.Complete();
-                    storage.FixDatasetFolder(projectDir);
-                    KeepPreviousRtCorrectionResult(storage);
-                    return storage;
-                }
+                using var streamManager = datasetStreamManagerFactory(projectDir);
+                var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
+                streamManager?.Complete();
+                storage.FixDatasetFolder(projectDir);
+                KeepPreviousRtCorrectionResult(storage);
+                return storage;
             }
             catch (FileNotFoundException) {
                 faultedHandle?.Invoke(projectParameter);

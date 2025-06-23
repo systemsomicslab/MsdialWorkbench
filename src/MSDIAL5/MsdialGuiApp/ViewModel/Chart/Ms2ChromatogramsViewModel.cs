@@ -1,8 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.ViewModel.Loader;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,7 +13,7 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
     internal sealed class Ms2ChromatogramsViewModel : ViewModelBase {
-        public Ms2ChromatogramsViewModel(Ms2ChromatogramsModel model, Action focusAction, IObservable<bool> isFocused) {
+        public Ms2ChromatogramsViewModel(Ms2ChromatogramsModel model, Action focusAction, IObservable<bool> isFocused, IMessageBroker? broker = null) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -30,7 +32,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MultiMsRawSpectrumLoaderViewModel = new MultiMsmsRawSpectrumLoaderViewModel(model.Loader);
+
             NumberOfChromatograms = model.NumberOfChromatograms.SetValidateAttribute(() => NumberOfChromatograms);
+            UseUserSelectedIons = model.ToReactivePropertySlimAsSynchronized(m => m.UseUserSelectedIons).AddTo(Disposables);
+            if (broker is not null) {
+                ShowProductIonSelectingCommand = new ReactiveCommand().WithSubscribe(() => {
+                    using var productIonSelectingViewModel = new ProductIonSelectingViewModel(model.ProductIonSelectingModel);
+                    broker.Publish(productIonSelectingViewModel);
+                    if (productIonSelectingViewModel.Result == true) {
+                        UseUserSelectedIons.Value = true;
+                    }
+                }).AddTo(Disposables);
+            }
+
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(model.CopyAsTable).AddTo(Disposables);
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
@@ -51,6 +65,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]
         public ReactiveProperty<int> NumberOfChromatograms { get; }
+
+        public ReactivePropertySlim<bool> UseUserSelectedIons { get; }
+        public ReactiveCommand ShowProductIonSelectingCommand { get; }
 
         public ReactiveCommand CopyAsTableCommand { get; }
         public AsyncReactiveCommand SaveAsTableCommand { get; }

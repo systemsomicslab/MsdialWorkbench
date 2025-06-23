@@ -172,9 +172,10 @@
                     </ItemsControl.Template>
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
+                            <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LinePen.DashStyle.Offset}" Value="0">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -206,9 +207,10 @@
                     </ItemsControl.Template>
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
+                            <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LinePen.DashStyle.Offset}" Value="1">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
