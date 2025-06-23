@@ -21,7 +21,7 @@ namespace CompMs.Common.Parameter {
         public float RelativeAmpCutoff { get; set; } = 0F;
         [Key(8)]
         public float AbsoluteAmpCutoff { get; set; } = 0;
-        
+
         // by [0-1]
         [Key(9)]
         public float SquaredWeightedDotProductCutOff { get; set; } = .6F;
@@ -100,9 +100,9 @@ namespace CompMs.Common.Parameter {
             sb.AppendLine($"{nameof(Ms2Tolerance)}: {Ms2Tolerance:f5}");
             sb.AppendLine($"{nameof(RelativeAmpCutoff)}: {RelativeAmpCutoff:f3}");
             sb.AppendLine($"{nameof(AbsoluteAmpCutoff)}: {AbsoluteAmpCutoff}");
-            sb.AppendLine($"{nameof(SquaredWeightedDotProductCutOff)}: {SquaredWeightedDotProductCutOff:f3}");
-            sb.AppendLine($"{nameof(SquaredSimpleDotProductCutOff)}: {SquaredSimpleDotProductCutOff:f3}");
-            sb.AppendLine($"{nameof(SquaredReverseDotProductCutOff)}: {SquaredReverseDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(WeightedDotProductCutOff)}: {WeightedDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(SimpleDotProductCutOff)}: {SimpleDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(ReverseDotProductCutOff)}: {ReverseDotProductCutOff:f3}");
             sb.AppendLine($"{nameof(MatchedPeaksPercentageCutOff)}: {MatchedPeaksPercentageCutOff:f3}");
             sb.AppendLine($"{nameof(AndromedaScoreCutOff)}: {AndromedaScoreCutOff:f3}");
             sb.AppendLine($"{nameof(TotalScoreCutoff)}: {TotalScoreCutoff:f3}");
