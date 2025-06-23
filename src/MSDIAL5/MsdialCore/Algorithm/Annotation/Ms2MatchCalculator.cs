@@ -91,9 +91,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public interface IMs2MatchResult : IMatchResult
     {
-        double WeightedDotProduct { get; }
-        double SimpleDotProduct { get; }
-        double ReverseDotProduct { get; }
+        double SquaredWeightedDotProduct { get; }
+        double SquaredSimpleDotProduct { get; }
+        double SquaredReverseDotProduct { get; }
         int MatchedPeaksCount { get; }
         double MatchedPeaksPercentage { get; }
 
@@ -102,36 +102,36 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public class Ms2MatchResult : IMs2MatchResult
     {
-        public double WeightedDotProduct { get; }
-        public double SimpleDotProduct { get; }
-        public double ReverseDotProduct { get; }
+        public double SquaredWeightedDotProduct { get; }
+        public double SquaredSimpleDotProduct { get; }
+        public double SquaredReverseDotProduct { get; }
         public int MatchedPeaksCount { get; }
         public double MatchedPeaksPercentage { get; }
 
-        public double TotalScore => ((WeightedDotProduct + SimpleDotProduct + ReverseDotProduct) / 3 + MatchedPeaksPercentage) / 2;
+        public double TotalScore => ((Math.Sqrt(SquaredWeightedDotProduct) + Math.Sqrt(SquaredSimpleDotProduct) + Math.Sqrt(SquaredReverseDotProduct)) / 3 + MatchedPeaksPercentage) / 2;
         public IEnumerable<double> Scores => new[] {
-            (WeightedDotProduct + SimpleDotProduct + ReverseDotProduct) / 3,
+            (Math.Sqrt(SquaredWeightedDotProduct) + Math.Sqrt(SquaredSimpleDotProduct) + Math.Sqrt(SquaredReverseDotProduct)) / 3,
             MatchedPeaksPercentage,
         };
 
         public bool IsSpectrumMatch { get; }
 
         public Ms2MatchResult(
-            double weightedDotProduct, double simpleDotProduct, double reverseDotProduct,
+            double sqweightedDotProduct, double sqsimpleDotProduct, double sqreverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
             bool isSpectrumMatch) {
-            WeightedDotProduct = weightedDotProduct;
-            SimpleDotProduct = simpleDotProduct;
-            ReverseDotProduct = reverseDotProduct;
+            SquaredWeightedDotProduct = sqweightedDotProduct;
+            SquaredSimpleDotProduct = sqsimpleDotProduct;
+            SquaredReverseDotProduct = sqreverseDotProduct;
             MatchedPeaksPercentage = matchedPeaksPercentage;
             MatchedPeaksCount = matchedPeaksCount;
             IsSpectrumMatch = isSpectrumMatch;
         }
 
         public virtual void Assign(MsScanMatchResult result) {
-            result.WeightedDotProduct = (float)WeightedDotProduct;
-            result.SimpleDotProduct = (float)SimpleDotProduct;
-            result.ReverseDotProduct = (float)ReverseDotProduct;
+            result.WeightedDotProduct = (float)SquaredWeightedDotProduct;
+            result.SimpleDotProduct = (float)SquaredSimpleDotProduct;
+            result.ReverseDotProduct = (float)SquaredReverseDotProduct;
             result.MatchedPeaksPercentage = (float)MatchedPeaksPercentage;
             result.MatchedPeaksCount = MatchedPeaksCount;
             result.IsSpectrumMatch = IsSpectrumMatch;

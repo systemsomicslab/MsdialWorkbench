@@ -54,10 +54,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     {
         public LipidMs2MatchResult(
             string name,
-            double weightedDotProduct, double simpleDotProduct, double reverseDotProduct,
+            double sqweightedDotProduct, double sqsimpleDotProduct, double sqreverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
             bool isSpectrumMatch, bool isLipidClassMatch, bool isLipidChainsMatch, bool isLipidPositionMatch, bool isOtherLipidMatch)
-            : base(weightedDotProduct, simpleDotProduct, reverseDotProduct, matchedPeaksPercentage, matchedPeaksCount, isSpectrumMatch) {
+            : base(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksPercentage, matchedPeaksCount, isSpectrumMatch) {
             IsLipidClassMatch = isLipidClassMatch;
             IsLipidChainsMatch = isLipidChainsMatch;
             IsLipidPositionMatch = isLipidPositionMatch;
