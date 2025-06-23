@@ -9,12 +9,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public LipidMs2MatchResult Calculate(IMSScanMatchQuery query, MoleculeMsReference reference) {
 
             var scan = query.Scan;
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
+            var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
 
-            if (weightedDotProduct == -1
+            if (sqweightedDotProduct == -1
                 || simpleDotProduct == -1
                 || reverseDotProduct == -1
                 || matchedPeaksScores[0] == -1
@@ -27,7 +27,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
 
             var isSpectrumMatch =
-                weightedDotProduct >= query.WeightedDotProductCutOff
+                sqweightedDotProduct >= query.WeightedDotProductCutOff
                 && simpleDotProduct >= query.SimpleDotProductCutOff
                 && reverseDotProduct >= query.ReverseDotProductCutOff
                 && matchedPeaksScores[0] >= query.MatchedPeaksPercentageCutOff
@@ -35,7 +35,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && (isLipidClassMatch || isLipidChainsMatch || isLipidPositionMatch || isOtherLipidMatch);
             return new LipidMs2MatchResult(
                 name,
-                weightedDotProduct, simpleDotProduct, reverseDotProduct,
+                sqweightedDotProduct, simpleDotProduct, reverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
                 isSpectrumMatch, isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch);
         }
