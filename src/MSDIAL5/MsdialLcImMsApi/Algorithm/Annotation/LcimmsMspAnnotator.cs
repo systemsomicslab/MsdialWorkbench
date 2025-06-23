@@ -88,7 +88,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             var result = new MsScanMatchResult
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)sqweightedDotProduct, SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)sqreverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct, SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.MspDB, AnnotatorID = annotatorID, Priority = Priority,
@@ -225,9 +225,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
+            result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 

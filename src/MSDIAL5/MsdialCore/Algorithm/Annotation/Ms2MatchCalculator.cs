@@ -129,9 +129,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public virtual void Assign(MsScanMatchResult result) {
-            result.WeightedDotProduct = (float)SquaredWeightedDotProduct;
-            result.SimpleDotProduct = (float)SquaredSimpleDotProduct;
-            result.ReverseDotProduct = (float)SquaredReverseDotProduct;
+            result.SquaredWeightedDotProduct = (float)SquaredWeightedDotProduct;
+            result.SquaredSimpleDotProduct = (float)SquaredSimpleDotProduct;
+            result.SquaredReverseDotProduct = (float)SquaredReverseDotProduct;
             result.MatchedPeaksPercentage = (float)MatchedPeaksPercentage;
             result.MatchedPeaksCount = MatchedPeaksCount;
             result.IsSpectrumMatch = IsSpectrumMatch;

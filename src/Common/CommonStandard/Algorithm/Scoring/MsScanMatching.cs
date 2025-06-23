@@ -439,9 +439,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             result.MatchedPeaksCount = (float)matchedPeaksScores[1];
             result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
 
-            if (result.WeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
                 result.IsSpectrumMatch = true;
@@ -478,9 +478,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             result.MatchedPeaksCount = matchedPeaks.Count(n => n.IsMatched);
             result.MatchedPeaksPercentage = (float)(result.MatchedPeaksCount / matchedPeaks.Count());
 
-            if (result.WeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch &&
                 result.AndromedaScore >= param.AndromedaScoreCutOff) {
@@ -561,9 +561,9 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             result.MatchedPeaksCount = (float)matchedPeaksScores[1];
             result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
-            if (result.WeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
                 result.IsSpectrumMatch = true;
@@ -603,8 +603,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var result = new MsScanMatchResult() {
                 LibraryID = refSpec.ScanID, 
-                WeightedDotProduct = (float)sqweightedDotProduct,
-                SimpleDotProduct = (float)sqsimpleDotProduct, ReverseDotProduct = (float)sqreverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct,
+                SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
                 RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };

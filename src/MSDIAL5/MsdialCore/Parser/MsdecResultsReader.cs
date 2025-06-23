@@ -259,9 +259,9 @@ namespace CompMs.MsdialCore.Parser {
                 var mResult = result.MspBasedMatchResult;
 
                 mResult.TotalScore = BitConverter.ToSingle(buffer, 8);
-                mResult.WeightedDotProduct = BitConverter.ToSingle(buffer, 12);
-                mResult.SimpleDotProduct = BitConverter.ToSingle(buffer, 16);
-                mResult.ReverseDotProduct = BitConverter.ToSingle(buffer, 20);
+                mResult.SquaredWeightedDotProduct = BitConverter.ToSingle(buffer, 12);
+                mResult.SquaredSimpleDotProduct = BitConverter.ToSingle(buffer, 16);
+                mResult.SquaredReverseDotProduct = BitConverter.ToSingle(buffer, 20);
                 mResult.MatchedPeaksCount = BitConverter.ToSingle(buffer, 24);
                 mResult.MatchedPeaksPercentage = BitConverter.ToSingle(buffer, 28);
                 mResult.EssentialFragmentMatchedScore = BitConverter.ToSingle(buffer, 32);

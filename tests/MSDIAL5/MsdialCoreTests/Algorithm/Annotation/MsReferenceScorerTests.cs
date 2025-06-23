@@ -59,18 +59,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
@@ -129,18 +129,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
@@ -200,18 +200,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity == 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
 
@@ -457,9 +457,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EIEIO, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");

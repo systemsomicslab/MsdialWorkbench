@@ -128,17 +128,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var result = annotator.CalculateScore(BuildQuery(target, annotator, parameter), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
 
@@ -150,9 +150,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -183,9 +183,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -295,9 +295,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var result = annotator.CalculateScore(BuildQuery(target, annotator, parameter), reference);
             annotator.Validate(result, BuildQuery(target, annotator, parameter), reference);
 
-            Console.WriteLine($"WeighedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeighedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
             Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");

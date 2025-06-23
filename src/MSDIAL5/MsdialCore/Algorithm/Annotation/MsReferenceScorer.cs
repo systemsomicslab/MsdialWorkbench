@@ -86,9 +86,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 Name = reference.Name,
                 LibraryID = reference.ScanID,
                 InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)sqweightedDotProduct,
-                SimpleDotProduct = (float)sqsimpleDotProduct,
-                ReverseDotProduct = (float)sqreverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct,
+                SquaredSimpleDotProduct = (float)sqsimpleDotProduct,
+                SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0],
                 MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity,
@@ -188,17 +188,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
            
             if (omics == TargetOmics.Lipidomics) {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
-                || result.SimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
-                || result.ReverseDotProduct >= parameter.SquaredReverseDotProductCutOff;
-                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SquaredSimpleDotProductCutOff) {
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                || result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                || result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff;
+                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SquaredSimpleDotProduct < parameter.SquaredSimpleDotProductCutOff) {
                     result.IsSpectrumMatch = false;
                 }
             }
             else {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
             }
