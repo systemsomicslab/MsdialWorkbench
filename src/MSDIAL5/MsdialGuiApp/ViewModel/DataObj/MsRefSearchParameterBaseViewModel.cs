@@ -179,26 +179,26 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 .Subscribe(x => _model.IsUseCcsForAnnotationFiltering = x)
                 .AddTo(Disposables);
 
-            WeightedDotProductCutOff = new ReactiveProperty<string>((model.WeightedDotProductCutOff * 1000).ToString())
+            WeightedDotProductCutOff = new ReactiveProperty<string>((model.SquaredWeightedDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => WeightedDotProductCutOff)
                 .AddTo(Disposables);
             WeightedDotProductCutOff.Where(_ => !WeightedDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(WeightedDotProductCutOff.Value) / 1000)
-                .Subscribe(x => _model.WeightedDotProductCutOff = x)
+                .Subscribe(x => _model.SquaredWeightedDotProductCutOff = x)
                 .AddTo(Disposables);
-            SimpleDotProductCutOff = new ReactiveProperty<string>((model.SimpleDotProductCutOff * 1000).ToString())
+            SimpleDotProductCutOff = new ReactiveProperty<string>((model.SquaredSimpleDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => SimpleDotProductCutOff)
                 .AddTo(Disposables);
             SimpleDotProductCutOff.Where(_ => !SimpleDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(SimpleDotProductCutOff.Value) / 1000)
-                .Subscribe(x => _model.SimpleDotProductCutOff = x)
+                .Subscribe(x => _model.SquaredSimpleDotProductCutOff = x)
                 .AddTo(Disposables);
-            ReverseDotProductCutOff = new ReactiveProperty<string>((model.ReverseDotProductCutOff * 1000).ToString())
+            ReverseDotProductCutOff = new ReactiveProperty<string>((model.SquaredReverseDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => ReverseDotProductCutOff)
                 .AddTo(Disposables);
             ReverseDotProductCutOff.Where(_ => !ReverseDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(ReverseDotProductCutOff.Value) / 1000)
-                .Subscribe(x => _model.ReverseDotProductCutOff = x)
+                .Subscribe(x => _model.SquaredReverseDotProductCutOff = x)
                 .AddTo(Disposables);
             MatchedPeaksPercentageCutOff = new ReactiveProperty<string>((model.MatchedPeaksPercentageCutOff * 100).ToString())
                 .SetValidateAttribute(() => MatchedPeaksPercentageCutOff)

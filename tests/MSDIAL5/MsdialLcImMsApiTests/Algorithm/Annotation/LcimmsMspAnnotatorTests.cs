@@ -429,7 +429,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
@@ -517,7 +517,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 TotalScoreCutoff = .7f,
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,

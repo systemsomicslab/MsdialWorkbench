@@ -189,9 +189,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.ReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 

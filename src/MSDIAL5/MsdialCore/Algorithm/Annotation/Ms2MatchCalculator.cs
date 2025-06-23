@@ -83,7 +83,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             : this(
                   scan,
                   parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd,
-                  parameter.WeightedDotProductCutOff, parameter.SimpleDotProductCutOff, parameter.ReverseDotProductCutOff,
+                  parameter.SquaredWeightedDotProductCutOff, parameter.SquaredSimpleDotProductCutOff, parameter.SquaredReverseDotProductCutOff,
                   parameter.MatchedPeaksPercentageCutOff, (int)parameter.MinimumSpectrumMatch) {
 
         }

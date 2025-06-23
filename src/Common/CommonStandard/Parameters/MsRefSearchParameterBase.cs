@@ -24,11 +24,26 @@ namespace CompMs.Common.Parameter {
         
         // by [0-1]
         [Key(9)]
-        public float WeightedDotProductCutOff { get; set; } = 0.6F;
+        public float SquaredWeightedDotProductCutOff { get; set; } = .6F;
         [Key(10)]
-        public float SimpleDotProductCutOff { get; set; } = 0.6F;
+        public float SquaredSimpleDotProductCutOff { get; set; } = .6F;
         [Key(11)]
-        public float ReverseDotProductCutOff { get; set; } = 0.8F;
+        public float SquaredReverseDotProductCutOff { get; set; } = .8F;
+        [IgnoreMember]
+        public float WeightedDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredWeightedDotProductCutOff);
+            set => SquaredWeightedDotProductCutOff = value * value;
+        }
+        [IgnoreMember]
+        public float SimpleDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredSimpleDotProductCutOff);
+            set => SquaredSimpleDotProductCutOff = value * value;
+        }
+        [IgnoreMember]
+        public float ReverseDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredReverseDotProductCutOff);
+            set => SquaredReverseDotProductCutOff = value * value;
+        }
         [Key(12)]
         public float MatchedPeaksPercentageCutOff { get; set; } = 0.25F;
         [Key(19)]
@@ -62,9 +77,9 @@ namespace CompMs.Common.Parameter {
             Ms2Tolerance = parameter.Ms2Tolerance;
             RelativeAmpCutoff = parameter.RelativeAmpCutoff;
             AbsoluteAmpCutoff = parameter.AbsoluteAmpCutoff;
-            WeightedDotProductCutOff = parameter.WeightedDotProductCutOff;
-            SimpleDotProductCutOff = parameter.SimpleDotProductCutOff;
-            ReverseDotProductCutOff = parameter.ReverseDotProductCutOff;
+            SquaredWeightedDotProductCutOff = parameter.SquaredWeightedDotProductCutOff;
+            SquaredSimpleDotProductCutOff = parameter.SquaredSimpleDotProductCutOff;
+            SquaredReverseDotProductCutOff = parameter.SquaredReverseDotProductCutOff;
             MatchedPeaksPercentageCutOff = parameter.MatchedPeaksPercentageCutOff;
             TotalScoreCutoff = parameter.TotalScoreCutoff;
             MinimumSpectrumMatch = parameter.MinimumSpectrumMatch;
@@ -85,9 +100,9 @@ namespace CompMs.Common.Parameter {
             sb.AppendLine($"{nameof(Ms2Tolerance)}: {Ms2Tolerance:f5}");
             sb.AppendLine($"{nameof(RelativeAmpCutoff)}: {RelativeAmpCutoff:f3}");
             sb.AppendLine($"{nameof(AbsoluteAmpCutoff)}: {AbsoluteAmpCutoff}");
-            sb.AppendLine($"{nameof(WeightedDotProductCutOff)}: {WeightedDotProductCutOff:f3}");
-            sb.AppendLine($"{nameof(SimpleDotProductCutOff)}: {SimpleDotProductCutOff:f3}");
-            sb.AppendLine($"{nameof(ReverseDotProductCutOff)}: {ReverseDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(SquaredWeightedDotProductCutOff)}: {SquaredWeightedDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(SquaredSimpleDotProductCutOff)}: {SquaredSimpleDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(SquaredReverseDotProductCutOff)}: {SquaredReverseDotProductCutOff:f3}");
             sb.AppendLine($"{nameof(MatchedPeaksPercentageCutOff)}: {MatchedPeaksPercentageCutOff:f3}");
             sb.AppendLine($"{nameof(AndromedaScoreCutOff)}: {AndromedaScoreCutOff:f3}");
             sb.AppendLine($"{nameof(TotalScoreCutoff)}: {TotalScoreCutoff:f3}");

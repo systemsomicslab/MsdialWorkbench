@@ -12,9 +12,9 @@ namespace CompMs.MsdialImmsCore.Parameter
         public MsdialImmsParameter(bool isImaging, bool isLabUseOnly) : base(isLabUseOnly) {
             MachineCategory = isImaging ? MachineCategory.IIMMS : MachineCategory.IMMS;
 
-            MspSearchParam.WeightedDotProductCutOff = 0.1f;
-            MspSearchParam.SimpleDotProductCutOff = 0.1f;
-            MspSearchParam.ReverseDotProductCutOff = 0.3f;
+            MspSearchParam.SquaredWeightedDotProductCutOff = 0.1f;
+            MspSearchParam.SquaredSimpleDotProductCutOff = 0.1f;
+            MspSearchParam.SquaredReverseDotProductCutOff = 0.3f;
             MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
             MspSearchParam.MinimumSpectrumMatch = 1;
             MSDataType = MSDataType.Centroid;

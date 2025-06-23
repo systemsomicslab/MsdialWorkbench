@@ -398,9 +398,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass range end for msp-based annotation": if (float.TryParse(valueLower, out float msend_ident)) param.MspSearchParam.MassRangeEnd = msend_ident; return true;
                 case "relative amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float relamp_ident)) param.MspSearchParam.RelativeAmpCutoff = relamp_ident; return true;
                 case "absolute amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float absamp_ident)) param.MspSearchParam.AbsoluteAmpCutoff = absamp_ident; return true;
-                case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct; return true;
-                case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct; return true;
-                case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct; return true;
+                case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.SquaredWeightedDotProductCutOff = dotproduct; return true;
+                case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SquaredSimpleDotProductCutOff = simpleproduct; return true;
+                case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.SquaredReverseDotProductCutOff = revdotproduct; return true;
                 case "matched peaks percentage cutoff for msp-based annotation": if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent; return true;
                 case "minimum spectrum match for msp-based annotation": if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch; return true;
                 case "total score cutoff for msp-based annotation": if (float.TryParse(valueLower, out float cutoff_ident)) param.MspSearchParam.TotalScoreCutoff = cutoff_ident; return true;
@@ -421,9 +421,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass range end for lbm-based annotation": if (float.TryParse(valueLower, out float msend_lbm_ident)) param.LbmSearchParam.MassRangeEnd = msend_lbm_ident; return true;
                 case "relative amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float relamp_lbm_ident)) param.LbmSearchParam.RelativeAmpCutoff = relamp_lbm_ident; return true;
                 case "absolute amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float absamp_lbm_ident)) param.LbmSearchParam.AbsoluteAmpCutoff = absamp_lbm_ident; return true;
-                case "weighted dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_dotproduct)) param.LbmSearchParam.WeightedDotProductCutOff = lbm_dotproduct; return true;
-                case "simple dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_simpleproduct)) param.LbmSearchParam.SimpleDotProductCutOff = lbm_simpleproduct; return true;
-                case "reverse dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_revdotproduct)) param.LbmSearchParam.ReverseDotProductCutOff = lbm_revdotproduct; return true;
+                case "weighted dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_dotproduct)) param.LbmSearchParam.SquaredWeightedDotProductCutOff = lbm_dotproduct; return true;
+                case "simple dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_simpleproduct)) param.LbmSearchParam.SquaredSimpleDotProductCutOff = lbm_simpleproduct; return true;
+                case "reverse dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_revdotproduct)) param.LbmSearchParam.SquaredReverseDotProductCutOff = lbm_revdotproduct; return true;
                 case "matched peaks percentage cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_matchedpeakspercent)) param.LbmSearchParam.MatchedPeaksPercentageCutOff = lbm_matchedpeakspercent; return true;
                 case "minimum spectrum match for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_minpeakmatch)) param.LbmSearchParam.MinimumSpectrumMatch = lbm_minpeakmatch; return true;
                 case "total score cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float cutoff_lbm_ident)) param.LbmSearchParam.TotalScoreCutoff = cutoff_lbm_ident; return true;

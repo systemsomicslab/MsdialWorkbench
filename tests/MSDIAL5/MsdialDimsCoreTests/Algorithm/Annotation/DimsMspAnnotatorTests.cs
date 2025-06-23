@@ -112,7 +112,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
             };
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 

@@ -275,7 +275,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 TotalScoreCutoff = 0.7f,
             };
             var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
