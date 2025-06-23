@@ -89,7 +89,7 @@
 	  <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
     <ProjectReference Include="..\..\Common\CommonSourceGenerator\CommonSourceGenerator.csproj">
       <OutputItemType>Analyzer</OutputItemType>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
 	  <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
 	  <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
