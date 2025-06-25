@@ -8,9 +8,9 @@ namespace CompMs.Common.DataObj.Result.Tests
             Assert.AreEqual(expected.Name, actual.Name);
             Assert.AreEqual(expected.InChIKey, actual.InChIKey);
             Assert.AreEqual(expected.TotalScore, actual.TotalScore);
-            Assert.AreEqual(expected.WeightedDotProduct, actual.WeightedDotProduct);
-            Assert.AreEqual(expected.SimpleDotProduct, actual.SimpleDotProduct);
-            Assert.AreEqual(expected.ReverseDotProduct, actual.ReverseDotProduct);
+            Assert.AreEqual(expected.SquaredWeightedDotProduct, actual.SquaredWeightedDotProduct);
+            Assert.AreEqual(expected.SquaredSimpleDotProduct, actual.SquaredSimpleDotProduct);
+            Assert.AreEqual(expected.SquaredReverseDotProduct, actual.SquaredReverseDotProduct);
             Assert.AreEqual(expected.MatchedPeaksCount, actual.MatchedPeaksCount);
             Assert.AreEqual(expected.MatchedPeaksPercentage, actual.MatchedPeaksPercentage);
             Assert.AreEqual(expected.EssentialFragmentMatchedScore, actual.EssentialFragmentMatchedScore);
