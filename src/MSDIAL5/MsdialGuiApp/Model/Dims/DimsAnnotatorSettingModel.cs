@@ -23,19 +23,19 @@ namespace CompMs.App.Msdial.Model.Dims
             _createFuctory = createFuctory;
             if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SquaredSimpleDotProductCutOff = 0.5F,
-                    SquaredWeightedDotProductCutOff = 0.5F,
-                    SquaredReverseDotProductCutOff = 0.7F,
-                    MatchedPeaksPercentageCutOff = 0.3F,
+                    SimpleDotProductCutOff = .7F,
+                    WeightedDotProductCutOff = .7F,
+                    ReverseDotProductCutOff = .84F,
+                    MatchedPeaksPercentageCutOff = .3F,
                     MinimumSpectrumMatch = 3,
                 };
             }
             else { // meaning lbm
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SquaredSimpleDotProductCutOff = 0.1F,
-                    SquaredWeightedDotProductCutOff = 0.1F,
-                    SquaredReverseDotProductCutOff = 0.1F,
-                    MatchedPeaksPercentageCutOff = 0.0F,
+                    SimpleDotProductCutOff = .32F,
+                    WeightedDotProductCutOff = .32F,
+                    ReverseDotProductCutOff = .32F,
+                    MatchedPeaksPercentageCutOff = .0F,
                     MinimumSpectrumMatch = 1
                 };
             }
@@ -105,10 +105,10 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SquaredSimpleDotProductCutOff = 0.1F,
-                SquaredWeightedDotProductCutOff = 0.1F,
-                SquaredReverseDotProductCutOff = 0.1F,
-                MatchedPeaksPercentageCutOff = 0.0F,
+                SimpleDotProductCutOff = .32F ,
+                WeightedDotProductCutOff = .32F,
+                ReverseDotProductCutOff = .32F,
+                MatchedPeaksPercentageCutOff = .0F,
                 MinimumSpectrumMatch = 1
             };
             _annotatorVisitor = annotatorVisitor;

@@ -24,11 +24,11 @@ namespace CompMs.Common.Parameter {
 
         // by [0-1]
         [Key(9)]
-        public float SquaredWeightedDotProductCutOff { get; set; } = .6F;
+        public float SquaredWeightedDotProductCutOff { get; set; } = .78F * .78F;
         [Key(10)]
-        public float SquaredSimpleDotProductCutOff { get; set; } = .6F;
+        public float SquaredSimpleDotProductCutOff { get; set; } = .78F * .78F;
         [Key(11)]
-        public float SquaredReverseDotProductCutOff { get; set; } = .8F;
+        public float SquaredReverseDotProductCutOff { get; set; } = .89F * .89F;
         [IgnoreMember]
         public float WeightedDotProductCutOff {
             get => (float)System.Math.Sqrt(SquaredWeightedDotProductCutOff);
