@@ -27,9 +27,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             _createFuctory = createFuctory;
             if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SimpleDotProductCutOff = 0.77F,
-                    WeightedDotProductCutOff = 0.77F,
-                    ReverseDotProductCutOff = 0.64F,
+                    SquaredSimpleDotProductCutOff = 0.6F,
+                    SquaredWeightedDotProductCutOff = 0.6F,
+                    SquaredReverseDotProductCutOff = 0.8F,
                     MatchedPeaksPercentageCutOff = 0.25F,
                     MinimumSpectrumMatch = 3,
                 };
@@ -42,18 +42,18 @@ namespace CompMs.App.Msdial.Model.Lcms
                     case CollisionType.EIEIO:
                     case CollisionType.EID:
                         SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                            SimpleDotProductCutOff = .22F,
-                            WeightedDotProductCutOff = .22F,
-                            ReverseDotProductCutOff = .22F,
+                            SquaredSimpleDotProductCutOff = 0.05F,
+                            SquaredWeightedDotProductCutOff = 0.05F,
+                            SquaredReverseDotProductCutOff = 0.05F,
                             MatchedPeaksPercentageCutOff = 0.0F,
                             MinimumSpectrumMatch = 1
                         };
                         break;
                     default:
                         SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                            SimpleDotProductCutOff = .39F,
-                            WeightedDotProductCutOff = .39F,
-                            ReverseDotProductCutOff = .71F,
+                            SquaredSimpleDotProductCutOff = 0.15F,
+                            SquaredWeightedDotProductCutOff = 0.15F,
+                            SquaredReverseDotProductCutOff = 0.5F,
                             MatchedPeaksPercentageCutOff = 0.0F,
                             MinimumSpectrumMatch = 1
                         };
@@ -126,13 +126,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SquaredSimpleDotProductCutOff = .0F,
-                SquaredWeightedDotProductCutOff = .0F,
-                SquaredReverseDotProductCutOff = .0F,
-                MatchedPeaksPercentageCutOff = .0F,
-                MinimumSpectrumMatch = .0F,
-                TotalScoreCutoff = .0F,
-                AndromedaScoreCutOff = .0F,
+                SquaredSimpleDotProductCutOff = 0.0F,
+                SquaredWeightedDotProductCutOff = 0.0F,
+                SquaredReverseDotProductCutOff = 0.0F,
+                MatchedPeaksPercentageCutOff = 0.0F,
+                MinimumSpectrumMatch = 0.0F,
+                TotalScoreCutoff = 0.0F,
+                AndromedaScoreCutOff = 0.0F,
                 MassRangeBegin = 100,
                 MassRangeEnd = 1500
             };
@@ -177,10 +177,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SquaredSimpleDotProductCutOff = .39F,
-                SquaredWeightedDotProductCutOff = .39F,
-                SquaredReverseDotProductCutOff = .71F,
-                MatchedPeaksPercentageCutOff = .0F,
+                SquaredSimpleDotProductCutOff = 0.15F,
+                SquaredWeightedDotProductCutOff = 0.15F,
+                SquaredReverseDotProductCutOff = 0.5F,
+                MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 1
             };
             _annotatorVisitor = annotatorVisitor;
