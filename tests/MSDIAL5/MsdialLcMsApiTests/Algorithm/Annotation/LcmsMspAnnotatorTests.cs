@@ -289,7 +289,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 result.AcurateMassSimilarity,
                 (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 7 * 3,
             }.Average();
-            Assert.AreEqual((float)expectedScores, result.TotalScore);
+            Assert.AreEqual((float)expectedScores, result.TotalScore, 1e-6);
         }
 
         [TestMethod()]

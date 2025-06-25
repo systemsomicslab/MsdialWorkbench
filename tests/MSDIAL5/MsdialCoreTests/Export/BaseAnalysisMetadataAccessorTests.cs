@@ -77,9 +77,9 @@ namespace CompMs.MsdialCore.Export.Tests
             {
                 Source = SourceType.MspDB,
                 IsSpectrumMatch = true,
-                SquaredSimpleDotProduct = 0.811f,
-                SquaredWeightedDotProduct = 0.724f,
-                SquaredReverseDotProduct = 0.631f,
+                SimpleDotProduct = 0.811f,
+                WeightedDotProduct = 0.724f,
+                ReverseDotProduct = 0.631f,
                 MatchedPeaksCount = 4.00f,
                 MatchedPeaksPercentage = 0.901f,
                 TotalScore = 0.638f,

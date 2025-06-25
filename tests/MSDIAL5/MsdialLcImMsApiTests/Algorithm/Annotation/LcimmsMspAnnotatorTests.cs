@@ -484,7 +484,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual(expected, result.TotalScore);
+            Assert.AreEqual(expected, result.TotalScore, 1e-6);
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsCcsMatch);

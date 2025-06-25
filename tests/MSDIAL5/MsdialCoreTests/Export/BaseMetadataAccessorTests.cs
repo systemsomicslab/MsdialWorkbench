@@ -82,9 +82,9 @@ namespace CompMs.MsdialCore.Export.Tests
             var matchResult = new MsScanMatchResult
             {
                 Source = SourceType.Manual | SourceType.MspDB,
-                SquaredSimpleDotProduct = 0.81f,
-                SquaredWeightedDotProduct = 0.82f,
-                SquaredReverseDotProduct = 0.83f,
+                SimpleDotProduct = 0.81f,
+                WeightedDotProduct = 0.82f,
+                ReverseDotProduct = 0.83f,
                 MatchedPeaksCount = 10,
                 MatchedPeaksPercentage = 0.84f,
                 TotalScore = 0.83f,

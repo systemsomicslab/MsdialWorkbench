@@ -175,7 +175,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             }.Average();
             var actual = annotator.CalculateAnnotatedScore(result);
 
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual, 1e-6);
         }
 
         [TestMethod()]

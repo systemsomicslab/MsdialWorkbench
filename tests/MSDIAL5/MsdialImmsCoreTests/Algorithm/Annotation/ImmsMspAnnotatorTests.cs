@@ -525,7 +525,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual((float)expected, result.TotalScore);
+            Assert.AreEqual((float)expected, result.TotalScore, 1e-6);
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsCcsMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
