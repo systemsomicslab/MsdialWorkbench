@@ -24,8 +24,8 @@ namespace CompMs.App.Msdial
         }
 
         private void LogUnhandledException(Exception exception, string source) {
-            while (exception is AggregateException agg) {
-                exception = agg.InnerException;
+            if (exception is AggregateException agg) {
+                exception = agg.Flatten().InnerException;
             }
             // Log the exception
             string message = $"Unhandled exception ({source})";
