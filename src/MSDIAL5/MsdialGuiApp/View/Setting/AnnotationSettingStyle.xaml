@@ -66,7 +66,7 @@
                 <HeaderedContentControl.Header>
                     <TextBlock Text="IMPORTANT NOTICE:" FontWeight="Bold" Foreground="Red"/>
                 </HeaderedContentControl.Header>
-                <TextBlock>
+                <TextBlock FontSize="11" TextWrapping="WrapWithOverflow">
                     The definition of cutoff values for dot product, weighted dot product, and reverse dot product has been changed from version 5.5.250625.<LineBreak/>
                     While the previous value was the squared value of dot product, we use the native dot product values from this version or later.<LineBreak/>
                     To obtain the equivalent thresholds, put the square root values of the previously used cutoff values in your project.<LineBreak/>
