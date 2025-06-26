@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = 20;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance = .5f;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance = .5f;
-                parameter.RefSpecMatchBaseParam.MspSearchParam.SquaredWeightedDotProductCutOff = .7f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff = .7f;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff = .7f;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring = true;
                 parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = true;
