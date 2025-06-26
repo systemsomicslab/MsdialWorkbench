@@ -424,7 +424,7 @@
                             <DataTemplate>
                                 <DataTemplate.Resources>
                                     <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
-                                        <TextBlock Text="Exp. vs.Rep."
+                                        <TextBlock Text="Exp. vs. Ref."
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">

@@ -45,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepSuggestedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
+            UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
             ShouldRunAlignment = AnalysisFiles.Count > 1 && !IsReadOnly;
             this.parameter = parameter;
         }
@@ -124,6 +125,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isForceInsertForGapFilling;
 
+        public bool UseRefMatchedPeaksOnly {
+            get => _useRefMatchedPeaksOnly;
+            set => SetProperty(ref _useRefMatchedPeaksOnly, value);
+        }
+        private bool _useRefMatchedPeaksOnly;
+
         public bool ShouldRunAlignment {
             get => shouldRunAlignment;
             set => SetProperty(ref shouldRunAlignment, value);
@@ -169,6 +176,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 ProteinAssembledResultFilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.prf),
             });
             parameter.AlignmentBaseParam.AlignmentReferenceFileID = ReferenceFile.AnalysisFileId;
+            parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly = UseRefMatchedPeaksOnly;
             var postProcessParameter = parameter.PostProcessBaseParam;
             postProcessParameter.PeakCountFilter = PeakCountFilter;
             postProcessParameter.NPercentDetectedInOneGroup = NPercentDetectedInOneGroup;
@@ -202,6 +210,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepSuggestedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
+            UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
         }
 
         private static List<IPeakEqualityParameterSetting> PrepareEqualityParameterSettings(ParameterBase parameter) {

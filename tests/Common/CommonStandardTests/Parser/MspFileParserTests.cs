@@ -145,5 +145,109 @@ namespace CompMs.Common.Parser.Tests
             var datas = MspFileParser.MspFileReader(testFile);
             Assert.AreEqual(size, datas.Count);
         }
+
+        [TestMethod]
+        public void GetAdductsPerSolventType()
+        {
+            var queries = new List<string>
+            {
+                "PC_[M+HCO3]-",
+                "LPC_[M+HCO3]-",
+                "SM_[M+HCO3]-",
+                "PE_[M-H]-",
+                "PA_[M-H]-"
+            };
+            var record1 = new MoleculeMsReference
+            {
+                Name = "Metabolite1",
+                PrecursorMz = 1234.567,
+                AdductType = AdductIon.GetAdductIon("[M+HCO3]-"),
+                ChromXs = new ChromXs(12.34, ChromXType.RT, ChromXUnit.Min),
+                Formula = new Formula { FormulaString = "formula" },
+                SMILES = "CCCCCCCCC",
+                InChIKey = "ABCD1234",
+                Ontology = "PC",
+                CollisionEnergy = 15f,
+                IonMode = IonMode.Negative,
+                InstrumentType = "Instrument1",
+                Comment = "Awesome comment",
+                DatabaseUniqueIdentifier = "DB1",
+                Spectrum = new List<SpectrumPeak> {
+                    new SpectrumPeak(123.45678d, 456d),
+                    new SpectrumPeak(234.56789d, 567d),
+                },
+                CompoundClass = "PC"
+            };
+            Assert.IsTrue(MspFileParser.queryCheck(record1, queries, IonMode.Negative, SolventType.NH4HCO3, CollisionType.CID));
+
+            var record2 = new MoleculeMsReference
+            {
+                Name = "Metabolite1",
+                PrecursorMz = 1234.567,
+                AdductType = AdductIon.GetAdductIon("[M-H]-"),
+                ChromXs = new ChromXs(12.34, ChromXType.RT, ChromXUnit.Min),
+                Formula = new Formula { FormulaString = "formula" },
+                SMILES = "CCCCCCCCC",
+                InChIKey = "ABCD1234",
+                Ontology = "PA",
+                CollisionEnergy = 15f,
+                IonMode = IonMode.Negative,
+                InstrumentType = "Instrument1",
+                Comment = "Awesome comment",
+                DatabaseUniqueIdentifier = "DB1",
+                Spectrum = new List<SpectrumPeak> {
+                    new SpectrumPeak(123.45678d, 456d),
+                    new SpectrumPeak(234.56789d, 567d),
+                },
+                CompoundClass = "PA"
+            };
+            Assert.IsTrue(MspFileParser.queryCheck(record2, queries, IonMode.Negative, SolventType.NH4HCO3, CollisionType.CID));
+
+            var record3 = new MoleculeMsReference
+            {
+                Name = "Metabolite3",
+                PrecursorMz = 1234.567,
+                AdductType = AdductIon.GetAdductIon("[M+HCOO]-"),
+                ChromXs = new ChromXs(12.34, ChromXType.RT, ChromXUnit.Min),
+                Formula = new Formula { FormulaString = "formula" },
+                SMILES = "CCCCCCCCC",
+                InChIKey = "ABCD1234",
+                Ontology = "PC",
+                CollisionEnergy = 15f,
+                IonMode = IonMode.Negative,
+                InstrumentType = "Instrument1",
+                Comment = "Awesome comment",
+                DatabaseUniqueIdentifier = "DB1",
+                Spectrum = new List<SpectrumPeak> {
+                    new SpectrumPeak(123.45678d, 456d),
+                    new SpectrumPeak(234.56789d, 567d),
+                },
+                CompoundClass = "PC"
+            };
+            Assert.IsFalse(MspFileParser.queryCheck(record3, queries, IonMode.Negative, SolventType.NH4HCO3, CollisionType.CID)); 
+
+            var record4 = new MoleculeMsReference
+            {
+                Name = "Metabolite1",
+                PrecursorMz = 1234.567,
+                AdductType = AdductIon.GetAdductIon("[M+CH3COO]-"),
+                ChromXs = new ChromXs(12.34, ChromXType.RT, ChromXUnit.Min),
+                Formula = new Formula { FormulaString = "formula" },
+                SMILES = "CCCCCCCCC",
+                InChIKey = "ABCD1234",
+                Ontology = "PC",
+                CollisionEnergy = 15f,
+                IonMode = IonMode.Negative,
+                InstrumentType = "Instrument1",
+                Comment = "Awesome comment",
+                DatabaseUniqueIdentifier = "DB1",
+                Spectrum = new List<SpectrumPeak> {
+                    new SpectrumPeak(123.45678d, 456d),
+                    new SpectrumPeak(234.56789d, 567d),
+                },
+                CompoundClass = "PC"
+            };
+            Assert.IsFalse(MspFileParser.queryCheck(record4, queries, IonMode.Negative, SolventType.NH4HCO3, CollisionType.CID));
+        }
     }
 }

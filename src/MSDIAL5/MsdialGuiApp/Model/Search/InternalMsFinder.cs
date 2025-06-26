@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Search {
 
             var refMs = selectedMetaboliteOx.Select(m => m?.RefSpectrum ?? Observable.Never<MsSpectrum>()).Switch();
             var structureRef = new ObservableMsSpectrum(refMs, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
-            var refVerticalAxis = structureRef.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+            var refVerticalAxis = structureRef.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.FragmentationScore), "fragmentation score");
             var horizontalAxis = _selectedObservedMetabolite.AxisRange.Select(range => AxisRange.Union(range, ms2RefRange) ?? new AxisRange(0d, 1d)).ToReactiveContinuousAxisManager<double>(new ConstantMargin(40d)).AddTo(Disposables);
             var itemSelector = new AxisItemSelector<double>(new AxisItemModel<double>("m/z", horizontalAxis, "m/z")).AddTo(Disposables);
             var propertySelectors = new AxisPropertySelectors<double>(itemSelector);
@@ -55,11 +55,12 @@ namespace CompMs.App.Msdial.Model.Search {
             var refMs2HorizontalAxis = propertySelectors;
 
             var msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            var msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
             SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
             SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), msGraphLabels).AddTo(Disposables);
 
             var ms2SpectrumModel = new SingleSpectrumModel(structureMs2, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), msGraphLabels);
-            var refSpectrumModel = new SingleSpectrumModel(structureRef, refMs2HorizontalAxis, refVerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Red)), msGraphLabels);
+            var refSpectrumModel = new SingleSpectrumModel(structureRef, refMs2HorizontalAxis, refVerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Red)), msGraphLabel2);
             RefMs2SpectrumModel = new MsSpectrumModel(ms2SpectrumModel, refSpectrumModel, Observable.Return<Ms2ScanMatching?>(null)).AddTo(Disposables);
 
             Disposables.Add(selectedMetaboliteOx.Connect());
@@ -84,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public MsfinderObservedMetabolite? SelectedObservedMetabolite {
             get => _selectedObservedMetabolite;
-            set => SetProperty(ref _selectedObservedMetabolite, value); 
+            set => SetProperty(ref _selectedObservedMetabolite, value);
         }
         private MsfinderObservedMetabolite? _selectedObservedMetabolite;
     }

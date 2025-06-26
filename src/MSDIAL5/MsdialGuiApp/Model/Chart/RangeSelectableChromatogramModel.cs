@@ -87,7 +87,10 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public (double, double) ConvertToRt(RangeSelection range) {
-            var axis = ChromatogramModel.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
+            var axis = ChromatogramModel.ChromAxisItemSelector.SelectedAxisItem?.AxisManager;
+            if (axis is null) {
+                return (0d, 1d);
+            }
             return range.ConvertBy(axis);
         }
     }

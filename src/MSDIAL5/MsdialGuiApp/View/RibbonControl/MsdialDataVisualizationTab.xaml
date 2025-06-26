@@ -46,7 +46,7 @@
         <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
                       IsEnabled="False"
                       KeyTip="W"/>
-        <RibbonButton Label="Notame (two-parameter processing tool)" LargeImageSource="/Resources/notame.png"
+        <RibbonButton Label="Notame (two-parameter processing tool)" LargeImageSource="{StaticResource Notame_is}"
                       Command="{Binding NotameViewModel.ShowSettingViewCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="B"/>
     </RibbonGroup>
