@@ -8,10 +8,10 @@ namespace CompMs.MsdialDimsCore.Parameter {
         public MsdialDimsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
             this.MachineCategory = MachineCategory.IFMS;
 
-            MspSearchParam.SquaredWeightedDotProductCutOff = .32f * .32f;
-            MspSearchParam.SquaredSimpleDotProductCutOff = .32f * .32f;
-            MspSearchParam.SquaredReverseDotProductCutOff = .55f * .55f;
-            MspSearchParam.MatchedPeaksPercentageCutOff = .2f;
+            MspSearchParam.WeightedDotProductCutOff = 0.1f;
+            MspSearchParam.SimpleDotProductCutOff = 0.1f;
+            MspSearchParam.ReverseDotProductCutOff = 0.3f;
+            MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
             MspSearchParam.MinimumSpectrumMatch = 1;
         }
 

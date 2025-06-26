@@ -23,19 +23,19 @@ namespace CompMs.App.Msdial.Model.Dims
             _createFuctory = createFuctory;
             if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SimpleDotProductCutOff = .7F,
-                    WeightedDotProductCutOff = .7F,
-                    ReverseDotProductCutOff = .84F,
-                    MatchedPeaksPercentageCutOff = .3F,
+                    SimpleDotProductCutOff = 0.6F,
+                    WeightedDotProductCutOff = 0.6F,
+                    ReverseDotProductCutOff = 0.8F,
+                    MatchedPeaksPercentageCutOff = 0F,
                     MinimumSpectrumMatch = 3,
                 };
             }
             else { // meaning lbm
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SimpleDotProductCutOff = .32F,
-                    WeightedDotProductCutOff = .32F,
-                    ReverseDotProductCutOff = .32F,
-                    MatchedPeaksPercentageCutOff = .0F,
+                    SimpleDotProductCutOff = 0.15F,
+                    WeightedDotProductCutOff = 0.15F,
+                    ReverseDotProductCutOff = 0.3F,
+                    MatchedPeaksPercentageCutOff = 0.0F,
                     MinimumSpectrumMatch = 1
                 };
             }
@@ -105,10 +105,10 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SimpleDotProductCutOff = .32F ,
-                WeightedDotProductCutOff = .32F,
-                ReverseDotProductCutOff = .32F,
-                MatchedPeaksPercentageCutOff = .0F,
+                SimpleDotProductCutOff = 0.1F,
+                WeightedDotProductCutOff = 0.1F,
+                ReverseDotProductCutOff = 0.1F,
+                MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 1
             };
             _annotatorVisitor = annotatorVisitor;
