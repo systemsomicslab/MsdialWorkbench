@@ -7,12 +7,9 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.Components;
-using CompMs.Common.Extension;
-
 
 namespace CompMs.MsdialCore.Export
 {
@@ -86,17 +83,16 @@ namespace CompMs.MsdialCore.Export
             {
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
-                    sw,
-                    spot,
-                    meta,
-                    metadata,
-                    quantAccessor,
-                    stats,
-                    RawFileMetadataDic,
-                    AnalysisFileClassDic,
-                    database,
-                    SmlDataHeader,
-                    internalStandardDic);
+                    sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                    database, SmlDataHeader, internalStandardDic
+                    );
+                foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
+                {
+                    WriteSmlDataLine(
+                        sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                        database, SmlDataHeader, internalStandardDic
+                        );
+                }
             }
 
             sw.WriteLine();
@@ -107,19 +103,17 @@ namespace CompMs.MsdialCore.Export
             //SMF data
             foreach (var spot in spots)
             {
-                var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmfDataLine(
-                    sw,
-                    spot,
-                    meta,
-                    metadata,
-                    quantAccessor,
-                    stats,
-                    RawFileMetadataDic,
-                    AnalysisFileClassDic,
-                    database,
-                    SmfDataHeader,
-                    internalStandardDic);
+                    sw, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                    SmfDataHeader, internalStandardDic
+                    );
+                foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
+                {
+                    WriteSmfDataLine(
+                        sw, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                        SmfDataHeader, internalStandardDic
+                        );
+                }
             }
             sw.WriteLine();
 
@@ -132,7 +126,6 @@ namespace CompMs.MsdialCore.Export
             ////SME data
             foreach (var spot in spots)
             {
-                //if (!spot.IsMsmsAssigned) { continue; }
                 //if (spot.IsBlankFilteredByPostCurator) { continue; }
                 //if (meta.IsNormalizeSplash && spot.InternalStandardAlignmentID == -1)
                 //{
@@ -146,23 +139,21 @@ namespace CompMs.MsdialCore.Export
                 {
                     continue;
                 }
+                WriteSmeDataLine(
+                    sw, spot, meta, msdecResults[spot.MasterAlignmentID],
+                    database, files, RawFileMetadataDic, idConfidenceMeasure
+                        );
+                foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
+                {
                     WriteSmeDataLine(
-                    sw,
-                    spot,
-                    meta,
-                    msdecResults[spot.MasterAlignmentID],
-                    database,
-                    files,
-                    RawFileMetadataDic,
-                    idConfidenceMeasure
-                            // ,List<MspFormatCompoundInformationBean> mspDB,
-                            //List<PostIdentificatioinReferenceBean> textDB
+                        sw, spot, meta, msdecResults[spot.MasterAlignmentID],
+                        database, files, RawFileMetadataDic, idConfidenceMeasure
                             );
+                }
                 sw.WriteLine("");
             }
             sw.WriteLine("");
         }
-
 
         private void WriteSmlDataLine(
             StreamWriter sw,
@@ -259,7 +250,7 @@ namespace CompMs.MsdialCore.Export
             LineData.AddRange(SetDataValues(quantValues, statValues, SmlDataHeader, RawFileMetadataDic, AnalysisFileClassDic));
             if (meta.MachineCategory == MachineCategory.IMMS || meta.MachineCategory == MachineCategory.LCIMMS || meta.MachineCategory == MachineCategory.IDIMS)
             {
-                LineData.AddRange(SetIMValues(metadata));
+                LineData.AddRange(SetIMValues(spot));
             }
             if (meta.IsNormalizeIS || meta.IsNormalizeSplash)
             {
@@ -274,12 +265,10 @@ namespace CompMs.MsdialCore.Export
             StreamWriter sw,
             AlignmentSpotProperty spot,
             ParameterBase meta,
-            IReadOnlyDictionary<string, string> metadata,
             IQuantValueAccessor quantAccessor,
             IReadOnlyList<StatsValue> stats,
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
-            IReadOnlyList<Database> database,
             IReadOnlyList<string> SmfDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic)
         {
@@ -288,8 +277,8 @@ namespace CompMs.MsdialCore.Export
             var matchResult = spot.MatchResults.Representative;
 
             var id = -1;
+            var smfID = spot.AlignmentID;
             var smeIDrefs = "null";
-            var smfID = metadata["Alignment ID"];
 
             var smeIDrefAmbiguity_code = "null";
             var isotopomer = "null";
@@ -318,7 +307,7 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + charge;
             }
 
-            if (spot.IsMsmsAssigned)
+            if (spot.Name is not null || spot.Name !="")
             {
                 //smeIDrefs = spot.AlignedDriftSpots[0].MasterID.ToString();
                 smeIDrefs = smfID.ToString();
@@ -337,7 +326,7 @@ namespace CompMs.MsdialCore.Export
             LineData.AddRange(SetDataValues(quantValues, statValues, SmfDataHeader, RawFileMetadataDic, AnalysisFileClassDic));
             if (meta.MachineCategory == MachineCategory.IMMS || meta.MachineCategory == MachineCategory.LCIMMS || meta.MachineCategory == MachineCategory.IDIMS)
             {
-                LineData.AddRange(SetIMValues(metadata));
+                LineData.AddRange(SetIMValues(spot));
             }
             if (meta.IsNormalizeIS || meta.IsNormalizeSplash)
             {
@@ -355,11 +344,9 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
             IReadOnlyDictionary<int, string> idConfidenceMeasure
-            //List<MspFormatCompoundInformationBean> mspDB,
-            //List<PostIdentificatioinReferenceBean> textDB,
+
             )
         {
-
             //if (analysisParamForLC.IsNormalizeSplash && splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1) { return; }
             //else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) { return; }
 
@@ -367,23 +354,24 @@ namespace CompMs.MsdialCore.Export
             //if want to add optional column, discribe here
 
             //
-            sw.WriteLine("");
+            //sw.WriteLine("");
         }
 
         public static void WriteDataMatrixMztabSMEData(
             StreamWriter sw,
             AlignmentSpotProperty spot,
-            ParameterBase param, 
-            MSDecResult msdec, 
+            ParameterBase param,
+            MSDecResult msdec,
             IReadOnlyList<Database> database,
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            IReadOnlyDictionary<int, string> idConfidenceMeasure, 
+            IReadOnlyDictionary<int, string> idConfidenceMeasure,
             IReadOnlyList<AnalysisFileBean> analysisFiles
             //, List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> textDB
             )
         {
             var smePrefix = "SME";
             var smeID = spot.AlignmentID;
+            var evidenceInputID = spot.AlignmentID; // need to consider
             var inchi = "null";
             var uri = "null";
             var adductIons = spot.AdductType.ToString().Substring(0, spot.AdductType.ToString().IndexOf("]") + 1)
@@ -396,7 +384,8 @@ namespace CompMs.MsdialCore.Export
             {
                 manualCurationScore = "100";
                 identificationMethod = idConfidenceManual;
-            };
+            }
+            ;
 
             var charge = spot.AdductType.ChargeNumber.ToString();
 
@@ -405,6 +394,18 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + spot.AdductType.ChargeNumber.ToString();
             }
 
+            //var chemicalName = "null";
+            //var chemicalNameDB = "null";
+            var chemicalFormula = "null";
+            var smiles = "null";
+            double theoreticalMassToCharge = 0;
+
+            var chemicalName = spot.Name;
+            var chemicalNameDB = spot.MatchResults.Representative.Name;
+            //var chemicalFormula = spot.MatchResults.Representative.Formula;
+            //var smiles = spot.MatchResults.Representative.Smiles;
+            //var theoreticalMassToCharge = spot.MatchResults.Representative.PrecursorMz;
+
             var properties = spot.AlignedPeakProperties;
             var repName = spot.MatchResults.Representative.Name;
             var repLibraryID = spot.MatchResults.Representative.LibraryID;
@@ -412,31 +413,30 @@ namespace CompMs.MsdialCore.Export
             var spectraRefList = new List<string>();  //  multiple files
             for (int i = 0; i < properties.Count; i++)
             {
-                if (properties[i].MatchResults.Representative.Name != repName 
+                if (properties[i].PeakID < 0) continue;
+                if (properties[i].MatchResults.Representative.Name != repName
                     || properties[i].MatchResults.Representative.LibraryID != repLibraryID)
                 { continue; }
 
-                    /// to get file id, peak id in aligned spots
+                /// to get file id, peak id in aligned spots
 
-                    var peakID = properties[i].PeakID;
-                    if (peakID < 0) continue;
 
-                    ////var peakAreaBean = DataAccessLcUtility.GetPeakAreaBean(analysisFiles, i, peakID);
-                    ////var ms1ScanID2 = peakAreaBean.Ms1LevelDatapointNumber;
-                    ////var ms2ScanID2 = peakAreaBean.Ms2LevelDatapointNumber;
-                    //var ms1ScanID2 = properties[i].Ms1ScanNumber;
-                    //var ms2ScanID2 = properties[i].Ms2ScanNumber;
-                    /////
+                ////var peakAreaBean = DataAccessLcUtility.GetPeakAreaBean(analysisFiles, i, peakID);
+                ////var ms1ScanID2 = peakAreaBean.Ms1LevelDatapointNumber;
+                ////var ms2ScanID2 = peakAreaBean.Ms2LevelDatapointNumber;
+                //var ms1ScanID2 = properties[i].Ms1ScanNumber;
+                //var ms2ScanID2 = properties[i].Ms2ScanNumber;
+                /////
 
-                    //// list of ms1 ms2 id pair
-                    //if (spot.IsMs2Match == true)
-                    //{
-                    //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2 + " ms2scanID=" + ms2ScanID2);
-                    //}
-                    //else
-                    //{
-                    //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2);
-                    //}
+                //// list of ms1 ms2 id pair
+                //if (spot.IsMs2Match == true)
+                //{
+                //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2 + " ms2scanID=" + ms2ScanID2);
+                //}
+                //else
+                //{
+                //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2);
+                //}
             }
             ;
 
@@ -451,20 +451,15 @@ namespace CompMs.MsdialCore.Export
             //var spectraRefNo = alignedSpot.RepresentativeFileID;  // single file 
             //var spectraRef = "ms_run[" + (spectraRefNo + 1) + "]:scan =" + spectraRefscanNo;
 
-            //var msLevel = "[MS, MS:1000511, ms level, 1]";
-            //if (spot.IsMs2Match == true)
-            //{
-            //    msLevel = "[MS, MS:1000511, ms level, 2]";
-            //}
+            var msLevel = "[MS, MS:1000511, ms level, 1]";
+            if (spot.IsMsmsAssigned == true)
+            {
+                msLevel = "[MS, MS:1000511, ms level, 2]";
+            }
 
-            var evidenceInputID = spot.AlignmentID; // need to consider
             var rank = "1"; // need to consider
 
-            var chemicalName = "null";
-            var chemicalNameDB = "null";
-            var chemicalFormula = "null";
-            var smiles = "null";
-            double theoreticalMassToCharge = 0;
+
 
             //var textLibId = spot.PostIdentificationLibraryID;
             //var libraryID = spot.LibraryID;
@@ -500,333 +495,47 @@ namespace CompMs.MsdialCore.Export
 
             //var databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
             var matchResult = spot.MatchResults.Representative;
+            var ResultScoreDic = new Dictionary<string, string>();
+            ResultScoreDic.Add(idConfidenceDefault, ValueOrNull(matchResult.TotalScore.ToString()));
+            ResultScoreDic.Add("[,, Retention time similarity, ]", ValueOrNull(matchResult.RtSimilarity.ToString()));
+            ResultScoreDic.Add("[,, Simple dot product, ]", ValueOrNull(matchResult.SimpleDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Reverse dot product, ]", ValueOrNull(matchResult.ReverseDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Weighted dot product, ]", ValueOrNull(matchResult.WeightedDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Matched peaks count, ]", ValueOrNull(matchResult.MatchedPeaksCount.ToString()));
+            ResultScoreDic.Add("[,, Matched peaks percentage, ]", ValueOrNull(matchResult.MatchedPeaksPercentage.ToString()));
+            ResultScoreDic.Add("[,, Retention index similarity, ]", ValueOrNull(matchResult.RiSimilarity.ToString()));
+            ResultScoreDic.Add("[,, CCS similarity, ]", ValueOrNull(matchResult.CcsSimilarity.ToString()));
+            ResultScoreDic.Add("[,, m/z similarity, ]", ValueOrNull(matchResult.AcurateMassSimilarity.ToString()));
 
-            var totalScore = matchResult.TotalScore > 0 ? matchResult.TotalScore > 1000 ? "100" : Math.Round(matchResult.TotalScore * 0.1, 1).ToString() : "null";
-            var RtSimilarity = matchResult.RtSimilarity > 0 ? Math.Round(matchResult.RtSimilarity * 0.1, 1).ToString() : "null";
-            var SimpleDotProduct = matchResult.SimpleDotProduct > 0 ? Math.Round(matchResult.SimpleDotProduct * 0.1, 1).ToString() : "null";
-            var ReverseDotProduct = matchResult.ReverseDotProduct > 0 ? Math.Round(matchResult.ReverseDotProduct * 0.1, 1).ToString() : "null";
-            var WeightedDotProduct = matchResult.WeightedDotProduct > 0 ? Math.Round(matchResult.WeightedDotProduct * 0.1, 1).ToString() : "null";
-            var MatchedPeaksCount = matchResult.MatchedPeaksCount > 0 ? Math.Round(matchResult.MatchedPeaksCount * 0.1, 1).ToString() : "null";
-            var MatchedPeaksPercentage = matchResult.MatchedPeaksPercentage > 0
-                ? matchResult.MatchedPeaksPercentage > 1000
-                ? "100"
-                : Math.Round(matchResult.MatchedPeaksPercentage * 0.1, 1).ToString()
-                : "null";
-            var RiSimilarity = matchResult.RiSimilarity > 0 ? Math.Round(matchResult.RiSimilarity * 0.1, 1).ToString() : "null";
-            var CcsSimilarity = matchResult.CcsSimilarity > 0 ? Math.Round(matchResult.CcsSimilarity * 0.1, 1).ToString() : "null";
-            var AcurateMassSimilarity = matchResult.AcurateMassSimilarity > 0 ? Math.Round(matchResult.AcurateMassSimilarity * 0.1, 1).ToString() : "null";
+            var SmeLine = new List<string>() {
+                    smePrefix,smeID.ToString(), evidenceInputID.ToString(), "databaseIdentifier",
+                    chemicalFormula, smiles, inchi, chemicalName,uri,derivatizedForm,adductIons,expMassToCharge,charge,theoreticalMassToCharge.ToString(),
+                    spectraRef, identificationMethod, msLevel
+                    };
 
-            //var dataSME01 = new List<string>() {
-            //        smePrefix,smeID.ToString(), evidenceInputID.ToString(), databaseIdentifier,
-            //        chemicalFormula, smiles, inchi, chemicalName,uri,derivatizedForm,adductIons,expMassToCharge,charge,theoreticalMassToCharge.ToString(),
-            //        spectraRef, identificationMethod, msLevel,
-            //        totalScore, rtScore, dotProduct, revDotProd, precense
-            //        };
-            //// if manual curation score use
-            //if (idConfidenceManual != "")
-            //{
-            //    dataSME01.Add(manualCurationScore);
-            //}
+            for (int i = 0; i < idConfidenceMeasure.Count; i++)
+            {
+                var idConfidence = idConfidenceMeasure[i + 1];
+                if (ResultScoreDic.ContainsKey(idConfidence))
+                {
+                    SmeLine.Add(ResultScoreDic[idConfidence]);
+                }
+                else
+                {
+                    SmeLine.Add("null");
+                }
+            }
 
-            //dataSME01.Add(rank);
+            // if manual curation score use
+            if (idConfidenceManual != "")
+            {
+                SmeLine.Add(manualCurationScore);
+            }
 
-            //var dataSME02 = new List<string>();
-            //foreach (string item in dataSME01)
-            //{
-            //    var metadataMember = item;
-            //    if (metadataMember == "")
-            //    {
-            //        metadataMember = "null";
-            //    }
-            //    dataSME02.Add(metadataMember);
-            //}
-
-
-            //sw.Write(String.Join("\t", dataSME02) + "\t");
+            SmeLine.Add(rank);
+            sw.Write(String.Join("\t", SmeLine.Select(item => string.IsNullOrEmpty(item) ? "null" : item).ToList()) + "\t");
 
         }
-
-
-        //public static void WriteIonmobilitySMEDataLine(
-        //    StreamWriter sw,
-        //    ParameterBase meta,
-        //    List<AnalysisFileBean> files,
-        //    AlignmentSpotProperty spot,
-        //    List<MspFormatCompoundInformationBean> mspDB,
-        //    List<PostIdentificatioinReferenceBean> textDB,
-        //    List<List<string>> database,
-        //    string idConfidenceDefault,
-        //    string idConfidenceManual
-        //    )
-        //{
-        //var smePrefix = "SME";
-        //var smeID = spot.AlignmentID;
-        //var inchi = "null";
-        //var uri = "null";
-        //var adductIons = spot.AdductType.AdductIonName.Substring(0, spot.AdductType.AdductIonName.IndexOf("]") + 1) + spot.AdductType.ChargeNumber + spot.AdductType.AdductIonName.Substring(spot.AdductType.AdductIonName.Length - 1, 1);
-        //var expMassToCharge = spot.MassCenter.ToString(); // 
-        //var derivatizedForm = "null";
-
-        //var charge = spot.AdductType.ChargeNumber.ToString();
-        //if (meta.IonMode == IonMode.Negative)
-        //{
-        //    charge = "-" + charge;
-        //}
-        //var msLevel = "[MS, MS:1000511, ms level, 1]";
-        //var chemicalName = "null";
-        //var chemicalNameDB = "null";
-        //var chemicalFormula = "null";
-        //var smiles = "null";
-        //double theoreticalMassToCharge = 0;
-        //var rank = "1"; // need to consider
-        //var totalScore = "null";
-        //var rtScore = "null";
-        //var ccsScore = "null";
-        //var dotProduct = "null";
-        //var revDotProd = "null";
-        //var precense = "null";
-
-        //var spectraRefList = new List<string>();
-        //var spectraRef = "null";
-
-        //var properties = spot.AlignedPeakProperties;
-        //var driftSpotProp = spot.AlignmentDriftSpotFeatures;
-        //var repfileId = spot.RepresentativeFileID;
-        //var repProperty = properties[repfileId];
-
-        //var textLibId = spot.CorrDecLibraryIDs;
-        //var libraryID = spot.CorrDecLibraryIDs;
-        //var databesePrefix = database[0][1];
-        //var identificationMethod = idConfidenceDefault;
-        //var manualCurationScore = "null";
-        //if (idConfidenceManual != "" && spot.IsManuallyModifiedForAnnotation == true)
-        //{
-        //    manualCurationScore = "100";
-        //    identificationMethod = idConfidenceManual;
-        //}
-        //;
-
-        //var databaseIdentifier = "null";
-
-
-        //var isMobility = driftSpotProp. > 0 ? true : false;
-        //if (isMobility)
-        //{
-        //    smeID = driftSpotProp.MasterID;
-        //    if (driftSpot.IsMs2Match == true)
-        //    {
-        //        msLevel = "[MS, MS:1000511, ms level, 2]";
-        //    }
-        //    charge = driftSpot.ChargeNumber.ToString();
-        //    if (param.IonMode == IonMode.Negative)
-        //    {
-        //        charge = "-" + charge;
-        //    }
-
-        //    var adduct = AdductIonParcer.GetAdductIonBean(driftSpot.AdductIonName);
-        //    //adductIons = adduct.AdductIonName.Substring(0, adduct.AdductIonName.IndexOf("]") + 1) + alignedSpot.ChargeNumber + adduct.AdductIonName.Substring(adduct.AdductIonName.Length - 1, 1);
-
-        //    //properties = driftSpot.AlignedPeakPropertyBeanCollection;
-        //    repfileId = driftSpot.RepresentativeFileID;
-        //    repProperty = properties[repfileId];
-
-        //    for (int i = 0; i < properties.Count; i++)
-        //    {
-        //        if (properties[i].Variable > 0)
-        //        {
-        //            /// to get file id, peak id in aligned spots
-        //            libraryID = driftSpot.LibraryID;
-        //            textLibId = driftSpot.PostIdentificationLibraryID;
-
-        //            var peakID = properties[i].PeakID;
-        //            if (peakID < 0) continue;
-        //            if (properties[i].LibraryID != libraryID || properties[i].MetaboliteName.Contains("w/o")) continue;
-
-        //            //var peakAreaBean = DataAccessLcUtility.GetPeakAreaBean(analysisFiles, i, peakID);
-        //            //var ms1ScanID2 = peakAreaBean.Ms1LevelDatapointNumber;
-        //            var ms1ScanID2 = driftSpot.AlignedPeakPropertyBeanCollection[i].Ms1ScanNumber;
-        //            var ms2ScanNumber = driftSpot.AlignedPeakPropertyBeanCollection[i].Ms2ScanNumber;
-
-        //            // list of ms1 ms2 id pair
-        //            if (driftSpot.IsMs2Match == true)
-        //            {
-        //                spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2 + " ms2scanID=" + ms2ScanNumber);
-        //            }
-        //        }
-        //    }
-        //    ;
-
-        //    if (spectraRefList.Count == 0)
-        //    {
-        //        spectraRefList.Add("ms_run[" + (repfileId + 1) + "]:ms2scanID=" + properties[repfileId].Ms2ScanNumber);
-        //    }
-
-        //    spectraRef = string.Join("| ", spectraRefList);
-
-
-
-        //    totalScore = driftSpot.TotalSimilairty > 0
-        //    ? driftSpot.TotalSimilairty > 1000
-        //    ? "100"
-        //    : Math.Round(driftSpot.TotalSimilairty * 0.1, 1).ToString()
-        //    : "null";
-        //    rtScore = driftSpot.RetentionTimeSimilarity > 0 ? Math.Round(driftSpot.RetentionTimeSimilarity * 0.1, 1).ToString() : "null";
-        //    ccsScore = driftSpot.CcsSimilarity > 0 ? Math.Round(driftSpot.CcsSimilarity * 0.1, 1).ToString() : "null";
-        //    dotProduct = driftSpot.MassSpectraSimilarity > 0 ? Math.Round(driftSpot.MassSpectraSimilarity * 0.1, 1).ToString() : "null";
-        //    revDotProd = driftSpot.ReverseSimilarity > 0 ? Math.Round(driftSpot.ReverseSimilarity * 0.1, 1).ToString() : "null";
-        //    precense = driftSpot.FragmentPresencePercentage > 0
-        //    ? driftSpot.FragmentPresencePercentage > 1000
-        //    ? "100"
-        //    : Math.Round(driftSpot.FragmentPresencePercentage * 0.1, 1).ToString()
-        //    : "null";
-
-        //    if (driftSpot.MetaboliteName != string.Empty) chemicalName = driftSpot.MetaboliteName;
-        //    if (textLibId >= 0 && textDB != null && textDB.Count != 0)
-        //    {
-        //        if (textDB[textLibId].MetaboliteName != null)
-        //        {
-        //            chemicalName = driftSpot.MetaboliteName;
-        //            chemicalNameDB = textDB[textLibId].MetaboliteName;
-        //        }
-        //        if (textDB[textLibId].Formula != null && textDB[textLibId].Formula.FormulaString != null && textDB[textLibId].Formula.FormulaString != string.Empty)
-        //            chemicalFormula = textDB[textLibId].Formula.FormulaString;
-        //        if (textDB[textLibId].Smiles != null && textDB[textLibId].Smiles != string.Empty)
-        //            smiles = textDB[textLibId].Smiles;
-        //        if (textDB[textLibId].AccurateMass != 0)
-        //            theoreticalMassToCharge = textDB[textLibId].AccurateMass;
-        //        databesePrefix = database[2][1];
-        //        databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
-        //    }
-        //    else if (libraryID >= 0 && mspDB != null && mspDB.Count != 0)
-        //    {
-        //        chemicalName = driftSpot.MetaboliteName;
-        //        chemicalNameDB = mspDB[libraryID].Name;
-        //        chemicalFormula = mspDB[libraryID].Formula;
-        //        smiles = mspDB[libraryID].Smiles;
-        //        theoreticalMassToCharge = mspDB[libraryID].PrecursorMz;
-        //        databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
-        //        if (mspDB[libraryID].CompoundClass != null && mspDB[libraryID].CompoundClass != string.Empty && chemicalName.Contains("|"))
-        //        {
-        //            chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    smeID = alignedSpot.MasterID;
-        //    if (alignedSpot.IsMs2Match == true)
-        //    {
-        //        msLevel = "[MS, MS:1000511, ms level, 2]";
-        //    }
-
-        //    libraryID = alignedSpot.LibraryID;
-        //    textLibId = alignedSpot.PostIdentificationLibraryID;
-        //    adductIons = alignedSpot.AdductIonName.Substring(0, alignedSpot.AdductIonName.IndexOf("]") + 1) + alignedSpot.ChargeNumber + alignedSpot.AdductIonName.Substring(alignedSpot.AdductIonName.Length - 1, 1);
-
-        //    for (int i = 0; i < properties.Count; i++)
-        //    {
-        //        if (properties[i].Variable > 0)
-        //        {
-        //            /// to get file id, peak id in aligned spots
-
-        //            var peakID = properties[i].PeakID;
-        //            if (peakID < 0) continue;
-        //            if (properties[i].LibraryID != libraryID || properties[i].MetaboliteName.Contains("w/o")) continue;
-
-        //            var ms1ScanNumber = properties[i].Ms2ScanNumber;
-
-        //            spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanNumber);
-        //        }
-        //    }
-        //    ;
-
-        //    if (spectraRefList.Count == 0)
-        //    {
-        //        spectraRefList.Add("ms_run[" + (repfileId + 1) + "]:ms2scanID=" + properties[repfileId].Ms2ScanNumber);
-        //    }
-
-        //    spectraRef = string.Join("| ", spectraRefList);
-
-        //    totalScore = alignedSpot.TotalSimilairty > 0
-        //    ? alignedSpot.TotalSimilairty > 1000
-        //    ? "100"
-        //    : Math.Round(alignedSpot.TotalSimilairty * 0.1, 1).ToString()
-        //    : "null";
-        //    rtScore = alignedSpot.RetentionTimeSimilarity > 0 ? Math.Round(alignedSpot.RetentionTimeSimilarity * 0.1, 1).ToString() : "null";
-        //    ccsScore = alignedSpot.CcsSimilarity > 0 ? Math.Round(alignedSpot.CcsSimilarity * 0.1, 1).ToString() : "null";
-        //    dotProduct = alignedSpot.MassSpectraSimilarity > 0 ? Math.Round(alignedSpot.MassSpectraSimilarity * 0.1, 1).ToString() : "null";
-        //    revDotProd = alignedSpot.ReverseSimilarity > 0 ? Math.Round(alignedSpot.ReverseSimilarity * 0.1, 1).ToString() : "null";
-        //    precense = alignedSpot.FragmentPresencePercentage > 0
-        //    ? alignedSpot.FragmentPresencePercentage > 1000
-        //    ? "100"
-        //    : Math.Round(alignedSpot.FragmentPresencePercentage * 0.1, 1).ToString()
-        //    : "null";
-
-        //    if (alignedSpot.MetaboliteName != "") chemicalName = alignedSpot.MetaboliteName;
-        //    if (textLibId >= 0 && textDB != null && textDB.Count != 0)
-        //    {
-        //        if (textDB[textLibId].MetaboliteName != null)
-        //        {
-        //            chemicalName = alignedSpot.MetaboliteName;
-        //            chemicalNameDB = textDB[textLibId].MetaboliteName;
-        //        }
-        //        if (textDB[textLibId].Formula != null && textDB[textLibId].Formula.FormulaString != null && textDB[textLibId].Formula.FormulaString != string.Empty)
-        //            chemicalFormula = textDB[textLibId].Formula.FormulaString;
-        //        if (textDB[textLibId].Smiles != null && textDB[textLibId].Smiles != string.Empty)
-        //            smiles = textDB[textLibId].Smiles;
-        //        if (textDB[textLibId].AccurateMass != 0)
-        //            theoreticalMassToCharge = textDB[textLibId].AccurateMass;
-        //        databesePrefix = database[2][1];
-        //        databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
-
-        //    }
-        //    else if (libraryID >= 0 && mspDB != null && mspDB.Count != 0)
-        //    {
-        //        chemicalName = alignedSpot.MetaboliteName;
-        //        chemicalNameDB = mspDB[libraryID].Name;
-        //        chemicalFormula = mspDB[libraryID].Formula;
-        //        smiles = mspDB[libraryID].Smiles;
-        //        theoreticalMassToCharge = mspDB[libraryID].PrecursorMz;
-        //        databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
-        //        if (mspDB[libraryID].CompoundClass != null && mspDB[libraryID].CompoundClass != string.Empty && chemicalName.Contains("|"))
-        //        {
-        //            chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
-        //        }
-        //    }
-
-        //}
-
-        //var evidenceInputID = smeID; // need to consider
-
-        //var dataSME01 = new List<string>() {
-        //        smePrefix,smeID.ToString(), evidenceInputID.ToString(), databaseIdentifier,
-        //        chemicalFormula, smiles, inchi, chemicalName,uri,derivatizedForm,adductIons,expMassToCharge,charge,theoreticalMassToCharge.ToString(),
-        //        spectraRef, identificationMethod, msLevel,
-        //        totalScore, rtScore, ccsScore, dotProduct, revDotProd, precense
-        //        };
-        ////// if manual curation score use
-        ////if (idConfidenceManual != "")
-        ////{
-        ////    dataSME01.Add(manualCurationScore);
-        ////}
-        //dataSME01.Add(rank);
-
-        //var dataSME02 = new List<string>();
-        //foreach (string item in dataSME01)
-        //{
-        //    var metadataMember = item;
-        //    if (metadataMember == "")
-        //    {
-        //        metadataMember = "null";
-        //    }
-        //    dataSME02.Add(metadataMember);
-        //}
-
-
-        //sw.Write(string.Join("\t", dataSME02) + "\t");
-
-
-        //}
 
         private void WriteMtdSection(
             StreamWriter sw,
@@ -845,10 +554,10 @@ namespace CompMs.MsdialCore.Export
 
             //switch (meta)
             //{
-            //    case MsdialLcImMsParameter lcimmsParameter:
+            //    case ParameterBase lcimmsParameter when lcimmsParameter.GetType().Name == "MsdialLcmsParameter":
             //        ionMobilityType = lcimmsParameter.IonMobilityType.ToString();
             //        break;
-            //    case MsdialImmsParameter immsParameter:
+            //    case ParameterBase immsParameter when immsParameter.GetType().Name == "MsdialImmsParameter":
             //        ionMobilityType = immsParameter.IonMobilityType.ToString();
             //        break;
             //}
@@ -1065,7 +774,7 @@ namespace CompMs.MsdialCore.Export
             mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "small_molecule-identification_reliability", smallMoleculeIdentificationReliability }));
 
             for (int i = 0; i < idConfidenceMeasure.Count; i++)
-                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "id_confidence_measure[" + (i + 1) + "]", idConfidenceMeasure[i] }));
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "id_confidence_measure[" + (i + 1) + "]", idConfidenceMeasure[i + 1] }));
 
             mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "quantification_method", quantificationMethod }));
 
@@ -1162,7 +871,7 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(string.Join(Separator, smfHeaderMeta) + Separator + string.Join(Separator, SmfDataHeader));
             return SmfDataHeader;
         }
-        private void WriteSmeHeader(StreamWriter sw, IReadOnlyDictionary<int,string> idConfidenceMeasure)
+        private void WriteSmeHeader(StreamWriter sw, IReadOnlyDictionary<int, string> idConfidenceMeasure)
         {
             var SmeHeader = new List<string>() {
                     "SEH","SME_ID","evidence_input_id","database_identifier","chemical_formula","smiles","inchi",
@@ -1242,10 +951,10 @@ namespace CompMs.MsdialCore.Export
             return dataValues;
         }
         private static List<string> SetIMValues(
-            IReadOnlyDictionary<string, string> metadata
+            AlignmentSpotProperty spot
         )
         {
-            return new List<string>() { metadata["Average mobility"], metadata["Average CCS"] };
+            return new List<string>() { spot.TimesCenter.Drift.Value.ToString(), spot.CollisionCrossSection.ToString() } ;
         }
         private static List<string> SetNormalizedData(
             AlignmentSpotProperty spot,
@@ -1375,7 +1084,7 @@ namespace CompMs.MsdialCore.Export
         private static IReadOnlyList<Database> SetDatabaseList(ParameterBase meta)
         {
             var database = new List<Database>();
-
+                        
             if (meta.MspFilePath != "" && meta.MspFilePath != null)
             {
 
@@ -1507,7 +1216,7 @@ namespace CompMs.MsdialCore.Export
                         msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
                         break;
                 }
-                var id = files[i].AnalysisFileId;
+                var id = files[i].AnalysisFileId + 1;
                 fileMetadataDic.Add(id, new RawFileMetadata()
                 {
                     Id = id,
@@ -1520,7 +1229,8 @@ namespace CompMs.MsdialCore.Export
                     Scan_polarity = ionMode.ToString(),
                     Scan_polarity_cv = ionMode.ToString() == "Positive" ? "[MS,MS:1000130,positive scan,]" : "[MS, MS:1000129, negative scan, ]",
                     AnalysisFileExtention = analysisFileExtention,
-                    AnalysisClass = files[i].AnalysisFileClass
+                    AnalysisClass = files[i].AnalysisFileClass,
+                    AnalysisFileId = files[i].AnalysisFileId
                 });
             }
             return fileMetadataDic;
@@ -1548,6 +1258,8 @@ namespace CompMs.MsdialCore.Export
             public string Assay_ref { get; set; }
             public string AnalysisFileExtention { get; set; }
             public string AnalysisClass { get; set; }
+
+            public int AnalysisFileId { get; set; }
         }
         static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
         static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
