@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.DataObj;
 using CompMs.Raw.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ internal sealed class LoadProductIonMapUsecase(IDataProvider provider)
     private IChromatogramPeakFeature? _previousPeak = null;
     private RawSpectrum[]? _previousSpectra = null;
 
-    public async Task<(MappedIon?, List<MappedIon>)> LoadProductIonSpectraAsync(IChromatogramPeakFeature peak, MzRange productIonRange, CancellationToken token = default) {
+    public async Task<(MappedIon?, List<MappedIon>)> LoadProductIonSpectraAsync(ChromatogramPeakFeature peak, MzRange productIonRange, CancellationToken token = default) {
         if (peak != _previousPeak) {
             _previousPeak = peak;
 
@@ -40,9 +41,12 @@ internal sealed class LoadProductIonMapUsecase(IDataProvider provider)
 
         RawSpectrum? nearest = null;
         if (spectra is { Length: > 0}) {
-            nearest = spectra.Min(s => (Math.Abs(s.Precursor.SelectedIonMz - peak.Mass), Math.Abs(s.ScanStartTime - peak.ChromXsTop.RT.Value), s)).s;
-            if (!nearest.Precursor.ContainsMz(peak.Mass, .01d, CompMs.Common.Enum.AcquisitionType.SWATH) || Math.Abs(nearest.ScanStartTime - peak.ChromXsTop.RT.Value) > .1d) {
-                nearest = null;
+            nearest = spectra.FirstOrDefault(s => s.RawSpectrumID?.ID == (ulong)peak.MS2RawSpectrumID);
+            if (nearest is null) {
+                nearest = spectra.Min(s => (Math.Abs(s.Precursor.SelectedIonMz - peak.PeakFeature.Mass), Math.Abs(s.ScanStartTime - peak.PeakFeature.ChromXsTop.RT.Value), s)).s;
+                if (!nearest.Precursor.ContainsMz(peak.PeakFeature.Mass, .01d, CompMs.Common.Enum.AcquisitionType.SWATH) || Math.Abs(nearest.ScanStartTime - peak.PeakFeature.ChromXsTop.RT.Value) > .1d) {
+                    nearest = null;
+                }
             }
         }
         var nearestIon = nearest is null

@@ -1,7 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.DataObj;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -12,10 +12,10 @@ namespace CompMs.App.Msdial.Model.MsResult;
 
 internal sealed class ProductIonIntensityMapModel : BindableBase
 {
-    private readonly IObservable<IChromatogramPeakFeature?> _peak;
+    private readonly IObservable<ChromatogramPeakFeature?> _peak;
     private readonly LoadProductIonMapUsecase _loadPIUsecase;
 
-    public ProductIonIntensityMapModel(IObservable<IChromatogramPeakFeature?> peak, MsSpectrumModel msSpectrumModel, LoadProductIonMapUsecase loadPIUsecase) {
+    public ProductIonIntensityMapModel(IObservable<ChromatogramPeakFeature?> peak, MsSpectrumModel msSpectrumModel, LoadProductIonMapUsecase loadPIUsecase) {
         _peak = peak.Replay(1).RefCount();
         _loadPIUsecase = loadPIUsecase;
         MsSpectrumModel = msSpectrumModel;
