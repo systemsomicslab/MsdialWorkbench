@@ -177,9 +177,9 @@ namespace CompMs.MsdialCore.Parser {
             var result = msdecResult.MspBasedMatchResult;
 
             fs.Write(BitConverter.GetBytes(result.TotalScore), 0, ByteConvertion.ToByteCount(result.TotalScore));
-            fs.Write(BitConverter.GetBytes(result.WeightedDotProduct), 0, ByteConvertion.ToByteCount(result.WeightedDotProduct));
-            fs.Write(BitConverter.GetBytes(result.SimpleDotProduct), 0, ByteConvertion.ToByteCount(result.SimpleDotProduct));
-            fs.Write(BitConverter.GetBytes(result.ReverseDotProduct), 0, ByteConvertion.ToByteCount(result.ReverseDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredWeightedDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredWeightedDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredSimpleDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredSimpleDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredReverseDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredReverseDotProduct));
             fs.Write(BitConverter.GetBytes(result.MatchedPeaksCount), 0, ByteConvertion.ToByteCount(result.MatchedPeaksCount));
             fs.Write(BitConverter.GetBytes(result.MatchedPeaksPercentage), 0, ByteConvertion.ToByteCount(result.MatchedPeaksPercentage));
             fs.Write(BitConverter.GetBytes(result.EssentialFragmentMatchedScore), 0, ByteConvertion.ToByteCount(result.EssentialFragmentMatchedScore));
@@ -213,9 +213,9 @@ namespace CompMs.MsdialCore.Parser {
             var byteCount = ByteConvertion.ToByteCount(obj.MspID)
                 + ByteConvertion.ToByteCount(obj.MspIDWhenOrdered)
                 + ByteConvertion.ToByteCount(mObj.TotalScore)
-                + ByteConvertion.ToByteCount(mObj.WeightedDotProduct)
-                + ByteConvertion.ToByteCount(mObj.SimpleDotProduct)
-                + ByteConvertion.ToByteCount(mObj.ReverseDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredWeightedDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredSimpleDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredReverseDotProduct)
                 + ByteConvertion.ToByteCount(mObj.MatchedPeaksCount)
                 + ByteConvertion.ToByteCount(mObj.MatchedPeaksPercentage)
                 + ByteConvertion.ToByteCount(mObj.EssentialFragmentMatchedScore)

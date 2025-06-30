@@ -31,10 +31,18 @@ However, if the discussion is something that cannot be done openly by any means,
 8. Select `MsdialGuiApp` from the `Startup Projects` pull-down menu.
 9. Click `▶ MsdialGuiApp` button on the right side of 8.
 
+### Important Note
+The 'Debug/Release vendor unsupported' version is a special configuration designed for the purpose of source code distribution.
+Due to licensing restrictions, this version cannot read proprietary data formats from mass spectrometry manufacturers.
+However, the [release versions](https://github.com/systemsomicslab/MsdialWorkbench/releases) distributed with official releases can read these proprietary formats.
+For the 'Debug/Release vendor unsupported' version, only the following formats are supported: **abf**(Reifycs), **cdf**(NetCDF), and **mzml**.
+If you convert your data into one of these formats, you can still analyze it using this configuration.
+Other than the data reading capability, there are no differences between this configuration and the release versions.
+
 # Developers
 Lead developer: Hiroshi Tsugawa (TUAT/RIKEN) 
 
-Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN), and Yuki Matsuzawa (TUAT)
+Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN), Yuki Matsuzawa (TUAT) and Bujinlkham Buyantogtokh (TUAT)
 
 Past developers: Diego Pedrosa (UC Davis), Ipputa Tada (SOKENDAI)
 
@@ -57,7 +65,4 @@ The source code is licensed under GNU LESSER GENERAL PUBLIC LICENSE (LGPL) versi
 See LGPL.txt for full text of the license.
 This software uses third-party software.
 A full list of third-party software licenses in MsdialWorkbench is in the file THIRD-PARTY-LICENSE-README.txt.
-
-
-
 

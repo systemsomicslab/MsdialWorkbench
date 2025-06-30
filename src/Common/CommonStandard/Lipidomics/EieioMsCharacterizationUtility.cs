@@ -420,7 +420,7 @@ namespace CompMs.Common.Lipidomics
             var adduct = reference.AdductType;
 
             var result = new LipidMsCharacterizationResult();
-            var minimumPeakIntensity = exp_spectrum.Min(n => n.Intensity);
+            var minimumPeakIntensity = exp_spectrum?.DefaultIfEmpty().Min(n => n?.Intensity) ?? 0d;
             var minimumPeakIntensityFactor = 2.0;
 
             var matchedpeaks = MsScanMatching.GetMachedSpectralPeaks(exp_spectrum, ref_spectrum, tolerance, mzBegin, mzEnd);

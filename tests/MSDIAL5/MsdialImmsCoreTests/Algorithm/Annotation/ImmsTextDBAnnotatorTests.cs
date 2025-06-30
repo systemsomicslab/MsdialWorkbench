@@ -218,9 +218,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 AcurateMassSimilarity = 0.8f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -248,9 +248,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 AcurateMassSimilarity = 0.8f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -276,9 +276,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -305,9 +305,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
