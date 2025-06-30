@@ -1,25 +1,27 @@
-﻿using System;
+﻿using Accord.Statistics.Kernels;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Enum;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.Common.Components;
+using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class MztabFormatExporter// : BaseMetadataAccessor
+    public sealed class MztabFormatExporter
     {
         public MztabFormatExporter(string separator = DEFAULT_SEPARATOR)
         {
             Separator = separator;
         }
-
         private const string DEFAULT_SEPARATOR = "\t";
 
         private const string mztabVersion = "2.0.0-M";
@@ -38,9 +40,6 @@ namespace CompMs.MsdialCore.Export
 
         public string Separator { get; }
 
-        public readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-        public readonly ParameterBase parameter;
-
         public void MztabFormatExporterCore(
         Stream stream,
         IReadOnlyList<AlignmentSpotProperty> spots,
@@ -55,12 +54,17 @@ namespace CompMs.MsdialCore.Export
         {
             var exportFileName = Path.GetFileNameWithoutExtension(outfile);
             var mztabId = exportFileName; // as filename
-            var meta = (metaAccessor as BaseMetadataAccessor)?.Parameter;
+            var meta = (metaAccessor as BaseMetadataAccessor).Parameter;
             using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true);
 
             //set common parameter
             var idConfidenceMeasure = SetIdConfidenceMeasure(meta.MachineCategory, idConfidenceDefault); //  must be fixed order!!
-            var database = SetDatabaseList(meta); // database(library) list<list<string>>
+            var manualAssigned = new List<bool>(spots.Select(n => n.IsManuallyModifiedForAnnotation));
+            if (manualAssigned.Contains(true))
+            {
+                idConfidenceMeasure.Add(idConfidenceMeasure.Count + 1, idConfidenceManual);
+            }
+            var database = SetDatabaseList(meta, spots); // database(library) list<list<string>>
             var RawFileMetadataDic = SetRawFileMetadataDic(files, meta.IonMode);
             // 
             var AnalysisFileClassDic = files
@@ -103,15 +107,16 @@ namespace CompMs.MsdialCore.Export
             //SMF data
             foreach (var spot in spots)
             {
+                var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmfDataLine(
                     sw, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    SmfDataHeader, internalStandardDic
+                    SmfDataHeader, internalStandardDic, metadata
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmfDataLine(
                         sw, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        SmfDataHeader, internalStandardDic
+                        SmfDataHeader, internalStandardDic, metadata
                         );
                 }
             }
@@ -135,19 +140,24 @@ namespace CompMs.MsdialCore.Export
                 //{
                 //    continue;
                 //}
+                //if (analysisParamForLC.IsNormalizeSplash && splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1) { return; }
+                //else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) { return; }
+
                 if (spot.Name == "")
                 {
                     continue;
                 }
+                var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
+
                 WriteSmeDataLine(
                     sw, spot, meta, msdecResults[spot.MasterAlignmentID],
-                    database, files, RawFileMetadataDic, idConfidenceMeasure
+                    database, RawFileMetadataDic, idConfidenceMeasure, files, metadata
                         );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmeDataLine(
                         sw, spot, meta, msdecResults[spot.MasterAlignmentID],
-                        database, files, RawFileMetadataDic, idConfidenceMeasure
+                        database, RawFileMetadataDic, idConfidenceMeasure, files, metadata
                             );
                 }
                 sw.WriteLine("");
@@ -178,7 +188,6 @@ namespace CompMs.MsdialCore.Export
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
             var chemicalName = metadata["Metabolite name"];
-            var chemicalNameDB = "null";
 
             var uri = "null";
 
@@ -188,8 +197,6 @@ namespace CompMs.MsdialCore.Export
 
             var textLibId = spot.MatchResults.TextDbID;
             var mspLibraryID = spot.MatchResults.MspID;
-            var refRtString = "null";
-            var refMzString = "null";
 
             var adductIons = metadata["Adduct type"]?.ToString() ?? "null";
             if (adductIons != "null" && adductIons.Length > 2 && adductIons.Substring(adductIons.Length - 2, 1) == "]")
@@ -270,14 +277,16 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
             IReadOnlyList<string> SmfDataHeader,
-            IReadOnlyDictionary<int, string> internalStandardDic)
+            IReadOnlyDictionary<int, string> internalStandardDic,
+            IReadOnlyDictionary<string, string> metadata
+            )
         {
             var smfPrefix = "SMF";
 
             var matchResult = spot.MatchResults.Representative;
 
             var id = -1;
-            var smfID = spot.AlignmentID;
+            var smfID = metadata["Alignment ID"];
             var smeIDrefs = "null";
 
             var smeIDrefAmbiguity_code = "null";
@@ -307,7 +316,7 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + charge;
             }
 
-            if (spot.Name is not null || spot.Name !="")
+            if (spot.Name is not null || spot.Name != "")
             {
                 //smeIDrefs = spot.AlignedDriftSpots[0].MasterID.ToString();
                 smeIDrefs = smfID.ToString();
@@ -322,8 +331,7 @@ namespace CompMs.MsdialCore.Export
             var quantValues = quantAccessor.GetQuantValues(spot);
 
             var statValues = stats.Select(stat => quantAccessor.GetStatsValues(spot, stat)).ToList();
-            var LineData = new List<string>();
-            LineData.AddRange(SetDataValues(quantValues, statValues, SmfDataHeader, RawFileMetadataDic, AnalysisFileClassDic));
+            var LineData = SetDataValues(quantValues, statValues, SmfDataHeader, RawFileMetadataDic, AnalysisFileClassDic).ToList();
             if (meta.MachineCategory == MachineCategory.IMMS || meta.MachineCategory == MachineCategory.LCIMMS || meta.MachineCategory == MachineCategory.IDIMS)
             {
                 LineData.AddRange(SetIMValues(spot));
@@ -332,32 +340,10 @@ namespace CompMs.MsdialCore.Export
             {
                 LineData.AddRange(SetNormalizedData(spot, internalStandardDic));
             }
-            sw.WriteLine(string.Join(Separator, LineMetaData) + Separator + string.Join(Separator, quantAccessor.GetQuantValues(spot).Values));
+            sw.WriteLine(string.Join(Separator, LineMetaData) + Separator + string.Join(Separator, LineData));
         }
 
-
-        private void WriteSmeDataLine(StreamWriter sw,
-            AlignmentSpotProperty spot,
-            ParameterBase meta,
-            MSDecResult msdec,
-            IReadOnlyList<Database> database,
-            IReadOnlyList<AnalysisFileBean> files,
-            IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            IReadOnlyDictionary<int, string> idConfidenceMeasure
-
-            )
-        {
-            //if (analysisParamForLC.IsNormalizeSplash && splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1) { return; }
-            //else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) { return; }
-
-            WriteDataMatrixMztabSMEData(sw, spot, meta, msdec, database, RawFileMetadataDic, idConfidenceMeasure, files);
-            //if want to add optional column, discribe here
-
-            //
-            //sw.WriteLine("");
-        }
-
-        public static void WriteDataMatrixMztabSMEData(
+        public static void WriteSmeDataLine(
             StreamWriter sw,
             AlignmentSpotProperty spot,
             ParameterBase param,
@@ -365,27 +351,29 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<Database> database,
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
             IReadOnlyDictionary<int, string> idConfidenceMeasure,
-            IReadOnlyList<AnalysisFileBean> analysisFiles
-            //, List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> textDB
+            IReadOnlyList<AnalysisFileBean> analysisFiles,
+            IReadOnlyDictionary<string, string> metadata
             )
         {
             var smePrefix = "SME";
-            var smeID = spot.AlignmentID;
-            var evidenceInputID = spot.AlignmentID; // need to consider
+            var smeID = metadata["Alignment ID"];
+            var evidenceInputID = metadata["Alignment ID"]; ; // need to consider
             var inchi = "null";
             var uri = "null";
-            var adductIons = spot.AdductType.ToString().Substring(0, spot.AdductType.ToString().IndexOf("]") + 1)
-                + spot.AdductType.ChargeNumber + spot.AdductType.ToString().Substring(spot.AdductType.ToString().Length - 1, 1);
+            var adductIons = metadata["Adduct type"]?.ToString() ?? "null";
+            if (adductIons != "null" && adductIons.Length > 2 && adductIons.Substring(adductIons.Length - 2, 1) == "]")
+            {
+                adductIons = adductIons.Substring(0, adductIons.IndexOf("]") + 1) + "1" + adductIons.Substring(adductIons.Length - 1, 1);
+            }
             var expMassToCharge = spot.MassCenter.ToString(); // 
             var derivatizedForm = "null";
             var identificationMethod = idConfidenceDefault;
             var manualCurationScore = "null";
-            if (idConfidenceManual != "" && spot.IsManuallyModifiedForAnnotation == true)
+            if (spot.IsManuallyModifiedForAnnotation == true)
             {
                 manualCurationScore = "100";
                 identificationMethod = idConfidenceManual;
             }
-            ;
 
             var charge = spot.AdductType.ChargeNumber.ToString();
 
@@ -394,22 +382,12 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + spot.AdductType.ChargeNumber.ToString();
             }
 
-            //var chemicalName = "null";
-            //var chemicalNameDB = "null";
-            var chemicalFormula = "null";
-            var smiles = "null";
-            double theoreticalMassToCharge = 0;
-
-            var chemicalName = spot.Name;
-            var chemicalNameDB = spot.MatchResults.Representative.Name;
-            //var chemicalFormula = spot.MatchResults.Representative.Formula;
-            //var smiles = spot.MatchResults.Representative.Smiles;
-            //var theoreticalMassToCharge = spot.MatchResults.Representative.PrecursorMz;
-
             var properties = spot.AlignedPeakProperties;
             var repName = spot.MatchResults.Representative.Name;
             var repLibraryID = spot.MatchResults.Representative.LibraryID;
-
+            var chemicalFormula = metadata["Formula"];
+            var smiles = metadata["SMILES"];
+            var theoreticalMassToCharge = metadata["Reference m/z"];
             var spectraRefList = new List<string>();  //  multiple files
             for (int i = 0; i < properties.Count; i++)
             {
@@ -420,36 +398,22 @@ namespace CompMs.MsdialCore.Export
 
                 /// to get file id, peak id in aligned spots
 
-
-                ////var peakAreaBean = DataAccessLcUtility.GetPeakAreaBean(analysisFiles, i, peakID);
-                ////var ms1ScanID2 = peakAreaBean.Ms1LevelDatapointNumber;
-                ////var ms2ScanID2 = peakAreaBean.Ms2LevelDatapointNumber;
-                //var ms1ScanID2 = properties[i].Ms1ScanNumber;
-                //var ms2ScanID2 = properties[i].Ms2ScanNumber;
+                var ms1ScanID = properties[i].MS1RawSpectrumIdTop;
+                var ms2ScanID = properties[i].MS2RawSpectrumID;
                 /////
 
-                //// list of ms1 ms2 id pair
-                //if (spot.IsMs2Match == true)
-                //{
-                //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2 + " ms2scanID=" + ms2ScanID2);
-                //}
-                //else
-                //{
-                //    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID2);
-                //}
-            }
-            ;
-
-            if (spectraRefList.Count == 0)
-            {
-                //spectraRefList.Add("ms_run[" + (repfileId + 1) + "]:ms2scanID=" + properties[repfileId].Ms2ScanNumber);
+                // list of ms1 ms2 id pair
+                if (properties[i].IsMsmsAssigned == true)
+                {
+                    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID + " ms2scanID=" + ms2ScanID);
+                }
+                else
+                {
+                    spectraRefList.Add("ms_run[" + (i + 1) + "]:ms1scanID=" + ms1ScanID);
+                }
             }
 
-            var spectraRef = string.Join("| ", spectraRefList);
-
-
-            //var spectraRefNo = alignedSpot.RepresentativeFileID;  // single file 
-            //var spectraRef = "ms_run[" + (spectraRefNo + 1) + "]:scan =" + spectraRefscanNo;
+            var spectraRef = spectraRefList.Count > 0 ? string.Join("| ", spectraRefList):"null";
 
             var msLevel = "[MS, MS:1000511, ms level, 1]";
             if (spot.IsMsmsAssigned == true)
@@ -494,43 +458,14 @@ namespace CompMs.MsdialCore.Export
             //}
 
             //var databaseIdentifier = databesePrefix + ":" + chemicalNameDB;
-            var matchResult = spot.MatchResults.Representative;
-            var ResultScoreDic = new Dictionary<string, string>();
-            ResultScoreDic.Add(idConfidenceDefault, ValueOrNull(matchResult.TotalScore.ToString()));
-            ResultScoreDic.Add("[,, Retention time similarity, ]", ValueOrNull(matchResult.RtSimilarity.ToString()));
-            ResultScoreDic.Add("[,, Simple dot product, ]", ValueOrNull(matchResult.SimpleDotProduct.ToString()));
-            ResultScoreDic.Add("[,, Reverse dot product, ]", ValueOrNull(matchResult.ReverseDotProduct.ToString()));
-            ResultScoreDic.Add("[,, Weighted dot product, ]", ValueOrNull(matchResult.WeightedDotProduct.ToString()));
-            ResultScoreDic.Add("[,, Matched peaks count, ]", ValueOrNull(matchResult.MatchedPeaksCount.ToString()));
-            ResultScoreDic.Add("[,, Matched peaks percentage, ]", ValueOrNull(matchResult.MatchedPeaksPercentage.ToString()));
-            ResultScoreDic.Add("[,, Retention index similarity, ]", ValueOrNull(matchResult.RiSimilarity.ToString()));
-            ResultScoreDic.Add("[,, CCS similarity, ]", ValueOrNull(matchResult.CcsSimilarity.ToString()));
-            ResultScoreDic.Add("[,, m/z similarity, ]", ValueOrNull(matchResult.AcurateMassSimilarity.ToString()));
 
             var SmeLine = new List<string>() {
                     smePrefix,smeID.ToString(), evidenceInputID.ToString(), "databaseIdentifier",
-                    chemicalFormula, smiles, inchi, chemicalName,uri,derivatizedForm,adductIons,expMassToCharge,charge,theoreticalMassToCharge.ToString(),
+                    chemicalFormula, smiles, inchi, repName,uri,derivatizedForm,adductIons,expMassToCharge,charge,theoreticalMassToCharge.ToString(),
                     spectraRef, identificationMethod, msLevel
                     };
 
-            for (int i = 0; i < idConfidenceMeasure.Count; i++)
-            {
-                var idConfidence = idConfidenceMeasure[i + 1];
-                if (ResultScoreDic.ContainsKey(idConfidence))
-                {
-                    SmeLine.Add(ResultScoreDic[idConfidence]);
-                }
-                else
-                {
-                    SmeLine.Add("null");
-                }
-            }
-
-            // if manual curation score use
-            if (idConfidenceManual != "")
-            {
-                SmeLine.Add(manualCurationScore);
-            }
+            SmeLine.AddRange(SetExportScoreList(idConfidenceMeasure, spot.MatchResults.Representative, manualCurationScore));
 
             SmeLine.Add(rank);
             sw.Write(String.Join("\t", SmeLine.Select(item => string.IsNullOrEmpty(item) ? "null" : item).ToList()) + "\t");
@@ -552,15 +487,17 @@ namespace CompMs.MsdialCore.Export
             var ionAbundanceUnits = spots.Select(spot => spot.IonAbundanceUnit).Distinct().ToList();
             var ionMobilityType = "";
 
-            //switch (meta)
-            //{
-            //    case ParameterBase lcimmsParameter when lcimmsParameter.GetType().Name == "MsdialLcmsParameter":
-            //        ionMobilityType = lcimmsParameter.IonMobilityType.ToString();
-            //        break;
-            //    case ParameterBase immsParameter when immsParameter.GetType().Name == "MsdialImmsParameter":
-            //        ionMobilityType = immsParameter.IonMobilityType.ToString();
-            //        break;
-            //}
+
+            if (meta.GetType().Name == "MsdialLcImMsParameter" || meta.GetType().Name == "MsdialImmsParameter")
+            {
+                var ionMobilityProp = meta.GetType().GetProperty("IonMobilityType");
+                if (ionMobilityProp != null)
+                {
+                    var value = ionMobilityProp.GetValue(meta);
+                    ionMobilityType = value?.ToString();
+                }
+            }
+
 
             //common parameter
 
@@ -954,7 +891,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot
         )
         {
-            return new List<string>() { spot.TimesCenter.Drift.Value.ToString(), spot.CollisionCrossSection.ToString() } ;
+            return new List<string>() { spot.TimesCenter.Drift.Value.ToString(), spot.CollisionCrossSection.ToString() };
         }
         private static List<string> SetNormalizedData(
             AlignmentSpotProperty spot,
@@ -977,12 +914,16 @@ namespace CompMs.MsdialCore.Export
                     continue;
                 }
                 var nameItem = spots.Where(item => item.AlignmentID == id).FirstOrDefault();
-                StandardDic.Add(id, UnknownIfEmpty(nameItem.Name));
+                if(nameItem == null)
+                {
+                    continue;
+                }
+                StandardDic.Add(id, ValueOrNull(nameItem.Name));
             }
             return StandardDic;
         }
 
-        private static IReadOnlyDictionary<int, string> SetIdConfidenceMeasure(MachineCategory machineCategory, string idConfidenceDefault)
+        private static Dictionary<int, string> SetIdConfidenceMeasure(MachineCategory machineCategory, string idConfidenceDefault)
         {
             var idConfidenceMeasure = new Dictionary<int, string>();
             List<string> measures;
@@ -1081,10 +1022,13 @@ namespace CompMs.MsdialCore.Export
             }
             return idConfidenceMeasure;
         }
-        private static IReadOnlyList<Database> SetDatabaseList(ParameterBase meta)
+        private static IReadOnlyList<Database> SetDatabaseList(ParameterBase meta, IReadOnlyList<AlignmentSpotProperty> spot)
         {
             var database = new List<Database>();
-                        
+
+
+
+
             if (meta.MspFilePath != "" && meta.MspFilePath != null)
             {
 
@@ -1140,6 +1084,43 @@ namespace CompMs.MsdialCore.Export
             }
             return database;
         }
+
+        private static List<string> SetExportScoreList(
+            IReadOnlyDictionary<int,string> idConfidenceMeasure, 
+            MsScanMatchResult matchResult,
+            string manualCurationScore
+            )
+        {
+            var scoreList = new List<string>();
+
+            var ResultScoreDic = new Dictionary<string, string>();
+            ResultScoreDic.Add(idConfidenceDefault, ValueOrNull(matchResult.TotalScore.ToString()));
+            ResultScoreDic.Add("[,, Retention time similarity, ]", ValueOrNull(matchResult.RtSimilarity.ToString()));
+            ResultScoreDic.Add("[,, Simple dot product, ]", ValueOrNull(matchResult.SimpleDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Reverse dot product, ]", ValueOrNull(matchResult.ReverseDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Weighted dot product, ]", ValueOrNull(matchResult.WeightedDotProduct.ToString()));
+            ResultScoreDic.Add("[,, Matched peaks count, ]", ValueOrNull(matchResult.MatchedPeaksCount.ToString()));
+            ResultScoreDic.Add("[,, Matched peaks percentage, ]", ValueOrNull(matchResult.MatchedPeaksPercentage.ToString()));
+            ResultScoreDic.Add("[,, Retention index similarity, ]", ValueOrNull(matchResult.RiSimilarity.ToString()));
+            ResultScoreDic.Add("[,, CCS similarity, ]", ValueOrNull(matchResult.CcsSimilarity.ToString()));
+            ResultScoreDic.Add("[,, m/z similarity, ]", ValueOrNull(matchResult.AcurateMassSimilarity.ToString()));
+            ResultScoreDic.Add(idConfidenceManual, manualCurationScore);
+
+            for (int i = 0; i < idConfidenceMeasure.Count; i++)
+            {
+                var idConfidence = idConfidenceMeasure[i+1];
+                if (ResultScoreDic.ContainsKey(idConfidence))
+                {
+                    scoreList.Add(ResultScoreDic[idConfidence]);
+                }
+                else
+                {
+                    scoreList.Add("null");
+                }
+            }
+            return scoreList;
+        } 
+
         private static IReadOnlyDictionary<int, RawFileMetadata> SetRawFileMetadataDic(IReadOnlyList<AnalysisFileBean> files, IonMode ionMode)
         {
             var fileMetadataDic = new Dictionary<int, RawFileMetadata>();
@@ -1242,6 +1223,7 @@ namespace CompMs.MsdialCore.Export
             public string Type { get; set; }
             public string Filename { get; set; }
             public string Uri { get; set; }
+            public string AnnotationMethod { get; set; }
         }
 
         // Change the accessibility of RawFileMetadata class from private to public to fix CS0051  
