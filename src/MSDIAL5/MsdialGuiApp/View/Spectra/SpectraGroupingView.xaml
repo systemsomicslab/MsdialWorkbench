@@ -9,6 +9,7 @@
              xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Spectra"
              xmlns:component="clr-namespace:CompMs.Common.Components;assembly=Common"
              mc:Ignorable="d"
+             d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:SpectraGroupingViewModel}}"
              d:DesignHeight="800" d:DesignWidth="1200">
     <Grid>
@@ -26,6 +27,8 @@
         </Grid.Resources>
 
         <HeaderedContentControl Header="Molecule group"
+                                VerticalAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
                                 Grid.Column="0">
             <ListBox ItemsSource="{Binding Path=MoleculeGroups}"
                      SelectedItem="{Binding Path=SelectedMoleculeGroup.Value}"
@@ -58,33 +61,42 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <HeaderedContentControl Header="Theoretical spectra"
-                                    Grid.Row="0">
-                <chart:SimpleChartControl>
-                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=TheoreticalSpectra.Value.Spectrum}"
-                                                   DataType="{x:Type component:SpectrumPeak}"
-                                                   HorizontalProperty="Mass"
-                                                   VerticalProperty="Intensity"/>
-                </chart:SimpleChartControl>
-            </HeaderedContentControl>
+            <chart:SimpleChartControl HorizontalAxis="{Binding Path=TheoreticalHorizontalAxis}"
+                                      VerticalAxis="{Binding Path=TheoreticalVerticalAxis}"
+                                      GraphTitle="{Binding Path=SelectedMoleculeGroup.Value.Name}"
+                                      Margin="8"
+                                      Grid.Row="0">
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=TheoreticalSpectra.Value.Spectrum}"
+                                               DataType="{x:Type component:SpectrumPeak}"
+                                               HorizontalProperty="Mass"
+                                               VerticalProperty="Intensity"
+                                               VerticalAlignment="Stretch"/>
+            </chart:SimpleChartControl>
 
-            <HeaderedContentControl Header="Measured spectra"
-                                    Grid.Row="1">
-                <chart:SimpleChartControl>
-                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
-                                                   DataType="{x:Type component:SpectrumPeak}"
-                                                   HorizontalProperty="Mass"
-                                                   VerticalProperty="Intensity"/>
-                </chart:SimpleChartControl>
-            </HeaderedContentControl>
+            <ComboBox ItemsSource="{Binding Path=Samples}"
+                      DisplayMemberPath="AnalysisFileName"
+                      SelectedItem="{Binding Path=SelectedSample.Value}"
+                      Grid.Row="1"/>
+            <chart:SimpleChartControl HorizontalAxis="{Binding Path=MeasuredHorizontalAxis}"
+                                      VerticalAxis="{Binding Path=MeasuredVerticalAxis}"
+                                      Margin="8"
+                                      Grid.Row="2">
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
+                                               DataType="{x:Type component:SpectrumPeak}"
+                                               HorizontalProperty="Mass"
+                                               VerticalProperty="Intensity"/>
+            </chart:SimpleChartControl>
 
-            <GridSplitter Height="2" Margin="0,-8"
+            <GridSplitter Height="2"
                           Background="Gray"
                           HorizontalAlignment="Stretch"
-                          VerticalAlignment="Bottom"/>
+                          VerticalAlignment="Top"
+                          ResizeBehavior="PreviousAndNext"
+                          Grid.Row="1"/>
         </Grid>
 
         <GridSplitter Width="2" Margin="-2,0"
