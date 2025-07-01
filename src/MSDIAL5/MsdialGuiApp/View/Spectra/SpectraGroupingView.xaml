@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -64,9 +65,29 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <Grid.Resources>
+                <axis:AutoContinuousAxisManager x:Key="TheoreticalHorizontalAxis"
+                                                ItemsSource="{Binding TheoreticalSpectra.Value.Spectrum}"
+                                                ValuePropertyName="Mass"
+                                                ChartMargin="20+"/>
+                <axis:AutoContinuousAxisManager x:Key="TheoreticalVerticalAxis"
+                                                ItemsSource="{Binding TheoreticalSpectra.Value.Spectrum}"
+                                                ValuePropertyName="Intensity"
+                                                Bounds="0,0"
+                                                ChartMargin="0+, 20+"/>
+                <axis:AutoContinuousAxisManager x:Key="MeasuredHorizontalAxis"
+                                                ItemsSource="{Binding MeasuredSpectra.Value.Spectrum}"
+                                                ValuePropertyName="Mass"
+                                                ChartMargin="20+"/>
+                <axis:AutoContinuousAxisManager x:Key="MeasuredVerticalAxis"
+                                                ItemsSource="{Binding MeasuredSpectra.Value.Spectrum}"
+                                                ValuePropertyName="Intensity"
+                                                Bounds="0,0"
+                                                ChartMargin="0+, 20+"/>
+            </Grid.Resources>
 
-            <chart:SimpleChartControl HorizontalAxis="{Binding Path=TheoreticalHorizontalAxis}"
-                                      VerticalAxis="{Binding Path=TheoreticalVerticalAxis}"
+            <chart:SimpleChartControl HorizontalAxis="{StaticResource ResourceKey=TheoreticalHorizontalAxis}"
+                                      VerticalAxis="{StaticResource ResourceKey=TheoreticalVerticalAxis}"
                                       GraphTitle="{Binding Path=SelectedMoleculeGroup.Value.Name}"
                                       Margin="8"
                                       Grid.Row="0">
@@ -80,9 +101,10 @@
             <ComboBox ItemsSource="{Binding Path=Samples}"
                       DisplayMemberPath="AnalysisFileName"
                       SelectedItem="{Binding Path=SelectedSample.Value}"
+                      SelectedIndex="0"
                       Grid.Row="1"/>
-            <chart:SimpleChartControl HorizontalAxis="{Binding Path=MeasuredHorizontalAxis}"
-                                      VerticalAxis="{Binding Path=MeasuredVerticalAxis}"
+            <chart:SimpleChartControl HorizontalAxis="{StaticResource ResourceKey=MeasuredHorizontalAxis}"
+                                      VerticalAxis="{StaticResource ResourceKey=MeasuredVerticalAxis}"
                                       Margin="8"
                                       Grid.Row="2">
                 <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"

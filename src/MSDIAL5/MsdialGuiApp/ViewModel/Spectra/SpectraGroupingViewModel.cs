@@ -26,19 +26,6 @@ public class SpectraGroupingViewModel : ViewModelBase {
         TheoreticalSpectra = model.ObserveProperty(m => m.TheoreticalSpectra).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         SelectedSample = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedSample).AddTo(Disposables);
         MeasuredSpectra = model.ObserveProperty(m => m.MeasuredSpectra).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
-        TheoreticalHorizontalAxis = TheoreticalSpectra.Select(s => s?.Spectrum.Select(p => p.Mass).DefaultIfEmpty() ?? [0d])
-            .Select(mzs => (mzs.Min(), mzs.Max()))
-            .ToReactiveContinuousAxisManager(new ConstantMargin(20d)).AddTo(Disposables);
-        TheoreticalVerticalAxis = TheoreticalSpectra.Select(s => s?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty() ?? [0d])
-            .Select(ints => (ints.Min(), ints.Max()))
-            .ToReactiveContinuousAxisManager(new ConstantMargin(0d, 20d), new AxisRange(0d, 0d)).AddTo(Disposables);
-        MeasuredHorizontalAxis = MeasuredSpectra.Select(s => s?.Spectrum.Select(p => p.Mass).DefaultIfEmpty() ?? [0d])
-            .Select(mzs => (mzs.Min(), mzs.Max()))
-            .ToReactiveContinuousAxisManager(new ConstantMargin(20d)).AddTo(Disposables);
-        MeasuredVerticalAxis = MeasuredSpectra.Select(s => s?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty() ?? [0d])
-            .Select(ints => (ints.Min(), ints.Max()))
-            .ToReactiveContinuousAxisManager(new ConstantMargin(0d, 20d), new AxisRange(0d, 0d)).AddTo(Disposables);
     }
 
     public ReadOnlyObservableCollection<MoleculeGroupModel> MoleculeGroups { get; }
@@ -49,9 +36,4 @@ public class SpectraGroupingViewModel : ViewModelBase {
     public AnalysisFileBeanModel[] Samples => _model.Samples;
     public ReactivePropertySlim<AnalysisFileBeanModel?> SelectedSample { get; }
     public ReadOnlyReactivePropertySlim<MsSpectrum?> MeasuredSpectra { get; }
-
-    public IAxisManager<double> TheoreticalHorizontalAxis { get; }
-    public IAxisManager<double> TheoreticalVerticalAxis { get; }
-    public IAxisManager<double> MeasuredHorizontalAxis { get; }
-    public IAxisManager<double> MeasuredVerticalAxis { get; }
 }
