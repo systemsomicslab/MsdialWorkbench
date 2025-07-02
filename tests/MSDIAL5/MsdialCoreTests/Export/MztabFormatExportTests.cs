@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MsdialCoreTests.Export
 {
-    internal class MztabFormatExport
+    internal class MztabFormatExportTests
     {
     }
 }

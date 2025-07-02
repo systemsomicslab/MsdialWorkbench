@@ -709,6 +709,32 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "colunit-small_molecule", optMobilityUnit }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "colunit-small_molecule_feature", optMobilityUnit }));
                 mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, optMobilityComment }));
+
+
+                if (meta.InstrumentType != null || meta.InstrumentType != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "InstrumentType: " + string.Join(", ", meta.Authors) }));
+                }
+                if (meta.Instrument != null || meta.Instrument != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "Instrument: " + string.Join(", ", meta.Authors) }));
+                }
+                if(meta.Authors != null || meta.Authors != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "Authors: " + string.Join(", ", meta.Authors) }));
+                }
+                if (meta.License != null || meta.License != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "License: " + string.Join(", ", meta.Authors) }));
+                }
+                if (meta.CollisionEnergy != null || meta.CollisionEnergy != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "Collision Energy: " + string.Join(", ", meta.Authors) }));
+                }
+                if (meta.Comment != null || meta.Comment != "")
+                {
+                    mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "Comment: " + string.Join(", ", meta.Authors) }));
+                }
             }
             sw.WriteLine(string.Join("\n", mtdTable));
         }
