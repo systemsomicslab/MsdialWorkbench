@@ -60,24 +60,26 @@
                 <ItemsControl ItemsSource="{Binding Path=ProductIonAbundances.Value}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <chart:SimpleChartControl Height="250"
-                                                      HorizontalAxis="{StaticResource SampleHorizontalAxis}"
-                                                      VerticalAxis="{StaticResource IntensityVerticalAxis}">
-                                <chart:SimpleChartControl.Resources>
-                                    <axis:CategoryAxisManager x:Key="SampleHorizontalAxis"
+                            <Border>
+                                <Border.Resources>
+                                    <axis:CategoryAxisManager x:Key="HorizontalBarsAxis"
                                                               ItemsSource="{Binding Path=.}"
                                                               IdentityPropertyName="SampleName"
                                                               DisplayPropertyName="SampleName"
                                                               ChartMargin="20+"/>
-                                    <axis:AutoContinuousAxisManager x:Key="IntensityVerticalAxis"
+                                    <axis:AutoContinuousAxisManager x:Key="VerticalBarsAxis"
                                                                     ItemsSource="{Binding Path=.}"
                                                                     ValuePropertyName="Intensity"
                                                                     ChartMargin="0+,20+"/>
-                                </chart:SimpleChartControl.Resources>
-                                <chart:BarControl ItemsSource="{Binding Path=.}"
-                                                  HorizontalPropertyName="SampleName"
-                                                  VerticalPropertyName="Intensity"/>
-                            </chart:SimpleChartControl>
+                                </Border.Resources>
+                                <chart:SimpleChartControl Height="240"
+                                                          HorizontalAxis="{StaticResource HorizontalBarsAxis}"
+                                                          VerticalAxis="{StaticResource VerticalBarsAxis}">
+                                    <chart:BarControl ItemsSource="{Binding Path=.}"
+                                                      HorizontalPropertyName="SampleName"
+                                                      VerticalPropertyName="Intensity"/>
+                                </chart:SimpleChartControl>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
