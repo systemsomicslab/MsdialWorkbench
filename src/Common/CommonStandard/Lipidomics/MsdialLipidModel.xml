@@ -415,40 +415,6 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LNAPS</Name>
-		<Abbreviation>LPS-N</Abbreviation>
-		<Chains>
-			<Total>2</Total>
-		</Chains>
-		<Skelton>
-			<Carbon>6</Carbon>
-			<Hydrogen>12</Hydrogen>
-			<Oxygen>8</Oxygen>
-			<Nitrogen/>
-			<Phosphorus/>
-		</Skelton>
-		<LbmClasses>
-			<LbmClass>LNAPS</LbmClass>
-		</LbmClasses>
-	</Lipid>
-	<Lipid>
-		<Name>LNAPE</Name>
-		<Abbreviation>LPE-N</Abbreviation>
-		<Chains>
-			<Total>2</Total>
-		</Chains>
-		<Skelton>
-			<Carbon>5</Carbon>
-			<Hydrogen>12</Hydrogen>
-			<Oxygen>6</Oxygen>
-			<Nitrogen/>
-			<Phosphorus/>
-		</Skelton>
-		<LbmClasses>
-			<LbmClass>LNAPE</LbmClass>
-		</LbmClasses>
-	</Lipid>
-	<Lipid>
         <Name>TG</Name>
         <Abbreviation>TG</Abbreviation>
         <Chains>
