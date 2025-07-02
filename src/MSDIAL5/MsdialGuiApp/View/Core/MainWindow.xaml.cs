@@ -148,7 +148,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<SpectraSimilarityMapViewModel>()
                 .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
             broker.ToObservable<SpectraGroupingViewModel>()
-                .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1200, needDispose: true));
+                .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1500, needDispose: true));
 
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
