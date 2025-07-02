@@ -27,37 +27,62 @@
             </Style>
         </Grid.Resources>
 
-        <HeaderedContentControl Header="Molecule group"
-                                VerticalAlignment="Stretch"
-                                VerticalContentAlignment="Stretch"
-                                Grid.Column="0">
-            <ListBox ItemsSource="{Binding Path=MoleculeGroups}"
-                     SelectedItem="{Binding Path=SelectedMoleculeGroup.Value}"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <ListBox.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type model:MoleculeGroupModel}"
-                                              ItemsSource="{Binding UniqueMzList}">
-                        <TextBlock Text="{Binding Name}"/>
-                        <!--<TreeViewItem Header="{Binding Name}" ItemsSource="{Binding UniqueMzList}"/>-->
-                    </HierarchicalDataTemplate>
-                </ListBox.Resources>
-            </ListBox>
-        </HeaderedContentControl>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0">
+                <TextBlock Text="Molecule group" DockPanel.Dock="Top"/>
+                <ListBox ItemsSource="{Binding Path=MoleculeGroups}"
+                         SelectedItem="{Binding Path=SelectedMoleculeGroup.Value}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type model:MoleculeGroupModel}"
+                                                  ItemsSource="{Binding UniqueMzList}">
+                            <TextBlock Text="{Binding Name}"/>
+                            <!--<TreeViewItem Header="{Binding Name}" ItemsSource="{Binding UniqueMzList}"/>-->
+                        </HierarchicalDataTemplate>
+                    </ListBox.Resources>
+                </ListBox>
+            </DockPanel>
 
-        <HeaderedContentControl Header="Product ion abundance of selected m/z"
-                                Grid.Column="1">
-            <ItemsControl ItemsSource="{Binding Path=ProductIonAbundances}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <chart:SimpleChartControl>
-                            <chart:BarControl ItemsSource="{Binding Path=.}"
-                                              HorizontalPropertyName="SampleName"
-                                              VerticalPropertyName="Intensity"/>
-                        </chart:SimpleChartControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </HeaderedContentControl>
+            <DockPanel Grid.Row="1">
+                <TextBlock Text="Unique m/z" DockPanel.Dock="Top"/>
+                <ListBox ItemsSource="{Binding Path=SelectedMoleculeGroup.Value.UniqueMzList}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+            </DockPanel>
+        </Grid>
+
+        <DockPanel Grid.Column="1">
+            <TextBlock DockPanel.Dock="Top" Text="Product ion abundance of selected m/z"/>
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Path=ProductIonAbundances.Value}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <chart:SimpleChartControl Height="250"
+                                                      HorizontalAxis="{StaticResource SampleHorizontalAxis}"
+                                                      VerticalAxis="{StaticResource IntensityVerticalAxis}">
+                                <chart:SimpleChartControl.Resources>
+                                    <axis:CategoryAxisManager x:Key="SampleHorizontalAxis"
+                                                              ItemsSource="{Binding Path=.}"
+                                                              IdentityPropertyName="SampleName"
+                                                              DisplayPropertyName="SampleName"
+                                                              ChartMargin="20+"/>
+                                    <axis:AutoContinuousAxisManager x:Key="IntensityVerticalAxis"
+                                                                    ItemsSource="{Binding Path=.}"
+                                                                    ValuePropertyName="Intensity"
+                                                                    ChartMargin="0+,20+"/>
+                                </chart:SimpleChartControl.Resources>
+                                <chart:BarControl ItemsSource="{Binding Path=.}"
+                                                  HorizontalPropertyName="SampleName"
+                                                  VerticalPropertyName="Intensity"/>
+                            </chart:SimpleChartControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
