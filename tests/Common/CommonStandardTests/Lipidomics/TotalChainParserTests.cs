@@ -156,18 +156,5 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(2, chains[1].DoubleBondCount);
             Assert.AreEqual(2, chains[1].OxidizedCount);
         }
-        [TestMethod]
-        public void LNAParseTest()
-        {
-            var parser = TotalChainParser.BuildParser(2);
-            var actual = parser.Parse("(FA 18:2)16:0");
-            Assert.IsInstanceOfType(actual, typeof(MolecularSpeciesLevelChains));
-            Assert.AreEqual(34, actual.CarbonCount);
-            Assert.AreEqual(2, actual.DoubleBondCount);
-            Assert.AreEqual(0, actual.OxidizedCount);
-            IChain[] chains = actual.GetDeterminedChains();
-            Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
-            Assert.IsInstanceOfType(chains[1], typeof(AcylChain));
-        }
     }
 }

@@ -239,3 +239,17 @@ Assemblies/*.dll
 /src/MSFINDER/MsfinderCommonStandard/Resources/MINEs-StructureDB-vs*.msd
 /src/MSFINDER/MsfinderCommonStandard/Resources/MsfinderStructureDB-VS*.esd
 /src/MSFINDER/MsfinderCommonStandard/Resources/MSMS-DBs-vs*.etm
+/tests/Common/ChartDrawingTests/ChartDrawingTests.csproj
+/tests/Common/CommonMVVMTests/CommonMVVMTests.csproj
+/tests/Common/CommonSourceGeneratorTests/CommonSourceGeneratorTests.csproj
+/tests/Common/CommonStandardTests/CommonStandardTests.csproj
+/tests/MSDIAL4/MonaRestApiTests/MonaRestApiTests.csproj
+/tests/MSDIAL4/StatisticsTests/StatisticsTests.csproj
+/tests/MSDIAL5/MsdialCoreTests/MsdialCoreTests.csproj
+/tests/MSDIAL5/MsdialDimsCoreTests/MsdialDimsCoreTests.csproj
+/tests/MSDIAL5/MsdialGcMsApiTests/MsdialGcMsApiTests.csproj
+/tests/MSDIAL5/MsdialGuiAppTests/MsdialGuiAppTests.csproj
+/tests/MSDIAL5/MsdialImmsCoreTests/MsdialImmsCoreTests.csproj
+/tests/MSDIAL5/MsdialIntegrateTests/MsdialIntegrateTests.csproj
+/tests/MSDIAL5/MsdialLcImMsApiTests/MsdialLcImMsApiTests.csproj
+/tests/MSDIAL5/MsdialLcMsApiTests/MsdialLcMsApiTests.csproj

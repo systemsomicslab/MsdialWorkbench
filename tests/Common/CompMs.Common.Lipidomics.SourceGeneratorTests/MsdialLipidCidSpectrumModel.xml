@@ -388,6 +388,97 @@
   	</LipidDefinitions>
   <LipidMSs>
     <LipidMS>
+      <LipidClass>ADGGA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M+NH4]+</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M+NH4Adduct</MZ>
+          <Intensity>300</Intensity>
+          <Comment>[M+NH4]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons>
+        <ChainIon>
+          <MZ>M+Proton+H-SN1Acyl-NL</MZ>
+          <NL>C6H10O7</NL>
+          <Intensity>100</Intensity>
+          <Comment>[M-SN3-C6H10O7+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN1Acyl+Proton+C6H10O7-H2O-H</MZ>
+          <Intensity>999</Intensity>
+          <Comment>[C6H10O7-H2O+SN3+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN2Acyl+Proton+C3H5O2</MZ>
+          <Intensity>300</Intensity>
+          <Comment>[SN1+C3H5O2+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN3Acyl+Proton+C3H5O2</MZ>
+          <Intensity>300</Intensity>
+          <Comment>[SN2+C3H5O2+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN1Acyl-H+Proton</MZ>
+          <Intensity>300</Intensity>
+          <Comment>[SN3]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        </ChainIons>
+      <ClassIons />
+      </LipidMS>
+    <LipidMS>
+      <LipidClass>ADGGA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M-H]-</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M-Proton</MZ>
+          <Intensity>999</Intensity>
+          <Comment>[M-H]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons>
+        <ChainIon>
+          <MZ>SN1Acyl+O+Electron</MZ>
+          <Intensity>300</Intensity>
+          <Comment>SN1FA-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN2Acyl+O+Electron</MZ>
+          <Intensity>300</Intensity>
+          <Comment>SN2FA-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        <ChainIon>
+          <MZ>SN3Acyl+O+Electron</MZ>
+          <Intensity>300</Intensity>
+          <Comment>SN3FA-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        </ChainIons>
+      <ClassIons />
+      </LipidMS>
+    </LipidMSs>
+  <LipidMSs>
+    <LipidMS>
       <LipidClass>BisMeLPA</LipidClass>
       <LSILevel>MSL</LSILevel>
       <Adduct>[M+H]+</Adduct>

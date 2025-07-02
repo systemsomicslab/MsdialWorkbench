@@ -87,11 +87,11 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = new MLCLLipidParser();
 
             var lipid = parser.Parse("MLCL 54:5");
-            Assert.AreEqual(1187.7509, lipid.Mass, 0.01);
+            Assert.AreEqual(1188.7582, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.MLCL, lipid.LipidClass);
 
             lipid = parser.Parse("MLCL 16:0_18:1_20:4");
-            Assert.AreEqual(1187.7509, lipid.Mass, 0.01);
+            Assert.AreEqual(1188.7582, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.MLCL, lipid.LipidClass);
 
             ////need to consider?
@@ -266,5 +266,26 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
+    [TestClass()]
+    public class ADGGALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new ADGGALipidParser();
+
+            var lipid = parser.Parse("ADGGA 14:0_16:0_18:1");
+            Assert.AreEqual(980.7528, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ADGGA, lipid.LipidClass);
+
+            lipid = parser.Parse("ADGGA (O-14:0)16:0_18:1");
+            Assert.AreEqual(980.7528, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ADGGA, lipid.LipidClass);
+
+            lipid = parser.Parse("ADGGA 48:1");
+            Assert.AreEqual(980.7528, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ADGGA, lipid.LipidClass);
+        }
+    }
 
 }

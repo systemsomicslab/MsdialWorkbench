@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics
         public string Target { get; } = "LPS-N";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
-        public static readonly string Pattern = $"^LPS-N\\s*(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^LPS-N\\s*\\(FA\\)?\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]

@@ -142,8 +142,7 @@ namespace CompMs.Common.Lipidomics
                         new Ac2PIM2LipidParser(),
                         new Ac3PIM2LipidParser(),
                         new Ac4PIM2LipidParser(),
-
-                        //new ADGGALipidParser(),
+                        new ADGGALipidParser(),
 
 
                     }.ForEach(parser.Add);
