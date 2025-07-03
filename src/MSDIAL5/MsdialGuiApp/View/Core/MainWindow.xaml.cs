@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProductIonSelectingViewModel>()
                 .Subscribe(ShowChildSettingDialog<ProductIonSelectingView>("Select product ion to display chromatogram", height: 500, width: 450, finishCommandContent: "OK"));
             broker.ToObservable<ProductIonIntensityMapViewModel>()
-                .Subscribe(ShowChildContent<ProductIonIntensityMapView>("brahbrah", height: 600, width: 1000, needDispose: false));
+                .Subscribe(ShowChildContent<ProductIonIntensityMapView>("Product ions visualization", height: 600, width: 1000, needDispose: false));
             broker.ToObservable<SpectraSimilarityMapViewModel>()
                 .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
             /*
