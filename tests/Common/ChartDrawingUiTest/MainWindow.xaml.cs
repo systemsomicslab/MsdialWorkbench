@@ -75,6 +75,7 @@ namespace ChartDrawingUiTest
                 typeof(ReorderableItemsControlBehaviorTest),
                 typeof(MovableItemsControlBehaviorTest),
                 typeof(ItemSelectBehaviorTest),
+                typeof(ProgressRing),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
