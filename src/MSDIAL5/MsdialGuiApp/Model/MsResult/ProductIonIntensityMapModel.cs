@@ -5,7 +5,9 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -71,6 +73,21 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
             (NearestIon, LoadedIons) = results;
             SelectedIon = null;
         }
+    }
+
+    public async Task WriteIonsAsync(Stream stream, CancellationToken token = default) {
+        using var writer = new StreamWriter(stream) {
+            AutoFlush = true
+        };
+
+        var sb = new StringBuilder();
+        foreach (var ion in LoadedIons ?? []) {
+            sb.AppendLine($"{ion.ID},{ion.Time},{ion.ExperimentID},{ion.Mz},{ion.Intensity}");
+        }
+
+        token.ThrowIfCancellationRequested();
+        await writer.WriteLineAsync("CycleID,ScanTime,ExperimentID,Mz,Intensity").ConfigureAwait(false);
+        await writer.WriteAsync(sb.ToString());
     }
 
     public void Reset() {

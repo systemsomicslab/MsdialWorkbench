@@ -38,6 +38,11 @@
 
         <Grid.ContextMenu>
             <ContextMenu>
+                <MenuItem Header="Save ion talbe"
+                          Command="{Binding SaveIonTableCommand}"/>
+                <MenuItem Header="Copy ion talbe"
+                          Command="{Binding CopyIonTableCommand}"/>
+                <Separator/>
                 <MenuItem Header="Save image as...">
                     <MenuItem Header="Save as emf"
                               Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

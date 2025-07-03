@@ -4,12 +4,15 @@ using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.IO;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.MsResult;
 
@@ -62,6 +65,9 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
         Disposables.Add(
             LoadProductIonsMapCommand.Select(_ => loadIons).Switch().Subscribe()
         );
+
+        SaveIonTableCommand = new SaveDataCommand(s => _model.WriteIonsAsync(s, default)) { Filter = "Comma separated values(.csv)|*.csv", };
+        CopyIonTableCommand = new CopyAsStringCommand(s => _model.WriteIonsAsync(s, default)) { Format = DataFormats.CommaSeparatedValue, };
     }
 
     public MsSpectrumViewModel MsSpectrumViewModel { get; }
@@ -81,6 +87,8 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonExperiment { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonCycle { get; }
     public ReadOnlyReactivePropertySlim<bool> IsBusy { get; }
+    public ICommand SaveIonTableCommand { get; }
+    public ICommand CopyIonTableCommand { get; }
 
     class IDComparer : IEqualityComparer<MappedIon>
     {
