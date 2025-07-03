@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -14,11 +15,13 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
 {
     private readonly IObservable<ChromatogramPeakFeature?> _peak;
     private readonly LoadProductIonMapUsecase _loadPIUsecase;
+    private readonly BusyNotifier _busyNotifier;
 
     public ProductIonIntensityMapModel(IObservable<ChromatogramPeakFeature?> peak, MsSpectrumModel msSpectrumModel, LoadProductIonMapUsecase loadPIUsecase) {
         _peak = peak.Replay(1).RefCount();
         _loadPIUsecase = loadPIUsecase;
         MsSpectrumModel = msSpectrumModel;
+        _busyNotifier = new BusyNotifier();
     }
 
     public MzRange? SelectedRange {
@@ -47,17 +50,27 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
 
     public MsSpectrumModel MsSpectrumModel { get; }
 
+    public IObservable<bool> IsBusy => _busyNotifier.AsObservable();
+
     public async Task LoadIonsAsync(CancellationToken token = default) {
         if (SelectedRange is null) {
             return;
         }
 
-        var peak = await _peak.FirstAsync();
-        if (peak is null) {
-            return;
+        using (_busyNotifier.ProcessStart()) {
+
+            token.ThrowIfCancellationRequested();
+            var peak = await _peak.FirstAsync();
+            if (peak is null) {
+                return;
+            }
+
+            token.ThrowIfCancellationRequested();
+            var results = await _loadPIUsecase.LoadProductIonSpectraAsync(peak, SelectedRange, token).ConfigureAwait(false);
+
+            (NearestIon, LoadedIons) = results;
+            SelectedIon = null;
         }
-        (NearestIon, LoadedIons) = await _loadPIUsecase.LoadProductIonSpectraAsync(peak, SelectedRange, token).ConfigureAwait(false);
-        SelectedIon = null;
     }
 
     public void Reset() {

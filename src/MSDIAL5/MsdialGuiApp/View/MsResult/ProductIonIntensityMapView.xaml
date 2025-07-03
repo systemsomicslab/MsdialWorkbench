@@ -346,6 +346,40 @@
                       Background="Gray"
                       Grid.Column="1"/>
 
-        <Button Content="Load" Command="{Binding LoadProductIonsMapCommand, Mode=OneTime}" Grid.Row="1" Grid.Column="1"/>
+        <StackPanel Orientation="Horizontal" Margin="8,0" Grid.Row="1" Grid.Column="1">
+            <Button Content="Load"
+                    Command="{Binding LoadProductIonsMapCommand, Mode=OneTime}"
+                    Width="128"
+                    Margin="8,0"/>
+
+            <TextBlock Text="&#xF16A;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                       Foreground="CadetBlue"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Width="32" Height="32"
+                       RenderTransformOrigin=".5,.5"
+                       Visibility="{Binding Path=IsBusy.Value, Converter={StaticResource BooleanToVisibility}}">
+                <TextBlock.RenderTransform>
+                    <RotateTransform x:Name="ProgressTransform"/>
+                </TextBlock.RenderTransform>
+                <TextBlock.Triggers>
+                    <EventTrigger RoutedEvent="TextBlock.Loaded">
+                        <BeginStoryboard>
+                            <BeginStoryboard.Storyboard>
+                                <Storyboard>
+                                    <DoubleAnimation RepeatBehavior="Forever"
+                                                     Storyboard.TargetName="ProgressTransform"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     To="360" Duration="0:0:2">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseInOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard.Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </TextBlock.Triggers>
+            </TextBlock>
+        </StackPanel>
     </Grid>
 </UserControl>

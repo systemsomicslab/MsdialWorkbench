@@ -54,10 +54,14 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
             .ToReactiveContinuousAxisManager(new ConstantMargin(0d, 20d), new AxisRange(0d, 0d)).AddTo(Disposables);
 
         LoadProductIonsMapCommand = SelectedMzRange.Select(r => r is not null)
-            .ToReactiveCommand()
-            .WithSubscribe(async () => {
-                await _model.LoadIonsAsync().ConfigureAwait(false);
-            }).AddTo(Disposables);
+            .ToReactiveCommand().AddTo(Disposables);
+
+        IsBusy = model.IsBusy.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+        var loadIons = Observable.FromAsync(_model.LoadIonsAsync);
+        Disposables.Add(
+            LoadProductIonsMapCommand.Select(_ => loadIons).Switch().Subscribe()
+        );
     }
 
     public MsSpectrumViewModel MsSpectrumViewModel { get; }
@@ -76,6 +80,7 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
     public ReactivePropertySlim<MappedIon?> SelectedIon { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonExperiment { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonCycle { get; }
+    public ReadOnlyReactivePropertySlim<bool> IsBusy { get; }
 
     class IDComparer : IEqualityComparer<MappedIon>
     {
