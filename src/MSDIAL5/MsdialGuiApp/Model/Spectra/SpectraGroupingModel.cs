@@ -27,6 +27,8 @@ public sealed class SpectraGroupingModel : BindableBase
         _scans = scans;
         _refer = refer;
         _quantifier = new Ms2Quantifier();
+
+        SelectedSample = Samples.FirstOrDefault();
     }
 
     public ObservableCollection<MoleculeGroupModel> MoleculeGroups { get; } = [];
@@ -35,38 +37,41 @@ public sealed class SpectraGroupingModel : BindableBase
         set {
             if (SetProperty(ref _selectedMoleculeGroup, value)) {
                 if (_selectedMoleculeGroup?.References is not { Length: > 0 }) {
-                    TheoreticalSpectra = null;
                     ProductIonAbundances = [];
+                    SelectedReference = null;
                     return;
                 }
                 var references = _selectedMoleculeGroup.References;
-                TheoreticalSpectra = new MsSpectrum(references[0].Spectrum);
+                SelectedReference = references[0];
 
                 var quantResults = _quantifier.Quantify(_selectedMoleculeGroup.UniqueMzList, _scans, Samples);
-                ProductIonAbundances = quantResults.Select(
-                    r => r.Abundances.Select(
-                        abundance => new ProductIonAbundanceModel {
-                            SampleName = abundance.SampleName,
-                            Intensity = abundance.Abundance,
-                        }
-                    ).ToArray()
+                ProductIonAbundances = quantResults.Zip(_selectedMoleculeGroup.UniqueMzList,
+                    (r, mz) => new GroupProductIonAbundancesModel {
+                        Abundances = r.Abundances.Select(
+                            abundance => new ProductIonAbundanceModel {
+                                SampleName = abundance.SampleName,
+                                Intensity = abundance.Abundance,
+                            }
+                        ).ToArray(),
+                        Mz = mz,
+                    }
                 ).ToArray();
             }
         }
     }
     private MoleculeGroupModel? _selectedMoleculeGroup;
 
-    public ProductIonAbundanceModel[][] ProductIonAbundances {
+    public MoleculeMsReference? SelectedReference {
+        get => _selectedReference;
+        set => SetProperty(ref _selectedReference, value);
+    }
+    private MoleculeMsReference? _selectedReference;
+
+    public GroupProductIonAbundancesModel[] ProductIonAbundances {
         get => _productIonAbundances;
         private set => SetProperty(ref _productIonAbundances, value);
     }
-    private ProductIonAbundanceModel[][] _productIonAbundances = [];
-
-    public MsSpectrum? TheoreticalSpectra {
-        get => _theoreticalSpectra;
-        set => SetProperty(ref _theoreticalSpectra, value);
-    }
-    private MsSpectrum? _theoreticalSpectra;
+    private GroupProductIonAbundancesModel[] _productIonAbundances = [];
 
     public AnalysisFileBeanModel[] Samples { get; } = [];
     public AnalysisFileBeanModel? SelectedSample {
@@ -110,6 +115,7 @@ public sealed class SpectraGroupingModel : BindableBase
         foreach (var group in groups) {
             MoleculeGroups.Add(group);
         }
+        SelectedMoleculeGroup = MoleculeGroups.FirstOrDefault();
     }
 }
 
@@ -128,4 +134,9 @@ public class MoleculeGroupModel {
 public class ProductIonAbundanceModel {
     public string SampleName { get; set; } = string.Empty;
     public double Intensity { get; set; }
+}
+
+public class GroupProductIonAbundancesModel {
+    public ProductIonAbundanceModel[] Abundances { get; set; } = [];
+    public double Mz { get; set; } = 0d;
 }
