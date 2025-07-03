@@ -112,7 +112,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
             };
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
@@ -131,9 +131,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var result = annotator.CalculateScore(BuildQuery(target, annotator, parameter), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -145,9 +145,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
@@ -169,7 +169,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual(expected, result.TotalScore);
+            Assert.AreEqual(expected, result.TotalScore, 1e-6);
         }
 
         [TestMethod()]
@@ -177,9 +177,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
             };
             var parameter = new MsRefSearchParameterBase
@@ -201,7 +201,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             }.Average();
             var actual = annotator.CalculateAnnotatedScore(result);
 
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual, 1e-6);
         }
 
         [TestMethod()]
@@ -209,9 +209,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
             };
             var parameter = new MsRefSearchParameterBase
