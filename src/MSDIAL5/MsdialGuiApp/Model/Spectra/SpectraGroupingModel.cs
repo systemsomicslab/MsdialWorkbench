@@ -98,12 +98,12 @@ public sealed class SpectraGroupingModel : BindableBase
         var peaks = _spot.AlignedPeakPropertiesModelProperty.Value ?? await task;
 
         var references = peaks.SelectMany(p => p.MatchResults.MatchResults, (_, r) => _refer.Refer(r)).OfType<MoleculeMsReference>();
-        var groups = mapper.MapMzValues(references)
-            .Select(kvp => new MoleculeGroupModel {
-                Name = kvp.Key.Name,
-                References = [kvp.Key],
-                UniqueMzList = kvp.Value,
-            });
+        var groups = mapper.MapMzByReferenceGroups(references, .01)
+            .Select(pair => new MoleculeGroupModel {
+                Name = string.Join(",", pair.Item1.Select(r => r.Name)),
+                References = pair.Item1,
+                UniqueMzList = pair.Item2,
+            }).OrderBy(g => g.References.Length);
 
         token.ThrowIfCancellationRequested();
         MoleculeGroups.Clear();
