@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+    <LangVersion>12</LangVersion>
+    <Nullable>annotations</Nullable>
+
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="5.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ReactiveProperty">
+      <Version>8.2.0</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\tests\MSDIAL5\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640B-30E6-4606-A394-BE953590F3E9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj">
+      <Project>{D7BC52DE-CDF0-4F78-B23E-EF2434D14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialCore\MsdialCore.csproj">
+      <Project>{b39eb5f8-713a-49cc-b0e9-b4040687cb81}</Project>
+      <Name>MsdialCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialDimsCore\MsdialDimsCore.csproj">
+      <Project>{1d3ce027-cdd7-446e-a190-ae99a129ceb3}</Project>
+      <Name>MsdialDimsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialGuiApp\MsdialGuiApp.csproj">
+      <Project>{276317C3-B877-445B-A950-1DE2B5414ACF}</Project>
+      <Name>MsdialGuiApp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialImmsCore\MsdialImmsCore.csproj">
+      <Project>{d024bb64-3ccd-49c2-b6ee-a11900817daf}</Project>
+      <Name>MsdialImmsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
+      <Project>{0750647b-1dfc-49dc-adfb-16235e22aa88}</Project>
+      <Name>MsdialLcImMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialLcMsApi\MsdialLcMsApi.csproj">
+      <Project>{a45c80bc-85bb-4953-aa7d-941633964f08}</Project>
+      <Name>MsdialLcMsApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

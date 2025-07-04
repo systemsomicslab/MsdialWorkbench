@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48</TargetFrameworks>
+
+    <IsPackable>false</IsPackable>
+
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>12</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\tests\Common\CommonStandardTestHelper\CommonStandardTestHelper.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Lipidomics\LipidEieioMsmsCharacterizationTests\PC_O-16_0_18_1%289%29_[M+H]+.msp.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\txt_invalid_formula.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Resources\Parser\msp_same_name.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\msp_name_check.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\msp_spectra_check.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\msp_test_data.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\txt_with_blank_end_line.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="Resources\FormulaGenerator\ProductIonLib_vs1.pid">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\NeutralLossDB_vs2.ndb">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\MsfinderFormulaDB-VS13.efd">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1.msp">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1_result.fgt">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\FormulaGenerator\test_data1_parameters.ini">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
+</Project>
