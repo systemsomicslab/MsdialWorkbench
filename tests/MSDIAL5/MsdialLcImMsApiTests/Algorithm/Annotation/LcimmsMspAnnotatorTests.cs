@@ -178,9 +178,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AcurateMassSimilarity = 0.8f,
                 RtSimilarity = 0.6f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -219,9 +219,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AcurateMassSimilarity = 0.8f,
                 RtSimilarity = 0.6f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -258,9 +258,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AcurateMassSimilarity = 0.8f,
                 RtSimilarity = 0.6f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -292,9 +292,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AcurateMassSimilarity = 0.8f,
                 RtSimilarity = 0.6f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -429,7 +429,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
@@ -448,9 +448,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -466,9 +466,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.AreEqual(3d/6, result.MatchedPeaksPercentage);
             Assert.AreEqual(3, result.MatchedPeaksCount);
             var expected = new[]
@@ -484,7 +484,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual(expected, result.TotalScore);
+            Assert.AreEqual(expected, result.TotalScore, 1e-6);
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsCcsMatch);
@@ -517,7 +517,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 TotalScoreCutoff = .7f,
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,
@@ -539,9 +539,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -557,9 +557,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity == 0);
             Assert.IsTrue(result.CcsSimilarity == 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             var expected = new[]
