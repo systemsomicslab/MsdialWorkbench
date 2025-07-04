@@ -33,6 +33,7 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
 
         LoadedIons = model.ObserveProperty(m => m.LoadedIons).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         NearestIon = model.ObserveProperty(m => m.NearestIon).Select(ion => ion is null ? Array.Empty<MappedIon>() : [ion]).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+        RelativeIons = model.ObserveProperty(m => m.RelativeIons).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
         SelectedIon = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedIon).AddTo(Disposables);
 
@@ -43,6 +44,17 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
         }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
         SelectedIonCycle = SelectedIon.WithLatestFrom(LoadedIons, (ion, ions) => {
             return ion is null
+                ? []
+                : ions.Where(i => i.ID == ion.ID).ToArray();
+        }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+
+        SelectedRelativeIonExperiment = SelectedIon.WithLatestFrom(RelativeIons, (ion, ions) => {
+            return ion is null || ions is null
+                ? []
+                : ions.Where(i => i.ExperimentID == ion.ExperimentID).ToArray();
+        }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+        SelectedRelativeIonCycle = SelectedIon.WithLatestFrom(RelativeIons, (ion, ions) => {
+            return ion is null || ions is null
                 ? []
                 : ions.Where(i => i.ID == ion.ID).ToArray();
         }).ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
@@ -66,14 +78,19 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
             LoadProductIonsMapCommand.Select(_ => loadIons).Switch().Subscribe()
         );
 
+        CalculateRelativeIntensitiesCommand = new ReactiveCommand().WithSubscribe(_model.CalculateRelativeIntensitiesFromSelectedExperiment).AddTo(Disposables);
+
         SaveIonTableCommand = new SaveDataCommand(s => _model.WriteIonsAsync(s, default)) { Filter = "Comma separated values(.csv)|*.csv", };
         CopyIonTableCommand = new CopyAsStringCommand(s => _model.WriteIonsAsync(s, default)) { Format = DataFormats.CommaSeparatedValue, };
+        SaveRelativeIonTableCommand = new SaveDataCommand(s => _model.WriteRelativeIonsAsync(s, default)) { Filter = "Comma separated values(.csv)|*.csv", };
+        CopyRelativeIonTableCommand = new CopyAsStringCommand(s => _model.WriteRelativeIonsAsync(s, default)) { Format = DataFormats.CommaSeparatedValue, };
     }
 
     public MsSpectrumViewModel MsSpectrumViewModel { get; }
 
     public ReadOnlyReactivePropertySlim<List<MappedIon>?> LoadedIons { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> NearestIon { get; }
+    public ReadOnlyReactivePropertySlim<List<MappedIon>?> RelativeIons { get; }
 
     public IAxisManager<MappedIon> IntensityMapHorizontalAxis { get; }
     public IAxisManager<MappedIon> IntensityMapVerticalAxis { get; }
@@ -86,9 +103,14 @@ internal sealed class ProductIonIntensityMapViewModel : ViewModelBase
     public ReactivePropertySlim<MappedIon?> SelectedIon { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonExperiment { get; }
     public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedIonCycle { get; }
+    public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedRelativeIonExperiment { get; }
+    public ReadOnlyReactivePropertySlim<MappedIon[]> SelectedRelativeIonCycle { get; }
     public ReadOnlyReactivePropertySlim<bool> IsBusy { get; }
+    public ReactiveCommand CalculateRelativeIntensitiesCommand { get; }
     public ICommand SaveIonTableCommand { get; }
     public ICommand CopyIonTableCommand { get; }
+    public ICommand SaveRelativeIonTableCommand { get; }
+    public ICommand CopyRelativeIonTableCommand { get; }
 
     class IDComparer : IEqualityComparer<MappedIon>
     {

@@ -13,7 +13,7 @@
              xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.MsResult"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="450" d:DesignWidth="1200"
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type viewmodel:ProductIonIntensityMapViewModel}}">
     <UserControl.Resources>
@@ -30,17 +30,40 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
 
+        <Grid.Resources>
+            <RotateTransform x:Key="rotateRight" Angle="90" CenterX=".5" CenterY=".5"/>
+            <RotateTransform x:Key="rotateLeft" Angle="-90" CenterX=".5" CenterY=".5"/>
+            <Style x:Key="HorizontalSplitter" TargetType="GridSplitter">
+                <Setter Property="Background" Value="Gray"/>
+                <Setter Property="Width" Value="2"/>
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="Margin" Value="0,0,0,-2"/>
+            </Style>
+            <Style x:Key="VerticalSplitter" TargetType="GridSplitter">
+                <Setter Property="Background" Value="Gray"/>
+                <Setter Property="Height" Value="2"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="Margin" Value="-2,0,0,0"/>
+            </Style>
+        </Grid.Resources>
+
         <Grid.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Save ion talbe"
+                <MenuItem Header="Calculate relative intensities"
+                          Command="{Binding CalculateRelativeIntensitiesCommand}"/>
+                <Separator/>
+                <MenuItem Header="Save ion table"
                           Command="{Binding SaveIonTableCommand}"/>
-                <MenuItem Header="Copy ion talbe"
+                <MenuItem Header="Copy ion table"
                           Command="{Binding CopyIonTableCommand}"/>
                 <Separator/>
                 <MenuItem Header="Save image as...">
@@ -63,24 +86,6 @@
         </Grid.ContextMenu>
 
         <Grid Grid.Column="0" Grid.Row="0">
-            <Grid.Resources>
-                <RotateTransform x:Key="rotateRight" Angle="90" CenterX=".5" CenterY=".5"/>
-                <RotateTransform x:Key="rotateLeft" Angle="-90" CenterX=".5" CenterY=".5"/>
-                <Style x:Key="HorizontalSplitter" TargetType="GridSplitter">
-                    <Setter Property="Background" Value="Gray"/>
-                    <Setter Property="Width" Value="2"/>
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="VerticalAlignment" Value="Stretch"/>
-                    <Setter Property="Margin" Value="0,0,0,-2"/>
-                </Style>
-                <Style x:Key="VerticalSplitter" TargetType="GridSplitter">
-                    <Setter Property="Background" Value="Gray"/>
-                    <Setter Property="Height" Value="2"/>
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    <Setter Property="VerticalAlignment" Value="Top"/>
-                    <Setter Property="Margin" Value="-2,0,0,0"/>
-                </Style>
-            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="40"/>
@@ -95,6 +100,35 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="16"/>
             </Grid.RowDefinitions>
+
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Calculate relative intensities"
+                              Command="{Binding CalculateRelativeIntensitiesCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Save ion table"
+                              Command="{Binding SaveIonTableCommand}"/>
+                    <MenuItem Header="Copy ion table"
+                              Command="{Binding CopyIonTableCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.ContextMenu>
 
             <TextBlock Text="Intensity"
                        LayoutTransform="{StaticResource rotateLeft}"
@@ -386,5 +420,197 @@
                 </TextBlock.Triggers>
             </TextBlock>
         </StackPanel>
+
+        <Grid Grid.Column="2" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="16"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save ion talbe"
+                              Command="{Binding SaveIonTableCommand}"/>
+                    <MenuItem Header="Copy ion talbe"
+                              Command="{Binding CopyIonTableCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.ContextMenu>
+
+            <TextBlock Text="Relative intensity"
+                       LayoutTransform="{StaticResource rotateLeft}"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" Grid.Row="0"/>
+            <TextBlock Text="m/z of selected ion"
+                       LayoutTransform="{StaticResource rotateLeft}"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" Grid.Row="2"/>
+            <TextBlock Text="Scan time"
+                       HorizontalAlignment="Center"
+                       Grid.Column="2" Grid.Row="4"/>
+            <TextBlock Text="Relative intensity"
+                       HorizontalAlignment="Center"
+                       Grid.Column="4" Grid.Row="4"/>
+
+            <chart:HeatmapControl x:Name="rpimap"
+                                  ItemsSource="{Binding Path=RelativeIons.Value, Mode=OneWay}"
+                                  DataType="{x:Type model:MappedIon}"
+                                  HorizontalPropertyName=""
+                                  VerticalPropertyName=""
+                                  DegreePropertyName="Intensity"
+                                  HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                  Grid.Column="2" Grid.Row="2">
+                <chart:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,20"
+                             HorizontalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).X}"
+                             VerticalOffset="{Binding Path=(chart:HeatmapControl.FocusedPoint).Y}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Time),
+                                                      StringFormat=Time: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Mz),
+                                                      StringFormat=m/z: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.Intensity),
+                                                      StringFormat=Relative intensity: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ExperimentID),
+                                                      StringFormat=ExperimentID: {0}}" />
+                            <TextBlock Text="{Binding Path=(chart:HeatmapControl.FocusedItem).(model:MappedIon.ID),
+                                                      StringFormat=CycleID: {0}}" />
+                        </StackPanel>
+                    </ToolTip>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                       Grid.Column="1" Grid.Row="2"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                         Grid.Column="2" Grid.Row="3"/>
+
+            <chart:ScatterControl ItemsSource="{Binding Path=NearestIon.Value}"
+                                  HorizontalPropertyName=""
+                                  VerticalPropertyName=""
+                                  HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                  VerticalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                  PointGeometry="M 0 1 L 9 10 H 11 L 1 0 L 11 -10 H 9 L 0 -1 L -9 -10 H -11 L -1 0 L -11 10 H -9 L 0 1 Z"
+                                  Radius="8"
+                                  ClipToBounds="True"
+                                  IsHitTestVisible="False"
+                                  Grid.Column="2" Grid.Row="2">
+                <chart:ScatterControl.BrushMapper>
+                    <design:ConstantBrushMapper Brush="Gray"/>
+                </chart:ScatterControl.BrushMapper>
+            </chart:ScatterControl>
+
+            <Border Background="WhiteSmoke"
+                    core:ChartBaseControl.HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                    core:ChartBaseControl.VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                    Grid.Column="2" Grid.Row="0">
+                <Grid>
+                    <chart:LineChartControl ItemsSource="{Binding Path=SelectedRelativeIonExperiment.Value, Mode=OneWay}"
+                                            HorizontalPropertyName=""
+                                            VerticalPropertyName="Relativeintensity"/>
+                    <chart:VerticalLine Item="{Binding Path=SelectedIon.Value}"
+                                        DataType="{x:Type model:MappedIon}"
+                                        HorizontalProperty=""
+                                        VerticalProperty="Intensity"
+                                        LineThickness="1">
+                        <chart:VerticalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Red"/>
+                        </chart:VerticalLine.LineBrush>
+                    </chart:VerticalLine>
+                    <TextBlock Margin="4" HorizontalAlignment="Right">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="ExeperimentID: {0} m/z: {1:F5}">
+                                <Binding Path="SelectedItem.ExperimentID" ElementName="rpimap"/>
+                                <Binding Path="SelectedItem.Mz" ElementName="rpimap"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </Border>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                       Grid.Column="1" Grid.Row="0"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapHorizontalAxis}"
+                                         Grid.Column="2" Grid.Row="1"/>
+
+            <Border Background="WhiteSmoke" LayoutTransform="{StaticResource rotateRight}"
+                    core:ChartBaseControl.HorizontalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                    core:ChartBaseControl.VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                    core:ChartBaseControl.FlippedX="True"
+                    Grid.Column="4" Grid.Row="2">
+                <Grid>
+                    <chart:LineChartControl ItemsSource="{Binding Path=SelectedRelativeIonCycle.Value, Mode=OneWay}"
+                                            HorizontalPropertyName=""
+                                            VerticalPropertyName="Intensity"/>
+                    <chart:VerticalLine Item="{Binding Path=SelectedIon.Value}"
+                                        DataType="{x:Type model:MappedIon}"
+                                        HorizontalProperty=""
+                                        VerticalProperty="Intensity"
+                                        LineThickness="1">
+                        <chart:VerticalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Red"/>
+                        </chart:VerticalLine.LineBrush>
+                    </chart:VerticalLine>
+                    <TextBlock Margin="4" HorizontalAlignment="Right">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Cycle ID: {0} Scan time: {1:F3}">
+                                <Binding Path="SelectedItem.ID" ElementName="rpimap"/>
+                                <Binding Path="SelectedItem.Time" ElementName="rpimap"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </Border>
+            <chart:VerticalAxisControl VerticalAxis="{Binding Path=IntensityMapDegreeAxis}"
+                                       TickPlacement="Left"
+                                       LayoutTransform="{StaticResource rotateRight}"
+                                       Grid.Column="4" Grid.Row="3"/>
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=IntensityMapVerticalAxis}"
+                                         FlippedX="True"
+                                         LayoutTransform="{StaticResource rotateRight}"
+                                         Grid.Column="3" Grid.Row="2"/>
+
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          Grid.Column="1" Grid.Row="0"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          ResizeBehavior="PreviousAndNext"
+                          Grid.Column="2" Grid.Row="1"/>
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          Grid.Column="1" Grid.Row="2"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          Grid.Column="2" Grid.Row="3"/>
+            <GridSplitter Style="{StaticResource HorizontalSplitter}"
+                          ResizeBehavior="PreviousAndNext"
+                          Grid.Column="3" Grid.Row="2"/>
+            <GridSplitter Style="{StaticResource VerticalSplitter}"
+                          Grid.Column="4" Grid.Row="3"/>
+        </Grid>
     </Grid>
 </UserControl>

@@ -6,6 +6,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -50,6 +51,12 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
     }
     private MappedIon? _selectedIon;
 
+    public List<MappedIon>? RelativeIons {
+        get => _relativeIons;
+        set => SetProperty(ref _relativeIons, value);
+    }
+    private List<MappedIon>? _relativeIons;
+
     public MsSpectrumModel MsSpectrumModel { get; }
 
     public IObservable<bool> IsBusy => _busyNotifier.AsObservable();
@@ -75,6 +82,22 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
         }
     }
 
+    public void CalculateRelativeIntensitiesFromSelectedExperiment() {
+        if (SelectedIon is null || LoadedIons is null || LoadedIons.Count == 0) {
+            return;
+        }
+        var baseIons = LoadedIons.Where(ion => ion.ExperimentID == SelectedIon.ExperimentID).ToDictionary(ion => ion.ID);
+
+        RelativeIons = LoadedIons.Select(ion =>
+            new MappedIon(
+                ion.ID,
+                ion.ExperimentID,
+                baseIons.TryGetValue(ion.ID, out var x) ? ion.Intensity / x.Intensity : 0d,
+                ion.Time,
+                ion.Mz)
+        ).ToList();
+    }
+
     public async Task WriteIonsAsync(Stream stream, CancellationToken token = default) {
         using var writer = new StreamWriter(stream) {
             AutoFlush = true
@@ -90,8 +113,24 @@ internal sealed class ProductIonIntensityMapModel : BindableBase
         await writer.WriteAsync(sb.ToString());
     }
 
+    public async Task WriteRelativeIonsAsync(Stream stream, CancellationToken token = default) {
+        using var writer = new StreamWriter(stream) {
+            AutoFlush = true
+        };
+
+        var sb = new StringBuilder();
+        foreach (var ion in RelativeIons ?? []) {
+            sb.AppendLine($"{ion.ID},{ion.Time},{ion.ExperimentID},{ion.Mz},{ion.Intensity}");
+        }
+
+        token.ThrowIfCancellationRequested();
+        await writer.WriteLineAsync("CycleID,ScanTime,ExperimentID,Mz,RelativeIntensity").ConfigureAwait(false);
+        await writer.WriteAsync(sb.ToString());
+    }
+
     public void Reset() {
         LoadedIons = null;
+        RelativeIons = null;
         NearestIon = null;
         SelectedIon = null;
         SelectedRange = null;
