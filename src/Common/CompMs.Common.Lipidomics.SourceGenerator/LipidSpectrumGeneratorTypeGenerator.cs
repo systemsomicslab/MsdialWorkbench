@@ -252,7 +252,6 @@ namespace CompMs.Common.Lipidomics {
                 {
                     if (lipidClass.Contains("Ether"))
                     {
-                        //now only one and two chains lipids are supported
                         if (def.NumOfChains == 1)
                         {
                             result.AppendLine($"                    SN1Alkyl = alkyl.Mass;");
@@ -332,7 +331,8 @@ namespace CompMs.Common.Lipidomics {
                         {
                             if (def.NumOfChains > 1)
                             {
-                                result.AppendLine($"                    SN{i + 1}Acyl = chains[{i}].Mass;");
+                                result.AppendLine(
+                                    $"                    SN{i + 1}Acyl = ({i} < chains.Count() ? chains[{i}].Mass : 0);");
                             }
                             else
                             {

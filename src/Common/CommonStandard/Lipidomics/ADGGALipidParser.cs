@@ -29,7 +29,7 @@ namespace CompMs.Common.Lipidomics
 
         public ILipid Parse(string lipidStr)
         {
-            var match = pattern.Match(lipidStr.Replace("_", "/")); //need consider
+            var match = pattern.Match(lipidStr); //need consider
             if (match.Success)
             {
                 var group = match.Groups;
@@ -41,6 +41,7 @@ namespace CompMs.Common.Lipidomics
                 var matchSub = patternSub.Match(lipidStr);
                 if (matchSub.Success)
                 {
+                    matchSub = patternSub.Match(lipidStr.Replace("_","/"));
                     var groupSub = matchSub.Groups;
                     if (groupSub["sn1sn2"].Value != "")
                     {
