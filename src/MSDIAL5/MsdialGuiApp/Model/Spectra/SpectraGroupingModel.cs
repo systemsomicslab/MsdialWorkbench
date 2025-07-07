@@ -19,13 +19,17 @@ public sealed class SpectraGroupingModel : BindableBase
     private readonly AlignmentSpotPropertyModel _spot;
     private readonly IMSScanProperty?[] _scans;
     private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> _refer;
+    private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+    private readonly double _mzTolerance;
     private readonly Ms2Quantifier _quantifier;
 
-    public SpectraGroupingModel(AnalysisFileBeanModelCollection fileCollection, AlignmentSpotPropertyModel spot, IMSScanProperty?[] scans, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
+    public SpectraGroupingModel(AnalysisFileBeanModelCollection fileCollection, AlignmentSpotPropertyModel spot, IMSScanProperty?[] scans, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator, double mzTolerance) {
         Samples = [.. fileCollection.AnalysisFiles];
         _spot = spot;
         _scans = scans;
         _refer = refer;
+        _evaluator = evaluator;
+        _mzTolerance = mzTolerance;
         _quantifier = new Ms2Quantifier();
 
         SelectedSample = Samples.FirstOrDefault();
@@ -44,7 +48,7 @@ public sealed class SpectraGroupingModel : BindableBase
                 var references = _selectedMoleculeGroup.References;
                 SelectedReference = references[0];
 
-                var quantResults = _quantifier.Quantify(_selectedMoleculeGroup.UniqueMzList, _scans, Samples);
+                var quantResults = _quantifier.Quantify(_selectedMoleculeGroup.UniqueMzList, _scans, Samples, _mzTolerance);
                 ProductIonAbundances = quantResults.Zip(_selectedMoleculeGroup.UniqueMzList,
                     (r, mz) => new GroupProductIonAbundancesModel {
                         Abundances = r.Abundances.Select(
@@ -102,8 +106,8 @@ public sealed class SpectraGroupingModel : BindableBase
         var task = _spot.AlignedPeakPropertiesModelProperty.ToTask();
         var peaks = _spot.AlignedPeakPropertiesModelProperty.Value ?? await task;
 
-        var references = peaks.SelectMany(p => p.MatchResults.MatchResults.Where(r => r.IsReferenceMatched), (_, r) => _refer.Refer(r)).OfType<MoleculeMsReference>();
-        var groups = mapper.MapMzByReferenceGroups(references, .01)
+        var references = peaks.SelectMany(p => p.MatchResults.MatchResults.Where(_evaluator.IsReferenceMatched).Select(_refer.Refer)).OfType<MoleculeMsReference>();
+        var groups = mapper.MapMzByReferenceGroups(references, _mzTolerance)
             .Select(pair => new MoleculeGroupModel {
                 Name = string.Join(",", pair.Item1.Select(r => r.Name)),
                 References = pair.Item1,

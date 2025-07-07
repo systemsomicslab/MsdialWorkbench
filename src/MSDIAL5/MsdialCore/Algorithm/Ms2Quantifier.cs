@@ -14,8 +14,9 @@ namespace CompMs.MsdialCore.Algorithm
         /// <param name="mzList">List of m/z values to quantify.</param>
         /// <param name="ms2DataList">MS2 spectral data for each sample.</param>
         /// <param name="files">Array of IFileBean for each sample (for sample name).</param>
+        /// <param name="tolerance">Tolerance for matching m/z values.</param>
         /// <returns>For each m/z, a list of abundances for each sample.</returns>
-        public List<Ms2QuantResult> Quantify(IEnumerable<double> mzList, IEnumerable<IMSScanProperty?> ms2DataList, IEnumerable<IFileBean> files)
+        public List<Ms2QuantResult> Quantify(IEnumerable<double> mzList, IEnumerable<IMSScanProperty?> ms2DataList, IEnumerable<IFileBean> files, double tolerance)
         {
             var results = new List<Ms2QuantResult>();
             var ms2DataArray = ms2DataList as IMSScanProperty?[] ?? ms2DataList.ToArray();
@@ -30,7 +31,7 @@ namespace CompMs.MsdialCore.Algorithm
                     var file = fileArray[i];
                     var sampleName = file.FileName;
                     var abundance = ms2Data?.Spectrum
-                        .Where(p => Math.Abs(p.Mass - mz) < .01)
+                        .Where(p => Math.Abs(p.Mass - mz) < tolerance)
                         .DefaultIfEmpty()
                         .Sum(p => p?.Intensity) ?? 0d;
                     abundances.Add(new SampleAbundance

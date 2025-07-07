@@ -56,6 +56,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly AlignmentFileBeanModel _alignmentFile;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly FilePropertiesModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
@@ -96,6 +97,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _alignmentFile = alignmentFileBean;
+            _evaluator = evaluator;
             _parameter = parameter;
             _projectBaseParameter = projectBaseParameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
@@ -455,8 +457,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (scans is null) {
                 return null;
             }
+            token.ThrowIfCancellationRequested();
 
-            var model = new SpectraGroupingModel(_fileCollection, spot, scans, _dataBaseMapper);
+            var model = new SpectraGroupingModel(_fileCollection, spot, scans, _dataBaseMapper, _evaluator, .05d);
             return model;
         }
 
