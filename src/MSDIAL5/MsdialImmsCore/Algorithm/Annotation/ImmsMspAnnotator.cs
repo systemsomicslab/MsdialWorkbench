@@ -73,9 +73,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
 
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = omics == TargetOmics.Lipidomics
                 ? MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
                 : MsScanMatching.GetMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
@@ -88,7 +88,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var result = new MsScanMatchResult
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct, SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.MspDB, AnnotatorID = sourceKey, Priority = Priority,
@@ -193,9 +193,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         //private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+            result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 

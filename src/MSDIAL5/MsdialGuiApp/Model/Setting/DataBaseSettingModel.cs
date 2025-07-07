@@ -170,11 +170,11 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         private MoleculeDataBase LoadMspDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB);
+            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB, DataBasePath);
         }
 
         private MoleculeDataBase LoadLipidDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, _parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
+            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, _parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB, DataBasePath);
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     {
                         throw new Exception($"Error while reading the text database: {error}");
                     }
-                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB);
+                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB, DataBasePath);
                 }
                 catch (IOException)
                 {

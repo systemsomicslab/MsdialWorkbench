@@ -34,13 +34,13 @@ namespace CompMs.App.Msdial.Model.Setting
             switch (DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:
-                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath, DBSource, parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
+                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath, DBSource, parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB, DataBasePath);
                 case DataBaseSource.Text:
                     var textdb = TextLibraryParser.TextLibraryReader(DataBasePath, out string error);
                     if (!string.IsNullOrEmpty(error)) {
                         throw new Exception(error);
                     }
-                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB);
+                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB, DataBasePath);
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }

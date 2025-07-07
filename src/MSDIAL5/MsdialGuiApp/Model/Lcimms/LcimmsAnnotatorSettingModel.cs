@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     SimpleDotProductCutOff = 0.6F,
                     WeightedDotProductCutOff = 0.6F,
                     ReverseDotProductCutOff = 0.8F,
-                    MatchedPeaksPercentageCutOff = 0.25F,
+                    MatchedPeaksPercentageCutOff = 0F,
                     MinimumSpectrumMatch = 3,
                 };
             }
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                             SimpleDotProductCutOff = 0.15F,
                             WeightedDotProductCutOff = 0.15F,
-                            ReverseDotProductCutOff = 0.5F,
+                            ReverseDotProductCutOff = 0.3F,
                             MatchedPeaksPercentageCutOff = 0.0F,
                             MinimumSpectrumMatch = 1
                         };
@@ -94,9 +94,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SimpleDotProductCutOff = 0.0F,
-                WeightedDotProductCutOff = 0.0F,
-                ReverseDotProductCutOff = 0.0F,
+                SquaredSimpleDotProductCutOff = 0.0F,
+                SquaredWeightedDotProductCutOff = 0.0F,
+                SquaredReverseDotProductCutOff = 0.0F,
                 MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 0.0F,
                 TotalScoreCutoff = 0.0F,
