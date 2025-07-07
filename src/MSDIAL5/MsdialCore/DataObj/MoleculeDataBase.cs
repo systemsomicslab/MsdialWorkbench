@@ -48,6 +48,16 @@ namespace CompMs.MsdialCore.DataObj
         [Key(2)]
         public DataBaseSource DataBaseSource { get; }
 
+        /// <summary>
+        /// The original path of the database file is required for output purposes, such as mzTab-M.
+        /// Once the file is loaded, it is saved again separately.
+        /// </summary>
+        /// <remarks>
+        /// No additional information beyond the original file location is retained.
+        /// </remarks>
+        [Key(3)]
+        public string DataBaseSourceFilePath { get; } = string.Empty;
+
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
         public void Save(Stream stream, bool forceSerialize = false) {
