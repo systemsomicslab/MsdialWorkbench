@@ -7,16 +7,33 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
     public sealed class MztabFormatExporter
     {
-        public MztabFormatExporter(string separator = DEFAULT_SEPARATOR)
+        public MztabFormatExporter(DataBaseStorage dataBaseStorage, string separator = DEFAULT_SEPARATOR)
         {
+            _dataBaseStorage = dataBaseStorage;
             Separator = separator;
+
+            _annotatorID2DataBaseID = new Dictionary<string, string>();
+            foreach (var db in dataBaseStorage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    _annotatorID2DataBaseID.Add(pair.AnnotatorID, db.DataBaseID);
+                }
+            }
+            foreach (var db in dataBaseStorage.ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    _annotatorID2DataBaseID.Add(pair.AnnotatorID, db.DataBaseID);
+                }
+            }
+            foreach (var db in dataBaseStorage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    _annotatorID2DataBaseID.Add(pair.AnnotatorID, db.DataBaseID);
+                }
+            }
         }
         private const string DEFAULT_SEPARATOR = "\t";
 
@@ -27,7 +44,7 @@ namespace CompMs.MsdialCore.Export
 
         private static readonly List<string> cvItem1 = new() { "MS", "PSI-MS controlled vocabulary", "4.1.192", "https://www.ebi.ac.uk/ols/ontologies/ms" };
         private static readonly List<string> cvItem2 = new() { "UO", "Units of Measurement Ontology", "2023-05-25", "http://purl.obolibrary.org/obo/uo.owl" };
-
+        private readonly DataBaseStorage _dataBaseStorage;
         private const string idConfidenceDefault = "[,, MS-DIAL algorithm matching score, ]";
         private const string idConfidenceManual = "[MS, MS:1001058, quality estimation by manual validation, ]";
         private const string quantificationMethod = "[MS, MS:1002019, Label-free raw feature quantitation, ]";
@@ -36,16 +53,17 @@ namespace CompMs.MsdialCore.Export
 
         public string Separator { get; }
 
+        private readonly Dictionary<string, string> _annotatorID2DataBaseID;
+
         public void MztabFormatExporterCore(
-        Stream stream,
-        IReadOnlyList<AlignmentSpotProperty> spots,
-        IReadOnlyList<MSDecResult> msdecResults,
-        IReadOnlyList<AnalysisFileBean> files,
-        MulticlassFileMetaAccessor fileMetaAccessor,
-        IMetadataAccessor metaAccessor,
-        IQuantValueAccessor quantAccessor,
-        IReadOnlyList<StatsValue> stats,
-        string outfile
+            Stream stream,
+            IReadOnlyList<AlignmentSpotProperty> spots,
+            IReadOnlyList<MSDecResult> msdecResults,
+            IReadOnlyList<AnalysisFileBean> files,
+            IMetadataAccessor metaAccessor,
+            IQuantValueAccessor quantAccessor,
+            IReadOnlyList<StatsValue> stats,
+            string outfile
         )
         {
             var exportFileName = Path.GetFileNameWithoutExtension(outfile);
@@ -183,8 +201,9 @@ namespace CompMs.MsdialCore.Export
             var chemicalName = metadata["Metabolite name"];
             chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
 
-            var databaseIdentifier = spot.MatchResults.Representative.AnnotatorID != null ?
-                spot.MatchResults.Representative.AnnotatorID! + ":" + spot.MatchResults.Representative.Name.Split('|')[spot.MatchResults.Representative.Name.Split('|').Length - 1] : "null";
+            var databaseIdentifier = spot.MatchResults.Representative.AnnotatorID is not null
+                ? _annotatorID2DataBaseID[spot.MatchResults.Representative.AnnotatorID!] + ":" + spot.MatchResults.Representative.Name.Split('|').Last()
+                : "null";
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
 
@@ -331,7 +350,7 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(string.Join(Separator, LineMetaData) + Separator + string.Join(Separator, LineData));
         }
 
-        public static void WriteSmeDataLine(
+        public void WriteSmeDataLine(
             StreamWriter sw,
             AlignmentSpotProperty spot,
             ParameterBase param,
@@ -425,7 +444,7 @@ namespace CompMs.MsdialCore.Export
             var rank = "1"; // need to consider
 
 
-            var databaseIdentifier = spot.MatchResults.Representative.AnnotatorID + ":" + repName;
+            var databaseIdentifier = _annotatorID2DataBaseID[spot.MatchResults.Representative.AnnotatorID] + ":" + repName;
 
             var SmeLine = new List<string>() {
                     smePrefix,smeID.ToString(), evidenceInputID.ToString(), databaseIdentifier,
@@ -992,65 +1011,93 @@ namespace CompMs.MsdialCore.Export
             }
             return idConfidenceMeasure;
         }
-        private static IReadOnlyList<Database> SetDatabaseList(ParameterBase meta, IReadOnlyList<AlignmentSpotProperty> spots)
+
+        private IReadOnlyList<Database> SetDatabaseList(ParameterBase meta, IReadOnlyList<AlignmentSpotProperty> spots)
         {
             var database = new List<Database>();
 
-            var AnnotatorIDList = new List<string>();
-            foreach (var spot in spots)
+            foreach (var db in _dataBaseStorage.MetabolomicsDataBases)
             {
-                var matchResult = spot.MatchResults?.Representative;
-                if (matchResult != null && !string.IsNullOrEmpty(matchResult.AnnotatorID) && !AnnotatorIDList.Contains(matchResult.AnnotatorID))
+                switch (db.DataBase.DataBaseSource)
                 {
-                    AnnotatorIDList.Add(matchResult.AnnotatorID);
+                    case DataBaseSource.Msp:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, User-defined MSP library file, ]",
+                            Type = "null",
+                            Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
+                            Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                        });
+                        break;
+
+                    case DataBaseSource.Lbm:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, MS-DIAL LipidsMsMs database, ]",
+                            Type = "null",
+                            Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
+                            Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                        });
+                        break;
+                    case DataBaseSource.Text:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, User-defined rt-mz text library, ]",
+                            Type = "null",
+                            Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
+                            Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                        });
+                        break;
+                    case DataBaseSource.EieioLipid:
+                    case DataBaseSource.EidLipid:
+                    case DataBaseSource.OadLipid:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, Database of lipids generated by MS-DIAL algorithms, ]",
+                            Type = "null",
+                            Filename = "Unknown",
+                            Uri = "null",
+                        });
+                        break;
                 }
             }
 
-            foreach (var AnnotatorID in AnnotatorIDList)
-            {
-                var tempString = ValueOrNull(AnnotatorID);
+            foreach (var db in _dataBaseStorage.ProteomicsDataBases) {
                 database.Add(new Database
                 {
-                    Metadata = "[,, " + tempString + ",  ]",
-                    AnnotatorID = tempString,
-                    Type = tempString,
-                    Filename = tempString, //ValueOrNull(Path.GetFileName(meta.MspFilePath)),
-                    Uri = "file://" + meta.MspFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                    AnnotatorID = db.DataBase.Id,
+                    Metadata = "[,, Database of peptides, ]",
+                    Type = "null",
+                    Filename = ValueOrNull(Path.GetFileName(db.DataBase.FastaFile)),
+                    Uri = "file://" + db.DataBase.FastaFile.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                 });
             }
-            //foreach (var Annotator in AnnotatorList)
-            //{
-            //    switch (Annotator.Source)
-            //    {
-            //        case DataBaseSource.Msp:
-            //            Annotator.Metadata = "[,, User-defined MSP library file, ]";
-            //            break;
 
-            //        case DataBaseSource.Lbm:
-            //            Annotator.Metadata = "[,, MS-DIAL LipidsMsMs database, ]";
-            //            break;
-            //        case DataBaseSource.Text:
-            //            Annotator.Metadata = "[,, User-defined rt-mz text library, ]";
-            //            break;
-            //        case DataBaseSource.EieioLipid:
-            //        case DataBaseSource.EidLipid:
-            //        case DataBaseSource.OadLipid:
-            //            Annotator.Metadata = "[,, Database of lipids generated by MS-DIAL algorithms, ]";
-            //            Filename = "Unknown";
-            //            Uri = "null";
-            //            break;
-            //    }
-            //}
+            foreach (var db in _dataBaseStorage.EadLipidomicsDatabases) {
+                database.Add(new Database
+                {
+                    AnnotatorID = db.DataBase.Id,
+                    Metadata = "[,, Database of lipids generated by MS-DIAL algorithms, ]",
+                    Type = "null",
+                    Filename = "Unknown",
+                    Uri = "null",
+                });
+            }
 
-
-            database.Add(new Database()
-            {
-                AnnotatorID = "null",
-                Metadata = "[,, no database, null ]",
-                Type = "null",
-                Filename = "Unknown",
-                Uri = "null"
-            }); // no database
+            if (database.Count == 0) {
+                database.Add(new Database()
+                {
+                    AnnotatorID = "null",
+                    Metadata = "[,, no database, null ]",
+                    Type = "null",
+                    Filename = "Unknown",
+                    Uri = "null"
+                }); // no database
+            }
 
             return database;
         }
