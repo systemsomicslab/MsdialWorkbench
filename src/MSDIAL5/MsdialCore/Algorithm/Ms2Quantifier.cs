@@ -29,10 +29,10 @@ namespace CompMs.MsdialCore.Algorithm
                     var ms2Data = ms2DataArray[i];
                     var file = fileArray[i];
                     var sampleName = file.FileName;
-                    var peak = ms2Data?.Spectrum
-                        .OrderBy(p => Math.Abs(p.Mass - mz))
-                        .FirstOrDefault();
-                    double abundance = peak is not null ? peak.Intensity : 0.0;
+                    var abundance = ms2Data?.Spectrum
+                        .Where(p => Math.Abs(p.Mass - mz) < .01)
+                        .DefaultIfEmpty()
+                        .Sum(p => p?.Intensity) ?? 0d;
                     abundances.Add(new SampleAbundance
                     {
                         SampleName = sampleName,
