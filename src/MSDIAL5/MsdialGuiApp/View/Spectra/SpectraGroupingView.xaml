@@ -83,6 +83,8 @@
                                        Content="{Binding Path=InChIKey, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="Ion mode:"
                                        Content="{Binding Path=IonMode, Mode=OneWay}"/>
+                    <ui:LabeledContent PrependLabel="Adduct:"
+                                       Content="{Binding Path=AdductType, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="Comment:"
                                        Content="{Binding Path=Comment, Mode=OneWay}"/>
                 </StackPanel>
@@ -187,11 +189,19 @@
                                       VerticalAxis="{StaticResource ResourceKey=TheoreticalVerticalAxis}"
                                       Margin="8"
                                       Grid.Row="1">
-                <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=SelectedReference.Value.Spectrum}"
-                                               DataType="{x:Type component:SpectrumPeak}"
-                                               HorizontalProperty="Mass"
-                                               VerticalProperty="Intensity"
-                                               VerticalAlignment="Stretch"/>
+                <Grid>
+                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=SelectedReference.Value.Spectrum}"
+                                                   DataType="{x:Type component:SpectrumPeak}"
+                                                   HorizontalProperty="Mass"
+                                                   VerticalProperty="Intensity"
+                                                   VerticalAlignment="Stretch"/>
+                    <chart:Annotator ItemsSource="{Binding Path=SelectedReference.Value.Spectrum}"
+                                     HorizontalPropertyName="Mass"
+                                     VerticalPropertyName="Intensity"
+                                     LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity"
+                                     Overlap="Direct,Horizontal"/>
+                </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Save image as..">
@@ -225,10 +235,18 @@
                                       VerticalAxis="{StaticResource ResourceKey=MeasuredVerticalAxis}"
                                       Margin="8"
                                       Grid.Row="3">
-                <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
-                                               DataType="{x:Type component:SpectrumPeak}"
-                                               HorizontalProperty="Mass"
-                                               VerticalProperty="Intensity"/>
+                <Grid>
+                    <chart:LineSpectrumControlSlim ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
+                                                   DataType="{x:Type component:SpectrumPeak}"
+                                                   HorizontalProperty="Mass"
+                                                   VerticalProperty="Intensity"/>
+                    <chart:Annotator ItemsSource="{Binding Path=MeasuredSpectra.Value.Spectrum}"
+                                     HorizontalPropertyName="Mass"
+                                     VerticalPropertyName="Intensity"
+                                     LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity"
+                                     Overlap="Direct,Horizontal"/>
+                </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Save image as..">

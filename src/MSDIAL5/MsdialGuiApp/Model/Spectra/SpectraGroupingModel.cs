@@ -101,7 +101,6 @@ public sealed class SpectraGroupingModel : BindableBase
 
     public async Task UpdateMoleculeGroupsAsync(CancellationToken token = default) {
         var mapper = new MzMapper();
-        var quantifier = new Ms2Quantifier();
 
         var task = _spot.AlignedPeakPropertiesModelProperty.ToTask();
         var peaks = _spot.AlignedPeakPropertiesModelProperty.Value ?? await task;
