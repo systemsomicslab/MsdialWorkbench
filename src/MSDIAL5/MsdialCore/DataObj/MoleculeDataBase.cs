@@ -14,11 +14,12 @@ namespace CompMs.MsdialCore.DataObj
     {
         private bool _needSerialize;
 
-        public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type, string dataBaseSourceFilePath) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;
         }
 

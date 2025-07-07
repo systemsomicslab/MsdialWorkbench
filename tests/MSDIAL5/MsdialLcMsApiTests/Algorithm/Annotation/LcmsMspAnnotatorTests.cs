@@ -180,7 +180,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature
             {
@@ -250,7 +250,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature
             {
@@ -376,7 +376,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -397,7 +397,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -418,7 +418,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -439,7 +439,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -460,7 +460,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -481,7 +481,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -508,7 +508,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -535,7 +535,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
@@ -562,7 +562,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase([], "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },

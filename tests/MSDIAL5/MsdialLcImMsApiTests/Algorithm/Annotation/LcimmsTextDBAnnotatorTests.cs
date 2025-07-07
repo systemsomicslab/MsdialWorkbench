@@ -193,7 +193,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -227,7 +227,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -259,7 +259,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -293,7 +293,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -418,7 +418,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = BuildPeak(810.604, 2, 102);
             target.Spectrum = new List<SpectrumPeak>
@@ -488,7 +488,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min), CollisionCrossSection = 102,
@@ -536,7 +536,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), new MsRefSearchParameterBase(), "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), new MsRefSearchParameterBase(), "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -558,7 +558,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -585,7 +585,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -612,7 +612,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -639,7 +639,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -668,7 +668,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -701,7 +701,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -734,7 +734,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
@@ -772,7 +772,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
