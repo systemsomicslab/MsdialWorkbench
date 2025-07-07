@@ -33,7 +33,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -59,7 +59,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -85,7 +85,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -113,7 +113,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -142,7 +142,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -346,7 +346,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -374,7 +374,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(BuildQuery(target, parameter, annotator));
@@ -400,7 +400,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
+            var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextDBPath"), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(BuildQuery(target, parameter, annotator));

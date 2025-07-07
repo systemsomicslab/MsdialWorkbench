@@ -37,7 +37,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -67,7 +67,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -97,7 +97,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -127,7 +127,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -159,7 +159,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -339,7 +339,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -369,7 +369,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var results = annotator.Search(BuildQuery(target, parameter, annotator));
@@ -397,7 +397,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
             var results = annotator.Search(BuildQuery(target, parameter, annotator));

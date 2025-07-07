@@ -22,19 +22,21 @@ namespace CompMs.MsdialCore.DataObj
             _needSerialize = true;
         }
 
-        public MoleculeDataBase(IList<MoleculeMsReference> list, string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(IList<MoleculeMsReference> list, string id, DataBaseSource dbsource, SourceType type, string dataBaseSourceFilePath) {
             Database = new MoleculeMsReferenceCollection(list);
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;
         }
 
         [SerializationConstructor]
-        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource) {
+        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource, string dataBaseSourceFilePath) {
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;// false;
         }
 
