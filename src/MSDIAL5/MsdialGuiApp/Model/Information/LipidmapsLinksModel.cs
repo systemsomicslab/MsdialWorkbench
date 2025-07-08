@@ -47,12 +47,11 @@ public sealed class LipidmapsLinksModel : DisposableModelBase
                 return Observable.Create<(bool hasItems, bool retrieving)>(observer => {
                     observer.OnNext((hasItems: false, retrieving: true));
                     var disposable = Observable.FromAsync(async token => {
-                        var lipids = await _handler.RetrieveLipidsAsync(m.InChIKey, token).ConfigureAwait(false);
+                        var lipids = await _handler.RetrieveLipidsAsync(m.Name, token).ConfigureAwait(false);
                         token.ThrowIfCancellationRequested();
                         _currentItems.OnNext(lipids.Select(l => new LipidmapsLinkItem(l.LipidmapsPage, l.LipidName)).ToArray());
                         return (hasItems: lipids.Length > 0, retrieving: false);
                     }).Subscribe(observer);
-                    observer.OnCompleted();
                     return disposable;
                 });
             }).Switch().Subscribe(results => {
