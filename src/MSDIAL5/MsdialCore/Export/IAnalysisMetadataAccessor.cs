@@ -134,6 +134,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private string GetIsotopesListContent(ChromatogramPeakFeature feature, IDataProvider provider) {
+            return "null";
             var spectrum = provider.LoadSpectrumAsync((ulong)feature.MS1RawSpectrumIdTop, feature.RawDataIDType).Result;
             if (spectrum is null) {
                 return "null";
