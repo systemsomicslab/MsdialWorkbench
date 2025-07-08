@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Information.LipidmapsLinkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Information"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Information"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LipidmapsLinkViewModel}}"
+             d:DesignHeight="240" d:DesignWidth="360">
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
+                    <TextBlock>
+                        <Hyperlink NavigateUri="{Binding Path=Uri}"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            <Run Text="{Binding Path=Name, Mode=OneWay}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
