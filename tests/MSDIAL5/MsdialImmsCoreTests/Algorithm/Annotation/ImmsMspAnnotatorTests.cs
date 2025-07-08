@@ -34,7 +34,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -61,7 +61,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -88,7 +88,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -115,7 +115,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -145,7 +145,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
@@ -163,9 +163,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 AcurateMassSimilarity = 0.8f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -176,7 +176,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -200,9 +200,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 AcurateMassSimilarity = 0.8f,
                 CcsSimilarity = 0.6f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -213,7 +213,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -235,9 +235,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -248,7 +248,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -264,9 +264,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var result = new MsScanMatchResult
             {
                 AcurateMassSimilarity = 0.8f,
-                WeightedDotProduct = 0.7f,
-                SimpleDotProduct = 0.6f,
-                ReverseDotProduct = 0.8f,
+                SquaredWeightedDotProduct = 0.7f,
+                SquaredSimpleDotProduct = 0.6f,
+                SquaredReverseDotProduct = 0.8f,
                 MatchedPeaksPercentage = 0.75f,
                 IsotopeSimilarity = -1,
             };
@@ -277,7 +277,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -306,7 +306,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
@@ -334,7 +334,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(BuildQuery(target, parameter, annotator));
@@ -360,7 +360,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(BuildQuery(target, parameter, annotator));
@@ -389,10 +389,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -409,9 +409,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -425,9 +425,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.AreEqual(3d/6 + 0.5, result.MatchedPeaksPercentage);
             Assert.AreEqual(3, result.MatchedPeaksCount);
             var expected = new[]
@@ -473,10 +473,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
-                ReverseDotProductCutOff = .7f,
+                SquaredReverseDotProductCutOff = .7f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -493,9 +493,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");
+            Console.WriteLine($"SquaredSimpleDotProduct: {result.SquaredSimpleDotProduct}");
+            Console.WriteLine($"SquaredReverseDotProduct: {result.SquaredReverseDotProduct}");
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -509,9 +509,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity == 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
+            Assert.IsTrue(result.SquaredWeightedDotProduct > 0);
+            Assert.IsTrue(result.SquaredSimpleDotProduct > 0);
+            Assert.IsTrue(result.SquaredReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             var expected = new[]
@@ -525,7 +525,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual((float)expected, result.TotalScore);
+            Assert.AreEqual((float)expected, result.TotalScore, 1e-6);
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsCcsMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
@@ -537,7 +537,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -558,7 +558,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -580,7 +580,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -602,7 +602,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -622,7 +622,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -642,7 +642,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -668,7 +668,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -694,7 +694,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },
@@ -720,7 +720,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             {
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult> {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = false, },
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsCcsMatch = true, },

@@ -27,9 +27,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 MassRangeBegin = 0,
                 MassRangeEnd = 2000,
-                WeightedDotProductCutOff = 0.5f,
-                SimpleDotProductCutOff = 0.5f,
-                ReverseDotProductCutOff = 0.5f,
+                SquaredWeightedDotProductCutOff = 0.5f,
+                SquaredSimpleDotProductCutOff = 0.5f,
+                SquaredReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f,
                 MinimumSpectrumMatch = 3,
             };
@@ -51,12 +51,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var calculator = new Ms2MatchCalculator();
             var result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
 
-            Assert.AreEqual(0.8547842944, result.WeightedDotProduct, 0.00001);
-            Assert.AreEqual(0.8550592192, result.SimpleDotProduct, 0.00001);
-            Assert.AreEqual(0.7361639372, result.ReverseDotProduct, 0.00001);
+            Assert.AreEqual(0.8547842944, result.SquaredWeightedDotProduct, 0.00001);
+            Assert.AreEqual(0.8550592192, result.SquaredSimpleDotProduct, 0.00001);
+            Assert.AreEqual(0.7361639372, result.SquaredReverseDotProduct, 0.00001);
             Assert.AreEqual(3f/6, result.MatchedPeaksPercentage);
             Assert.AreEqual(3, result.MatchedPeaksCount);
-            var expected = ((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3 + result.MatchedPeaksPercentage) / 2; 
+            var expected = ((System.Math.Sqrt(result.SquaredWeightedDotProduct) + System.Math.Sqrt(result.SquaredSimpleDotProduct) + System.Math.Sqrt(result.SquaredReverseDotProduct)) / 3 + result.MatchedPeaksPercentage) / 2; 
             Assert.AreEqual(expected, result.TotalScore);
             Assert.IsTrue(result.IsSpectrumMatch);
         }
@@ -78,9 +78,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 MassRangeBegin = 0,
                 MassRangeEnd = 2000,
-                WeightedDotProductCutOff = 0.5f,
-                SimpleDotProductCutOff = 0.5f,
-                ReverseDotProductCutOff = 0.5f,
+                SquaredWeightedDotProductCutOff = 0.5f,
+                SquaredSimpleDotProductCutOff = 0.5f,
+                SquaredReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f,
                 MinimumSpectrumMatch = 3,
             };
@@ -104,21 +104,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsTrue(result.IsSpectrumMatch);
 
-            parameter.WeightedDotProductCutOff = 0.9f;
+            parameter.SquaredWeightedDotProductCutOff = 0.9f;
             result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsFalse(result.IsSpectrumMatch);
 
-            parameter.WeightedDotProductCutOff = 0.5f;
-            parameter.SimpleDotProductCutOff = 0.9f;
+            parameter.SquaredWeightedDotProductCutOff = 0.5f;
+            parameter.SquaredSimpleDotProductCutOff = 0.9f;
             result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsFalse(result.IsSpectrumMatch);
 
-            parameter.SimpleDotProductCutOff = 0.5f;
-            parameter.ReverseDotProductCutOff = 0.8f;
+            parameter.SquaredSimpleDotProductCutOff = 0.5f;
+            parameter.SquaredReverseDotProductCutOff = 0.8f;
             result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsFalse(result.IsSpectrumMatch);
 
-            parameter.ReverseDotProductCutOff = 0.5f;
+            parameter.SquaredReverseDotProductCutOff = 0.5f;
             parameter.MatchedPeaksPercentageCutOff = 0.6f;
             result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsFalse(result.IsSpectrumMatch);
