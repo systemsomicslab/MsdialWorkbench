@@ -14,6 +14,10 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
 
+            lipid = parser.Parse("PC 34:2;O2");
+            Assert.AreEqual(789.55198, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.OxPC, lipid.LipidClass);
+
             lipid = parser.Parse("PC 16:0_18:2");
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
@@ -21,6 +25,10 @@ namespace CompMs.Common.Lipidomics.Tests
             lipid = parser.Parse("PC 16:0/18:2");
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
+
+            lipid = parser.Parse("PC 16:0/18:2;O2");
+            Assert.AreEqual(789.55198, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.OxPC, lipid.LipidClass);
 
             lipid = parser.Parse("PC O-16:0/18:2");
             Assert.IsNull(lipid);

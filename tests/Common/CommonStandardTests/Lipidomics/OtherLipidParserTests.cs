@@ -157,7 +157,27 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.TG, lipid.LipidClass);
         }
     }
+    [TestClass()]
+    public class TG_ESTLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new TG_ESTLipidParser();
 
+            var lipid = parser.Parse("TG 60:3;O2"); //O=C(OCC(OC(=O)CCCCCCCCCCCCC)COC(=O)CCCCCCC(OC(=O)CCCCCCCC=CCCCCCCCC)C=CCCCCCC)CCCCCCCCCCC
+            Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
+
+            lipid = parser.Parse("TG 12:0/16:1;O(FA 18:1)/14:0"); 
+            Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
+
+            lipid = parser.Parse("TG 12:0_14:0_16:1;O(FA 18:1)");
+            Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
+        }
+    }
     [TestClass()]
     public class DGTSLipidParserTests
     {

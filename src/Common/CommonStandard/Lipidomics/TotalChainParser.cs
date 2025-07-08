@@ -39,7 +39,7 @@ namespace CompMs.Common.Lipidomics
             return new TotalChainParser(chainCount, chainCount, true, false, false);
         }
 
-        private TotalChainParser(int chainCount, int capacity, bool hasSphingosine, bool hasEther, bool atLeastSpeciesLevel) {
+        protected TotalChainParser(int chainCount, int capacity, bool hasSphingosine, bool hasEther, bool atLeastSpeciesLevel) {
             ChainCount = chainCount;
             Capacity = capacity;
             var submolecularLevelPattern = hasEther
@@ -132,7 +132,7 @@ namespace CompMs.Common.Lipidomics
                     .ToArray());
         }
 
-        private TotalChain ParseTotalChains(GroupCollection groups, int chainCount) {
+        protected TotalChain ParseTotalChains(GroupCollection groups, int chainCount) {
             var carbon = int.Parse(groups["carbon"].Value);
             var db = int.Parse(groups["db"].Value);
             var ox = !groups["ox"].Success ? 0 : !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);
