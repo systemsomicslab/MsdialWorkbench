@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.Export {
             Directory = directory;
             AlignmentFileName = alignmentFileName;
             var dt = DateTime.Now;
-            var timestamp = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
+            var timestamp = dt.ToString("yyyyMMddHHmm");
             GnpsTableFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSTable_{timestamp}.txt");
             GnpsMgfFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSSpectra_{timestamp}.mgf");
             GnpsEdgeFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSEdges_{timestamp}.txt");
