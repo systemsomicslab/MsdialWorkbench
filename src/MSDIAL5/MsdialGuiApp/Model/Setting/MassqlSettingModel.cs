@@ -52,11 +52,11 @@ namespace CompMs.App.Msdial.Model.Setting {
                         }
                     }
                     catch (JsonReaderException ex) {
-                        Console.WriteLine("MassQL JSON parse error: " + ex.Message);
+                        System.Diagnostics.Debug.WriteLine("MassQL JSON parse error: " + ex.Message);
                         results = null;
                     }
                     catch (JsonSerializationException ex) {
-                        Console.WriteLine("MassQL JSON parse error: " + ex.Message);
+                        System.Diagnostics.Debug.WriteLine("MassQL JSON parse error: " + ex.Message);
                         results = null;
                     }
                 }
