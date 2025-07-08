@@ -41,7 +41,8 @@ namespace CompMs.App.Msdial.Model.Setting {
                 //var isAlignmentResultTargeted = true;
                 MassQL? result = null;
                 using (var sr = new StreamReader(resStream)) {
-                    result = JsonConvert.DeserializeObject<MassQL>(sr.ReadToEnd());
+                    var massQL = sr.ReadToEnd();
+                    result = JsonConvert.DeserializeObject<MassQL>(massQL);
                 }
                 if (result is null) {
                     return;
