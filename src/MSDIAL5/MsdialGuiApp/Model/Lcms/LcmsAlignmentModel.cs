@@ -39,6 +39,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -461,6 +462,79 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var model = new SpectraGroupingModel(_fileCollection, spot, scans, _dataBaseMapper, _evaluator, .05d);
             return model;
+        }
+
+        public async Task ExportProductIonQuantifactionResultAsync(CancellationToken token = default) {
+
+            var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(_fileCollection);
+            var mapper = new MzMapper();
+            var quantifier = new Ms2Quantifier();
+            AnalysisFileBeanModel[] samples = [.. _fileCollection.AnalysisFiles];
+            double mzTolerance = .05d;
+
+            var objects = new List<object>();
+            foreach (var spot in Ms1Spots) {
+                token.ThrowIfCancellationRequested();
+                if (!spot.IsRefMatched(_evaluator)) {
+                    continue;
+                }
+
+                token.ThrowIfCancellationRequested();
+                var scans = await alignmentPeaksSpectraLoader.GetCurrentScansAsync(_fileCollection.AnalysisFiles, spot).ConfigureAwait(false);
+                if (scans is null) {
+                    continue;
+                }
+
+                token.ThrowIfCancellationRequested();
+
+                var task = spot.AlignedPeakPropertiesModelProperty.ToTask();
+                var peaks = spot.AlignedPeakPropertiesModelProperty.Value ?? await task;
+
+                var referencePairs = peaks.SelectMany(p => p.MatchResults.MatchResults.Where(_evaluator.IsReferenceMatched).Select(r => (_dataBaseMapper.MoleculeMsRefer(r), r))).OfType<(MoleculeMsReference, MsScanMatchResult)>();
+                referencePairs = referencePairs.Where(pair => pair.Item2.MatchedPeaksPercentage >= 2d).ToArray();
+
+                var reference2Score = referencePairs.GroupBy(pair => pair.Item1, pair => pair.Item2.TotalScore).ToDictionary(g => g.Key, g => g.Max());
+                var references = referencePairs.Select(pair => pair.Item1).ToArray();
+                var groups = mapper.MapMzByReferenceGroups(references, mzTolerance)
+                    .Select(pair => new MoleculeGroupModel {
+                        Name = string.Join(",", pair.Item1.Select(r => r.Name)),
+                        References = pair.Item1,
+                        UniqueMzList = pair.Item2,
+                    }).OrderByDescending(g => g.References.Max(r => reference2Score[r])).ThenBy(g => g.References.Length);
+
+                var groupObjects = new List<object>();
+                foreach (var group in groups) {
+                    token.ThrowIfCancellationRequested();
+                    var quantResults = quantifier.Quantify(group.UniqueMzList, scans, samples, mzTolerance);
+                    var productIonAbundances = quantResults.Zip(group.UniqueMzList,
+                        (r, mz) => new GroupProductIonAbundancesModel {
+                            Abundances = r.Abundances.Select(
+                                abundance => new ProductIonAbundanceModel {
+                                    SampleName = abundance.SampleName,
+                                    Intensity = abundance.Abundance,
+                                }
+                            ).ToArray(),
+                            Mz = mz,
+                        }
+                    ).ToArray();
+                    groupObjects.Add(new
+                    {
+                        ReferenceGroup = group.References.Select(r => r.Name).ToArray(),
+                        UniqueIonMz = group.UniqueMzList,
+                        Abundances = productIonAbundances,
+                    });
+                }
+
+                objects.Add(new
+                {
+                    MasterAlignemntID = spot.MasterAlignmentID,
+                    References = references.Select(r => r.Name).ToArray(),
+                    Groups = groupObjects,
+                });
+            }
+
+            using var writer = new StreamWriter("UniqueProductIonAbundances.json");
+            await writer.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(objects, Newtonsoft.Json.Formatting.Indented)).ConfigureAwait(false);
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
