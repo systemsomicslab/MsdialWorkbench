@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting {
         private string _massql = string.Empty;
 
         public void SendMassql() {
-            var massql = "https://msql.ucsd.edu/parse?query=" + Massql;
+            var massql = "https://massql.gnps2.org/parse?query=" + Massql;
             var req = WebRequest.Create(massql);
 
             try {
@@ -41,8 +41,13 @@ namespace CompMs.App.Msdial.Model.Setting {
                 //var isAlignmentResultTargeted = true;
                 MassQL? result = null;
                 using (var sr = new StreamReader(resStream)) {
-                    var massQL = sr.ReadToEnd();
-                    result = JsonConvert.DeserializeObject<MassQL>(massQL);
+                    try {
+                        var massQL = sr.ReadToEnd();
+                        result = JsonConvert.DeserializeObject<MassQL>(massQL);
+                    }
+                    catch (JsonReaderException ex) {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
                 if (result is null) {
                     return;
