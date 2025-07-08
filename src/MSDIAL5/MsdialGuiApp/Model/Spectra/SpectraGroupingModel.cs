@@ -105,13 +105,15 @@ public sealed class SpectraGroupingModel : BindableBase
         var task = _spot.AlignedPeakPropertiesModelProperty.ToTask();
         var peaks = _spot.AlignedPeakPropertiesModelProperty.Value ?? await task;
 
-        var references = peaks.SelectMany(p => p.MatchResults.MatchResults.Where(_evaluator.IsReferenceMatched).Select(_refer.Refer)).OfType<MoleculeMsReference>();
+        var referencePairs = peaks.SelectMany(p => p.MatchResults.MatchResults.Where(_evaluator.IsReferenceMatched).Select(r => (_refer.Refer(r), r))).OfType<(MoleculeMsReference, MsScanMatchResult)>();
+        var reference2Score = referencePairs.GroupBy(pair => pair.Item1, pair => pair.Item2.TotalScore).ToDictionary(g => g.Key, g => g.Max());
+        var references = referencePairs.Select(pair => pair.Item1).ToArray();
         var groups = mapper.MapMzByReferenceGroups(references, _mzTolerance)
             .Select(pair => new MoleculeGroupModel {
                 Name = string.Join(",", pair.Item1.Select(r => r.Name)),
                 References = pair.Item1,
                 UniqueMzList = pair.Item2,
-            }).OrderBy(g => g.References.Length);
+            }).OrderByDescending(g => g.References.Max(r => reference2Score[r])).ThenBy(g => g.References.Length);
 
         token.ThrowIfCancellationRequested();
         MoleculeGroups.Clear();

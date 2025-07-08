@@ -147,6 +147,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
                 }
             }).AddTo(Disposables);
+
+            AdhocExportProductIonQuantifactionResultCommand = new AsyncReactiveCommand()
+                .WithSubscribe(() => model.ExportProductIonQuantifactionResultAsync())
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -198,6 +202,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
         private DelegateCommand? _goToExternalMsfinderCommand;
+
+        public AsyncReactiveCommand AdhocExportProductIonQuantifactionResultCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;
