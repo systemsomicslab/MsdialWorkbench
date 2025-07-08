@@ -39,7 +39,6 @@ namespace CompMs.App.Msdial.Model.Setting {
                 var res = req.GetResponse();
                 var resStream = res.GetResponseStream();
                 List<MassQL>? results = null;
-                //MassQL? result = null;
                 using (var sr = new StreamReader(resStream)) {
                     var json = sr.ReadToEnd();
                     try {
