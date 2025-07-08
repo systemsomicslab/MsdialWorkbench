@@ -23,7 +23,9 @@ namespace CompMs.Common.Proteomics.Function {
             var start = 0;
             var end = 0;
 
-            if (cleavagesites.IsEmptyOrNull()) return peptides;
+            if (cleavagesites.IsEmptyOrNull()) {
+                return peptides;
+            }
             if (cleavagesites.Count == 1 && cleavagesites[0] == "-") {
                 var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj, Position = new CompMs.Common.DataObj.Range(0, proteinSeqObj.Count - 1) };
                 peptide.IsProteinNterminal = true;
