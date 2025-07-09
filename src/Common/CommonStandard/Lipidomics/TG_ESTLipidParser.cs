@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -84,7 +86,7 @@ namespace CompMs.Common.Lipidomics
             Expression = new Regex(Pattern, RegexOptions.Compiled);
         }
 
-        public ITotalChain Parse(string lipidStr)
+        public new ITotalChain Parse(string lipidStr)
         {
             var match = Expression.Match(lipidStr);
             if (match.Success)
@@ -93,11 +95,13 @@ namespace CompMs.Common.Lipidomics
                 if (groups["PositionLevel"].Success)
                 {
                     var chains = ParsePositionLevelChains(groups);
-                        return chains;
+                    return chains;
                 }
                 else if (groups["MolecularSpeciesLevel"].Success)
                 {
-                    var chains = ParseMolecularSpeciesLevelChains(groups);
+                    var chainStrs = match.Groups["MolecularSpeciesLevel"].Value.Split('_');
+                    //var chains = ParseMolecularSpeciesLevelChains(groups);
+                    var chains = ParseMslChainsFromStrings(chainStrs);
                     return chains;
                 }
                 else if (groups["TotalChain"].Success)
@@ -107,6 +111,37 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
+
+        private ITotalChain ParseMslChainsFromStrings(string[] chainStrs)
+        {
+            var chains = new List<IChain>();
+            var fahfaChains = new List<IChain>();
+            foreach (var chainStr in chainStrs)
+            {
+                string baseChain = chainStr;
+                string faChain = null;
+
+                var faMatch = Regex.Match(chainStr, @"^(?<main>.+?)\(FA\s*(?<fa>.+?)\)$");
+                if (faMatch.Success)
+                {
+                    baseChain = faMatch.Groups["main"].Value;
+                    faChain = faMatch.Groups["fa"].Value;
+
+                    var mainParsed = AcylParser.Parse(baseChain);
+                    var faParsed = AcylParser.Parse(faChain);
+                    fahfaChains.Add(mainParsed);
+                    fahfaChains.Add(faParsed);
+                }
+                else
+                {
+                    var parsed = AcylParser.Parse(baseChain);
+                    chains.Add(parsed);
+                }
+            }
+            chains.Add((IChain)fahfaChains);
+            return new PositionLevelChains(chains.ToArray()); // Need to fix the order of Chain. The last two are fahfa chains.
+        }
+
     }
 }
 
