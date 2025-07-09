@@ -78,13 +78,21 @@ public sealed class AlignmentGnpsExporter {
         var directory = Path.GetDirectoryName(GnpsEdgeFilePath);
 
         var edge_peakshape = Path.Combine(directory, filename + "_peakshape.csv");
-        ExportPeakShapeEdges(edges, edge_peakshape);
+        using (var stream = File.Open(edge_peakshape, FileMode.Create, FileAccess.Write)) {
+            ExportPeakShapeEdges(stream, edges);
+        }
         var edge_ioncorrelation = Path.Combine(directory, filename + "_ioncorrelation.csv");
-        ExportIonCorrelationEdges(edges, edge_ioncorrelation);
+        using (var stream = File.Open(edge_ioncorrelation, FileMode.Create, FileAccess.Write)) {
+            ExportIonCorrelationEdges(stream, edges);
+        }
         var edge_insource = Path.Combine(directory, filename + "_insource.csv");
-        ExportInsourceEdges(edges, edge_insource);
+        using (var stream = File.Open(edge_insource, FileMode.Create, FileAccess.Write)) {
+            ExportInsourceEdges(stream, edges);
+        }
         var edge_adduct = Path.Combine(directory, filename + "_adduct.csv");
-        ExportAdductEdges(edges, edge_adduct);
+        using (var stream = File.Open(edge_adduct, FileMode.Create, FileAccess.Write)) {
+            ExportAdductEdges(stream, edges);
+        }
     }
 
     private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats, List<AlignmentSpotProperty> flattenedSpots, List<MSDecResult> alignedMsdecResults) {
@@ -249,8 +257,8 @@ public sealed class AlignmentGnpsExporter {
         return edges;
     }
 
-    private static void ExportPeakShapeEdges(List<GnpsEdge> edges, string edge_peakshape) {
-        using var sw = new StreamWriter(edge_peakshape, false, Encoding.ASCII);
+    private static void ExportPeakShapeEdges(Stream stream, List<GnpsEdge> edges) {
+        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
         var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
         sw.WriteLine(String.Join(",", header.ToArray()));
@@ -260,8 +268,8 @@ public sealed class AlignmentGnpsExporter {
         }
     }
 
-    private static void ExportIonCorrelationEdges(List<GnpsEdge> edges, string edge_ioncorrelation) {
-        using var sw = new StreamWriter(edge_ioncorrelation, false, Encoding.ASCII);
+    private static void ExportIonCorrelationEdges(Stream stream, List<GnpsEdge> edges) {
+        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
         var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
         sw.WriteLine(String.Join(",", header.ToArray()));
@@ -271,8 +279,8 @@ public sealed class AlignmentGnpsExporter {
         }
     }
 
-    private static void ExportInsourceEdges(List<GnpsEdge> edges, string edge_insource) {
-        using var sw = new StreamWriter(edge_insource, false, Encoding.ASCII);
+    private static void ExportInsourceEdges(Stream stream, List<GnpsEdge> edges) {
+        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
         var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
         sw.WriteLine(String.Join(",", header.ToArray()));
@@ -282,8 +290,8 @@ public sealed class AlignmentGnpsExporter {
         }
     }
 
-    private static void ExportAdductEdges(List<GnpsEdge> edges, string edge_adduct) {
-        using var sw = new StreamWriter(edge_adduct, false, Encoding.ASCII);
+    private static void ExportAdductEdges(Stream stream, List<GnpsEdge> edges) {
+        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
         var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
         sw.WriteLine(String.Join(",", header.ToArray()));
