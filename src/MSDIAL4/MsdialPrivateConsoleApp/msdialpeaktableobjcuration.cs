@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MsdialPrivateConsoleApp {
 
@@ -138,6 +141,63 @@ namespace MsdialPrivateConsoleApp {
                 }
             }
             return list;
+        }
+
+        public static void AdhocJson2Table20250709(string inputfile, string outputfile) {
+            var json = File.ReadAllText(inputfile);
+            var data = JsonConvert.DeserializeObject<List<JObject>>(json);
+
+            var output = new List<string>();
+            var headerWritten = false;
+
+            foreach (var record in data) {
+                var masterId = record["MasterAlignemntID"]?.ToString();
+                var references = record["References"] as JArray;
+                if (references == null || references.Count == 0) continue;
+
+                var groups = record["Groups"] as JArray;
+                if (groups == null) continue;
+
+                foreach (var group in groups) {
+                    var referenceGroup = group["ReferenceGroup"] as JArray;
+                    if (referenceGroup == null || referenceGroup.Count != 1) continue;
+
+                    string refName = referenceGroup.First.ToString();
+                    var abundancesArray = group["Abundances"] as JArray;
+
+                    if (abundancesArray == null) continue;
+
+                    // Get sample names from the first item
+                    var sampleNames = abundancesArray.First["Abundances"]
+                        .Select(s => s["SampleName"].ToString()).ToList();
+
+                    if (!headerWritten) {
+                        output.Add("MasterAlignemntID\tReferenceGroup\tUniqueIonMz\t" + string.Join("\t", sampleNames));
+                        headerWritten = true;
+                    }
+
+                    var sumList = new double[sampleNames.Count];
+
+                    foreach (var item in abundancesArray) {
+                        var mz = item["Mz"].ToObject<double>();
+                        var abunds = item["Abundances"] as JArray;
+                        var values = new double[sampleNames.Count];
+
+                        for (int i = 0; i < sampleNames.Count; i++) {
+                            values[i] = abunds[i]["Intensity"].ToObject<double>();
+                            sumList[i] += values[i];
+                        }
+
+                        output.Add($"{masterId}\t{refName}\t{mz:F7}\t" + string.Join("\t", values.Select(v => v.ToString("F0"))));
+                    }
+
+                    // sum line
+                    output.Add($"{masterId}\t{refName}\tsum\t" + string.Join("\t", sumList.Select(v => v.ToString("F0"))));
+                }
+            }
+
+            File.WriteAllLines(outputfile, output);
+            Console.WriteLine("Finished exporting to formatted_output.tsv");
         }
     }
 }
