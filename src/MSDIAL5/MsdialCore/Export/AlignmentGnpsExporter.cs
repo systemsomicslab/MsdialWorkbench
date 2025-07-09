@@ -10,16 +10,6 @@ using System.Text;
 
 namespace CompMs.MsdialCore.Export; 
 
-public class GnpsEdge {
-    public int SourceID { get; set; }
-    public int TargetID { get; set; }
-    public string Type { get; set; }
-    public string Score { get; set; }
-    public string Annotation { get; set; }
-    public string EdgeID { get; set; }
-    public string EdgeIdShort { get; set; }
-}
-
 public sealed class AlignmentGnpsExporter {
 
     public string Directory { get; private set; } = string.Empty;
@@ -37,6 +27,7 @@ public sealed class AlignmentGnpsExporter {
         GnpsMgfFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSSpectra_{timestamp}.mgf");
         GnpsEdgeFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSEdges_{timestamp}.txt");
     }
+
     public void Export(
         IReadOnlyList<AlignmentSpotProperty> spots,
         IReadOnlyList<MSDecResult> msdecResults,
@@ -281,5 +272,15 @@ public sealed class AlignmentGnpsExporter {
                 sw.WriteLine(String.Join(",", field));
             }
         }
+    }
+
+    private sealed class GnpsEdge {
+        public int SourceID { get; set; }
+        public int TargetID { get; set; }
+        public string Type { get; set; }
+        public string Score { get; set; }
+        public string Annotation { get; set; }
+        public string EdgeID { get; set; }
+        public string EdgeIdShort { get; set; }
     }
 }
