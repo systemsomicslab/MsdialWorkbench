@@ -11,21 +11,16 @@ using System.Text;
 namespace CompMs.MsdialCore.Export; 
 
 public sealed class AlignmentGnpsExporter {
-
-    public string Directory { get; private set; } = string.Empty;
-    public string AlignmentFileName { get; private set; } = string.Empty;
     public string GnpsTableFilePath { get; private set; } = string.Empty;
     public string GnpsMgfFilePath { get; private set; } = string.Empty;
     public string GnpsEdgeFilePath { get; private set; } = string.Empty;
 
     public AlignmentGnpsExporter(string directory, string alignmentFileName) {
-        Directory = directory;
-        AlignmentFileName = alignmentFileName;
         var dt = DateTime.Now;
         var timestamp = dt.ToString("yyyyMMddHHmm");
-        GnpsTableFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSTable_{timestamp}.txt");
-        GnpsMgfFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSSpectra_{timestamp}.mgf");
-        GnpsEdgeFilePath = System.IO.Path.Combine(directory, $"{alignmentFileName}_GNPSEdges_{timestamp}.txt");
+        GnpsTableFilePath = Path.Combine(directory, $"{alignmentFileName}_GNPSTable_{timestamp}.txt");
+        GnpsMgfFilePath = Path.Combine(directory, $"{alignmentFileName}_GNPSSpectra_{timestamp}.mgf");
+        GnpsEdgeFilePath = Path.Combine(directory, $"{alignmentFileName}_GNPSEdges_{timestamp}.txt");
     }
 
     public void Export(
@@ -39,11 +34,9 @@ public sealed class AlignmentGnpsExporter {
         // Implement the export logic for GNPS format here
         // This is a placeholder implementation
 
-        if (spots == null || spots.Count == 0) {
+        if (spots is not { Count: > 0 }) {
             throw new ArgumentException("No spots to export.");
         }
-        // table export
-        using var stream = File.Open(GnpsTableFilePath, FileMode.Create, FileAccess.Write);
 
         var flattenedSpots = new List<AlignmentSpotProperty>();
         var alignedMsdecResults = new List<MSDecResult>();
@@ -68,6 +61,33 @@ public sealed class AlignmentGnpsExporter {
             }
         }
 
+        // table export
+        using (var tableStream = File.Open(GnpsTableFilePath, FileMode.Create, FileAccess.Write)) {
+            ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, stats, flattenedSpots, alignedMsdecResults);
+        }
+
+        // mgf export
+        using (var mgfStream = File.Open(GnpsMgfFilePath, FileMode.Create, FileAccess.Write)) {
+            ExportGnpsMgf(mgfStream, flattenedSpots, alignedMsdecResults);
+        }
+
+        // edge export
+        var edges = BuildGnpsEdges(spots);
+
+        var filename = Path.GetFileNameWithoutExtension(GnpsEdgeFilePath);
+        var directory = Path.GetDirectoryName(GnpsEdgeFilePath);
+
+        var edge_peakshape = Path.Combine(directory, filename + "_peakshape.csv");
+        ExportPeakShapeEdges(edges, edge_peakshape);
+        var edge_ioncorrelation = Path.Combine(directory, filename + "_ioncorrelation.csv");
+        ExportIonCorrelationEdges(edges, edge_ioncorrelation);
+        var edge_insource = Path.Combine(directory, filename + "_insource.csv");
+        ExportInsourceEdges(edges, edge_insource);
+        var edge_adduct = Path.Combine(directory, filename + "_adduct.csv");
+        ExportAdductEdges(edges, edge_adduct);
+    }
+
+    private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats, List<AlignmentSpotProperty> flattenedSpots, List<MSDecResult> alignedMsdecResults) {
         var csvExporter = new AlignmentCSVExporter();
         csvExporter.Export(
             stream,
@@ -78,20 +98,17 @@ public sealed class AlignmentGnpsExporter {
             metaAccessor,
             quantAccessor,
             stats);
+    }
 
-        // mgf export
-        using var mgfStream = File.Open(GnpsMgfFilePath, FileMode.Create, FileAccess.Write);
+    private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots, List<MSDecResult> alignedMsdecResults) {
         var mgfExporter = new AlignmentMgfExporter();
         mgfExporter.BatchExport(
             mgfStream,
             flattenedSpots,
             alignedMsdecResults);
-
-        // edge export
-        exportGnpsEdgeFilesLegacyCode(GnpsEdgeFilePath, spots);
     }
 
-    private void exportGnpsEdgeFilesLegacyCode(string GnpsEdgeFilePath, IReadOnlyList<AlignmentSpotProperty> spots) {
+    private static List<GnpsEdge> BuildGnpsEdges(IReadOnlyList<AlignmentSpotProperty> spots) {
         var isIonMobility = spots[0].IsMultiLayeredData();
         var edges = new List<GnpsEdge>();
 
@@ -135,7 +152,8 @@ public sealed class AlignmentGnpsExporter {
 
                         var uniquestring = sourceMasterID + "_" + targetMasterID + "_" + annotation;
                         var uniquestringShort = sourceMasterID + "_" + targetMasterID;
-                        edges.Add(new GnpsEdge() {
+                        edges.Add(new GnpsEdge()
+                        {
                             SourceID = sourceMasterID,
                             TargetID = targetMasterID,
                             Annotation = annotation,
@@ -152,7 +170,8 @@ public sealed class AlignmentGnpsExporter {
                             annotation = "Parent " + alignedSpot.MasterAlignmentID + "_Mobility " + drift.MasterAlignmentID;
                             uniquestring = sourceMasterID + "_" + targetMasterID + "_" + annotation;
                             uniquestringShort = sourceMasterID + "_" + targetMasterID + "_" + annotation;
-                            edges.Add(new GnpsEdge() {
+                            edges.Add(new GnpsEdge()
+                            {
                                 SourceID = sourceMasterID,
                                 TargetID = targetMasterID,
                                 Annotation = annotation,
@@ -208,7 +227,8 @@ public sealed class AlignmentGnpsExporter {
 
                         var uniquestring = sourceID + "_" + targetID + "_" + annotation;
                         var uniquestringShort = sourceID + "_" + targetID;
-                        edges.Add(new GnpsEdge() {
+                        edges.Add(new GnpsEdge()
+                        {
                             SourceID = sourceID,
                             TargetID = targetID,
                             Annotation = annotation,
@@ -226,51 +246,50 @@ public sealed class AlignmentGnpsExporter {
             edges = edges.GroupBy(n => n.EdgeID).Select(g => g.First()).ToList();
         }
 
-        var filename = System.IO.Path.GetFileNameWithoutExtension(GnpsEdgeFilePath);
-        var directory = System.IO.Path.GetDirectoryName(GnpsEdgeFilePath);
-        var edge_peakshape = System.IO.Path.Combine(directory, filename + "_peakshape.csv");
-        var edge_ioncorrelation = System.IO.Path.Combine(directory, filename + "_ioncorrelation.csv");
-        var edge_adduct = System.IO.Path.Combine(directory, filename + "_adduct.csv");
-        var edge_insource = System.IO.Path.Combine(directory, filename + "_insource.csv");
+        return edges;
+    }
 
-        using (var sw = new StreamWriter(edge_peakshape, false, Encoding.ASCII)) {
-            //Header
-            var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-            sw.WriteLine(String.Join(",", header.ToArray()));
-            foreach (var edge in edges.Where(n => n.Type == "Chromatogram-based annotation")) {
-                var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-                sw.WriteLine(String.Join(",", field));
-            }
+    private static void ExportPeakShapeEdges(List<GnpsEdge> edges, string edge_peakshape) {
+        using var sw = new StreamWriter(edge_peakshape, false, Encoding.ASCII);
+        //Header
+        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
+        sw.WriteLine(String.Join(",", header.ToArray()));
+        foreach (var edge in edges.Where(n => n.Type == "Chromatogram-based annotation")) {
+            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
+            sw.WriteLine(String.Join(",", field));
         }
+    }
 
-        using (var sw = new StreamWriter(edge_ioncorrelation, false, Encoding.ASCII)) {
-            //Header
-            var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-            sw.WriteLine(String.Join(",", header.ToArray()));
-            foreach (var edge in edges.Where(n => n.Type == "Alignment-based annotation")) {
-                var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-                sw.WriteLine(String.Join(",", field));
-            }
+    private static void ExportIonCorrelationEdges(List<GnpsEdge> edges, string edge_ioncorrelation) {
+        using var sw = new StreamWriter(edge_ioncorrelation, false, Encoding.ASCII);
+        //Header
+        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
+        sw.WriteLine(String.Join(",", header.ToArray()));
+        foreach (var edge in edges.Where(n => n.Type == "Alignment-based annotation")) {
+            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
+            sw.WriteLine(String.Join(",", field));
         }
+    }
 
-        using (var sw = new StreamWriter(edge_insource, false, Encoding.ASCII)) {
-            //Header
-            var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-            sw.WriteLine(String.Join(",", header.ToArray()));
-            foreach (var edge in edges.Where(n => n.Type == "MS2-based annotation")) {
-                var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-                sw.WriteLine(String.Join(",", field));
-            }
+    private static void ExportInsourceEdges(List<GnpsEdge> edges, string edge_insource) {
+        using var sw = new StreamWriter(edge_insource, false, Encoding.ASCII);
+        //Header
+        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
+        sw.WriteLine(String.Join(",", header.ToArray()));
+        foreach (var edge in edges.Where(n => n.Type == "MS2-based annotation")) {
+            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
+            sw.WriteLine(String.Join(",", field));
         }
+    }
 
-        using (var sw = new StreamWriter(edge_adduct, false, Encoding.ASCII)) {
-            //Header
-            var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-            sw.WriteLine(String.Join(",", header.ToArray()));
-            foreach (var edge in edges.Where(n => n.Type == "Adduct annotation")) {
-                var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-                sw.WriteLine(String.Join(",", field));
-            }
+    private static void ExportAdductEdges(List<GnpsEdge> edges, string edge_adduct) {
+        using var sw = new StreamWriter(edge_adduct, false, Encoding.ASCII);
+        //Header
+        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
+        sw.WriteLine(String.Join(",", header.ToArray()));
+        foreach (var edge in edges.Where(n => n.Type == "Adduct annotation")) {
+            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
+            sw.WriteLine(String.Join(",", field));
         }
     }
 
