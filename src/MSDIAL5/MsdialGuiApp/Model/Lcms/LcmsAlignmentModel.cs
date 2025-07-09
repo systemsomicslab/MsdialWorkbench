@@ -528,7 +528,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 objects.Add(new
                 {
                     MasterAlignemntID = spot.MasterAlignmentID,
-                    References = references.Select(r => r.Name).ToArray(),
+                    References = reference2Score.Select(n => new { name = n.Key.Name, score = n.Value }).ToArray(),
                     Groups = groupObjects,
                 });
             }
