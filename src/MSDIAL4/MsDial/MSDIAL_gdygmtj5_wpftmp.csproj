@@ -1,0 +1,512 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <AssemblyName>MSDIAL</AssemblyName>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\</MSBuildProjectExtensionsPath>
+    <_TargetAssemblyProjectName>MSDIAL</_TargetAssemblyProjectName>
+    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TargetFrameworks>net48;net481;net472</TargetFrameworks>
+    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <HighEntropyVA>false</HighEntropyVA>
+    <PublishUrl>..\publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>false</MapFileExtensions>
+    <TargetCulture>en</TargetCulture>
+    <ProductName>MsDial</ProductName>
+    <SuiteName>MsDial</SuiteName>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>Ms-Dial.html</WebPage>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>3.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
+    <StartupObject>Rfx.Riken.OsakaUniv.App</StartupObject>
+    <AssemblyTitle>MSDIAL</AssemblyTitle>
+    <AssemblyDescription>Software for untargeted metabolomics</AssemblyDescription>
+    <AssemblyCompany>RIKEN</AssemblyCompany>
+    <AssemblyProduct>Rfx.Riken.OsakaUniv</AssemblyProduct>
+    <AssemblyCopyright>Copyright ©  2014-2018 Hiroshi Tsugawa. All rights reserved.</AssemblyCopyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="VersionUpdateNotificationService\**" />
+    <Compile Remove="VersionUpdateNotifierService\**" />
+    <EmbeddedResource Remove="VersionUpdateNotificationService\**" />
+    <EmbeddedResource Remove="VersionUpdateNotifierService\**" />
+    <None Remove="VersionUpdateNotificationService\**" />
+    <None Remove="VersionUpdateNotifierService\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Parameter for LC\AnalysisParametersSettingVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.map" />
+    <None Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.map" />
+    <None Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js.map" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <None Include="App.config" />
+    <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" />
+    <Content Include="CytoscapeLocalBrowser\data\elements.js" />
+    <Content Include="CytoscapeLocalBrowser\data\style.js" />
+    <Content Include="Resources\SQLite.Interop.dll" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\style.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" />
+    <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BarChart\BarChart.csproj">
+      <Project>{a3ac4d50-9249-478d-be03-0465fd00ef2f}</Project>
+      <Name>BarChart</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BinVestigateRestApiStandard\BinVestigateRestApiStandard.csproj">
+      <Project>{56759084-f7c0-4aa6-ab4e-2f8e13927029}</Project>
+      <Name>BinVestigateRestApiStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ChromatogramUI\Chromatogram.csproj">
+      <Project>{6dced6bb-4107-40c9-a9ef-d60658c385c0}</Project>
+      <Name>Chromatogram</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IsotopeRatioCalculatorStandard\IsotopeRatioCalculatorStandard.csproj">
+      <Project>{550a1e94-87d0-4244-8e25-23c7a4321a9a}</Project>
+      <Name>IsotopeRatioCalculatorStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MassSpectrogram\MassSpectrogram.csproj">
+      <Project>{9adb8ed7-1d30-45bf-8ac5-a3ccf19afd65}</Project>
+      <Name>MassSpectrogram</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
+      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
+      <Name>MolecularFormulaFinderStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
+      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
+      <Name>MolViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonaExport\MonaExport.csproj">
+      <Project>{3232ef20-fadb-47c5-958f-4eab0eee2f91}</Project>
+      <Name>MonaExport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonaRestApi\MonaRestApi.csproj">
+      <Project>{d4610dbd-360c-4310-8cb0-ffb9e24545c1}</Project>
+      <Name>MonaRestApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialCommon\MsdialCommon.csproj">
+      <Project>{049645f4-4ea5-41a2-b369-22d23fb09040}</Project>
+      <Name>MsdialCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
+      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
+      <Name>MsdialGcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj">
+      <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
+      <Name>MsdialLcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PairwisePlot\PairwisePlot.csproj">
+      <Project>{9f9ccfc8-5b22-4bce-81b1-04c09ec717d2}</Project>
+      <Name>PairwisePlot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PathwayMap\PathwayMap.csproj">
+      <Project>{7c8bf853-6f34-4cbd-bec9-6d1aea199947}</Project>
+      <Name>PathwayMap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj">
+      <Project>{8f90089f-df30-4353-833f-220ecac7c1cf}</Project>
+      <Name>Splash</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Accord">
+      <Version>3.8.0</Version>
+    </PackageReference>
+    <PackageReference Include="Accord.Statistics">
+      <Version>3.8.0</Version>
+    </PackageReference>
+    <PackageReference Include="Extended.Wpf.Toolkit">
+      <Version>2.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="gong-wpf-dragdrop">
+      <Version>1.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/Msp20221205132019_conventional_converted.lbm2</Lbm2Url>
+    </PropertyGroup>
+    <ItemGroup>
+      <_DeployToItem Include="$(TargetDir)\*.lbm*" />
+    </ItemGroup>
+    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
+    <Exec Command="xcopy &quot;$(ProjectDir)CytoscapeLocalBrowser&quot; &quot;$(TargetDir)CytoscapeLocalBrowser&quot; /D/E/C/I/H/Y" />
+  </Target>
+  <ItemGroup>
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\accord\3.8.0\lib\net462\Accord.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\accord.math\3.8.0\lib\net462\Accord.Math.Core.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\accord.math\3.8.0\lib\net462\Accord.Math.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\accord.statistics\3.8.0\lib\net462\Accord.Statistics.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\BarChart\bin\Debug\net472\BarChart.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\BinVestigateRestApiStandard\bin\Debug\netstandard2.0\BinVestigateRestApi.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\ChartDrawing\bin\Debug\net472\ChartDrawing.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\ChromatogramUI\bin\Debug\net48\Chromatogram.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\CommonStandard\bin\Debug\net48\Common.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\CommonMVVM\bin\Debug\net472\CommonMVVM.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\commonservicelocator\2.0.5\lib\net48\CommonServiceLocator.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\DatabaseStandard\bin\Debug\netstandard2.0\Database.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\DataProcessingStandard\bin\Debug\netstandard2.0\DataProcessing.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\gong-wpf-dragdrop\1.1.0\lib\net46\GongSolutions.Wpf.DragDrop.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\IsotopeRatioCalculatorStandard\bin\Debug\netstandard2.0\IsotopeRatioCalculator.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\masslynxsdk.x64\4.7.0\lib\MassLynxRawSDK.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MassSpectrogram\bin\Debug\net472\MassSpectrogram.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MathematicsStandard\bin\Debug\netstandard2.0\Mathematics.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\mathnet.numerics.signed\4.9.0\lib\net461\MathNet.Numerics.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\messagepack\1.7.3.7\lib\net47\MessagePack.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\enterpriselibrary.common\5.0.505\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Common.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\enterpriselibrary.validation\5.0.505\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Validation.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\unity\2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\unity\2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\unity.interception\2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\unity.interception\2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\microsoft.xaml.behaviors.wpf\1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MolecularFormulaFinderStandard\bin\Debug\net472\MolecularFormulaFinder.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MolViewer\bin\Debug\net472\MolViewer.exe" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MonaExport\bin\Debug\net472\MonaExport.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MonaRestApi\bin\Debug\net472\MonaRestApi.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsdialCommon\bin\Debug\MsdialCommon.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsdialGcmsProcessStandard\bin\Debug\netstandard2.0\MsdialGcmsProcess.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsdialLcmsProcessStandard\bin\Debug\netstandard2.0\MsdialLcmsProcess.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\NCDK.Display\bin\Debug\net472\NCDK.Display.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\NCDK\bin\Debug\net472\NCDK.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\newtonsoft.json\13.0.3\lib\net45\Newtonsoft.Json.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\PairwisePlot\bin\Debug\net472\PairwisePlot.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\PathwayMap\bin\Debug\net472\PathwayMap.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\PdfExporter\bin\Debug\net472\PdfExporter.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\pdfsharp\1.50.5147\lib\net20\PdfSharp.Charting.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\pdfsharp\1.50.5147\lib\net20\PdfSharp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\prism.core\7.2.0.1422\lib\net45\Prism.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\prism.wpf\7.2.0.1422\lib\net45\Prism.Wpf.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\rawdatahandler\1.2.9013.327\lib\net48\RawDataHandler.dll" />
+    <ReferencePath Include="F:\MS-DIAL5\MsdialWorkbench\src\Common\spectra-hash\splash\bin\x86\Debug\net472\Splash.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.buffers\4.5.1\ref\net45\System.Buffers.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.ComponentModel.DataAnnotations.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Configuration.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Data.OracleClient.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\stub.system.data.sqlite.core.netframework\1.0.115.5\lib\net46\System.Data.SQLite.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.IO.Compression.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Net.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Net.Http.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\microsoft.net.http\2.2.29\lib\net45\System.Net.Http.Extensions.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\microsoft.net.http\2.2.29\lib\net45\System.Net.Http.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Net.Http.WebRequest.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Numerics.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.runtime.compilerservices.unsafe\4.5.3\ref\net461\System.Runtime.CompilerServices.Unsafe.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Runtime.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Serialization.Primitives.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.security.accesscontrol\4.7.0\ref\net461\System.Security.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Security.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.security.permissions\4.7.0\ref\net461\System.Security.Permissions.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.security.principal.windows\4.7.0\ref\net461\System.Security.Principal.Windows.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.ServiceProcess.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.threading.tasks.extensions\4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Transactions.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\system.valuetuple\4.5.0\ref\net47\System.ValueTuple.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Controls.Ribbon.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Forms.DataVisualization.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Forms.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\prism.wpf\7.2.0.1422\lib\net45\System.Windows.Interactivity.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Xml.Linq.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationClient.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationClientsideProviders.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationProvider.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationTypes.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsBase.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsFormsIntegration.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.AvalonDock.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.DataGrid.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\extended.wpf.toolkit\2.9.0\lib\net40\Xceed.Wpf.Toolkit.dll" />
+    <ReferencePath Include="C:\Users\mikikot\.nuget\packages\zlib.net\1.0.3\lib\zlib.net.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\Microsoft.Win32.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\netstandard.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.AppContext.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Collections.Concurrent.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Collections.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Collections.NonGeneric.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Collections.Specialized.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ComponentModel.Annotations.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ComponentModel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ComponentModel.EventBasedAsync.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ComponentModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ComponentModel.TypeConverter.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Console.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Data.Common.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.Contracts.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.Debug.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.FileVersionInfo.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.Process.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.StackTrace.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.TextWriterTraceListener.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.Tools.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Diagnostics.TraceSource.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Drawing.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Dynamic.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Globalization.Calendars.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Globalization.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Globalization.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.Compression.ZipFile.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.FileSystem.DriveInfo.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.FileSystem.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.FileSystem.Watcher.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.IsolatedStorage.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.MemoryMappedFiles.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.Pipes.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.IO.UnmanagedMemoryStream.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Linq.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Linq.Expressions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Linq.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Linq.Queryable.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Http.Rtc.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.NameResolution.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.NetworkInformation.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Ping.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Requests.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Security.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.Sockets.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.WebHeaderCollection.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.WebSockets.Client.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Net.WebSockets.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ObjectModel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.Emit.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.Emit.ILGeneration.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.Emit.Lightweight.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Reflection.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Resources.Reader.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Resources.ResourceManager.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Resources.Writer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.CompilerServices.VisualC.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Handles.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.InteropServices.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.InteropServices.WindowsRuntime.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Serialization.Formatters.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Serialization.Json.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Runtime.Serialization.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Claims.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Cryptography.Algorithms.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Cryptography.Csp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Cryptography.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Cryptography.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Cryptography.X509Certificates.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.Principal.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Security.SecureString.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ServiceModel.Duplex.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ServiceModel.Http.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ServiceModel.NetTcp.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ServiceModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.ServiceModel.Security.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Text.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Text.Encoding.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Text.RegularExpressions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.Overlapped.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.Tasks.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.Tasks.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.Thread.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.ThreadPool.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Threading.Timer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.ReaderWriter.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.XDocument.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.XmlDocument.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.XmlSerializer.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.XPath.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\Facades\System.Xml.XPath.XDocument.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\BinVestigate\BinVestigateSpectrumSearchWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\BinVestigate\BinVestigateStatisticsBrowserWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Developlment\BrowseSmootherAndBaselineCorrectionWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\EIMS search\EimsSearchWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\AlignmentResultExportWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\CopyImageAsWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\CopySpectraTableAsWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\LipoqualityDatabaseFormatExportWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\MrmprobsExportWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\PeaklistExportWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\SaveDataTableAsTextWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\SaveImageAsWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\SaveSpectraTableAsWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Export\StoreMsAnnotationTagsWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\AifViewerControl.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\CorrDec\AskDecMethodWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\CorrDec\CorrDecSetting.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\ExperimentConfigViewer.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\Export\ParticularAlignmentSpotExporterWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MSMS Search\MsmsSearchForAIF.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\CorrelationDecResMsVIewerForAif.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MassSpectrogramAlignmentForAif.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MassSpectrogramAlignmentUC.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MassSpectrogramRawVsDecUC.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MassSpectrogramUserControl.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\Ms2ChromatogramForAIF.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\Ms2ChromatogramUC.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MsFinderExporterSettingWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\MsViewerForAIF.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\SampleTableViewerInAlignment.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ForAIF\MsViewer\ScrollMs1ChromatogramForAif.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Fragment searcher\FragmentQuerySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Help\HelpAboutWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Lipid database\LipidDbSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Lipid database\LipoqualitySpectrumSearchWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Lipid database\LipoqualityStatisticsBrowserWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\MainWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ManualPeakMod\AlignedPeakCorrectionWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ManualPeakMod\ChromatogramManualPeakPickViewer.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Molecular networking\MolecularNetworkExportWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Molecular networking\MolecularNetworkSettingWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\MSMS search\MsmsSearchWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Normalization\GcmsNormalizationPropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Normalization\LcmsNormalizationPropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Normalization\LowessSpanSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Normalization\NormalizationSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Normalization\SplashSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Online database\DownloadOnlineMsMsRecordWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for GC\AnalysisParamSetForGcWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for GC\RetentionIndexDictionarySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for LC\AdvancedLibrarySearchOptionWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for LC\AgilentCcsCalibrationSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for LC\AnalysisParamSetForLcWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for LC\UserDefinedAdductSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Parameter for LC\WatersCcsCalibrationSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Pathway\MetabolicPathwaySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Pathway\PathwayMapWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\PosNegAmalgamator\PosNegAmalgamatorSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Progress bar\ProgressBarEach.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Progress bar\ProgressBarMultiContainerWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Progress bar\ProgressBarWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\AnalysisFilePropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\FileClassSettingWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\FilePropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\GcmsIdentificationPropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\LcmsIdentificationPropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Property\ProjectPropertySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Quantmass browser\QuantmassBrowser.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\RetentionTimeCorrection\RetentionTimeCorrectionWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\ShortMessageWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\StartUp\StartUpWindow.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\HcaResultWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\HcaSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\Hca\HcaHeatmap.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\MultivariateAnalysisResultWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\PcaSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\PlsSetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\StatisticsBarchartWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\Statistics\StatisticsPairwisePlotWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\TableViewer\AdditionalFilteringSetting.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\TableViewer\AlignmentSpotTableViewer.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\TableViewer\IdentifiedCompoundGroup.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\TableViewer\PeakSpotTableViewer.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\TableViewer\SpotRelationTable.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\View\ExtractedIonChromatogramDisplaySetWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\View\ExtractedIonChromatogramDisplayWin.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\View\RangeSlider.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\App.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\MSDIAL_Content.g.cs" />
+    <Compile Include="F:\MS-DIAL5\MsdialWorkbench\src\MSDIAL4\MsDial\obj\Debug\net48\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Users\mikikot\.nuget\packages\messagepackanalyzer\1.6.0\analyzers\dotnet\cs\MessagePackAnalyzer.dll" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

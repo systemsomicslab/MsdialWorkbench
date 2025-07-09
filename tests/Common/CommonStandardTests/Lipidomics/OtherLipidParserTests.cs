@@ -169,11 +169,11 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
 
-            lipid = parser.Parse("TG 12:0/16:1;O(FA 18:1)/14:0"); 
+            lipid = parser.Parse("TG 12:0_14:0_16:1;O(FA 18:1)");
             Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
 
-            lipid = parser.Parse("TG 12:0_14:0_16:1;O(FA 18:1)");
+            lipid = parser.Parse("TG 12:0/16:1;O(FA 18:1)/14:0"); 
             Assert.AreEqual(1000.8670, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.TG_EST, lipid.LipidClass);
         }

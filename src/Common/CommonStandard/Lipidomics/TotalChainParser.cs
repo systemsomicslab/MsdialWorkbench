@@ -106,7 +106,7 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 
-        private PositionLevelChains ParsePositionLevelChains(GroupCollection groups) {
+        protected PositionLevelChains ParsePositionLevelChains(GroupCollection groups) {
             var matches = groups["Chain"].Captures.Cast<Capture>().ToArray();
             if (HasSphingosine) {
                 if (SphingoParser.Parse(matches[0].Value) is IChain sphingo) {
@@ -125,7 +125,7 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        private MolecularSpeciesLevelChains ParseMolecularSpeciesLevelChains(GroupCollection groups) {
+        protected MolecularSpeciesLevelChains ParseMolecularSpeciesLevelChains(GroupCollection groups) {
             return new MolecularSpeciesLevelChains(
                 groups["Chain"].Captures.Cast<Capture>()
                     .Select(c => AlkylParser.Parse(c.Value) ?? AcylParser.Parse(c.Value))
