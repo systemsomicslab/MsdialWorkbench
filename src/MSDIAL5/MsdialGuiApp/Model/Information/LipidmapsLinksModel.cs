@@ -42,7 +42,7 @@ public sealed class LipidmapsLinksModel : DisposableModelBase
 
         Disposables.Add(
             molecule.Select(m => {
-                if (m is null) {
+                if (m?.Name is null) {
                     return Observable.Return((hasItems: false, retrieving: false));
                 }
                 return Observable.Create<(bool hasItems, bool retrieving)>(observer => {

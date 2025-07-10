@@ -14,9 +14,14 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
                     <TextBlock>
+                        <Run Text="{Binding Path=Name, Mode=OneWay}"/>
                         <Hyperlink NavigateUri="{Binding Path=Uri}"
                                    RequestNavigate="Hyperlink_RequestNavigate">
-                            <Run Text="{Binding Path=Name, Mode=OneWay}"/>
+                            <Run Text=" (LIPIDMAPS)"/>
+                        </Hyperlink>
+                        <Hyperlink NavigateUri="{Binding Path=PubChemCID}"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            <Run Text=" (PubChem)"/>
                         </Hyperlink>
                     </TextBlock>
                 </DataTemplate>

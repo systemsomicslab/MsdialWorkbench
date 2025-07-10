@@ -48,7 +48,7 @@ public sealed class LipidmapsRestAPIHandler
         var (lipid, abbrev) = GetLipidNameAndAnnotationLevel(rawlipid);
         var builder = new UriBuilder(_baseUri)
         {
-            Path = $"{abbrev}{lipid}/name,sys_name,lm_id,pubchem_id/json"
+            Path = $"{abbrev}{lipid}/name,sys_name,lm_id,pubchem_cid/json"
         };
         Uri requestUri = builder.Uri;
 
