@@ -240,7 +240,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
                 var handler = new LipidmapsRestAPIHandler();
-                LipidmapsLinksModel = new LipidmapsLinksModel(handler, target).AddTo(Disposables);
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
             }
 
             if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {

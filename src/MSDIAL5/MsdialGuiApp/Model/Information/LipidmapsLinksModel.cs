@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using Reactive.Bindings.Extensions;
@@ -34,7 +35,7 @@ public sealed class LipidmapsLinksModel : DisposableModelBase
     /// <param name="handler">The <see cref="LipidmapsRestAPIHandler"/> used to perform API requests to the Lipidmaps database.</param>
     /// <param name="molecule">An observable sequence of <see cref="IMoleculeProperty"/> instances representing the molecules for which lipid
     /// data is retrieved.</param>
-    public LipidmapsLinksModel(LipidmapsRestAPIHandler handler, IObservable<IMoleculeProperty?> molecule) {
+    public LipidmapsLinksModel(LipidmapsRestAPIHandler handler, IObservable<MsScanMatchResult?> molecule) {
         _handler = handler;
         _currentItems = new Subject<LipidmapsLinkItem[]>().AddTo(Disposables);
         CurrentItems = _currentItems;

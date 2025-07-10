@@ -224,7 +224,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             CompoundDetailModel = compoundDetailModel;
             if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
                 var handler = new LipidmapsRestAPIHandler();
-                LipidmapsLinksModel = new LipidmapsLinksModel(handler, selectedSpectrum.Select(s => s?.Molecule)).AddTo(_disposables);
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, selectedSpectrum.Select(s => s?.MatchResults.Representative)).AddTo(_disposables);
             }
 
             if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {

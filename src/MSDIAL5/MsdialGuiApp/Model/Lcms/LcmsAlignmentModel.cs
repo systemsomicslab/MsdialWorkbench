@@ -248,7 +248,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
                 var handler = new LipidmapsRestAPIHandler();
-                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target).AddTo(Disposables);
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
             }
 
             if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
