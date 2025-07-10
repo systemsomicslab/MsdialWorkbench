@@ -66,12 +66,20 @@ public sealed class LipidmapsLinksModel : DisposableModelBase
     /// <summary>
     /// Gets a value indicating whether the retrieval process is currently active.
     /// </summary>
-    public bool Retrieving { get; private set; }
+    public bool Retrieving {
+        get => _retrieving;
+        private set => SetProperty(ref _retrieving, value);
+    }
+    private bool _retrieving;
 
     /// <summary>
     /// Gets a value indicating whether the collection contains any items.
     /// </summary>
-    public bool HasItems { get; private set; }
+    public bool HasItems {
+        get => _hasItems;
+        private set => SetProperty(ref _hasItems, value);
+    }
+    private bool _hasItems;
 
     /// <summary>
     /// Gets an observable sequence of the current Lipidmaps link items.

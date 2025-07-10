@@ -9,23 +9,59 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LipidmapsLinkViewModel}}"
              d:DesignHeight="240" d:DesignWidth="360">
-    <ScrollViewer>
-        <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
-                    <TextBlock>
-                        <Run Text="{Binding Path=Name, Mode=OneWay}"/>
-                        <Hyperlink NavigateUri="{Binding Path=Uri}"
-                                   RequestNavigate="Hyperlink_RequestNavigate">
-                            <Run Text=" (LIPIDMAPS)"/>
-                        </Hyperlink>
-                        <Hyperlink NavigateUri="{Binding Path=PubChemCID}"
-                                   RequestNavigate="Hyperlink_RequestNavigate">
-                            <Run Text=" (PubChem)"/>
-                        </Hyperlink>
-                    </TextBlock>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <ScrollViewer>
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Retrieving.Value}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            <Grid>
+                <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}" Margin="4,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
+                            <TextBlock TextWrapping="WrapWithOverflow">
+                                <Run Text="{Binding Path=Name, Mode=OneWay}"/>
+                                <Run Text="(" FontSize="10"/>
+                                <Hyperlink NavigateUri="{Binding Path=Uri}"
+                                           RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="LIPID MAPS" FontSize="10"/>
+                                </Hyperlink>
+                                <Run Text="," FontSize="10"/>
+                                <Hyperlink NavigateUri="{Binding Path=PubChemCID}"
+                                           RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="PubChem" FontSize="10"/>
+                                </Hyperlink>
+                                <Run Text=")" FontSize="10"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <TextBlock Text="No available links." FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=HasItems.Value}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </ScrollViewer>
+                   
+        <Control Visibility="{Binding Path=Retrieving.Value, Converter={StaticResource BooleanToVisibility}}"
+                 Style="{StaticResource ResourceKey=LoadingControlStyle}"/>
+    </Grid>
 </UserControl>

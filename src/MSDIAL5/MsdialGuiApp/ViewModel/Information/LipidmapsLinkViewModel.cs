@@ -13,7 +13,12 @@ public sealed class LipidmapsLinkViewModel : ViewModelBase
         _model = model;
 
         CurrentItems = model.CurrentItems.ToReadOnlyReactivePropertySlim([]).AddTo(Disposables);
+        Retrieving = model.ObserveProperty(m => m.Retrieving).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        HasItems = model.ObserveProperty(m => m.HasItems).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
     }
 
     public ReadOnlyReactivePropertySlim<LipidmapsLinkItem[]> CurrentItems { get; }
+
+    public ReadOnlyReactivePropertySlim<bool> Retrieving { get; }
+    public ReadOnlyReactivePropertySlim<bool> HasItems { get; }
 }
