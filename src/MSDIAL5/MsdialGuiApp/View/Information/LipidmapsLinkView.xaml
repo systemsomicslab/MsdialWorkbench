@@ -9,9 +9,8 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LipidmapsLinkViewModel}}"
              d:DesignHeight="240" d:DesignWidth="360">
-    <Grid>
-        <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+    <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
                     <TextBlock>
@@ -23,5 +22,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

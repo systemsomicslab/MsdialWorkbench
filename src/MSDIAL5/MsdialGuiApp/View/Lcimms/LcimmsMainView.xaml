@@ -320,7 +320,7 @@
                 <Grid Grid.Column="1">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" MinHeight="235" />
+                        <RowDefinition Height="235" MinHeight="235" />
                         <RowDefinition Height="*" MinHeight="300" />
                     </Grid.RowDefinitions>
 
