@@ -17,6 +17,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive.Linq;
@@ -98,9 +99,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            } 
+            if (model.MoleculeStructureModel is not null) {
+                MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
+            }
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);

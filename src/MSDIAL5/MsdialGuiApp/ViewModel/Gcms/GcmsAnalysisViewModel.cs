@@ -15,8 +15,10 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -46,9 +48,17 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { peakInformationViewModel, compoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            }
+            if (model.MoleculeStructureModel is not null) {
+                var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(moleculeStructureViewModel);
+            }
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = [peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel,];
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);

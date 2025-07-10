@@ -70,7 +70,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
             if (model.LipidmapsLinksModel is not null) {
                 peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
@@ -79,6 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
                 peakDetailViewModels.Add(MoleculeStructureViewModel);
             }
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             peakDetailViewModels.Add(matchResultCandidatesViewModel);
             PeakDetailViewModels = [.. peakDetailViewModels];
 
