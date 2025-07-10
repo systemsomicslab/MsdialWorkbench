@@ -24,7 +24,7 @@
                 </Style>
             </ScrollViewer.Style>
             <Grid>
-                <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}" Margin="4,0">
+                <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}" Margin="4,0" Focusable="False">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
                             <TextBlock TextWrapping="WrapWithOverflow">
