@@ -276,8 +276,10 @@ namespace CompMs.MsdialCore.Export
             var chargeChar = feature.AdductType.IonMode == IonMode.Positive ? "+" : "-";
             var chargeString = feature.AdductType.ChargeNumber + chargeChar;
 
+            sw.WriteLine("SCANS=" + feature.MasterAlignmentID); // gnps
             sw.WriteLine("TITLE=" + nameField + "|" + commentField);
             sw.WriteLine("PEPMASS=" + feature.MassCenter);
+            sw.WriteLine("MSLEVEL=2"); // gnps
             sw.WriteLine("ION=" + feature.AdductType.AdductIonName);
             sw.WriteLine("CHARGE=" + chargeString);
             WriteChromXFieldAsMGF(sw, feature.TimesCenter, feature.CollisionCrossSection);
@@ -292,7 +294,7 @@ namespace CompMs.MsdialCore.Export
             if (chromXs.RI.Value > 0)
                 sw.WriteLine("RETENTIONINDEX=" + chromXs.RI.Value);
             if (chromXs.Drift.Value > 0) {
-                sw.WriteLine("MOBILITY=" + chromXs.Drift.Value);
+                sw.WriteLine("DRIFTTIME=" + chromXs.Drift.Value);
                 sw.WriteLine("CCS=" + ccs);
             }
         }
