@@ -79,19 +79,19 @@ public sealed class AlignmentGnpsExporter {
 
         var edge_peakshape = Path.Combine(directory, filename + "_peakshape.csv");
         using (var stream = File.Open(edge_peakshape, FileMode.Create, FileAccess.Write)) {
-            ExportPeakShapeEdges(stream, edges);
+            edges.ExportPeakShapeEdges(stream);
         }
         var edge_ioncorrelation = Path.Combine(directory, filename + "_ioncorrelation.csv");
         using (var stream = File.Open(edge_ioncorrelation, FileMode.Create, FileAccess.Write)) {
-            ExportIonCorrelationEdges(stream, edges);
+            edges.ExportIonCorrelationEdges(stream);
         }
         var edge_insource = Path.Combine(directory, filename + "_insource.csv");
         using (var stream = File.Open(edge_insource, FileMode.Create, FileAccess.Write)) {
-            ExportInsourceEdges(stream, edges);
+            edges.ExportInsourceEdges(stream);
         }
         var edge_adduct = Path.Combine(directory, filename + "_adduct.csv");
         using (var stream = File.Open(edge_adduct, FileMode.Create, FileAccess.Write)) {
-            ExportAdductEdges(stream, edges);
+            edges.ExportAdductEdges(stream);
         }
     }
 
@@ -116,7 +116,7 @@ public sealed class AlignmentGnpsExporter {
             alignedMsdecResults);
     }
 
-    private static List<GnpsEdge> BuildGnpsEdges(IReadOnlyList<AlignmentSpotProperty> spots) {
+    public static GnpsEdges BuildGnpsEdges(IReadOnlyList<AlignmentSpotProperty> spots) {
         var isIonMobility = spots[0].IsMultiLayeredData();
         var edges = new List<GnpsEdge>();
 
@@ -254,46 +254,51 @@ public sealed class AlignmentGnpsExporter {
             edges = edges.GroupBy(e => e.EdgeID).Select(g => g.First()).ToList();
         }
 
-        return edges;
+        return new GnpsEdges { Edges = edges, };
     }
 
-    private static void ExportPeakShapeEdges(Stream stream, List<GnpsEdge> edges) {
-        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
-        //Header
-        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
-        foreach (var edge in edges.Where(e => e.Type == "Chromatogram-based annotation")) {
-            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
+    public sealed class  GnpsEdges
+    {
+        public List<GnpsEdge> Edges { get; set; }
+
+        public void ExportPeakShapeEdges(Stream stream) {
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
+            //Header
+            sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+            foreach (var edge in Edges.Where(e => e.Type == "Chromatogram-based annotation")) {
+                sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
+            }
+        }
+
+        public void ExportIonCorrelationEdges(Stream stream) {
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
+            //Header
+            sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+            foreach (var edge in Edges.Where(e => e.Type == "Alignment-based annotation")) {
+                sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
+            }
+        }
+
+        public void ExportInsourceEdges(Stream stream) {
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
+            //Header
+            sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+            foreach (var edge in Edges.Where(e => e.Type == "MS2-based annotation")) {
+                sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
+            }
+        }
+
+        public void ExportAdductEdges(Stream stream) {
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
+            //Header
+            sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+            foreach (var edge in Edges.Where(e => e.Type == "Adduct annotation")) {
+                sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
+            }
         }
     }
 
-    private static void ExportIonCorrelationEdges(Stream stream, List<GnpsEdge> edges) {
-        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
-        //Header
-        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
-        foreach (var edge in edges.Where(e => e.Type == "Alignment-based annotation")) {
-            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
-        }
-    }
-
-    private static void ExportInsourceEdges(Stream stream, List<GnpsEdge> edges) {
-        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
-        //Header
-        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
-        foreach (var edge in edges.Where(e => e.Type == "MS2-based annotation")) {
-            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
-        }
-    }
-
-    private static void ExportAdductEdges(Stream stream, List<GnpsEdge> edges) {
-        using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
-        //Header
-        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
-        foreach (var edge in edges.Where(e => e.Type == "Adduct annotation")) {
-            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
-        }
-    }
-
-    private sealed class GnpsEdge {
+    public sealed class GnpsEdge {
         public int SourceID { get; set; }
         public int TargetID { get; set; }
         public string Type { get; set; }
