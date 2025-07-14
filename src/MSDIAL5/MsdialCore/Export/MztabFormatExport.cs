@@ -35,6 +35,7 @@ namespace CompMs.MsdialCore.Export
                 }
             }
         }
+        public MztabFormatExporter() { }
         private const string DEFAULT_SEPARATOR = "\t";
 
         private const string mztabVersion = "2.0.0-M";
@@ -200,10 +201,17 @@ namespace CompMs.MsdialCore.Export
             var smfIDrefs = metadata["Alignment ID"];
             var chemicalName = metadata["Metabolite name"];
             chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
+            var databaseIdentifier = "null";
+            var LibraryID = spot?.MatchResults?.Representative.LibraryID;
+            var rep = spot?.MatchResults?.Representative;
+            if (rep != null &&
+                rep.AnnotatorID != null &&
+                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
+                !string.IsNullOrEmpty(rep.Name))
+            {
+                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+            }
 
-            var databaseIdentifier = spot.MatchResults.Representative.AnnotatorID is not null
-                ? _annotatorID2DataBaseID[spot.MatchResults.Representative.AnnotatorID!] + ":" + spot.MatchResults.Representative.Name.Split('|').Last()
-                : "null";
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
 
@@ -213,12 +221,9 @@ namespace CompMs.MsdialCore.Export
             var bestIdConfidenceMeasure = "null";
             var theoreticalNeutralMass = "null";
 
-            var textLibId = spot.MatchResults.TextDbID;
-            var mspLibraryID = spot.MatchResults.MspID;
-
             var adductIons = SetAdductTypeString(metadata["Adduct type"]?.ToString() ?? "null");
 
-            if (textLibId >= 0 && meta.TextDBFilePath != "")
+            if (LibraryID != null && LibraryID > 0 && rep.Source == SourceType.TextDB)
             {
                 reliability = "annotated by user-defined text library";
                 bestIdConfidenceMeasure = idConfidenceDefault;
@@ -444,7 +449,15 @@ namespace CompMs.MsdialCore.Export
             var rank = "1"; // need to consider
 
 
-            var databaseIdentifier = _annotatorID2DataBaseID[spot.MatchResults.Representative.AnnotatorID] + ":" + repName;
+            var databaseIdentifier = "null";
+            var rep = spot?.MatchResults?.Representative;
+            if (rep != null &&
+                rep.AnnotatorID != null &&
+                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
+                !string.IsNullOrEmpty(rep.Name))
+            {
+                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+            }
 
             var SmeLine = new List<string>() {
                     smePrefix,smeID.ToString(), evidenceInputID.ToString(), databaseIdentifier,
@@ -459,7 +472,7 @@ namespace CompMs.MsdialCore.Export
 
         }
 
-        private void WriteMtdSection(
+        protected void WriteMtdSection(
             StreamWriter sw,
             string mzTabId,
             ParameterBase meta,
