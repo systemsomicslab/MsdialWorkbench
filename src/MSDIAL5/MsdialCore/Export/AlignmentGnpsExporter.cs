@@ -251,7 +251,7 @@ public sealed class AlignmentGnpsExporter {
         }
 
         if (edges.Count > 0) {
-            edges = edges.GroupBy(n => n.EdgeID).Select(g => g.First()).ToList();
+            edges = edges.GroupBy(e => e.EdgeID).Select(g => g.First()).ToList();
         }
 
         return edges;
@@ -260,44 +260,36 @@ public sealed class AlignmentGnpsExporter {
     private static void ExportPeakShapeEdges(Stream stream, List<GnpsEdge> edges) {
         using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
-        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-        sw.WriteLine(String.Join(",", header.ToArray()));
-        foreach (var edge in edges.Where(n => n.Type == "Chromatogram-based annotation")) {
-            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-            sw.WriteLine(String.Join(",", field));
+        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+        foreach (var edge in edges.Where(e => e.Type == "Chromatogram-based annotation")) {
+            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
         }
     }
 
     private static void ExportIonCorrelationEdges(Stream stream, List<GnpsEdge> edges) {
         using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
-        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-        sw.WriteLine(String.Join(",", header.ToArray()));
-        foreach (var edge in edges.Where(n => n.Type == "Alignment-based annotation")) {
-            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-            sw.WriteLine(String.Join(",", field));
+        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+        foreach (var edge in edges.Where(e => e.Type == "Alignment-based annotation")) {
+            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
         }
     }
 
     private static void ExportInsourceEdges(Stream stream, List<GnpsEdge> edges) {
         using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
-        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-        sw.WriteLine(String.Join(",", header.ToArray()));
-        foreach (var edge in edges.Where(n => n.Type == "MS2-based annotation")) {
-            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-            sw.WriteLine(String.Join(",", field));
+        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+        foreach (var edge in edges.Where(e => e.Type == "MS2-based annotation")) {
+            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
         }
     }
 
     private static void ExportAdductEdges(Stream stream, List<GnpsEdge> edges) {
         using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
         //Header
-        var header = new List<string>() { "ID1", "ID2", "EdgeType", "Score", "Annotation" };
-        sw.WriteLine(String.Join(",", header.ToArray()));
-        foreach (var edge in edges.Where(n => n.Type == "Adduct annotation")) {
-            var field = new List<string>() { edge.SourceID.ToString(), edge.TargetID.ToString(), edge.Type, edge.Score, edge.Annotation };
-            sw.WriteLine(String.Join(",", field));
+        sw.WriteLine("ID1,ID2,EdgeType,Score,Annotation");
+        foreach (var edge in edges.Where(e => e.Type == "Adduct annotation")) {
+            sw.WriteLine($"{edge.SourceID.ToString()},{edge.TargetID.ToString()},{edge.Type},{edge.Score},{edge.Annotation}");
         }
     }
 
