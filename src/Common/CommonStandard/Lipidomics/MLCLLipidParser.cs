@@ -40,7 +40,7 @@ namespace CompMs.Common.Lipidomics
                 var matchSub = patternSub.Match(lipidStr);
                 if (matchSub.Success)
                 {
-                    match = pattern.Match(lipidStr.Replace("_", "/"));
+                    match = pattern.Match(lipidStr.Replace("_", "/"));  //temporary change to PositionLevelChains
                     var group = match.Groups;
                     var groupSub = matchSub.Groups;
                     if (groupSub["sn2sn3"].Value != "")

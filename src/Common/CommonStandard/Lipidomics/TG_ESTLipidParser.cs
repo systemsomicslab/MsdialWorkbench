@@ -138,7 +138,7 @@ namespace CompMs.Common.Lipidomics
                     chains.Add(parsed);
                 }
             }
-            chains.Add((IChain)fahfaChains);
+            chains.AddRange(fahfaChains);
             return new PositionLevelChains(chains.ToArray()); // Need to fix the order of Chain. The last two are fahfa chains.
         }
 

@@ -876,23 +876,40 @@
             <LbmClass>BMP</LbmClass>
         </LbmClasses>
     </Lipid>
-    <Lipid>
-        <Name>GM3</Name>
-        <Abbreviation>GM3</Abbreviation>
-        <Chains>
-            <Ceramide/>
-            <Total>2</Total>
-        </Chains>
-        <Skelton>
-            <Carbon>23</Carbon>
-            <Hydrogen>37</Hydrogen>
-            <Oxygen>18</Oxygen>
-            <Nitrogen>1</Nitrogen>
-        </Skelton>
-        <LbmClasses>
-            <LbmClass>GM3</LbmClass>
-        </LbmClasses>
-    </Lipid>
+	<Lipid>
+		<Name>GM3</Name>
+		<Abbreviation>GM3</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>23</Carbon>
+			<Hydrogen>37</Hydrogen>
+			<Oxygen>18</Oxygen>
+			<Nitrogen>1</Nitrogen>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>GM3</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>CerP</Name>
+		<Abbreviation>CerP</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>0</Carbon>
+			<Hydrogen>1</Hydrogen>
+			<Oxygen>3</Oxygen>
+			<Phosphorus>1</Phosphorus>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>CerP</LbmClass>
+		</LbmClasses>
+	</Lipid>
 	<Lipid>
 		<Name>GD1a</Name>
 		<Abbreviation>GD1a</Abbreviation>

@@ -1425,6 +1425,32 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
+    public class CerPLipidParser : ILipidParser {
+        public string Target { get; } = "CerP";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
+        public static readonly string Pattern = $"^CerP\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 0,
+            MassDiffDictionary.HydrogenMass * 1,
+            MassDiffDictionary.OxygenMass * 3,
+            MassDiffDictionary.PhosphorusMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.CerP, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
     public class GD1aLipidParser : ILipidParser {
         public string Target { get; } = "GD1a";
 
