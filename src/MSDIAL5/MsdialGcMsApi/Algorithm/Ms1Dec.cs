@@ -4,6 +4,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +23,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var removed = new bool[results.Count];
                 for (int i = 0; i < results.Count; i++) {
                     for (int j = i + 1; j < results.Count; j++) {
-                        if (removed[i] || removed[j]) {
+                        if (removed[i] || removed[j]
+                            || Math.Abs(results[i].ChromXs.RT.Value - results[j].ChromXs.RT.Value) <= _parameter.FirstColumnRetentionTimeTolerance) {
                             continue;
                         }
                         var dotproduct = MsScanMatching.GetWeightedDotProduct(results[i], results[j], _parameter.CentroidMs1Tolerance, 0d, double.MaxValue);
