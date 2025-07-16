@@ -37,9 +37,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes, MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes, MsRefSearchParameterBase parameter) {
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
@@ -86,9 +86,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 Name = reference.Name,
                 LibraryID = reference.ScanID,
                 InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct,
-                ReverseDotProduct = (float)reverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct,
+                SquaredSimpleDotProduct = (float)sqsimpleDotProduct,
+                SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0],
                 MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity,
@@ -188,17 +188,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
            
             if (omics == TargetOmics.Lipidomics) {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff;
-                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SimpleDotProductCutOff) {
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                || result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                || result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff;
+                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SquaredSimpleDotProduct < parameter.SquaredSimpleDotProductCutOff) {
                     result.IsSpectrumMatch = false;
                 }
             }
             else {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
             }

@@ -50,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             KeepOriginalPrecurosrIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.KeepOriginalPrecurosrIsotopes).AddTo(Disposables);
 
+            ExecuteChromDeconvolution = model.ToReactivePropertySlimAsSynchronized(m => m.ExecuteChromDeconvolution).AddTo(Disposables);
+
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             ObserveHasErrors = new[]
@@ -70,6 +72,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 RemoveAfterPrecursor.ToUnit(),
                 KeptIsotopeRange.ToUnit(),
                 KeepOriginalPrecurosrIsotopes.ToUnit(),
+                ExecuteChromDeconvolution.ToUnit(),
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -108,6 +111,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> KeptIsotopeRange { get; }
 
         public ReactivePropertySlim<bool> KeepOriginalPrecurosrIsotopes { get; }
+
+        public ReactivePropertySlim<bool> ExecuteChromDeconvolution { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

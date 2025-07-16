@@ -2205,7 +2205,7 @@ namespace CompMs.Common.Lipidomics
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // seek [M-CH3]-
-                    var threshold = 10.0;
+                    var threshold = 5.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -13032,12 +13032,9 @@ AdductIon adduct)
                                 }
                             }
                         }
-                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("SHexCer", LbmClass.SHexCer, hydrogenString, theoreticalMz, adduct,
-                            totalCarbon, totalDoubleBond, acylOxidized, candidates, 2);
-
                     }
-
-
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SHexCer", LbmClass.SHexCer, hydrogenString, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, acylOxidized, candidates, 2);
                 }
             }
             else

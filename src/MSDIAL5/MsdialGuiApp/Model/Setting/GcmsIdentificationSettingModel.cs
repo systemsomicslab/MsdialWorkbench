@@ -300,7 +300,7 @@ namespace CompMs.App.Msdial.Model.Setting
             SearchParameter.RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
             SearchParameter.RtTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
             SearchParameter.Ms1Tolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance;
-            SearchParameter.WeightedDotProductCutOff = parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff;
+            SearchParameter.SquaredWeightedDotProductCutOff = parameter.RefSpecMatchBaseParam.MspSearchParam.SquaredWeightedDotProductCutOff;
             SearchParameter.TotalScoreCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff;
             SearchParameter.IsUseTimeForAnnotationScoring = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring;
             SearchParameter.IsUseTimeForAnnotationFiltering = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering;

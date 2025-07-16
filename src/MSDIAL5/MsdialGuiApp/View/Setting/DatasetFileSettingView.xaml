@@ -56,7 +56,7 @@
                     HorizontalAlignment="Left" VerticalAlignment="Center" Height="24" Width="64" Margin="8,0"
                     Grid.Row="0">
                 <ToolTipService.ToolTip>
-                    <ToolTip Content="Select analysis files (now abf format only). Here, you have the only chance to change the name of your samples. You should change the type of samples especially for quality control samples which are also utilized for peak alignment. The remaining properties including Class ID, Analytical order, and Included can be changed after data processing." />
+                    <ToolTip Content="Select analysis files. Here, you have the only chance to change the name of your samples. You should change the type of samples especially for quality control samples which are also utilized for peak alignment. The remaining properties including Class ID, Analytical order, and Included can be changed after data processing." />
                 </ToolTipService.ToolTip>
             </Button>
         </StackPanel>
@@ -237,6 +237,27 @@
 
             </DataGrid.Columns>
         </DataGrid>
+
+        <Viewbox StretchDirection="DownOnly"
+                 IsHitTestVisible="False"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Margin="16,8"
+                 Grid.Row="1">
+            <TextBlock FontSize="24" Foreground="#888">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=AnalysisFilePropertyCollection.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Run FontFamily="Segoe MDL2 Assets" Text="&#xE8B7;"/>
+                Click 'Browse' to select files or drag and drop here
+            </TextBlock>
+        </Viewbox>
 
         <TextBox Text="{Binding SupportingMessage.Value, Mode=OneWay}"
                  TextWrapping="WrapWithOverflow"

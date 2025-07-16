@@ -714,4 +714,40 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="Control" x:Key="LoadingControlStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <TextBlock Text="&#xF16A;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                               Foreground="CadetBlue"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Width="32" Height="32"
+                               RenderTransformOrigin=".5,.5">
+                        <TextBlock.RenderTransform>
+                            <RotateTransform x:Name="ProgressTransform"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="TextBlock.Loaded">
+                            <BeginStoryboard>
+                                <BeginStoryboard.Storyboard>
+                                    <Storyboard>
+                                        <DoubleAnimation RepeatBehavior="Forever"
+                                                         Storyboard.TargetName="ProgressTransform"
+                                                         Storyboard.TargetProperty="Angle"
+                                                         To="360" Duration="0:0:2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <ExponentialEase EasingMode="EaseInOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard.Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

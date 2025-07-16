@@ -114,6 +114,7 @@ namespace CompMs.App.Msdial.Model.Search
                     foreach (var frag in SelectedStructure.FragmenterResult.FragmentPics) {
                         frag.Peak.FragmentationScore = frag.MatchedFragmentInfo.TotalLikelihood;
                         var label = MsfinderUtility.GetLabelForInsilicoSpectrum(frag.MatchedFragmentInfo.Formula, frag.MatchedFragmentInfo.RearrangedHydrogen, _adduct.IonMode, frag.MatchedFragmentInfo.AssignedAdductString);
+                        frag.Peak.Comment = frag.MatchedFragmentInfo.Smiles;
                     }
                     var msSpectrum = new MsSpectrum(SelectedStructure.FragmenterResult.FragmentPics.Select(p => p.Peak).ToList());
                     _refSpectrum.Value = msSpectrum;
@@ -145,11 +146,11 @@ namespace CompMs.App.Msdial.Model.Search
                 _filePath = filePath;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                if (fragmentOntologyDB != null && productIonDB != null)
+                if (fragmentOntologyDB is not null && productIonDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && neutralLossDB != null)
+                if (fragmentOntologyDB is not null && neutralLossDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                if (fragmentOntologyDB is not null && chemicalOntologies is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
@@ -194,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Search
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
                 SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
@@ -215,11 +216,11 @@ namespace CompMs.App.Msdial.Model.Search
                 _molecules = molecules;
                 _setAnnotationUsecase = setAnnotationUsecase;
 
-                if (fragmentOntologyDB != null && productIonDB != null)
+                if (fragmentOntologyDB is not null && productIonDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && neutralLossDB != null)
+                if (fragmentOntologyDB is not null && neutralLossDB is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
-                if (fragmentOntologyDB != null && chemicalOntologies != null)
+                if (fragmentOntologyDB is not null && chemicalOntologies is not null)
                     ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
 
                 _rawData = RawDataParcer.RawDataFileReader(filePath, parameter.AnalysisParameter);
@@ -265,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Search
                 MoleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
 
                 var _msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+                var _msGraphLabel2 = new GraphLabels(string.Empty, "m/z", "Fragment score", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.FragmentationScore));
                 SpectrumModelMs1 = new SingleSpectrumModel(internalMsFinderMs1, ms1HorizontalAxis, ms1VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 SpectrumModelMs2 = new SingleSpectrumModel(internalMsFinderMs2, ms2HorizontalAxis, ms2VerticalAxis, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Black)), _msGraphLabels).AddTo(Disposables);
                 var ms2SpectrumModel = new SingleSpectrumModel(ms2Spectrum, refMs2HorizontalAxis, ms2VerticalAxis2, new ChartHueItem(string.Empty, new ConstantBrushMapper(Brushes.Blue)), _msGraphLabels).AddTo(Disposables);
@@ -323,8 +324,8 @@ namespace CompMs.App.Msdial.Model.Search
                 }
             }
             StructureList = updatedStructureList;
-            FilteredStructureList = StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula).ToList();
-            SelectedStructure = StructureList.FirstOrDefault();
+            FilteredStructureList = [.. StructureList.Where(s => s.Formula == StructureList.FirstOrDefault().Formula)];
+            SelectedStructure = FilteredStructureList.FirstOrDefault();
             Mouse.OverrideCursor = null;
             if (StructureList.Count == 0) {
                 MessageBox.Show("No structure found");
