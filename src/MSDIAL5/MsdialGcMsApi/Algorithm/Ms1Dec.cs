@@ -26,7 +26,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                             continue;
                         }
                         var dotproduct = MsScanMatching.GetWeightedDotProduct(results[i], results[j], _parameter.CentroidMs1Tolerance, 0d, double.MaxValue);
-                        if (dotproduct > .64d) {
+                        if (dotproduct > .8d) {
                             if (chromPeakFeatures[i].PeakFeature.PeakHeightTop >= chromPeakFeatures[j].PeakFeature.PeakHeightTop) {
                                 removed[j] = true;
                             }
