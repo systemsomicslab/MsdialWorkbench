@@ -158,25 +158,31 @@ namespace MsdialPrivateConsoleApp {
                 var groups = record["Groups"] as JArray;
                 if (groups == null) continue;
 
+                var recordSum = new double[0];
+                var sampleNames = new List<string>();
+                var referenceGroupNames = new List<string>();
+
                 foreach (var group in groups) {
                     var referenceGroup = group["ReferenceGroup"] as JArray;
                     if (referenceGroup == null || referenceGroup.Count != 1) continue;
 
                     string refName = referenceGroup.First.ToString();
-                    var abundancesArray = group["Abundances"] as JArray;
+                    referenceGroupNames.Add(refName);
 
+                    var abundancesArray = group["Abundances"] as JArray;
                     if (abundancesArray == null) continue;
 
-                    // Get sample names from the first item
-                    var sampleNames = abundancesArray.First["Abundances"]
-                        .Select(s => s["SampleName"].ToString()).ToList();
-
-                    if (!headerWritten) {
-                        output.Add("MasterAlignemntID\tReferenceGroup\tUniqueIonMz\t" + string.Join("\t", sampleNames));
-                        headerWritten = true;
+                    if (sampleNames.Count == 0) {
+                        sampleNames = abundancesArray.First["Abundances"]
+                            .Select(s => s["SampleName"].ToString()).ToList();
+                        if (!headerWritten) {
+                            output.Add("MasterAlignemntID\tReferenceGroup\tUniqueIonMz\t" + string.Join("\t", sampleNames));
+                            headerWritten = true;
+                        }
+                        recordSum = new double[sampleNames.Count];
                     }
 
-                    var sumList = new double[sampleNames.Count];
+                    var groupSum = new double[sampleNames.Count];
 
                     foreach (var item in abundancesArray) {
                         var mz = item["Mz"].ToObject<double>();
@@ -185,14 +191,20 @@ namespace MsdialPrivateConsoleApp {
 
                         for (int i = 0; i < sampleNames.Count; i++) {
                             values[i] = abunds[i]["Intensity"].ToObject<double>();
-                            sumList[i] += values[i];
+                            groupSum[i] += values[i];
+                            recordSum[i] += values[i];
                         }
 
                         output.Add($"{masterId}\t{refName}\t{mz:F7}\t" + string.Join("\t", values.Select(v => v.ToString("F0"))));
                     }
 
-                    // sum line
-                    output.Add($"{masterId}\t{refName}\tsum\t" + string.Join("\t", sumList.Select(v => v.ToString("F0"))));
+                    // group sum line
+                    output.Add($"{masterId}\t{refName}\tsum\t" + string.Join("\t", groupSum.Select(v => v.ToString("F0"))));
+                }
+
+                if (referenceGroupNames.Count > 0) {
+                    var refConcat = string.Join("|", referenceGroupNames);
+                    output.Add($"{masterId}\t{refConcat}\trecord sum\t" + string.Join("\t", recordSum.Select(v => v.ToString("F0"))));
                 }
             }
 

@@ -59,8 +59,8 @@ namespace MsdialPrivateConsoleApp {
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution_20250708\result\dda_result_rev064.txt");
 
             msdialpeaktableobjcuration.AdhocJson2Table20250709(
-                @"E:\0_SourceCode\MsdialWorkbench\src\MSDIAL5\MsdialGuiApp\bin\Debug\net48\UniqueProductIonAbundances.json",
-                @"E:\0_SourceCode\MsdialWorkbench\src\MSDIAL5\MsdialGuiApp\bin\Debug\net48\UniqueProductIonAbundances.tsv");
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_Pos.json",
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_Pos.tsv");
 
             //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\ztscanasQ1dec_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\result\ztscanasQ1dec_vs_dda_result.txt");
