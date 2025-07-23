@@ -528,6 +528,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 objects.Add(new
                 {
                     MasterAlignemntID = spot.MasterAlignmentID,
+                    ProductIonAbundances = scans.Zip(samples, (s, sample) => new {
+                        Sample = sample.AnalysisFileName,
+                        SumOfProductIonAbundance = s?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Sum() ?? 0d
+                    }).ToList(),
                     References = reference2Score.Select(n => new { name = n.Key.Name, score = n.Value }).ToArray(),
                     Groups = groupObjects,
                 });
