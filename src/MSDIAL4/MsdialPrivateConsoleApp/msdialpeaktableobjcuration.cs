@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection.Emit;
 
 namespace MsdialPrivateConsoleApp {
 
@@ -143,6 +144,60 @@ namespace MsdialPrivateConsoleApp {
             return list;
         }
 
+        public static void ExtractTargetedLipids(string inputtable, string targetlistfile, string outputfile, string polarity = "positive") {
+            var header = new List<string>();
+            var arraylist = new List<string[]>();
+            using (var sr = new StreamReader(inputtable)) {
+                header = sr.ReadLine().Split('\t').ToList();
+                while (sr.Peek() > -1) {
+                    var linearray =sr.ReadLine().Split('\t');
+                    arraylist.Add(linearray);
+                }
+            }
+
+            var targetclass_pos = new List<string>() { "TG", "DG" };
+            var targetclass_neg = new List<string>() { "PC", "PE", "PS", "PG", "PI", "Cer_NS" };
+
+            var targetlist = new List<string[]>();
+            using (var sr = new StreamReader(targetlistfile)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var linearray = sr.ReadLine().Split('\t');
+                    targetlist.Add(new string[2] { linearray[0], linearray[1][linearray[1].Length - 1].ToString() == "+" ? "positive" : "negative" });
+                }
+            }
+
+            using (var sw = new StreamWriter(outputfile)) {
+                sw.WriteLine(String.Join("\t", header));
+                foreach (var array in arraylist) {
+                    var id = array[0];
+                    var lipidclass = array[2];
+                    var flag = false;
+                    foreach (var target in targetlist) {
+                        if (target[0] == id && target[1] == polarity) {
+                            if (polarity == "positive") {
+                                foreach (var pol in targetclass_pos) {
+                                    if (lipidclass == pol) {
+                                        flag = true; break;
+                                    }
+                                }
+                            }
+                            else {
+                                foreach (var pol in targetclass_neg) {
+                                    if (lipidclass == pol) {
+                                        flag = true; break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (flag) {
+                        sw.WriteLine(String.Join("\t", array));
+                    }
+                }
+            }
+        }
+
         public static void AdhocJson2Table20250709(string inputfile, string outputfile) {
             var json = File.ReadAllText(inputfile);
             var data = JsonConvert.DeserializeObject<List<JObject>>(json);
@@ -153,6 +208,8 @@ namespace MsdialPrivateConsoleApp {
             foreach (var record in data) {
                 var masterId = record["MasterAlignemntID"]?.ToString();
                 var references = record["References"] as JArray;
+                var representativeReference = record["RepresentativeReference"]?.ToString();
+                var representativeOntology = record["RepresentativeOntology"]?.ToString();
                 if (references == null || references.Count == 0) continue;
 
                 var groups = record["Groups"] as JArray;
@@ -176,7 +233,7 @@ namespace MsdialPrivateConsoleApp {
                         sampleNames = abundancesArray.First["Abundances"]
                             .Select(s => s["SampleName"].ToString()).ToList();
                         if (!headerWritten) {
-                            output.Add("MasterAlignemntID\tReferenceGroup\tUniqueIonMz\t" + string.Join("\t", sampleNames));
+                            output.Add("MasterAlignemntID\tRepresentativeName\tRepresentativeOntology\tReferenceGroup\tUniqueIonMz\t" + string.Join("\t", sampleNames));
                             headerWritten = true;
                         }
                         recordSum = new double[sampleNames.Count];
@@ -195,16 +252,16 @@ namespace MsdialPrivateConsoleApp {
                             recordSum[i] += values[i];
                         }
 
-                        output.Add($"{masterId}\t{refName}\t{mz:F7}\t" + string.Join("\t", values.Select(v => v.ToString("F0"))));
+                        output.Add($"{masterId}\t{representativeReference}\t{representativeOntology}\t{refName}\t{mz:F7}\t" + string.Join("\t", values.Select(v => v.ToString("F0"))));
                     }
 
                     // group sum line
-                    output.Add($"{masterId}\t{refName}\tsum\t" + string.Join("\t", groupSum.Select(v => v.ToString("F0"))));
+                    output.Add($"{masterId}\t{representativeReference}\t{representativeOntology}\t{refName}\tsum\t" + string.Join("\t", groupSum.Select(v => v.ToString("F0"))));
                 }
 
                 if (referenceGroupNames.Count > 0) {
                     var refConcat = string.Join("|", referenceGroupNames);
-                    output.Add($"{masterId}\t{refConcat}\trecord sum\t" + string.Join("\t", recordSum.Select(v => v.ToString("F0"))));
+                    output.Add($"{masterId}\t{representativeReference}\t{representativeOntology}\t{refConcat}\trecord sum\t" + string.Join("\t", recordSum.Select(v => v.ToString("F0"))));
                 }
             }
 
