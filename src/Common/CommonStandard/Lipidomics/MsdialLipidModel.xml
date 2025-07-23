@@ -911,6 +911,58 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
+		<Name>PE_Cer</Name>
+		<Abbreviation>PE-Cer</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>2</Carbon>
+			<Hydrogen>6</Hydrogen>
+			<Nitrogen>1</Nitrogen>
+			<Oxygen>3</Oxygen>
+			<Phosphorus>1</Phosphorus>
+		
+	</Skelton>
+		<LbmClasses>
+			<LbmClass>PE_Cer</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>PI_Cer</Name>
+		<Abbreviation>PI-Cer</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>6</Carbon>
+			<Hydrogen>11</Hydrogen>
+			<Oxygen>8</Oxygen>
+			<Phosphorus>1</Phosphorus>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>PI_Cer</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>SL</Name>
+		<Abbreviation>SL</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Hydrogen>0</Hydrogen>
+			<Oxygen>3</Oxygen>
+			<Sulfur>1</Sulfur>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>SL</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
 		<Name>GD1a</Name>
 		<Abbreviation>GD1a</Abbreviation>
 		<Chains>
@@ -987,7 +1039,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>37</Carbon>
-			<Hydrogen>61</Hydrogen>
+			<Hydrogen>60</Hydrogen>
 			<Oxygen>28</Oxygen>
 			<Nitrogen>2</Nitrogen>
 		</Skelton>

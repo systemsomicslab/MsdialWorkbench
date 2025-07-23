@@ -36,6 +36,23 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.SM, lipid.LipidClass);
         }
         [TestMethod()]
+        public void ASMParseTest()
+        {
+            var parser = new ASMLipidParser();
+
+            var lipid = parser.Parse("SM 52:2;O3");
+            Assert.AreEqual(968.8285, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ASM, lipid.LipidClass);
+
+            lipid = parser.Parse("SM 16:1;O2(FA 18:0)/18:0"); // O=C(CCCCCCCCCCCCCCCCC)OC(C(COP([O-])(OCC[N+](C)(C)C)=O)NC(CCCCCCCCCCCCCCCCC)=O)C=CCCCCCCCCCCC
+            Assert.AreEqual(968.8285, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ASM, lipid.LipidClass);
+
+            lipid = parser.Parse("SM 34:1;O2(FA 18:0)");
+            Assert.AreEqual(968.8285, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ASM, lipid.LipidClass);
+        }
+        [TestMethod()]
         public void CerNSParseTest()
         {
             var parser = new CeramideLipidParser();

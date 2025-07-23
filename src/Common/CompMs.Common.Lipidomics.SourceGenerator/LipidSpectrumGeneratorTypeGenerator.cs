@@ -218,11 +218,36 @@ namespace CompMs.Common.Lipidomics {
                     }
 
                 }
-                else if (lipidClass.Contains("Cer") || lipidClass == "SM")
+                else if (lipidClass.Contains("Cer") || lipidClass == "SM" || lipidClass == "SL" || lipidClass == "SL_O")
                 {
-                    result.AppendLine($"""
+                    if (def.NumOfChains == 2)
+                    {
+                        result.AppendLine($"""
                             double Sph;
                             double Acyl;
+                    """);
+                    }
+                    else if (def.NumOfChains == 1)
+                    {
+                        result.AppendLine($"""
+                            double Sph;
+                    """);
+                    }
+                    else if (def.NumOfChains > 2)
+                    {
+                        result.AppendLine($"""
+                            double Sph;
+                            double {string.Join(", ", Enumerable.Range(1, def.NumOfChains - 1).Select(i => "Acyl" + i))};
+                    """);
+                    }
+                }
+                else if (lipidClass == "ASM")
+                {
+
+                    result.AppendLine($"""
+                            double Sph;
+                            double Acyl1;
+                            double Acyl2;
                     """);
                 }
                 else
@@ -340,10 +365,11 @@ namespace CompMs.Common.Lipidomics {
                             }
                         }
                     }
-                    else if (lipidClass.Contains("Cer") || lipidClass == "SM")
+                    else if (lipidClass.Contains("Cer")
+                        || lipidClass == "SM" || lipidClass == "SM_O"
+                        || lipidClass == "SL" || lipidClass == "SL_O")
                     {
-
-                        if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel )
+                        if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
                         {
                             if (def.NumOfChains == 2)
                             {
@@ -355,6 +381,19 @@ namespace CompMs.Common.Lipidomics {
                                 result.AppendLine("                         Acyl = chains[0].Mass;");
                                 result.AppendLine("                    };");
                             }
+                        }
+                    }
+                    else if (lipidClass == "ASM")
+                    {
+                        if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
+                        {
+                                result.AppendLine("                    if(chains[0] is SphingoChain){");
+                                result.AppendLine("                         Sph = chains[0].Mass;");
+                                result.AppendLine("                         Acyl2 = chains[1].Mass;");
+                                result.AppendLine("                    } else {        ");
+                                result.AppendLine("                         Sph = chains[1].Mass;");
+                                result.AppendLine("                         Acyl2 = chains[0].Mass;");
+                                result.AppendLine("                    };");
                         }
                     }
                 }
