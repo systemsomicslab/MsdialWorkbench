@@ -464,7 +464,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return model;
         }
 
-        public async Task ExportProductIonQuantifactionResultAsync(CancellationToken token = default) {
+        public async Task ExportProductIonAbundanceResultAsync(CancellationToken token = default) {
 
             var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(_fileCollection);
             var mapper = new MzMapper();

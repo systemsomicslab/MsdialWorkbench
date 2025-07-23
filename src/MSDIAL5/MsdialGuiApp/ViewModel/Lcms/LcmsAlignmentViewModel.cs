@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }).AddTo(Disposables);
 
             AdhocExportProductIonQuantifactionResultCommand = new AsyncReactiveCommand()
-                .WithSubscribe(() => model.ExportProductIonQuantifactionResultAsync())
+                .WithSubscribe(() => model.ExportProductIonAbundanceResultAsync())
                 .AddTo(Disposables);
         }
 
