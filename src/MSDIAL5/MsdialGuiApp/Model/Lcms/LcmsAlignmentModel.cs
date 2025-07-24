@@ -525,19 +525,22 @@ namespace CompMs.App.Msdial.Model.Lcms
                     });
                 }
 
+                var ontology = _dataBaseMapper.MoleculeMsRefer(spot.MatchResultsModel.Representative)?.OntologyOrCompoundClass;
                 objects.Add(new
                 {
                     MasterAlignemntID = spot.MasterAlignmentID,
+                    RepresentativeReference = spot.MatchResultsModel.Representative.Name,
+                    RepresentativeOntology = ontology,
                     ProductIonAbundances = scans.Zip(samples, (s, sample) => new {
                         Sample = sample.AnalysisFileName,
                         SumOfProductIonAbundance = s?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Sum() ?? 0d
                     }).ToList(),
-                    References = reference2Score.Select(n => new { name = n.Key.Name, score = n.Value }).ToArray(),
+                    References = reference2Score.Select(n => new { name = n.Key.Name, score = n.Value, ontology = n.Key.OntologyOrCompoundClass }).ToArray(),
                     Groups = groupObjects,
                 });
             }
 
-            using var writer = new StreamWriter("UniqueProductIonAbundances.json");
+            using var writer = new StreamWriter(@"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances.json");
             await writer.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(objects, Newtonsoft.Json.Formatting.Indented)).ConfigureAwait(false);
         }
 
