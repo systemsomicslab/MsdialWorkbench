@@ -175,20 +175,22 @@ namespace MsdialPrivateConsoleApp {
                     var flag = false;
                     foreach (var target in targetlist) {
                         if (target[0] == id && target[1] == polarity) {
-                            if (polarity == "positive") {
-                                foreach (var pol in targetclass_pos) {
-                                    if (lipidclass == pol) {
-                                        flag = true; break;
-                                    }
-                                }
-                            }
-                            else {
-                                foreach (var pol in targetclass_neg) {
-                                    if (lipidclass == pol) {
-                                        flag = true; break;
-                                    }
-                                }
-                            }
+                            flag = true;
+                            break;
+                            //if (polarity == "positive") {
+                            //    foreach (var pol in targetclass_pos) {
+                            //        if (lipidclass == pol) {
+                            //            flag = true; break;
+                            //        }
+                            //    }
+                            //}
+                            //else {
+                            //    foreach (var pol in targetclass_neg) {
+                            //        if (lipidclass == pol) {
+                            //            flag = true; break;
+                            //        }
+                            //    }
+                            //}
                         }
                     }
                     if (flag) {
@@ -212,7 +214,20 @@ namespace MsdialPrivateConsoleApp {
                 var representativeOntology = record["RepresentativeOntology"]?.ToString();
                 if (references == null || references.Count == 0) continue;
 
-                var groups = record["Groups"] as JArray;
+                var productIonDict = new Dictionary<string, double>();
+                var productIonArray = record["ProductIonAbundances"] as JArray;
+                if (productIonArray != null) {
+                    foreach (var item in productIonArray) {
+                        string sample = item["Sample"].ToString();
+                        double sum = item["SumOfProductIonAbundance"].ToObject<double>();
+                        productIonDict[sample] = sum;
+                    }
+                }
+                else {
+                    continue;
+                }
+
+                    var groups = record["Groups"] as JArray;
                 if (groups == null) continue;
 
                 var recordSum = new double[0];
@@ -262,6 +277,13 @@ namespace MsdialPrivateConsoleApp {
                 if (referenceGroupNames.Count > 0) {
                     var refConcat = string.Join("|", referenceGroupNames);
                     output.Add($"{masterId}\t{representativeReference}\t{representativeOntology}\t{refConcat}\trecord sum\t" + string.Join("\t", recordSum.Select(v => v.ToString("F0"))));
+                }
+
+                if (productIonDict.Count > 0) {
+                    var values = sampleNames
+                        .Select(name => productIonDict.ContainsKey(name) ? productIonDict[name] : 0.0)
+                        .Select(v => v.ToString("F0"));
+                    output.Add($"{masterId}\t{representativeReference}\t{representativeOntology}\t{representativeReference}\tSum of Raw MS2\t{string.Join("\t", values)}");
                 }
             }
 

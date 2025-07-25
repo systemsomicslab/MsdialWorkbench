@@ -58,24 +58,43 @@ namespace MsdialPrivateConsoleApp {
             //files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution_20250708\dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\annotation_distribution_20250708\result\dda_result_rev064.txt");
 
-            //msdialpeaktableobjcuration.AdhocJson2Table20250709(
-            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV2.json",
-            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV2.tsv");
+            msdialpeaktableobjcuration.AdhocJson2Table20250709(
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV3.json",
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV3.tsv");
+
+            msdialpeaktableobjcuration.AdhocJson2Table20250709(
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3.json",
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3.tsv");
 
             //msdialpeaktableobjcuration.AdhocJson2Table20250709(
-            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV2.json",
-            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV2.tsv");
+            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Neg.json",
+            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Neg.tsv");
+
+            //msdialpeaktableobjcuration.AdhocJson2Table20250709(
+            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Pos.json",
+            //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Pos.tsv");
 
             msdialpeaktableobjcuration.ExtractTargetedLipids(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV2.tsv", 
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV3.tsv",
                 @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\curatedlipididlist.txt",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV2_Extracted.txt", 
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_PosV3_Extracted.txt",
                 "positive");
             msdialpeaktableobjcuration.ExtractTargetedLipids(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV2.tsv",
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3.tsv",
                 @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\curatedlipididlist.txt",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV2_Extracted.txt",
+                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3_Extracted.txt",
                 "negative");
+
+            //msdialpeaktableobjcuration.ExtractTargetedLipids(
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Neg.tsv",
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\curatedlipididlist.txt",
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Neg_Extracted.txt",
+            //   "negative");
+            //msdialpeaktableobjcuration.ExtractTargetedLipids(
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Pos.tsv",
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\curatedlipididlist.txt",
+            //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Pos_Extracted.txt",
+            //   "positive");
 
             //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\ztscanasQ1dec_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\result\ztscanasQ1dec_vs_dda_result.txt");
