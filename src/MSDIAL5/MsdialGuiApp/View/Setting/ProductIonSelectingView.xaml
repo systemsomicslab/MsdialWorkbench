@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
              mc:Ignorable="d" 
@@ -25,15 +26,25 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="32"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Margin="8,0">
-                        <Button Content="Clear" Command="{Binding Path=ClearSettingsCommand}"/>
+                    <StackPanel Orientation="Horizontal" Margin="8,4"
+                                Grid.Row="0">
+                        <ui:LabeledContent PrependLabel="RT left:">
+                            <TextBox Text="{Binding Path=LeftRt.Value}" MinWidth="64" Width="Auto"/>
+                        </ui:LabeledContent>
+                        <ui:LabeledContent PrependLabel="RT right:">
+                            <TextBox Text="{Binding Path=RightRt.Value}" MinWidth="64" Width="Auto"/>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="8,0" Grid.Row="1">
+                        <Button Content="Clear table" Command="{Binding Path=ClearSettingsCommand}" Padding="4,0" Margin="0,4"/>
                     </StackPanel>
 
                     <DataGrid ItemsSource="{Binding Path=SettingIons}"
                               AutoGenerateColumns="False"
-                              Grid.Row="1">
+                              Grid.Row="2">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="m/z" Binding="{Binding Path=Mz}" Width="Auto"/>
                         </DataGrid.Columns>
