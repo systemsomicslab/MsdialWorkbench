@@ -36,10 +36,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel?> peak, IObservable<MSDecResult?> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
-            ProductIonSelectingModel = new ProductIonSelectingModel();
+            ProductIonSelectingModel = new ProductIonSelectingModel().AddTo(Disposables);
 
             var smoother = new Smoothing();
             IObservable<(ChromatogramPeakFeatureModel peak, double[] mzs)> intensityTopIons = peak.SkipNull()
+                .Do(ProductIonSelectingModel.SelectPeak)
                 .SelectSwitch(p => {
                     UseUserSelectedIons = false;
                     var loadSpectrum = Observable.Defer(() => {
@@ -57,12 +58,12 @@ namespace CompMs.App.Msdial.Model.Chart
                     }).Switch().Select(mzs => (peak: p, mzs: mzs));
                 });
             var rawChromatograms = intensityTopIons
-                .SelectSwitch(pair => {
+                .CombineLatest(ProductIonSelectingModel.GetRtRangeAsObservable(), (pair, range) => {
                     var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
                     var unit = ChromXUnit.Min;
                     return Observable.FromAsync(async token => {
                         try {
-                            var chromatograms = await DataAccess.GetMs2ValuePeaksAsync(provider, pair.peak.Mass, pair.peak.ChromXLeftValue, pair.peak.ChromXRightValue, pair.mzs, parameter, acquisitionType, type: type, unit: unit).ConfigureAwait(false);
+                            var chromatograms = await DataAccess.GetMs2ValuePeaksAsync(provider, pair.peak.Mass, range.Left, range.Right, pair.mzs, parameter, acquisitionType, type: type, unit: unit).ConfigureAwait(false);
                             var smootheds = chromatograms.Select(c => smoother.LinearWeightedMovingAverage(c, parameter.SmoothingLevel)).ToList();
                             return smootheds.Zip(pair.mzs, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
                         }
@@ -70,7 +71,7 @@ namespace CompMs.App.Msdial.Model.Chart
                             return [];
                         }
                     });
-                })
+                }).Switch()
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
                     chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F5"))).ToList(),
