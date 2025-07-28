@@ -14,7 +14,11 @@ internal sealed class ProductIonSelectingViewModel : SettingDialogViewModel
     public ProductIonSelectingViewModel(ProductIonSelectingModel model) {
         _model = model;
 
-        SettingIons = [..model.SettingIons];
+        SettingIons = model.SettingIons is null ? [] : [..model.SettingIons];
+
+        LeftRt = model.ToReactivePropertySlimAsSynchronized(m => m.LeftRt).AddTo(Disposables);
+        RightRt = model.ToReactivePropertySlimAsSynchronized(m => m.RightRt).AddTo(Disposables);
+
         ClearSettingsCommand = new ReactiveCommand()
             .WithSubscribe(() => SettingIons.Clear())
             .AddTo(Disposables);
@@ -23,6 +27,9 @@ internal sealed class ProductIonSelectingViewModel : SettingDialogViewModel
     }
 
     public ObservableCollection<SettingIon> SettingIons { get; }
+
+    public ReactivePropertySlim<double> LeftRt { get; }
+    public ReactivePropertySlim<double> RightRt { get; }
 
     public ReactiveCommand ClearSettingsCommand { get; }
 
