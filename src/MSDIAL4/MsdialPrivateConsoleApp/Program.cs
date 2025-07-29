@@ -66,9 +66,9 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3.json",
             //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result\UniqueProductIonAbundances_NegV3.tsv");
 
-            msdialpeaktableobjcuration.AdhocJson2Table20250709(
-                @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.json",
-                @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.tsv");
+            //msdialpeaktableobjcuration.AdhocJson2Table20250709(
+            //    @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.json",
+            //    @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.tsv");
 
             //msdialpeaktableobjcuration.AdhocJson2Table20250709(
             //    @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Neg.json",
@@ -99,6 +99,12 @@ namespace MsdialPrivateConsoleApp {
             //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\curatedlipididlist.txt",
             //   @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result\ztscan\UniqueProductIonAbundances_Pos_Extracted.txt",
             //   "positive");
+
+            msdialpeaktableobjcuration.ExtractTargetedLipids(
+               @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.tsv",
+               @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\curatedlipididlist.txt",
+               @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances_Extracted.txt",
+               "positive");
 
             //var files = Directory.GetFiles(@"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\ztscanasQ1dec_vs_dda", "*.txt", SearchOption.TopDirectoryOnly);
             //msdialpeaktableobjcuration.ExportScoreDist(files, @"E:\6_Projects\PROJECT_ZTScan\20241214\dotproduct_distribution_vs_dda_20250708\result\ztscanasQ1dec_vs_dda_result.txt");
