@@ -271,6 +271,16 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentGnpsExportViewModel}">
+                    <Expander Header="GNPS" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <CheckBox Content="GNPS"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 
