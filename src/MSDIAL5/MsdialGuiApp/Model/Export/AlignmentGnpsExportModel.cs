@@ -27,11 +27,20 @@ internal sealed class AlignmentGnpsExportModel : BindableBase, IAlignmentResultE
     private readonly ObservableCollection<ExportType> _types;
     private readonly AnalysisFileBeanModelCollection _files;
 
+    public bool IsSelected {
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
+    private bool _isSelected = false;
+
     public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
-        return Types.Count(type => type.ShouldExport) + 5;
+        return IsSelected ? Types.Count(type => type.ShouldExport) + 5 : 0;
     }
 
     public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
+        if (!IsSelected) {
+            return;
+        }
         var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
         var msdecResults = alignmentFile.LoadMSDecResults();
         var container = alignmentFile.LoadAlignmentResultAsync(default).Result;
