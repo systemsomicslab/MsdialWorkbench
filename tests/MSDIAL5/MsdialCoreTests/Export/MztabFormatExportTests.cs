@@ -1,13 +1,12 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
-using CompMs.Common.Parameter;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export.Tests
 {
@@ -16,24 +15,68 @@ namespace CompMs.MsdialCore.Export.Tests
     {
 
         [TestMethod()]
-        public void MztabWriteMtdSectionTest()
+        //[DeploymentItem(@"Resources\Export\small_test_project.mdproject", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        //[DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        //[DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_DriftSpots.arf", @"Resources\Export")]
+        public async Task MztabWriteMtdSectionTest()
         {
+            IMsdialDataStorage<ParameterBase> storage = default!;
+            using (var streamManager = new DirectoryTreeStreamManager("./Resources/Export")) {
+                storage = await MsdialDataStorage.Serializer.LoadAsync(streamManager, "Dataset_2025_07_31_12_31_11.mddata", "", "");
+                storage.FixDatasetFolder("./Resources/Export");
+            }
+
+            var dbs = storage.DataBases.MetabolomicsDataBases.Select(db => new MztabFormatExporter.Database
+            {
+                AnnotatorID = db.DataBase.Id,
+                Metadata = "[,, User-defined MSP library file, ]",
+                Type = "null",
+                Filename = Path.GetFileName(db.DataBase.DataBaseSourceFilePath),
+                Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+            }).ToArray();
+            var file2class = storage.AnalysisFiles.ToDictionary(f => f.AnalysisFileId, f => f.AnalysisFileClass);
+            var idConfidenceMeasure = new Dictionary<int, string> {
+                [1] = "[,, MS-DIAL algorithm matching score, ]",
+                [2] = "[,, Retention time similarity, ]",
+                [3] = "[,, m/z similarity, ]",
+                [4] = "[,, Simple dot product, ]",
+                [5] = "[,, Weighted dot product, ]",
+                [6] = "[,, Reverse dot product, ]",
+                [7] = "[,, Matched peaks count, ]",
+                [8] = "[,, Matched peaks percentage, ]",
+            };
+            var msRunFormat = "[,, ABF(Analysis Base File) file, ]";
+            var msRunIDFormat = "[,, ABF file Datapoint Number, ]";
+            var rawFileMetadata = storage.AnalysisFiles.Select(f => new MztabFormatExporter.RawFileMetadata
+            {
+                Id = f.AnalysisFileId + 1,
+                Assay = "assay[" + (f.AnalysisFileId + 1) + "]",
+                Assay_ref = f.AnalysisFileName,
+                Run = "ms_run[" + (f.AnalysisFileId + 1) + "]",
+                FileLocation = "file://" + f.AnalysisFilePath.Replace("\\", "/").Replace(" ", "%20"),
+                Format_cv = msRunFormat,
+                Id_format_cv = msRunIDFormat,
+                Scan_polarity = storage.Parameter.IonMode.ToString(),
+                Scan_polarity_cv = storage.Parameter.IonMode.ToString() == "Positive" ? "[MS,MS:1000130,positive scan,]" : "[MS, MS:1000129, negative scan, ]",
+                AnalysisFileExtention = ".ABF",
+                AnalysisClass = f.AnalysisFileClass,
+                AnalysisFileId = f.AnalysisFileId
+            }).ToDictionary(d => d.Id, d => d);
+
+            var alignmentFile = storage.AlignmentFiles.Last();
+            //var container = AlignmentResultContainer.Load(new AlignmentFileBean { FilePath = Path.Combine("./Resources/Export", Path.GetFileName(alignmentFile.FilePath)), });
+            var container = AlignmentResultContainer.Load(alignmentFile);
+
             var stream = new MemoryStream();
-
-            var dbs = DataBaseStorage.CreateEmpty();
-            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 0, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB, "TestDBPath");
-            var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
-            MassAnnotator annotator = new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 1);
-            dbs.AddMoleculeDataBase(
-                db,
-                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true))
-                }
-            );
-
-
-            //MztabFormatExporter.WriteMtdSection(stream, mztabId, parameter, [.. spots], RawFileMetadataDic, AnalysisFileClassDic, idConfidenceMeasure, database);
-
+            using (var writer = new StreamWriter(stream, leaveOpen: true))
+            {
+                var exporter = new MztabFormatExporter(storage.DataBases);
+                exporter.WriteMtdSection(writer, "test_mztab", storage.Parameter, [.. container.AlignmentSpotProperties], rawFileMetadata, file2class, idConfidenceMeasure, dbs);
+            }
         }
 
         private static ParameterBase parameter = new ParameterBase
