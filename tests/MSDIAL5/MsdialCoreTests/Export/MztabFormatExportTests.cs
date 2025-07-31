@@ -4,20 +4,15 @@ using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace MsdialCoreTests.Export
+namespace CompMs.MsdialCore.Export.Tests
 {
-    internal class MztabFormatExportTests
+    [TestClass]
+    public class MztabFormatExportTests
     {
 
         [TestMethod()]
@@ -83,7 +78,5 @@ namespace MsdialCoreTests.Export
         public string Separator { get; }
 
         private readonly Dictionary<string, string> _annotatorID2DataBaseID;
-
-
     }
 }
