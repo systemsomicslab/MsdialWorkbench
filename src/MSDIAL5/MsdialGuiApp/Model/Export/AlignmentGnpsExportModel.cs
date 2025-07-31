@@ -5,6 +5,7 @@ using CompMs.MsdialCore.Export;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Export;
@@ -41,13 +42,33 @@ internal sealed class AlignmentGnpsExportModel : BindableBase, IAlignmentResultE
         if (!IsSelected) {
             return;
         }
-        var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+        var dt = DateTime.Now;
+        var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{dt:yyyy_MM_dd_HH_mm_ss}";
         var msdecResults = alignmentFile.LoadMSDecResults();
         var container = alignmentFile.LoadAlignmentResultAsync(default).Result;
         var files = _files.AnalysisFiles.Select(f => f.File).ToArray();
         var exporter = new AlignmentGnpsExporter(exportDirectory, alignmentFile.FileName);
         foreach (var type in Types.Where(t => t.ShouldExport)) {
             exporter.Export(container.AlignmentSpotProperties, msdecResults, files, AccessFileMeta.GetAccessor(), AccessPeakMetaModel.GetAccessor(), type.QuantValueAccessor, type.Stats);
+        }
+
+        var edgeFileName = $"{alignmentFile.FileName}_GNPSEdges_{dt:yyyyMMddHHmm}";
+        var edges = AlignmentGnpsExporter.BuildGnpsEdges(container.AlignmentSpotProperties);
+        var edge_peakshape = Path.Combine(exportDirectory, edgeFileName + "_peakshape.csv");
+        using (var stream = File.Open(edge_peakshape, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+            edges.ExportPeakShapeEdges(stream);
+        }
+        var edge_ioncorrelation = Path.Combine(exportDirectory, edgeFileName + "_ioncorrelation.csv");
+        using (var stream = File.Open(edge_ioncorrelation, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+            edges.ExportIonCorrelationEdges(stream);
+        }
+        var edge_insource = Path.Combine(exportDirectory, edgeFileName + "_insource.csv");
+        using (var stream = File.Open(edge_insource, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+            edges.ExportInsourceEdges(stream);
+        }
+        var edge_adduct = Path.Combine(exportDirectory, edgeFileName + "_adduct.csv");
+        using (var stream = File.Open(edge_adduct, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+            edges.ExportAdductEdges(stream);
         }
     }
 }
