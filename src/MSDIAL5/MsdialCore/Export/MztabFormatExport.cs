@@ -472,7 +472,7 @@ namespace CompMs.MsdialCore.Export
 
         }
 
-        protected void WriteMtdSection(
+        internal void WriteMtdSection(
             StreamWriter sw,
             string mzTabId,
             ParameterBase meta,
