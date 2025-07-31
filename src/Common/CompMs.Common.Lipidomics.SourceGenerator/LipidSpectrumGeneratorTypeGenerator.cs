@@ -387,13 +387,19 @@ namespace CompMs.Common.Lipidomics {
                     {
                         if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
                         {
-                                result.AppendLine("                    if(chains[0] is SphingoChain){");
-                                result.AppendLine("                         Sph = chains[0].Mass;");
-                                result.AppendLine("                         Acyl2 = chains[1].Mass;");
-                                result.AppendLine("                    } else {        ");
-                                result.AppendLine("                         Sph = chains[1].Mass;");
-                                result.AppendLine("                         Acyl2 = chains[0].Mass;");
-                                result.AppendLine("                    };");
+                            result.AppendLine("                    if(chains.Count() ==2){");
+                            result.AppendLine("                        if(chains[0] is SphingoChain){");
+                            result.AppendLine("                             Sph = chains[0].Mass;");
+                            result.AppendLine("                             Acyl2 = chains[1].Mass;");
+                            result.AppendLine("                        } else {        ");
+                            result.AppendLine("                             Sph = chains[1].Mass;");
+                            result.AppendLine("                             Acyl2 = chains[0].Mass;");
+                            result.AppendLine("                        };"); 
+                            result.AppendLine("                    } else {        ");
+                            result.AppendLine("                         Sph = chains[0].Mass;");
+                            result.AppendLine("                         Acyl1 = chains[2].Mass;");
+                            result.AppendLine("                         Acyl2 = chains[1].Mass;");
+                            result.AppendLine("                    };");
                         }
                     }
                 }
