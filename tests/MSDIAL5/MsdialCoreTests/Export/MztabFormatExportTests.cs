@@ -1,4 +1,7 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -13,6 +16,44 @@ namespace CompMs.MsdialCore.Export.Tests
     [TestClass]
     public class MztabFormatExportTests
     {
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\test_mztab.mzTab.txt", @"Resources\Export")]
+        public async Task MztabFormatExporterTest() {
+            IMsdialDataStorage<ParameterBase> storage = default!;
+            using (var streamManager = new DirectoryTreeStreamManager("./Resources/Export")) {
+                storage = await MsdialDataStorage.Serializer.LoadAsync(streamManager, "Dataset_2025_07_31_12_31_11.mddata", "", "");
+                storage.FixDatasetFolder("./Resources/Export");
+            }
+            var alignmentFile = storage.AlignmentFiles.Last();
+            var container = AlignmentResultContainer.Load(alignmentFile);
+            var loader = new MSDec.MSDecLoader(alignmentFile.SpectraFilePath, []);
+
+            var exporter = new MztabFormatExporter(storage.DataBases);
+            using var stream = new MemoryStream();
+            //using var stream = File.Open("../../test_mztab.mzTab.txt", FileMode.Create);
+            exporter.MztabFormatExporterCore(
+                stream,
+                [.. container.AlignmentSpotProperties],
+                loader.LoadMSDecResults(),
+                storage.AnalysisFiles,
+                new StubMetadataAccessor(storage.DataBaseMapper, storage.Parameter),
+                new LegacyQuantValueAccessor("Height", storage.Parameter),
+                [ StatsValue.Average, StatsValue.Stdev, ],
+                "mztab_test");
+
+            using var exp_stream = File.Open("Resources/Export/test_mztab.mzTab.txt", FileMode.Open);
+            var buffer = new byte[stream.GetBuffer().Length];
+            await exp_stream.ReadAsync(buffer);
+
+            CollectionAssert.AreEqual(buffer, stream.GetBuffer());
+        }
+
 
         [TestMethod()]
         //[DeploymentItem(@"Resources\Export\small_test_project.mdproject", @"Resources\Export")]
@@ -122,4 +163,7 @@ namespace CompMs.MsdialCore.Export.Tests
 
         private readonly Dictionary<string, string> _annotatorID2DataBaseID;
     }
+
+    class StubMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false)
+        : BaseMetadataAccessor(refer, parameter, trimSpectrumToExcelLimit) { }
 }

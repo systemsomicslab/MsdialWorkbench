@@ -392,11 +392,11 @@ namespace CompMs.MsdialCore.Export
             }
 
             var properties = spot.AlignedPeakProperties;
-            var repName = spot.MatchResults.Representative.Name.Split('|')[spot.MatchResults.Representative.Name.Split('|').Length - 1];
+            var repName = spot.MatchResults.Representative.Name.Split('|').Last();
             var repLibraryID = spot.MatchResults.Representative.LibraryID;
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
-            var theoreticalMassToCharge = metadata["Reference m/z"];
+            var theoreticalMassToCharge = metadata.TryGetValue("Reference m/z", out var refmz) ? refmz : "0";
             var spectraRefList = new List<string>();  //  multiple files
             for (int i = 0; i < properties.Count; i++)
             {
@@ -768,7 +768,7 @@ namespace CompMs.MsdialCore.Export
                     mtdTable.Add(string.Join(Separator, new string[] { commentPrefix, "Comment: " + string.Join(", ", meta.Authors) }));
                 }
             }
-            sw.WriteLine(string.Join("\n", mtdTable));
+            sw.WriteLine(string.Join(System.Environment.NewLine, mtdTable));
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
