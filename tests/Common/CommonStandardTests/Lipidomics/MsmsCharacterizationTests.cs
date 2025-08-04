@@ -2225,7 +2225,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var totalCarbon = 34;
             var totalDbBond = 1;
-            var totalOxidized = 4;
+            var totalOxidized = 3;
             var sn1Carbon = 18;
             var sn1DbBond = 1;
             var sn2Carbon = 16;
@@ -2240,7 +2240,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 554.5143f, totalCarbon, totalDbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
-            Console.WriteLine($"CerNHTest test (Cer 18:1;O3/16:0;O)");
+            Console.WriteLine($"Cer_NH test (Cer 18:1;O3/16:0;O)");
             Console.WriteLine(PRECURSORTYPE);
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
@@ -2287,7 +2287,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var totalCarbon = 34;
             var totalDbBond = 1;
-            var totalOxidized = 5;
+            var totalOxidized = 4;
             var sn1Carbon = 18;
             var sn1DbBond = 1;
             var sn2Carbon = 16;
@@ -2302,7 +2302,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 570.5092f, totalCarbon, totalDbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
-            Console.WriteLine($"CerAHTest test (Cer 18:1;O3/16:0;O2)");
+            Console.WriteLine($"Cer_AH test (Cer 18:1;O3/16:0;O2)");
             Console.WriteLine(PRECURSORTYPE);
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");

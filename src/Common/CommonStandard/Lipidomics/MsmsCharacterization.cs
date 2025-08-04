@@ -10962,10 +10962,10 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
 
-                            var sphFragment1 = LipidMsmsCharacterizationUtility.SphingoChainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - H2O - MassDiffDictionary.HydrogenMass; //[Sph-H2O-3H]-
-                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - H2O - 12; //[Sph-CO-H]-
-                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - 12 +MassDiffDictionary.HydrogenMass;  //"[Acyl-CO]-"
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
+                            var sphFragment1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - H2O + MassDiffDictionary.HydrogenMass; //[Sph-H2O-3H]-
+                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - 12; //[Sph-CO-H]-
+                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - 12 +MassDiffDictionary.HydrogenMass-H2O;  //"[Acyl-CO]-"
+                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton + 12 * 2 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphFragment1, Intensity = 1 },

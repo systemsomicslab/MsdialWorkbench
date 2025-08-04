@@ -91,6 +91,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.Cer_NP:
                 case LbmClass.Cer_AP:
                 case LbmClass.Cer_ABP:
+                case LbmClass.Cer_AH:
+                case LbmClass.Cer_NH:
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
@@ -1659,6 +1661,14 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 case LbmClass.HexCer_AP:
                     return LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -2500,6 +2510,14 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 case LbmClass.HexCer_AP:
                     return LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -3255,6 +3273,14 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.Cer_ABP:
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.HexCer_AP:
