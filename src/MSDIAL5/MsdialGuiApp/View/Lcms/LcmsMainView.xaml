@@ -155,6 +155,7 @@
         <KeyBinding Gesture="Ctrl+Z" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.UndoCommand, Mode=OneWay}"/>
         <KeyBinding Gesture="Ctrl+Y" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.RedoCommand, Mode=OneWay}"/>
         <KeyBinding Gesture="Ctrl+Shift+A" Command="{Binding Path=AlignmentViewModel.Value.AdhocExportProductIonQuantifactionResultCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Shift+B" Command="{Binding Path=AnalysisViewModel.Value.AdhocExportProductIonAbundanceResultCommand, Mode=OneWay}"/>
     </UserControl.InputBindings>
 
     <Grid Name="Grid_MainWindow">
