@@ -147,6 +147,22 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.Cer_HDS, lipid.LipidClass);
         }
         [TestMethod()]
+        public void CerAHParseTest()
+        {
+            var parser = new CeramideLipidParser();
+            var lipid = parser.Parse("Cer 18:1;O3/16:0(2OH)"); //  
+            Assert.AreEqual(569.5019, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_AH, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void CerNHParseTest()
+        {
+            var parser = new CeramideLipidParser();
+            var lipid = parser.Parse("Cer 18:1;O3/24:0"); //  
+            Assert.AreEqual(665.6322, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_NH, lipid.LipidClass);
+        }
+        [TestMethod()]
         public void GM3ParseTest()
         {
             var parser = new GM3LipidParser();
