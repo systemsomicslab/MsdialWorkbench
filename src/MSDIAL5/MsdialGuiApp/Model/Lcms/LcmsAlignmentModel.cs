@@ -506,15 +506,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                 foreach (var group in groups) {
                     token.ThrowIfCancellationRequested();
                     var quantResults = quantifier.Quantify(group.UniqueMzList, scans, samples, mzTolerance);
-                    var productIonAbundances = quantResults.Zip(group.UniqueMzList,
-                        (r, mz) => new GroupProductIonAbundancesModel {
+                    var productIonAbundances = quantResults.Select(
+                        r => new GroupProductIonAbundancesModel {
                             Abundances = r.Abundances.Select(
                                 abundance => new ProductIonAbundanceModel {
                                     SampleName = abundance.SampleName,
                                     Intensity = abundance.Abundance,
                                 }
                             ).ToArray(),
-                            Mz = mz,
+                            Mz = r.QuantMass,
                         }
                     ).ToArray();
                     groupObjects.Add(new
@@ -535,7 +535,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         Sample = sample.AnalysisFileName,
                         SumOfProductIonAbundance = s?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Sum() ?? 0d
                     }).ToList(),
-                    References = reference2Score.Select(n => new { name = n.Key.Name, score = n.Value, ontology = n.Key.OntologyOrCompoundClass }).ToArray(),
+                    References = reference2Score.Select(kvp => new { name = kvp.Key.Name, score = kvp.Value, ontology = kvp.Key.OntologyOrCompoundClass }).ToArray(),
                     Groups = groupObjects,
                 });
             }
