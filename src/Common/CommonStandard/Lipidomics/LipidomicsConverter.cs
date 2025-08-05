@@ -3947,6 +3947,8 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Cer_HS: return "Cer-HS";
                 case LbmClass.Cer_AH: return "Cer-AH";
                 case LbmClass.Cer_NH: return "Cer-NH";
+                case LbmClass.Cer_AH_d9: return "Cer-AH_d9";
+                case LbmClass.Cer_NH_d9: return "Cer-NH_d9";
                 case LbmClass.Cer_HDS: return "Cer-HDS";
                 case LbmClass.Cer_NDOS: return "Cer-NDOS";
                 case LbmClass.HexCer_NS: return "HexCer-NS";
@@ -4389,6 +4391,8 @@ namespace CompMs.Common.Lipidomics
                 case "Cer-AP": return LbmClass.Cer_AP;
                 case "Cer-NH": return LbmClass.Cer_NH;
                 case "Cer-AH": return LbmClass.Cer_AH;
+                case "Cer-NH_d9": return LbmClass.Cer_NH_d9;
+                case "Cer-AH_d9": return LbmClass.Cer_AH_d9;
                 case "Cer-ABP": return LbmClass.Cer_ABP;
                 case "Cer-EODS": return LbmClass.Cer_EODS;
                 case "Cer-EOS": return LbmClass.Cer_EOS;

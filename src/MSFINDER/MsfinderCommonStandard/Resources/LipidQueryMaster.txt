@@ -356,3 +356,7 @@ Cer_AH	[M+H]+	Positive	FALSE
 Cer_AH	[M-H]-	Negative	FALSE
 Cer_NH	[M+H]+	Positive	FALSE
 Cer_NH	[M-H]-	Negative	FALSE
+Cer_AH_d9	[M+H]+	Positive	FALSE
+Cer_AH_d9	[M-H]-	Negative	FALSE
+Cer_NH_d9	[M+H]+	Positive	FALSE
+Cer_NH_d9	[M-H]-	Negative	FALSE

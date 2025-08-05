@@ -225,6 +225,8 @@ namespace CompMs.Common.DataObj.NodeEdge {
             { "Cer_AP", "rgb(178, 34, 34)" },
             { "Cer_NH", "rgb(220, 40, 60)" },
             { "Cer_AH", "rgb(178, 178, 34)" },
+            { "Cer_NH_d9", "rgb(220, 40, 60)" },
+            { "Cer_AH_d9", "rgb(178, 178, 34)" },
             { "Cer_ABP", "rgb(178, 134, 34)" },
             { "Cer_OS", "rgb(228, 122, 224)" },
             { "Cer_HS", "rgb(218, 112, 214)" },

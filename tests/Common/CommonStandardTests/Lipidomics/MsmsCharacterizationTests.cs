@@ -2240,7 +2240,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 554.5143f, totalCarbon, totalDbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
-            Console.WriteLine($"Cer_NH test (Cer 18:1;O3/16:0;O)");
+            Console.WriteLine($"Cer_NH test (Cer 18:1;O3/16:0)");
             Console.WriteLine(PRECURSORTYPE);
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
@@ -2302,7 +2302,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 570.5092f, totalCarbon, totalDbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
-            Console.WriteLine($"Cer_AH test (Cer 18:1;O3/16:0;O2)");
+            Console.WriteLine($"Cer_AH test (Cer 18:1;O3/16:0(2OH))");
             Console.WriteLine(PRECURSORTYPE);
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
@@ -2310,6 +2310,137 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result2.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
         }
+
+        [TestMethod()]
+        public void CerNHd9Test()
+        {
+            //Cer 18:1;O3/16:0;O
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 561.5562,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =561.556224, Intensity =200, },
+                    new SpectrumPeak { Mass =531.545659, Intensity =300, },
+                    new SpectrumPeak { Mass =513.535095, Intensity =100, },
+                    new SpectrumPeak { Mass =511.519444, Intensity =100, },
+                    new SpectrumPeak { Mass =495.52453, Intensity =100, },
+                    new SpectrumPeak { Mass =305.315994, Intensity =500, },
+                    new SpectrumPeak { Mass =284.272079, Intensity =800, },
+                    new SpectrumPeak { Mass =289.321079, Intensity =999, },
+                    new SpectrumPeak { Mass =277.321079, Intensity =300, },
+                    new SpectrumPeak { Mass =264.289445, Intensity =500, },
+                    new SpectrumPeak { Mass =254.225129, Intensity =500, },
+                    new SpectrumPeak { Mass =262.297604, Intensity =400, },
+                }
+            };
+
+            var PRECURSORTYPE2 = "[M+H]+";
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 563.5708,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =563.570777, Intensity =100, },
+                    new SpectrumPeak { Mass =545.560212, Intensity =100, },
+                    new SpectrumPeak { Mass =527.549647, Intensity =100, },
+                    new SpectrumPeak { Mass =509.539083, Intensity =100, },
+                    new SpectrumPeak { Mass =298.274056, Intensity =200, },
+                    new SpectrumPeak { Mass =280.263491, Intensity =999, },
+                    new SpectrumPeak { Mass =262.252926, Intensity =200, },
+                }
+            };
+
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 3;
+            var sn1Carbon = 18;
+            var sn1DbBond = 1;
+            var sn2Carbon = 16;
+            var sn2DbBond = 0;
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramideNhD9(target, 0.025,
+                561.5562f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            var result2 = LipidMsmsCharacterization.JudgeIfCeramideNhD9(target2, 0.025,
+                563.5708f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
+            Console.WriteLine($"Cer_NH_d9 test (Cer_d9 18:1;O3/16:0)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+            Console.WriteLine(PRECURSORTYPE2);
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void CerAHd9Test()
+        {
+            //Cer 18:1;O3/16:0;O2
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 577.551139,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =577.551139, Intensity =999, },
+                    new SpectrumPeak { Mass =323.326558, Intensity =100, },
+                    new SpectrumPeak { Mass =303.300344, Intensity =500, },
+                    new SpectrumPeak { Mass =294.243853, Intensity =500, },
+                    new SpectrumPeak { Mass =284.259503, Intensity =500, },
+                    new SpectrumPeak { Mass =280.284359, Intensity =300, },
+                    new SpectrumPeak { Mass =266.248938, Intensity =500, },
+                    new SpectrumPeak { Mass =234.27888, Intensity =999, },
+
+                }
+            };
+
+            var PRECURSORTYPE2 = "[M+H]+";
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 579.565691,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =579.565691, Intensity =1, },
+                    new SpectrumPeak { Mass =561.555127, Intensity =100, },
+                    new SpectrumPeak { Mass =543.544562, Intensity =200, },
+                    new SpectrumPeak { Mass =525.533997, Intensity =50, },
+                    new SpectrumPeak { Mass =323.325461, Intensity =300, },
+                    new SpectrumPeak { Mass =298.274056, Intensity =100, },
+                    new SpectrumPeak { Mass =280.263491, Intensity =999, },
+                    new SpectrumPeak { Mass =262.252926, Intensity =300, },
+                }
+            };
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 4;
+            var sn1Carbon = 18;
+            var sn1DbBond = 1;
+            var sn2Carbon = 16;
+            var sn2DbBond = 0;
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramideAhD9(target, 0.025,
+                577.551139f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            var result2 = LipidMsmsCharacterization.JudgeIfCeramideAhD9(target2, 0.025,
+                579.565691f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE2));
+            Console.WriteLine($"Cer_AH_d9 test (Cer_d9 18:1;O3/16:0(2OH)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+            Console.WriteLine(PRECURSORTYPE2);
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+
 
 
     }
