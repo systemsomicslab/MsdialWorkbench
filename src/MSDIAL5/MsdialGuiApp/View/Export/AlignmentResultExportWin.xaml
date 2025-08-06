@@ -248,6 +248,16 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentReferenceMatchedProductIonExportViewModel}">
+                    <Expander Header="Library matched product ions" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <CheckBox Content="JSON"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AlignmentMatchedSpectraExportViewModel}">
                     <Expander Header="Deconvoluted spectra and reference" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                         <Grid>
