@@ -60,7 +60,6 @@
                                   HorizontalAxis="{Binding Path=SelectedItem.DataContext[1], ElementName=AxisOrderSelector}">
             <chart:HeatmapControl ItemsSource="{Binding Path=Result.Value, Mode=OneWay}"
                                   DataType="{x:Type model:SimilarityMatrixItem}"
-                                  FlippedY="False"
                                   HorizontalPropertyName="Right.File"
                                   VerticalPropertyName="Left.File"
                                   DegreePropertyName="Similarity"
