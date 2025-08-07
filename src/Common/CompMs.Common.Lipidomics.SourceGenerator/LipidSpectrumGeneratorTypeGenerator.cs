@@ -367,7 +367,9 @@ namespace CompMs.Common.Lipidomics {
                     }
                     else if (lipidClass.Contains("Cer")
                         || lipidClass == "SM" || lipidClass == "SM_O"
-                        || lipidClass == "SL" || lipidClass == "SL_O")
+                        || lipidClass == "SL" || lipidClass == "SL_O"
+                        || lipidClass == "ASM"
+                        )
                     {
                         if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
                         {
@@ -382,24 +384,49 @@ namespace CompMs.Common.Lipidomics {
                                 result.AppendLine("                    };");
                             }
                         }
-                    }
-                    else if (lipidClass == "ASM")
-                    {
-                        if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
+                        if (def.NumOfChains == 3)
                         {
-                            result.AppendLine("                    if(chains.Count() ==2){");
-                            result.AppendLine("                        if(chains[0] is SphingoChain){");
-                            result.AppendLine("                             Sph = chains[0].Mass;");
-                            result.AppendLine("                             Acyl2 = chains[1].Mass;");
-                            result.AppendLine("                        } else {        ");
-                            result.AppendLine("                             Sph = chains[1].Mass;");
-                            result.AppendLine("                             Acyl2 = chains[0].Mass;");
-                            result.AppendLine("                        };"); 
-                            result.AppendLine("                    } else {        ");
-                            result.AppendLine("                         Sph = chains[0].Mass;");
-                            result.AppendLine("                         Acyl1 = chains[2].Mass;");
-                            result.AppendLine("                         Acyl2 = chains[1].Mass;");
-                            result.AppendLine("                    };");
+                            switch (lipidClass)
+                            {
+                                case "ASM":
+                                    result.AppendLine("                    if(chains.Count() ==2){");
+                                    result.AppendLine("                        if(chains[0] is SphingoChain){");
+                                    result.AppendLine("                             Sph = chains[0].Mass;");
+                                    result.AppendLine("                             Acyl2 = chains[1].Mass;");
+                                    result.AppendLine("                        } else {        ");
+                                    result.AppendLine("                             Sph = chains[1].Mass;");
+                                    result.AppendLine("                             Acyl2 = chains[0].Mass;");
+                                    result.AppendLine("                        };");
+                                    result.AppendLine("                    } else {        ");
+                                    result.AppendLine("                         Sph = chains[0].Mass;");
+                                    result.AppendLine("                         Acyl1 = chains[2].Mass;");
+                                    result.AppendLine("                         Acyl2 = chains[1].Mass;");
+                                    result.AppendLine("                    };");
+                                    break;
+                                default:
+                                    result.AppendLine("                    if(chains.Count() ==2){");
+                                    result.AppendLine("                        if(chains[0] is SphingoChain){");
+                                    result.AppendLine("                             Sph = chains[0].Mass;");
+                                    result.AppendLine("                             Acyl1 = 0.0;");
+                                    result.AppendLine("                             Acyl2 = chains[1].Mass;");
+                                    result.AppendLine("                        } else {        ");
+                                    result.AppendLine("                             Sph = chains[1].Mass;");
+                                    result.AppendLine("                             Acyl1 = chains[0].Mass;");
+                                    result.AppendLine("                             Acyl2 = 0.0;");
+                                    result.AppendLine("                        };");
+                                    result.AppendLine("                    } else {        ");
+                                    result.AppendLine("                        if(chains[0] is SphingoChain){");
+                                    result.AppendLine("                             Sph = chains[0].Mass;");
+                                    result.AppendLine("                             Acyl1 = chains[1].Mass;");
+                                    result.AppendLine("                             Acyl2 = chains[2].Mass;");
+                                    result.AppendLine("                        } else {        ");
+                                    result.AppendLine("                             Sph = chains[1].Mass;");
+                                    result.AppendLine("                             Acyl1 = chains[0].Mass;");
+                                    result.AppendLine("                             Acyl2 = chains[2].Mass;");
+                                    result.AppendLine("                        };");
+                                    result.AppendLine("                    };");
+                                    break;
+                            }
                         }
                     }
                 }

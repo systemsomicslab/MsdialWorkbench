@@ -339,12 +339,12 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                 case LbmClass.SM:
                     if (lipid.Chains.OxidizedCount == 3)
                     {
-                        var generatorSM = new SM_OCidLipidSpectrumGenerator(); 
+                        var generatorSM = new SM_OCidLipidSpectrumGenerator();
                         spectrum = generatorSM.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
                     }
                     else
                     {
-                        var generatorSM = new SMCidLipidSpectrumGenerator(); 
+                        var generatorSM = new SMCidLipidSpectrumGenerator();
                         spectrum = generatorSM.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
                     }
                     break;
@@ -367,7 +367,7 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                 case LbmClass.PE_Cer: var generatorPE_Cer = new PE_CerCidLipidSpectrumGenerator(); spectrum = generatorPE_Cer.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
                 case LbmClass.PI_Cer: var generatorPI_Cer = new PI_CerCidLipidSpectrumGenerator(); spectrum = generatorPI_Cer.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
                 case LbmClass.SHexCer:
-                    if (lipid.Chains.OxidizedCount==3)
+                    if (lipid.Chains.OxidizedCount == 3)
                     {
                         var generatorSHexCer = new SHexCer_OCidLipidSpectrumGenerator();
                         spectrum = generatorSHexCer.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
@@ -400,15 +400,38 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                 //case LbmClass.GT1b: var generatorGT1b = new GT1b_CerCidLipidSpectrumGenerator(); spectrum = generatorGT1b.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
                 case LbmClass.MIPC: var generatorMIPC = new MIPC_CerCidLipidSpectrumGenerator(); spectrum = generatorMIPC.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
                 case LbmClass.NGcGM3: var generatorNGcGM3 = new NGcGM3_CerCidLipidSpectrumGenerator(); spectrum = generatorNGcGM3.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.AHexCer_AS: var generatorAHexCer_AS = new AHexCer_ASCidLipidSpectrumGenerator(); spectrum = generatorAHexCer_AS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.AHexCer_NS: var generatorAHexCer_NS = new AHexCer_NSCidLipidSpectrumGenerator(); spectrum = generatorAHexCer_NS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.ASHexCer_AS: var generatorASHexCer_AS = new ASHexCer_ASCidLipidSpectrumGenerator(); spectrum = generatorASHexCer_AS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.ASHexCer_NS: var generatorASHexCer_NS = new ASHexCer_NSCidLipidSpectrumGenerator(); spectrum = generatorASHexCer_NS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.AHexCer:
+                    if (lipid.Chains.OxidizedCount == 2)
+                    {
+                        var generatorAHexCer_NS = new AHexCer_NSCidLipidSpectrumGenerator();
+                        spectrum = generatorAHexCer_NS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    }
+                    else
+                    {
+                        var generatorAHexCer_AS = new AHexCer_ASCidLipidSpectrumGenerator();
+                        spectrum = generatorAHexCer_AS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    }
+                    break;
+                case LbmClass.ASHexCer:
+                    if (lipid.Chains.OxidizedCount == 2)
+                    {
+                        var generatorASHexCer_NS = new ASHexCer_NSCidLipidSpectrumGenerator();
+                        spectrum = generatorASHexCer_NS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    }
+                    else
+                    {
+                        var generatorASHexCer_AS = new ASHexCer_ASCidLipidSpectrumGenerator();
+                        spectrum = generatorASHexCer_AS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    }
+                    break;
                 case LbmClass.ASM: var generatorASM = new ASMCidLipidSpectrumGenerator(); spectrum = generatorASM.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.Cer_EBDS: var generatorCer_EBDS = new Cer_EBDSCidLipidSpectrumGenerator(); spectrum = generatorCer_EBDS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.Cer_EODS: var generatorCer_EODS = new Cer_EODSCidLipidSpectrumGenerator(); spectrum = generatorCer_EODS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.Cer_EOS: var generatorCer_EOS = new Cer_EOSCidLipidSpectrumGenerator(); spectrum = generatorCer_EOS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //case LbmClass.HexCer_EOS: var generatorHexCer_EOS = new HexCer_EOSCidLipidSpectrumGenerator(); spectrum = generatorHexCer_EOS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.Cer_EBDS:
+                    var generatorCer_EBDS = new Cer_EBDSCidLipidSpectrumGenerator(); spectrum = generatorCer_EBDS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.Cer_EODS:
+                    var generatorCer_EODS = new Cer_EODSCidLipidSpectrumGenerator(); spectrum = generatorCer_EODS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.Cer_EOS:
+                    var generatorCer_EOS = new Cer_EOSCidLipidSpectrumGenerator(); spectrum = generatorCer_EOS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                case LbmClass.HexCer_EOS: var generatorHexCer_EOS = new HexCer_EOSCidLipidSpectrumGenerator(); spectrum = generatorHexCer_EOS.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
 
                 default:
                     Assert.Inconclusive("Skip");
@@ -439,9 +462,11 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
 
 
     [DeploymentItem("LipidSpectrumGeneratorTest_GP.msp")]
-    public static IEnumerable<object[]> GetTestDataGP() {
+    public static IEnumerable<object[]> GetTestDataGP()
+    {
         var libGP = MspFileParser.MspFileReader("LipidSpectrumGeneratorTest_GP.msp");
-        foreach (var reference in libGP) {
+        foreach (var reference in libGP)
+        {
             var lipidGP = FacadeLipidParser.Default.Parse(reference.Name);
             yield return new object[] { reference, lipidGP };
         }
@@ -463,7 +488,23 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
         foreach (var reference in libCer)
         {
             var lipidCer = FacadeLipidParser.Default.Parse(reference.Name);
-            yield return new object[] { reference, lipidCer };
+
+
+            if (lipidCer.LipidClass.ToString() != reference.CompoundClass)
+            {
+                var lipidClass = (LbmClass)System.Enum.Parse(typeof(LbmClass), reference.CompoundClass);
+
+                var lipidCer2 = new Lipid(
+                    lipidClass,
+                    lipidCer.Mass,
+                    lipidCer.Chains
+                );
+                yield return new object[] { reference, lipidCer2 };
+            }
+            else
+            {
+                yield return new object[] { reference, lipidCer };
+            }
         }
     }
 }
