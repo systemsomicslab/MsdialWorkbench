@@ -150,7 +150,11 @@ namespace CompMs.Common.Lipidomics
                         new PE_CerLipidParser(),
                         new SLLipidParser(),
                         new ASMLipidParser(),
-
+                        new AHexCerLipidParser(),
+                        new ASHexCerLipidParser(),
+                        new CerEbdsLipidParser(),
+                        new CerEosLipidParser(),
+                        new HexCerEosLipidParser(),
 
                     }.ForEach(parser.Add);
                     @default = parser;
