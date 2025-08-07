@@ -372,11 +372,11 @@ namespace CompMs.Common.Lipidomics
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
                     case LbmClass.Cer_AH_d9:
-                        result = LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
                     case LbmClass.Cer_NH_d9:
-                        result = LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
                     case LbmClass.HexCer_AP:
