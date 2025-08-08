@@ -19,7 +19,16 @@ namespace CompMs.Common.Lipidomics
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
         public static readonly string Pattern = $"^HexCer\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-        public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+).*?\(?((?<sp>\d+)OH,?)+\)?/\d+:\d+.*?(;?(?<h>\(?((?<ab>\d+)OH,?)+\)?|((?<oxnum>\d+)?O)))?";
+        private static readonly string OxidizedPattern = @"[;\(]((?<ox>O(?<oxnum>\d+)?)|((?<oxpos>\d+)OH,?)+\)?)";
+
+        //public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+).*?\(?((?<sp>\d+)OH,?)+\)?/\d+:\d+.*?(;?(?<h>\(?((?<ab>\d+)OH,?)+\)?|((?<oxnum>\d+)?O)))?";
+        public static readonly string CeramideSphPattern = @"\d+:(?<d>\d+).*?([;\(]((?<sphoh>(O(?<sphohnum>\d+)?)|((?<sp>\d+)OH,?)+\))?))";
+        public static readonly string CeramideAcylPattern = @"\d+:(?<acyld>\d+).*?(?<h>[;\(]((?<ox>O(?<oxnum>\d+)?)|((?<ab>\d+)OH,?)+\)?)?)?";
+
+
+
+        public static readonly string CeramideClassPattern = $@"{CeramideSphPattern}/{CeramideAcylPattern}";
+
         private static readonly Regex ceramideClassPattern = new Regex(CeramideClassPattern, RegexOptions.Compiled);
 
         public ILipid Parse(string lipidStr)
@@ -65,15 +74,37 @@ namespace CompMs.Common.Lipidomics
                     {
                         classString = classString + "D";
                     }
-
-                    switch (classGroup["sp"].Value)
+                    if (classGroup["sphoh"].Success)
                     {
-                        case "3":
+                        if (classGroup["sp"].Success)
+                        {
+                            switch (classGroup["sp"].Value)
+                            {
+                                case "3":
+                                    classString = classString + "S";
+                                    break;
+                                case "4":
+                                    classString = classString + "P";
+                                    break;
+                            }
+                        }
+                        else if (classGroup["sphohnum"].Success)
+                        {
+                            switch (classGroup["sphohnum"].Value)
+                            {
+                                case "2":
+                                    classString = classString + "S";
+                                    break;
+                                case "3":
+                                    classString = classString + "P";
+                                    break;
+                            }
+                        }
+                        else
+                        {
                             classString = classString + "S";
-                            break;
-                        case "4":
-                            classString = classString + "P";
-                            break;
+                        }
+
                     }
                 }
                 var lipidClass = new LbmClass();
