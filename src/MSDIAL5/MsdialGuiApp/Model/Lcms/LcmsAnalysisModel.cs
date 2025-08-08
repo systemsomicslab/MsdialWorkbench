@@ -9,6 +9,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Spectra;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -32,6 +33,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -40,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider _provider;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ParameterBase _parameter;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
@@ -62,16 +65,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            if (evaluator is null) {
-                throw new ArgumentNullException(nameof(evaluator));
-            }
-
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
             _provider = provider;
             DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _parameter = parameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
             _broker = broker;
@@ -233,15 +233,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode, analysisFileModel.AcquisitionType);
-            analysisFile = analysisFileModel;
-
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
         private readonly UndoManager _undoManager;
-        public AnalysisFileBeanModel analysisFile { get; }
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
@@ -371,6 +368,70 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _provider.LoadMs1Spectrums(),
                 DataBaseMapper,
                 _parameter);
+        }
+
+        public async Task ExportProductIonAbundanceResultAsync(CancellationToken token = default) {
+            var loader = new MsDecSpectrumFromFileLoader(AnalysisFileModel);
+            var mapper = new MzMapper();
+            var quantifier = new Ms2Quantifier();
+            double mzTolerance = .05d;
+
+            var objects = new List<object>();
+            foreach (var peak in Ms1Peaks) {
+                token.ThrowIfCancellationRequested();
+                if (!peak.IsRefMatched(_evaluator)) {
+                    continue;
+                }
+
+                var scan = loader.LoadMSDecResult(peak);
+                if (scan is null) {
+                    continue;
+                }
+
+                var referencePairs = peak.MatchResultsModel.MatchResults.Where(_evaluator.IsReferenceMatched).Select(r => (DataBaseMapper.MoleculeMsRefer(r), r)).OfType<(MoleculeMsReference, MsScanMatchResult)>();
+                referencePairs = referencePairs.Where(pair => pair.Item2.MatchedPeaksPercentage >= 2d).ToArray();
+
+                var reference2Score = referencePairs.GroupBy(pair => pair.Item1, pair => pair.Item2.TotalScore).ToDictionary(g => g.Key, g => g.Max());
+                var references = referencePairs.Select(pair => pair.Item1).ToArray();
+                var groups = mapper.MapMzByReferenceGroups(references, mzTolerance)
+                    .Select(pair => new MoleculeGroupModel {
+                        Name = string.Join(",", pair.Item1.Select(r => r.Name)),
+                        References = pair.Item1,
+                        UniqueMzList = pair.Item2,
+                    }).OrderByDescending(g => g.References.Max(r => reference2Score[r])).ThenBy(g => g.References.Length);
+
+                var groupObjects = new List<object>();
+                foreach (var group in groups) {
+                    token.ThrowIfCancellationRequested();
+                    var quantResults = quantifier.Quantify(group.UniqueMzList, [scan], [AnalysisFileModel], mzTolerance);
+                    var productIonAbundances = quantResults.Select(
+                        r => new {
+                            Mz = r.QuantMass,
+                            Abundance = r.Abundances.Single().Abundance,
+                        }
+                    ).ToArray();
+                    groupObjects.Add(new
+                    {
+                        ReferenceGroup = group.References.Select(r => r.Name).ToArray(),
+                        UniqueIonMz = group.UniqueMzList,
+                        Abundances = productIonAbundances,
+                    });
+                }
+
+                var ontology = DataBaseMapper.MoleculeMsRefer(peak.MatchResultsModel.Representative)?.OntologyOrCompoundClass;
+                objects.Add(new
+                {
+                    MasterAlignemntID = peak.MasterPeakID,
+                    RepresentativeReference = peak.MatchResultsModel.Representative.Name,
+                    RepresentativeOntology = ontology,
+                    SumOfProductIonAbundance = scan?.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Sum() ?? 0d,
+                    References = reference2Score.Select(kvp => new { name = kvp.Key.Name, score = kvp.Value, ontology = kvp.Key.OntologyOrCompoundClass }).ToArray(),
+                    Groups = groupObjects,
+                });
+            }
+
+            using var writer = new StreamWriter(@".\UniqueProductIonAbundance.json");
+            await writer.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(new { Sample = AnalysisFileModel.AnalysisFileName, Results = objects, }, Newtonsoft.Json.Formatting.Indented)).ConfigureAwait(false);
         }
 
         public void Undo() => _undoManager.Undo();

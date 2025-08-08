@@ -6,7 +6,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
@@ -27,21 +26,19 @@ namespace CompMs.App.Msdial.Model.Loader
                 throw new ArgumentNullException(nameof(target));
             }
             IObservable<ReadOnlyCollection<AlignmentChromPeakFeatureModel>?> props = target.AlignedPeakPropertiesModelProperty;
-            var task = target.AlignedPeakPropertiesModelProperty.ToTask();
-            if (target.AlignedPeakPropertiesModelProperty.Value is null) {
-                props = Observable.FromAsync(() => task);
-            }
-            return props.Select(props_ => {
-                var prop = props_.FirstOrDefault(p => p.FileID == _file.AnalysisFileId);
-                if (prop is null || prop.MSDecResultID < 0) {
-                    return null;
-                }
-                var rep = ((IAnnotatedObject)prop).MatchResults.Representative;
-                if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
-                    return loader.LoadMSDecResult(prop.MSDecResultID);
-                }
-                return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
-            });
+            return target.AlignedPeakPropertiesModelProperty
+                .Where(props_ => props_ is not null)
+                .Select(props_ => {
+                    var prop = props_.FirstOrDefault(p => p.FileID == _file.AnalysisFileId);
+                    if (prop is null || prop.MSDecResultID < 0) {
+                        return null;
+                    }
+                    var rep = ((IAnnotatedObject)prop).MatchResults.Representative;
+                    if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
+                        return loader.LoadMSDecResult(prop.MSDecResultID);
+                    }
+                    return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
+                });
         }
 
         IObservable<IMSScanProperty?> IMsSpectrumLoader<ChromatogramPeakFeatureModel?>.LoadScanAsObservable(ChromatogramPeakFeatureModel? target) {

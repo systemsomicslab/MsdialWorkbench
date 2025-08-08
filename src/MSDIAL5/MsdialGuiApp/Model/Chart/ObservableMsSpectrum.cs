@@ -20,13 +20,14 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class ObservableMsSpectrum : DisposableModelBase {
         private readonly Subject<Stream> _saveAsObservable;
-        private readonly IObservable<ISpectraExporter?> _exporter;
+        private readonly IObservable<ISpectraExporter?>? _exporter;
 
-        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?> exporter) {
-            MsSpectrum = msSpectrum ?? throw new ArgumentNullException(nameof(msSpectrum));
+        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?>? exporter) {
+            var msSpectrumHot = msSpectrum?.Replay(1);
+            MsSpectrum = msSpectrumHot ?? throw new ArgumentNullException(nameof(msSpectrum));
             Loaded = loaded ?? Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _exporter = exporter;
-            var spectrum = msSpectrum.Select(s => s?.Spectrum ?? new List<SpectrumPeak>(0)).Publish();
+            var spectrum = msSpectrumHot.Select(s => s?.Spectrum ?? new List<SpectrumPeak>(0)).Publish();
             var save = new Subject<Stream>().AddTo(Disposables);
             if (exporter != null) {
                 save.Where(s => s != null && s.CanWrite)
@@ -41,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim(false)
                 .AddTo(Disposables)
                 ?? Observable.Return(false);
+            Disposables.Add(msSpectrumHot.Connect());
             Disposables.Add(spectrum.Connect());
         }
 

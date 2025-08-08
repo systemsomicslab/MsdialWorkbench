@@ -278,6 +278,20 @@ namespace CompMs.Common.DataStructure
             dfs(node);
         }
         public void PostOrder(Action<Edge> f) => PostOrder(Root, f);
+        public void EdgePostOrder(Action<Edge> f) => PostOrder(Root, f);
+
+        public void NodePostOrder(int node, Action<int> f) {
+            void dfs(int v)
+            {
+                foreach(var e in g[v])
+                {
+                    dfs(e.To);
+                }
+                f(v);
+            }
+            dfs(node);
+        }
+        public void NodePostOrder(Action<int> f) => NodePostOrder(Root, f);
 
         public void PreOrder(int node, Action<Edge> f)
         {
@@ -292,6 +306,22 @@ namespace CompMs.Common.DataStructure
             dfs(node);
         }
         public void PreOrder(Action<Edge> f) => PreOrder(Root, f);
+        public void EdgePreOrder(Action<Edge> f) => PreOrder(Root, f);
+
+        public void NodePreOrder(int node, Action<int> f)
+        {
+            void dfs(int v)
+            {
+                f(v);
+                foreach(var e in g[v])
+                {
+                    dfs(e.To);
+                }
+            }
+            dfs(node);
+        }
+
+        public void NodePreOrder(Action<int> f) => NodePreOrder(Root, f);
 
         public void BfsEdge(int node, Action<Edge> f)
         {
