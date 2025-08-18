@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Imaging;
-using CompMs.CommonMVVM;
+﻿using CompMs.CommonMVVM;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,14 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace CompMs.App.Msdial.Model.ImagingImms
+namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class SaveImagesModel : BindableBase
     {
-        private readonly WholeImageResultModel _imageResult;
+        private readonly IWholeImageResultModel _imageResult;
         private readonly IReadOnlyList<ImagingRoiModel> _roiModels;
 
-        public SaveImagesModel(WholeImageResultModel imageResult, IReadOnlyList<ImagingRoiModel> roiModels)
+        public SaveImagesModel(IWholeImageResultModel imageResult, IReadOnlyList<ImagingRoiModel> roiModels)
         {
             _imageResult = imageResult ?? throw new ArgumentNullException(nameof(imageResult));
             _roiModels = roiModels ?? throw new ArgumentNullException(nameof(roiModels));
