@@ -1,0 +1,401 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.ImagingDims.ImagingMainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:info="clr-namespace:CompMs.App.Msdial.View.Information"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.ImagingDims"
+             xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imaging"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingDims"
+             xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:infovm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingDimsMainViewModel}}"
+             d:Background="White"
+             d:DesignHeight="780" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="GroupBox" x:Key="GroupBoxHeader">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GroupBox">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Border Background="{StaticResource MainThemeColor}"
+                                        BorderBrush="Black"
+                                        BorderThickness=".5"
+                                        HorizontalAlignment="Stretch"
+                                        Grid.Row="0">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      ContentSource="Header"
+                                                      RecognizesAccessKey="True"/>
+                                </Border>
+                                <ContentPresenter Grid.Row="1"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate DataType="{x:Type vm:ImagingDimsMainViewModel}" x:Key="ImageSelector">
+                <GroupBox Header="Images" Style="{StaticResource GroupBoxHeader}">
+                    <ListBox ItemsSource="{Binding ImageViewModels}"
+                             SelectedItem="{Binding SelectedImageViewModel}"
+                             DisplayMemberPath="ImageTitle"
+                             IsSynchronizedWithCurrentItem="True"/>
+                </GroupBox>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ImagingDimsImageViewModel}" x:Key="RoiSelector">
+                <GroupBox Header="ROIs" Style="{StaticResource GroupBoxHeader}">
+                    <ItemsControl ItemsSource="{Binding RoiViewModels}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected.Value}"
+                                              Tag="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource NegativeConverter}}"
+                                              Visibility="{Binding Path=Tag, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Id.Value}"/>
+                                                <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                         PresentationOptions:Freeze="True"/>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </StackPanel>
+                                        </CheckBox.Content>
+                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding Path=IsChecked, ElementName=EditButton, Converter={StaticResource BooleanToVisibility}}">
+                                        <CheckBox IsChecked="{Binding IsSelected.Value}" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding Id.Value}"/>
+                                        <Rectangle Width="16" Height="8" Margin="8,0,0,0">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding Roi.Color}"
+                                                                 PresentationOptions:Freeze="True"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="EditButton" Content="&#xED63;" FontFamily="Segoe MDL2 Assets" Margin="4,2" Background="White"/>
+                                    <Button Command="{Binding DataContext.(vm:ImagingDimsImageViewModel.RemoveRoiCommand), Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Model}"
+                                            Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                            Margin="4,2" Background="White"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                                  
+                </GroupBox>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <local:DimsImagingRibbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"/>
+
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl Content="{Binding}"
+                            ContentTemplate="{StaticResource ImageSelector}"
+                            Grid.Row="0"/>
+            <ContentControl Content="{Binding Path=SelectedImageViewModel}"
+                            ContentTemplate="{StaticResource RoiSelector}"
+                            Grid.Row="1"/>
+            <ContentControl Content="{Binding RoiCompareViewModels}"
+                            Grid.Row="2"/>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TabControl Grid.Row="0">
+                <TabItem Header="ROI intensities">
+                    <Grid Margin="8,24,8,8">
+                        <Grid.Resources>
+                            <Style TargetType="ItemsControl">
+                                <Setter Property="ItemsPanel">
+                                    <Setter.Value>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1"/>
+                                        </ItemsPanelTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Intensity" VerticalAlignment="Center"
+                                   Grid.Row="0" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX=".5" CenterY=".5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}"
+                                      Grid.Row="1" Grid.Column="1">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                                    <TextBlock Text="{Binding Id}"
+                                               HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <GridSplitter Height="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" Foreground="Gray" Grid.Row="1" Grid.Column="1"/>
+                        <GridSplitter Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" Foreground="Gray" Grid.Row="0" Grid.Column="0"/>
+                        <Border Background="WhiteSmoke" Padding="0,24,0,0" 
+                                Grid.Row="0" Grid.Column="1">
+                            <Viewbox Stretch="Fill">
+                                <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                                            <Border Width="100"
+                                                    BorderThickness="0"
+                                                    Padding="5,0"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Bottom">
+                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity}">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
+                                                    </Rectangle.Fill>
+                                                    <Rectangle.ToolTip>
+                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity, StringFormat=Average intensity: {0:F0}}"/>
+                                                    </Rectangle.ToolTip>
+                                                </Rectangle>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Viewbox>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="EIC">
+                    <chart:EicView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.EicViewModel}"/>
+                </TabItem>
+            </TabControl>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel
+                    Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button DataContext="{Binding SelectedImageViewModel.ImageResultViewModel}"
+                            Command="{Binding SearchCompoundCommand, Mode=OneWay}"
+                            Background="AliceBlue"
+                        >Compound search
+                    </Button>
+                    <Button Name="Button_TableViewer"
+                            DataContext="{Binding SelectedImageViewModel.ImageResultViewModel}"
+                            Command="{Binding ShowIonTableCommand, Mode=OneWay}"
+                            Background="AliceBlue"
+                            Margin="0,2,0,0" 
+                            HorizontalContentAlignment="Right"
+                            VerticalAlignment="Top" HorizontalAlignment="Right"
+                            Height="25" Width="110"
+                            Grid.Row="0">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Table.png"/>
+                                <TextBlock Text=" Show ion table " VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+
+                <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
+                                Grid.Row="1"/>
+            </Grid>
+            <GridSplitter Height="2" Foreground="Gray"
+                          VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+        </Grid>
+
+        <Grid Grid.Column="2" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TabControl ItemsSource="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels}"
+                        Grid.Row="0">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Resources>
+                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
+                                <info:PeakInformationView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
+                                <info:CompoundDetailView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
+                                <info:MoleculeStructureView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MatchResultCandidatesViewModel}">
+                                <info:MatchResultCandidatesView/>
+                            </DataTemplate>
+                        </DataTemplate.Resources>
+                        <ContentPresenter Content="{Binding}"/>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Resources>
+                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
+                                <TextBlock>Peak information</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
+                                <TextBlock>Compound information</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
+                                <TextBlock>Structure</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MatchResultCandidatesViewModel}">
+                                <TextBlock>Candidates</TextBlock>
+                            </DataTemplate>
+                        </DataTemplate.Resources>
+                        <ContentPresenter Content="{Binding}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+            <Grid Grid.Row="1">
+            <Grid.InputBindings>
+                <KeyBinding Gesture="Ctrl+Z" Command="{x:Static ui:AreaSelector.UndoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+                <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
+            </Grid.InputBindings>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto" MaxWidth="240"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical"
+                            Margin="8"
+                            Grid.Column="1">
+                    <GroupBox Header="ROI commands">
+                        <ItemsControl>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="Margin" Value="4"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <CheckBox Content="Selector enable"
+                                      IsChecked="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable}"/>
+                            <CheckBox x:Name="SelectorVisibility" Content="Selector visible"/>
+                            <Button Content="Calculate"
+                                    Command="{Binding SelectedImageViewModel.AddRoiCommand}"/>
+                        </ItemsControl>
+                    </GroupBox>
+
+                    <GroupBox Header="Save commands">
+                        <ItemsControl>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="Margin" Value="4"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ContentControl>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding SelectedImageViewModel.SaveImagesViewModel.Path.Value}"
+                                             Width="100"
+                                             TextWrapping="NoWrap"/>
+                                    <Button Content="Browse" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.BrowseCommand}"/>
+                                </StackPanel>
+                            </ContentControl>
+                            <Button Content="Save" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.SaveCommand}"/>
+                            <Button Content="Save intensities" Command="{Binding SelectedImageViewModel.SaveIntensitiesCommand}"/>
+                            <Button Content="Load ROI" Command="{Binding SelectedImageViewModel.LoadRoiCommand}"/>
+                        </ItemsControl>
+                    </GroupBox>
+                </StackPanel>
+                <Border x:Name="ImageContainer"
+                        ClipToBounds="True"
+                        Grid.Column="0">
+                    <Viewbox behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}"
+                             behavior:AddMovabilityBehavior.IsEnabled="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Converter={StaticResource NegativeConverter}}"
+                             Stretch="Uniform">
+                        <Grid Width="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Width}"
+                              Height="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Height}"
+                              behavior:AddMovabilityBehavior.IsEnabled="False">
+                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"/>
+                            <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Grid/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="0" Background="Transparent"
+                                                Visibility="{Binding IsSelected.Value, Converter={StaticResource BooleanToVisibility}}">
+                                            <chart:BitmapImageView DataContext="{Binding Roi.RoiImage}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ui:AreaSelector x:Name="roiSelector"
+                                             SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
+                                             Background="Transparent"
+                                             Stroke="Red"
+                                             VerticalAlignment="Stretch"
+                                             HorizontalAlignment="Stretch"
+                                             IsSelectable="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Mode=OneWay}"
+                                             Visibility="{Binding IsChecked, ElementName=SelectorVisibility, Converter={StaticResource BooleanToVisibility}}"/>
+                        </Grid>
+                    </Viewbox>
+                </Border>
+            </Grid>
+            <GridSplitter HorizontalAlignment="Stretch"
+                          VerticalAlignment="Top"
+                          Foreground="Gray"
+                          Height="2"
+                          Grid.Row="1"/>
+        </Grid>
+        <GridSplitter HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Foreground="Gray"
+                      Width="2"
+                      Grid.Column="1"
+                      Grid.Row="1" Grid.RowSpan="2"/>
+        <GridSplitter HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Foreground="Gray"
+                      Width="2"
+                      Grid.Column="2"
+                      Grid.Row="1" Grid.RowSpan="2"/>
+    </Grid>
+</UserControl>
