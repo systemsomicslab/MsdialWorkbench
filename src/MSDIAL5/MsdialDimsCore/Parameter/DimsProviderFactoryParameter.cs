@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Algorithm;
+﻿using CompMs.Common.DataObj;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Algorithm;
 using MessagePack;
@@ -12,6 +13,7 @@ namespace CompMs.MsdialDimsCore.Parameter
     public interface IDimsDataProviderFactoryParameter
     {
         IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
+        IDataProviderFactory<RawMeasurement> Create();
     }
 
     [MessagePackObject]
@@ -30,6 +32,10 @@ namespace CompMs.MsdialDimsCore.Parameter
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
             return new DimsBpiDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
         }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new DimsBpiDataProviderFactory(TimeBegin, TimeEnd);
+        }
     }
 
     [MessagePackObject]
@@ -47,6 +53,10 @@ namespace CompMs.MsdialDimsCore.Parameter
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
             return new DimsTicDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new DimsTicDataProviderFactory(TimeBegin, TimeEnd);
         }
     }
 
@@ -68,6 +78,10 @@ namespace CompMs.MsdialDimsCore.Parameter
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
             return new DimsAverageDataProviderFactory(MassTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new DimsAverageDataProviderFactory(MassTolerance, TimeBegin, TimeEnd);
         }
     }
 }
