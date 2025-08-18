@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -27,7 +28,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
         private string _path = string.Empty;
 
-        public Task SaveAsync()
+        public Task SaveAsync(CancellationToken token = default)
         {
             var image = _imageResult.SelectedPeakIntensities?.BitmapImageModel;
             if (image is null) {
@@ -58,11 +59,11 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 {
                     encoder.Frames.Add(BitmapFrame.Create(roi.BitmapSource));
                 }
-                using (var stream = File.Open(Path, FileMode.Create))
+                using (var stream = File.Open(Path, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
                     encoder.Save(stream);
                 }
-            });
+            }, token);
         }
     }
 }
