@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
 {
-    internal sealed class WholeImageResultModel : DisposableModelBase
+    internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageResultModel
     {
         private readonly List<Raw2DElement> _elements;
         private readonly AnalysisFileBeanModel _file;
