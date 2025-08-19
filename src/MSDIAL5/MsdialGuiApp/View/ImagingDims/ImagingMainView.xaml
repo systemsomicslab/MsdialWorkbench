@@ -261,6 +261,9 @@
                             <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
                                 <info:CompoundDetailView/>
                             </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:LipidmapsLinkViewModel}">
+                                <info:LipidmapsLinkView/>
+                            </DataTemplate>
                             <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
                                 <info:MoleculeStructureView/>
                             </DataTemplate>
@@ -279,6 +282,11 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
                                 <TextBlock>Compound information</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:LipidmapsLinkViewModel}">
+                                <TextBlock Text="Links"
+                                           VerticalAlignment="Stretch"
+                                           ToolTip="Database links"/>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
                                 <TextBlock>Structure</TextBlock>
