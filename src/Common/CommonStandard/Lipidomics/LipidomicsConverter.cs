@@ -3945,6 +3945,10 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Cer_EOS: return "Cer-EOS";
                 case LbmClass.Cer_OS: return "Cer-OS";
                 case LbmClass.Cer_HS: return "Cer-HS";
+                case LbmClass.Cer_AH: return "Cer-AH";
+                case LbmClass.Cer_NH: return "Cer-NH";
+                case LbmClass.Cer_AH_d9: return "Cer-AH_d9";
+                case LbmClass.Cer_NH_d9: return "Cer-NH_d9";
                 case LbmClass.Cer_HDS: return "Cer-HDS";
                 case LbmClass.Cer_NDOS: return "Cer-NDOS";
                 case LbmClass.HexCer_NS: return "HexCer-NS";
@@ -4385,6 +4389,10 @@ namespace CompMs.Common.Lipidomics
                 case "Cer-NS": return LbmClass.Cer_NS;
                 case "Cer-NP": return LbmClass.Cer_NP;
                 case "Cer-AP": return LbmClass.Cer_AP;
+                case "Cer-NH": return LbmClass.Cer_NH;
+                case "Cer-AH": return LbmClass.Cer_AH;
+                case "Cer-NH_d9": return LbmClass.Cer_NH_d9;
+                case "Cer-AH_d9": return LbmClass.Cer_AH_d9;
                 case "Cer-ABP": return LbmClass.Cer_ABP;
                 case "Cer-EODS": return LbmClass.Cer_EODS;
                 case "Cer-EOS": return LbmClass.Cer_EOS;
@@ -4416,6 +4424,10 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NP": return LbmClass.Cer_NP;
                 case "Cer_AP": return LbmClass.Cer_AP;
                 case "Cer_ABP": return LbmClass.Cer_ABP;
+                case "Cer_NH": return LbmClass.Cer_NH;
+                case "Cer_AH": return LbmClass.Cer_AH;
+                case "Cer_NH_d9": return LbmClass.Cer_NH_d9;
+                case "Cer_AH_d9": return LbmClass.Cer_AH_d9;
                 case "Cer_EODS": return LbmClass.Cer_EODS;
                 case "Cer_EOS": return LbmClass.Cer_EOS;
                 case "Cer_OS": return LbmClass.Cer_OS;
@@ -4860,6 +4872,10 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NP": return "Sphingolipids";
                 case "Cer_AP": return "Sphingolipids";
                 case "Cer_ABP": return "Sphingolipids";
+                case "Cer_NH": return "Sphingolipids";
+                case "Cer_AH": return "Sphingolipids";
+                case "Cer_NH_d9": return "Sphingolipids";
+                case "Cer_AH_d9": return "Sphingolipids";
                 case "Cer_OS": return "Sphingolipids";
                 case "Cer_HS": return "Sphingolipids";
                 case "Cer_HDS": return "Sphingolipids";
@@ -4875,6 +4891,11 @@ namespace CompMs.Common.Lipidomics
                 case "Cer-NS": return "Sphingolipids";
                 case "Cer-NP": return "Sphingolipids";
                 case "Cer-AP": return "Sphingolipids";
+                case "Cer-ABP": return "Sphingolipids";
+                case "Cer-NH": return "Sphingolipids";
+                case "Cer-AH": return "Sphingolipids";
+                case "Cer-NH_d9": return "Sphingolipids";
+                case "Cer-AH_d9": return "Sphingolipids";
                 case "Cer-OS": return "Sphingolipids";
                 case "Cer-HS": return "Sphingolipids";
                 case "Cer-HDS": return "Sphingolipids";

@@ -101,6 +101,10 @@ Cer_NDS,Cer,1,,1,,2
 Cer_NS,Cer,1,,1,,2
 Cer_NP,Cer,1,,1,,2
 Cer_AP,Cer,1,,1,,2
+Cer_AH,Cer,1,,1,,2
+Cer_NH,Cer,1,,1,,2
+Cer_AH_d9,Cer,1,,1,,2
+Cer_NH_d9,Cer,1,,1,,2
 Cer_ABP,Cer,1,,1,,2
 Cer_EBDS,Cer,1,,1,1,2
 Cer_HS,Cer,1,,1,,2

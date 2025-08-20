@@ -118,6 +118,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new AlignmentResultMassBankRecordExportViewModel(m);
                 case AlignmentMztabMExportModel m:
                     return new AlignmentMztabMExportViewModel(m);
+                case AlignmentReferenceMatchedProductIonExportModel m:
+                    return new AlignmentReferenceMatchedProductIonExportViewModel(m);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

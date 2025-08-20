@@ -167,7 +167,7 @@
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" MinHeight="235" />
+                    <RowDefinition Height="235" MinHeight="235" />
                     <RowDefinition Height="*" MinHeight="300" />
                 </Grid.RowDefinitions>
                 <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -187,6 +187,9 @@
                                 <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                     <infoview:CompoundDetailView/>
                                 </DataTemplate>
+                                <DataTemplate DataType="{x:Type info:LipidmapsLinkViewModel}">
+                                    <infoview:LipidmapsLinkView/>
+                                </DataTemplate>
                                 <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                     <infoview:MoleculeStructureView/>
                                 </DataTemplate>
@@ -201,12 +204,19 @@
                         <DataTemplate>
                             <DataTemplate.Resources>
                                 <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
-                                    <TextBlock Text="Basic peak property"
-                                               VerticalAlignment="Stretch"/>
+                                    <TextBlock Text="Peak"
+                                               VerticalAlignment="Stretch"
+                                               ToolTip="Basic peak property"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                    <TextBlock Text="Compound detail"
-                                               VerticalAlignment="Stretch"/>
+                                    <TextBlock Text="Compound"
+                                               VerticalAlignment="Stretch"
+                                               ToolTip="Compound detail"/>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type info:LipidmapsLinkViewModel}">
+                                    <TextBlock Text="Links"
+                                               VerticalAlignment="Stretch"
+                                               ToolTip="Database links"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                     <TextBlock Text="Structure"

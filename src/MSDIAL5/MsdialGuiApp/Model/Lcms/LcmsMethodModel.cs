@@ -120,9 +120,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
+            var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, exportTypes.GetRange(0, 4), accessPeakMeta);
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, spectraAndReference, };
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, productions, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
