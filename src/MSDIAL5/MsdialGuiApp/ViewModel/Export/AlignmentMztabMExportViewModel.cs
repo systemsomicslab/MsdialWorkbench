@@ -21,10 +21,10 @@ internal sealed class AlignmentMztabMExportViewModel : ViewModelBase, IAlignment
     public ReactivePropertySlim<bool> IsSelected { get; }
 
     public bool IsExpanded {
-        get => _isExapnded;
-        set => SetProperty(ref _isExapnded, value);
+        get => _isExpanded;
+        set => SetProperty(ref _isExpanded, value);
     }
-    private bool _isExapnded = false;
+    private bool _isExpanded = false;
 
     public ReadOnlyCollection<ExportType> Types => _model.Types;
 
