@@ -1,12 +1,15 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Spectra;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -47,8 +50,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
+            var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
+            var spectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
+            var spectraGroupingCommand = new ReactiveCommand().WithSubscribe(async () => {
+                var m = await model.CreateSpectraGroupingModelAsync().ConfigureAwait(false);
+                if (m is null) {
+                    _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                    return;
+                }
+                var spectraGroupingViewModel = new SpectraGroupingViewModel(m);
+                await m.UpdateMoleculeGroupsAsync();
+                broker.Publish(spectraGroupingViewModel);
+            }).AddTo(Disposables);
+
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker)
+            {
+                SpectraSimilarityMapCommand = spectraSmilarityMapCommand,
+                SpectraGroupingCommand = spectraGroupingCommand,
+            }.AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);

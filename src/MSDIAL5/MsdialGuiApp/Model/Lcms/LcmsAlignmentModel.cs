@@ -8,6 +8,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Spectra;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
@@ -38,6 +39,9 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -53,9 +57,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly AlignmentFileBeanModel _alignmentFile;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly FilePropertiesModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
+        private readonly AnalysisFileBeanModelCollection _fileCollection; 
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
@@ -92,10 +98,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _alignmentFile = alignmentFileBean;
+            _evaluator = evaluator;
             _parameter = parameter;
             _projectBaseParameter = projectBaseParameter;
             _msfinderSearcherFactory = msfinderSearcherFactory;
             _files = files ?? throw new ArgumentNullException(nameof(files));
+            _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -154,7 +162,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum deconvolutedObservableMsSpectrum = ObservableMsSpectrum.Create(Target, msDecSpectrumLoader, spectraExporter).AddTo(Disposables);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(mapper)).AddTo(Disposables);
-            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
+            var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(fileCollection);
+            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(alignmentPeaksSpectraLoader, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
                 Target, MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
@@ -261,6 +270,20 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
+
+            SpectraSimilarityMapModel = new SpectraSimilarityMapModel(fileCollection, _parameter.ProjectParam);
+            Target.Subscribe(async t => {
+                if (t is null) {
+                    SpectraSimilarityMapModel.ClearSimilarities();
+                    return;
+                }
+                var scans = await alignmentPeaksSpectraLoader.GetCurrentScansAsync(fileCollection.AnalysisFiles, t);
+                if (scans is null) {
+                    SpectraSimilarityMapModel.ClearSimilarities();
+                    return;
+                }
+                await SpectraSimilarityMapModel.UpdateSimilaritiesAsync(t, scans);
+            });
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -288,6 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ProteinResultContainerModel? ProteinResultContainerModel { get; }
         public override AlignmentSpotSource AlignmentSpotSource { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
+        public SpectraSimilarityMapModel SpectraSimilarityMapModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
@@ -429,6 +453,21 @@ namespace CompMs.App.Msdial.Model.Lcms
 
                 return network;
             }
+        }
+
+        public async Task<SpectraGroupingModel?> CreateSpectraGroupingModelAsync(CancellationToken token = default) {
+            if (Target.Value is not AlignmentSpotPropertyModel spot) {
+                return null;
+            }
+            var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(_fileCollection);
+            var scans = await alignmentPeaksSpectraLoader.GetCurrentScansAsync(_fileCollection.AnalysisFiles, spot).ConfigureAwait(false);
+            if (scans is null) {
+                return null;
+            }
+            token.ThrowIfCancellationRequested();
+
+            var model = new SpectraGroupingModel(_fileCollection, spot, scans, _dataBaseMapper, _evaluator, .05d);
+            return model;
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {

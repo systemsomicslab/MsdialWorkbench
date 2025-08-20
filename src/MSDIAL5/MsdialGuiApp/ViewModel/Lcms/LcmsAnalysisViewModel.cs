@@ -125,6 +125,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakDetailViewModels = [.. peakDetailViewModels];
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
+
+            AdhocExportProductIonAbundanceResultCommand = new AsyncReactiveCommand()
+                .WithSubscribe(() => model.ExportProductIonAbundanceResultAsync())
+                .AddTo(Disposables);
         }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
@@ -170,6 +174,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
         private DelegateCommand? _goToExternalMsfinderCommand;
+
+        public AsyncReactiveCommand AdhocExportProductIonAbundanceResultCommand { get; }
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);
         private DelegateCommand? _saveMs2SpectrumCommand;
