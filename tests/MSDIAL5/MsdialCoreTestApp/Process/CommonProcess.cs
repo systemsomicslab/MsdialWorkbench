@@ -1,6 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -57,32 +58,35 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         public static void ParseLibraries(ParameterBase param, float targetMz,
-            out IupacDatabase iupacDB, out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
+            out IupacDatabase iupacDB, out MoleculeDataBase? mspDB, out MoleculeDataBase? txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
-            out List<MoleculeMsReference> lbmDB) {
+            out MoleculeDataBase? lbmDB) {
 
+            mspDB = null;
+            txtDB = null;
+            lbmDB = null;
             iupacDB = IupacResourceParser.GetIUPACDatabase();
-            mspDB = new List<MoleculeMsReference>();
-            txtDB = new List<MoleculeMsReference>();
-            lbmDB = new List<MoleculeMsReference>();
             isotopeTextDB = new List<MoleculeMsReference>();
             compoundsInTargetMode = new List<MoleculeMsReference>();
 
             if (ErrorHandler.IsFileExist(param.MspFilePath)) { 
-                mspDB = LibraryHandler.ReadMsLibrary(param.MspFilePath, param, out var mspError);
+                var mspList = LibraryHandler.ReadMsLibrary(param.MspFilePath, param, out var mspError);
+                mspDB = new MoleculeDataBase(mspList, "MspDB", DataBaseSource.Msp, SourceType.MspDB, param.MspFilePath);
                 if (mspError != string.Empty) {
                     Console.WriteLine(mspError);
                 }
             }
             if (ErrorHandler.IsFileExist(param.LbmFilePath)) {
-                lbmDB = LibraryHandler.ReadMsLibrary(param.LbmFilePath, param, out var lbmError);
+                var lbmList = LibraryHandler.ReadMsLibrary(param.LbmFilePath, param, out var lbmError);
+                lbmDB = new MoleculeDataBase(lbmList, "LbmDB", DataBaseSource.Lbm, SourceType.MspDB, param.LbmFilePath);
                 if (lbmError != string.Empty) {
                     Console.WriteLine(lbmError);
                 }
             }
 
             if (ErrorHandler.IsFileExist(param.TextDBFilePath)) {
-                txtDB = LibraryHandler.ReadMsLibrary(param.TextDBFilePath, param, out var txtError);
+                var txtList = LibraryHandler.ReadMsLibrary(param.TextDBFilePath, param, out var txtError);
+                txtDB = new MoleculeDataBase(txtList, "TextDB", DataBaseSource.Text, SourceType.TextDB, param.TextDBFilePath);
                 if (txtError != string.Empty) {
                     Console.WriteLine(txtError);
                 }

@@ -286,6 +286,38 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentMztabMExportViewModel}">
+                    <Expander Header="mztab-M" IsExpanded="{Binding Path=IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <CheckBox Content="mztab-M"
+                                      IsChecked="{Binding Path=IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                            <ItemsControl ItemsSource="{Binding Types}"
+                                          IsEnabled="{Binding Path=IsSelected.Value, Mode=OneWay}"
+                                          Margin="8" Grid.Row="1">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Path=Label}"
+                                                  IsChecked="{Binding Path=IsSelected, Mode=TwoWay}"
+                                                  IsEnabled="{Binding Path=Enabled.Value}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  Margin="8,8,0,0" Width="180"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 

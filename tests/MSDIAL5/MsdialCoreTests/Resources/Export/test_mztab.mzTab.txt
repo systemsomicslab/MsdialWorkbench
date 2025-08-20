@@ -1,0 +1,74 @@
+MTD	mzTab-version	2.0.0-M
+MTD	mzTab-ID	mztab_test
+MTD	software[1]	[MS, MS:1003082, MS-DIAL, 5.5.250403-beta]
+MTD	ms_run[1]-location	file://./Resources/Export/0717_kinetex_wine_50_4min_pos_IDA_E1.abf
+MTD	ms_run[1]-format	[,, ABF(Analysis Base File) file, ]
+MTD	ms_run[1]-id_format	[,, MS-DIAL set Datapoint Number, ]
+MTD	ms_run[1]-scan_polarity[1]	[MS,MS:1000130,positive scan,]
+MTD	assay[1]	0717_kinetex_wine_50_4min_pos_IDA_E1
+MTD	assay[1]-ms_run_ref	ms_run[1]
+MTD	ms_run[2]-location	file://./Resources/Export/0717_kinetex_wine_50_4min_pos_IDA_F1.abf
+MTD	ms_run[2]-format	[,, ABF(Analysis Base File) file, ]
+MTD	ms_run[2]-id_format	[,, MS-DIAL set Datapoint Number, ]
+MTD	ms_run[2]-scan_polarity[1]	[MS,MS:1000130,positive scan,]
+MTD	assay[2]	0717_kinetex_wine_50_4min_pos_IDA_F1
+MTD	assay[2]-ms_run_ref	ms_run[2]
+MTD	study_variable[1]	E
+MTD	study_variable[1]-assay_refs	assay[1]
+MTD	study_variable[1]-description	E
+MTD	study_variable[2]	F
+MTD	study_variable[2]-assay_refs	assay[2]
+MTD	study_variable[2]-description	F
+MTD	cv[1]-label	MS
+MTD	cv[1]-full_name	PSI-MS controlled vocabulary
+MTD	cv[1]-version	4.1.192
+MTD	cv[1]-uri	https://www.ebi.ac.uk/ols/ontologies/ms
+MTD	database[1]	[,, User-defined MSP library file, ]
+MTD	database[1]-prefix	small_test_msp
+MTD	database[1]-version	small_test_msp.msp
+MTD	database[1]-uri	file://D:/msdial_test/Msdial/out/wine/small_test_msp.msp
+MTD	small_molecule-quantification_unit	[,,precursor intensity (peak height), ]
+MTD	small_molecule_feature-quantification_unit	[,,precursor intensity (peak height), ]
+MTD	small_molecule-identification_reliability	[MS, MS:1003032, compound identification confidence code in MS-DIAL, ]
+MTD	id_confidence_measure[1]	[,, MS-DIAL algorithm matching score, ]
+MTD	id_confidence_measure[2]	[,, Retention time similarity, ]
+MTD	id_confidence_measure[3]	[,, m/z similarity, ]
+MTD	id_confidence_measure[4]	[,, Simple dot product, ]
+MTD	id_confidence_measure[5]	[,, Weighted dot product, ]
+MTD	id_confidence_measure[6]	[,, Reverse dot product, ]
+MTD	id_confidence_measure[7]	[,, Matched peaks count, ]
+MTD	id_confidence_measure[8]	[,, Matched peaks percentage, ]
+MTD	quantification_method	[MS, MS:1002019, Label-free raw feature quantitation, ]
+
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]
+SML	0	0	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1017	1737	1017.125	1736.875	0	0
+SML	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	300.027	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.5242083	12642	20826	12641.5625	20826.4375	0	0
+SML	2	2	null	null	null	null	null	null	null	[M+H]1+	999	null	0	5881	15691	5880.5625	15690.8125	0	0
+SML	3	3	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1285	2241	1284.625	2240.625	0	0
+SML	4	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	302.0427	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.6437206	536230	1837469	536230.375	1837468.6875	0	0
+SML	5	5	null	null	null	null	null	null	null	[M+H]1+	999	null	0	314	5489	314.375	5489.125	0	0
+SML	6	6	null	null	null	null	null	null	null	[M+H]1+	999	null	0	479	1459	478.625	1459	0	0
+SML	7	7	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1451	10300	1450.5625	10300.1875	0	0
+SML	8	8	null	null	null	null	null	null	null	[M+H]1+	999	null	0	390	1732	390.25	1732.375	0	0
+SML	9	9	null	null	null	null	null	null	null	[M+H]1+	999	null	0	248	1531	247.75	1530.5625	0	0
+SML	10	10	null	null	null	null	null	null	null	[M+H]1+	999	null	0	268	1871	268.25	1870.5625	0	0
+SML	11	11	null	null	null	null	null	null	null	[M+H]1+	999	null	0	384	1553	384.375	1553.1875	0	0
+
+SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]
+SMF	0	null	null	[M+H]1+	null	300.1852722167969	1	1.9281166666666667	1.9281166666666667	1.9281166666666667	1017	1737
+SMF	1	1	null	[M+H]1+	null	301.0346374511719	1	1.9940083333333334	1.9740666666666666	2.01395	12642	20826
+SMF	2	null	null	[M+H]1+	null	302.0978088378906	1	1.98095	1.98095	1.98095	5881	15691
+SMF	3	null	null	[M+H]1+	null	302.1385192871094	1	1.9800666666666666	1.9800666666666666	1.9800666666666666	1285	2241
+SMF	4	4	null	[M+H]1+	null	303.0500183105469	1	1.9805083333333333	1.9770666666666667	1.98395	536230	1837469
+SMF	5	null	null	[M+H]1+	null	303.12347412109375	1	1.98995	1.98995	1.98995	314	5489
+SMF	6	null	null	[M+H]1+	null	303.3472595214844	1	1.97795	1.97795	1.97795	479	1459
+SMF	7	null	null	[M+H]1+	null	303.7848205566406	1	1.9745083333333333	1.9680666666666666	1.98095	1451	10300
+SMF	8	null	null	[M+H]1+	null	303.9742126464844	1	1.98095	1.98095	1.98095	390	1732
+SMF	9	null	null	[M+H]1+	null	304.1094970703125	1	1.97795	1.97795	1.97795	248	1531
+SMF	10	null	null	[M+H]1+	null	304.62640380859375	1	1.98095	1.98095	1.98095	268	1871
+SMF	11	null	null	[M+H]1+	null	304.8061828613281	1	1.98395	1.98395	1.98395	384	1553
+
+SEH	SME_ID	evidence_input_id	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	derivatized_form	adduct_ion	exp_mass_to_charge	charge	theoretical_mass_to_charge	spectra_ref	identification_method	ms_level	id_confidence_measure[1]	id_confidence_measure[2]	id_confidence_measure[3]	id_confidence_measure[4]	id_confidence_measure[5]	id_confidence_measure[6]	id_confidence_measure[7]	id_confidence_measure[8]	rank
+SME	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	null	[M+H]1+	301.0346374511719	1	0	ms_run[2]:ms1scanID=3490 ms2scanID=3488	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.5242083	0	0.8979989	0.646961	0.69420624	0.88054246	4	0.6666667	1	
+SME	4	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	null	[M+H]1+	303.0500183105469	1	0	ms_run[1]:ms1scanID=3510 ms2scanID=3468| ms_run[2]:ms1scanID=3440 ms2scanID=3418	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.6437206	0	0.9999581	0.6832075	0.7282375	0.8728807	15	0.88235295	1	
+
