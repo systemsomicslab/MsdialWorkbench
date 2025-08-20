@@ -13,10 +13,9 @@ namespace CompMs.MsdialCore.Export
 {
     public sealed class MztabFormatExporter
     {
-        public MztabFormatExporter(DataBaseStorage dataBaseStorage, string separator = DEFAULT_SEPARATOR)
+        public MztabFormatExporter(DataBaseStorage dataBaseStorage)
         {
             _dataBaseStorage = dataBaseStorage;
-            Separator = separator;
 
             _annotatorID2DataBaseID = new Dictionary<string, string>();
             foreach (var db in dataBaseStorage.MetabolomicsDataBases) {
@@ -35,8 +34,6 @@ namespace CompMs.MsdialCore.Export
                 }
             }
         }
-        public MztabFormatExporter() { }
-        private const string DEFAULT_SEPARATOR = "\t";
 
         private const string mztabVersion = "2.0.0-M";
         private const string mtdPrefix = "MTD";
@@ -52,7 +49,7 @@ namespace CompMs.MsdialCore.Export
 
         private const string smallMoleculeIdentificationReliability = "[MS, MS:1003032, compound identification confidence code in MS-DIAL, ]"; // new define on psi-ms.obo
 
-        public string Separator { get; }
+        public string Separator { get; } = "\t";
 
         private readonly Dictionary<string, string> _annotatorID2DataBaseID;
 
