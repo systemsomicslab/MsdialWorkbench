@@ -152,10 +152,10 @@
                                                  LabelSize="17"
                                                  Margin="1.5,0,0,0"
                                                  Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
-                    <TextBlock Text="{Binding Path=SelectedVerticalAxisItem.Value.GraphLabel}"
+                    <TextBlock Text="{Binding Path=Labels.HorizontalTitle}"
                                Style="{StaticResource FormalItalicAxisTitle}"
                                Grid.Row="2" Grid.Column="2"/>
-                    <TextBlock Text="{Binding Labels.VerticalTitle}"
+                    <TextBlock Text="{Binding Path=SelectedVerticalAxisItem.Value.GraphLabel}"
                                Style="{StaticResource FormalAxisTitle}"
                                Grid.Row="0" Grid.Column="0">
                         <TextBlock.LayoutTransform>

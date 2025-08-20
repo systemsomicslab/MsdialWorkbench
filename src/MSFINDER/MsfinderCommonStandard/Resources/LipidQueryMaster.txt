@@ -352,3 +352,11 @@ Cer_ABP	[M+H]+	Positive	True
 Cer_ABP	[M-H]-	Negative	True
 Cer_ABP	[M+HCOO]-	Negative	True
 Cer_ABP	[M+CH3COO]-	Negative	True
+Cer_AH	[M+H]+	Positive	FALSE
+Cer_AH	[M-H]-	Negative	FALSE
+Cer_NH	[M+H]+	Positive	FALSE
+Cer_NH	[M-H]-	Negative	FALSE
+Cer_AH_d9	[M+H]+	Positive	FALSE
+Cer_AH_d9	[M-H]-	Negative	FALSE
+Cer_NH_d9	[M+H]+	Positive	FALSE
+Cer_NH_d9	[M-H]-	Negative	FALSE

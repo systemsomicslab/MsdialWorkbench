@@ -1208,7 +1208,34 @@
         <TargetClass>Cer-AS</TargetClass>
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
-      <Lipid>
+		<Lipid>
+			<StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
+			<Concentration>47.087175</Concentration>
+			<DilutionRate>0.015625</DilutionRate>
+			<MolecularWeight>530.93</MolecularWeight>
+			<PeakID>-1</PeakID>
+			<TargetClass>Cer-ABP</TargetClass>
+			<IsLabPrivateVersion>true</IsLabPrivateVersion>
+		</Lipid>
+		<Lipid>
+			<StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
+			<Concentration>47.087175</Concentration>
+			<DilutionRate>0.015625</DilutionRate>
+			<MolecularWeight>530.93</MolecularWeight>
+			<PeakID>-1</PeakID>
+			<TargetClass>Cer-AH</TargetClass>
+			<IsLabPrivateVersion>true</IsLabPrivateVersion>
+		</Lipid>
+		<Lipid>
+			<StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
+			<Concentration>47.087175</Concentration>
+			<DilutionRate>0.015625</DilutionRate>
+			<MolecularWeight>530.93</MolecularWeight>
+			<PeakID>-1</PeakID>
+			<TargetClass>Cer-NH</TargetClass>
+			<IsLabPrivateVersion>true</IsLabPrivateVersion>
+		</Lipid>
+		<Lipid>
         <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>

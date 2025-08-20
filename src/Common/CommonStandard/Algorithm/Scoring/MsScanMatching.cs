@@ -22,17 +22,17 @@ namespace CompMs.Common.Algorithm.Scoring {
         public double Intensity { get; set; }
         public double MatchedIntensity { get; set; }
     }
-    public sealed class MsScanMatching {
-        private MsScanMatching() { }
-
+    public static class MsScanMatching {
         private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
-            if (obj1 == null || obj2 == null || obj1.Count == 0 || obj2.Count == 0) return false;
-            return true;
+            return obj1 is not null && obj2 is not null && obj1.Count != 0 && obj2.Count != 0;
         }
 
         private static bool IsComparedAvailable(IMSScanProperty obj1, IMSScanProperty obj2) {
-            if (obj1.Spectrum == null || obj2.Spectrum == null || obj1.Spectrum.Count == 0 || obj2.Spectrum.Count == 0) return false;
-            return true;
+            return obj1.Spectrum is not null && obj2.Spectrum is not null && obj1.Spectrum.Count != 0 && obj2.Spectrum.Count != 0;
+        }
+
+        private static bool IsAvailableSpectrum(IMSScanProperty? obj) {
+            return obj?.Spectrum is { Count: > 0 };
         }
 
         public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
@@ -1659,6 +1659,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 case LbmClass.HexCer_AP:
                     return LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -2500,6 +2516,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 case LbmClass.HexCer_AP:
                     return LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -3255,6 +3287,22 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.Cer_ABP:
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.HexCer_AP:
@@ -4092,14 +4140,19 @@ namespace CompMs.Common.Algorithm.Scoring {
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
 
-            double minMz = Math.Min(peaks1[0].Mass, peaks2[0].Mass);
             double maxMz = Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass);
-            double focusedMz = minMz;
-            int remaindIndexM = 0, remaindIndexL = 0;
-
-            if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
+            int remaindIndexM = 0, remaindIndexL = 0;
+            while (remaindIndexM < peaks1.Count && peaks1[remaindIndexM].Mass < massBegin - bin) {
+                ++remaindIndexM;
+            }
+            while (remaindIndexL < peaks2.Count && peaks2[remaindIndexL].Mass < massBegin - bin) {
+                ++remaindIndexL;
+            }
 
+            double focusedMz = Math.Min(
+                peaks1.ElementAtOrDefault(remaindIndexM)?.Mass ?? double.MaxValue,
+                peaks2.ElementAtOrDefault(remaindIndexL)?.Mass ?? double.MaxValue);
 
             SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
             SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
@@ -4109,18 +4162,18 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             while (focusedMz <= maxMz) {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; remaindIndexM = ++i) {
                     if (peaks1[i].Mass < focusedMz - bin) { continue; }
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
-                    else { remaindIndexM = i; break; }
+                    else { break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; remaindIndexL = ++i) {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumR += peaks2[i].Intensity;
-                    else { remaindIndexL = i; break; }
+                    else { break; }
                 }
 
                 measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
@@ -4131,6 +4184,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                 size++;
 
                 if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
+                if (remaindIndexM >= peaks1.Count || remaindIndexL >= peaks2.Count) {
+                    focusedMz = remaindIndexL >= peaks2.Count
+                        ? peaks1[remaindIndexM].Mass
+                        : peaks2[remaindIndexL].Mass;
+                    continue;
+                }
                 if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
                     focusedMz = peaks1[remaindIndexM].Mass;
                 else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
@@ -4162,6 +4221,109 @@ namespace CompMs.Common.Algorithm.Scoring {
             else {
                 return Math.Pow(covariance, 2) / scalarM / scalarR;
             }
+        }
+
+        public static double[][] GetBatchSimpleDotProduct(IReadOnlyList<IMSScanProperty?> props, double bin, double massBegin, double massEnd) {
+            var result = new double[props.Count][];
+            for (int i = 0; i < props.Count; i++) {
+                result[i] = new double[props.Count];
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+                Array.Fill(result[i], -1);
+#else
+                for (int j = 0; j < result[i].Length; j++) {
+                    result[i][j] = -1;
+                }
+#endif
+                result[i][i] = 1d;
+            }
+
+            var availableIndex = Enumerable.Range(0, props.Count).Where(i => IsAvailableSpectrum(props[i])).ToList();
+
+            var totPeaks = availableIndex.Select(k => props[k].Spectrum.Count).Sum();
+            var mergedPeaks = new (double Mz, double Intensity, int ID)[totPeaks];
+            var used = 0;
+            for (int k = 0; k < availableIndex.Count; k++) {
+                var peaks = props[availableIndex[k]].Spectrum;
+                for (int l = 0; l < peaks.Count; l++) {
+                    mergedPeaks[l + used] = (peaks[l].Mass, peaks[l].Intensity, k);
+                }
+                used += peaks.Count;
+            }
+            Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
+
+            double[][] focusedlasts = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(double.MinValue, availableIndex.Count).ToArray()).ToArray();
+            double[] summed = ArrayPool<double>.Shared.Rent(availableIndex.Count);
+            bool[] isExists = Enumerable.Repeat(false, availableIndex.Count).ToArray();
+            int[] existsID = ArrayPool<int>.Shared.Rent(availableIndex.Count);
+            double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
+            double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
+            int klo = 0, khi = 0;
+
+            double focusedMz = mergedPeaks.Any() ? Math.Max(mergedPeaks.First().Mz, massBegin) : massBegin;
+            double maxMz = mergedPeaks.Any() ? Math.Min(massEnd, mergedPeaks.Last().Mz) : massEnd;
+
+            for (int k = 0; k < mergedPeaks.Length; k++) {
+                if (mergedPeaks[k].Mz < massBegin - bin) {
+                    continue;
+                }
+                var focus = mergedPeaks[k];
+                scalars[focus.ID] += focus.Intensity;
+
+                var p = k;
+                var existsIDIdx = 0;
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, intensity, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        summed[ID] = 0d;
+                    }
+                    summed[ID] += intensity;
+                }
+
+                p = k;
+                existsIDIdx = 0;
+                for (int l = 0; l < isExists.Length; l++) {
+                    isExists[l] = false;
+                }
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, _, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        existsID[existsIDIdx++] = ID;
+                    }
+                }
+
+                while (--existsIDIdx >= 0) {
+                    var anotherID = existsID[existsIDIdx];
+                    isExists[anotherID] = false;
+                    if (anotherID != focus.ID && focus.Mz - bin < focusedlasts[anotherID][focus.ID]) {
+                        continue;
+                    }
+                    focusedlasts[anotherID][focus.ID] = focusedlasts[focus.ID][anotherID] = focus.Mz;
+                    if (anotherID == focus.ID) {
+                        for (int l = 0; l < availableIndex.Count; l++) {
+                            if (focusedlasts[l][focus.ID] < focus.Mz - bin) {
+                                focusedlasts[focus.ID][l] = focusedlasts[l][focus.ID] = focus.Mz;
+                            }
+                        }
+                    }
+                    var cov = Math.Sqrt(summed[anotherID] * summed[focus.ID]);
+                    covariances[focus.ID][anotherID] = (covariances[anotherID][focus.ID] += cov);
+                }
+            }
+
+            for (int i = 0; i < availableIndex.Count; i++) {
+                for (int j = i + 1; j < availableIndex.Count; j++) {
+                    result[availableIndex[j]][availableIndex[i]] = result[availableIndex[i]][availableIndex[j]] = scalars[i] != 0d && scalars[j] != 0d
+                        ? Math.Pow(covariances[i][j], 2) / scalars[i] / scalars[j]
+                        : 0;
+                }
+            }
+
+            ArrayPool<double>.Shared.Return(summed);
+            ArrayPool<int>.Shared.Return(existsID);
+
+            return result;
         }
 
         public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance) {
