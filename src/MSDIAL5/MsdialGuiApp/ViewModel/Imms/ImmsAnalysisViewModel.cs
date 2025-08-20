@@ -14,9 +14,9 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -68,9 +68,18 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                var lipidmapsLinkViewModel = new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables);
+                peakDetailViewModels.Add(lipidmapsLinkViewModel);
+            }
+            if (model.MoleculeStructureModel is not null) {
+                MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
+            }
             var matchResultCandidateViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidateViewModel, };
+            peakDetailViewModels.Add(matchResultCandidateViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             GoToMsfinderCommand = model.CanSearchCompound
                 .ToReactiveCommand().WithSubscribe(() => {

@@ -23,7 +23,7 @@ public class MsScanMatchingTests
     }
 
     [TestMethod()]
-    public void GetSimpleDotProduct_IsCummutative() {
+    public void GetSimpleDotProduct_IsCommutative() {
         var scans = CreateScanBatch([20, 15], 1, 42);
         var actual = MsScanMatching.GetSimpleDotProduct(scans[0], scans[1], _mzTolerance, _mzMin, _mzMax);
         var expected = MsScanMatching.GetSimpleDotProduct(scans[1], scans[0], _mzTolerance, _mzMin, _mzMax);

@@ -69,7 +69,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void CerNPParseTest()
         {
             var parser = new CeramideLipidParser();
-            var lipid = parser.Parse("Cer 18:1;O3/24:0"); // O=C(NC(CO)C(O)C(O)CCCC=CCCCCCCCCC)CCCCCCCCCCCCCCCCCCCCCCC
+            var lipid = parser.Parse("Cer 18:0;O3/24:1"); // O=C(NC(CO)C(O)C(O)CCCC=CCCCCCCCCC)CCCCCCCCCCCCCCCCCCCCCCC
             Assert.AreEqual(665.6322102, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_NP, lipid.LipidClass);
 
@@ -101,7 +101,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void CerAPParseTest()
         {
             var parser = new CeramideLipidParser();
-            var lipid = parser.Parse("Cer 18:2;O3/24:0(2OH)"); // O=C(NC(CO)C(O)C(O)CCCC=CCCC=CCCCCC)C(O)CCCCCCCCCCCCCCCCCCCCCC
+            var lipid = parser.Parse("Cer 18:0;O3/24:2(2OH)"); // O=C(NC(CO)C(O)C(O)CCCC=CCCC=CCCCCC)C(O)CCCCCCCCCCCCCCCCCCCCCC
             Assert.AreEqual(679.611474712, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_AP, lipid.LipidClass);
 
@@ -145,6 +145,22 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = parser.Parse("Cer 18:0;O2/24:0;O"); //  
             Assert.AreEqual(667.6478602, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_HDS, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void CerAHParseTest()
+        {
+            var parser = new CeramideLipidParser();
+            var lipid = parser.Parse("Cer 18:1;O3/16:0(2OH)"); //  
+            Assert.AreEqual(569.5019, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_AH, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void CerNHParseTest()
+        {
+            var parser = new CeramideLipidParser();
+            var lipid = parser.Parse("Cer 18:1;O3/24:0"); //  
+            Assert.AreEqual(665.6322, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_NH, lipid.LipidClass);
         }
         [TestMethod()]
         public void GM3ParseTest()

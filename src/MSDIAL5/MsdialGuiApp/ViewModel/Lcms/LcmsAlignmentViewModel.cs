@@ -19,6 +19,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Windows;
@@ -89,14 +90,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            if (model.MoleculeStructureModel is null) {
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, matchResultCandidatesViewModel, };
-            }
-            else {
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            } 
+            if (model.MoleculeStructureModel is not null) {
                 MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
             }
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
@@ -147,10 +151,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
                 }
             }).AddTo(Disposables);
-
-            AdhocExportProductIonQuantifactionResultCommand = new AsyncReactiveCommand()
-                .WithSubscribe(() => model.ExportProductIonAbundanceResultAsync())
-                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -202,8 +202,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
         private DelegateCommand? _goToExternalMsfinderCommand;
-
-        public AsyncReactiveCommand AdhocExportProductIonQuantifactionResultCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;
