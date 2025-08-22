@@ -7,7 +7,7 @@ public class ContextTests
 
     [TestInitialize]
     public void Initialize() {
-        _ctx = new Context([("H", "1"), ("C", "12"), ("O", "16")]);
+        _ctx = new Context([("H", "1"), ("C", "12"), ("O", "16"), ("N", "14")]);
     }
 
     [DataTestMethod()]
@@ -30,6 +30,9 @@ public class ContextTests
     [DataRow("(M) + (H)", "M+H")]
     [DataRow("(M) + (H) * 2", "M+2H")]
     [DataRow("(M) * 2 + (H)", "2M+H")]
+    [DataRow("(H * 2 + O) * 0.5", "H2O/2")]
+    [DataRow("(C * 11 + H * 17 + N + O * 8) * -0.5", "-C11H17NO8/2")]
+        
     public void Resolve_Sentence(string expected, string raw) {
         var parser = new FormulaSentenceParser();
         var sentence = parser.Parse(raw)!;

@@ -6,51 +6,56 @@ internal sealed class FormulaSentenceParser
 {
     private static readonly Regex _termRegex, _sentenceRegex;
 
-    static FormulaSentenceParser() {
-        var term = @"([+-]?)\s*((\d*)([A-z][A-z0-9]*)|(\d*\.?\d+))";
+    static FormulaSentenceParser()
+    {
+        var term = @"(?<sign>[+-]?)\s*(?:(?<count>\d*)(?<element>[A-Za-z][A-Za-z0-9]*)|(?<number>\d*\.?\d+))(?:/(?<divisor>\d+))?";
         var sentence = $@"^\s*({term})(\s*{term})*\s*$";
 
         _termRegex = new Regex(term, RegexOptions.Compiled);
         _sentenceRegex = new Regex(sentence, RegexOptions.Compiled);
     }
 
-    public Sentence? Parse(string value) {
-        if (FormulaStringParser.IsMarkupFormula(value)) {
-            return new Sentence { Raw = value, Terms = [(new Term() { Raw = value, }, 1)] };
+    public Sentence? Parse(string value)
+    {
+        if (FormulaStringParser.IsMarkupFormula(value))
+        {
+            return new Sentence { Raw = value, Terms = [(new Term { Raw = value }, 1)] };
         }
-        if (!_sentenceRegex.IsMatch(value)) {
-            return null;
-        }
+        if (!_sentenceRegex.IsMatch(value)) return null;
 
-        var matches = _termRegex.Matches(value);
-        var result = new List<(Term, int)>();
-        foreach (Match match in matches) {
-            var sign = match.Groups[1].Value;
-            if (string.IsNullOrEmpty(sign)) {
-                sign = "+";
-            }
+        var result = new List<(Term, double)>();
 
-            if (!string.IsNullOrEmpty(match.Groups[4].Value)) {
-                var number = match.Groups[3].Value;
-                if (string.IsNullOrEmpty(number)) {
-                    number = "1";
+        foreach (Match match in _termRegex.Matches(value))
+        {
+            var sign = string.IsNullOrEmpty(match.Groups["sign"].Value) ? "+" : match.Groups["sign"].Value;
+
+            // 元の数字
+            double factor = 1;
+
+            if (!string.IsNullOrEmpty(match.Groups["element"].Value))
+            {
+                var numStr = match.Groups["count"].Value;
+                factor = string.IsNullOrEmpty(numStr) ? 1 : int.Parse(numStr);
+                factor = double.Parse(sign + factor.ToString());
+                // divisor があれば割る
+                if (!string.IsNullOrEmpty(match.Groups["divisor"].Value))
+                {
+                    factor = factor / double.Parse(match.Groups["divisor"].Value);
                 }
-                var element = match.Groups[4].Value;
-                var factor = int.Parse(sign + number);
-                result.Add((new() { Raw = element }, factor));
+                result.Add((new Term { Raw = match.Groups["element"].Value }, factor));
             }
-            else if (!string.IsNullOrEmpty(match.Groups[5].Value)) {
-                var element = match.Groups[5].Value;
-                var factor = int.Parse(sign + '1');
-                result.Add((new() { Raw = element }, factor));
+            else if (!string.IsNullOrEmpty(match.Groups["number"].Value))
+            {
+                factor = double.Parse(sign + "1");
+                if (!string.IsNullOrEmpty(match.Groups["divisor"].Value))
+                {
+                    factor = (factor / double.Parse(match.Groups["divisor"].Value));
+                }
+                result.Add((new Term { Raw = match.Groups["number"].Value }, factor));
             }
-            else {
-                continue;
-            }
-
         }
 
-        return new() { Terms = [.. result], Raw = value, };
+        return new Sentence { Terms = [.. result], Raw = value };
     }
 
     public SubVar? Parse(string name, string value) {
