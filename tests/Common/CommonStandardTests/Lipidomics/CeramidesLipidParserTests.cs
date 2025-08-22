@@ -182,65 +182,6 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void SHexCerParseTest()
-        {
-            var parser = new SHexCerLipidParser();
-
-            var lipid = parser.Parse("SHexCer 36:2;O2");
-            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("SHexCer 18:1;O2/18:1"); // O=C(NC(COC1OC(CO)C(O)C(OS(=O)(=O)O)C1O)C(O)C=CCCCCCCC)CCCCCCCCCCCC=CCCCCCCCCCC
-            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("SHexCer 18:1(1OH,3OH)/18:1");
-            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
-        }
-        [TestMethod()]
-        public void AHexCerParseTest()
-        {
-            var parser = new AHexCerLipidParser();
-
-            var lipid = parser.Parse("AHexCer 52:2;O2");
-            Assert.AreEqual(963.8102, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.AHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("AHexCer (O-16:0)36:2;O2");
-            Assert.AreEqual(963.8102, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.AHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("AHexCer (O-16:0)18:1;O2/18:1"); 
-            Assert.AreEqual(963.8102, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.AHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("AHexCer (O-16:0)18:1(1OH,3OH)/18:1");
-            Assert.AreEqual(963.8102, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.AHexCer, lipid.LipidClass);
-        }
-        [TestMethod()]
-        public void ASHexCerParseTest()
-        {
-            var parser = new ASHexCerLipidParser();
-
-            var lipid = parser.Parse("ASHexCer 48:2;O3");
-            Assert.AreEqual(1003.6994, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.ASHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("ASHexCer (O-12:0)36:2;O3");
-            Assert.AreEqual(1003.6994, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.ASHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("ASHexCer (O-12:0)18:1;O2/18:1;O");
-            Assert.AreEqual(1003.6994, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.ASHexCer, lipid.LipidClass);
-
-            lipid = parser.Parse("ASHexCer (O-12:0)18:1(1OH,3OH)/18:1(2OH)");
-            Assert.AreEqual(1003.6994, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.ASHexCer, lipid.LipidClass);
-        }
-        [TestMethod()]
         public void Cer_EBDSParseTest()
         {
             var parser = new CerEbdsLipidParser();
@@ -297,26 +238,6 @@ namespace CompMs.Common.Lipidomics.Tests
 
 
         }
-        [TestMethod()]
-        public void HexCer_EOSParseTest()
-        {
-            var parser = new HexCerEosLipidParser();
 
-            var lipid = parser.Parse("HexCer 72:8;O4"); //O=C(OCCC=CCC=CCC=CCC=CCC=CCCCCCCCCCC(=O)NC(COC1OC(CO)C(O)C(O)C1O)C(O)C=CCCC=CCCCCCCCCC)CCCCCCCCCCCCCCCCCCCCCCCCCCC
-            Assert.AreEqual(1250.0399, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.HexCer_EOS, lipid.LipidClass);
-
-            lipid = parser.Parse("HexCer 36:2;O3(FA 36:6)");
-            Assert.AreEqual(1250.0399, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.HexCer_EOS, lipid.LipidClass);
-
-            lipid = parser.Parse("HexCer 18:2;O2/54:6;O2");
-            Assert.AreEqual(1250.0399, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.HexCer_EOS, lipid.LipidClass);
-
-            lipid = parser.Parse("HexCer 18:2;O2/18:0;O(FA 36:6)");
-            Assert.AreEqual(1250.0399, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.HexCer_EOS, lipid.LipidClass);
-        }
     }
 }

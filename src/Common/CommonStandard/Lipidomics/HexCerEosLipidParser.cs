@@ -12,32 +12,32 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
 {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * 10,
+            MassDiffDictionary.HydrogenMass * 9,
             MassDiffDictionary.OxygenMass * 5,
         }.Sum();
         private static readonly HexCerEosChainParser chainsParser = new HexCerEosChainParser();
-        public static readonly string HexCerEbdsPattern = $"^HexCer\\s*(?<sn>{chainsParser.Pattern})$";
-        private static readonly Regex HexCerEbdspattern = new Regex(HexCerEbdsPattern, RegexOptions.Compiled);
+        public static readonly string HexCerEosPattern = $"^HexCer\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex HexCerEospattern = new Regex(HexCerEosPattern, RegexOptions.Compiled);
 
         public ILipid Parse(string lipidStr)
         {
-            var match = HexCerEbdspattern.Match(lipidStr);
+            var match = HexCerEospattern.Match(lipidStr);
             if (match.Success)
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
                 if (chains is TotalChain)
                 {
-                    return new Lipid(LbmClass.HexCer_EOS, Skelton + chains.Mass - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass, chains);
+                    return new Lipid(LbmClass.HexCer_EOS, Skelton + chains.Mass - MassDiffDictionary.OxygenMass, chains);
                 }
                 else if (chains is MolecularSpeciesLevelChains)
                 {
-                    return new Lipid(LbmClass.HexCer_EOS, Skelton + chains.Mass + MassDiffDictionary.OxygenMass, chains);
+                    return new Lipid(LbmClass.HexCer_EOS, Skelton + chains.Mass + MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass, chains);
                 }
                 else if (chains is PositionLevelChains)
                 {
-                    var balance = + MassDiffDictionary.HydrogenMass;
-                    if (group["OAcyl"].Value == null || group["OAcyl"].Value == "") { balance = 0.0; }
+                    var balance = 0.0;
+                    if (group["OAcyl"].Value == null || group["OAcyl"].Value == "") { balance = + MassDiffDictionary.HydrogenMass; }
                     return new Lipid(LbmClass.HexCer_EOS, Skelton + chains.Mass + balance, chains);
                 }
             }
