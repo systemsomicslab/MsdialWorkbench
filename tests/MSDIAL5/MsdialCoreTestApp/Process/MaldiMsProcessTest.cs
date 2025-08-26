@@ -88,13 +88,16 @@ namespace CompMs.App.MsdialConsole.Process
                 ]);
             //var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
 
-            var container = new MsdialImmsDataStorage {
+            var mapper = new DataBaseMapper();
+            db.SetDataBaseMapper(mapper);
+            var container = new MsdialImmsDataStorage
+            {
                 AnalysisFiles = [file],
                 AlignmentFiles = [],
                 MsdialImmsParameter = param,
                 IupacDatabase = IupacResourceParser.GetIUPACDatabase(),
                 DataBases = db,
-                DataBaseMapper = db.CreateDataBaseMapper()
+                DataBaseMapper = mapper
             };
             storage.AddStorage(container);
 
@@ -281,6 +284,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
             var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 1);
+            container.DataBaseMapper = new DataBaseMapper();
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 txtDB,
@@ -288,8 +292,9 @@ namespace CompMs.App.MsdialConsole.Process
                     new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
                 ]
             );
+            container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
-            var annotationProcess = BuildAnnotationProcess(container.DataBases);
+            var annotationProcess = BuildAnnotationProcess(container.DataBases, container.DataBaseMapper);
 
             MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
@@ -324,11 +329,11 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
+        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper) {
             return new StandardAnnotationProcess(
                 storage.CreateQueryFactories().MoleculeQueryFactories,
                 FacadeMatchResultEvaluator.FromDataBases(storage),
-                storage.CreateDataBaseMapper());
+                mapper);
         }
     }
 

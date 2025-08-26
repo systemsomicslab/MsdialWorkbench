@@ -67,8 +67,9 @@ public sealed class DimsProcess {
                 new MetabolomicsAnnotatorParameterPair(textAnnotator.Save(), new AnnotationQueryWithoutIsotopeFactory(textAnnotator, param.TextDbSearchParam)),
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         var providerFactory = new StandardDataProviderFactory();
         Console.WriteLine("Start processing..");
@@ -80,7 +81,7 @@ public sealed class DimsProcess {
         projectDataStorage.AddStorage(storage);
 
         var files = storage.AnalysisFiles;
-        var mapper = storage.DataBases.CreateDataBaseMapper();
+        var mapper = storage.DataBaseMapper;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
         var annotationProcess = new StandardAnnotationProcess(
