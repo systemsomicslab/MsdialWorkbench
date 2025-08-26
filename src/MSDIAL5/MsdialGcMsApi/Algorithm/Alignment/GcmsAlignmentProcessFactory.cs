@@ -23,7 +23,7 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
         Files = files;
         GcmsParameter = storage.Parameter;
         _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        _refer = storage.DataBases.CreateDataBaseMapper();
+        _refer = storage.DataBaseMapper;
         MspDB = storage.MspDB;
     }
 
