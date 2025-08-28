@@ -91,7 +91,9 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine();
 
             //SML section
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic);
+            //SML Header
+            var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment);
             //SML data
 
             foreach (var spot in spots)
@@ -99,13 +101,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic
+                    database, SmlDataHeader, internalStandardDic, hasComment
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic
+                        database, SmlDataHeader, internalStandardDic, hasComment
                         );
                 }
             }
@@ -188,7 +190,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
             IReadOnlyList<Database> database,
             IReadOnlyList<string> SmlDataHeader,
-            IReadOnlyDictionary<int, string> internalStandardDic
+            IReadOnlyDictionary<int, string> internalStandardDic,
+            bool hasComment
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -267,6 +270,10 @@ namespace CompMs.MsdialCore.Export
             if (meta.IsNormalizedMatrixExport && (meta.IsNormalizeIS || meta.IsNormalizeSplash))
             {
                 LineData.AddRange(SetNormalizedData(spot, internalStandardDic));
+            }
+            if (hasComment)
+            {
+                LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
             }
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
@@ -768,7 +775,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -803,6 +810,10 @@ namespace CompMs.MsdialCore.Export
             {
                 SmlDataHeader.Add("opt_global_internalStanderdSMLID");
                 SmlDataHeader.Add("opt_global_internalStanderdMetaboliteName");
+            }
+            if (hasComment)
+            {
+                SmlDataHeader.Add("opt_global_user_comment");
             }
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
