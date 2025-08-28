@@ -399,8 +399,7 @@ namespace CompMs.MsdialCore.Export
             {
                 if (properties[i].PeakID < 0) continue;
                 if (!properties[i].IsMsmsAssigned) continue;
-                if (properties[i].MatchResults.Representative.Name != repName
-                    || properties[i].MatchResults.Representative.LibraryID != repLibraryID)
+                if (properties[i].MatchResults.Representative.LibraryID != repLibraryID)
                 { continue; }
 
                 /// to get file id, peak id in aligned spots
