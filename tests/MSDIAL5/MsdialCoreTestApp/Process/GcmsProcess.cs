@@ -80,41 +80,40 @@ public sealed class GcmsProcess
         }
 
         CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB,
-            out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
+            out var mspDB, out var txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
-            out List<MoleculeMsReference> lbmDB);
+            out var lbmDB);
 
         
         var container = new MsdialGcmsDataStorage()
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB,
-            TextDB = txtDB,
+            MspDB = mspDB is null ? [] : [.. mspDB.Database],
+            TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
             MsdialGcmsParameter = param
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB.Count > 0)
+        if (mspDB is { Database.Count: > 0 })
         {
-            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
-            var annotator = new MassAnnotator(database, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
-            dbStorage.AddMoleculeDataBase(database, [
+            var annotator = new MassAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
+            dbStorage.AddMoleculeDataBase(mspDB, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB.Count > 0)
+        if (txtDB is { Database.Count: > 0 })
         {
-            var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
-            var textannotator = new MassAnnotator(textdatabase, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB", 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, [
+            var textannotator = new MassAnnotator(txtDB, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB", 2);
+            dbStorage.AddMoleculeDataBase(txtDB, [
                 new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectStore).Result;

@@ -341,11 +341,14 @@ namespace CompMs.App.Msdial.Model.Search
         public DelegateCommand ShowIsotopeSpectrumCommand => _showIsotopeSpectrumCommand ??= new DelegateCommand(ShowIsotopeSpectrum);
         private DelegateCommand? _showIsotopeSpectrumCommand;
         public void ShowIsotopeSpectrum() {
-            if (SelectedFormula is null|| _rawData is null) { return; }
-            MsfinderUtility.GetExperimentalIsotopicIons(_rawData.PrecursorMz, _rawData.Ms1Spectrum, out var precursorIntensity);
-            var isotopicIons = MsfinderUtility.GetTheoreticalIsotopicIons(SelectedFormula, _rawData.PrecursorType, precursorIntensity);
-            if (isotopicIons is not null) {
-                _ms1SpectrumSubject.OnNext(new MsSpectrum(isotopicIons));
+            if (SelectedFormula is null || _rawData is null || _rawData.Ms1PeakNumber <= 0) { return; }
+            var experimentalIsotope = MsfinderUtility.GetExperimentalIsotopicIons(_rawData.PrecursorMz, _rawData.Ms1Spectrum, out var precursorIntensity);
+            var theoreticalIsotopicIons = MsfinderUtility.GetTheoreticalIsotopicIons(SelectedFormula, _rawData.PrecursorType, precursorIntensity);
+            if (experimentalIsotope is not null) {
+                _ms1SpectrumSubject.OnNext(new MsSpectrum(experimentalIsotope));
+            }
+            else if (theoreticalIsotopicIons is not null) {
+                _ms1SpectrumSubject.OnNext(new MsSpectrum(theoreticalIsotopicIons));
             }
         }
 

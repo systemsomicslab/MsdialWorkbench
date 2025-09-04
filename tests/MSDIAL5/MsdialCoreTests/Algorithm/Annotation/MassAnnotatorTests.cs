@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
             var result = annotator.Annotate(BuildQuery(target, annotator, parameter));
@@ -53,7 +53,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
             var result = annotator.Annotate(BuildQuery(target, annotator, parameter));
@@ -77,7 +77,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Metabolomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Metabolomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
             var results = BuildQuery(target, annotator, parameter).FindCandidates();
@@ -111,7 +111,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature
             {
@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -194,7 +194,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
@@ -220,7 +220,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
             var result = annotator.Annotate(BuildQuery(target, annotator, parameter));
@@ -245,7 +245,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
             var results = annotator.Search(BuildQuery(target, annotator, parameter));
@@ -278,7 +278,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 SquaredReverseDotProductCutOff = .7f,
                 TotalScoreCutoff = 0.7f,
             };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature
             {
@@ -316,7 +316,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void SelectTopHitTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -334,7 +334,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void FilterByThresholdTest() {
             var parameter = new MsRefSearchParameterBase { };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false },
@@ -349,7 +349,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void SelectReferenceMatchResultsTest() {
             var parameter = new MsRefSearchParameterBase { };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false },
@@ -364,7 +364,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void IsReferenceMatchTest() {
             var parameter = new MsRefSearchParameterBase { };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false },
@@ -379,7 +379,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void IsSuggestedTest() {
             var parameter = new MsRefSearchParameterBase { };
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var annotator = new MassAnnotator(new MoleculeDataBase([], "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspDBPath"), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false },

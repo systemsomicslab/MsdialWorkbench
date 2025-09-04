@@ -16,6 +16,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -203,9 +204,16 @@ namespace CompMs.App.Msdial.Model.Imms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            }
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
@@ -276,7 +284,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private BrushMapData<AlignmentSpotPropertyModel>? _selectedBrush;
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public void SaveSpectra(string filename) {

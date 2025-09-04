@@ -38,42 +38,40 @@ public sealed class LcimmsProcess {
         }
 
         CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
-            out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode, out var lbmDB);
+            out var mspDB, out var txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode, out var lbmDB);
 
         var container = new MsdialLcImMsDataStorage() {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB,
-            TextDB = txtDB,
+            MspDB = mspDB is null ? [] : [.. mspDB.Database],
+            TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
             MsdialLcImMsParameter = param
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB.Count > 0) {
-            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
-            var annotator = new LcimmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
-            dbStorage.AddMoleculeDataBase(database, [
+        if (mspDB is { Database.Count: > 0 }) {
+            var annotator = new LcimmsMspAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
+            dbStorage.AddMoleculeDataBase(mspDB, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (lbmDB.Count > 0) {
-            var lbmDatabase = new MoleculeDataBase(lbmDB, param.LbmFilePath, DataBaseSource.Lbm, SourceType.MspDB);
-            var lbmAnnotator = new LcimmsMspAnnotator(lbmDatabase, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
-            dbStorage.AddMoleculeDataBase(lbmDatabase, [
+        if (lbmDB is { Database.Count: > 0 }) {
+            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+            dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB.Count > 0) {
-            var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
-            var textannotator = new LcimmsTextDBAnnotator(textdatabase, param.TextDbSearchParam, param.TextDBFilePath, 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, [
+        if (txtDB is { Database.Count: > 0 }) {
+            var textannotator = new LcimmsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 2);
+            dbStorage.AddMoleculeDataBase(txtDB, [
                 new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectSaved).Result;

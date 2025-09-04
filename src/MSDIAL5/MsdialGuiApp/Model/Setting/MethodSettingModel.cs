@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 if (IdentifySettingModel != null) {
                     if (!IdentifySettingModel.IsReadOnly ) {
                         Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
-                        Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
+                        Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
                     }
                 }
                 if (!(AdductIonSettingModel is null || AdductIonSettingModel.TryCommit())) {

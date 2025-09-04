@@ -22,6 +22,7 @@
         <Style TargetType="ui:NumericUpDown">
             <Setter Property="Interval" Value="-1"/>
             <Setter Property="Height" Value="16"/>
+            <Setter Property="Focusable" Value="False"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ui:NumericUpDown}">
@@ -51,6 +52,9 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+        <Style TargetType="ItemsControl">
+            <Setter Property="Focusable" Value="False"/>
         </Style>
     </Window.Resources>
     
@@ -132,7 +136,7 @@
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Bottom"
                                         Margin="8"
-                                        Height="30"
+                                        Height="24"
                                         Grid.Row="1">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Export format:"
@@ -168,7 +172,8 @@
                                           IsChecked="{Binding TrimContentToExcelLimit, Mode=TwoWay}"
                                           ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
                                 <CheckBox Content="Enable multi class export" IsChecked="{Binding EnableMultiClass, Mode=TwoWay}"/>
-                                <ui:LabeledContent PrependLabel="Number of classes" IsEnabled="{Binding EnableMultiClass, Mode=OneWay}">
+                                <ui:LabeledContent PrependLabel="Number of classes"
+                                                   IsEnabled="{Binding EnableMultiClass, Mode=OneWay}" Focusable="False">
                                     <ui:NumericUpDown Value="{Binding NumberOfClasses, Mode=TwoWay}" VerticalContentAlignment="Center"/>
                                 </ui:LabeledContent>
                                 <ItemsControl ItemsSource="{Binding EstimatedClasses.Value}">
@@ -227,7 +232,7 @@
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Bottom"
                                         Margin="8"
-                                        Height="30"
+                                        Height="24"
                                         Grid.Row="1">
                                 <TextBlock Text="Spectra type:"
                                            VerticalAlignment="Center"
@@ -239,7 +244,17 @@
                                           Width="100" Margin="8,0,0,0"/>
                             </StackPanel>
                             <CheckBox Content="Export peaks individually" IsChecked="{Binding ExportIndividually.Value}"
-                                      Margin="16,8,8,8" Height="30" Grid.Row="2"/>
+                                      Margin="16,8,8,8" Height="24" VerticalContentAlignment="Center" Grid.Row="2"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentReferenceMatchedProductIonExportViewModel}">
+                    <Expander Header="Library matched product ions" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <CheckBox Content="JSON"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
                         </Grid>
                     </Expander>
                 </DataTemplate>
@@ -268,6 +283,38 @@
                                 <TextBlock Text="ContributorID:" Margin="8,0"/>
                                 <TextBox Text="{Binding ContributorID.Value}" Width="120"/>
                             </StackPanel>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentMztabMExportViewModel}">
+                    <Expander Header="mztab-M" IsExpanded="{Binding Path=IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <CheckBox Content="mztab-M"
+                                      IsChecked="{Binding Path=IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                            <ItemsControl ItemsSource="{Binding Types}"
+                                          IsEnabled="{Binding Path=IsSelected.Value, Mode=OneWay}"
+                                          Margin="8" Grid.Row="1">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Path=Label}"
+                                                  IsChecked="{Binding Path=IsSelected, Mode=TwoWay}"
+                                                  IsEnabled="{Binding Path=Enabled.Value}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  Margin="8,8,0,0" Width="180"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </Grid>
                     </Expander>
                 </DataTemplate>

@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Search {
         private static readonly List<ExistFormulaQuery> existFormulaDB = FileStorageUtility.GetExistFormulaDB();
         private static readonly List<ExistStructureQuery> mineStructureDB = FileStorageUtility.GetMinesStructureDB();
         private static readonly List<FragmentOntology> fragmentOntologyDB = FileStorageUtility.GetUniqueFragmentDB();
+        private readonly List<MoleculeMsReference> mspDB = [];
         private readonly List<ExistStructureQuery> userDefinedStructureDB = [];
         private static readonly List<FragmentLibrary> eiFragmentDB = FileStorageUtility.GetEiFragmentDB();
         private static readonly List<ExistStructureQuery> existStructureDB = FileStorageUtility.GetExistStructureDB();
@@ -293,6 +294,20 @@ namespace CompMs.App.Msdial.Model.Search {
 
             _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
 
+            if (_spotData is null || _parameter is null) return;
+            if (fragmentOntologyDB is not null && productIonDB is not null)
+                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
+            if (fragmentOntologyDB is not null && neutralLossDB is not null)
+                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
+            if (fragmentOntologyDB is not null && chemicalOntologies is not null)
+                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
+
+            string error = string.Empty;
+            mspDB = FileStorageUtility.GetMspDB(parameter, _spotData.IonMode, out error);
+            if (error != string.Empty) {
+                MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
             _ms1SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms1Spectrum));
             _ms2SpectrumSubject = new BehaviorSubject<MsSpectrum>(new MsSpectrum(_spotData.Ms2Spectrum));
             _adduct = AdductIon.GetAdductIon(_spotData.PrecursorType);
@@ -328,27 +343,19 @@ namespace CompMs.App.Msdial.Model.Search {
         public void FindFormula() {
             Mouse.OverrideCursor = Cursors.Wait;
             if (_spotData is null || _parameter is null) return;
-            if (fragmentOntologyDB is not null && productIonDB is not null)
-                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
-            if (fragmentOntologyDB is not null && neutralLossDB is not null)
-                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(neutralLossDB, fragmentOntologyDB);
-            if (fragmentOntologyDB is not null && chemicalOntologies is not null)
-                ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(chemicalOntologies, fragmentOntologyDB);
-            if (productIonDB is not null && neutralLossDB is not null) {
-                var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _spotData, _parameter);
-                FormulaList = formulaResults;
-                foreach (var formulaResult in formulaResults) {
-                    var folder = Path.GetDirectoryName(_queryFile.RawDataFilePath);
-                    var formulaFileName = Path.Combine(folder, formulaResult.Formula.FormulaString);
-                    var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
-                    FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
-                }
-                SelectedFormula = FormulaList.FirstOrDefault();
-                if (chemicalOntologies is not null) {
-                    ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _spotData.IonMode, _parameter, _adduct, productIonDB, neutralLossDB);
-                }
-                FormulaResultParcer.FormulaResultsWriter(_queryFile.FormulaFilePath, formulaResults);
+            var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(productIonDB, neutralLossDB, existFormulaDB, _spotData, _parameter);
+            FormulaList = formulaResults;
+            foreach (var formulaResult in formulaResults) {
+                var folder = Path.GetDirectoryName(_queryFile.RawDataFilePath);
+                var formulaFileName = Path.Combine(folder, formulaResult.Formula.FormulaString);
+                var formulaFilePath = Path.ChangeExtension(formulaFileName, ".fgt");
+                FormulaResultParcer.FormulaResultsWriter(formulaFilePath, formulaResults);
             }
+            SelectedFormula = FormulaList.FirstOrDefault();
+            if (chemicalOntologies is not null) {
+                ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, chemicalOntologies, _spotData.IonMode, _parameter, _adduct, productIonDB, neutralLossDB);
+            }
+            FormulaResultParcer.FormulaResultsWriter(_queryFile.FormulaFilePath, formulaResults);
             Mouse.OverrideCursor = null;
             if (FormulaList.Count == 0) {
                 MessageBox.Show("No formula found");
@@ -365,7 +372,6 @@ namespace CompMs.App.Msdial.Model.Search {
                 File.Delete(file);
             }
             var process = new StructureFinderBatchProcess();
-            var mspDB = FileStorageUtility.GetMspDB(_parameter, _spotData.IonMode, out var error);
             process.DirectSingleSearchOfStructureFinder(_spotData, FormulaList, _parameter, _queryFile.StructureFolderPath, existStructureDB, userDefinedStructureDB, mineStructureDB, fragmentOntologyDB, mspDB, eiFragmentDB);
             var structureFilePaths = Directory.GetFiles(_queryFile.StructureFolderPath, "*.sfd");
             var updatedStructureList = new List<FragmenterResultVM>();
@@ -397,18 +403,15 @@ namespace CompMs.App.Msdial.Model.Search {
         public DelegateCommand ShowIsotopeSpectrumCommand => _showIsotopeSpectrumCommand ??= new DelegateCommand(ShowIsotopeSpectrum);
         private DelegateCommand? _showIsotopeSpectrumCommand;
         public void ShowIsotopeSpectrum() {
-            if (_spotData?.NominalIsotopicPeakList is null) { return; }
-            var isotopeList = _spotData.NominalIsotopicPeakList;
-            var peakList = new List<SpectrumPeak>();
-            foreach (var isotope in isotopeList) {
-                var spec = new SpectrumPeak() {
-                    Mass = isotope.Mass,
-                    Intensity = isotope.RelativeAbundance,
-                    Comment = isotope.Comment,
-                };
-                peakList.Add(spec);
+            if (SelectedFormula is null || _spotData is null || _spotData.Ms1PeakNumber <= 0) { return; }
+            var experimentalIsotope = MsfinderUtility.GetExperimentalIsotopicIons(_spotData.PrecursorMz, _spotData.Ms1Spectrum, out var precursorIntensity);
+            var theoreticalIsotopicIons = MsfinderUtility.GetTheoreticalIsotopicIons(SelectedFormula, _spotData.PrecursorType, precursorIntensity);
+            if (experimentalIsotope is not null) {
+                _ms1SpectrumSubject.OnNext(new MsSpectrum(experimentalIsotope));
             }
-            _ms1SpectrumSubject.OnNext(new MsSpectrum(peakList));
+            else if (theoreticalIsotopicIons is not null) {
+                _ms1SpectrumSubject.OnNext(new MsSpectrum(theoreticalIsotopicIons));
+            }
         }
 
         public DelegateCommand ShowRawMs2SpectrumCommand => _showRawMs2SpectrumCommand ??= new DelegateCommand(ShowRawMs2Spectrum);

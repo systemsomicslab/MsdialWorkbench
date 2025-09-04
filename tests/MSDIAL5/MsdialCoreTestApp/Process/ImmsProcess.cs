@@ -42,37 +42,35 @@ public sealed class ImmsProcess
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB,
-            TextDB = txtDB,
+            MspDB = mspDB is null ? [] : [.. mspDB.Database],
+            TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
             MsdialImmsParameter = param,
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB.Count > 0) {
-            var database = new MoleculeDataBase(mspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            var mspAnnotator = new ImmsMspAnnotator(database, param.MspSearchParam, param.TargetOmics, "MspDB", 1);
-            dbStorage.AddMoleculeDataBase(database, [
+        if (mspDB is { Database.Count: > 0 }) {
+            var mspAnnotator = new ImmsMspAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, "MspDB", 1);
+            dbStorage.AddMoleculeDataBase(mspDB, [
                 new MetabolomicsAnnotatorParameterPair(mspAnnotator.Save(), new AnnotationQueryFactory(mspAnnotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (lbmDB.Count > 0) {
-            var database = new MoleculeDataBase(lbmDB, "LbmDB", DataBaseSource.Lbm, SourceType.MspDB);
-            var annotator = new ImmsMspAnnotator(database, param.LbmSearchParam, param.TargetOmics, "LbmDB", 1);
-            dbStorage.AddMoleculeDataBase(database, [
+        if (lbmDB is { Database.Count: > 0 }) {
+            var annotator = new ImmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, "LbmDB", 1);
+            dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB.Count > 0) {
-            var database = new MoleculeDataBase(txtDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-            var textDBAnnotator = new ImmsTextDBAnnotator(database, param.TextDbSearchParam, "TextDB", 2);
-            dbStorage.AddMoleculeDataBase(database, [
+        if (txtDB is { Database.Count: > 0 }) {
+            var textDBAnnotator = new ImmsTextDBAnnotator(txtDB, param.TextDbSearchParam, "TextDB", 2);
+            dbStorage.AddMoleculeDataBase(txtDB, [
                 new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectSaved).Result;

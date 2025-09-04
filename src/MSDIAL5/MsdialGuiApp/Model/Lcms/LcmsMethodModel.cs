@@ -113,12 +113,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, peakMeta, fileMeta, analysisFileBeanModelCollection);
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
+            var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, gnps, massBank, spectraAndReference, };
+            var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, exportTypes.GetRange(0, 4), accessPeakMeta);
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, gnps, productions, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
-
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
             var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);

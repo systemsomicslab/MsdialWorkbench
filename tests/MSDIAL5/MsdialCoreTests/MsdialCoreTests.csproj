@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\Export\*" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+
 </Project>

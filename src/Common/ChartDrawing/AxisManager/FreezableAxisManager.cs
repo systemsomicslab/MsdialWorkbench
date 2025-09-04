@@ -58,6 +58,17 @@ namespace CompMs.Graphics.AxisManager
             axis.CoerceValue(RangeProperty);
         }
 
+        protected AxisRange CoreRange {
+            get => _coreRange;
+            set {
+                if (_coreRange != value) {
+                    _coreRange = value;
+                    InitialRangeChanged?.Invoke(this, args);
+                }
+            }
+        }
+        private AxisRange _coreRange = new(0d, 1d);
+
         public static readonly DependencyProperty InitialRangeProperty =
             DependencyProperty.Register(
                 nameof(InitialRange), typeof(AxisRange), typeof(FreezableAxisManager),
@@ -76,7 +87,6 @@ namespace CompMs.Graphics.AxisManager
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (FreezableAxisManager)d;
             axis.Focus((AxisRange)e.NewValue);
-            axis.InitialRangeChanged?.Invoke(axis, args);
         }
 
         static object CoerceInitialRange(DependencyObject d, object value) {
@@ -86,6 +96,25 @@ namespace CompMs.Graphics.AxisManager
             }
 
             return initial;
+        }
+
+        public static readonly DependencyProperty ChartMarginProperty =
+            DependencyProperty.Register(
+                nameof(ChartMargin), typeof(IChartMargin), typeof(FreezableAxisManager),
+                new PropertyMetadata(
+                    new RelativeMargin(0d),
+                    OnChartMarginChanged));
+
+        public IChartMargin ChartMargin
+        {
+            get => (IChartMargin)GetValue(ChartMarginProperty);
+            set => SetValue(ChartMarginProperty, value);
+        }
+
+        static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var axis = (FreezableAxisManager)d;
+            axis.InitialRangeChanged?.Invoke(axis, args);
         }
 
         public static readonly DependencyProperty LabelTicksProperty =
@@ -140,7 +169,13 @@ namespace CompMs.Graphics.AxisManager
         }
 
         public void Recalculate(double drawableLength) {
-            // TODO: Recalculate initial range
+            if (drawableLength == 0) {
+                return;
+            }
+            // var lo = -(1 + ChartMargin.Left + ChartMargin.Right) / (drawableLength - 2 * ConstantMargin) * ConstantMargin - ChartMargin.Left;
+            // var hi = 1 - lo - ChartMargin.Left + ChartMargin.Right;
+            (var lo, var hi) = ChartMargin.Add(0, drawableLength);
+            InitialRange = TranslateFromRelativeRange(lo / drawableLength, hi / drawableLength, CoreRange.Union(Bounds));
         }
 
         public bool Contains(AxisValue val) {
@@ -218,6 +253,14 @@ namespace CompMs.Graphics.AxisManager
 
         public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
             return TranslateFromRelativePointCore(FlipRelative(value / drawableLength, isFlipped), Min.Value, Max.Value);
+        }
+
+        private AxisValue TranslateFromRelativePoint(double value, AxisRange range) {
+            return new AxisValue(value * (range.Maximum.Value - range.Minimum.Value) + range.Minimum.Value);
+        }
+
+        private AxisRange TranslateFromRelativeRange(double low, double hi, AxisRange range) {
+            return new AxisRange(TranslateFromRelativePoint(low, range), TranslateFromRelativePoint(hi, range));
         }
     }
 }
