@@ -6,7 +6,6 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Utility;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -85,15 +84,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new GcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            var peakGroup = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(
-                    analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToArray(),
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
-                new[]
-                {
+            ExportType[] quantTypes =
+                [
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
                     new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
                     //new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
@@ -104,25 +96,25 @@ namespace CompMs.App.Msdial.Model.Gcms
                     new ExportType("Retention index", new LegacyQuantValueAccessor("RI", storage.Parameter), "Ri"),
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
-                },
-                new AccessPeakMetaModel(metadataAccessorFactory),
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                ];
+            AccessPeakMetaModel peakMeta = new(metadataAccessorFactory);
+            AccessFileMetaModel fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod([.. analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File)], ExportFormat.Tsv, ExportFormat.Csv),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
-
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, peakMeta, fileMeta, analysisFileBeanModelCollection);
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, gnps, };
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
