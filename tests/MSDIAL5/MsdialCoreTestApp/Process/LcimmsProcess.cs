@@ -140,6 +140,25 @@ public sealed class LcimmsProcess {
             var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+
+            var mztabm_filename = alignmentFile.FileName + ".mzTabM";
+            var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
+            var spots = result.AlignmentSpotProperties; // TODO: cancellation
+            var msdecs = align_decResults;
+            var accessor = align_accessor;
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
+
+            using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            mztabM_exporter.MztabFormatExporterCore(
+                tabmstream,
+                spots,
+                msdecs,
+                files,
+                accessor,
+                align_quantAccessor,
+                align_stats,
+                mztabm_filename
+            );
         }
 
         if (isProjectSaved) {
