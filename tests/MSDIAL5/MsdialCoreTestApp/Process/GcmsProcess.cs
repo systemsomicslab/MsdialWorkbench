@@ -234,6 +234,24 @@ public sealed class GcmsProcess
             var spotExporter = new AlignmentCSVExporter("\t");
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+
+            var mztabm_filename = alignmentFile.FileName + ".mzTabM";
+            var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
+            var spots = result.AlignmentSpotProperties; // TODO: cancellation
+            var msdecs = decResults;
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
+
+            using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            mztabM_exporter.MztabFormatExporterCore(
+                tabmstream,
+                spots,
+                msdecs,
+                files,
+                accessor,
+                quantAccessor,
+                stats,
+                mztabm_filename
+            );
         }
 
         if (isProjectSaved)
