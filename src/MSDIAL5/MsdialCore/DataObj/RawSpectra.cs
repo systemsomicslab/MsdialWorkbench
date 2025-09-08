@@ -16,43 +16,29 @@ public class RawSpectra : IRawSpectra
     private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
     private readonly IReadOnlyList<RawSpectrum> _spectra;
     private readonly IonMode _ionMode;
-    private readonly AcquisitionType _acquisitionType;
-    public AcquisitionType AcquisitionType { get; => _acquisitionType; }
+
+    public AcquisitionType AcquisitionType { get; }
 
     public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
         _spectra = spectra;
         _ionMode = ionMode;
         _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
-        _acquisitionType= acquisitionType;
+        AcquisitionType= acquisitionType;
 
+        StartRt = spectra.DefaultIfEmpty().Min(p => p?.ScanStartTime) ?? 0d;
+        EndRt = spectra.DefaultIfEmpty().Max(p => p?.ScanStartTime) ?? 0d;
     }
 
     public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) : this(provider.LoadMsSpectrums(), ionMode, acquisitionType) {
 
     }
 
-    public double StartRt { 
-        get {
-            if (_spectra.IsEmptyOrNull()) return 0;
-            else return _spectra[0].ScanStartTime;
-        } 
-    }
+    public double StartRt { get; }
 
-    public double EndRt {
-        get {
-            if (_spectra.IsEmptyOrNull()) return 0;
-            else return _spectra[_spectra.Count - 1].ScanStartTime;
-        }
-    }
+    public double EndRt { get; }
 
     public (int MsLevel, int ExperimentID)[] ExperimentIDs {
-        get {
-            var result = new HashSet<(int MsLevel, int ExperimentID)>();
-            foreach (var spec in _spectra) {
-                result.Add((spec.MsLevel, spec.ExperimentID));
-            }
-            return [.. result];
-        }
+        get => [.._spectra.Select(p => (p.MsLevel, p.ExperimentID)).Distinct()];
     }
 
     public ExtractedIonChromatogram GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
@@ -208,13 +194,11 @@ public class RawSpectra : IRawSpectra
     }
 
     private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
-        switch (type) {
-            case ChromXType.RT:
-                return new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
-            case ChromXType.Drift:
-                return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
-            default:
-                throw new ArgumentException($"ChromXType {type} is not supported.");
-        }
+        return type switch
+        {
+            ChromXType.RT => new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType),
+            ChromXType.Drift => new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType),
+            _ => throw new ArgumentException($"ChromXType {type} is not supported."),
+        };
     }
 }
