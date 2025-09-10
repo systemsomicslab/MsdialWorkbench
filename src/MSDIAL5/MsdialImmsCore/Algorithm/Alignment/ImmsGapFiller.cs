@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 {
-    public class ImmsGapFiller : GapFiller
+    public class ImmsGapFiller : GapFiller, IGapFiller
     {
         private readonly double mzTol, driftTol;
         private readonly IonMode ionMode;

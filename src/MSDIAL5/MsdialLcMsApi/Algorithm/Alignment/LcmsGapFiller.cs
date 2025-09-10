@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
-    public class LcmsGapFiller : GapFiller
+    public class LcmsGapFiller : GapFiller, IGapFiller
     {
         private readonly double mzTol, rtTol;
         private readonly IonMode ionMode;

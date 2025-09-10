@@ -119,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             return _accessor;
         }
 
-        public override GapFiller CreateGapFiller() {
+        public override IGapFiller CreateGapFiller() {
             return _filler;
         }
 
@@ -193,7 +193,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         }
     }
 
-    class MockFiller : GapFiller
+    class MockFiller : GapFiller, IGapFiller
     {
         public MockFiller(ParameterBase param) : base(param) {
         }

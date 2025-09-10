@@ -35,7 +35,7 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
         return new GcmsDataAccessor(GcmsParameter);
     }
 
-    public override GapFiller CreateGapFiller() {
+    public override IGapFiller CreateGapFiller() {
         switch (GcmsParameter.AlignmentIndexType) {
             case Common.Enum.AlignmentIndexType.RT:
                 return new GcmsRTGapFiller(Files, MspDB, GcmsParameter);

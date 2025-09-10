@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment;
 public class PeakAligner {
     protected DataAccessor Accessor { get; }
     protected IPeakJoiner Joiner { get; }
-    protected GapFiller Filler { get; }
+    protected IGapFiller Filler { get; }
     protected IAlignmentRefiner Refiner { get; }
     protected ParameterBase Param { get; }
     protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();

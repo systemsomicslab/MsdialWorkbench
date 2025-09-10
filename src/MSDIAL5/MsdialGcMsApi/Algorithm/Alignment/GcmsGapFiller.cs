@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 
-public abstract class GcmsGapFiller : GapFiller
+public abstract class GcmsGapFiller : GapFiller, IGapFiller
 {
     private readonly List<AnalysisFileBean> _files;
     private readonly MsdialGcmsParameter _param;
