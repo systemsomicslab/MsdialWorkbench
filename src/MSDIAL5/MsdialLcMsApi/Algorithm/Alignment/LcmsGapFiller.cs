@@ -82,121 +82,100 @@ public class LcmsGapFiller : IGapFiller
             alignmentChromPeakFeature.PeakID = -2;
         }
 
-        var peaklist = smoothed.AsPeakArray();
-        (var candidates, var minId) = GetPeakTopCandidates(smoothed, peaklist, center.Value);
-
-        (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, center.Value, _isForceInsert);
+        (var id, var leftId, var rightId) = GetNearestPeak(smoothed, center.Value);
         if (id == -1 || leftId == -1 || rightId == -1) {
             SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature, center.Mz.Value);
             return;
         }
-
-        SetAlignmentChromPeakFeature(alignmentChromPeakFeature, center, peaklist, id, leftId, rightId);
+        SetAlignmentChromPeakFeature(alignmentChromPeakFeature, center, smoothed, id, leftId, rightId);
     }
 
-    private (List<(ChromatogramPeak, int)>, int) GetPeakTopCandidates(Chromatogram chromatogram, List<ChromatogramPeak> sPeaklist, double centralAx) {
-        var candidates = new List<(ChromatogramPeak, int)>();
-        var minId = -1;
-        var minDiff = double.MaxValue;
+    private (int id, int leftId, int rightId) GetNearestPeak(Chromatogram chromatogram, double centralAx) {
+        var nearestTopId = -1;
+        var minId = chromatogram.Length / 2;
 
-        var start = sPeaklist.LowerBound(centralAx - _rtTol, (a, b) => a.ChromXs.Value.CompareTo(b));
-        for (int i = start; i < sPeaklist.Count; i++) {
-            if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
-            if (sPeaklist[i].ChromXs.Value < centralAx - _rtTol) continue;
-            if (centralAx + _rtTol < sPeaklist[i].ChromXs.Value) break;
+        for (int i = 0; i < chromatogram.Length; i++) {
+            if (i - 2 < 0 || i + 2 >= chromatogram.Length) continue;
+            if (chromatogram.Time(i) < centralAx - _rtTol) continue;
+            if (centralAx + _rtTol < chromatogram.Time(i)) break;
 
-            if (   sPeaklist[i-2].Intensity <= sPeaklist[i-1].Intensity && sPeaklist[i-1].Intensity <= sPeaklist[i].Intensity && sPeaklist[i].Intensity > sPeaklist[i+1].Intensity
-                || sPeaklist[i-1].Intensity < sPeaklist[i].Intensity && sPeaklist[i].Intensity >= sPeaklist[i+1].Intensity && sPeaklist[i+1].Intensity >= sPeaklist[i+2].Intensity) {
-                candidates.Add((sPeaklist[i], i));
+            if (chromatogram.IsBroadPeakTop(i)
+                && (nearestTopId < 0
+                    || Math.Abs(chromatogram.Time(nearestTopId) - centralAx) > Math.Abs(chromatogram.Time(i) - centralAx))) {
+                nearestTopId = i;
             }
 
-            var diff = Math.Abs(sPeaklist[i].ChromXs.Value - centralAx);
-            if (diff < minDiff) {
-                minDiff = diff;
+            var diff = Math.Abs(chromatogram.Time(i) - centralAx);
+            if (diff < Math.Abs(chromatogram.Time(minId) - centralAx)) {
                 minId = i;
             }
         }
 
-        if (minId == -1) minId = sPeaklist.Count / 2;
-
-        return (candidates, minId);
-    }
-
-    private (int, int, int) GetPeakRange(List<(ChromatogramPeak Peak, int Index)> candidates, List<ChromatogramPeak> sPeaklist, int minId, double centralAx, bool isForceInsert) {
-        int id, leftId, rightId;
-
-        if (candidates.Count == 0) {
-            if (!isForceInsert) return (-1, -1, -1);
+        if (nearestTopId == -1) {
+            if (!_isForceInsert) return (-1, -1, -1);
             var range = 5;
 
-            id = minId;
-            leftId = Math.Max(id - 1, 0);
-            rightId = Math.Min(id + 1, sPeaklist.Count - 1);
-
-            var limit = Math.Max(id - range, 0);
+            var leftId = Math.Max(minId - 1, 0);
+            var limit = Math.Max(minId - range, 0);
             while (limit < leftId) {
-                if (sPeaklist[leftId - 1].Intensity > sPeaklist[leftId].Intensity) break;
+                if (chromatogram.Intensity(leftId - 1) > chromatogram.Intensity(leftId)) {
+                    break;
+                }
                 --leftId;
             }
-            limit = Math.Min(id + range, sPeaklist.Count - 1);
+
+            var rightId = Math.Min(minId + 1, chromatogram.Length - 1);
+            limit = Math.Min(minId + range, chromatogram.Length - 1);
             while (rightId < limit) {
-                if (sPeaklist[rightId].Intensity < sPeaklist[rightId + 1].Intensity) break;
+                if (chromatogram.Intensity(rightId) < chromatogram.Intensity(rightId + 1)) {
+                    break;
+                }
                 ++rightId;
             }
+            return (id: minId, leftId, rightId);
         }
         else {
-            id = candidates.Argmin(cand => Math.Abs(cand.Peak.ChromXs.Value - centralAx)).Index;
-
             var margin = 2;
 
-            leftId = Math.Max(id - margin, 0);
+            int leftId = Math.Max(nearestTopId - margin, 0);
             while (0 < leftId) {
-                if (sPeaklist[leftId - 1].Intensity >= sPeaklist[leftId].Intensity) break;
+                if (chromatogram.Intensity(leftId - 1) >= chromatogram.Intensity(leftId)) {
+                    break;
+                }
                 --leftId;
             }
 
-            rightId = Math.Min(id + margin, sPeaklist.Count - 1);
-            while (rightId < sPeaklist.Count - 1) {
-                if (sPeaklist[rightId].Intensity <= sPeaklist[rightId + 1].Intensity) break;
+            int rightId = Math.Min(nearestTopId + margin, chromatogram.Length - 1);
+            while (rightId < chromatogram.Length - 1) {
+                if (chromatogram.Intensity(rightId) <= chromatogram.Intensity(rightId + 1)) {
+                    break;
+                }
                 ++rightId;
             }
 
-            if (!isForceInsert && (id - leftId < 2 || rightId - id < 2)) return (-1, -1, -1);
+            if (!_isForceInsert && (nearestTopId - leftId < 2 || rightId - nearestTopId < 2)) {
+                return (-1, -1, -1);
+            }
 
+            int id = nearestTopId;
             for(int i = leftId + 1; i <= rightId - 1; i++) {
-                if (sPeaklist[i - 1].Intensity <= sPeaklist[i].Intensity && sPeaklist[i].Intensity > sPeaklist[i + 1].Intensity
-                    || sPeaklist[i - 1].Intensity < sPeaklist[i].Intensity && sPeaklist[i].Intensity >= sPeaklist[i + 1].Intensity) {
-                    if (sPeaklist[id].Intensity < sPeaklist[i].Intensity) {
-                        id = i;
-                    }
+                if (chromatogram.IsPeakTop(i) && chromatogram.Intensity(id) < chromatogram.Intensity(i)) {
+                    id = i;
                 }
             }
+            return (id, leftId, rightId);
         }
-
-        return (id, leftId, rightId);
     }
 
-    private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
-        double peakAreaAboveZero = 0d, baseline = 0d;
-        if (center.Type == ChromXType.RI || center.Type == ChromXType.RT) {
-            for (int i = leftId; i < rightId; i++) {
-                peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.RT.Value - sPeaklist[i].ChromXs.RT.Value);
-            }
-            peakAreaAboveZero *= 60d;
-
-            baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.RT.Value - sPeaklist[leftId].ChromXs.RT.Value) / 2;
-            baseline *= 60d;
+    private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, Chromatogram chromatogram, int id, int leftId, int rightId) {
+        double peakAreaAboveZero = 0d;
+        for (int i = leftId; i < rightId; i++) {
+            peakAreaAboveZero += (chromatogram.Intensity(i) + chromatogram.Intensity(i + 1)) / 2 * (chromatogram.Time(i + 1) - chromatogram.Time(i));
         }
-        else {
-            for (int i = leftId; i < rightId; i++) {
-                peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value);
-            }
-            baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.Value - sPeaklist[leftId].ChromXs.Value) / 2;
-        }
+        peakAreaAboveZero *= 60d;
 
-        System.Diagnostics.Debug.Assert(sPeaklist[id].ChromXs != null);
-        System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);
-        System.Diagnostics.Debug.Assert(sPeaklist[rightId].ChromXs != null);
+        var baseline = (chromatogram.Intensity(leftId) + chromatogram.Intensity(rightId)) * (chromatogram.Time(rightId) - chromatogram.Time(leftId)) / 2;
+        baseline *= 60d;
 
         if (result.MasterPeakID < 0) {
             result.Mass = center.Mz.Value;
@@ -204,12 +183,12 @@ public class LcmsGapFiller : IGapFiller
         result.ChromScanIdTop = id;
         result.ChromScanIdLeft = leftId;
         result.ChromScanIdRight = rightId;
-        result.ChromXsTop = sPeaklist[id].ChromXs;
-        result.ChromXsLeft = sPeaklist[leftId].ChromXs;
-        result.ChromXsRight = sPeaklist[rightId].ChromXs;
-        result.PeakHeightTop = sPeaklist[id].Intensity;
-        result.PeakHeightLeft = sPeaklist[leftId].Intensity;
-        result.PeakHeightRight = sPeaklist[rightId].Intensity;
+        result.ChromXsTop = chromatogram.PeakChromXs(id);
+        result.ChromXsLeft = chromatogram.PeakChromXs(leftId);
+        result.ChromXsRight = chromatogram.PeakChromXs(rightId);
+        result.PeakHeightTop = chromatogram.Intensity(id);
+        result.PeakHeightLeft = chromatogram.Intensity(leftId);
+        result.PeakHeightRight = chromatogram.Intensity(rightId);
         result.PeakAreaAboveZero = peakAreaAboveZero;
         result.PeakAreaAboveBaseline = peakAreaAboveZero - baseline;
         result.PeakShape.SignalToNoise = (float)result.PeakHeightTop / result.PeakShape.EstimatedNoise;

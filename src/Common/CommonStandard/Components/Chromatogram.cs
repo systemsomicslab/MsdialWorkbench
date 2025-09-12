@@ -104,6 +104,28 @@ namespace CompMs.Common.Components
         }
 
         /// <summary>
+        /// Retrieves the chromatographic position and mass (m/z) for a peak at the specified index.
+        /// </summary>
+        /// <param name="i">The zero-based index of the peak in the chromatogram.</param>
+        /// <returns>A <see cref="ChromXs"/> object representing the chromatographic position and mass (m/z) of the peak.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
+        /// <remarks>
+        /// This method constructs a <see cref="ChromXs"/> object using the time and m/z values of the peak at the specified index.
+        /// The <see cref="ChromXs"/> object encapsulates the chromatographic position and mass-to-charge ratio, providing a standardized
+        /// representation of these values within the chromatogram.
+        /// </remarks>
+        public ChromXs PeakChromXs(int i) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            } 
+            var result = new ChromXs(_peaks[i].Time, _type, _unit);
+            if (_type != ChromXType.Mz) {
+                result.Mz = new MzValue(_peaks[i].Mz);
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Determines if the chromatogram is empty, meaning it contains no peaks.
         /// </summary>
         /// <value>True if the chromatogram contains no peaks; otherwise, false.</value>
@@ -281,7 +303,7 @@ namespace CompMs.Common.Components
                     break;
                 }
 
-                if (_peaks[i].Intensity > maxInt && _peaks[i - 1].Intensity <= _peaks[i].Intensity && _peaks[i].Intensity <= _peaks[i + 1].Intensity) {
+                if (_peaks[i].Intensity > maxInt && _peaks[i - 1].Intensity <= _peaks[i].Intensity && _peaks[i].Intensity >= _peaks[i + 1].Intensity) {
                     maxInt = _peaks[i].Intensity;
                     maxID = i;
                 }
@@ -451,7 +473,9 @@ namespace CompMs.Common.Components
         public bool IsPeakTop(int topId) {
             return topId >= 1 && topId < _size - 1
                 && _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
-                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
+                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity
+                && (_peaks[topId - 1].Intensity != _peaks[topId].Intensity
+                    || _peaks[topId].Intensity != _peaks[topId + 1].Intensity);
         }
 
         /// <summary>
