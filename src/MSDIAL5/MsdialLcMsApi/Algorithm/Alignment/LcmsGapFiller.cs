@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -32,30 +31,26 @@ public class LcmsGapFiller : IGapFiller
               param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
     public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+        GapFill(ms1Spectra, spot, fileID);
+    }
+
+    public void GapFill(Ms1Spectra ms1Spectra, AlignmentSpotProperty spot, int fileID) {
         var peaks = spot.AlignedPeakProperties;
         var detected = peaks.Where(peak => peak.PeakID >= 0).ToArray();
 
         var target = peaks.First(peak => peak?.FileID == fileID);
         target.PeakShape.EstimatedNoise = GetEstimatedNoise(detected);
 
-        var chromXCenter = GetCenter(spot, detected);
-        var peakWidth = GetPeakWidth(detected);
-        GapFillCore(chromXCenter, target, ms1Spectra, peakWidth);
+        var rtCenter = new ChromXs(new RetentionTime(detected.Average(peak => peak.ChromXsTop.RT.Value), ChromXUnit.Min))
+        {
+            Mz = new MzValue(detected.Argmax(peak => peak.PeakHeightTop).Mass),
+        };
+        var peakWidth = detected.Max(peak => peak.PeakWidth(ChromXType.RT));
+        GapFillCore(target, ms1Spectra, rtCenter, peakWidth);
     }
 
     public bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
         return spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0;
-    }
-
-    private ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks) {
-        return new ChromXs(peaks.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
-        {
-            Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),
-        };
-    }
-
-    private double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
-        return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
     }
 
     private Chromatogram GetPeaks(Ms1Spectra ms1Spectra, ChromXs center, double peakWidth, SmoothingMethod smoothingMethod, int smoothingLevel) {
@@ -70,7 +65,7 @@ public class LcmsGapFiller : IGapFiller
         return peaks.Max(n => n.PeakShape.EstimatedNoise);
     }
 
-    private void GapFillCore(ChromXs center, AlignmentChromPeakFeature alignmentChromPeakFeature, Ms1Spectra ms1Spectra, double peakWidth) {
+    private void GapFillCore(AlignmentChromPeakFeature alignmentChromPeakFeature, Ms1Spectra ms1Spectra, ChromXs center, double peakWidth) {
         using var smoothed = GetPeaks(ms1Spectra, center, peakWidth, _smoothingMethod, _smoothingLevel);
 
         if (smoothed.Length == 0) {
@@ -170,12 +165,11 @@ public class LcmsGapFiller : IGapFiller
     private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, Chromatogram chromatogram, int id, int leftId, int rightId) {
         double peakAreaAboveZero = 0d;
         for (int i = leftId; i < rightId; i++) {
-            peakAreaAboveZero += (chromatogram.Intensity(i) + chromatogram.Intensity(i + 1)) / 2 * (chromatogram.Time(i + 1) - chromatogram.Time(i));
+            peakAreaAboveZero += chromatogram.CalculateArea(i, i + 1);
         }
         peakAreaAboveZero *= 60d;
 
-        var baseline = (chromatogram.Intensity(leftId) + chromatogram.Intensity(rightId)) * (chromatogram.Time(rightId) - chromatogram.Time(leftId)) / 2;
-        baseline *= 60d;
+        var baseline = chromatogram.CalculateArea(leftId, rightId) * 60d;
 
         if (result.MasterPeakID < 0) {
             result.Mass = center.Mz.Value;
