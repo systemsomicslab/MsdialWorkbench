@@ -51,4 +51,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="LipidSpectrumGeneratorTest_Others.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

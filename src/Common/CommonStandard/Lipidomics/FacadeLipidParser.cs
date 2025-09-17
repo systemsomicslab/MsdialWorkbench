@@ -13,14 +13,18 @@ namespace CompMs.Common.Lipidomics
         /// </summary>
         /// <param name="lipidStr">The lipid name to parse.</param>
         /// <returns>The parsed ILipid object, or null if parsing fails.</returns>
-        public ILipid Parse(string lipidStr) {
+        public ILipid Parse(string lipidStr)
+        {
             var key = lipidStr.Split()[0];
-            if (map.TryGetValue(key, out var parsers)) {
+            if (map.TryGetValue(key, out var parsers))
+            {
                 // Remove lipid synonym (e.g. PC 34:1|PC 16:0_18:1 -> PC 16:0_18:1) if it exists
                 var parts = lipidStr.Split('|');
                 lipidStr = parts.Length > 1 ? parts[1] : lipidStr;
-                foreach (var parser in parsers) {
-                    if (parser.Parse(lipidStr) is ILipid lipid) {
+                foreach (var parser in parsers)
+                {
+                    if (parser.Parse(lipidStr) is ILipid lipid)
+                    {
                         return lipid;
                     }
                 }
@@ -28,22 +32,29 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 
-        public void Add(ILipidParser parser) {
-            if (!map.ContainsKey(parser.Target)) {
+        public void Add(ILipidParser parser)
+        {
+            if (!map.ContainsKey(parser.Target))
+            {
                 map.Add(parser.Target, new List<ILipidParser>());
             }
             map[parser.Target].Add(parser);
         }
 
-        public void Remove(ILipidParser parser) {
-            if (map.ContainsKey(parser.Target)) {
+        public void Remove(ILipidParser parser)
+        {
+            if (map.ContainsKey(parser.Target))
+            {
                 map[parser.Target].Remove(parser);
             }
         }
 
-        public static ILipidParser Default {
-            get {
-                if (@default is null) {
+        public static ILipidParser Default
+        {
+            get
+            {
+                if (@default is null)
+                {
                     var parser = new FacadeLipidParser();
                     new List<ILipidParser>{
                         new BMPLipidParser(),
@@ -155,6 +166,25 @@ namespace CompMs.Common.Lipidomics
                         new CerEbdsLipidParser(),
                         new CerEosLipidParser(),
                         new HexCerEosLipidParser(),
+                        new FALipidParser(),
+                        new FAHFALipidParser(),
+                        new AAHFALipidParser(),
+                        new WELipidParser(),
+                        new NAGlyLipidParser(),
+                        new NAGlySerLipidParser(),
+                        new NAOrnLipidParser(),
+                        new NATauLipidParser(),
+                        new NAPheLipidParser(),
+                        new NATryALipidParser(),
+                        new NA5HTLipidParser(),
+                        new NASerLipidParser(),
+                        new NAAlaLipidParser(),
+                        new NAGlnLipidParser(),
+                        new NALeuLipidParser(),
+                        new NAValLipidParser(),
+                        new NAOrn_FAHFALipidParser(),
+
+
 
                     }.ForEach(parser.Add);
                     @default = parser;
