@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter;
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
-
+        public ParameterBase Parameter => _parameter;
         public string[] GetHeaders() => GetHeadersCore();
 
         IReadOnlyDictionary<string, string> IMetadataAccessor.GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {

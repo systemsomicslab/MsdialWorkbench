@@ -79,7 +79,7 @@ namespace CompMs.App.MsdialConsole.Process
             var provider = new StandardDataProviderFactory().Create(rawobj);
 
             var db = DataBaseStorage.CreateEmpty();
-            var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB, param.TextDBFilePath);
             var textDBAnnotator = new ImmsTextDBAnnotator(tdb, param.TextDbSearchParam, "TextDB", -1);
             db.AddMoleculeDataBase(
                 tdb,
@@ -88,13 +88,16 @@ namespace CompMs.App.MsdialConsole.Process
                 ]);
             //var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
 
-            var container = new MsdialImmsDataStorage {
+            var mapper = new DataBaseMapper();
+            db.SetDataBaseMapper(mapper);
+            var container = new MsdialImmsDataStorage
+            {
                 AnalysisFiles = [file],
                 AlignmentFiles = [],
                 MsdialImmsParameter = param,
                 IupacDatabase = IupacResourceParser.GetIUPACDatabase(),
                 DataBases = db,
-                DataBaseMapper = db.CreateDataBaseMapper()
+                DataBaseMapper = mapper
             };
             storage.AddStorage(container);
 
@@ -172,17 +175,19 @@ namespace CompMs.App.MsdialConsole.Process
             var container = new MsdialImmsDataStorage {
                 AnalysisFiles = [file], 
                 AlignmentFiles = [],
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param
+                MspDB = mspDB is null ? [] : [.. mspDB.Database], TextDB = txtDB is null ? [] : [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param
             };
-            var database = new MoleculeDataBase(txtDB, reffile, DataBaseSource.Text, SourceType.TextDB);
-            var annotator = new ImmsTextDBAnnotator(database, param.TextDbSearchParam, param.TextDBFilePath, 1);
             container.DataBases = DataBaseStorage.CreateEmpty();
-            container.DataBases.AddMoleculeDataBase(
-                database,
-                [ 
-                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
-                ]
-            );
+            if (txtDB is { Database.Count: > 0 })
+            {
+                var annotator = new ImmsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 1);
+                container.DataBases.AddMoleculeDataBase(
+                    txtDB,
+                    [ 
+                        new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
+                    ]
+                );
+            }
             storage.AddStorage(container);
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
@@ -274,21 +279,22 @@ namespace CompMs.App.MsdialConsole.Process
             var container = new MsdialDimsDataStorage {
                 AnalysisFiles = [file],
                 AlignmentFiles = [],
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
+                MspDB = [.. mspDB.Database], TextDB = [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
             };
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var database = new MoleculeDataBase(txtDB, reffile, DataBaseSource.Text, SourceType.TextDB);
-            var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(database, param.TextDbSearchParam, param.TextDBFilePath, 1);
+            var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 1);
+            container.DataBaseMapper = new DataBaseMapper();
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
-                database,
+                txtDB,
                 [
                     new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
                 ]
             );
+            container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
-            var annotationProcess = BuildAnnotationProcess(container.DataBases);
+            var annotationProcess = BuildAnnotationProcess(container.DataBases, container.DataBaseMapper);
 
             MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
@@ -323,11 +329,11 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
+        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper) {
             return new StandardAnnotationProcess(
                 storage.CreateQueryFactories().MoleculeQueryFactories,
                 FacadeMatchResultEvaluator.FromDataBases(storage),
-                storage.CreateDataBaseMapper());
+                mapper);
         }
     }
 

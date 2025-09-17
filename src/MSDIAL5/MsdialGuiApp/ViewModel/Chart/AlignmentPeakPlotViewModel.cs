@@ -114,4 +114,7 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
         using var vm = new ExportMrmprobsViewModel(m);
         _broker.Publish(vm);
     }
+
+    public ReactiveCommand? SpectraSimilarityMapCommand { get; set; }
+    public ReactiveCommand? SpectraGroupingCommand { get; set; }
 }

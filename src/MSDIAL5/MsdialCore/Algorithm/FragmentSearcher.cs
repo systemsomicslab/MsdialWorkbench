@@ -90,130 +90,12 @@ namespace CompMs.MsdialCore.Algorithm {
 
         }
 
-        private static bool isPeakDetectedByBasicMsPropertyQuery(ChromatogramPeakFeature feature, double maxIntensity,
-            List<PeakFeatureSearchValue> queries) {
-            var featureRt = feature.ChromXsTop.RT.Value;
-            var featureDt = feature.ChromXsTop.HasDrift() ? feature.ChromXsTop.Drift.Value : 0.0;
-            var featureHeight = feature.PeakHeightTop;
-            var featureRelativeHeight = featureHeight / maxIntensity * 100.0;
-            var featureMz = feature.Mass;
-            var flag = false;
-            foreach (var query in queries) {
-                if (query.TimeMin > 0 && featureRt > 0 && featureRt < query.TimeMin) continue;
-                if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) continue;
-                if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) continue;
-                if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) continue;
-
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1) {
-                    if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
-                    if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
-                    if (query.Mass > 0 && query.MassTolerance > 0 &&
-                        Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
-                }
-                flag = true;
-                break;
-            }
-            return flag;
+        private static bool isPeakDetectedByBasicMsPropertyQuery(ChromatogramPeakFeature feature, double maxIntensity, List<PeakFeatureSearchValue> queries) {
+            return IsMs1FeatureMatched(feature, maxIntensity, queries);
         }
 
-        private static bool isPeakDetectedByAllBasicMsPropertyQuery(ChromatogramPeakFeature feature, double maxIntensity,
-            List<PeakFeatureSearchValue> queries) {
-            var featureRt = feature.ChromXsTop.RT.Value;
-            var featureDt = feature.ChromXsTop.HasDrift() ? feature.ChromXsTop.Drift.Value : 0.0;
-            var featureHeight = feature.PeakHeightTop;
-            var featureRelativeHeight = featureHeight / maxIntensity * 100.0;
-            var featureMz = feature.Mass;
-            var flag = true;
-            foreach (var query in queries) {
-                if (query.TimeMin > 0 && featureRt > 0 && featureRt < query.TimeMin) {
-                    flag = false; break;
-                }
-                if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) {
-                    flag = false; break;
-                }
-                if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) {
-                    flag = false; break;
-                }
-                if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) {
-                    flag = false; break;
-                }
-                if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) {
-                    flag = false; break;
-                }
-                if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) {
-                    flag = false; break;
-                }
-
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1 &&
-                    query.Mass > 0 && query.MassTolerance > 0 &&
-                    Math.Abs(featureMz - query.Mass) > query.MassTolerance) {
-                    flag = false; break;
-                }
-            }
-            return flag;
-        }
-
-
-        private static bool isPeakDetectedByBasicMsPropertyQuery(AlignmentSpotProperty feature, double maxIntensity,
-            List<PeakFeatureSearchValue> queries) {
-            var featureRt = feature.TimesCenter.RT.Value;
-            var featureDt = feature.TimesCenter.HasDrift() ? feature.TimesCenter.Drift.Value : 0.0;
-            var featureHeight = feature.HeightAverage;
-            var featureRelativeHeight = featureHeight / maxIntensity * 100.0;
-            var featureMz = feature.MassCenter;
-            var flag = false;
-            foreach (var query in queries) {
-                if (query.TimeMin > 0 && featureRt > 0 && featureRt < query.TimeMin) continue;
-                if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) continue;
-                if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) continue;
-                if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) continue;
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1) {
-                    if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
-                    if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
-                    if (query.Mass > 0 && query.MassTolerance > 0 &&
-                        Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
-                }
-                flag = true;
-                break;
-            }
-            return flag;
-        }
-
-        private static bool isPeakDetectedByAllBasicMsPropertyQuery(AlignmentSpotProperty feature, double maxIntensity,
-            List<PeakFeatureSearchValue> queries) {
-            var featureRt = feature.TimesCenter.RT.Value;
-            var featureDt = feature.TimesCenter.HasDrift() ? feature.TimesCenter.Drift.Value : 0.0;
-            var featureHeight = feature.HeightAverage;
-            var featureRelativeHeight = featureHeight / maxIntensity * 100.0;
-            var featureMz = feature.MassCenter;
-            var flag = true;
-            foreach (var query in queries) {
-                if (query.TimeMin > 0 && featureRt > 0 && featureRt < query.TimeMin) {
-                    flag = false; break;
-                }
-                if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) {
-                    flag = false; break;
-                }
-                if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) {
-                    flag = false; break;
-                }
-                if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) {
-                    flag = false; break;
-                }
-                if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) {
-                    flag = false; break;
-                }
-                if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) {
-                    flag = false; break;
-                }
-
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1 &&
-                    query.Mass > 0 && query.MassTolerance > 0 &&
-                    Math.Abs(featureMz - query.Mass) > query.MassTolerance) {
-                    flag = false; break;
-                }
-            }
-            return flag;
+        private static bool isPeakDetectedByBasicMsPropertyQuery(AlignmentSpotProperty feature, double maxIntensity, List<PeakFeatureSearchValue> queries) {
+            return IsMs1SpotMatched(feature, maxIntensity, queries);
         }
 
         public static void Search(List<AlignmentSpotProperty> features, MSDecLoader decLoader, ParameterBase param) {
@@ -242,6 +124,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             foreach (var feature in features) {
                 var featureStatus = feature.FeatureFilterStatus;
+                
                 featureStatus.IsFragmentExistFiltered = false;
                 if (isIonMobility) {
                     var isFragmentExist = false;
@@ -295,74 +178,90 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static bool isAllFragmentExist(List<SpectrumPeak> peaks, List<PeakFeatureSearchValue> queries, double precursorMz, double basePeakIntensity) {
-            var isAllQueryFound = true;
-            foreach (var query in queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS2)) {
-                var qMass = query.Mass;
-                var qIntensity = query.RelativeIntensityCutoff;
-                var qType = query.PeakFeatureSearchType;
+        private static bool EvaluateCondition(string? conditionType, double featureValue, double queryValue) {
+            return conditionType?.ToUpperInvariant() switch {
+                "GREATERTHAN" => featureValue > queryValue,
+                "LESSTHAN" => featureValue < queryValue,
+                "EQUALS" => Math.Abs(featureValue - queryValue) < 0.01,
+                _ => featureValue >= queryValue // default behavior (BETWEEN or unspecified)
+            };
+        }
 
-                var isQueryFound = false;
-                foreach (var peak in peaks) {
+        private static bool isAllFragmentExist(List<SpectrumPeak> peaks, List<PeakFeatureSearchValue> queries, double precursorMz, double basePeakIntensity) {
+            foreach (var query in queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS2)) {
+                var isQueryFound = peaks.Any(peak => {
                     var productIon = peak.Mass;
                     var neutralLoss = precursorMz - productIon;
                     var relativeIntensity = peak.Intensity / basePeakIntensity * 100.0;
-
-                    if (qType == PeakFeatureSearchType.ProductIon) {
-                        if (Math.Abs(qMass - productIon) < query.MassTolerance && relativeIntensity > qIntensity) {
-                            isQueryFound = true;
-                            break;
-                        }
-                    }
-                    else {
-                        if (Math.Abs(qMass - neutralLoss) < query.MassTolerance && relativeIntensity > qIntensity) {
-                            isQueryFound = true;
-                            break;
-                        }
-                    }
-                }
-                if (isQueryFound == false) {
-                    isAllQueryFound = false;
-                    break;
-                }
+                    var targetMass = query.PeakFeatureSearchType == PeakFeatureSearchType.ProductIon ? productIon : neutralLoss;
+                    return Math.Abs(targetMass - query.Mass) <= query.MassTolerance &&
+                           EvaluateCondition(query.ConditionType, relativeIntensity, query.RelativeIntensityCutoff);
+                });
+                if (!isQueryFound) return false;
             }
-
-            if (isAllQueryFound)
-                return true;
-            else
-                return false;
+            return true;
         }
 
         private static bool isFragmentFound(List<SpectrumPeak> peaks, List<PeakFeatureSearchValue> queries, double precursorMz, double basePeakIntensity) {
-            var isFragmentExist = false;
-            foreach (var peak in peaks) {
+            return peaks.Any(peak => {
                 var productIon = peak.Mass;
                 var neutralLoss = precursorMz - productIon;
                 var relativeIntensity = peak.Intensity / basePeakIntensity * 100.0;
 
-                foreach (var query in queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS2)) {
-                    if (query.PeakFeatureSearchType == PeakFeatureSearchType.ProductIon) {
-                        var qProduct = query.Mass;
-                        var qIntensity = query.RelativeIntensityCutoff;
+                return queries.Where(q => q.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS2).Any(query => {
+                    var targetMass = query.PeakFeatureSearchType == PeakFeatureSearchType.ProductIon ? productIon : neutralLoss;
+                    return Math.Abs(targetMass - query.Mass) <= query.MassTolerance &&
+                           EvaluateCondition(query.ConditionType, relativeIntensity, query.RelativeIntensityCutoff);
+                });
+            });
+        }
 
-                        if (Math.Abs(qProduct - productIon) < query.MassTolerance && relativeIntensity > qIntensity) {
-                            isFragmentExist = true;
-                            break;
-                        }
-                    }
-                    else {
-                        var qLoss = query.Mass;
-                        var qIntensity = query.RelativeIntensityCutoff;
+        public static bool IsMs1FeatureMatched(ChromatogramPeakFeature feature, double maxIntensity, List<PeakFeatureSearchValue> queries) {
 
-                        if (Math.Abs(qLoss - neutralLoss) < query.MassTolerance && relativeIntensity > qIntensity) {
-                            isFragmentExist = true;
-                            break;
-                        }
-                    }
-                }
-                if (isFragmentExist == true) break;
+            var ms1Queries = queries.Where(q => q.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).ToList();
+            if (ms1Queries.Count == 0) return true; // 
+
+            var featureRt = feature.ChromXsTop.RT.Value;
+            var featureDt = feature.ChromXsTop.HasDrift() ? feature.ChromXsTop.Drift.Value : 0.0;
+            var featureMz = feature.Mass;
+            var featureHeight = feature.PeakHeightTop;
+            var relativeHeight = featureHeight / maxIntensity * 100.0;
+            var charge = feature.PeakCharacter?.Charge ?? 0;
+
+            foreach (var query in ms1Queries) {
+                if (!EvaluateCondition(query.ConditionType, featureRt, query.TimeMin)) continue;
+                if (!EvaluateCondition(query.ConditionType, featureDt, query.MobilityMin)) continue;
+                if (!EvaluateCondition(query.ConditionType, featureHeight, query.AbsoluteIntensityCutoff)) continue;
+                if (!EvaluateCondition(query.ConditionType, relativeHeight, query.RelativeIntensityCutoff)) continue;
+                if (!EvaluateCondition(query.ConditionType, charge, query.Charge)) continue;
+                if (query.Mass > 0 && query.MassTolerance > 0 && Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
+                return true;
             }
-            return isFragmentExist;
+            return false;
+        }
+
+        public static bool IsMs1SpotMatched(AlignmentSpotProperty feature, double maxIntensity, List<PeakFeatureSearchValue> queries) {
+
+            var ms1Queries = queries.Where(q => q.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).ToList();
+            if (ms1Queries.Count == 0) return true; 
+
+            var featureRt = feature.TimesCenter.RT.Value;
+            var featureDt = feature.TimesCenter.HasDrift() ? feature.TimesCenter.Drift.Value : 0.0;
+            var featureMz = feature.MassCenter;
+            var featureHeight = feature.HeightAverage;
+            var relativeHeight = featureHeight / maxIntensity * 100.0;
+            var charge = feature.PeakCharacter?.Charge ?? 0;
+
+            foreach (var query in ms1Queries) {
+                if (!EvaluateCondition(query.ConditionType, featureRt, query.TimeMin)) continue;
+                if (!EvaluateCondition(query.ConditionType, featureDt, query.MobilityMin)) continue;
+                if (!EvaluateCondition(query.ConditionType, featureHeight, query.AbsoluteIntensityCutoff)) continue;
+                if (!EvaluateCondition(query.ConditionType, relativeHeight, query.RelativeIntensityCutoff)) continue;
+                if (!EvaluateCondition(query.ConditionType, charge, query.Charge)) continue;
+                if (query.Mass > 0 && query.MassTolerance > 0 && Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
+                return true;
+            }
+            return false;
         }
     }
 }

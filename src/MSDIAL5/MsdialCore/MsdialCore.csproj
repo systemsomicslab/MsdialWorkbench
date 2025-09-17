@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net48;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net48;net8.0</TargetFrameworks>
     <RootNamespace>CompMs.MsdialCore</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>12</LangVersion>
@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<InternalsVisibleTo Include="MsdialCoreTests" />
+	  <InternalsVisibleTo Include="MsdialCoreTests" />
   </ItemGroup>
 
   <ItemGroup>

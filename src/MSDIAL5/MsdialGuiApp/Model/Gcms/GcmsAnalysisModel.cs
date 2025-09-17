@@ -222,9 +222,16 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
             compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, selectedSpectrum.Select(s => s?.MatchResults.Representative)).AddTo(_disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+            }
 
             PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel, UndoManager);
 
@@ -257,7 +264,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public EicModel EicModel { get; }
         public PeakInformationMs1BasedModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public GcmsAnalysisPeakTableModel PeakTableModel { get; }
         public UndoManager UndoManager { get; }
