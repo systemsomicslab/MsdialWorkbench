@@ -6,19 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class NAOrn_FAHFALipidParser : ILipidParser
+    public class NATryA_FAHFALipidParser : ILipidParser
     {
-        public string Target { get; } = "NAOrn";
+        public string Target { get; } = "NATryA";
 
         private static readonly NA_FAHFAChainParser chainsParser = new NA_FAHFAChainParser();
-        public static readonly string Pattern = $"^NAOrn\\s*(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^NATryA\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.CarbonMass * 10,
             MassDiffDictionary.HydrogenMass * 10,
-            MassDiffDictionary.OxygenMass * 2,
             MassDiffDictionary.NitrogenMass * 2,
         }.Sum();
 
@@ -29,7 +28,7 @@ namespace CompMs.Common.Lipidomics
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.NAOrn, Skelton + chains.Mass, chains);
+                return new Lipid(LbmClass.NATryA, Skelton + chains.Mass, chains);
             }
             return null;
         }

@@ -6,20 +6,20 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class NAOrn_FAHFALipidParser : ILipidParser
+    public class NAGly_FAHFALipidParser : ILipidParser
     {
-        public string Target { get; } = "NAOrn";
+        public string Target { get; } = "NAGly";
 
         private static readonly NA_FAHFAChainParser chainsParser = new NA_FAHFAChainParser();
-        public static readonly string Pattern = $"^NAOrn\\s*(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^NAGly\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * 10,
+            MassDiffDictionary.CarbonMass * 2,
+            MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.OxygenMass * 2,
-            MassDiffDictionary.NitrogenMass * 2,
+            MassDiffDictionary.NitrogenMass * 1,
         }.Sum();
 
         public ILipid Parse(string lipidStr)
@@ -29,7 +29,7 @@ namespace CompMs.Common.Lipidomics
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.NAOrn, Skelton + chains.Mass, chains);
+                return new Lipid(LbmClass.NAGly, Skelton + chains.Mass, chains);
             }
             return null;
         }
