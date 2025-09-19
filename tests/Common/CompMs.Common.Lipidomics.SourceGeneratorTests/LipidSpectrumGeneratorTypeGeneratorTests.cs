@@ -543,81 +543,98 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                     }
                     else
                     {
-                        var generatorNATryA_FA = new NATryA_FACidLipidSpectrumGenerator(); spectrum = generatorNATryA_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                        var generatorNATryA_FA = new NATryA_FACidLipidSpectrumGenerator(); spectrum = generatorNATryA_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
                     }
                     break;
-                //case LbmClass.NATau:
+                case LbmClass.NATau:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNATau_OxFA = new NATau_OxFACidLipidSpectrumGenerator(); spectrum = generatorNATau_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                    else
+                    {
+                        var generatorNATau_FA = new NATau_FACidLipidSpectrumGenerator(); spectrum = generatorNATau_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                case LbmClass.NAPhe:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAPhe_OxFA = new NAPhe_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAPhe_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                    else
+                    {
+                        var generatorNAPhe_FA = new NAPhe_FACidLipidSpectrumGenerator(); spectrum = generatorNAPhe_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                case LbmClass.NA5HT:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNA5HT_OxFA = new NA5HT_OxFACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                    else
+                    {
+                        var generatorNA5HT_FA = new NA5HT_FACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                //case LbmClass.NAAnt:
                 //    if (lipid.Chains.OxidizedCount > 0)
                 //    {
-                //        var generatorNATau_OxFA = new NATau_OxFACidLipidSpectrumGenerator(); spectrum = generatorNATau_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //        var generatorNAAnt_OxFA = new NAAnt_OxFACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
                 //    }
                 //    else
                 //    {
-                //        var generatorNATau_FA = new NATau_FACidLipidSpectrumGenerator(); spectrum = generatorNATau_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NAPhe:
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNAPhe_OxFA = new NAPhe_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAPhe_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNAPhe_FA = new NAPhe_FACidLipidSpectrumGenerator(); spectrum = generatorNAPhe_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NA5HT:
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNA5HT_OxFA = new NA5HT_OxFACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNA5HT_FA = new NA5HT_FACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NASer:
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNASer_OxFA = new NASer_OxFACidLipidSpectrumGenerator(); spectrum = generatorNASer_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNASer_FA = new NASer_FACidLipidSpectrumGenerator(); spectrum = generatorNASer_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NAAla: 
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNAAla_OxFA = new NAAla_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAAla_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNAAla_FA = new NAAla_FACidLipidSpectrumGenerator(); spectrum = generatorNAAla_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NAGln: 
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNAGln_OxFA = new NAGln_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAGln_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNAGln_FA = new NAGln_FACidLipidSpectrumGenerator(); spectrum = generatorNAGln_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NALeu: 
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNALeu_OxFA = new NALeu_OxFACidLipidSpectrumGenerator(); spectrum = generatorNALeu_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNALeu_FA = new NALeu_FACidLipidSpectrumGenerator(); spectrum = generatorNALeu_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //case LbmClass.NAVal: 
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNAVal_OxFA = new NAVal_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAVal_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNAVal_FA = new NAVal_FACidLipidSpectrumGenerator(); spectrum = generatorNAVal_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
+                //        var generatorNAAnt_FA = new NAAnt_FACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                //    }                
+                case LbmClass.NASer:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNASer_OxFA = new NASer_OxFACidLipidSpectrumGenerator(); spectrum = generatorNASer_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    else
+                    {
+                        var generatorNASer_FA = new NASer_FACidLipidSpectrumGenerator(); spectrum = generatorNASer_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList();
+                    }
+                    break;
+                case LbmClass.NAAla:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAAla_OxFA = new NAAla_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAAla_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    else
+                    {
+                        var generatorNAAla_FA = new NAAla_FACidLipidSpectrumGenerator(); spectrum = generatorNAAla_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                case LbmClass.NAGln:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAGln_OxFA = new NAGln_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAGln_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    else
+                    {
+                        var generatorNAGln_FA = new NAGln_FACidLipidSpectrumGenerator(); spectrum = generatorNAGln_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                case LbmClass.NALeu:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNALeu_OxFA = new NALeu_OxFACidLipidSpectrumGenerator(); spectrum = generatorNALeu_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    else
+                    {
+                        var generatorNALeu_FA = new NALeu_FACidLipidSpectrumGenerator(); spectrum = generatorNALeu_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
+                case LbmClass.NAVal:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAVal_OxFA = new NAVal_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAVal_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    else
+                    {
+                        var generatorNAVal_FA = new NAVal_FACidLipidSpectrumGenerator(); spectrum = generatorNAVal_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
+                    }
+                    break;
                 default:
                     Assert.Inconclusive("Skip");
                     return;
