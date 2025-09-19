@@ -576,15 +576,24 @@ public class LipidSpectrumGeneratorTypeGeneratorTests
                         var generatorNA5HT_FA = new NA5HT_FACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); 
                     }
                     break;
-                //case LbmClass.NAAnt:
-                //    if (lipid.Chains.OxidizedCount > 0)
-                //    {
-                //        var generatorNAAnt_OxFA = new NAAnt_OxFACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }
-                //    else
-                //    {
-                //        var generatorNAAnt_FA = new NAAnt_FACidLipidSpectrumGenerator(); spectrum = generatorNA5HT_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
-                //    }                
+                case LbmClass.NAAnt:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAAnt_OxFA = new NAAnt_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAAnt_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                    else
+                    {
+                        var generatorNAAnt_FA = new NAAnt_FACidLipidSpectrumGenerator(); spectrum = generatorNAAnt_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                case LbmClass.NAGABA:
+                    if (lipid.Chains.OxidizedCount > 0)
+                    {
+                        var generatorNAGABA_OxFA = new NAGABA_OxFACidLipidSpectrumGenerator(); spectrum = generatorNAGABA_OxFA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
+                    else
+                    {
+                        var generatorNAGABA_FA = new NAGABA_FACidLipidSpectrumGenerator(); spectrum = generatorNAGABA_FA.Generate((Lipid)lipid, reference.AdductType)?.OrderBy(s => s.Mass).ToList(); break;
+                    }
                 case LbmClass.NASer:
                     if (lipid.Chains.OxidizedCount > 0)
                     {

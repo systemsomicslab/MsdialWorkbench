@@ -1764,6 +1764,36 @@
 			<LbmClass>NAVal</LbmClass>
 		</LbmClasses>
 	</Lipid>
-
-
+	<Lipid>
+		<Name>NAAnt</Name>
+		<Abbreviation>NAAnt</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>7</Carbon>
+			<Hydrogen>6</Hydrogen>
+			<Oxygen>2</Oxygen>
+			<Nitrogen>1</Nitrogen>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>NAAnt</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>NAGABA</Name>
+		<Abbreviation>NAGABA</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>4</Carbon>
+			<Hydrogen>8</Hydrogen>
+			<Oxygen>2</Oxygen>
+			<Nitrogen>1</Nitrogen>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>NAGABA</LbmClass>
+		</LbmClasses>
+	</Lipid>
 </Lipids>

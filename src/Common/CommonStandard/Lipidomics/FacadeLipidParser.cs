@@ -186,6 +186,8 @@ namespace CompMs.Common.Lipidomics
                         new NATryA_FAHFALipidParser(),
                         new NAGly_FAHFALipidParser(),
                         new NAGlySer_FAHFALipidParser(),
+                        new NAAntLipidParser(),
+                        new NAGABALipidParser(),
 
 
 

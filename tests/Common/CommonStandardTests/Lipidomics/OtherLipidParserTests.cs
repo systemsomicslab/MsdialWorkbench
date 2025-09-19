@@ -307,29 +307,34 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()] public class NAOrnLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NAOrnLipidParser(); var lipid = parser.Parse("NAOrn 18:1"); Assert.AreEqual(396.33519326799995, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NAOrn, lipid.LipidClass); } }
     [TestClass()] public class NATauLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NATauLipidParser(); var lipid = parser.Parse("NATau 18:1"); Assert.AreEqual(389.259979728, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NATau, lipid.LipidClass); } }
     [TestClass()] public class NAPheLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NAPheLipidParser(); var lipid = parser.Parse("NAPhe 18:1"); Assert.AreEqual(429.324294236, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NAPhe, lipid.LipidClass); } }
-    [TestClass()] 
+    [TestClass()]
     public class NATryALipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NATryALipidParser(); var lipid = parser.Parse("NATryA 18:1"); Assert.AreEqual(424.34536402799995, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NATryA, lipid.LipidClass); } }
-    [TestClass()] 
-    public class NA5HTLipidParserTests {
-        [TestMethod()] 
-        public void ParseTest() { var parser = new NA5HTLipidParser(); var lipid = parser.Parse("NA5HT 18:1");//O=C(NCCC1=CNC=2C=CC(O)=CC21)CCCCCCCC=CCCCCCCCC
-            Assert.AreEqual(440.340278648, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NA5HT, lipid.LipidClass); } }
+    [TestClass()]
+    public class NA5HTLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new NA5HTLipidParser(); var lipid = parser.Parse("NA5HT 18:1");//O=C(NCCC1=CNC=2C=CC(O)=CC21)CCCCCCCC=CCCCCCCCC
+            Assert.AreEqual(440.340278648, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NA5HT, lipid.LipidClass);
+        }
+    }
     [TestClass()] public class NASerLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NASerLipidParser(); var lipid = parser.Parse("NASer 18:1"); Assert.AreEqual(369.28790872800005, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NASer, lipid.LipidClass); } }
     [TestClass()] public class NAAlaLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NAAlaLipidParser(); var lipid = parser.Parse("NAAla 18:1"); Assert.AreEqual(353.292994108, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NAAla, lipid.LipidClass); } }
     [TestClass()] public class NAGlnLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NAGlnLipidParser(); var lipid = parser.Parse("NAGln 18:1"); Assert.AreEqual(410.314457824, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NAGln, lipid.LipidClass); } }
     [TestClass()] public class NALeuLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NALeuLipidParser(); var lipid = parser.Parse("NALeu 18:1"); Assert.AreEqual(395.3399443, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NALeu, lipid.LipidClass); } }
     [TestClass()] public class NAValLipidParserTests { [TestMethod()] public void ParseTest() { var parser = new NAValLipidParser(); var lipid = parser.Parse("NAVal 18:1"); Assert.AreEqual(381.324294236, lipid.Mass, 0.01); Assert.AreEqual(LbmClass.NAVal, lipid.LipidClass); } }
-    [TestClass()] 
-    public class NAOrn_FAHFALipidParserTests 
-    { 
-        [TestMethod()] 
-        public void ParseTest() 
-        { 
+    [TestClass()]
+    public class NAOrn_FAHFALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
             var parser = new NAOrn_FAHFALipidParser();
-            var lipid = parser.Parse("NAOrn 18:1;O(FA 16:0)"); 
+            var lipid = parser.Parse("NAOrn 18:1;O(FA 16:0)");
             Assert.AreEqual(650.5598, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.NAOrn, lipid.LipidClass); 
-        } 
+            Assert.AreEqual(LbmClass.NAOrn, lipid.LipidClass);
+        }
     }
     [TestClass()]
     public class NAGly_FAHFALipidParserTests
@@ -365,6 +370,31 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = parser.Parse("NATryA 18:1;O(FA 16:0)");
             Assert.AreEqual(678.5699, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.NATryA, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class NAGABALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new NAGABALipidParser();
+            var lipid = parser.Parse("NAGABA 18:1");
+            Assert.AreEqual(367.3086, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.NAGABA, lipid.LipidClass);
+        }
+    }
+
+    [TestClass()]
+    public class NAAntLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new NAAntLipidParser();
+            var lipid = parser.Parse("NAAnt 18:1");
+            Assert.AreEqual(401.2930, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.NAAnt, lipid.LipidClass);
         }
     }
 }

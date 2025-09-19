@@ -466,6 +466,8 @@
   <LipidDefinition><Name>NAGlySer_FAHFA</Name><Chain>2</Chain></LipidDefinition>
   <LipidDefinition><Name>NAOrn_FAHFA</Name><Chain>2</Chain></LipidDefinition>
   <LipidDefinition><Name>NATryA_FAHFA</Name><Chain>2</Chain></LipidDefinition>	
+  <LipidDefinition><Name>NAGABA_FA</Name><Chain>1</Chain></LipidDefinition>
+  <LipidDefinition><Name>NAGABA_OxFA</Name><Chain>1</Chain></LipidDefinition>
   <LipidMSs>
     <LipidMS>
       <LipidClass>AAHFA</LipidClass>
@@ -15449,7 +15451,7 @@
         </Precursors>
       <ChainIons>
         <ChainIon>
-          <MZ>SN1Acyl+H-Proton</MZ>
+          <MZ>SN1Acyl-H-Proton</MZ>
           <Intensity>150</Intensity>
           <Comment>Acyl-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
@@ -15485,7 +15487,7 @@
     <LipidMS>
       <LipidClass>NAAnt_OxFA</LipidClass>
       <LSILevel>MSL</LSILevel>
-      <Adduct>None</Adduct>
+      <Adduct>[M-H]-</Adduct>
       <Precursors>
         <Precursor>
           <MZ>M-Proton</MZ>
@@ -15496,7 +15498,7 @@
         </Precursors>
       <ChainIons>
         <ChainIon>
-          <MZ>SN1Acyl+H-Proton</MZ>
+          <MZ>SN1Acyl-H-Proton</MZ>
           <Intensity>150</Intensity>
           <Comment>Acyl-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
@@ -15522,6 +15524,166 @@
           <PI>C6H8N</PI>
           <Intensity>999</Intensity>
           <Comment>benzene+NH2-H//92</Comment>
+          </ClassIon>
+        </ClassIons>
+      </LipidMS>
+    </LipidMSs>
+  <LipidMSs>
+    <LipidMS>
+      <LipidClass>NAGABA_FA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M+H]+</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M+Proton</MZ>
+          <Intensity>200</Intensity>
+          <Comment>[M+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons />
+      <ClassIons>
+        <ClassIon>
+          <MZ>PI+Proton</MZ>
+          <PI>C4H9NO2</PI>
+          <Intensity>200</Intensity>
+          <Comment>[GABA]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>PI+Proton</MZ>
+          <PI>C4H7NO</PI>
+          <Intensity>999</Intensity>
+          <Comment>[C4H8NO]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        </ClassIons>
+      </LipidMS>
+    <LipidMS>
+      <LipidClass>NAGABA_FA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M-H]-</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M-Proton</MZ>
+          <Intensity>600</Intensity>
+          <Comment>[M-H]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons>
+        <ChainIon>
+          <MZ>SN1Acyl-Proton+NH2</MZ>
+          <Intensity>200</Intensity>
+          <Comment>[FAA]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        </ChainIons>
+      <ClassIons>
+        <ClassIon>
+          <MZ>PI-Proton</MZ>
+          <PI>C4H9NO2</PI>
+          <Intensity>999</Intensity>
+          <Comment>[GABA]-//102</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>PI-Proton</MZ>
+          <PI>C4H7NO</PI>
+          <Intensity>100</Intensity>
+          <Comment>[C4H6NO]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>M-Proton-NL</MZ>
+          <NL>CO2</NL>
+          <Intensity>400</Intensity>
+          <Comment>[M-CO2-H]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        </ClassIons>
+      </LipidMS>
+    </LipidMSs>
+  <LipidMSs>
+    <LipidMS>
+      <LipidClass>NAGABA_OxFA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M+H]+</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M+Proton</MZ>
+          <Intensity>200</Intensity>
+          <Comment>[M+H]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons />
+      <ClassIons>
+        <ClassIon>
+          <MZ>PI+Proton</MZ>
+          <PI>C4H9NO2</PI>
+          <Intensity>200</Intensity>
+          <Comment>[GABA]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>PI+Proton</MZ>
+          <PI>C4H7NO</PI>
+          <Intensity>999</Intensity>
+          <Comment>[C4H8NO]+</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>M+Proton-NL</MZ>
+          <NL>H2O</NL>
+          <Intensity>100</Intensity>
+          <Comment>[M+H-H2O]+</Comment>
+          </ClassIon>
+        </ClassIons>
+      </LipidMS>
+    <LipidMS>
+      <LipidClass>NAGABA_OxFA</LipidClass>
+      <LSILevel>MSL</LSILevel>
+      <Adduct>[M-H]-</Adduct>
+      <Precursors>
+        <Precursor>
+          <MZ>M-Proton</MZ>
+          <Intensity>600</Intensity>
+          <Comment>[M-H]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </Precursor>
+        </Precursors>
+      <ChainIons>
+        <ChainIon>
+          <MZ>SN1Acyl-Proton+NH2</MZ>
+          <Intensity>200</Intensity>
+          <Comment>[FAA]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        </ChainIons>
+      <ClassIons>
+        <ClassIon>
+          <MZ>PI-Proton</MZ>
+          <PI>C4H9NO2</PI>
+          <Intensity>999</Intensity>
+          <Comment>[GABA]-//102</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>PI-Proton</MZ>
+          <PI>C4H7NO</PI>
+          <Intensity>100</Intensity>
+          <Comment>[C4H6NO]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
+          </ClassIon>
+        <ClassIon>
+          <MZ>M-Proton-NL</MZ>
+          <NL>CO2</NL>
+          <Intensity>400</Intensity>
+          <Comment>[M-CO2-H]-</Comment>
+          <IsDiagnostic>1</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       </LipidMS>

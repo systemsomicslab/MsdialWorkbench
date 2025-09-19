@@ -2764,4 +2764,56 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 	}
+
+    public class NAAntLipidParser : ILipidParser {
+        public string Target { get; } = "NAAnt";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(1);
+        public static readonly string Pattern = $"^NAAnt\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 7,
+            MassDiffDictionary.HydrogenMass * 6,
+            MassDiffDictionary.OxygenMass * 2,
+            MassDiffDictionary.NitrogenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.NAAnt, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class NAGABALipidParser : ILipidParser {
+        public string Target { get; } = "NAGABA";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(1);
+        public static readonly string Pattern = $"^NAGABA\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 4,
+            MassDiffDictionary.HydrogenMass * 8,
+            MassDiffDictionary.OxygenMass * 2,
+            MassDiffDictionary.NitrogenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.NAGABA, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
 }
