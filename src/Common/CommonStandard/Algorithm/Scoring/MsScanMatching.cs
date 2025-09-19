@@ -2212,6 +2212,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -3844,8 +3847,26 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20230630
+                case LbmClass.NATryA:
+                    if (totalCarbon < 29)
+                    {
+                        return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                case LbmClass.NAGABA:
+                    return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
 
                 default:

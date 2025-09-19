@@ -913,6 +913,12 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+>>>>>>>>> Temporary merge branch 2
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+>>>>>>>>> Temporary merge branch 2
                     case LbmClass.NA5HT:
                         result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -942,10 +948,30 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
+                    case LbmClass.NAAnt:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                     case LbmClass.BisMeLPA:
                         result = LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
+                    //20230630
+                    case LbmClass.NATryA:
+                        if (totalCarbon < 29)
+                        {
+                            return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                        }
+                        else
+                        {
+                            return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        }
+                    case LbmClass.NAGABA:
+                        return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+
                     default:
                         return null;
                 }
