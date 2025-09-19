@@ -3821,9 +3821,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 //20230612
-                case LbmClass.NATryA:
-                    return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -3858,7 +3855,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                     if (totalCarbon < 29)
                     {
                         return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
                     else
                     {
