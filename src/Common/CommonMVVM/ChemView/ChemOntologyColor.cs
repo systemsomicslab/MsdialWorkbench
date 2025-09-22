@@ -2767,6 +2767,8 @@ namespace CompMs.CommonMVVM.ChemView {
             { "NALeu", Color.FromArgb(180,215, 63, 150)},
             { "NAVal", Color.FromArgb(180,215, 33, 70)},
             { "NASer", Color.FromArgb(180,215, 33, 100)},
+            { "NAAnt", Color.FromArgb(180,215, 66, 100)},
+            { "NAGABA", Color.FromArgb(180,215, 123, 100)},
             { "WE", Color.FromArgb(180,215, 29, 100) },
             { "GM3", Color.FromArgb(180, 168, 0, 47) },
             { "GD1a", Color.FromArgb(180, 158, 0, 47) },
