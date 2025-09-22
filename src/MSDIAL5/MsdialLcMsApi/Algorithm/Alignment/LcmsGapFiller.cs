@@ -87,7 +87,6 @@ public class LcmsGapFiller : IGapFiller
 
     private (int id, int leftId, int rightId) GetNearestPeak(Chromatogram chromatogram, double centralAx) {
         var nearestTopId = -1;
-        var minId = chromatogram.Length / 2;
 
         for (int i = 0; i < chromatogram.Length; i++) {
             if (i - 2 < 0 || i + 2 >= chromatogram.Length) continue;
@@ -99,15 +98,16 @@ public class LcmsGapFiller : IGapFiller
                     || Math.Abs(chromatogram.Time(nearestTopId) - centralAx) > Math.Abs(chromatogram.Time(i) - centralAx))) {
                 nearestTopId = i;
             }
-
-            var diff = Math.Abs(chromatogram.Time(i) - centralAx);
-            if (diff < Math.Abs(chromatogram.Time(minId) - centralAx)) {
-                minId = i;
-            }
         }
 
         if (nearestTopId == -1) {
             if (!_isForceInsert) return (-1, -1, -1);
+
+            var minId = chromatogram.SearchNearestPoint(new RetentionTime(centralAx));
+            if (minId < 0) {
+                minId = chromatogram.Length / 2;
+            }
+
             var range = 5;
 
             var leftId = Math.Max(minId - 1, 0);

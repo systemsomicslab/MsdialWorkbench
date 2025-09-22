@@ -350,11 +350,35 @@ namespace CompMs.Common.Components
             return top + SearchNearestPoint(right, _peaks.Take(_size).Skip(top));
         }
 
+        public int SearchNearestPoint(IChromX chrom) {
+            var target = chrom.Value;
+            return SearchNearestPoint(chrom, _peaks);
+        }
+
         private int SearchNearestPoint(ChromXs chrom, IEnumerable<ValuePeak> peaklist) {
-            var target = chrom.GetChromByType(_type).Value;
-            return peaklist
-                .Select(peak => Math.Abs(peak.Time - target))
-                .Argmin();
+            return SearchNearestPoint(chrom.GetChromByType(_type), peaklist);
+        }
+
+        private int SearchNearestPoint(IChromX chrom, IEnumerable<ValuePeak> peaklist) {
+            if (peaklist is null) {
+                return -1;
+            }
+
+            double target = chrom.Value;
+            double minDistance = double.MaxValue;
+            int nearestIndex = -1;
+            int index = 0;
+
+            foreach (var peak in peaklist) {
+                double distance = Math.Abs(peak.Time - target);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestIndex = index;
+                }
+                index++;
+            }
+
+            return nearestIndex;
         }
 
         private int FindHighestIntensity(int start, int end, int defaultId) {
