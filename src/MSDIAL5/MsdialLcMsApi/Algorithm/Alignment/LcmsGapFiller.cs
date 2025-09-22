@@ -109,44 +109,16 @@ public class LcmsGapFiller : IGapFiller
             }
 
             var range = 5;
+            var leftId = chromatogram.SearchLeftEdge(Math.Max(minId - 1, 0), Math.Max(minId - range, 0));
+            var rightId = chromatogram.SearchRightEdge(Math.Min(minId + 1, chromatogram.Length - 1), Math.Min(minId + range, chromatogram.Length - 1));
 
-            var leftId = Math.Max(minId - 1, 0);
-            var limit = Math.Max(minId - range, 0);
-            while (limit < leftId) {
-                if (chromatogram.Intensity(leftId - 1) > chromatogram.Intensity(leftId)) {
-                    break;
-                }
-                --leftId;
-            }
-
-            var rightId = Math.Min(minId + 1, chromatogram.Length - 1);
-            limit = Math.Min(minId + range, chromatogram.Length - 1);
-            while (rightId < limit) {
-                if (chromatogram.Intensity(rightId) < chromatogram.Intensity(rightId + 1)) {
-                    break;
-                }
-                ++rightId;
-            }
             return (id: minId, leftId, rightId);
         }
         else {
             var margin = 2;
 
-            int leftId = Math.Max(nearestTopId - margin, 0);
-            while (0 < leftId) {
-                if (chromatogram.Intensity(leftId - 1) >= chromatogram.Intensity(leftId)) {
-                    break;
-                }
-                --leftId;
-            }
-
-            int rightId = Math.Min(nearestTopId + margin, chromatogram.Length - 1);
-            while (rightId < chromatogram.Length - 1) {
-                if (chromatogram.Intensity(rightId) <= chromatogram.Intensity(rightId + 1)) {
-                    break;
-                }
-                ++rightId;
-            }
+            var leftId = chromatogram.SearchLeftEdgeHard(Math.Max(nearestTopId - margin, 0), 0);
+            var rightId = chromatogram.SearchRightEdgeHard(Math.Min(nearestTopId + margin, chromatogram.Length - 1), chromatogram.Length - 1);
 
             if (!_isForceInsert && (nearestTopId - leftId < 2 || rightId - nearestTopId < 2)) {
                 return (-1, -1, -1);
@@ -154,7 +126,7 @@ public class LcmsGapFiller : IGapFiller
 
             int id = nearestTopId;
             for(int i = leftId + 1; i <= rightId - 1; i++) {
-                if (chromatogram.IsPeakTop(i) && chromatogram.Intensity(id) < chromatogram.Intensity(i)) {
+                if (chromatogram.IsPeakTop(i) && chromatogram.IntensityDifference(id, i) < 0d) {
                     id = i;
                 }
             }

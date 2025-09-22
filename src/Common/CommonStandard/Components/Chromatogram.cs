@@ -350,10 +350,84 @@ namespace CompMs.Common.Components
             return top + SearchNearestPoint(right, _peaks.Take(_size).Skip(top));
         }
 
-        public int SearchNearestPoint(IChromX chrom) {
-            var target = chrom.Value;
-            return SearchNearestPoint(chrom, _peaks);
+        /// <summary>
+        /// Continues searching to the left as long as the intensity decreases.
+        /// </summary>
+        /// <param name="startID">The starting index for the search.</param>
+        /// <param name="leftLimitID">The left boundary index (inclusive) where the search stops.</param>
+        /// <returns>The index of the leftmost point where the intensity stops decreasing.</returns>
+        public int SearchLeftEdge(int startID, int leftLimitID) {
+            var leftID = Math.Max(startID, 0);
+            leftLimitID = Math.Max(leftLimitID, 0);
+            while (leftLimitID < leftID) {
+                if (_peaks[leftID - 1].Intensity > _peaks[leftID].Intensity) {
+                    break;
+                }
+                --leftID;
+            }
+            return leftID;
         }
+
+        public int SearchLeftEdgeHard(int startID, int leftLimitID) {
+            var leftID = Math.Max(startID, 0);
+            leftLimitID = Math.Max(leftLimitID, 0);
+            while (leftLimitID < leftID) {
+                if (_peaks[leftID - 1].Intensity >= _peaks[leftID].Intensity) {
+                    break;
+                }
+                --leftID;
+            }
+            return leftID;
+        }
+
+        /// <summary>
+        /// Searches for the right edge of a peak in the chromatogram, starting from a specified index
+        /// and stopping at a specified limit. The right edge is identified as the point where the intensity
+        /// starts to increase.
+        /// </summary>
+        /// <param name="startID">The zero-based index to start the search from.</param>
+        /// <param name="rightLimitID">The zero-based index of the right boundary where the search stops.</param>
+        /// <returns>The zero-based index of the right edge of the peak.</returns>
+        /// <remarks>
+        /// This method iterates through the chromatogram peaks starting from the specified `startID` and
+        /// stops when it encounters a peak with an intensity greater than the current peak's intensity.
+        /// The search is bounded by the `rightLimitID` to ensure it does not exceed the specified range.
+        /// </remarks>
+        public int SearchRightEdge(int startID, int rightLimitID) {
+            var rightID = Math.Min(startID, Length - 1);
+            var limit = Math.Min(rightLimitID, Length - 1);
+            while (rightID < limit) {
+                if (_peaks[rightID].Intensity < _peaks[rightID + 1].Intensity) {
+                    break;
+                }
+                ++rightID;
+            }
+            return rightID;
+        }
+
+        public int SearchRightEdgeHard(int startID, int rightLimitID) {
+            var rightID = Math.Min(startID, Length - 1);
+            var limit = Math.Min(rightLimitID, Length - 1);
+            while (rightID < limit) {
+                if (_peaks[rightID].Intensity <= _peaks[rightID + 1].Intensity) {
+                    break;
+                }
+                ++rightID;
+            }
+            return rightID;
+        }
+
+        /// <summary>
+        /// Searches for the nearest point in the chromatogram to the specified chromatographic value.
+        /// </summary>
+        /// <param name="chrom">The chromatographic value (e.g., Retention Time (RT), Retention Index (RI), or Drift Time).</param>
+        /// <returns>The index of the nearest point in the chromatogram to the specified value.</returns>
+        /// <remarks>
+        /// This method identifies the index of the chromatogram peak that is closest to the given chromatographic value.
+        /// Chromatographic values can represent parameters such as Retention Time (RT), Retention Index (RI), or Drift Time,
+        /// depending on the chromatogram's context.
+        /// </remarks>
+        public int SearchNearestPoint(IChromX chrom) => SearchNearestPoint(chrom, _peaks);
 
         private int SearchNearestPoint(ChromXs chrom, IEnumerable<ValuePeak> peaklist) {
             return SearchNearestPoint(chrom.GetChromByType(_type), peaklist);
