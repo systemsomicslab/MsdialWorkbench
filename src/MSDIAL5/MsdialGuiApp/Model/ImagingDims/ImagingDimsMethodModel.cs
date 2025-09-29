@@ -64,6 +64,9 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         var stopwatch = Stopwatch.StartNew();
 
         var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
+
+        //var dimsprovider = _storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+
         if (option.HasFlag(ProcessOption.Identification)) {
             var queryFatoires = _storage.CreateAnnotationQueryFactoryStorage();
             var annotationProcess = new StandardAnnotationProcess(queryFatoires.MoleculeQueryFactories, _evaluator, _storage.DataBaseMapper);
