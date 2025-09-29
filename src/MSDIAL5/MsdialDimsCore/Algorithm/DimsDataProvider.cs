@@ -100,9 +100,11 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
 
         private static List<RawSpectrum> AccumulateRawSpectrums(RawSpectrum[] spectrums, double massTolerance) {
+            var targetmz4ppmcalc = 200.0;
+            double ppmTolerance = (massTolerance / targetmz4ppmcalc) * 1_000_000;
             var ms1Spectrums = spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
             var groups = ms1Spectrums.SelectMany(spectrum => spectrum.Spectrum)
-                .GroupBy(peak => (int)(peak.Mz / massTolerance));
+                .GroupBy(peak => (int)(peak.Mz * 1_000_000 / ppmTolerance));
             var massBins = new Dictionary<int, double[]>();
             foreach (var group in groups) {
                 var peaks = group.ToList();
