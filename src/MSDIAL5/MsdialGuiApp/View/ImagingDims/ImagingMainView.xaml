@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.ImagingImms.ImagingMainView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.ImagingDims.ImagingMainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,15 +7,15 @@
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:info="clr-namespace:CompMs.App.Msdial.View.Information"
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.ImagingImms"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.ImagingDims"
              xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imaging"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingDims"
              xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:infovm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingImmsMainViewModel}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingDimsMainViewModel}}"
              d:Background="White"
              d:DesignHeight="780" d:DesignWidth="1280">
     <UserControl.Resources>
@@ -48,7 +48,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <DataTemplate DataType="{x:Type vm:ImagingImmsMainViewModel}" x:Key="ImageSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingDimsMainViewModel}" x:Key="ImageSelector">
                 <GroupBox Header="Images" Style="{StaticResource GroupBoxHeader}">
                     <ListBox ItemsSource="{Binding ImageViewModels}"
                              SelectedItem="{Binding SelectedImageViewModel}"
@@ -56,7 +56,7 @@
                              IsSynchronizedWithCurrentItem="True"/>
                 </GroupBox>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:ImagingImmsImageViewModel}" x:Key="RoiSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingDimsImageViewModel}" x:Key="RoiSelector">
                 <GroupBox Header="ROIs" Style="{StaticResource GroupBoxHeader}">
                     <ItemsControl ItemsSource="{Binding RoiViewModels}">
                         <ItemsControl.ItemTemplate>
@@ -88,7 +88,7 @@
                                         </Rectangle>
                                     </StackPanel>
                                     <ToggleButton x:Name="EditButton" Content="&#xED63;" FontFamily="Segoe MDL2 Assets" Margin="4,2" Background="White"/>
-                                    <Button Command="{Binding DataContext.(vm:ImagingImmsImageViewModel.RemoveRoiCommand), Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    <Button Command="{Binding DataContext.(vm:ImagingDimsImageViewModel.RemoveRoiCommand), Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding Model}"
                                             Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
                                             Margin="4,2" Background="White"/>
@@ -112,7 +112,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <local:ImmsImagingRibbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"/>
+        <local:DimsImagingRibbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"/>
 
         <Grid Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -131,22 +131,12 @@
         </Grid>
 
         <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="240"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
-            <search:PeakSpotNavigatorView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.PeakSpotNavigatorViewModel}"
-                                          Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
-            <chart:SurveyScanView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.SurveyScanViewModel}"
-                                  Grid.Row="2" Grid.Column="0"/>
-
-            <TabControl Grid.Row="0" Grid.Column="1">
+            <TabControl Grid.Row="0">
                 <TabItem Header="ROI intensities">
                     <Grid Margin="8,24,8,8">
                         <Grid.Resources>
@@ -217,7 +207,7 @@
                     <chart:EicView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.EicViewModel}"/>
                 </TabItem>
             </TabControl>
-            <Grid Grid.Row="1" Grid.Column="1">
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
@@ -250,9 +240,6 @@
                 <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
                                 Grid.Row="1"/>
             </Grid>
-            <GridSplitter Width="2" Foreground="Gray"
-                          VerticalAlignment="Stretch" HorizontalAlignment="Left"
-                          Grid.RowSpan="2" Grid.Column="1"/>
             <GridSplitter Height="2" Foreground="Gray"
                           VerticalAlignment="Top" HorizontalAlignment="Stretch"
                           Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>

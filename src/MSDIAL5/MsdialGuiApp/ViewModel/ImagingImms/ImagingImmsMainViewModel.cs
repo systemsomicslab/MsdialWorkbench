@@ -26,13 +26,13 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model,
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
-                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
-                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
+                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>()),
+                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>())) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
             var focusManager = new FocusControlManager().AddTo(Disposables);
             ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, peakSpotTableService)).AddTo(Disposables);
-            RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
+            RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>([]);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExporModel.ExportAsync).AddTo(Disposables);
         }
 
@@ -65,9 +65,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
 
         private void ExportAnalysis() {
             var m = _model.CreateExportAnalysisModel();
-            using (var vm = new AnalysisResultExportViewModel(m)) {
-                _broker.Publish(vm);
-            }
+            using var vm = new AnalysisResultExportViewModel(m);
+            _broker.Publish(vm);
         }
     }
 }
