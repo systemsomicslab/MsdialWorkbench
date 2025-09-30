@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 tasks.Add(Task.Run(async () => {
                     await sem.WaitAsync().ConfigureAwait(false);
                     try {
-                        await ints.SaveAsync(writer);
+                        await ints.SaveAsync(writer, skipUnknownPeaks: true, token: token);
                     }
                     finally {
                         sem.Release();

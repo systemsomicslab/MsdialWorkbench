@@ -96,7 +96,7 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
             tasks.Add(Task.Run(async () => {
                 await sem.WaitAsync().ConfigureAwait(false);
                 try {
-                    await ints.SaveAsync(writer);
+                    await ints.SaveAsync(writer, skipUnknownPeaks: false, token: token);
                 }
                 finally {
                     sem.Release();
