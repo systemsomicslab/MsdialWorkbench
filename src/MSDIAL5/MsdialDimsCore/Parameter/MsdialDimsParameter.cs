@@ -5,8 +5,8 @@ using MessagePack;
 namespace CompMs.MsdialDimsCore.Parameter {
     [MessagePackObject]
     public class MsdialDimsParameter : ParameterBase {
-        public MsdialDimsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
-            this.MachineCategory = MachineCategory.IFMS;
+        public MsdialDimsParameter(bool isImaging, bool isLabUseOnly) : base(isLabUseOnly) {
+            this.MachineCategory = isImaging ? MachineCategory.IDIMS : MachineCategory.IFMS;
 
             MspSearchParam.WeightedDotProductCutOff = 0.1f;
             MspSearchParam.SimpleDotProductCutOff = 0.1f;
@@ -16,7 +16,7 @@ namespace CompMs.MsdialDimsCore.Parameter {
         }
 
         [SerializationConstructor]
-        public MsdialDimsParameter() : this(isLabUseOnly: false) {
+        public MsdialDimsParameter() : this(isImaging: false, isLabUseOnly: false) {
 
         }
 

@@ -230,6 +230,11 @@
                               xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.ImagingImms">
                     <iimvw:ImagingMainView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type idivm:ImagingDimsMainViewModel}"
+                              xmlns:idivm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingDims"
+                              xmlns:idivw="clr-namespace:CompMs.App.Msdial.View.ImagingDims">
+                    <idivw:ImagingMainView/>
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
 
