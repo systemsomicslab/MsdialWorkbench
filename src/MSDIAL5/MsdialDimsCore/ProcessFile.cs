@@ -43,7 +43,6 @@ public sealed class ProcessFile : IFileProcessor {
         Console.WriteLine("Loading spectral information");
         var provider = _providerFactory.Create(file);
 
-         
         var (peakFeatures, msdecResults) = option.HasFlag(ProcessOption.PeakSpotting)
             ? await FindPeaksAndScans(file, parameter, provider, progress, token).ConfigureAwait(false)
             : await LoadPeaksAndScans(file, provider, token).ConfigureAwait(false);
