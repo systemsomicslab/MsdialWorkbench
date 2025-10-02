@@ -107,11 +107,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.QuantMass, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.QuantMass),
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             switch (parameter.AlignmentIndexType) {
@@ -209,7 +209,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(spotsSource.Spots!.Items, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, UndoManager).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
-            peakInformationModel.Add(t => new QuantMassPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
+            peakInformationModel.Add(t => new QuantMassPoint(t?.QuantMass ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
@@ -259,14 +259,14 @@ namespace CompMs.App.Msdial.Model.Gcms
                     timeSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, _rt_tol, target.DefaultIfNull(t => t.TimesCenter), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
                     break;
             }
-            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, _mz_tol, target.DefaultIfNull(t => t.MassCenter), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, _mz_tol, target.DefaultIfNull(t => t.QuantMass), "F3", "Quant mass", isItalic: true).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
                 target,
                 id => spotsSource.Spots!.Items.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 target.DefaultIfNull(t => (double)t.MasterAlignmentID),
                 "ID",
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(timeSpotFocus, spot => spot.TimesCenter),
-                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
+                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.QuantMass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, spotsSource.Spots.Items, evaluator, files, classBrush).AddTo(Disposables);
