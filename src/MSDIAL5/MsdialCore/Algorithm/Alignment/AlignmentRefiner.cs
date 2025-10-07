@@ -89,20 +89,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
                 spot.PeakCharacter.IsotopeWeightNumber = 0;
             }
-            //foreach (var spot in alignmentSpots) {
-            //    spot.PeakCharacter.IsotopeParentPeakID = -1;
-            //    spot.PeakCharacter.IsotopeWeightNumber = -1;
-            //    if (_param.TrackingIsotopeLabels || spot.IsReferenceMatched(evaluator)) {
-            //        spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
-            //        spot.PeakCharacter.IsotopeWeightNumber = 0;
-            //    }
-            //    if (!spot.IsReferenceMatched(evaluator) && !spot.IsAnnotationSuggested(evaluator)) {
-            //        spot.SetAdductType(AdductIon.Default);
-            //    }
-            //}
-            //if (_param.TrackingIsotopeLabels) return;
-
-            //IsotopeEstimator.Process(alignmentSpots, _param, _iupac);
         }
 
         private void SetStatProperty(List<AlignmentSpotProperty> alignments) {
