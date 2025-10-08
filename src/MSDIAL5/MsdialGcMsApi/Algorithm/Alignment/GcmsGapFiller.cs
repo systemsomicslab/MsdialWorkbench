@@ -63,6 +63,19 @@ public abstract class GcmsGapFiller : IGapFiller
         GapFillCore(peaklist, chromXCenter, AxTol, target);
     }
 
+    public void UpdateQuantMass(RawSpectra rawSpectra, AlignmentSpotProperty spot, int fileID) {
+        var peaks = spot.AlignedPeakProperties;
+        var detected = peaks.Where(peak => peak.PeakID >= 0).ToArray();
+
+        var target = peaks.First(peak => peak?.FileID == fileID);
+
+        var chromXCenter = GetCenter(spot, detected);
+        chromXCenter.Mz = new MzValue(spot.QuantMass); // use user selected quant mass value
+        var peakWidth = GetPeakWidth(detected);
+        var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
+        GapFillCore(peaklist, chromXCenter, AxTol, target);
+    }
+
     protected abstract ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
     protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
     protected abstract List<ChromatogramPeak> GetPeaks(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
