@@ -216,7 +216,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunAlignment() {
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm => {
-                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage)
+                    var factory = new GcmsAlignmentProcessFactory(_storage)
                     {
                         Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };

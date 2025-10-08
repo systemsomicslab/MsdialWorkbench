@@ -14,40 +14,26 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 
 public abstract class GcmsGapFiller : IGapFiller
 {
-    private readonly List<AnalysisFileBean> _files;
-    private readonly MsdialGcmsParameter _param;
-    protected readonly AlignmentIndexType indexType;
-    private List<MoleculeMsReference> _mspDB;
-    private readonly bool _isRepresentativeQuantMassBasedOnBasePeakMz;
+    private readonly MsdialGcmsParameter _parameter;
     protected readonly SmoothingMethod _smoothingMethod;
     protected readonly int _smoothingLevel;
     protected readonly bool _isForceInsert; 
 
     protected abstract double AxTol { get; }
 
-    private bool IsReplaceMode => !_mspDB.IsEmptyOrNull();
-    private int Bin => _param?.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
+    private int Bin => _parameter?.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
 
-    public GcmsGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param) {
-        _files = files;
-        _mspDB = mspDB;
-        _param = param;
-        _isRepresentativeQuantMassBasedOnBasePeakMz = param.IsRepresentativeQuantMassBasedOnBasePeakMz;
+    public GcmsGapFiller(MsdialGcmsParameter parameter) {
+        _parameter = parameter;
 
-        indexType = param.AlignmentIndexType;
-
-        _smoothingMethod = param.SmoothingMethod;
-        _smoothingLevel = param.SmoothingLevel;
-        _isForceInsert = param.IsForceInsertForGapFilling;
+        _smoothingMethod = parameter.SmoothingMethod;
+        _smoothingLevel = parameter.SmoothingLevel;
+        _isForceInsert = parameter.IsForceInsertForGapFilling;
     }
 
     public bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
         var peak = spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId);
         return peak.Mass != spot.QuantMass;
-    }
-
-    protected static SpectrumPeak GetBasePeak(List<SpectrumPeak> spectrum) {
-        return spectrum.Argmax(peak => peak.Intensity);
     }
 
     public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
@@ -70,7 +56,6 @@ public abstract class GcmsGapFiller : IGapFiller
         var target = peaks.First(peak => peak?.FileID == fileID);
 
         var chromXCenter = GetCenter(spot, detected);
-        chromXCenter.Mz = new MzValue(spot.QuantMass); // use user selected quant mass value
         var peakWidth = GetPeakWidth(detected);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
         GapFillCore(peaklist, chromXCenter, AxTol, target);
@@ -79,7 +64,8 @@ public abstract class GcmsGapFiller : IGapFiller
     protected abstract ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
     protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
     protected abstract List<ChromatogramPeak> GetPeaks(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
-    protected float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
+
+    private float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
         return peaks.Max(n => n.PeakShape.EstimatedNoise);
     }
 
@@ -250,13 +236,13 @@ public class GcmsRTGapFiller : GcmsGapFiller
     private readonly MsdialGcmsParameter _parameter;
 
 
-    private readonly double rtTol;
+    private readonly double _rtTol;
     private readonly Dictionary<int, RetentionIndexHandler> _fileIdToHandler;
-    protected override double AxTol => rtTol;
+    protected override double AxTol => _rtTol;
 
-    public GcmsRTGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) : base(files, mspDB, parameter) {
+    public GcmsRTGapFiller(MsdialGcmsParameter parameter) : base(parameter) {
         _parameter = parameter;
-        rtTol = parameter.RetentionTimeAlignmentTolerance;
+        _rtTol = parameter.RetentionTimeAlignmentTolerance;
         _fileIdToHandler = parameter.GetRIHandlers();
     }
 
@@ -313,7 +299,7 @@ public class GcmsRIGapFiller : GcmsGapFiller
 
     protected override double AxTol => _riTol;
 
-    public GcmsRIGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) : base(files, mspDB, parameter) {
+    public GcmsRIGapFiller(MsdialGcmsParameter parameter) : base(parameter) {
         _parameter = parameter;
         _riTol = parameter.RetentionIndexAlignmentTolerance;
         _fileIdToHandler = parameter.GetRIHandlers();
@@ -346,10 +332,8 @@ public class GcmsRIGapFiller : GcmsGapFiller
         var centralMz = center.Mz.Value;
         // RT conversion
         var riHandler = _fileIdToHandler[fileID];
-        var centralRT = riHandler.ConvertBack(center.RI);
         var maxRt = riHandler.ConvertBack(center.RI + peakWidth * 2d); // temp
         var minRt = riHandler.ConvertBack(center.RI - peakWidth * 2d); // temp
-        var rtTol = maxRt.Value - minRt.Value;
 
         var range = ChromatogramRange.FromTimes(minRt, maxRt);
         using (var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.PeakPickBaseParam.CentroidMs1Tolerance), range))
