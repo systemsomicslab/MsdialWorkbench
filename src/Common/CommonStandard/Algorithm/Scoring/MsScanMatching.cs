@@ -540,9 +540,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-
-
-
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
