@@ -245,22 +245,14 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void SaveSpectraTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> spectrum) {
+        public static void SaveSpectraTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> spectrum, bool exportNumOfPeaks = true) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
-                WriteSpectrumPeakInfo(sw, spectrum);
+                WriteSpectrumPeakInfo(sw, spectrum, exportNumOfPeaks);
                 sw.WriteLine("END IONS");
                 sw.WriteLine();
             }
-        }
-
-        public static void SavePeakTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty) {
-            using StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true);
-            sw.WriteLine("BEGIN IONS");
-            WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
-            sw.WriteLine("END IONS");
-            sw.WriteLine();
         }
 
         public static void WriteChromPeakFeatureInfoAsMgf(StreamWriter sw, ChromatogramPeakFeature feature) {
@@ -641,13 +633,15 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<ISpectrumPeak> massSpectra)
+        private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<ISpectrumPeak> massSpectra, bool exportNumOfPeaks = true)
         {
             if (massSpectra is null) {
                 return;
             }
             var peaks = massSpectra.Where(spec => spec.Intensity > 0).ToList();
-            sw.WriteLine("Num Peaks: " + peaks.Count);
+            if (exportNumOfPeaks) {
+                sw.WriteLine("Num Peaks: " + peaks.Count);
+            }
             foreach (var peak in peaks)
             {
                 sw.WriteLine(Math.Round(peak.Mass, 5) + "\t" + Math.Round(peak.Intensity, 0));

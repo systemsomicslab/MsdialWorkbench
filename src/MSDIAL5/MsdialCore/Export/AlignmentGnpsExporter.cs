@@ -41,7 +41,7 @@ public sealed class AlignmentGnpsExporter {
         ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, flattenedSpots, msdecResults);
     }
 
-    public void ExportMgf(IReadOnlyList<AlignmentSpotProperty> spots) {
+    public void ExportMgf(IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
         if (spots is not { Count: > 0 }) {
             throw new ArgumentException("No spots to export.");
         }
@@ -52,7 +52,8 @@ public sealed class AlignmentGnpsExporter {
 
         // mgf export
         using var mgfStream = File.Open(GnpsMgfFilePath, FileMode.Create, FileAccess.Write);
-        ExportGnpsMgf(mgfStream, flattenedSpots);
+
+        ExportGnpsMgf(mgfStream, flattenedSpots, msdecResults);
     }
 
     private static List<AlignmentSpotProperty> FlattenSpots(IReadOnlyList<AlignmentSpotProperty> spots) {
@@ -79,9 +80,9 @@ public sealed class AlignmentGnpsExporter {
             []);
     }
 
-    private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots) {
+    private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> msdecResults) {
         foreach (var spot in flattenedSpots) {
-            SpectraExport.SavePeakTableAsMgfFormat(mgfStream, spot);
+            SpectraExport.SaveSpectraTableAsMgfFormat(mgfStream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, exportNumOfPeaks: false);
         }
     }
 
