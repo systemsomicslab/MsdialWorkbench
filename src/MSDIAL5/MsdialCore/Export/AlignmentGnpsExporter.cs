@@ -28,31 +28,42 @@ public sealed class AlignmentGnpsExporter {
         GnpsFileClassMetaAccessor fileMetaAccessor,
         IMetadataAccessor metaAccessor,
         IQuantValueAccessor quantAccessor) {
-        // Implement the export logic for GNPS format here
-        // This is a placeholder implementation
-
         if (spots is not { Count: > 0 }) {
             throw new ArgumentException("No spots to export.");
         }
 
-        var flattenedSpots = new List<AlignmentSpotProperty>();
+        // Implement the export logic for GNPS format here
 
+        var flattenedSpots = FlattenSpots(spots);
+
+        // table export
+        using var tableStream = File.Open(GnpsTableFilePath, FileMode.Create, FileAccess.Write);
+        ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, flattenedSpots, msdecResults);
+    }
+
+    public void ExportMgf(IReadOnlyList<AlignmentSpotProperty> spots) {
+        if (spots is not { Count: > 0 }) {
+            throw new ArgumentException("No spots to export.");
+        }
+
+        // Implement the export logic for GNPS format here
+
+        List<AlignmentSpotProperty> flattenedSpots = FlattenSpots(spots);
+
+        // mgf export
+        using var mgfStream = File.Open(GnpsMgfFilePath, FileMode.Create, FileAccess.Write);
+        ExportGnpsMgf(mgfStream, flattenedSpots);
+    }
+
+    private static List<AlignmentSpotProperty> FlattenSpots(IReadOnlyList<AlignmentSpotProperty> spots) {
+        var flattenedSpots = new List<AlignmentSpotProperty>();
         for (int i = 0; i < spots.Count; i++) {
             var spot = spots[i];
             if (!spot.IsMultiLayeredData() && spot.IsMsmsAssigned && spot.MasterAlignmentID > 0) {
                 flattenedSpots.Add(spot);
             }
         }
-
-        // table export
-        using (var tableStream = File.Open(GnpsTableFilePath, FileMode.Create, FileAccess.Write)) {
-            ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, flattenedSpots, msdecResults);
-        }
-
-        // mgf export
-        using (var mgfStream = File.Open(GnpsMgfFilePath, FileMode.Create, FileAccess.Write)) {
-            ExportGnpsMgf(mgfStream, flattenedSpots, msdecResults);
-        }
+        return flattenedSpots;
     }
 
     private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, GnpsFileClassMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
@@ -68,12 +79,10 @@ public sealed class AlignmentGnpsExporter {
             []);
     }
 
-    private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
-        var mgfExporter = new AlignmentMgfExporter();
-        mgfExporter.BatchExport(
-            mgfStream,
-            flattenedSpots,
-            alignedMsdecResults);
+    private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots) {
+        foreach (var spot in flattenedSpots) {
+            SpectraExport.SavePeakTableAsMgfFormat(mgfStream, spot);
+        }
     }
 
     public static GnpsEdges BuildGnpsEdges(IReadOnlyList<AlignmentSpotProperty> spots) {
