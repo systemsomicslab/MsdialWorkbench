@@ -22,7 +22,7 @@ public sealed class AlignmentCSVExporter
         IReadOnlyList<AlignmentSpotProperty> spots,
         IReadOnlyList<MSDecResult> msdecResults,
         IReadOnlyList<AnalysisFileBean> files,
-        MulticlassFileMetaAccessor fileMetaAccessor,
+        IFileClassMetaAccessor fileMetaAccessor,
         IMetadataAccessor metaAccessor,
         IQuantValueAccessor quantAccessor,
         IReadOnlyList<StatsValue> stats) {
@@ -48,7 +48,7 @@ public sealed class AlignmentCSVExporter
     private void WriteHeader(
         StreamWriter sw,
         IReadOnlyList<AnalysisFileBean> files,
-        MulticlassFileMetaAccessor fileMetaAccessor,
+        IFileClassMetaAccessor fileMetaAccessor,
         IReadOnlyList<string> metaHeaders,
         IReadOnlyList<string> quantHeaders,
         IReadOnlyList<string> classHeaders,

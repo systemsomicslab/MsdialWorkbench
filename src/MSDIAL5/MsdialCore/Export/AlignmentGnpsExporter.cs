@@ -25,7 +25,7 @@ public sealed class AlignmentGnpsExporter {
         IReadOnlyList<AlignmentSpotProperty> spots,
         IReadOnlyList<MSDecResult> msdecResults,
         IReadOnlyList<AnalysisFileBean> files,
-        MulticlassFileMetaAccessor fileMetaAccessor,
+        GnpsFileClassMetaAccessor fileMetaAccessor,
         IMetadataAccessor metaAccessor,
         IQuantValueAccessor quantAccessor) {
         // Implement the export logic for GNPS format here
@@ -55,7 +55,7 @@ public sealed class AlignmentGnpsExporter {
         }
     }
 
-    private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
+    private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, GnpsFileClassMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
         var csvExporter = new AlignmentCSVExporter();
         csvExporter.Export(
             stream,
