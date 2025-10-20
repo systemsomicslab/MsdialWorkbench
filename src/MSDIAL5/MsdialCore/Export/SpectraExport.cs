@@ -255,6 +255,14 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
+        public static void SavePeakTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty) {
+            using StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true);
+            sw.WriteLine("BEGIN IONS");
+            WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
+            sw.WriteLine("END IONS");
+            sw.WriteLine();
+        }
+
         public static void WriteChromPeakFeatureInfoAsMgf(StreamWriter sw, ChromatogramPeakFeature feature) {
             var nameField = GetNameField(feature);
             var commentField = GetCommentField(feature);
