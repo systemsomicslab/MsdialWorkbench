@@ -27,8 +27,7 @@ public sealed class AlignmentGnpsExporter {
         IReadOnlyList<AnalysisFileBean> files,
         MulticlassFileMetaAccessor fileMetaAccessor,
         IMetadataAccessor metaAccessor,
-        IQuantValueAccessor quantAccessor,
-        IReadOnlyList<StatsValue> stats) {
+        IQuantValueAccessor quantAccessor) {
         // Implement the export logic for GNPS format here
         // This is a placeholder implementation
 
@@ -47,7 +46,7 @@ public sealed class AlignmentGnpsExporter {
 
         // table export
         using (var tableStream = File.Open(GnpsTableFilePath, FileMode.Create, FileAccess.Write)) {
-            ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, stats, flattenedSpots, msdecResults);
+            ExportGnpsTable(tableStream, files, fileMetaAccessor, metaAccessor, quantAccessor, flattenedSpots, msdecResults);
         }
 
         // mgf export
@@ -56,7 +55,7 @@ public sealed class AlignmentGnpsExporter {
         }
     }
 
-    private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
+    private void ExportGnpsTable(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor fileMetaAccessor, IMetadataAccessor metaAccessor, IQuantValueAccessor quantAccessor, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {
         var csvExporter = new AlignmentCSVExporter();
         csvExporter.Export(
             stream,
@@ -66,7 +65,7 @@ public sealed class AlignmentGnpsExporter {
             fileMetaAccessor,
             metaAccessor,
             quantAccessor,
-            stats);
+            []);
     }
 
     private void ExportGnpsMgf(Stream mgfStream, List<AlignmentSpotProperty> flattenedSpots, IReadOnlyList<MSDecResult> alignedMsdecResults) {

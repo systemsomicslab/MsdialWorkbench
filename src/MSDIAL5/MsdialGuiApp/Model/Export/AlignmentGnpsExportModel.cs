@@ -49,7 +49,7 @@ internal sealed class AlignmentGnpsExportModel : BindableBase, IAlignmentResultE
         var files = _files.AnalysisFiles.Select(f => f.File).ToArray();
         var exporter = new AlignmentGnpsExporter(exportDirectory, alignmentFile.FileName);
         foreach (var type in Types.Where(t => t.ShouldExport)) {
-            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, AccessFileMeta.GetAccessor(), AccessPeakMetaModel.GetAccessor(), type.QuantValueAccessor, type.Stats);
+            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, AccessFileMeta.GetAccessor(), AccessPeakMetaModel.GetAccessor(), type.QuantValueAccessor);
         }
 
         var edgeFileName = $"{alignmentFile.FileName}_GNPSEdges_{dt:yyyyMMddHHmm}";
