@@ -60,14 +60,14 @@ namespace CompMs.App.Msdial.Model.Imaging
             }
         }
 
-        public async Task SaveAsync(Stream stream) {
-            if (string.IsNullOrEmpty(Peak.Name)) {
+        public async Task SaveAsync(Stream stream, bool skipUnknownPeaks = true, System.Threading.CancellationToken token = default) {
+            if (skipUnknownPeaks && string.IsNullOrEmpty(Peak.Name)) {
                 return;
             }
             var pixels = _intensitiesLoader.Load(_peakIndex);
             var row = string.Format("{0},{1},{2},{3},", Peak.MasterPeakID, Peak.Name, Mz.Value, Drift.Value) + string.Join(",", pixels.PixelPeakFeaturesList[0].IntensityArray);
             var encoded = UTF8Encoding.Default.GetBytes(row + "\n");
-            await stream.WriteAsync(encoded, 0, encoded.Length).ConfigureAwait(false);
+            await stream.WriteAsync(encoded, 0, encoded.Length, token).ConfigureAwait(false);
         }
     }
 }

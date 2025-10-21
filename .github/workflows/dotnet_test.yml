@@ -20,6 +20,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -41,6 +44,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -74,6 +80,9 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -103,6 +112,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -132,6 +144,9 @@ jobs:
         pair: [ { os: windows-latest, runtime: win-x64 }, { os: ubuntu-latest, runtime: linux-x64 }, { os: macos-latest, runtime: osx-x64 } ]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages

@@ -136,13 +136,17 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, 
+            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.TotalScore > _alignmentParameter.Ms1AlignmentTolerance && isRetentionMatch;
+        return result.IsSpectrumMatch && isRetentionMatch;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance,
+            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         return result.TotalScore;
     }
 
@@ -252,6 +256,9 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                     if (IsSimilarTo(candidate, target)) {
                         if (!candidate.AnnotatedMSDecResult.IsReferenceMatched(_evaluator) && target.AnnotatedMSDecResult.IsReferenceMatched(_evaluator)) {
                             master[rtIdc].RemoveAt(i);
+                            if (!master.ContainsKey(rtTarget)) {
+                                master[rtTarget] = [];
+                            }
                             master[rtTarget].Add(target);
                             return true;
                         }

@@ -72,14 +72,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFiles.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
-            var peakGroup = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(
-                    analysisFiles,
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv),
-                new[]
-                {
+            ExportType[] quantTypes =
+                [
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, isSelected: true),
                     new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
                     new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
@@ -89,26 +83,27 @@ namespace CompMs.App.Msdial.Model.Dims
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
-                },
-                new AccessPeakMetaModel(metadataAccessorFactory),
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                ];
+            AccessPeakMetaModel peakMeta = new(metadataAccessorFactory);
+            AccessFileMetaModel fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(analysisFiles, ExportFormat.Tsv, ExportFormat.Csv),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), analysisFileBeanModelCollection);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
+            AlignmentResultExportModel = new AlignmentResultExportModel([peakGroup, spectraGroup, gnps, spectraAndReference,], alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
 
