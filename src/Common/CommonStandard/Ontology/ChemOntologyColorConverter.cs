@@ -2765,7 +2765,6 @@ namespace CompMs.Common.Ontology
             { "NAGln", "rgb(215, 63, 120)"},
             { "NALeu", "rgb(215, 63, 150)"},
             { "NAVal", "rgb(215, 33, 70)"},
-            { "NASer", "rgb(215, 33, 100)"},
             { "NASer", "rgb(215, 66, 100)"},
             { "NAGABA", "rgb(215, 123, 100)"},
             { "WE", "rgb(215, 29, 100)" },
