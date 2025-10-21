@@ -15,7 +15,8 @@ internal sealed class AlignmentGnpsExportViewModel : ViewModelBase, IAlignmentRe
     public AlignmentGnpsExportViewModel(AlignmentGnpsExportModel model) {
         _model = model;
         CanExport = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).ToReadOnlyReactivePropertySlim(!HasValidationErrors).AddTo(Disposables);
-        IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
+        IsSelectedGnps = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelectedGnps).AddTo(Disposables);
+        IsSelectedGnps2 = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelectedGnps2).AddTo(Disposables);
     }
 
     public string Label => _model.Label;
@@ -26,7 +27,8 @@ internal sealed class AlignmentGnpsExportViewModel : ViewModelBase, IAlignmentRe
     }
     private bool _isExpanded = false;
 
-    public ReactivePropertySlim<bool> IsSelected { get; }
+    public ReactivePropertySlim<bool> IsSelectedGnps { get; }
+    public ReactivePropertySlim<bool> IsSelectedGnps2 { get; }
 
     public ReadOnlyObservableCollection<ExportType> Types => _model.Types;
 
