@@ -193,7 +193,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private DelegateCommand? _goToLicenceCommand;
 
         private void GoToLicence() {
-            System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/licence/main.html");
+            System.Diagnostics.Process.Start("https://systemsomicslab.github.io/compms/license/main.html");
         }
 
         public DelegateCommand ShowAboutCommand => _showAboutCommand ??= new DelegateCommand(ShowAbout);
