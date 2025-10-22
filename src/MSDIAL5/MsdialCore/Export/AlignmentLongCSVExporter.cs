@@ -30,7 +30,7 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void ExportFileMeta(Stream stream, IReadOnlyList<AnalysisFileBean> files, MulticlassFileMetaAccessor accessor) {
+        public void ExportFileMeta(Stream stream, IReadOnlyList<AnalysisFileBean> files, IFileClassMetaAccessor accessor) {
             using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
             // Header
             var headers = accessor.GetHeaders();

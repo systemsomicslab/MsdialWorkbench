@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, peakMeta, fileMeta, analysisFileBeanModelCollection);
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, gnps, };
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);

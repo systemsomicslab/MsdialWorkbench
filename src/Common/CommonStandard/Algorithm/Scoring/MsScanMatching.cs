@@ -521,6 +521,25 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
+        public static MsScanMatchResult CompareEIMSScanProperties(
+            IMSScanProperty scan1, IMSScanProperty scan2, 
+            MsRefSearchParameterBase param, 
+            double eiThreshold, double rtTol, double riTol,
+            double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, (float)rtTol, (float)riTol, param.Ms1Tolerance, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (msMatchedScore > eiThreshold) {
+                result.IsSpectrumMatch = true;
+            }
+            if (isUseRetentionIndex) {
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            else {
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            return result;
+        }
+
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
@@ -550,6 +569,33 @@ namespace CompMs.Common.Algorithm.Scoring {
             result.Name = refSpec.Name;
             result.LibraryID = refSpec.ScanID;
             result.InChIKey = refSpec.InChIKey;
+            return result;
+        }
+
+        public static MsScanMatchResult CompareMSScanProperties(
+            IMSScanProperty scanProp, 
+            IMSScanProperty refSpec,
+            MsRefSearchParameterBase param,
+            float rtTol,
+            float riTol,
+            float ms1Tol,
+            float ms2Tol, 
+            float massRangeBegin, 
+            float massRangeEnd) {
+
+            var result = CompareBasicMSScanProperties(scanProp, refSpec, rtTol, riTol, ms1Tol, ms2Tol, massRangeBegin, massRangeEnd);
+            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+
+            result.MatchedPeaksCount = (float)matchedPeaksScores[1];
+            result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
+                result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.IsSpectrumMatch = true;
+            }
+
             return result;
         }
 
@@ -583,7 +629,12 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
            float ms2Tol, float massRangeBegin, float massRangeEnd) {
-            
+            return CompareBasicMSScanProperties(scanProp, refSpec, param.RtTolerance, param.RiTolerance, param.Ms1Tolerance, ms2Tol, massRangeBegin, massRangeEnd);
+        }
+
+        public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, float rttolerance, float ritolerance, float ms1tolerance,
+           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+
             var isRtMatch = false;
             var isRiMatch = false;
             var isMs1Match = false;
@@ -591,10 +642,10 @@ namespace CompMs.Common.Algorithm.Scoring {
             var sqweightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var sqsimpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var sqreverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
-            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
+            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, rttolerance, out isRtMatch);
+            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, ritolerance, out isRiMatch);
 
-            var ms1Tol = param.Ms1Tolerance;
+            var ms1Tol = ms1tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
             if (scanProp.PrecursorMz > 500) {
                 ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
@@ -602,7 +653,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
 
             var result = new MsScanMatchResult() {
-                LibraryID = refSpec.ScanID, 
+                LibraryID = refSpec.ScanID,
                 SquaredWeightedDotProduct = (float)sqweightedDotProduct,
                 SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
@@ -611,8 +662,6 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             return result;
         }
-
-
 
 
 
