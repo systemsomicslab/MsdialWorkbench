@@ -26,7 +26,16 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
         public double Mass => MassCenter; // Alias of MassCenter used in PeakSpotNavigatorView
-        public double QuantMass => innerModel.QuantMass;
+        public double QuantMass {
+            get => innerModel.QuantMass;
+            set {
+                if (innerModel.QuantMass != value) {
+                    innerModel.QuantMass = value;
+                    OnPropertyChanged(nameof(QuantMass));
+                }
+            }
+        }
+
         public double HeightAverage => innerModel.HeightAverage;
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
