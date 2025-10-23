@@ -3,7 +3,7 @@ using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.Model.Gcms;
 
-public sealed class QuantmassBrowserModel : DisposableModelBase
+public sealed class QuantmassBrowserModel : BindableBase
 {
     private readonly AlignmentSpotSource _spotSource;
 

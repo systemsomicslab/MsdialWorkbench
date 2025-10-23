@@ -90,6 +90,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
             AlignmentSpotSource = spotsSource;
 
+            QuantmassBrowserModel = new QuantmassBrowserModel(spotsSource);
+
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
 
@@ -275,6 +277,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public override AlignmentSpotSource AlignmentSpotSource { get; }
+        public QuantmassBrowserModel QuantmassBrowserModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
         public GcgcAlignmentPeakPlotModel GcgcPlotModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }

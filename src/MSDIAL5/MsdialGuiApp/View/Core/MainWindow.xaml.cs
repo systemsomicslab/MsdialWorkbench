@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.Gcms;
 using CompMs.App.Msdial.View.Information;
 using CompMs.App.Msdial.View.MsResult;
 using CompMs.App.Msdial.View.PeakCuration;
@@ -14,6 +15,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Gcms;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
@@ -149,6 +151,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
             broker.ToObservable<SpectraGroupingViewModel>()
                 .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1500, needDispose: true));
+            broker.ToObservable<QuantmassBrowserViewModel>()
+                .Subscribe(ShowChildSettingDialog<QuantmassBrowserView>("Quant mass browser", height: 800, width: 1500, needDispose: false));
 
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()

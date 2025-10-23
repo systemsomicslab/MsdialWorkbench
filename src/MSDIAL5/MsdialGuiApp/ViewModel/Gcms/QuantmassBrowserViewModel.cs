@@ -1,13 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Gcms;
-using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms;
 
-public sealed class QuantmassBrowserViewModel : ViewModelBase
+public sealed class QuantmassBrowserViewModel : SettingDialogViewModel
 {
     private readonly QuantmassBrowserModel _model;
 
@@ -19,5 +19,4 @@ public sealed class QuantmassBrowserViewModel : ViewModelBase
     public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots => _model.Spots.Items;
 
     public ReactivePropertySlim<AlignmentSpotPropertyModel?> SelectedSpot { get; }
-
 }
