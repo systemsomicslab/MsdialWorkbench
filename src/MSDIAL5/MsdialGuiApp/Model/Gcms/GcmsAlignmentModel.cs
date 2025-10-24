@@ -23,6 +23,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
+using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Parser;
 using Reactive.Bindings;
@@ -62,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             CalculateMatchScore? calculateMatchScore,
+            PeakQuantCalculation peakQuantCalculation,
             MsfinderSearcherFactory msfinderSearcherFactory,
             IMessageBroker broker)
             : base(alignmentFileBean, peakSpotFiltering, peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), broker) {
@@ -90,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
             AlignmentSpotSource = spotsSource;
 
-            QuantmassBrowserModel = new QuantmassBrowserModel(spotsSource);
+            QuantmassBrowserModel = new QuantmassBrowserModel(spotsSource, peakQuantCalculation, fileCollection, alignmentFileBean, chromatogramSpotSerializer);
 
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);

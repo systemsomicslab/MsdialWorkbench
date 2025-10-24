@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             _alignmentEicSem = new SemaphoreSlim(1, 1).AddTo(Disposables);
         }
 
+        public AlignmentFileBean AlignmentFileBean => _alignmentFile;
         public string FileName => _alignmentFile.FileName;
         public string FilePath => _alignmentFile.FilePath;
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;

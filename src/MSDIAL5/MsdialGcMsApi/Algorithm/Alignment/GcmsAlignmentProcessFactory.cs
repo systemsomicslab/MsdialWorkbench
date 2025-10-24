@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -65,5 +66,11 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
                     new GcmsDataAccessor(GcmsParameter),
                     Progress);
         }
+    }
+
+    public PeakQuantCalculation CreatePeakQuantCalculation(IDataProviderFactory<AnalysisFileBean> providerFactory) {
+        var accessor = new GcmsDataAccessor(GcmsParameter);
+        var gapFiller = (GcmsGapFiller)CreateGapFiller();
+        return new PeakQuantCalculation(gapFiller, accessor, providerFactory, GcmsParameter);
     }
 }

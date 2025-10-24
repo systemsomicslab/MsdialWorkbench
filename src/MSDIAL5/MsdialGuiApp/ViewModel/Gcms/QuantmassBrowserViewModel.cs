@@ -4,6 +4,7 @@ using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms;
 
@@ -14,9 +15,12 @@ public sealed class QuantmassBrowserViewModel : SettingDialogViewModel
     public QuantmassBrowserViewModel(QuantmassBrowserModel model) {
         SelectedSpot = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedSpot).AddTo(Disposables);
         _model = model;
+        FinishCommand = new AsyncReactiveCommand().WithSubscribe(() => model.RunQuantificationAsync()).AddTo(Disposables);
     }
 
     public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots => _model.Spots.Items;
 
     public ReactivePropertySlim<AlignmentSpotPropertyModel?> SelectedSpot { get; }
+
+    public override ICommand? FinishCommand { get; }
 }

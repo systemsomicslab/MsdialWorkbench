@@ -152,7 +152,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<SpectraGroupingViewModel>()
                 .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1500, needDispose: true));
             broker.ToObservable<QuantmassBrowserViewModel>()
-                .Subscribe(ShowChildSettingDialog<QuantmassBrowserView>("Quant mass browser", height: 800, width: 1500, needDispose: false));
+                .Subscribe(ShowChildSettingDialog<QuantmassBrowserView>("Quant mass browser", height: 800, width: 1500, finishCommandContent: "Run", needDispose: false));
 
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
