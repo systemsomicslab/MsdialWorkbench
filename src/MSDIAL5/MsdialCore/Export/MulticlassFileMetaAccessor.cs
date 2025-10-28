@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Export;
 /// This accessor facilitates the handling of files that pertain to multiple classes or parameters,
 /// dynamically adjusting the metadata headers and content based on specified or discovered class information.
 /// </remarks>
-public sealed class MulticlassFileMetaAccessor
+public sealed class MulticlassFileMetaAccessor : IFileClassMetaAccessor
 {
     private static readonly string[] _aboveFields = [
         "Class",
@@ -26,8 +26,7 @@ public sealed class MulticlassFileMetaAccessor
     /// Initializes a new instance of the <see cref="MulticlassFileMetaAccessor"/> with predefined additional classes.
     /// </summary>
     /// <param name="classes">An array of strings representing the classes to be included in the metadata.</param>
-    public MulticlassFileMetaAccessor(string[] classes)
-    {
+    public MulticlassFileMetaAccessor(string[] classes) {
         AdditionalClasses = classes;
     }
 
