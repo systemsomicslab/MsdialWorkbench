@@ -14,6 +14,12 @@ namespace CompMs.Common.DataStructure
             _container = new LinkedList<(U, T)>();
         }
 
+        public LruCache(int capacity, IEqualityComparer<T> comparer) {
+            _capacity = capacity;
+            _cache = new Dictionary<T, LinkedListNode<(U value, T key)>>(comparer);
+            _container = new LinkedList<(U, T)>();
+        }
+
         public U Get(T key) {
             if (_cache.TryGetValue(key, out var node)) {
                 _container.Remove(node);

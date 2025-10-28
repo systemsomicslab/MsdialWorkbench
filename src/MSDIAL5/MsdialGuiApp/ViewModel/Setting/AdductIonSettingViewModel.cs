@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     public class AdductIonSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public AdductIonSettingViewModel(AdductIonSettingModel model, IObservable<bool> isEnabled) {
+        public AdductIonSettingViewModel(IAdductIonSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
             IsReadOnly = model.IsReadOnly;
 
@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
         }
 
-        public AdductIonSettingModel Model { get; }
+        public IAdductIonSettingModel Model { get; }
 
         public bool IsReadOnly { get; }
 

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 
@@ -13,12 +14,12 @@ namespace CompMs.App.Msdial.Model.Setting
     public sealed class PeakDetectionSettingModel : BindableBase, IPeakDetectionSettingModel
     {
 
-        public PeakDetectionSettingModel(PeakPickBaseParameter parameter, ProcessOption process) {
-            PeakPickSettingModel = new PeakPickSettingModel(parameter);
+        public PeakDetectionSettingModel(PeakPickBaseParameterModel peakPickBaseParameterModel, ProcessOption process) {
+            PeakPickSettingModel = peakPickBaseParameterModel;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
         }
 
-        public PeakPickSettingModel PeakPickSettingModel { get; }
+        public PeakPickBaseParameterModel PeakPickSettingModel { get; }
 
         public bool IsReadOnly { get; }
 

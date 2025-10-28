@@ -1,7 +1,9 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Internal;
 using CompMs.RawDataHandler.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -77,6 +79,40 @@ public static class DataProviderExtensions {
         return result;
     }
 
+    /// <summary>
+    /// An extension method for IDataProvider to retrieve all MS2 spectra associated with the MS1 spectrum closest to the specified retention time (RT).
+    /// </summary>
+    /// <param name="provider">The data provider instance on which the extension method operates.</param>
+    /// <param name="rt">The target retention time (ScanStartTime) to find the nearest MS1 spectrum.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation and returns an array of <see cref="RawSpectrum"/> objects containing all MS2 spectra related to the closest MS1 spectrum.</returns>
+    public static async Task<RawSpectrum[]> LoadMs2SpectraByNearestMs1WithRtAsync(this IDataProvider provider, double rt, CancellationToken token) {
+        var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+        var lower = spectra.LowerBound(rt, (t, s) => t.ScanStartTime.CompareTo(s));
+        int next = lower, prev = lower - 1;
+        while (next < spectra.Count && spectra[next].MsLevel != 1) {
+            ++next;
+        }
+        while (prev >= 0 && spectra[prev].MsLevel != 1) {
+            --prev;
+        }
+        int? ms1 = null;
+        if (next < spectra.Count) {
+            ms1 = next;
+        }
+        if (prev >= 0 && (ms1 is null || Math.Abs(spectra[ms1.Value].ScanStartTime - rt) > Math.Abs(spectra[prev].ScanStartTime - rt))) {
+            ms1 = prev;
+        }
+        if (ms1 is null) {
+            return [];
+        }
+        var results = new List<RawSpectrum>();
+        for (var idx = ms1.Value + 1; idx < spectra.Count && spectra[idx].MsLevel == 2; ++idx) {
+            results.Add(spectra[idx]);
+        }
+        return [.. results];
+    }
+
     public static double GetMinimumCollisionEnergy(this IDataProvider provider) {
         return provider.LoadMsSpectrums().DefaultIfEmpty().Min(s => s?.CollisionEnergy) ?? -1d;
     }
@@ -116,12 +152,15 @@ public static class DataProviderExtensions {
     /// <param name="provider">The original data provider to filter.</param>
     /// <param name="mz">The target m/z value to filter by.</param>
     /// <param name="tolerance">The tolerance for the m/z filtering. Data points within this tolerance from the specified m/z value will be included in the filtered data.</param>
+    /// <param name="acquisitionType">The acquisition type for spectrum acquiring</param>
     /// <returns>A new <see cref="IDataProvider"/> instance that provides access to the data filtered based on the specified m/z value and tolerance.</returns>
     /// <remarks>
     /// This method creates an instance of <see cref="PrecursorMzSelectedDataProvider"/>, which implements the filtering logic based on the specified m/z value and tolerance.
     /// </remarks>
-    public static IDataProvider FilterByMz(this IDataProvider provider, double mz, double tolerance) {
-        return new PrecursorMzSelectedDataProvider(provider, mz, tolerance);
+    /// <param name="acquisitionType"></param>
+    public static IDataProvider FilterByMz(this IDataProvider provider, double mz, double tolerance, AcquisitionType acquisitionType)
+    {
+        return new PrecursorMzSelectedDataProvider(provider, mz, tolerance, acquisitionType);
     }
 
     /// <summary>

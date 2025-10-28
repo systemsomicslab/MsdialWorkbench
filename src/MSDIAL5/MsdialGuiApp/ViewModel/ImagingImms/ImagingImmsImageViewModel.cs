@@ -1,6 +1,6 @@
-﻿using CompMs.App.Msdial.Model.ImagingImms;
+﻿using CompMs.App.Msdial.Model.Imaging;
+using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imaging;
-using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -22,11 +22,12 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);
             ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, peakSpotTableService, broker).AddTo(Disposables);
-            var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
-            var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
             SaveImagesViewModel = new SaveImagesViewModel(model.SaveImagesModel, broker).AddTo(Disposables);
             AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
+            RemoveRoiCommand = new ReactiveCommand<ImagingRoiModel>().WithSubscribe(model.RemoveRoi).AddTo(Disposables);
+            SaveIntensitiesCommand = new AsyncReactiveCommand().WithSubscribe(() => model.SaveIntensitiesAsync()).AddTo(Disposables);
+            LoadRoiCommand = new ReactiveCommand().WithSubscribe(model.LoadRoi).AddTo(Disposables);
         }
 
         public string ImageTitle => _model.File.AnalysisFileName;
@@ -37,5 +38,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public SaveImagesViewModel SaveImagesViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels => ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels;
         public AsyncReactiveCommand AddRoiCommand { get; }
+        public ReactiveCommand<ImagingRoiModel> RemoveRoiCommand { get; }
+        public AsyncReactiveCommand SaveIntensitiesCommand { get; }
+        public ReactiveCommand LoadRoiCommand { get; }
     }
 }

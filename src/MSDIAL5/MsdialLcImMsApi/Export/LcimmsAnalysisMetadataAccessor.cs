@@ -22,7 +22,7 @@ namespace CompMs.MsdialLcImMsApi.Export
         /// <param name="refer">An object that provides references for MoleculeMsReference and MsScanMatchResult.</param>
         /// <param name="parameter">Parameters for the analysis.</param>
         /// <param name="type">The type of export spectra.</param>
-        public LcimmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
+        public LcimmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 
@@ -85,15 +85,17 @@ namespace CompMs.MsdialLcImMsApi.Export
         /// <param name="spectrumList">The list of raw spectra.</param>
         /// <param name="analysisFile">The analysis file bean.</param>
         /// <returns>A dictionary containing the metadata content.</returns>
+        /// <param name="exportStyle"></param>
         protected override Dictionary<string, string> GetContentCore(
             ChromatogramPeakFeature feature,
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
             content["RT left(min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsLeft.RT.Value);
             content["RT (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsTop.RT.Value);
             content["RT right (min)"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsRight.RT.Value);

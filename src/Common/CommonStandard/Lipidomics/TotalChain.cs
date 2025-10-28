@@ -58,11 +58,9 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBondCount == chains.DoubleBondCount
                 && OxidizedCount == chains.OxidizedCount;
         }
-
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Separate(this);
         }
-
         public override string ToString() {
             return string.Format("{0}{1}:{2}{3}", EtherSymbol(AlkylChainCount), CarbonCount, DoubleBondCount, OxidizeSymbol(OxidizedCount));
         }

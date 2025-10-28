@@ -39,11 +39,11 @@ namespace CompMs.App.MsdialConsole {
             //{
             //    "lcms"
             //    , "-i"
-            //    , @"E:\3_RIKEN\MedicalMS\data\neg"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\console_fastlc_demo"
             //    , "-o"
-            //    , @"E:\3_RIKEN\MedicalMS\data\neg_output"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\console_fastlc_demo"
             //    , "-m"
-            //    , @"E:\3_RIKEN\MedicalMS\data\neg\lipidomics_neg_library.txt"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\console_fastlc_demo\lib\msdial_console_param4lipidomics.txt"
             //    , "-p"
             //};
 

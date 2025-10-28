@@ -20,16 +20,16 @@ namespace CompMs.MsdialCore.Export
     }
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? _refer;
         private readonly ParameterBase _parameter;
         private readonly bool _trimSpectrumToExcelLimit;
 
-        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) {
+        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) {
             _refer = refer;
             _parameter = parameter;
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
-
+        public ParameterBase Parameter => _parameter;
         public string[] GetHeaders() => GetHeadersCore();
 
         IReadOnlyDictionary<string, string> IMetadataAccessor.GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
@@ -111,12 +111,12 @@ namespace CompMs.MsdialCore.Export
                 { "Isotope tracking parent ID", spot.PeakCharacter.IsotopeParentPeakID.ToString() },
                 { "Isotope tracking weight number", spot.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "m/z similarity", ValueOrNull(matchResult.AcurateMassSimilarity, "F2") },
-                { "Simple dot product", ValueOrNull(matchResult.SimpleDotProduct, "F2") },
-                { "Weighted dot product", ValueOrNull(matchResult.WeightedDotProduct, "F2") },
-                { "Reverse dot product", ValueOrNull(matchResult.ReverseDotProduct, "F2") },
+                { "Simple dot product", ValueOrNull(matchResult.SimpleDotProduct, "F3") },
+                { "Weighted dot product", ValueOrNull(matchResult.WeightedDotProduct, "F3") },
+                { "Reverse dot product", ValueOrNull(matchResult.ReverseDotProduct, "F3") },
                 { "Matched peaks count", ValueOrNull(matchResult.MatchedPeaksCount, "F2") },
                 { "Matched peaks percentage", ValueOrNull(matchResult.MatchedPeaksPercentage, "F2") },
-                { "Total score", ValueOrNull(matchResult.TotalScore, "F2") },
+                { "Total score", ValueOrNull(matchResult.TotalScore, "F3") },
                 { "S/N average", spot.SignalToNoiseAve.ToString("0.00") },
                 { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },

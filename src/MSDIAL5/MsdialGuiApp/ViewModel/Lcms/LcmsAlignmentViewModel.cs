@@ -1,21 +1,28 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Spectra;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -43,8 +50,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
+            var spectraSimilarityMapViewModel = new SpectraSimilarityMapViewModel(model.SpectraSimilarityMapModel).AddTo(Disposables);
+            var spectraSmilarityMapCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(spectraSimilarityMapViewModel)).AddTo(Disposables);
+            var spectraGroupingCommand = new ReactiveCommand().WithSubscribe(async () => {
+                var m = await model.CreateSpectraGroupingModelAsync().ConfigureAwait(false);
+                if (m is null) {
+                    _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                    return;
+                }
+                var spectraGroupingViewModel = new SpectraGroupingViewModel(m);
+                await m.UpdateMoleculeGroupsAsync();
+                broker.Publish(spectraGroupingViewModel);
+            }).AddTo(Disposables);
+
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker)
+            {
+                SpectraSimilarityMapCommand = spectraSmilarityMapCommand,
+                SpectraGroupingCommand = spectraGroupingCommand,
+            }.AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
@@ -66,14 +90,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            if (model.MoleculeStructureModel is null) {
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, matchResultCandidatesViewModel, };
-            }
-            else {
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            } 
+            if (model.MoleculeStructureModel is not null) {
                 MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
             }
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
@@ -101,6 +128,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var findTargetCompoundsSpotViewModel = new FindTargetCompoundsSpotViewModel(model.FindTargetCompoundSpotModel, broker).AddTo(Disposables);
             ShowFindCompoundSpotViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(findTargetCompoundsSpotViewModel)).AddTo(Disposables);
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var message = new ShortMessageWindow() {
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        Title = "MS-FINDER running in the background...",
+                        Width = 400,
+                        Height = 100
+                    };
+                    message.Show();
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    message.Close();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -147,12 +197,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
+        public ReactiveCommand GoToMsfinderCommand {  get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
         private DelegateCommand? _showIonTableCommand;

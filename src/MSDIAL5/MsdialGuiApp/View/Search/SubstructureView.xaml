@@ -1,0 +1,79 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Search.SubstructureView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Search"
+        xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
+        d:DataContext="{d:DesignInstance Type={x:Type local:InternalMsfinderSubstructure}}"
+        Title="Substructure viewer" Height="400" Width="1000">
+    <Grid>
+        <Grid x:Name="Data">
+            <DataGrid CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+          ItemsSource="{Binding  Path=SubstructureElements}">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader" >
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn SortMemberPath="Assigned type" Width="1.2*" Header="Assigned type" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=AssignedType, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn SortMemberPath="Mass" Width="1.5*" Header="Mass" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Mass, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn SortMemberPath="Formula" Width="1.5*" Header="Formula (mass)" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Formula, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn SortMemberPath="Comment" Width="2*" Header="Comment" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Comment, StringFormat=0.0000, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn SortMemberPath="SMILES" Width="2*" Header="SMILES" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Smiles, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn SortMemberPath= "Short InChIKey" Width="2*" Header="Short InChIKey">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Inchikey, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn SortMemberPath= "Structure candidate" Width="2*" Header="Structure candidate">
+                        <DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<infoview:MoleculeStructureView DataContext="{Binding MoleculeStructureViewModel}"/>
+							</DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,803 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+             xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:InternalMsfinderSettingViewModel}}"
+             mc:Ignorable="d"
+             d:DesignHeight="575" d:DesignWidth="620">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:CBoolNegativeConverter x:Key="InverseBool"/>
+            <Style x:Key="AlignedContent" TargetType="ui:LabeledContent">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ui:LabeledContent">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{TemplateBinding PrependLabel}"
+                                       VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                       Margin="0,0,8,0"
+                                       Grid.Column="0"/>
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  Grid.Column="1"/>
+                                <Label Content="{TemplateBinding AppendLabel}"
+                               VerticalAlignment="Center" VerticalContentAlignment="Center"
+                               Grid.Column="2"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+
+            <ObjectDataProvider x:Key="SolventType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="common:SolventType" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
+            <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="IsReadOnly" Value="True" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid>
+            <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" Grid.ColumnSpan="2">
+                <TabItem Name="TabItem_MassSpectrum" Header="Basic">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,10,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Mass tolerance setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0">
+                                <ui:LabeledContent PrependLabel="Mass tolerance type:"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <RadioButton Name="RadioButton_DaAsTolerance"
+                                                     Content="Da"
+                                                     IsChecked="{Binding MassTolType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Da}"
+                                                     VerticalAlignment="Center"
+                                                     Margin="0,0,15,0"/>
+                                        <RadioButton Name="RadioButton_PpmAsTolerance"
+                                                     Content="ppm"
+                                                     IsChecked="{Binding MassTolType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Ppm}"
+                                                     VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Mass tolerance (MS1):"
+                                                   AppendLabel="+-Da or ppm"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add mass error tolerances for calculating isotopic ratio similarities.">
+                                    <TextBox Text="{Binding Mass1Tolerance.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Mass tolerance (MS2):"
+                                                   AppendLabel="+-Da or ppm"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the mass torelance for the fragment mass matching.">
+                                    <TextBox Text="{Binding Mass2Tolerance.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,10,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Abundance setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Relative abundance cut off:"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the cut off value for removing noise effects.">
+                                    <TextBox Text="{Binding RelativeAbundanceCutOff.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,10,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Mass range setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Mass range max:"
+                                                   AppendLabel="Da"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the mass range for spectrum similarity calculation.">
+                                    <TextBox Text="{Binding MassRangeMax.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Mass range min:"
+                                                   AppendLabel="Da"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the mass range for spectrum similarity calculation.">
+                                    <TextBox Text="{Binding MassRangeMin.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_MolecularFormulaFinder" Header="Formula finder">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Formula calculation setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="LEWIS and SENIOR check:"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Candidates will be reduced based on these valence rules.">
+                                    <CheckBox IsChecked="{Binding IsLewisAndSeniorCheck.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Isotopic ratio tolerance:"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add abundance tolerances for calculating isotopic ratio similarities.">
+                                    <TextBox Text="{Binding IsotopicAbundanceTolerance.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Element ratio check:"
+                                                   AppendLabel="covering"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                    <ComboBox SelectedValue="{Binding CoverRange.Value}" SelectedValuePath="DataContext">
+                                        <ComboBox.Items>
+                                            <ComboBoxItem Content="Common range (99.7%)" DataContext="{x:Static enum:CoverRange.CommonRange}"/>
+                                            <ComboBoxItem Content="Extended range (99.99%)" DataContext="{x:Static enum:CoverRange.ExtendedRange}"/>
+                                            <ComboBoxItem Content="No restriction" DataContext="{x:Static enum:CoverRange.ExtremeRange}"/>
+                                        </ComboBox.Items>
+                                    </ComboBox>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Element probability check:"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="This rule is based on the current statistics report. Please see details here: http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                    <CheckBox IsChecked="{Binding IsElementProbabilityCheck.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,8,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Element selection" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Name="CheckBox_Ocheck"
+                                              Content="O"
+                                              IsChecked="{Binding IsOcheck.Value}"
+                                              Margin="5, 0,0,0"
+                                              ToolTip="If you want to find O elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_Ncheck"
+                                              Content="N"
+                                              IsChecked="{Binding IsNcheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find N elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_Pcheck"
+                                              Content="P"
+                                              IsChecked="{Binding IsPcheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find P elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_Scheck"
+                                              Content="S"
+                                              IsChecked="{Binding IsScheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find S elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_Fcheck"
+                                              Content="F"
+                                              IsChecked="{Binding IsFcheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find F elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_ClCheck"
+                                              Content="Cl"
+                                              IsChecked="{Binding IsClCheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find Cl elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_BrCheck"
+                                              Content="Br"
+                                              IsChecked="{Binding IsBrCheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find Br elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_Icheck"
+                                              Content="I"
+                                              IsChecked="{Binding IsIcheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find I elements, please check this option."/>
+                                    <CheckBox Name="CheckBox_SiCheck"
+                                              Content="Si"
+                                              IsChecked="{Binding IsSiCheck.Value}"
+                                              Margin="20, 0,0,0"
+                                              ToolTip="If you want to find Si elements, please check this option."/>
+                                </StackPanel>
+                                <CheckBox Name="CheckBox_IsTmsMeoxDerivative"
+                                          Content="TMS-MEOX derivative compound"
+                                          IsChecked="{Binding IsTmsMeoxDerivative.Value}"
+                                          FontStyle="Italic"
+                                          Margin="5,10,0,0"
+                                          ToolTip="If you want to find TMS or MEOX derivative elements, please check this option.">
+                                </CheckBox>
+                                <StackPanel Margin="25,0,0,0">
+                                    <ui:LabeledContent PrependLabel="Minimum TMS count:"
+                                                       Style="{StaticResource AlignedContent}"
+                                                       ToolTip="Add the minimum number of TMS which should be reacted for your target metabolite.">
+                                        <TextBox Text="{Binding MinimumTmsCount.Value}"
+                                                 IsEnabled="{Binding IsTmsMeoxDerivative.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Minimum MEOX count:"
+                                                       Style="{StaticResource AlignedContent}"
+                                                       ToolTip="Add the minimum number of MEOX which should be reacted for your target metabolite.">
+                                        <TextBox Text="{Binding MinimumMeoxCount.Value}"
+                                                 IsEnabled="{Binding IsTmsMeoxDerivative.Value}"/>
+                                    </ui:LabeledContent>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,8,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Options" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Maximum report number:"
+                                                   AppendLabel="up to 100"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="The nunmber of reported formula">
+                                    <TextBox Text="{Binding FormulaMaximumReportNumber.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Time out (-1 means infinite):"
+                                                   AppendLabel="min"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Time out setting">
+                                    <TextBox Text="{Binding FormulaPredictionTimeOut.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Advanced settings for AIF:"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="This rule is based on the current report statistics. Please see http://www.ncbi.nlm.nih.gov/pubmed/17389044.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding CanExcuteMS2AdductSearch.Value}" VerticalAlignment="Center" />
+                                        <Button Content="Setting" Command="{Binding OpenSetAdductTypeWindow}" Margin="20, 0,0,0"/>
+                                    </StackPanel>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_StructureFinder" Header="Structure finder">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <Label Content="In silico MS/MS or EI-MS fragmenter setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Tree depth:"
+                                                   AppendLabel="[1-3]"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="The number of cleavages.">
+                                    <TextBox Text="{Binding TreeDepth.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,8,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Options" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Maximum report number:"
+                                                   AppendLabel="up to 100"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="The nunmber of reported structures">
+                                    <TextBox Text="{Binding StructureMaximumReportNumber.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Time out (-1 means infinite):"
+                                                   AppendLabel="min"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Time out setting">
+                                    <TextBox Text="{Binding StructurePredictionTimeOut.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Cut off for structure elucidation:"
+                                                   AppendLabel="0-10 (total score)"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Cut off setting">
+                                    <TextBox Text="{Binding StructurePredictionTimeOut.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Cut off for spectral match:"
+                                                   AppendLabel="0-100 (%)"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Cut off setting">
+                                    <TextBox Text="{Binding ScoreCutOffForSpectralMatch.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,8,0,0">
+                            <GroupBox.Header>
+                                <Label Content="FSEA setting" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="Relative abundance cut off [%]:"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the cut off value for removing noise effects.">
+                                    <TextBox Text="{Binding FseaRelativeAbundanceCutOff.Value}"/>
+                                </ui:LabeledContent>
+                                <ui:LabeledContent PrependLabel="Fisher's exact test P-value cut off [%]:"
+                                                   AppendLabel="%"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   ToolTip="Add the cut off of P value.">
+                                    <TextBox Text="{Binding FseaPvalueCutOff.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_Database" Header="Data source">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Local Databases" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="8,0,0,0">
+
+                                    <CheckBox Content="HMDB (Human)"
+                                              IsChecked="{Binding Hmdb.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="Serum (Human)"
+                                              IsChecked="{Binding Serum.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="YMDB (Yeast)"
+                                              IsChecked="{Binding Ymdb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="FooDB (Food)"
+                                              IsChecked="{Binding Foodb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <CheckBox Content="Urine (Human)"
+                                              IsChecked="{Binding Urine.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="CSF (Human)"
+                                              IsChecked="{Binding Csf.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="ECMDB (E.coli)"
+                                              IsChecked="{Binding Ecmdb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="PlantCyc (Plant)"
+                                              IsChecked="{Binding Plantcyc.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="8,0,0,0">
+                                    <CheckBox Content="Saliva (Human)"
+                                              IsChecked="{Binding Saliva.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="SMPDB (Human)"
+                                              IsChecked="{Binding Smpdb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="BMDB (Bovine)"
+                                              IsChecked="{Binding Bmdb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="ChEBI (Biomolecules)"
+                                              IsChecked="{Binding Chebi.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3" Margin="8,0,0,0">
+                                    <CheckBox Content="Feces (Human)"
+                                              IsChecked="{Binding Feces.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="LipidMAPS (Lipids)"
+                                              IsChecked="{Binding Lipidmaps.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="DrugBank (Drug)"
+                                              IsChecked="{Binding Drugbank.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="T3DB (Toxin)"
+                                              IsChecked="{Binding T3db.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,5,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="190" />
+                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="8,0,0,0">
+                                    <CheckBox Content="STOFF (Environment)"
+                                              IsChecked="{Binding Stoff.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="NANPDB (Natural product)"
+                                              IsChecked="{Binding Nanpdb.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="KNApSAcK (Natural product)"
+                                              IsChecked="{Binding Knapsack.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <CheckBox Content="BLEXP (blood exposome)"
+                                              IsChecked="{Binding Blexp.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="COCONUT (Natural product)"
+                                              IsChecked="{Binding Coconut.Value}"
+                                              Margin="5, 10,0,0"/>
+                                    <CheckBox Content="PubChem (Biomolecules)"
+                                              IsChecked="{Binding Pubchem.Value}"
+                                              Margin="5, 10,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="8,0,0,0">
+                                    <CheckBox Content="NPA (Natural Products Atlas)"
+                                              IsChecked="{Binding Npa.Value}"
+                                              Margin="5, 0,0,0"/>
+                                    <CheckBox Content="UNPD (Natural product)"
+                                              IsChecked="{Binding Unpd.Value}"
+                                              Margin="5, 36,0,0"
+                                              VerticalAlignment="Bottom"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Grid.Column="0" BorderThickness="0" Margin="0,5,0,0">
+
+                        </GroupBox>
+                        <GroupBox Grid.Row="3" Grid.Column="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <Label Content="MINEs (Metabolic In silico Network Expansions) setting"  FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0" Orientation="Horizontal">
+                                <RadioButton Content="Never use it."
+                                             IsChecked="{Binding IsMinesNeverUse.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                                <RadioButton Content="Only use when there is no query in local DBs."
+                                             IsChecked="{Binding IsMinesOnlyUseForNecessary.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                                <RadioButton Content="Always use it."
+                                             IsChecked="{Binding IsMinesAllTime.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="4" Grid.Column="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <Label Content="PubChem Online setting"  FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0" Orientation="Horizontal">
+                                <RadioButton Content="Never use it."
+                                             IsChecked="{Binding IsPubChemNeverUse.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                                <RadioButton Content="Only use when there is no query in local DBs."
+                                             IsChecked="{Binding IsPubChemOnlyUseForNecessary.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                                <RadioButton Content="Always use it."
+                                             IsChecked="{Binding IsPubChemAllTime.Value}"
+                                             Margin="5,0,0,0"
+                                             VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_RetentionTime" Header="Retention time">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUsePredictedRtForStructureElucidation.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use predicted RT/RI values for structure elucidation"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="RT tolerance:"
+                                                   AppendLabel="min"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <TextBox IsEnabled="{Binding IsUsePredictedRtForStructureElucidation.Value}"
+                                             Text="{Binding RtToleranceForStructureElucidation.Value}"/>
+                                </ui:LabeledContent>
+                                <GroupBox Header="RT resource" IsEnabled="{Binding IsUsePredictedRtForStructureElucidation.Value}">
+                                    <StackPanel>
+                                        <StackPanel Margin="10, 8" Orientation="Horizontal">
+                                            <RadioButton Content="From user-library"
+                                                         IsChecked="{Binding IsUseRtInchikeyLibrary.Value}"
+                                                         d:IsChecked="True"/>
+                                            <RadioButton Content="Calculated by XLogP based equation"
+                                                         IsChecked="{Binding IsUseXlogpPrediction.Value}"
+                                                         Margin="20, 0, 0, 0"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <StackPanel.Resources>
+                                                <Style TargetType="{x:Type ui:ExecutableBar}" BasedOn="{StaticResource AlignedExecutableBar}">
+                                                    <Setter Property="ButtonHeight" Value="45"/>
+                                                </Style>
+                                                <Style TargetType="{x:Type ui:LabeledContent}" x:Key="AlignedContentTemp">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ui:LabeledContent">
+                                                                <Grid HorizontalAlignment="Stretch">
+
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <GroupBox Header="User-defined InChIKey-RT text library"
+                                                      IsEnabled="{Binding IsUseRtInchikeyLibrary.Value}"
+                                                      BorderThickness="0"
+                                                      FontStyle="Italic">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="210"/>
+                                                        <ColumnDefinition Width="274"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                                    <TextBox Grid.Column="1"
+                                                             Name="TextBox_RtInChIKeyDictionaryFilepath"
+                                                             Text="{Binding RtInChIKeyDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                                        <TextBox.ToolTip>
+                                                            <TextBlock>
+                                                                File format (tab-delimited text) <LineBreak />
+                                                                Header: [0] InChIKey [1] RT (min) <LineBreak />
+                                                                From second row (ex.):  <LineBreak />
+                                                                AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) 3.2 <LineBreak />
+                                                                BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) 3.5 <LineBreak />
+                                                                CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) 2.6 <LineBreak />
+                                                                DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) 3.3
+                                                            </TextBlock>
+                                                        </TextBox.ToolTip>
+                                                    </TextBox>
+                                                    <Button Grid.Column="2"
+                                                            Name="Button_RtInChIKeyDictionaryFilepath_Browse"
+                                                            Content="Select"
+                                                            Click="Button_RtInChiKeyDictionaryFilepath_Browse_Click"
+                                                            Margin="8,0,0,0"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Header="XLogP based RT prediction and cut off setting for structure elucidation"
+                                                      IsEnabled="{Binding IsUseXlogpPrediction.Value}"
+                                                      BorderThickness="0"
+                                                      FontStyle="Italic">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="210"/>
+                                                        <ColumnDefinition Width="274"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                                    <TextBox Grid.Column="1"
+                                                             Name="TextBox_RtSmilesDictionaryFilepath"
+                                                             Text="{Binding RtSmilesDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                                        <TextBox.ToolTip>
+                                                            <TextBlock>
+                                                                File format (tab-delimited text) <LineBreak />
+                                                                Header: [0] Name [1] RT (min) [2] SMILES <LineBreak />
+                                                                From second row (ex.):  <LineBreak />
+                                                                Compound A (tab) 3.2 (tab) CCCCO <LineBreak />
+                                                                Compound B (tab) 3.5 (tab) CCOCCO <LineBreak />
+                                                                Compound C (tab) 2.6 (tab) CCCO <LineBreak />
+                                                                Compound D (tab) 3.3 (tab) CCCCN
+                                                            </TextBlock>
+                                                        </TextBox.ToolTip>
+                                                    </TextBox>
+                                                    <Button Grid.Column="2"
+                                                            Name="Button_RtSmilesDictionaryFilepath_Browse"
+                                                            Content="Select"
+                                                            Click="Button_RtSmilesDictionaryFilepath_Browse_Click"
+                                                            Margin="8,0,0,0"/>
+                                                </Grid>
+                                            </GroupBox>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Summary:" BorderThickness="0">
+                                    <TextBox Name="TextBox_RtPredictionSummary" 
+                                             Text="{Binding RtPredictionSummaryReport.Value}"
+                                             Height="25"
+                                             HorizontalAlignment="Stretch"
+                                             VerticalAlignment="Top"
+                                             VerticalContentAlignment="Center"
+                                             Style="{StaticResource ReadOnlyTextBox}"/>
+                                </GroupBox>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseExperimentalRtForSpectralSearching.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use experimental RT/RI values for searching"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <RadioButton Name="RadioButton_RetentionTime"
+                                                 Content="Retention time"
+                                                 IsEnabled="{Binding IsUseExperimentalRtForSpectralSearching.Value}"
+                                                 IsChecked="{Binding RetentionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=RT}"
+                                                 d:IsChecked="True"/>
+                                    <RadioButton Name="RadioButton_RetentionIndex"
+                                                 Content="Retention index"
+                                                 IsEnabled="{Binding IsUseExperimentalRtForSpectralSearching.Value}"
+                                                 IsChecked="{Binding RetentionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=RI}"
+                                                 Margin="20,0,0,0"/>
+
+                                </StackPanel>
+                                <ui:LabeledContent PrependLabel="RT(min) / RI tolerance:"
+                                                   Style="{StaticResource AlignedContent}"
+                                                   Margin="0,5,0,0">
+                                    <TextBox Text="{Binding RtToleranceForSpectralSearching.Value}"
+                                             IsEnabled="{Binding IsUseExperimentalRtForSpectralSearching.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseRtForFilteringCandidates.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use retention time to 'exclude' candidates"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_CCS" Header="CCS">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use predicted CCS values for structure elucidation"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="CCS tolerance:"
+                                                   AppendLabel="Ao^2"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <TextBox IsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                             Text="{Binding CcsToleranceForStructureElucidation.Value}"/>
+                                </ui:LabeledContent>
+                                <GroupBox Header="User-defined InChIKey-Adduct-CCS text library"
+                                                      IsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                                      BorderThickness="0"
+                                                      FontStyle="Italic"
+                                                      Margin="0,8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="210"/>
+                                            <ColumnDefinition Width="274"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                        <TextBox Grid.Column="1"
+                                                             Name="TextBox_CcsAdductInChIKeyDictionaryFilepath"
+                                                             Text="{Binding CcsAdductInChIKeyDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                            <TextBox.ToolTip>
+                                                <TextBlock>
+                                                    File format (tab-delimited text) <LineBreak />
+                                                    Header: [0] InChIKey [1] Adduct type [2] CCS <LineBreak />
+                                                    From second row (ex.):  <LineBreak />
+                                                    AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) [M+H]+ (tab) 3.2 <LineBreak />
+                                                    BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) [M+NH4]+ (tab) 3.5 <LineBreak />
+                                                    CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) [M+Na]+ (tab) 2.6 <LineBreak />
+                                                    DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) [M+H]+ (tab) 3.3
+                                                </TextBlock>
+                                            </TextBox.ToolTip>
+                                        </TextBox>
+                                        <Button Grid.Column="2"
+                                                Name="Button_CcsAdductInChIKeyDictionaryFilepath_Browse"
+                                                Content="Select"
+                                                Click="Button_CcsAdductInChiKeyDictionaryFilepath_Browse_Click"
+                                                Margin="8,0,0,0"/>
+                                    </Grid>
+                                </GroupBox>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseExperimentalCcsForSpectralSearching.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use experimental CCS values for searching"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="CCS tolerance:"
+                                                   AppendLabel="Ao^2"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <TextBox IsEnabled="{Binding IsUseExperimentalCcsForSpectralSearching.Value}"
+                                             Text="{Binding CcsToleranceForSpectralSearching.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseCcsForFilteringCandidates.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use CCS to 'exclude' candidates"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</UserControl>

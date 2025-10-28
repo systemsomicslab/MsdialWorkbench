@@ -23,27 +23,27 @@ namespace CompMs.MsdialCore.Export
     public interface IAnalysisMetadataAccessor
     {
         string[] GetHeaders();
-        Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile);
+        Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle);
     }
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
     {
-        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) {
+        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) {
             this.refer = refer;
             this.parameter = parameter;
             this.type = type;
         }
 
         protected readonly ParameterBase parameter;
-        protected readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+        protected readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer;
         private readonly ExportspectraType type;
 
         public string[] GetHeaders() => GetHeadersCore();
 
-        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
+        public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var matchResult = NullIfUnknown(feature.MatchResults.Representative);
             var reference = matchResult is null ? null : refer.Refer(matchResult);
-            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile);
+            return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums(), analysisFile, exportStyle);
         }
 
         protected virtual string[] GetHeadersCore() {
@@ -84,7 +84,8 @@ namespace CompMs.MsdialCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList,
-            AnalysisFileBean analysisFile) {
+            AnalysisFileBean analysisFile,
+            ExportStyle exportStyle) {
 
             IEnumerable<string> comments = Enumerable.Empty<string>();
             if (!string.IsNullOrEmpty(feature.Comment)) {
@@ -117,15 +118,15 @@ namespace CompMs.MsdialCore.Export
                 // "m/z matched",
                 { "MS/MS matched", (matchResult?.IsSpectrumMatch ?? false).ToString() },
                 // { "m/z similarity", mzSimilarity },
-                { "Simple dot product", ValueOrNull(matchResult?.SimpleDotProduct, "F2") },
-                { "Weighted dot product", ValueOrNull(matchResult?.WeightedDotProduct, "F2") },
-                { "Reverse dot product", ValueOrNull(matchResult?.ReverseDotProduct, "F2") },
+                { "Simple dot product", ValueOrNull(matchResult?.SimpleDotProduct, "F3") },
+                { "Weighted dot product", ValueOrNull(matchResult?.WeightedDotProduct, "F3") },
+                { "Reverse dot product", ValueOrNull(matchResult?.ReverseDotProduct, "F3") },
                 { "Matched peaks count", ValueOrNull(matchResult?.MatchedPeaksCount, "F2") },
                 { "Matched peaks percentage", ValueOrNull(matchResult?.MatchedPeaksPercentage, "F2") },
-                { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
+                { "Total score", ValueOrNull(matchResult?.TotalScore, "F3") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
                 { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile) }
+                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) }
             };
         }
 
@@ -138,16 +139,16 @@ namespace CompMs.MsdialCore.Export
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            return string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
-        private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile) {
+        private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile, ExportStyle exportStyle) {
             var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, parameter, analysisFile.AcquisitionType);
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            var strSpectrum = string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
-            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+            var strSpectrum = string.Join(" ", spectrum.Select(peak => string.Format("{0:F5}:{1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !exportStyle.TrimToExcelLimit) {
                 return strSpectrum;
             }
             var builder = new System.Text.StringBuilder();

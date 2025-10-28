@@ -82,7 +82,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider, stubFile);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
 
             Assert.AreEqual("699.99951", content["m/z left"]);
             Assert.AreEqual("700.00001", content["m/z"]);

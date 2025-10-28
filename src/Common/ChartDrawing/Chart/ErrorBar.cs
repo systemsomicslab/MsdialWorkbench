@@ -89,7 +89,7 @@ namespace CompMs.Graphics.Chart
 
                 if (herrors != null) {
                     var b = haxis.TranslateToAxisValue(0d);
-                    foreach ((var herr, var item) in herrors.Zip(items)) {
+                    foreach ((var herr, var item) in herrors.ZipInternal(items)) {
                         item.HorizontalLower = item.HorizontalCenter + b - haxis.TranslateToAxisValue(herr.Item1);
                         item.HorizontalUpper = item.HorizontalCenter - b + haxis.TranslateToAxisValue(herr.Item2);
                     }
@@ -97,7 +97,7 @@ namespace CompMs.Graphics.Chart
 
                 if (verrors != null) {
                     var b = vaxis.TranslateToAxisValue(0d);
-                    foreach ((var verr, var item) in verrors.Zip(items)) {
+                    foreach ((var verr, var item) in verrors.ZipInternal(items)) {
                         item.VerticalLower = item.VerticalCenter + b - vaxis.TranslateToAxisValue(verr.Item1);
                         item.VerticalUpper = item.VerticalCenter - b + vaxis.TranslateToAxisValue(verr.Item2);
                     }
@@ -211,6 +211,13 @@ namespace CompMs.Graphics.Chart
             CoerceValue(ItemsProperty);
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+            InvalidateVisual();
+        }
+
         public static readonly DependencyProperty VerticalPropertyProperty =
             DependencyProperty.Register(
                 nameof(VerticalProperty), typeof(string), typeof(ErrorBar),
@@ -240,6 +247,13 @@ namespace CompMs.Graphics.Chart
             base.OnVerticalRangeChanged(sender, e);
             ShouldCoerceItems = true;
             CoerceValue(ItemsProperty);
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+            InvalidateVisual();
         }
 
         public static readonly DependencyProperty LinePenProperty =

@@ -71,6 +71,8 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
 
     public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
+    public PeakLinkModel PeakLinks => _model.PeakLinkModel;
+
     public IAxisManager<double> HorizontalAxis { get; }
 
     public ReadOnlyReactivePropertySlim<IAxisManager<double>?> VerticalAxis { get; }
@@ -112,4 +114,7 @@ internal class AlignmentPeakPlotViewModel : ViewModelBase
         using var vm = new ExportMrmprobsViewModel(m);
         _broker.Publish(vm);
     }
+
+    public ReactiveCommand? SpectraSimilarityMapCommand { get; set; }
+    public ReactiveCommand? SpectraGroupingCommand { get; set; }
 }

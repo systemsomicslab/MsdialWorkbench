@@ -133,6 +133,12 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool isAlignSpotViewSelected;
 
+        public bool UseCurrentFiltering {
+            get => _useCurrentFiltering;
+            set => SetProperty(ref _useCurrentFiltering, value);
+        }
+        private bool _useCurrentFiltering;
+
         public ReadOnlyReactivePropertySlim<bool> AvailableFileResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableIonEdge { get; }
@@ -157,10 +163,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter);
+                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering);
                 }
                 else {
-                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter);
+                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter, UseCurrentFiltering);
                 }
             });
         }
@@ -169,10 +175,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter);
+                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering);
                 }
                 else {
-                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter);
+                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter, UseCurrentFiltering);
                 }
             });
         }

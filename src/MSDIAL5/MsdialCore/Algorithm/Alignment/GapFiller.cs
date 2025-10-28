@@ -33,13 +33,17 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var target = peaks.First(peak => peak?.FileID == fileID);
             target.PeakShape.EstimatedNoise = GetEstimatedNoise(detected);
 
-            var chromXCenter = GetCenter(detected);
+            var chromXCenter = GetCenter(spot, detected);
             var peakWidth = GetPeakWidth(detected);
             var peaklist = GetPeaks(ms1Spectra, rawSpectra, spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
             GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
-        protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
+        public virtual bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
+            return spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0;
+        }
+
+        protected abstract ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
         protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
             return peaks.Max(n => n.PeakShape.EstimatedNoise);
@@ -56,7 +60,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 return;
             }
             var result = alignmentChromPeakFeature;
-            result.PeakID = -2;
+            if (result.MasterPeakID < 0) {
+                result.MasterPeakID = -2;
+                result.PeakID = -2;
+            }
 
             var centralAx = center.Value;
             (var candidates, var minId) = GetPeakTopCandidates(peaklist, centralAx, axTol);
@@ -156,23 +163,30 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
-            double peakAreaAboveZero = 0d;
-            if (center.Type == ChromXType.RI) {
+            double peakAreaAboveZero = 0d, baseline = 0d;
+            if (center.Type == ChromXType.RI || center.Type == ChromXType.RT) {
                 for (int i = leftId; i < rightId; i++) {
                     peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.RT.Value - sPeaklist[i].ChromXs.RT.Value);
                 }
+                peakAreaAboveZero *= 60d;
+
+                baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.RT.Value - sPeaklist[leftId].ChromXs.RT.Value) / 2;
+                baseline *= 60d;
             }
             else {
                 for (int i = leftId; i < rightId; i++) {
                     peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value);
                 }
+                baseline = (sPeaklist[leftId].Intensity + sPeaklist[rightId].Intensity) * (sPeaklist[rightId].ChromXs.Value - sPeaklist[leftId].ChromXs.Value) / 2;
             }
 
             System.Diagnostics.Debug.Assert(sPeaklist[id].ChromXs != null);
             System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);
             System.Diagnostics.Debug.Assert(sPeaklist[rightId].ChromXs != null);
 
-            result.Mass = center.Mz.Value;
+            if (result.MasterPeakID < 0) {
+                result.Mass = center.Mz.Value;
+            }
             result.ChromScanIdTop = id;
             result.ChromScanIdLeft = leftId;
             result.ChromScanIdRight = rightId;
@@ -182,7 +196,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakHeightTop = sPeaklist[id].Intensity;
             result.PeakHeightLeft = sPeaklist[leftId].Intensity;
             result.PeakHeightRight = sPeaklist[rightId].Intensity;
-            result.PeakAreaAboveZero = peakAreaAboveZero * 60;
+            result.PeakAreaAboveZero = peakAreaAboveZero;
+            result.PeakAreaAboveBaseline = peakAreaAboveZero - baseline;
             result.PeakShape.SignalToNoise = (float)result.PeakHeightTop / result.PeakShape.EstimatedNoise;
         }
 
@@ -198,6 +213,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakHeightLeft = 0;
             result.PeakHeightRight = 0;
             result.PeakAreaAboveZero = 0;
+            result.PeakAreaAboveBaseline = 0;
             result.PeakShape.SignalToNoise = 0;
         }
     }

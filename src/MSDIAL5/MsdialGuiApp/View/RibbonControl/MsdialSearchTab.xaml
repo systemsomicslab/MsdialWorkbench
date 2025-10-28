@@ -20,12 +20,19 @@
         <RibbonButton Label="Spectral search" LargeImageSource="{StaticResource Spectral_library_search_is}"
                       IsEnabled="False"
                       KeyTip="S"/>
-        <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
-                      Command="{Binding GoToMsfinderCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                      KeyTip="M"/>
         <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
                       Command="{Binding ShowMassqlSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
+        <RibbonSplitButton Label="MS-FINDER search" LargeImageSource="{StaticResource Msfinder_is}"
+                           Command="{Binding ShowMsfinderSettingViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                           KeyTip="M">
+            <RibbonGallery>
+                <RibbonMenuItem Header="Batch analysis" Command="{Binding ShowMsfinderSettingViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" KeyTip="B"/>
+                <RibbonMenuItem Header="Parameter setting" Command="{Binding ShowMsfinderSettingViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" ToolTip="MS-FINDER setting" KeyTip="P"/>
+                <RibbonMenuItem Header="Use external MS-FINDER" Command="{Binding GoToMsfinderCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}" KeyTip="F"/>
+            </RibbonGallery>
+        </RibbonSplitButton>
+                           
         <RibbonButton Label="Find target compounds"
                       Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="C"/>

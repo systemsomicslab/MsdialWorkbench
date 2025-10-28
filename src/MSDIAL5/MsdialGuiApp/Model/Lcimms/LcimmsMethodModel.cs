@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
@@ -36,9 +37,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
     internal sealed class LcimmsMethodModel : MethodModelBase
     {
         static LcimmsMethodModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift)!;
         }
 
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
             if (storage is null) {
@@ -68,15 +70,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFileBeanModelCollection.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
-            var peakGroup = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(
-                    analysisFiles,
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
-                new[]
-                {
+            ExportType[] quantTypes =
+                [
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
                     new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
                     new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
@@ -89,28 +84,56 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
-                },
-                new AccessPeakMetaModel(metadataAccessorFactory),
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                ];
+            AccessPeakMetaModel peakMeta = new(metadataAccessorFactory);
+            AccessFileMetaModel fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(analysisFiles, ExportFormat.Tsv, ExportFormat.Csv ),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
+            AlignmentResultExportModel = new AlignmentResultExportModel([peakGroup, spectraGroup, gnps, spectraAndReference,], alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
+
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter)
+            {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter))
+                {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
+            var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -141,7 +164,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakFilterModel PeakFilterModel { get; }
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public ParameterExportModel ParameterExportModel { get; }
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
 
+        public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
@@ -159,6 +185,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
                 _fileProperties,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }
@@ -180,6 +207,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _peakSpotFiltering,
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
+                _msfinderSearcherFactory,
                 _broker)
             .AddTo(Disposables);
         }
@@ -197,16 +225,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 int usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true);
-                var runner = new ProcessRunner(processor);
-                if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                    if (!RunFileProcess(Storage.AnalysisFiles, usable, runner)) {
-                        return;
-                    }
-                }
-                else {
-                    if (!RunAnnotation(Storage.AnalysisFiles, usable, runner)) {
-                        return;
-                    }
+                var runner = new ProcessRunner(processor, usable);
+                if (!RunFileProcess(Storage.AnalysisFiles, runner, processOption)) {
+                    return;
                 }
             }
 
@@ -227,17 +248,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new LcimmsStandardAnnotationProcess(Storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, matchResultEvaluator, Storage.DataBaseMapper);
         }
 
-        private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
+        private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
-                vm => runner.RunAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
-                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool RunAnnotation(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
-            var request = new ProgressBarMultiContainerRequest(
-                vm => runner.AnnotateAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
+                vm => runner.RunAllAsync(analysisFiles, processOption, vm.ProgressBarVMs.Select(vm_ => new Progress<int>(v => vm_.CurrentValue = v)), vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
@@ -298,7 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     Label = "Nist format (*.msp)"
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
                     [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(factory.Create(file), Storage.Parameter.MS2DataType)),
                 })
                 {

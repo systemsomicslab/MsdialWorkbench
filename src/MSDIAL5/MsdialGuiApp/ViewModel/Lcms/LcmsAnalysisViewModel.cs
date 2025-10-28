@@ -6,15 +6,19 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -47,7 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
 
-            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel, broker).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
@@ -69,6 +73,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var message = new ShortMessageWindow() {
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        Title = "MS-FINDER running in the background...",
+                        Width = 400,
+                        Height = 100
+                    };
+                    message.Show();
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    message.Close();
+                if (msfinder is not null) {
+                    broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                }
+            }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null) {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
+
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ is not null)
                 .Select(model_ => new ExperimentSpectrumViewModel(model_!))
@@ -85,16 +112,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            if (model.MoleculeStructureModel is null) {
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, matchResultCandidatesViewModel, };
-            }
-            else {
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            } 
+            if (model.MoleculeStructureModel is not null) {
                 MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
             }
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
+
+            AdhocExportProductIonAbundanceResultCommand = new AsyncReactiveCommand()
+                .WithSubscribe(() => model.ExportProductIonAbundanceResultAsync())
+                .AddTo(Disposables);
         }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
@@ -134,14 +168,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
+                
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
 
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
-        }
-
+        public AsyncReactiveCommand AdhocExportProductIonAbundanceResultCommand { get; }
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, _model.CanSaveSpectra);
         private DelegateCommand? _saveMs2SpectrumCommand;

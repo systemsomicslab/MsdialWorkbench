@@ -1,8 +1,10 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.Parameter;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
@@ -27,6 +29,10 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
         [Key(156)]
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
+
+        public Dictionary<int, RetentionIndexHandler> GetRIHandlers() {
+            return RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(RiCompoundType, kvp.Value.RiDictionary));
+        }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();

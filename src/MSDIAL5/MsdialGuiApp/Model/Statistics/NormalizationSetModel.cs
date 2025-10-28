@@ -65,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }.Merge().Switch()
             .ToReadOnlyReactivePropertySlim(initialValue: false)
             .AddTo(Disposables);
+            FileCollection = fileCollection;
         }
 
         public ReadOnlyReactivePropertySlim<bool> IsNormalized { get; }
@@ -123,6 +124,9 @@ namespace CompMs.App.Msdial.Model.Statistics
         public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty { get; }
 
         public IObservable<Unit> Normalized => _normalized;
+
+        public AnalysisFileBeanModelCollection FileCollection { get; }
+
         private readonly Subject<Unit> _normalized;
 
         public void Normalize() {

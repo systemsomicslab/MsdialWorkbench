@@ -93,6 +93,7 @@ namespace CompMs.Common.Lipidomics
                         new LPId5LipidParser(),
                         new LPGd5LipidParser(),
                         new LPSd5LipidParser(),
+                        new LPALipidParser(),
                         new CeramideNsD7LipidParser(),
                         new SMd9LipidParser(),
                         new DGd5LipidParser(),

@@ -23,6 +23,8 @@ NAGln,NAGln,1,,,1,1
 NALeu,NALeu,1,,,1,1
 NAVal,NAVal,1,,,1,1
 NASer,NASer,1,,,1,1
+NAAnt,NAAnt,1,,,1,1
+NAGABA,NAGABA,1,,,1,1
 WE,WE,1,1,,,2
 PA,PA,2,,,,2
 PC,PC,2,,,,2
@@ -101,6 +103,10 @@ Cer_NDS,Cer,1,,1,,2
 Cer_NS,Cer,1,,1,,2
 Cer_NP,Cer,1,,1,,2
 Cer_AP,Cer,1,,1,,2
+Cer_AH,Cer,1,,1,,2
+Cer_NH,Cer,1,,1,,2
+Cer_AH_d9,Cer,1,,1,,2
+Cer_NH_d9,Cer,1,,1,,2
 Cer_ABP,Cer,1,,1,,2
 Cer_EBDS,Cer,1,,1,1,2
 Cer_HS,Cer,1,,1,,2

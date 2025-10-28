@@ -18,7 +18,7 @@ namespace CompMs.MsdialGcMsApi.Export
         private readonly IMsScanPropertyLoader<SpectrumFeature> _loader;
         private readonly bool _trimSpectrumToExcelLimit;
 
-        public GcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMsScanPropertyLoader<SpectrumFeature> loader, bool trimSpectrumToExcelLimit = true) {
+        public GcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, IMsScanPropertyLoader<SpectrumFeature> loader, bool trimSpectrumToExcelLimit = true) {
             _refer = refer;
             _loader = loader;
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;

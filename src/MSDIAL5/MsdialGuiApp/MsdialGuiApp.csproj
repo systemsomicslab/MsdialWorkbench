@@ -10,14 +10,26 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 		<Lbm2Url>https://zenodo.org/records/11399747/files/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
-    <LangVersion>12</LangVersion>
+		<LangVersion>12</LangVersion>
+		<IcdUrl>https://zenodo.org/records/12618137/files/InchikeyClassyfireDB-VS5.icd</IcdUrl>
+		<MsdUrl>https://zenodo.org/records/12618137/files/MINEs-StructureDB-vs1.msd</MsdUrl>
+		<EsdUrl>https://zenodo.org/records/12618137/files/MsfinderStructureDB-VS15.esd</EsdUrl>
+		<EtmUrl>https://zenodo.org/records/12618137/files/MSMS-DBs-vs1.etm</EtmUrl>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>
 			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
+			<_DeployToItemIcd Include="$(OutputPath)\Resources\msfinderLibrary\*.icd" />
+			<_DeployToItemMsd Include="$(OutputPath)\Resources\msfinderLibrary\*.msd" />
+			<_DeployToItemEsd Include="$(OutputPath)\Resources\msfinderLibrary\*.esd" />
+			<_DeployToItemEtm Include="$(OutputPath)\Resources\msfinderLibrary\*.etm" />
 		</ItemGroup>
 		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)')" />
+		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)')" />
+		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)')" />
+		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)')" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -31,23 +43,45 @@
 		<None Remove="Resources\BinVestigate.ico" />
 		<None Remove="Resources\CompoundSearchIcon.ico" />
 		<None Remove="Resources\Deconvoluted.ico" />
+		<None Remove="Resources\FseaResultViewer.ico" />
+		<None Remove="Resources\IsotopeButton.ico" />
 		<None Remove="Resources\Lipoquality.ico" />
 		<None Remove="Resources\MolecularNetworking.ico" />
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
+		<None Remove="Resources\NeutralLossButton.ico" />
+		<None Remove="Resources\notame.png" />
+		<None Remove="Resources\Notame.R" />
+		<None Remove="Resources\ProductIonButton.ico" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
+		<None Remove="Resources\RawDataButton.ico" />
+		<None Remove="Resources\Report.R" />
 		<None Remove="Resources\SplashLipids.xml" />
+		<None Remove="Resources\SubstructureViewer.ico" />
 		<None Remove="Resources\Table.png" />
+		<Resource Include="Resources\FseaResultViewer.ico">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\IsotopeButton.ico">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Report.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\Notame.R">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="MessagePack" Version="1.7.3.7" />
 	  <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="R.NET" Version="1.9.0" />
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
 	</ItemGroup>
 	<ItemGroup>
@@ -55,7 +89,7 @@
 	  <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
     <ProjectReference Include="..\..\Common\CommonSourceGenerator\CommonSourceGenerator.csproj">
       <OutputItemType>Analyzer</OutputItemType>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
 	  <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
 	  <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
@@ -83,10 +117,23 @@
 	  <Resource Include="Resources\msfinder_icon.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="Resources\NeutralLossButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\ProductIonButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\notame.png" />
 	  <Resource Include="Resources\RawAndDeconvo.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="Resources\RawChromatogram.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\RawDataButton.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Resources\SubstructureViewer.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
 	  <Resource Include="Resources\Table.png">
@@ -210,6 +257,33 @@
         <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
+
+	<ItemGroup>
+		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Update="Properties\Resources.resx">

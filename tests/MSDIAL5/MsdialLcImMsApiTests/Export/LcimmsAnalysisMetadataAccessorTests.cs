@@ -104,7 +104,7 @@ namespace CompMs.MsdialLcImMsApi.Export.Tests
             var msdec = new MSDecResult();
             var analysisFile = new AnalysisFileBean();
 
-            var dict = accessor.GetContent(feature, msdec, new MockDataProvider(), analysisFile);
+            var dict = accessor.GetContent(feature, msdec, new MockDataProvider(), analysisFile, new());
 
             Assert.AreEqual("1.100", dict["RT left(min)"]);
             Assert.AreEqual("1.200", dict["RT (min)"]);

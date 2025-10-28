@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public void SelectDestination() {
             var fbd = new Graphics.Window.SelectFolderDialog
             {
-                Title = "Chose a export folder.",
+                Title = "Choose a export folder.",
             };
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 DestinationFolder = fbd.SelectedPath;

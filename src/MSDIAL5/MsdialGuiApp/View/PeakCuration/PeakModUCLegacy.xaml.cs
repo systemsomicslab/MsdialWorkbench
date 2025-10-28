@@ -389,7 +389,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 }
                 else if (this.Type == PeakModType.Aligned) {
                     Mouse.OverrideCursor = Cursors.Wait;
-                    UtilityLegacy.ModifyPeakEdge(this.PeakPropertyList, minX, maxX);
+                    foreach (var sample in PeakPropertyList) {
+                        sample.ModifyPeakEdge(minX, maxX);
+                    }
                     this.VM?.UpdateAlignedChromUC();
                     this.VM?.UpdatePickingChromUC();
                     Mouse.OverrideCursor = null;

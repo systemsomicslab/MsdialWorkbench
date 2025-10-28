@@ -58,6 +58,11 @@ namespace CompMs.Graphics.AxisManager.Generic
             remove => _axisManagerImpl.InitialRangeChanged -= value;
         }
 
+        public event EventHandler AxisValueMappingChanged {
+            add => _axisManagerImpl.AxisValueMappingChanged += value;
+            remove => _axisManagerImpl.AxisValueMappingChanged -= value;
+        }
+
         public bool Contains(AxisValue value) => _axisManagerImpl.Contains(value);
 
         public bool ContainsCurrent(AxisValue value) => _axisManagerImpl.ContainsCurrent(value);

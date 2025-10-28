@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.View.Setting
 
         private void Browse_Click(object sender, RoutedEventArgs e) {
             var fbd = new Graphics.Window.SelectFolderDialog {
-                Title = "Chose a export folder.",
+                Title = "Choose a export folder.",
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {

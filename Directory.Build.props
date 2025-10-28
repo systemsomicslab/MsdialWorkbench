@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug vendor unsupported'">
+    <DefineConstants>DEBUG;TRACE;VENDOR_UNSUPPORTED</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release vendor unsupported'">
+    <DefineConstants>TRACE;VENDOR_UNSUPPORTED</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+</Project>

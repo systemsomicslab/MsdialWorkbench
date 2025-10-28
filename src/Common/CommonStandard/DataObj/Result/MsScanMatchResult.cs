@@ -15,7 +15,7 @@ namespace CompMs.Common.DataObj.Result {
         DataBases = FastaDB | MspDB | TextDB | GeneratedLipid,
     }
     public enum DataBaseSource {
-        None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid
+        None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid, MsFinder,
     }
 
     [MessagePackObject]
@@ -31,11 +31,27 @@ namespace CompMs.Common.DataObj.Result {
 
         // spectral similarity
         [Key(3)]
-        public float WeightedDotProduct { get; set; }
+        public float SquaredWeightedDotProduct { get; set; }
+        [IgnoreMember]
+        public float WeightedDotProduct {
+            get => (float)Math.Sqrt(Math.Max(SquaredWeightedDotProduct, 0f));
+            set => SquaredWeightedDotProduct = value * value;
+        }
+
         [Key(4)]
-        public float SimpleDotProduct { get; set; }
+        public float SquaredSimpleDotProduct { get; set; }
+        [IgnoreMember]
+        public float SimpleDotProduct {
+            get => (float)Math.Sqrt(Math.Max(SquaredSimpleDotProduct, 0f));
+            set => SquaredSimpleDotProduct = value * value;
+        }
         [Key(5)]
-        public float ReverseDotProduct { get; set; }
+        public float SquaredReverseDotProduct { get; set; }
+        [IgnoreMember]
+        public float ReverseDotProduct {
+            get => (float)Math.Sqrt(Math.Max(SquaredReverseDotProduct, 0f));
+            set => SquaredReverseDotProduct = value * value;
+        }
         [Key(6)]
         public float MatchedPeaksCount { get; set; }
         [Key(7)]
@@ -108,6 +124,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsReferenceMatched { get; set; } = false;
         [Key(34)]
         public bool IsAnnotationSuggested { get; set; } = false;
+        [Key(36)]
+        public double CollisionEnergy { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

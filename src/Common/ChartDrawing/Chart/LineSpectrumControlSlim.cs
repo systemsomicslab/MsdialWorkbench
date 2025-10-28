@@ -157,6 +157,12 @@ namespace CompMs.Graphics.Chart
             CoerceTree();
         }
 
+        protected override void OnHorizontalMappingChanged(object sender, EventArgs e) {
+            base.OnHorizontalMappingChanged(sender, e);
+            CoerceTree();
+            InvalidateVisual();
+        }
+
         private AxisValue yBase;
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
@@ -165,6 +171,16 @@ namespace CompMs.Graphics.Chart
                 yBase = new AxisValue(1e-20);
             }
             CoerceTree();
+        }
+
+        protected override void OnVerticalMappingChanged(object sender, EventArgs e) {
+            base.OnVerticalMappingChanged(sender, e);
+            yBase = VerticalAxis?.TranslateToAxisValue(0d) ?? AxisValue.NaN;
+            if (double.IsNegativeInfinity(yBase.Value)) {
+                yBase = new AxisValue(1e-20);
+            }
+            CoerceTree();
+            InvalidateVisual();
         }
 
         private Lazy<List<LineSpectrumControlSlimItem>> tree;
@@ -412,6 +428,7 @@ namespace CompMs.Graphics.Chart
 
                 var lo = SearchCollection.LowerBound(tree.Value, new LineSpectrumControlSlimItem(hr.Minimum, 0d, null), (a, b) => a.X.Value.CompareTo(b.X.Value));
                 var hi = SearchCollection.UpperBound(tree.Value, new LineSpectrumControlSlimItem(hr.Maximum, 0d, null), (a, b) => a.X.Value.CompareTo(b.X.Value));
+                drawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(0d, 0d, actualWidth, actualHeight));
                 for (int i = lo; i < hi; i++) {
                     var item = tree.Value[i];
                     var x = haxis.TranslateToRenderPoint(item.X, flippedX, actualWidth);
@@ -423,7 +440,7 @@ namespace CompMs.Graphics.Chart
             UpdateSelectedPoint();
         }
 
-        private static readonly double radius = 3d;
+        private static readonly double radius = 4d;
 
         private bool CursorOnLine(AxisValue x, AxisValue y, LineSpectrumControlSlimItem item, double cutoff) {
             return (item.Y >= y && y > yBase || yBase > y && y >= item.Y)
@@ -477,9 +494,15 @@ namespace CompMs.Graphics.Chart
                     .Where(item => CursorOnLine(x, y, item, dx))
                     .DefaultIfEmpty()
                     .Argmin(item => Math.Abs(x - item?.X ?? 0d));
-                if (spot != null && FocusedItem != spot.Item) {
-                    FocusedItem = spot.Item;
+                if (spot is not null) {
                     FocusedPoint = pt;
+                    if (FocusedItem != spot.Item) {
+                        FocusedItem = spot.Item;
+                    }
+                }
+                else {
+                    FocusedItem = null;
+                    FocusedPoint = null;
                 }
             }
         }

@@ -33,6 +33,11 @@
                           BorderBrush="Black">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Peak spectra alignment"
+                              Command="{Binding Path=SpectraSimilarityMapCommand}"/>
+                    <MenuItem Header="Peak spectra grouping"
+                              Command="{Binding Path=SpectraGroupingCommand}"/>
+                    <Separator/>
                     <MenuItem Header="Save image using dialog"
                               Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -89,6 +94,16 @@
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
+            <chart:SpotLinkedAnnotator Spots="{Binding Spots, Mode=OneWay}"
+                                       Links="{Binding PeakLinks.Links, Mode=OneWay}"
+                                       Annotators="{Binding PeakLinks.Annotations, Mode=OneWay}"
+                                       DataType="{x:Type do:AlignmentSpotPropertyModel}"
+                                       Target="{Binding Target.Value, Mode=OneWay}"
+                                       HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
+                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                       LinkBrush="{Binding PeakLinks.LinkerBrush, Mode=OneWay}"
+                                       SpotLabelBrush="{Binding PeakLinks.SpotLabelBrush, Mode=OneWay}"
+                                       Radius="5.5"/>
             <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
                             ContentTemplate="{DynamicResource FocusCross}"
                             IsHitTestVisible="False">

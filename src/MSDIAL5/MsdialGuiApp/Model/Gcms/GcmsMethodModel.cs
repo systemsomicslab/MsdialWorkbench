@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
@@ -15,6 +16,7 @@ using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -40,7 +42,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private readonly List<CalculateMatchScore> _calculateMatchScores;
-        private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
+        private readonly ChromatogramSerializer<ChromatogramSpotInfo>? _chromatogramSpotSerializer;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -62,11 +65,14 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
             switch (storage.Parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
-                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    if (_chromatogramSpotSerializer is not null) {
+                        _chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(_chromatogramSpotSerializer, storage.Parameter.GetRIHandlers());
+                    }
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
                     break;
             }
 
@@ -78,15 +84,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new GcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            var peakGroup = new AlignmentExportGroupModel(
-                "Peaks",
-                new ExportMethod(
-                    analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToArray(),
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
-                new[]
-                {
+            ExportType[] quantTypes =
+                [
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
                     new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
                     //new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
@@ -97,28 +96,52 @@ namespace CompMs.App.Msdial.Model.Gcms
                     new ExportType("Retention index", new LegacyQuantValueAccessor("RI", storage.Parameter), "Ri"),
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
-                },
-                new AccessPeakMetaModel(metadataAccessorFactory),
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                ];
+            AccessPeakMetaModel peakMeta = new(metadataAccessorFactory);
+            AccessFileMetaModel fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod([.. analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File)], ExportFormat.Tsv, ExportFormat.Csv),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
-
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, gnps, };
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
+
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter) {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[] 
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)) {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
+
+            MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(MsfinderSettingParameter, exportMatForMsfinder, currentAlignmentFile);
         }
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
+        public MsfinderParameterSetting MsfinderSettingParameter { get; }
 
         public GcmsAnalysisModel? SelectedAnalysisModel {
             get => _selectedAnalysisModel;
@@ -156,13 +179,10 @@ namespace CompMs.App.Msdial.Model.Gcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
-                if (!RunFromPeakSpotting()) {
-                    return;
-                }
-            }
-            else if (option.HasFlag(ProcessOption.Identification)) {
-                if (!RunFromIdentification()) {
+            if (option.HasFlag(ProcessOption.Identification)) {
+                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
+                var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
+                if (!RunFileProcess(runner, option)) {
                     return;
                 }
             }
@@ -180,37 +200,14 @@ namespace CompMs.App.Msdial.Model.Gcms
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunFromPeakSpotting() {
+        private bool RunFileProcess(ProcessRunner runner, ProcessOption processOption) {
             var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.RunAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
-                _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
-            _broker.Publish(request);
-            return request.Result ?? false;
-        }
-
-        private bool RunFromIdentification() {
-            var request = new ProgressBarMultiContainerRequest(
-                vm_ =>
-                {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                    var runner = new ProcessRunner(processor);
-                    return runner.AnnotateAllAsync(
-                        _storage.AnalysisFiles,
-                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                        Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment,
-                        default);
-                },
+                vm_ => runner.RunAllAsync(
+                    _storage.AnalysisFiles,
+                    processOption,
+                    vm_.ProgressBarVMs.Select(pbvm => new Progress<int>(v => pbvm.CurrentValue = v)),
+                    vm_.Increment,
+                    default),
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
@@ -219,9 +216,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunAlignment() {
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm => {
-                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage, _evaluator)
+                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage)
                     {
-                        ReportAction = v => vm.CurrentValue = v
+                        Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.
@@ -241,12 +238,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }
 
         public CheckChromatogramsModel? ShowChromatograms(bool tic, bool bpc, bool highestEic) {

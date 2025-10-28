@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
+using CompMs.Common.Enum;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,11 @@ namespace CompMs.App.Msdial.Model.Core
             }
             _previousProjects = _settings.PreviousProjects;
             PreviousProjects = _previousProjects.AsReadOnly();
+
+            //InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Negative);
         }
+
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
 
         public IObservable<bool> NowSaving => nowSaving;
         private readonly BusyNotifier nowSaving;

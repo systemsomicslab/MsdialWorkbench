@@ -323,6 +323,32 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
+    public class LPALipidParser : ILipidParser {
+        public string Target { get; } = "LPA";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPA\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPA, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
     public class TGLipidParser : ILipidParser {
         public string Target { get; } = "TG";
 

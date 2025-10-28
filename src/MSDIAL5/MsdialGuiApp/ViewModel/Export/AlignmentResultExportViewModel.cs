@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private void BrowseDirectory() {
             var fbd = new Graphics.Window.SelectFolderDialog
             {
-                Title = "Chose a export folder.",
+                Title = "Choose a export folder.",
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
@@ -116,6 +116,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new AlignmentMatchedSpectraExportViewModel(m);
                 case AlignmentResultMassBankRecordExportModel m:
                     return new AlignmentResultMassBankRecordExportViewModel(m);
+                case AlignmentMztabMExportModel m:
+                    return new AlignmentMztabMExportViewModel(m);
+                case AlignmentGnpsExportModel m:
+                    return new AlignmentGnpsExportViewModel(m);
+                case AlignmentReferenceMatchedProductIonExportModel m:
+                    return new AlignmentReferenceMatchedProductIonExportViewModel(m);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

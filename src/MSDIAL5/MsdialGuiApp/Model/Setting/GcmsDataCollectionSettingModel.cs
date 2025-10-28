@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 
@@ -8,12 +9,12 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly ParameterBase _parameter;
 
-        public GcmsDataCollectionSettingModel(ParameterBase parameter, ProcessOption process) {
+        public GcmsDataCollectionSettingModel(ParameterBase parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, ProcessOption process) {
             _parameter = parameter;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
 
-            MassRange = new Ms1CollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false);
-            RtRange = new RetentionTimeCollectionRangeSetting(parameter.PeakPickBaseParam, needAccmulation: false);
+            MassRange = new Ms1CollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false);
+            RtRange = new RetentionTimeCollectionRangeSetting(peakPickBaseParameterModel, needAccmulation: false);
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
         }
 

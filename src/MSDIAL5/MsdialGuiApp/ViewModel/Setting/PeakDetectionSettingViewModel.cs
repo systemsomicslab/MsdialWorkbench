@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumDatapoints).AddTo(Disposables);
 
-            ExcludedMassList = Model.PeakPickSettingModel.ExcludedMassList
+            ExcludedMassList = Model.PeakPickSettingModel.ExcludedMzQueries
                 .ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
 
             AddCommand = new[]

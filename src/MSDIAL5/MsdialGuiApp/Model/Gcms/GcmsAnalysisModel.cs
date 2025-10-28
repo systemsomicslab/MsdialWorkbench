@@ -53,10 +53,11 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
         private readonly CalculateMatchScore? _calculateMatchScore;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly IMessageBroker _broker;
         private readonly RawSpectra _rawSpectra;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore? calculateMatchScore, IMessageBroker broker) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore? calculateMatchScore, MsfinderSearcherFactory msfinderSearcherFactory, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
             var peakPickParameter = parameter.PeakPickBaseParam;
             var chromDecParameter = parameter.ChromDecBaseParam;
@@ -67,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _peaks =  file.LoadChromatogramPeakFeatureModels();
             _file = file;
             _calculateMatchScore = calculateMatchScore;
+            _msfinderSearcherFactory = msfinderSearcherFactory;
             _broker = broker;
             UndoManager = new UndoManager().AddTo(_disposables);
             CompoundSearcher = new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore);
@@ -98,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 Observable.Return((string?)null),
                 gcgcBrushes.First(),
                 gcgcBrushes,
-                new PeakLinkModel(_peaks),
+                PeakLinkModel.Build(_peaks, _peaks.Select(p => p.InnerModel.PeakCharacter).ToList()),
                 horizontalAxis: PeakPlotModel.HorizontalAxis)
             {
                 HorizontalTitle = "Retention time (min)",
@@ -122,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             EicModel.VerticalTitle = "Abundance";
             PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
 
-            var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
+            var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults), dbMapper).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
             var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType);
             var decLoader = file.MSDecLoader;
@@ -143,8 +145,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var refGraphLabels = new GraphLabels("Reference EI spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Red);
-            var exporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(dbMapper.MoleculeMsRefer)).AddTo(_disposables);
-            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, exporter).AddTo(_disposables);
+            var exporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.RetryRefer<MoleculeMsReference?>(dbMapper)).AddTo(_disposables);
+            ObservableMsSpectrum refObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate.Select(rr => rr?.MatchResult), refLoader, exporter).AddTo(_disposables);
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(_disposables);
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(dbStorage, dbMapper);
@@ -220,9 +222,16 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
             compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, selectedSpectrum.Select(s => s?.MatchResults.Representative)).AddTo(_disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+            }
 
             PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel, UndoManager);
 
@@ -237,7 +246,8 @@ namespace CompMs.App.Msdial.Model.Gcms
                 (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
 
-            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode);
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode, file.AcquisitionType);
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(projectParameter);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel => _file;
@@ -254,12 +264,14 @@ namespace CompMs.App.Msdial.Model.Gcms
         public EicModel EicModel { get; }
         public PeakInformationMs1BasedModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public GcmsAnalysisPeakTableModel PeakTableModel { get; }
         public UndoManager UndoManager { get; }
 
         public GcmsAnalysisCompoundSearchUsecase CompoundSearcher { get; }
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
         public IObservable<bool> CanSetUnknown => _spectrumFeatures.SelectedSpectrum.Select(t => !(t is null));
 
@@ -290,6 +302,14 @@ namespace CompMs.App.Msdial.Model.Gcms
             return compoundSearch;
         }
 
+        public InternalMsFinderSingleSpot? CreateSingleSearchMsfinderModel() {
+            if (_spectrumFeatures.SelectedSpectrum.Value is not Ms1BasedSpectrumFeature spectrumFeature) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                return null;
+            }
+            return _msfinderSearcherFactory.CreateModelForGcmsAnalysisSpec(MsfinderParameterSetting, spectrumFeature.GetCurrentSpectrumFeature(), spectrumFeature, UndoManager);
+        }
+
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {
             return _spectrumFeatures.SaveAsync(_file);
@@ -307,11 +327,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
             throw new NotImplementedException();
         }
 
-        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter, bool useCurrentFiltering) {
             throw new NotImplementedException();
         }
 

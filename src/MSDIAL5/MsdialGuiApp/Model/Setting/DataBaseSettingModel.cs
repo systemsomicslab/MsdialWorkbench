@@ -170,11 +170,11 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         private MoleculeDataBase LoadMspDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB);
+            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB, DataBasePath);
         }
 
         private MoleculeDataBase LoadLipidDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, _parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
+            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, _parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB, DataBasePath);
         }
 
         /// <summary>
@@ -196,19 +196,26 @@ namespace CompMs.App.Msdial.Model.Setting
         private MoleculeDataBase? LoadTextDataBase() {
             const int maxAttempts = 3;
 
-            for (int attempt = 0; attempt < maxAttempts; attempt++) {
-                try {
-                    var textdb = TextLibraryParser.TextLibraryReader(DataBasePath, out string error);
-                    if (!string.IsNullOrEmpty(error)) {
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                try
+                {
+                    string error;
+                    var textdb = TextLibraryParser.TextLibraryReader(DataBasePath, out error);
+                    if (!string.IsNullOrEmpty(error))
+                    {
                         throw new Exception($"Error while reading the text database: {error}");
                     }
-                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB);
+                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB, DataBasePath);
                 }
-                catch (IOException) {
-                    if (attempt == maxAttempts - 1) {
+                catch (IOException)
+                {
+                    if (attempt == maxAttempts - 1)
+                    {
                         throw;
                     }
-                    else {
+                    else
+                    {
                         var request = new ErrorMessageBoxRequest()
                         {
                             ButtonType = System.Windows.MessageBoxButton.OKCancel,
@@ -216,7 +223,29 @@ namespace CompMs.App.Msdial.Model.Setting
                             Caption = "Unable to load the text database.",
                         };
                         MessageBroker.Default.Publish(request);
-                        if (request.Result != System.Windows.MessageBoxResult.OK) {
+                        if (request.Result != System.Windows.MessageBoxResult.OK)
+                        {
+                            return null;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (attempt == maxAttempts - 1)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        var request = new ErrorMessageBoxRequest()
+                        {
+                            ButtonType = System.Windows.MessageBoxButton.OKCancel,
+                            Content = ex.Message,
+                            Caption = "Unable to load the text database.",
+                        };
+                        MessageBroker.Default.Publish(request);
+                        if (request.Result != System.Windows.MessageBoxResult.OK)
+                        {
                             return null;
                         }
                     }

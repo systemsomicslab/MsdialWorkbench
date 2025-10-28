@@ -16,10 +16,6 @@ namespace CompMs.Common.Lipidomics
             this.totalChainGenerator = totalChainGenerator;
         }
 
-        public LipidGenerator() : this(new TotalChainVariationGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
-
-        }
-
         private readonly ITotalChainVariationGenerator totalChainGenerator;
 
         public bool CanGenerate(ILipid lipid) {
@@ -32,7 +28,7 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<ILipid> GenerateCore(ILipid lipid) {
             return lipid.Chains.GetCandidateSets(totalChainGenerator)
-                .Select(chains => new Lipid(lipid.LipidClass, lipid.Mass, chains));
+            .Select(chains => new Lipid(lipid.LipidClass, lipid.Mass, chains));
         }
 
         public IEnumerable<ILipid> GenerateUntil(ILipid lipid, Func<ILipid, bool> predicate) {

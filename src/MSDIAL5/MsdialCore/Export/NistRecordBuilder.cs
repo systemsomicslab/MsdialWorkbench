@@ -14,6 +14,7 @@ public sealed class NistRecordBuilder
         "NAME",
         "PRECURSORMZ",
         "PRECURSORTYPE",
+        "IONMODE",
         "RETENTIONTIME",
         "RETENTIONINDEX",
         "MOBILITY",
@@ -152,6 +153,7 @@ public sealed class NistRecordBuilder
 
     public void SetIonPropertyProperties(IIonProperty ionProperty) {
         _contents["PRECURSORTYPE"] = ionProperty.AdductType.AdductIonName;
+        _contents["IONMODE"] = ionProperty.AdductType.IonMode.ToString();
         _contents["CCS"] = ionProperty.CollisionCrossSection.ToString();
     }
 

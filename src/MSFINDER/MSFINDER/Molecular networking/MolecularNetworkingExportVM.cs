@@ -180,7 +180,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                     var fbd = new System.Windows.Forms.FolderBrowserDialog();
                     fbd.RootFolder = Environment.SpecialFolder.Desktop;
-                    fbd.Description = "Chose a folder where to save the exported files.";
+                    fbd.Description = "Choose a folder where to save the exported files.";
                     fbd.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
                     if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {

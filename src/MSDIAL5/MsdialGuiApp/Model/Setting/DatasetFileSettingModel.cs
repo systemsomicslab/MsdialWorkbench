@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -47,12 +48,19 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private AcquisitionType _selectedAcquisiolationType = AcquisitionType.DDA;
 
+        public string SupportingMessage {
+            get => _filetypeInfo;
+            set => SetProperty(ref _filetypeInfo, value);
+        }
+        private string _filetypeInfo = string.Empty;
+
         public void SetFiles(IEnumerable<string> files) {
             if (IsReadOnly) {
                 return;
             }
 
             FileModels.Clear();
+            var checker = new FileTypeChecker();
             foreach ((var file, var i) in files.OrderBy(file => file).WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
@@ -75,9 +83,11 @@ namespace CompMs.App.Msdial.Model.Setting
                     AcquisitionType = AcquisitionType.DDA,
                 };
                 FileModels.AddAnalysisFile(bean);
+                checker.CheckFileType(bean.AnalysisFilePath);
             }
 
             ProjectFolderPath = FileModels.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
+            SupportingMessage = checker.GetSupportMessage();
         }
 
         public void SetSelectedAquisitionTypeToAll() {
@@ -97,9 +107,7 @@ namespace CompMs.App.Msdial.Model.Setting
             var fileID_ClassName = parameter.FileID_ClassName;
             fileID_AnalysisFileType.Clear();
             fileID_ClassName.Clear();
-            var counter = 0;
             foreach (var analysisfile in IncludedFileModels) {
-                analysisfile.AnalysisFileId = counter++;
                 fileID_ClassName[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileClass;
                 fileID_AnalysisFileType[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileType;
             }
@@ -118,6 +126,61 @@ namespace CompMs.App.Msdial.Model.Setting
                 .GroupBy(analysisfile => analysisfile.AnalysisFileType)
                 .Average(group => group.Count())
                 > 4;
+        }
+
+        class FileTypeChecker {
+            public bool ContainsNetCdf { get; set; }
+            public bool ContainsAgilentD { get; set; }
+            public bool ContainsShimadzuLcd { get; set; }
+
+            public void ClearFileTypeInfo() {
+                ContainsNetCdf = false;
+                ContainsAgilentD = false;
+                ContainsShimadzuLcd = false;
+            }
+
+            public void CheckFileType(string path) {
+                var ext = Path.GetExtension(path);
+                if (string.Equals(ext, ".cdf", StringComparison.CurrentCultureIgnoreCase)) {
+                    ContainsNetCdf = true;
+                }
+                else if (string.Equals(ext, ".lcd", StringComparison.CurrentCultureIgnoreCase)) {
+                    ContainsShimadzuLcd = true;
+                }
+                else if (string.Equals(ext, ".d", StringComparison.CurrentCultureIgnoreCase)) {
+                    if (Directory.Exists(Path.Combine(path, "AcqData"))) {
+                        ContainsAgilentD = true;
+                    }
+                }
+            }
+
+            public string GetSupportMessage() {
+                var builder = new StringBuilder();
+                if (ContainsNetCdf) {
+                    builder.AppendLine("NetCDF Format Notice");
+                    builder.AppendLine("The NetCDF format requires the Unidata NetCDF library for reading data.");
+                    builder.AppendLine("If you encounter issues while attempting to read a file, please download and install the necessary library from the following link: https://downloads.unidata.ucar.edu/netcdf/.");
+                    builder.AppendLine("Note: During installation, make sure to enable the option to add the library to the system PATH environment variable.");
+                }
+                if (ContainsAgilentD) {
+                    if (builder.Length > 0) {
+                        builder.AppendLine();
+                    }
+                    builder.AppendLine("Agilent .d Format Notice");
+                    builder.AppendLine("The Agilent .d format may require Visual C++ 2013 for compatibility on newer Windows versions.");
+                    builder.AppendLine("If you encounter issues when trying to read a file, please download and install the Visual C++ 2013 Runtime from Microsoft: https://support.microsoft.com/en-us/topic/update-for-visual-c-2013-and-visual-c-redistributable-package-5b2ac5ab-4139-8acc-08e2-9578ec9b2cf1.");
+                }
+                if (ContainsShimadzuLcd) {
+                    if (builder.Length > 0) {
+                        builder.AppendLine();
+                    }
+                    builder.AppendLine("Shimadzu .lcd Format Notice");
+                    builder.AppendLine("The Shimadzu .lcd format may require Visual C++ 2015 for compatibility on newer Windows versions.");
+                    builder.AppendLine("If you experience issues while trying to read a file, please download and install the Visual C++ 2015 Runtime from Microsoft: https://www.microsoft.com/en-us/download/details.aspx?id=48145.");
+                }
+
+                return builder.ToString();
+            }
         }
     }
 }

@@ -1,18 +1,23 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -64,15 +69,47 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { PeakInformationViewModel, CompoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            }
+            if (model.MoleculeStructureModel is not null) {
+                MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(MoleculeStructureViewModel);
+            }
             var matchResultCandidateViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidateViewModel, };
+            peakDetailViewModels.Add(matchResultCandidateViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
+
+            GoToMsfinderCommand = model.CanSearchCompound
+                .ToReactiveCommand().WithSubscribe(() => {
+                    var message = new ShortMessageWindow() {
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                        Title = "MS-FINDER running in the background...",
+                        Width = 400,
+                        Height = 100
+                    };
+                    message.Show();
+                    var msfinder = model.CreateSingleSearchMsfinderModel();
+                    message.Close();
+                    if (msfinder is not null) {
+                        broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
+                    }
+                }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = model.CanSearchCompound.ToReactiveCommand().WithSubscribe(() => {
+                var msfinderSetting = model.MsfinderParameterSetting;
+                if (msfinderSetting is not null)
+                {
+                    broker.Publish(new InternalMsfinderSettingViewModel(msfinderSetting, broker));
+                }
+            }).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
-
+        public MsfinderParameterSetting MsfinderParameterSetting { get; }
         public EicViewModel EicViewModel { get; }
 
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
@@ -85,8 +122,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-
+        public ReactiveCommand GoToMsfinderCommand { get; }
+        public ReactiveCommand ShowMsfinderSettingCommand { get; }
         public ICommand SetUnknownCommand { get; }
+
+        public DelegateCommand GoToExternalMsfinderCommand => _goToExternalMsfinderCommand ??= new DelegateCommand(_model.InvokeMsfinder);
+        private DelegateCommand? _goToExternalMsfinderCommand;
+
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using var model = _model.BuildCompoundSearchModel();
@@ -109,13 +151,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
-        }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
-        private DelegateCommand? _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.InvokeMsfinder();
         }
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ??= new DelegateCommand(SaveSpectra, CanSaveSpectra);

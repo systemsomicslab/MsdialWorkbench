@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -12,7 +11,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
-using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
@@ -37,7 +35,7 @@ namespace CompMs.App.MsdialConsole.Process
             var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
 
             var filename = Path.GetFileNameWithoutExtension(filepath);
-            var fileDir = Path.GetDirectoryName(filepath);
+            var fileDir = Path.GetDirectoryName(filepath)!;
             //var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_AHexCer\spatial_lipidomics\sagital_pos\", "20221023_TIMS_Brain_DHAP_20um_Pos.mdproject");
             var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\", "20211005_Eye_Acsl_HZ_KO_Neg.mdproject");
 
@@ -55,7 +53,7 @@ namespace CompMs.App.MsdialConsole.Process
             };
 
             var param = new MsdialImmsParameter(isImaging: true, isLabUseOnly: true) {
-                ProjectFolderPath = Path.GetDirectoryName(outputfile),
+                ProjectFolderPath = Path.GetDirectoryName(outputfile)!,
                 ProjectFileName = Path.GetFileName(outputfile),
                 MachineCategory = MachineCategory.IIMMS,
                 TextDBFilePath = reffile,
@@ -70,38 +68,45 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
-            RawMeasurement rawobj = null;
+            RawMeasurement? rawobj = null;
             using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
                 rawobj = access.GetMeasurement();
             }
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+                return access.GetMeasurement();
+            });
             var provider = new StandardDataProviderFactory().Create(rawobj);
 
             var db = DataBaseStorage.CreateEmpty();
-            var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB, param.TextDBFilePath);
             var textDBAnnotator = new ImmsTextDBAnnotator(tdb, param.TextDbSearchParam, "TextDB", -1);
             db.AddMoleculeDataBase(
                 tdb,
-                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                [
                     new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
-                });
+                ]);
             //var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
 
-            var container = new MsdialImmsDataStorage {
-                AnalysisFiles = new List<AnalysisFileBean>() { file },
-                AlignmentFiles = new List<AlignmentFileBean>(),
+            var mapper = new DataBaseMapper();
+            db.SetDataBaseMapper(mapper);
+            var container = new MsdialImmsDataStorage
+            {
+                AnalysisFiles = [file],
+                AlignmentFiles = [],
                 MsdialImmsParameter = param,
                 IupacDatabase = IupacResourceParser.GetIUPACDatabase(),
                 DataBases = db,
-                DataBaseMapper = db.CreateDataBaseMapper()
+                DataBaseMapper = mapper
             };
             storage.AddStorage(container);
 
             var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
 
-            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, matchResultEvaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, matchResultEvaluator);
             processor.RunAsyncTest(file, provider).Wait();
 
-            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
+            using var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath);
             using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 storage.Save(
@@ -110,8 +115,8 @@ namespace CompMs.App.MsdialConsole.Process
                 path => new DirectoryTreeStreamManager(path),
                 parameter => { }).Wait();
                 streamManager.Complete();
-                fs.Move();
             }
+            fs.Move();
         }
 
         public static void TimsOnTest() {
@@ -119,7 +124,7 @@ namespace CompMs.App.MsdialConsole.Process
             var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Pos.txt";
             var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\20220208_Eye_Acsl6Hz_20um_DCTB_Pos.mddata";
             var filename = Path.GetFileNameWithoutExtension(filepath);
-            var fileDir = Path.GetDirectoryName(filepath);
+            var fileDir = Path.GetDirectoryName(filepath)!;
             var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\", "20211004_Acsl6_leftHZ_rightKO_Eye.mdproject");
             var storage = new ProjectDataStorage(projectParameter);
             var file = new AnalysisFileBean() {
@@ -135,7 +140,7 @@ namespace CompMs.App.MsdialConsole.Process
             };
 
             var param = new MsdialImmsParameter() {
-                ProjectFolderPath = Path.GetDirectoryName(outputfile),
+                ProjectFolderPath = Path.GetDirectoryName(outputfile)!,
                 ProjectFileName = Path.GetFileName(outputfile),
                 MachineCategory = MachineCategory.IMMS,
                 TextDBFilePath = reffile,
@@ -156,31 +161,37 @@ namespace CompMs.App.MsdialConsole.Process
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
-            RawMeasurement rawobj = null;
+            RawMeasurement? rawobj = null;
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 rawobj = access.GetMeasurement();
             }
+            var providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean f) => {
+                using var access = new RawDataAccess(f.AnalysisFilePath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false);
+                return access.GetMeasurement();
+            });
             Console.WriteLine("Peak picking...");
             var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialImmsDataStorage {
-                AnalysisFiles = new List<AnalysisFileBean>() { file }, 
-                AlignmentFiles = new List<AlignmentFileBean>(),
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param
+                AnalysisFiles = [file], 
+                AlignmentFiles = [],
+                MspDB = mspDB is null ? [] : [.. mspDB.Database], TextDB = txtDB is null ? [] : [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param
             };
-            var database = new MoleculeDataBase(txtDB, reffile, DataBaseSource.Text, SourceType.TextDB);
-            var annotator = new MsdialImmsCore.Algorithm.Annotation.ImmsTextDBAnnotator(database, param.TextDbSearchParam, param.TextDBFilePath, 1);
             container.DataBases = DataBaseStorage.CreateEmpty();
-            container.DataBases.AddMoleculeDataBase(
-                database,
-                new List<IAnnotatorParameterPair<MoleculeDataBase>> { 
-                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
-                }
-            );
+            if (txtDB is { Database.Count: > 0 })
+            {
+                var annotator = new ImmsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 1);
+                container.DataBases.AddMoleculeDataBase(
+                    txtDB,
+                    [ 
+                        new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
+                    ]
+                );
+            }
             storage.AddStorage(container);
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, evaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, providerFactory, null, null, evaluator);
             processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
@@ -194,8 +205,8 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
-            RawSpectraOnPixels pixelData = null;
-            var featureElements = features.Select(n => new Raw2DElement(n.Mass, n.ChromXsTop.Value)).ToList();
+            RawSpectraOnPixels? pixelData = null;
+            var featureElements = features.Select(n => new Raw2DElement(n.PeakFeature.Mass, n.PeakFeature.ChromXsTop.Value)).ToList();
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 pixelData = access.GetRawPixelFeatures(featureElements, null);
@@ -230,9 +241,9 @@ namespace CompMs.App.MsdialConsole.Process
         public static void TimsOffTest() {
             var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-1-9AA-OFF\Brain-C-9AA-TIMS-OFF-01.d";
             var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt";
-            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-1-9AA-OFF\Brain-C-9AA-TIMS-OFF-01_msdial.txt";
-            var filename = System.IO.Path.GetFileNameWithoutExtension(filepath);
-            var fileDir = System.IO.Path.GetDirectoryName(filepath);
+            //var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-1-9AA-OFF\Brain-C-9AA-TIMS-OFF-01_msdial.txt";
+            var filename = Path.GetFileNameWithoutExtension(filepath);
+            var fileDir = Path.GetDirectoryName(filepath);
             var file = new AnalysisFileBean() {
                 AnalysisFileId = 0,
                 AnalysisFileIncluded = true,
@@ -259,46 +270,44 @@ namespace CompMs.App.MsdialConsole.Process
                 out var compoundsInTargetMode,
                 out var lbmDB);
 
-            RawMeasurement rawobj = null;
+            RawMeasurement? rawobj = null;
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 rawobj = access.GetMeasurement();
             }
             Console.WriteLine("Peak picking...");
-            var provider = new StandardDataProviderFactory().Create(rawobj);
             var container = new MsdialDimsDataStorage {
-                AnalysisFiles = new List<AnalysisFileBean>() { file },
-                AlignmentFiles = new List<AlignmentFileBean>(),
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
+                AnalysisFiles = [file],
+                AlignmentFiles = [],
+                MspDB = [.. mspDB.Database], TextDB = [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
             };
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var database = new MoleculeDataBase(txtDB, reffile, DataBaseSource.Text, SourceType.TextDB);
-            var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(database, param.TextDbSearchParam, param.TextDBFilePath, 1);
-            container.DataBases = new DataBaseStorage(null, null, null);
+            var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 1);
+            container.DataBaseMapper = new DataBaseMapper();
+            container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
-                database,
-                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                txtDB,
+                [
                     new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
-                }
+                ]
             );
+            container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
-            var annotationProcess = BuildAnnotationProcess(container.DataBases);
+            var annotationProcess = BuildAnnotationProcess(container.DataBases, container.DataBaseMapper);
 
-            CompMs.MsdialDimsCore.ProcessFile.Run(file, provider, container, annotationProcess, evaluator);
+            MsdialDimsCore.ProcessFile processor = new MsdialDimsCore.ProcessFile(new StandardDataProviderFactory(), container, annotationProcess, evaluator);
+            processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, null, default).Wait();
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
-            RawSpectraOnPixels pixelData = null;
-            var featureElements = features.Select(n => new Raw2DElement() { Mz = n.Mass }).ToList();
+            RawSpectraOnPixels? pixelData = null;
+            var featureElements = features.Select(n => new Raw2DElement() { Mz = n.PeakFeature.Mass }).ToList();
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
                 pixelData = access.GetRawPixelFeatures(featureElements, null);
             }
 
-            foreach (var item in features.Zip(pixelData.PixelPeakFeaturesList, (feature, pixel) => (Feature: feature, Pixel: pixel))) {
-                var feature = item.Feature;
-                var pixel = item.Pixel;
-
+            foreach (var (feature, pixel) in features.Zip(pixelData.PixelPeakFeaturesList, (feature, pixel) => (Feature: feature, Pixel: pixel))) {
                 if (feature.IsReferenceMatched(evaluator)) {
                     Console.WriteLine("Name\t" + feature.Name);
                     Console.WriteLine("MZ\t" + feature.PrecursorMz);
@@ -320,11 +329,11 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
+        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper) {
             return new StandardAnnotationProcess(
                 storage.CreateQueryFactories().MoleculeQueryFactories,
                 FacadeMatchResultEvaluator.FromDataBases(storage),
-                storage.CreateDataBaseMapper());
+                mapper);
         }
     }
 

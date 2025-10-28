@@ -1,5 +1,4 @@
-﻿using Accord.Statistics.Kernels;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
@@ -64,10 +63,25 @@ namespace CompMs.MsdialCore.DataObj
 
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
-                MspDB = new List<MoleculeMsReference>();
+                MspDB = [];
                 foreach (var file in AnalysisFiles) file.RetentionTimeCorrectionBean.ClearCache();
+                List<List<ChromatogramPeak>>[] tmp = new List<List<ChromatogramPeak>>[AnalysisFiles.Count];
+                for (int i = 0; i < AnalysisFiles.Count; i++) {
+                    var f = AnalysisFiles[i];
+                    tmp[i] = f.RetentionTimeCorrectionBean.StandardList.Select(s => s.Chromatogram).ToList();
+                    foreach (var s in f.RetentionTimeCorrectionBean.StandardList) {
+                        s.Chromatogram = null;
+                    }
+                }
+
                 SaveMsdialDataStorageCore(stream);
                 MspDB = mspList;
+                for (int i = 0; i < AnalysisFiles.Count; i++) {
+                    var f = AnalysisFiles[i];
+                    for (int j = 0; j < f.RetentionTimeCorrectionBean.StandardList.Count; j++) {
+                        f.RetentionTimeCorrectionBean.StandardList[j].Chromatogram = tmp[i][j];
+                    }
+                }
             }
         }
 
@@ -105,6 +119,18 @@ namespace CompMs.MsdialCore.DataObj
             storage.Parameter.ProjectFolderPath = projectFolder;
             storage.Parameter.TextDBFilePath = ReplaceFolderPath(storage.Parameter.TextDBFilePath, previousFolder, projectFolder);
             storage.Parameter.IsotopeTextDBFilePath = ReplaceFolderPath(storage.Parameter.IsotopeTextDBFilePath, previousFolder, projectFolder);
+
+            foreach (var info in storage.Parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.Values) {
+                try {
+                    var newpath = ReplaceFolderPath(info.DictionaryFilePath, previousFolder, projectFolder);
+                    if (File.Exists(newpath) || !File.Exists(info.DictionaryFilePath)) {
+                        info.DictionaryFilePath = newpath;
+                    }
+                }
+                catch (ArgumentException) {
+                    // Do nothing
+                }
+            }
 
             foreach (var file in storage.AnalysisFiles) {
                 file.AnalysisFilePath = ReplaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
