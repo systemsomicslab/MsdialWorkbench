@@ -169,6 +169,7 @@ public class ExpressionHelperTests
         public event EventHandler RangeChanged;
 
         public event EventHandler InitialRangeChanged;
+        public event EventHandler AxisValueMappingChanged;
 
         bool IAxisManager.Contains(AxisValue value) {
             throw new NotImplementedException();
