@@ -600,8 +600,10 @@ namespace CompMs.Common.Components
         /// A broad peak top is identified not only by its intensity being no less than its immediate neighbors but also if at least one set of next-outer neighbors maintains or increases intensity towards the peak. This method is useful for identifying peaks that might represent broader chromatographic features, potentially indicative of complex or co-eluting compounds.
         /// </remarks>
         public bool IsBroadPeakTop(int topId) {
-            return IsPeakTop(topId) &&
-                (topId - 2 >= 0 && _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity ||
+            return topId >= 1 && topId < _size - 1
+                && _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
+                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity
+                && (topId - 2 >= 0 && _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity ||
                 topId + 2 < _size && _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity);
         }
 
