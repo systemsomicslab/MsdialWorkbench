@@ -216,7 +216,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private bool RunAlignment() {
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm => {
-                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage)
+                    var factory = new GcmsAlignmentProcessFactory(_storage)
                     {
                         Progress = new Progress<int>(v => vm.CurrentValue = v)
                     };
@@ -238,7 +238,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
+            var factory = new GcmsAlignmentProcessFactory(_storage);
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), factory.CreatePeakQuantCalculation(_providerFactory), _msfinderSearcherFactory, _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {

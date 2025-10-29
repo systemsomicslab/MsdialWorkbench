@@ -104,6 +104,28 @@ namespace CompMs.Common.Components
         }
 
         /// <summary>
+        /// Retrieves the chromatographic position and mass (m/z) for a peak at the specified index.
+        /// </summary>
+        /// <param name="i">The zero-based index of the peak in the chromatogram.</param>
+        /// <returns>A <see cref="ChromXs"/> object representing the chromatographic position and mass (m/z) of the peak.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
+        /// <remarks>
+        /// This method constructs a <see cref="ChromXs"/> object using the time and m/z values of the peak at the specified index.
+        /// The <see cref="ChromXs"/> object encapsulates the chromatographic position and mass-to-charge ratio, providing a standardized
+        /// representation of these values within the chromatogram.
+        /// </remarks>
+        public ChromXs PeakChromXs(int i) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            } 
+            var result = new ChromXs(_peaks[i].Time, _type, _unit);
+            if (_type != ChromXType.Mz) {
+                result.Mz = new MzValue(_peaks[i].Mz);
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Determines if the chromatogram is empty, meaning it contains no peaks.
         /// </summary>
         /// <value>True if the chromatogram contains no peaks; otherwise, false.</value>
@@ -281,7 +303,7 @@ namespace CompMs.Common.Components
                     break;
                 }
 
-                if (_peaks[i].Intensity > maxInt && _peaks[i - 1].Intensity <= _peaks[i].Intensity && _peaks[i].Intensity <= _peaks[i + 1].Intensity) {
+                if (_peaks[i].Intensity > maxInt && _peaks[i - 1].Intensity <= _peaks[i].Intensity && _peaks[i].Intensity >= _peaks[i + 1].Intensity) {
                     maxInt = _peaks[i].Intensity;
                     maxID = i;
                 }
@@ -328,11 +350,109 @@ namespace CompMs.Common.Components
             return top + SearchNearestPoint(right, _peaks.Take(_size).Skip(top));
         }
 
+        /// <summary>
+        /// Continues searching to the left as long as the intensity decreases.
+        /// </summary>
+        /// <param name="startID">The starting index for the search.</param>
+        /// <param name="leftLimitID">The left boundary index (inclusive) where the search stops.</param>
+        /// <returns>The index of the leftmost point where the intensity stops decreasing.</returns>
+        public int SearchLeftEdge(int startID, int leftLimitID) {
+            var leftID = Math.Max(startID, 0);
+            leftLimitID = Math.Max(leftLimitID, 0);
+            while (leftLimitID < leftID) {
+                if (_peaks[leftID - 1].Intensity > _peaks[leftID].Intensity) {
+                    break;
+                }
+                --leftID;
+            }
+            return leftID;
+        }
+
+        public int SearchLeftEdgeHard(int startID, int leftLimitID) {
+            var leftID = Math.Max(startID, 0);
+            leftLimitID = Math.Max(leftLimitID, 0);
+            while (leftLimitID < leftID) {
+                if (_peaks[leftID - 1].Intensity >= _peaks[leftID].Intensity) {
+                    break;
+                }
+                --leftID;
+            }
+            return leftID;
+        }
+
+        /// <summary>
+        /// Searches for the right edge of a peak in the chromatogram, starting from a specified index
+        /// and stopping at a specified limit. The right edge is identified as the point where the intensity
+        /// starts to increase.
+        /// </summary>
+        /// <param name="startID">The zero-based index to start the search from.</param>
+        /// <param name="rightLimitID">The zero-based index of the right boundary where the search stops.</param>
+        /// <returns>The zero-based index of the right edge of the peak.</returns>
+        /// <remarks>
+        /// This method iterates through the chromatogram peaks starting from the specified `startID` and
+        /// stops when it encounters a peak with an intensity greater than the current peak's intensity.
+        /// The search is bounded by the `rightLimitID` to ensure it does not exceed the specified range.
+        /// </remarks>
+        public int SearchRightEdge(int startID, int rightLimitID) {
+            var rightID = Math.Min(startID, Length - 1);
+            var limit = Math.Min(rightLimitID, Length - 1);
+            while (rightID < limit) {
+                if (_peaks[rightID].Intensity < _peaks[rightID + 1].Intensity) {
+                    break;
+                }
+                ++rightID;
+            }
+            return rightID;
+        }
+
+        public int SearchRightEdgeHard(int startID, int rightLimitID) {
+            var rightID = Math.Min(startID, Length - 1);
+            var limit = Math.Min(rightLimitID, Length - 1);
+            while (rightID < limit) {
+                if (_peaks[rightID].Intensity <= _peaks[rightID + 1].Intensity) {
+                    break;
+                }
+                ++rightID;
+            }
+            return rightID;
+        }
+
+        /// <summary>
+        /// Searches for the nearest point in the chromatogram to the specified chromatographic value.
+        /// </summary>
+        /// <param name="chrom">The chromatographic value (e.g., Retention Time (RT), Retention Index (RI), or Drift Time).</param>
+        /// <returns>The index of the nearest point in the chromatogram to the specified value.</returns>
+        /// <remarks>
+        /// This method identifies the index of the chromatogram peak that is closest to the given chromatographic value.
+        /// Chromatographic values can represent parameters such as Retention Time (RT), Retention Index (RI), or Drift Time,
+        /// depending on the chromatogram's context.
+        /// </remarks>
+        public int SearchNearestPoint(IChromX chrom) => SearchNearestPoint(chrom, _peaks);
+
         private int SearchNearestPoint(ChromXs chrom, IEnumerable<ValuePeak> peaklist) {
-            var target = chrom.GetChromByType(_type).Value;
-            return peaklist
-                .Select(peak => Math.Abs(peak.Time - target))
-                .Argmin();
+            return SearchNearestPoint(chrom.GetChromByType(_type), peaklist);
+        }
+
+        private int SearchNearestPoint(IChromX chrom, IEnumerable<ValuePeak> peaklist) {
+            if (peaklist is null) {
+                return -1;
+            }
+
+            double target = chrom.Value;
+            double minDistance = double.MaxValue;
+            int nearestIndex = -1;
+            int index = 0;
+
+            foreach (var peak in peaklist) {
+                double distance = Math.Abs(peak.Time - target);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestIndex = index;
+                }
+                index++;
+            }
+
+            return nearestIndex;
         }
 
         private int FindHighestIntensity(int start, int end, int defaultId) {
@@ -451,7 +571,9 @@ namespace CompMs.Common.Components
         public bool IsPeakTop(int topId) {
             return topId >= 1 && topId < _size - 1
                 && _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
-                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
+                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity
+                && (_peaks[topId - 1].Intensity != _peaks[topId].Intensity
+                    || _peaks[topId].Intensity != _peaks[topId + 1].Intensity);
         }
 
         /// <summary>
@@ -478,8 +600,10 @@ namespace CompMs.Common.Components
         /// A broad peak top is identified not only by its intensity being no less than its immediate neighbors but also if at least one set of next-outer neighbors maintains or increases intensity towards the peak. This method is useful for identifying peaks that might represent broader chromatographic features, potentially indicative of complex or co-eluting compounds.
         /// </remarks>
         public bool IsBroadPeakTop(int topId) {
-            return IsPeakTop(topId) &&
-                (topId - 2 >= 0 && _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity ||
+            return topId >= 1 && topId < _size - 1
+                && _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
+                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity
+                && (topId - 2 >= 0 && _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity ||
                 topId + 2 < _size && _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity);
         }
 

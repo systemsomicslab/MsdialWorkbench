@@ -454,7 +454,7 @@ namespace CompMs.Common.Components.Tests
             bool isFlatTopPeak = eic.IsPeakTop(1); // Index of the peak in question
 
             // Assert
-            Assert.IsTrue(isFlatTopPeak, "Peak in a flat region should be considered a peak top candidate.");
+            Assert.IsFalse(isFlatTopPeak, "Peak in a flat region should not be considered a peak top candidate.");
         }
 
         [TestMethod]
