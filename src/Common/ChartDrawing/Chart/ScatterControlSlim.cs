@@ -275,7 +275,8 @@ public class ScatterControlSlim : ChartBaseControl
             typeof(IBrushMapper),
             typeof(ScatterControlSlim),
             new FrameworkPropertyMetadata(
-                new ConstantBrushMapper<object>(Brushes.Black)));
+                new ConstantBrushMapper<object>(Brushes.Black),
+                FrameworkPropertyMetadataOptions.AffectsRender));
 
     public object SelectedItem {
         get => GetValue(SelectedItemProperty);
