@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <DataGrid ItemsSource="{Binding Path=Spots}" 
-                  SelectedItem="{Binding Path=SelectedSpot.Value}"
+                  SelectedItem="{Binding Path=Spots/}"
                   ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                   HorizontalAlignment="Stretch" 
