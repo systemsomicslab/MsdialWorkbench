@@ -71,6 +71,10 @@ public sealed class PeakQuantCalculation(GcmsGapFiller gapFiller, IFeatureAccess
             await CollectAlignmentPeaksAsync(analysisFile, peaks, spots, file, chromPeakInfoSerializer, token);
             reporter.Report(++counter, analysisFiles.Count - 1);
         }
+
+        foreach (var spot in spots) {
+            DataObjConverter.SetRepresentativeProperty(spot);
+        }
     }
 
     private async Task CollectAlignmentPeaksAsync(
