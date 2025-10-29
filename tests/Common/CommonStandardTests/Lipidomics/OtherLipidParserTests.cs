@@ -397,4 +397,30 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.NAAnt, lipid.LipidClass);
         }
     }
+    [TestClass()]
+    public class VAELipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new VAELipidParser();
+            var lipid = parser.Parse("VAE 18:1");
+            Assert.AreEqual(550.47498, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.VAE, lipid.LipidClass);
+        }
+    }
+
+
+    [TestClass()]
+    public class NAELipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new NAELipidParser();
+            var lipid = parser.Parse("NAE 18:1");
+            Assert.AreEqual(325.29808, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.NAE, lipid.LipidClass);
+        }
+    }
 }
