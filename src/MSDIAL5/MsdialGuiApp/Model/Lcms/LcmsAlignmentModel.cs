@@ -206,7 +206,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                alignmentFileBean.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables),
+                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables),
                 files,
                 parameter,
                 projectBaseParameter,

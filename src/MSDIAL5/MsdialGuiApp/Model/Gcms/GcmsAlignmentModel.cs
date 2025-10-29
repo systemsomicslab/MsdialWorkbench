@@ -188,7 +188,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 target,
-                alignmentFileBean.CreateEicLoader(chromatogramSpotSerializer, fileCollection, projectBaseParameter).AddTo(Disposables),
+                new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables),
                 files,
                 parameter,
                 projectBaseParameter,

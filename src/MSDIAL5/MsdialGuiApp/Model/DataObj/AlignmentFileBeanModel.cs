@@ -34,6 +34,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public AlignmentFileBean AlignmentFileBean => _alignmentFile;
         public string FileName => _alignmentFile.FileName;
         public string FilePath => _alignmentFile.FilePath;
+        public string EicFilePath => _alignmentFile.EicFilePath;
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
 
         public int CountRawFiles => _analysisFiles.Count;
@@ -185,10 +186,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public async Task AppendMSDecResultAsync(MSDecResult result, CancellationToken token = default) {
             var results = await LoadMSDecResultsAsync(token).ConfigureAwait(false);
             await SaveMSDecResultsAsync(results.Append(result), token).ConfigureAwait(false);
-        }
-
-        public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, FilePropertiesModel projectBaseParameter) {
-            return new AlignmentEicLoader(deserializer, _alignmentFile.EicFilePath, analysisFiles, projectBaseParameter);
         }
 
         public async Task<ChromatogramSpotInfo> LoadEicInfoByIndexAsync(int index, ChromatogramSerializer<ChromatogramSpotInfo> deserializer, CancellationToken token = default) {
