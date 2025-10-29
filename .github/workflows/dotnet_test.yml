@@ -40,7 +40,6 @@ jobs:
 
   publish-msdial5:
     needs: test
-    if: github.event_name == 'push'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +68,6 @@ jobs:
 
   publish-msdial5-console:
     needs: test
-    if: github.event_name == 'push'
     runs-on: ${{ matrix.triple.os }}
     strategy:
       matrix:
@@ -108,7 +106,6 @@ jobs:
 
   publish-msdial4:
     needs: test
-    if: github.event_name == 'push'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -137,7 +134,6 @@ jobs:
 
   publish-msdial4-console:
     needs: test
-    if: github.event_name == 'push'
     runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
