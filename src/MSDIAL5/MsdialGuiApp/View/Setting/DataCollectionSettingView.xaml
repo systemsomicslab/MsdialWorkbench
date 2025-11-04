@@ -79,7 +79,6 @@
                             <RadioButton Content="TIC(total ion current)" IsChecked="{Binding Path=UseMs1WithHighestTic.Value}"/>
                             <RadioButton Content="BPI(base peak intensity)" IsChecked="{Binding Path=UseMs1WithHighestBpi.Value}"/>
                             <RadioButton Content="Average MS1 spectra by m/z" IsChecked="{Binding Path=UseAverageMs1.Value}"/>
-                            <RadioButton Content="Sum MS1 spectra by m/z" IsChecked="{Binding Path=UseAccumulateMs1.Value}"/>
 
                             <ui:LabeledContent PrependLabel="MS1 scan time range">
                                 <Grid >
@@ -109,7 +108,8 @@
 
                     <ContentControl x:Name="ImmsMs1SelectionMethod" Visibility="{Binding Path=CanSetImmsDataCollectionSettingViewModel, Converter={StaticResource BooleanToVisibility}}">
                         <StackPanel DataContext="{Binding Path=ImmsDataCollectionSettingViewModel}">
-                            <RadioButton Content="Average(average all ms1 spectrums)" IsChecked="{Binding Path=UseAverageMs1.Value}"/>
+                            <RadioButton Content="Average MS1 spectra by m/z" IsChecked="{Binding Path=UseAverageMs1.Value}"/>
+                            <RadioButton Content="Sum MS1 spectra by m/z" IsChecked="{Binding Path=UseAccumulateMs1.Value}"/>
                             <RadioButton Content="TIC(total ion current)" IsChecked="{Binding Path=UseMs1WithHighestTic.Value}"/>
 
                             <ui:LabeledContent PrependLabel="MS1 scan time range">
