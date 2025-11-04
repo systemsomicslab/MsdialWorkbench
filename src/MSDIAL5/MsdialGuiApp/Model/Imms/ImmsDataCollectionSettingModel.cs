@@ -28,6 +28,12 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private bool useAverageMs1 = true;
 
+        public bool UseAccumulateMs1 {
+            get => useAccumulateMs1;
+            set => SetProperty(ref useAccumulateMs1, value);
+        }
+        private bool useAccumulateMs1 = false;
+
         public double TimeBegin {
             get => timeBegin;
             set => SetProperty(ref timeBegin, value);
@@ -61,6 +67,9 @@ namespace CompMs.App.Msdial.Model.Imms
             if (UseAverageMs1) {
                 return new ImmsAverageDataProviderFactoryParameter(MassTolerance, DriftTolerance, TimeBegin, TimeEnd);
             }
+            else if (UseAccumulateMs1) {
+                return new ImmsAccumulateDataProviderFactoryParameter(MassTolerance, DriftTolerance, TimeBegin, TimeEnd);
+            }
             else if (UseMs1WithHighestTic) {
                 return new ImmsTicDataProviderFactoryParameter(TimeBegin, TimeEnd);
             }
@@ -75,12 +84,24 @@ namespace CompMs.App.Msdial.Model.Imms
             switch (factoryParameter) {
                 case ImmsTicDataProviderFactoryParameter ticParameter:
                     UseMs1WithHighestTic = true;
+                    UseAverageMs1 = false;
+                    UseAccumulateMs1 = false;
                     TimeBegin = ticParameter.TimeBegin;
                     TimeEnd = ticParameter.TimeEnd;
                     break;
                 case ImmsAverageDataProviderFactoryParameter averageParameter:
                     UseMs1WithHighestTic = false;
                     UseAverageMs1 = true;
+                    UseAccumulateMs1 = false;
+                    TimeBegin = averageParameter.TimeBegin;
+                    TimeEnd = averageParameter.TimeEnd;
+                    MassTolerance = averageParameter.MassTolerance;
+                    DriftTolerance = averageParameter.DriftTolerance;
+                    break;
+                case ImmsAccumulateDataProviderFactoryParameter averageParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAverageMs1 = false;
+                    UseAccumulateMs1 = true;
                     TimeBegin = averageParameter.TimeBegin;
                     TimeEnd = averageParameter.TimeEnd;
                     MassTolerance = averageParameter.MassTolerance;

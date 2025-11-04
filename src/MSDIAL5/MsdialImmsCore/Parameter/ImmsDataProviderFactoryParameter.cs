@@ -63,4 +63,32 @@ namespace CompMs.MsdialImmsCore.Parameter
             return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
         }
     }
+
+    [MessagePackObject]
+    public class ImmsAccumulateDataProviderFactoryParameter : IImmsDataProviderFactoryParameter
+    {
+        public ImmsAccumulateDataProviderFactoryParameter(double massTolerance, double driftTolerance, double timeBegin, double timeEnd) {
+            MassTolerance = massTolerance;
+            DriftTolerance = driftTolerance;
+            TimeBegin = timeBegin;
+            TimeEnd = timeEnd;
+        }
+
+        [Key(nameof(MassTolerance))]
+        public double MassTolerance { get; }
+        [Key(nameof(DriftTolerance))]
+        public double DriftTolerance { get; }
+        [Key(nameof(TimeBegin))]
+        public double TimeBegin { get; }
+        [Key(nameof(TimeEnd))]
+        public double TimeEnd { get; }
+
+        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
+            return new ImmsAccumulateDataProviderFactory(MassTolerance, DriftTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
+        }
+    }
 }
