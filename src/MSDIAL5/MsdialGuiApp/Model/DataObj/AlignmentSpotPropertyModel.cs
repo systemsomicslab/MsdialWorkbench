@@ -151,7 +151,15 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double SignalToNoiseAve => innerModel.SignalToNoiseAve;
-        public double FillPercentage => innerModel.FillParcentage;
+        public double FillPercentage {
+            get => innerModel.FillParcentage;
+            set {
+                if (innerModel.FillParcentage != value) {
+                    innerModel.FillParcentage = (float)value;
+                    OnPropertyChanged(nameof(FillPercentage));
+                }
+            }
+        }
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => innerModel.MatchResults;
