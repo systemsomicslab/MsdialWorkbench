@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -421,6 +422,55 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = parser.Parse("NAE 18:1");
             Assert.AreEqual(325.29808, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.NAE, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class BRSELipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new BRSELipidParser();
+            var lipid = parser.Parse("SE 28:2/18:1"); //C46H78O2
+            var lipidMass = 28 * MassDiffDictionary.CarbonMass +
+                            46 * MassDiffDictionary.HydrogenMass +
+                            1 * MassDiffDictionary.OxygenMass +
+                            18 * MassDiffDictionary.CarbonMass +
+                            ((18-1) * 2+ (1*-2)) * MassDiffDictionary.HydrogenMass +
+                            1 * MassDiffDictionary.OxygenMass;
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.BRSE, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class CholestanLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new CholestanLipidParser();
+            var lipid = parser.Parse("ST 27:0;O"); 
+            var lipidMass = 27 * MassDiffDictionary.CarbonMass +
+                            48 * MassDiffDictionary.HydrogenMass +
+                            1 * MassDiffDictionary.OxygenMass;
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.ST, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class CSPHexLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new CSPHexLipidParser();
+            var lipid = parser.Parse("SG 27:1;O;Hex;PA 16:0_20:4"); //C72H123O13P
+            var lipidMass = 72 * MassDiffDictionary.CarbonMass +
+                            123 * MassDiffDictionary.HydrogenMass +
+                            1 * MassDiffDictionary.PhosphorusMass +
+                            13 * MassDiffDictionary.OxygenMass;
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CSPHex, lipid.LipidClass);
         }
     }
 }

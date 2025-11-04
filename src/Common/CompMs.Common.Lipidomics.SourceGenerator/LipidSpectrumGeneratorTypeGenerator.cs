@@ -250,7 +250,7 @@ namespace CompMs.Common.Lipidomics {
                             double Acyl2;
                     """);
                 }
-                else
+                else if (def.NumOfChains > 0 )
                 {
                     result.AppendLine($"""
                             double {string.Join(", ", Enumerable.Range(1, def.NumOfChains).Select(i => "SN" + i + "Acyl"))};
