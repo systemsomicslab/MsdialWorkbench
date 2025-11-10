@@ -118,6 +118,7 @@ public sealed class DimsProcess {
         }
         await Task.WhenAll(tasks);
 
+        storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
         if (storage.MsdialDimsParameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -163,7 +164,6 @@ public sealed class DimsProcess {
         }
 
         if (isProjectSaved) {
-            storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.MsdialDimsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

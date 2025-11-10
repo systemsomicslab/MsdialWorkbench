@@ -203,6 +203,8 @@ public sealed class GcmsProcess
             });
         }
         await Task.WhenAll(tasks);
+        
+        storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
 
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
@@ -256,7 +258,6 @@ public sealed class GcmsProcess
 
         if (isProjectSaved)
         {
-            storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

@@ -47,6 +47,19 @@ namespace CompMs.App.MsdialConsole {
             //    , "-p"
             //};
 
+            // lcms csv file import
+            //args = new string[]
+            //{
+            //    "lcms"
+            //    , "-i"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps\consoleapp_demo_csvimportfiles.csv"
+            //    , "-o"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps"
+            //    , "-m"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps\msdial_console_param4metabolomics.txt"
+            //    , "-p"
+            //};
+
             // dims
             // args = new string[]
             // {
