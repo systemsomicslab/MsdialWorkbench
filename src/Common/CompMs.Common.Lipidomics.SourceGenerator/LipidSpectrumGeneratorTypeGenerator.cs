@@ -218,7 +218,7 @@ namespace CompMs.Common.Lipidomics {
                     }
 
                 }
-                else if (lipidClass.Contains("Cer") || lipidClass == "SM" || lipidClass == "SL" || lipidClass == "SL_O")
+                else if (lipidClass.Contains("Cer") || lipidClass == "SM" || lipidClass == "SL" || lipidClass == "SL_O" || lipidClass == "SM_d9")
                 {
                     if (def.NumOfChains == 2)
                     {
@@ -368,7 +368,7 @@ namespace CompMs.Common.Lipidomics {
                     else if (lipidClass.Contains("Cer")
                         || lipidClass == "SM" || lipidClass == "SM_O"
                         || lipidClass == "SL" || lipidClass == "SL_O"
-                        || lipidClass == "ASM"
+                        || lipidClass == "ASM" || lipidClass == "SM_d9"
                         )
                     {
                         if (lipidMS.LSILevel == LSILevel.MolecularSpeciesLevel)
