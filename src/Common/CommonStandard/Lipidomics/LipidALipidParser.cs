@@ -20,7 +20,7 @@ namespace CompMs.Common.Lipidomics
         {
             MassDiffDictionary.CarbonMass * 12,
             MassDiffDictionary.HydrogenMass * 20,
-            MassDiffDictionary.OxygenMass * 15,
+            MassDiffDictionary.OxygenMass * 19,
             MassDiffDictionary.NitrogenMass * 2,
             MassDiffDictionary.PhosphorusMass * 2,
         }.Sum();
@@ -74,16 +74,9 @@ namespace CompMs.Common.Lipidomics
             if (match.Success)
             {
                 var groups = match.Groups;
-                if (groups["PositionLevel"].Success)
+                if (groups["PositionLevel"].Success || groups["MolecularSpeciesLevel"].Success)
                 {
-                    var chainStrs = match.Groups["PositionLevel"].Value.Replace("-O-", '_').Replace("N-", "").Split('_');
                     var chains = ParsePositionLevelChains(groups);
-                    return chains;
-                }
-                else if (groups["MolecularSpeciesLevel"].Success)
-                {
-                    var chainStrs = match.Groups["MolecularSpeciesLevel"].Value.Replace("-O-", '_').Replace("N-", "").Split('_');
-                    var chains = ParseMolecularSpeciesLevelChains(groups);
                     return chains;
                 }
                 else if (groups["TotalChain"].Success)

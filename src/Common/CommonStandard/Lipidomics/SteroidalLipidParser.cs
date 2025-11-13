@@ -380,35 +380,7 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    public class CholestanLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
 
-        public static readonly string Pattern = $"^ST 27:0;O$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 27,
-            MassDiffDictionary.HydrogenMass * 48,
-            MassDiffDictionary.OxygenMass * 1,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
 
     public class EGSELipidParser : ILipidParser
     {
@@ -968,1295 +940,556 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    public class CALipidParser : ILipidParser
+    public class BA_ST_LipidParser : ILipidParser
     {
         public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O5$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
+        double Skelton;
 
         public ILipid Parse(string lipidStr)
         {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
+            switch (lipidStr)
             {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
+                case "ST 24:1;O5"://CA,MCA,HCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 5,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "ST 24:1;O4"://DCA,HDCA,UDCA,CDCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 4,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "ST 24:1;O3"://LCA,ILCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 3,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "ST 24:2;O4"://7KLCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 38,
+                        MassDiffDictionary.OxygenMass * 4,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                default:
+                    return null;
             }
-            return null;
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BileAcid, Skelton, chain);
         }
     }
 
-    public class DCALipidParser : ILipidParser
+    public class BALipidParser : ILipidParser
+    {
+        public string Target { get; } = "BA";
+        double Skelton;
+
+        public ILipid Parse(string lipidStr)
+        {
+            switch (lipidStr)
+            {
+                case "BA 24:1;O5;G"://GCA,GHCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 43,
+                        MassDiffDictionary.OxygenMass * 6,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O4;G"://GDCA,GUDCA,GCDCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 43,
+                        MassDiffDictionary.OxygenMass * 5,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O3;G"://GLCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 43,
+                        MassDiffDictionary.OxygenMass * 4,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O5;T"://TCA,TMCA,THCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 45,
+                        MassDiffDictionary.OxygenMass * 7,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O4;T"://TDCA,TUDCA,TCDCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 45,
+                        MassDiffDictionary.OxygenMass * 6,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O3;T"://TLCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 45,
+                        MassDiffDictionary.OxygenMass * 5,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                default:
+                    return null;
+            }
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BileAcid, Skelton, chain);
+        }
+    }
+    public class BAHex_ST_LipidParser : ILipidParser
+    {
+        public string Target { get; } = "SG";
+        double Skelton;
+
+        public ILipid Parse(string lipidStr)
+        {
+            switch (lipidStr)
+            {
+                case "SG 24:1;O3;Hex"://LCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 30,
+                        MassDiffDictionary.HydrogenMass * 50,
+                        MassDiffDictionary.OxygenMass * 8,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "SG 24:2;O4;Hex"://7KLCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 30,
+                        MassDiffDictionary.HydrogenMass * 48,
+                        MassDiffDictionary.OxygenMass * 9,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "SG 24:1;O4;Hex"://DCA
+                    Skelton = new[]
+                {
+                            MassDiffDictionary.CarbonMass * 30,
+                            MassDiffDictionary.HydrogenMass * 50,
+                            MassDiffDictionary.OxygenMass * 9,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                            }.Sum();
+                    break;
+                case "SG 24:1;O5;Hex"://CA
+                    Skelton = new[]
+                    {
+                                MassDiffDictionary.CarbonMass * 30,
+                                MassDiffDictionary.HydrogenMass * 50,
+                                MassDiffDictionary.OxygenMass * 10,
+                                MassDiffDictionary.NitrogenMass * 0,
+                                MassDiffDictionary.PhosphorusMass * 0,
+                                MassDiffDictionary.SulfurMass * 0,
+                            }.Sum();
+                    break;
+
+                default:
+                    return null;
+            }
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BAHex, Skelton, chain);
+        }
+    }
+
+    public class BAHexLipidParser : ILipidParser
+    {
+        public string Target { get; } = "BA";
+        double Skelton;
+
+        public ILipid Parse(string lipidStr)
+        {
+            switch (lipidStr)
+            {
+                case "BA 24:1;O3;G;Hex"://GLCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 53,
+                        MassDiffDictionary.OxygenMass * 9,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O4;G;Hex"://GDCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 53,
+                        MassDiffDictionary.OxygenMass * 10,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O5;G;Hex"://GCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 53,
+                        MassDiffDictionary.OxygenMass * 11,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O3;T;Hex"://TLCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 55,
+                        MassDiffDictionary.OxygenMass * 10,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O4;T;Hex"://TDCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 55,
+                        MassDiffDictionary.OxygenMass * 11,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O5;T;Hex"://TCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 32,
+                        MassDiffDictionary.HydrogenMass * 55,
+                        MassDiffDictionary.OxygenMass * 12,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+
+                default:
+                    return null;
+            }
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BAHex, Skelton, chain);
+        }
+    }
+
+    public class BASulfate_ST_LipidParser : ILipidParser
     {
         public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
+        double Skelton;
 
         public ILipid Parse(string lipidStr)
         {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
+            switch (lipidStr)
             {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
+                case "ST 24:1;O3;S"://LCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 6,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                        }.Sum();
+                    break;
+                case "ST 24:1;O4;S"://DCA,HDCA,CDCA,UDCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 7,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                            }.Sum();
+                    break;
+                case "ST 24:1;O5;S"://CA,MCA,HCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 40,
+                        MassDiffDictionary.OxygenMass * 8,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                            }.Sum();
+                    break;
+                case "ST 24:2;O4;S"://7KLCA
+                    Skelton = new[]
+                {
+                        MassDiffDictionary.CarbonMass * 24,
+                        MassDiffDictionary.HydrogenMass * 38,
+                        MassDiffDictionary.OxygenMass * 7,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                            }.Sum();
+                    break;
+                default:
+                    return null;
             }
-            return null;
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BASulfate, Skelton, chain);
         }
     }
 
-    public class HDCALipidParser : ILipidParser
+    public class BASulfateLipidParser : ILipidParser
+    {
+        public string Target { get; } = "BA";
+        double Skelton;
+
+        public ILipid Parse(string lipidStr)
+        {
+            switch (lipidStr)
+            {
+                case "BA 24:1;O3;G;S"://GLCA
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 26,
+                        MassDiffDictionary.HydrogenMass * 43,
+                        MassDiffDictionary.OxygenMass * 7,
+                        MassDiffDictionary.NitrogenMass * 1,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 1,
+                    }.Sum();
+                    break;
+                case "BA 24:1;O4;G;S"://GDCA,GUDCA,GCDCA,GHDCA
+                    Skelton = new[]
+                        {
+                            MassDiffDictionary.CarbonMass * 26,
+                            MassDiffDictionary.HydrogenMass * 43,
+                            MassDiffDictionary.OxygenMass * 8,
+                            MassDiffDictionary.NitrogenMass * 1,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 1,
+                        }.Sum();
+                    break;
+                case "BA 24:1;O5;G;S"://GCA,GHCA, MCA
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 26,
+                            MassDiffDictionary.HydrogenMass * 43,
+                            MassDiffDictionary.OxygenMass * 9,
+                            MassDiffDictionary.NitrogenMass * 1,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 1,
+                        }.Sum();
+                    break;
+                case "BA 24:1;O3;T;S"://TLCA
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 26,
+                            MassDiffDictionary.HydrogenMass * 45,
+                            MassDiffDictionary.OxygenMass * 8,
+                            MassDiffDictionary.NitrogenMass * 1,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 2,
+                        }.Sum();
+                    break;
+                case "BA 24:1;O4;T;S"://TDCA,TUDCA,TCDCA
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 26,
+                            MassDiffDictionary.HydrogenMass * 45,
+                            MassDiffDictionary.OxygenMass * 9,
+                            MassDiffDictionary.NitrogenMass * 1,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 2,
+                        }.Sum();
+                    break;
+                case "BA 24:1;O5;T;S"://TCA,TMCA,THCA
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 26,
+                            MassDiffDictionary.HydrogenMass * 45,
+                            MassDiffDictionary.OxygenMass * 10,
+                            MassDiffDictionary.NitrogenMass * 1,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 2,
+                        }.Sum();
+                    break;
+
+                default:
+                    return null;
+            }
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.BASulfate, Skelton, chain);
+        }
+    }
+
+
+    public class STLipidParser : ILipidParser
     {
         public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
+        double Skelton;
 
         public ILipid Parse(string lipidStr)
         {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
+            switch (lipidStr)
             {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
+                case "ST 27:1;O"://Cholesterol
+                    Skelton = new[]
+                        {
+                            MassDiffDictionary.CarbonMass * 27,
+                            MassDiffDictionary.HydrogenMass * 46,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 27:0;O"://Cholestan
+                    Skelton = new[]
+                        {
+                            MassDiffDictionary.CarbonMass * 27,
+                            MassDiffDictionary.HydrogenMass * 48,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 28:2;O"://BRS
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 28,
+                            MassDiffDictionary.HydrogenMass * 46,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 28:1;O"://CAS
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 28,
+                            MassDiffDictionary.HydrogenMass * 48,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 29:2;O"://STS
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 29,
+                            MassDiffDictionary.HydrogenMass * 48,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 29:1;O"://SIS
+                    Skelton = new[]
+                    {
+                            MassDiffDictionary.CarbonMass * 29,
+                            MassDiffDictionary.HydrogenMass * 50,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 27:2;O"://DSMS
+                    Skelton = new[]
+                        {
+                            MassDiffDictionary.CarbonMass * 27,
+                            MassDiffDictionary.HydrogenMass * 44,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 28:3;O"://EGS
+                    Skelton = new[]
+                        {
+                            MassDiffDictionary.CarbonMass * 28,
+                            MassDiffDictionary.HydrogenMass * 44,
+                            MassDiffDictionary.OxygenMass * 1,
+                            MassDiffDictionary.NitrogenMass * 0,
+                            MassDiffDictionary.PhosphorusMass * 0,
+                            MassDiffDictionary.SulfurMass * 0,
+                        }.Sum();
+                    break;
+                case "ST 28:4;O"://DEGS
+                    Skelton = new[]
+                    {
+                        MassDiffDictionary.CarbonMass * 28,
+                        MassDiffDictionary.HydrogenMass * 42,
+                        MassDiffDictionary.OxygenMass * 1,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+                    break;
+                default:
+                    return null;
             }
-            return null;
+            var chain = new TotalChain(0, 0, 0, 0, 0, 0);
+            return new Lipid(LbmClass.ST, Skelton, chain);
         }
     }
-
-    public class UDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class CDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;G$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GCDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;G$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GUDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;G$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GLCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;G$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TUDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TCDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TDCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TLCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class MCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O5$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TMCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;T$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class LCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O3$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 3,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GHCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;G$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class THCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 27:1;O5$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class ILCALipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O3$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 3,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class KLCA_7LipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:2;O4$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 38,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class LCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O3;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 30,
-            MassDiffDictionary.HydrogenMass * 50,
-            MassDiffDictionary.OxygenMass * 8,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class KLCA_7_HexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:2;O3;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 30,
-            MassDiffDictionary.HydrogenMass * 48,
-            MassDiffDictionary.OxygenMass * 9,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class DCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 30,
-            MassDiffDictionary.HydrogenMass * 50,
-            MassDiffDictionary.OxygenMass * 9,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class CAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O5;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 30,
-            MassDiffDictionary.HydrogenMass * 50,
-            MassDiffDictionary.OxygenMass * 10,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GLCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;G;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 53,
-            MassDiffDictionary.OxygenMass * 9,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GDCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;G;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 53,
-            MassDiffDictionary.OxygenMass * 10,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5;G;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 53,
-            MassDiffDictionary.OxygenMass * 11,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TLCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;T;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 55,
-            MassDiffDictionary.OxygenMass * 10,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TDCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;T;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 55,
-            MassDiffDictionary.OxygenMass * 11,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TCAHexLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5;T;Hex$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 32,
-            MassDiffDictionary.HydrogenMass * 55,
-            MassDiffDictionary.OxygenMass * 12,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class LCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O3;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class KLCA_7_SulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:2;O3;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 38,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class DCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O4;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class CASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 24:1;O5;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 24,
-            MassDiffDictionary.HydrogenMass * 40,
-            MassDiffDictionary.OxygenMass * 8,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GLCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;G;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 7,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GDCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;G;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 8,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class GCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5;G;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 43,
-            MassDiffDictionary.OxygenMass * 9,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 1,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TLCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O3;T;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 8,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 2,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TDCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O4;T;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 9,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 2,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class TCASulfateLipidParser : ILipidParser
-    {
-        public string Target { get; } = "BA";
-
-        public static readonly string Pattern = $"^BA 24:1;O5;T;S$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 26,
-            MassDiffDictionary.HydrogenMass * 45,
-            MassDiffDictionary.OxygenMass * 10,
-            MassDiffDictionary.NitrogenMass * 1,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 2,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
-    public class CholesterolLipidParser : ILipidParser
-    {
-        public string Target { get; } = "ST";
-
-        public static readonly string Pattern = $"^ST 27:1;O$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 27,
-            MassDiffDictionary.HydrogenMass * 46,
-            MassDiffDictionary.OxygenMass * 1,
-            MassDiffDictionary.NitrogenMass * 0,
-            MassDiffDictionary.PhosphorusMass * 0,
-            MassDiffDictionary.SulfurMass * 0,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr)
-        {
-            var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
-                var group = match.Groups;
-                var chain = new TotalChain(0, 0, 0, 0, 0, 0);
-                return new Lipid(LbmClass.ST, Skelton, chain);
-            }
-            return null;
-        }
-    }
-
     public class SHexLipidParser : ILipidParser
     {
         public string Target { get; } = "SG";
@@ -2359,9 +1592,9 @@ namespace CompMs.Common.Lipidomics
                         MassDiffDictionary.SulfurMass * 0,
                     }.Sum();
                     break;
-                    case "ST 28:2;O;PE"://BRS_PE
-                        Skelton = new[]
-                        {
+                case "ST 28:2;O;PE"://BRS_PE
+                    Skelton = new[]
+                    {
                             MassDiffDictionary.CarbonMass * 30,
                             MassDiffDictionary.HydrogenMass * 52,
                             MassDiffDictionary.OxygenMass * 4,
@@ -2370,9 +1603,9 @@ namespace CompMs.Common.Lipidomics
                             MassDiffDictionary.SulfurMass * 0,
                         }.Sum();
                     break;
-                    case "ST 28:1;O;PE"://CAS_PE
-                        Skelton = new[]
-                        {
+                case "ST 28:1;O;PE"://CAS_PE
+                    Skelton = new[]
+                    {
                             MassDiffDictionary.CarbonMass * 30,
                             MassDiffDictionary.HydrogenMass * 54,
                             MassDiffDictionary.OxygenMass * 4,
@@ -2381,9 +1614,9 @@ namespace CompMs.Common.Lipidomics
                             MassDiffDictionary.SulfurMass * 0,
                         }.Sum();
                     break;
-                    case "ST 29:1;O;PE"://SIS_PE
-                        Skelton = new[]
-                        {
+                case "ST 29:1;O;PE"://SIS_PE
+                    Skelton = new[]
+                    {
                             MassDiffDictionary.CarbonMass * 31,
                             MassDiffDictionary.HydrogenMass * 56,
                             MassDiffDictionary.OxygenMass * 4,
@@ -2392,9 +1625,9 @@ namespace CompMs.Common.Lipidomics
                             MassDiffDictionary.SulfurMass * 0,
                         }.Sum();
                     break;
-                    case "ST 29:2;O;PE"://STS_PE
-                        Skelton = new[]
-                        {
+                case "ST 29:2;O;PE"://STS_PE
+                    Skelton = new[]
+                    {
                             MassDiffDictionary.CarbonMass * 31,
                             MassDiffDictionary.HydrogenMass * 54,
                             MassDiffDictionary.OxygenMass * 4,
@@ -2403,9 +1636,9 @@ namespace CompMs.Common.Lipidomics
                             MassDiffDictionary.SulfurMass * 0,
                         }.Sum();
                     break;
-                    case "ST 27:0;O;PE"://Cholestan_PE
-                        Skelton = new[]
-                        {
+                case "ST 27:0;O;PE"://Cholestan_PE
+                    Skelton = new[]
+                    {
                             MassDiffDictionary.CarbonMass * 29,
                             MassDiffDictionary.HydrogenMass * 54,
                             MassDiffDictionary.OxygenMass * 4,

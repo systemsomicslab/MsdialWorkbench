@@ -5,21 +5,22 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class CeramideNsD7LipidParser : ILipidParser
+    public class CeramideD9LipidParser : ILipidParser
     {
-        public string Target { get; } = "Cer_d7";
+        public string Target { get; } = "Cer_d9";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
-        public static readonly string Pattern = $"^Cer_d7\\s*(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^Cer_d9\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+).*?\)?;?\(?((?<oxSph>O(?<oxnumSph>\d+)?)|((?<sp>\d+)OH,?)+\)?)/\d+:\d+.*?(;?(?<h>\(?((?<ab>\d+)OH,?)+\)?|(O(?<oxnum>\d+)?)))?";
 
         private static readonly Regex ceramideClassPattern = new Regex(CeramideClassPattern, RegexOptions.Compiled);
-        private static readonly double massBalanceD7 = new[]
+
+        private static readonly double massBalanceD9 = new[]
 {
-            MassDiffDictionary.Hydrogen2Mass * 7,
-            - MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.Hydrogen2Mass * 9,
+            - MassDiffDictionary.HydrogenMass * 9,
         }.Sum();
 
         public ILipid Parse(string lipidStr)
@@ -131,7 +132,7 @@ namespace CompMs.Common.Lipidomics
                         lipidClass = LbmClass.Cer_NDS;
                         break;
                     case "NS":
-                        lipidClass = LbmClass.Cer_NS_d7;
+                        lipidClass = LbmClass.Cer_NS;
                         break;
                     case "AP":
                     case "ADP":
@@ -152,13 +153,13 @@ namespace CompMs.Common.Lipidomics
                         lipidClass = LbmClass.Cer_HS;
                         break;
                     case "AH":
-                        lipidClass = LbmClass.Cer_AH;
+                        lipidClass = LbmClass.Cer_AH_d9;
                         break;
                     case "NH":
-                        lipidClass = LbmClass.Cer_NH;
+                        lipidClass = LbmClass.Cer_NH_d9;
                         break;
                 }
-                return new Lipid(lipidClass, chains.Mass + massBalanceD7, chains);
+                return new Lipid(lipidClass, chains.Mass + massBalanceD9, chains);
             }
             return null;
         }

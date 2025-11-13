@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Accord.Math;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -448,7 +449,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest()
         {
-            var parser = new CholestanLipidParser();
+            var parser = new STLipidParser();
             var lipid = parser.Parse("ST 27:0;O"); 
             var lipidMass = 27 * MassDiffDictionary.CarbonMass +
                             48 * MassDiffDictionary.HydrogenMass +
@@ -471,6 +472,49 @@ namespace CompMs.Common.Lipidomics.Tests
                             13 * MassDiffDictionary.OxygenMass;
             Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.CSPHex, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+
+    public class BAHex_ST_LipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new BAHex_ST_LipidParser();
+            var lipid = parser.Parse("ST 24:1;O3;Hex");
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 30,
+                        MassDiffDictionary.HydrogenMass * 50,
+                        MassDiffDictionary.OxygenMass * 8,
+                        MassDiffDictionary.NitrogenMass * 0,
+                        MassDiffDictionary.PhosphorusMass * 0,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.BileAcid, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class LipidALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new LipidALipidParser();
+            var lipid = parser.Parse("LipidA 14:0-O-14:0_N-18:0-O-16:0_18:0_N-16:0");//C108H206N2O25P2
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 108,
+                        MassDiffDictionary.HydrogenMass * 206,
+                        MassDiffDictionary.OxygenMass * 25,
+                        MassDiffDictionary.NitrogenMass * 2,
+                        MassDiffDictionary.PhosphorusMass * 2,
+                        MassDiffDictionary.SulfurMass * 0,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LipidA, lipid.LipidClass);
         }
     }
 }
