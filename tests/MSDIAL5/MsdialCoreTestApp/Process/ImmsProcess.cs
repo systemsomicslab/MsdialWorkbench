@@ -126,7 +126,7 @@ public sealed class ImmsProcess
             });
         }
         await Task.WhenAll(tasks);
-
+        storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -173,7 +173,6 @@ public sealed class ImmsProcess
         }
 
         if (isProjectSaved) {
-            storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
