@@ -482,7 +482,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void ParseTest()
         {
             var parser = new BAHex_ST_LipidParser();
-            var lipid = parser.Parse("ST 24:1;O3;Hex");
+            var lipid = parser.Parse("SG 24:1;O3;Hex");
             var lipidMass = new[]
                                     {
                         MassDiffDictionary.CarbonMass * 30,
@@ -493,7 +493,7 @@ namespace CompMs.Common.Lipidomics.Tests
                         MassDiffDictionary.SulfurMass * 0,
                     }.Sum();
             Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.BileAcid, lipid.LipidClass);
+            Assert.AreEqual(LbmClass.BAHex, lipid.LipidClass);
         }
     }
     [TestClass()]
