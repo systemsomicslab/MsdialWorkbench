@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(3);
         public static readonly string Pattern = $"^ADGGA\\s*(\\(O-)?(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-                private static readonly string AcylChainsPattern = $"(?<Chain>{AcylChainParser.Pattern})";
+        private static readonly string AcylChainsPattern = $"(?<Chain>{AcylChainParser.Pattern})";
 
         private static readonly TotalChainParser chainsParserSub = TotalChainParser.BuildParser(2);
         public static readonly string PatternSub = $"^ADGGA\\s*\\(O-(?<OAcyl>{AcylChainsPattern})\\)?(?<sn1sn2>{chainsParserSub.Pattern})*?$";

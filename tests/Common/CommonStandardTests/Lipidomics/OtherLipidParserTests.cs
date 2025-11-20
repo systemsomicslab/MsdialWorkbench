@@ -517,4 +517,97 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.LipidA, lipid.LipidClass);
         }
     }
+    [TestClass()]
+    public class CoqLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new CoqLipidParser();
+            var lipid = parser.Parse("CoQ1");
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 14,
+                        MassDiffDictionary.HydrogenMass * 18,
+                        MassDiffDictionary.OxygenMass * 4,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CoQ, lipid.LipidClass);
+
+            var lipid2 = parser.Parse("CoQ8");
+            var lipid2Mass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 49,
+                        MassDiffDictionary.HydrogenMass * 74,
+                        MassDiffDictionary.OxygenMass * 4,
+                    }.Sum();
+            Assert.AreEqual(lipid2Mass, lipid2.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CoQ, lipid2.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class PimsLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new PimsLipidParser();
+            var lipid = parser.Parse("Ac2PIM1 20:0_15:0");//C50H95O18P
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 50,
+                        MassDiffDictionary.HydrogenMass * 95,
+                        MassDiffDictionary.OxygenMass * 18,
+                        MassDiffDictionary.PhosphorusMass * 1,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Ac2PIM1, lipid.LipidClass);
+        }
+
+        [TestMethod()]
+        public void ParseTest2()
+        {
+            var parser = new PimsLipidParser();
+            var lipid = parser.Parse("Ac2PIM2 18:0_18:1");//C57H105O23P
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 57,
+                        MassDiffDictionary.HydrogenMass * 105,
+                        MassDiffDictionary.OxygenMass * 23,
+                        MassDiffDictionary.PhosphorusMass * 1,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Ac2PIM2, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void ParseTest3()
+        {
+            var parser = new PimsLipidParser();
+            var lipid = parser.Parse("Ac3PIM2 16:0_19:0_18:0");//C74H139O24P
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 74,
+                        MassDiffDictionary.HydrogenMass * 139,
+                        MassDiffDictionary.OxygenMass * 24,
+                        MassDiffDictionary.PhosphorusMass * 1,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Ac3PIM2, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void ParseTest4()
+        {
+            var parser = new PimsLipidParser();
+            var lipid = parser.Parse("Ac4PIM2 18:2_16:0_16:1_18:1");//C89H159O25P
+            var lipidMass = new[]
+                                    {
+                        MassDiffDictionary.CarbonMass * 89,
+                        MassDiffDictionary.HydrogenMass * 159,
+                        MassDiffDictionary.OxygenMass * 25,
+                        MassDiffDictionary.PhosphorusMass * 1,
+                    }.Sum();
+            Assert.AreEqual(lipidMass, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Ac4PIM2, lipid.LipidClass);
+        }
+    }
 }
