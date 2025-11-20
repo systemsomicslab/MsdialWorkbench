@@ -250,9 +250,9 @@ namespace CompMs.Common.DataObj {
                 case AcquisitionType.SWATH:
                     var lowerOffset = IsolationWindowLowerOffset;
                     var upperOffset = IsolationWindowUpperOffset;
-                    return (double)SelectedIonMz - lowerOffset - tolerance < mz && (double)mz < (double)SelectedIonMz + upperOffset + (double)tolerance;
+                    return (double)SelectedIonMz - lowerOffset - tolerance <= mz && (double)mz <= (double)SelectedIonMz + upperOffset + (double)tolerance;
                 case AcquisitionType.DDA:
-                    return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
+                    return Math.Abs((double)SelectedIonMz - (double)mz) <= (double)tolerance;
                 default:
                     throw new NotSupportedException(nameof(acquisitionType));
             }

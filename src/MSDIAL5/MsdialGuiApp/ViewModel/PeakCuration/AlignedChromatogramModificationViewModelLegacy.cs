@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
@@ -57,13 +58,10 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 var dv2_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Aligned);
                 var dv3_ = UtilityLegacy.GetDrawingVisualUC(properties, PeakModType.Picking);
                 var originalChromUC = new PeakModUCLegacy(this, dv_, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, properties.ToList());
-                originalChromUC.RefreshUI();
                 OriginalChromUC = originalChromUC;
                 var alignedChromUC = new PeakModUCLegacy(this, dv2_, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, properties.ToList());
-                alignedChromUC.RefreshUI();
                 AlignedChromUC = alignedChromUC;
                 var pickingUC = new PeakModUCLegacy(this, dv3_, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
-                pickingUC.RefreshUI();
                 PickingUC = pickingUC;
             }).AddTo(Disposables);
 

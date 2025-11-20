@@ -29,7 +29,7 @@ namespace CompMs.Graphics.Core.Base
         public static bool operator <=(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) <= 0;
         public static bool operator >=(AxisValue lhs, AxisValue rhs) => lhs.CompareTo(rhs) >= 0;
 
-        public int CompareTo(AxisValue other) {
+        public readonly int CompareTo(AxisValue other) {
             if (double.IsNaN(other.Value)) {
                 return 1;
             }
@@ -45,19 +45,19 @@ namespace CompMs.Graphics.Core.Base
             return 0;
         }
 
-        public override bool Equals(object obj) {
+        public override readonly bool Equals(object obj) {
             return (obj is AxisValue other) && other.Value == Value;
         }
 
-        public override string ToString() {
+        public override readonly string ToString() {
             return Value.ToString();
         }
 
-        public override int GetHashCode() {
+        public override readonly int GetHashCode() {
             return Value.GetHashCode();
         }
 
-        public bool IsNaN() {
+        public readonly bool IsNaN() {
             return double.IsNaN(Value);
         }
     }

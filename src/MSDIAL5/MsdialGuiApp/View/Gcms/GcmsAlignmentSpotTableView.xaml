@@ -170,10 +170,10 @@
                                     Binding="{Binding Path=AlignmentID}"
                                     IsReadOnly="True" 
                                     Width="50" />
-                <DataGridTextColumn Header="m/z"
+                <DataGridTextColumn Header="Quant mass"
                                     Binding="{Binding Path=MassCenter, StringFormat=F4}"
                                     IsReadOnly="True"
-                                    Width="70" />
+                                    Width="80" />
                 <DataGridTextColumn Header="RT(min)"
                                     Binding="{Binding Path=RT, StringFormat=F4}"
                                     IsReadOnly="True"
@@ -183,12 +183,9 @@
                                     Visibility="{Binding Path=Data.IsRiValid, Source={StaticResource TableVM}, Converter={StaticResource BooleanToVisibility}}"
                                     IsReadOnly="True"
                                     Width="70" />
-                <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductType, Converter={StaticResource AdductIonConverter}}"
-                                    Width="*"/>
                 <DataGridTextColumn Header="Fill %"
                                     Binding="{Binding Path=FillPercentage, StringFormat=F2}"
-                                    IsReadOnly="True"
+                                    IsReadOnly="False"
                                     Width="50" />
                 <DataGridTextColumn Header="Metabolite name"
                                     Binding="{Binding Path=Name}"

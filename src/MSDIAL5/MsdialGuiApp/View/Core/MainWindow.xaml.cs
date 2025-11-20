@@ -3,20 +3,26 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.Gcms;
+using CompMs.App.Msdial.View.Information;
 using CompMs.App.Msdial.View.MsResult;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.View.Spectra;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Gcms;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Spectra;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.Common;
@@ -128,7 +134,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
             broker.ToObservable<InternalMsfinderBatchSettingViewModel>()
-                .Subscribe(ShowChildSettingDialog<InternalMsfinderBatchSettingView>("MS-FINDER  batch processing setting", height: 800, width: 800, finishCommandContent: "Run", needDispose: true));
+                .Subscribe(ShowChildSettingDialog<InternalMsfinderBatchSettingView>("MS-FINDER  batch processing setting", height: 800, width: 800, finishCommandContent: "Run"));
             broker.ToObservable<InternalMsFinderViewModel>()
                 .Subscribe(ShowChildContent<InternalMsFinderView>("MS-FINDER", height: 1000, width: 1500));
             broker.ToObservable<InternalMsfinderSettingViewModel>()
@@ -141,6 +147,13 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<FseaResultView>("FSEA Result Viewer", height: 600, width: 1000));
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
+            broker.ToObservable<SpectraSimilarityMapViewModel>()
+                .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
+            broker.ToObservable<SpectraGroupingViewModel>()
+                .Subscribe(ShowChildContent<SpectraGroupingView>("Spectra grouping", height: 800, width: 1500, needDispose: true));
+            broker.ToObservable<QuantmassBrowserViewModel>()
+                .Subscribe(ShowChildSettingDialog<QuantmassBrowserView>("Quant mass browser", height: 800, width: 1500, finishCommandContent: "Run", needDispose: false));
+
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);

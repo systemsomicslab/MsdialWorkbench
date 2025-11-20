@@ -10,27 +10,27 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public sealed class Ms2MatchCalculator : IMatchScoreCalculator<IMSScanMatchQuery, IMSScanProperty, Ms2MatchResult>
     {
         public Ms2MatchResult Calculate(IMSScanMatchQuery query, IMSScanProperty reference) {
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
+            var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
+            var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var matchedPeaksScores = MsScanMatching.GetMatchedPeaksScores(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
 
-            if (weightedDotProduct == -1
-                || simpleDotProduct == -1
-                || reverseDotProduct == -1
+            if (sqweightedDotProduct == -1
+                || sqsimpleDotProduct == -1
+                || sqreverseDotProduct == -1
                 || matchedPeaksScores[0] == -1
                 || matchedPeaksScores[1] == -1) {
                 return Ms2MatchResult.Empty;
             }
 
             var isSpectrumMatch =
-                weightedDotProduct >= query.WeightedDotProductCutOff
-                && simpleDotProduct >= query.SimpleDotProductCutOff
-                && reverseDotProduct >= query.ReverseDotProductCutOff
+                sqweightedDotProduct >= query.WeightedDotProductCutOff
+                && sqsimpleDotProduct >= query.SimpleDotProductCutOff
+                && sqreverseDotProduct >= query.ReverseDotProductCutOff
                 && matchedPeaksScores[0] >= query.MatchedPeaksPercentageCutOff
                 && matchedPeaksScores[1] >= query.MinimumSpectrumMatch;
             return new Ms2MatchResult(
-                weightedDotProduct, simpleDotProduct, reverseDotProduct,
+                sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
                 isSpectrumMatch);
         }
@@ -83,7 +83,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             : this(
                   scan,
                   parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd,
-                  parameter.WeightedDotProductCutOff, parameter.SimpleDotProductCutOff, parameter.ReverseDotProductCutOff,
+                  parameter.SquaredWeightedDotProductCutOff, parameter.SquaredSimpleDotProductCutOff, parameter.SquaredReverseDotProductCutOff,
                   parameter.MatchedPeaksPercentageCutOff, (int)parameter.MinimumSpectrumMatch) {
 
         }
@@ -91,9 +91,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public interface IMs2MatchResult : IMatchResult
     {
-        double WeightedDotProduct { get; }
-        double SimpleDotProduct { get; }
-        double ReverseDotProduct { get; }
+        double SquaredWeightedDotProduct { get; }
+        double SquaredSimpleDotProduct { get; }
+        double SquaredReverseDotProduct { get; }
         int MatchedPeaksCount { get; }
         double MatchedPeaksPercentage { get; }
 
@@ -102,36 +102,36 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public class Ms2MatchResult : IMs2MatchResult
     {
-        public double WeightedDotProduct { get; }
-        public double SimpleDotProduct { get; }
-        public double ReverseDotProduct { get; }
+        public double SquaredWeightedDotProduct { get; }
+        public double SquaredSimpleDotProduct { get; }
+        public double SquaredReverseDotProduct { get; }
         public int MatchedPeaksCount { get; }
         public double MatchedPeaksPercentage { get; }
 
-        public double TotalScore => ((WeightedDotProduct + SimpleDotProduct + ReverseDotProduct) / 3 + MatchedPeaksPercentage) / 2;
+        public double TotalScore => ((Math.Sqrt(SquaredWeightedDotProduct) + Math.Sqrt(SquaredSimpleDotProduct) + Math.Sqrt(SquaredReverseDotProduct)) / 3 + MatchedPeaksPercentage) / 2;
         public IEnumerable<double> Scores => new[] {
-            (WeightedDotProduct + SimpleDotProduct + ReverseDotProduct) / 3,
+            (Math.Sqrt(SquaredWeightedDotProduct) + Math.Sqrt(SquaredSimpleDotProduct) + Math.Sqrt(SquaredReverseDotProduct)) / 3,
             MatchedPeaksPercentage,
         };
 
         public bool IsSpectrumMatch { get; }
 
         public Ms2MatchResult(
-            double weightedDotProduct, double simpleDotProduct, double reverseDotProduct,
+            double sqweightedDotProduct, double sqsimpleDotProduct, double sqreverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
             bool isSpectrumMatch) {
-            WeightedDotProduct = weightedDotProduct;
-            SimpleDotProduct = simpleDotProduct;
-            ReverseDotProduct = reverseDotProduct;
+            SquaredWeightedDotProduct = sqweightedDotProduct;
+            SquaredSimpleDotProduct = sqsimpleDotProduct;
+            SquaredReverseDotProduct = sqreverseDotProduct;
             MatchedPeaksPercentage = matchedPeaksPercentage;
             MatchedPeaksCount = matchedPeaksCount;
             IsSpectrumMatch = isSpectrumMatch;
         }
 
         public virtual void Assign(MsScanMatchResult result) {
-            result.WeightedDotProduct = (float)WeightedDotProduct;
-            result.SimpleDotProduct = (float)SimpleDotProduct;
-            result.ReverseDotProduct = (float)ReverseDotProduct;
+            result.SquaredWeightedDotProduct = (float)SquaredWeightedDotProduct;
+            result.SquaredSimpleDotProduct = (float)SquaredSimpleDotProduct;
+            result.SquaredReverseDotProduct = (float)SquaredReverseDotProduct;
             result.MatchedPeaksPercentage = (float)MatchedPeaksPercentage;
             result.MatchedPeaksCount = MatchedPeaksCount;
             result.IsSpectrumMatch = IsSpectrumMatch;

@@ -10,10 +10,13 @@ using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -53,14 +56,25 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { peakInformationViewModel, compoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            } 
+            if (model.MoleculeStructureModel is not null) {
+                var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(moleculeStructureViewModel);
+            }
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+
+            QuantmassBrowserViewModel = new QuantmassBrowserViewModel(model.QuantmassBrowserModel).AddTo(Disposables);
+            ShowQuantmassBrowserCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(QuantmassBrowserViewModel)).AddTo(Disposables);
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(NormalizationSetViewModel)).AddTo(Disposables);
@@ -80,7 +94,15 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
 
             GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
+                var message = new ShortMessageWindow() {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "MS-FINDER running in the background...",
+                    Width = 400,
+                    Height = 100
+                };
+                message.Show();
                 var msfinder = model.CreateSingleSearchMsfinderModel();
+                message.Close();
                 if (msfinder is not null)
                 {
                     broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
@@ -100,7 +122,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public GcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
-
         public ICommand InternalStandardSetCommand { get; }
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
@@ -118,6 +139,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public GcgcAlignmentPeakPlotViewModel GcgcPlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
+
+        public QuantmassBrowserViewModel QuantmassBrowserViewModel { get; }
+        public ReactiveCommand ShowQuantmassBrowserCommand { get; }
 
         public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
         public ReactiveCommand<MultivariateAnalysisOption> ShowMultivariateAnalysisSettingCommand { get; }

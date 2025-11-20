@@ -7,6 +7,8 @@ namespace CompMs.Graphics.Converter
 {
     public class AreEqualsConverter : IMultiValueConverter
     {
+        public static readonly AreEqualsConverter Default = new AreEqualsConverter();
+
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2) return false;

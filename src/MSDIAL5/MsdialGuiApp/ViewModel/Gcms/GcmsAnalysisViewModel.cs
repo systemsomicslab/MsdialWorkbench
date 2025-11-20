@@ -10,11 +10,15 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.UI.Message;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -44,16 +48,32 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var peakDetailViewModels = new List<ViewModelBase> { peakInformationViewModel, compoundDetailViewModel, };
+            if (model.LipidmapsLinksModel is not null) {
+                peakDetailViewModels.Add(new LipidmapsLinkViewModel(model.LipidmapsLinksModel).AddTo(Disposables));
+            }
+            if (model.MoleculeStructureModel is not null) {
+                var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+                peakDetailViewModels.Add(moleculeStructureViewModel);
+            }
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = [peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel,];
+            peakDetailViewModels.Add(matchResultCandidatesViewModel);
+            PeakDetailViewModels = [.. peakDetailViewModels];
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
             PeakTableViewModel = new GcmsAnalysisPeakTableViewModel(model.PeakTableModel, Observable.Return(model.EicLoader), PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
 
             GoToMsfinderCommand = new ReactiveCommand().WithSubscribe(() => {
+                var message = new ShortMessageWindow() {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "MS-FINDER running in the background...",
+                    Width = 400,
+                    Height = 100
+                };
+                message.Show();
                 var msfinder = model.CreateSingleSearchMsfinderModel();
+                message.Close();
                 if (msfinder is not null) {
                     broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
                 }

@@ -81,6 +81,8 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.Cer_BS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.Cer_BDS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.Cer_ABP, new CeramidePhytoSphSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_AH, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NH, new CeramideSpectrumGenerator());
                     //generator.Add(LbmClass.Cer_HS, new CeramideSpectrumGenerator());
                     //generator.Add(LbmClass.Cer_HDS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.HexCer_NS, new HexCerSpectrumGenerator());
@@ -125,7 +127,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.EtherLPC, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PE, new PEOadSpectrumGenerator());
                     generator.Add(LbmClass.LPE, new LPEOadSpectrumGenerator());
-                    generator.Add(LbmClass.EtherPE, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPE, new EtherPEOadSpectrumGenerator());
                     generator.Add(LbmClass.EtherLPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PG, new PGOadSpectrumGenerator());
                     generator.Add(LbmClass.LPG, new LPGOadSpectrumGenerator());
@@ -133,6 +135,8 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.LPI, new LPIOadSpectrumGenerator());
                     generator.Add(LbmClass.PS, new PSOadSpectrumGenerator());
                     generator.Add(LbmClass.LPS, new LPSOadSpectrumGenerator());
+                    generator.Add(LbmClass.PA, new PAOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPA, new LPAOadSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGOadSpectrumGenerator());
                     generator.Add(LbmClass.DG, new DGOadSpectrumGenerator());
                     generator.Add(LbmClass.SM, new SMOadSpectrumGenerator());

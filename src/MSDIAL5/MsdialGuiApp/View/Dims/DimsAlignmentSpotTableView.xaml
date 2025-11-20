@@ -181,7 +181,7 @@
                                     Width="*"/>
                 <DataGridTextColumn Header="Fill %"
                                     Binding="{Binding Path=FillPercentage, StringFormat=F2}"
-                                    IsReadOnly="True"
+                                    IsReadOnly="False"
                                     Width="50" />
                 <DataGridTextColumn Header="Metabolite name"
                                     Binding="{Binding Path=Name}"

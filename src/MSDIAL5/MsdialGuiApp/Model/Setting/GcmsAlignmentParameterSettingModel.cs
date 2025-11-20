@@ -44,6 +44,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepRefMatchedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepRefMatchedMetaboliteFeatures;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
+            UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
             ShouldRunAlignment = files.Count > 1 && !IsReadOnly;
 
             IndexType = parameter.AlignmentIndexType;
@@ -100,6 +101,12 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref _isForceInsertForGapFilling, value);
         }
         private bool _isForceInsertForGapFilling;
+
+        public bool UseRefMatchedPeaksOnly {
+            get => _useRefMatchedPeaksOnly;
+            set => SetProperty(ref _useRefMatchedPeaksOnly, value);
+        }
+        private bool _useRefMatchedPeaksOnly;
 
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz {
             get => _isRepresentativeQuantMassBasedOnBasePeakMz;
@@ -194,6 +201,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 ProteinAssembledResultFilePath = Path.Combine(projectFolder, AlignmentResultFileName + "." + MsdialDataStorageFormat.prf),
             });
             _parameter.AlignmentBaseParam.AlignmentReferenceFileID = ReferenceFile.AnalysisFileId;
+            _parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly = UseRefMatchedPeaksOnly;
             var postProcessParameter = _parameter.PostProcessBaseParam;
             postProcessParameter.PeakCountFilter = PeakCountFilter;
             postProcessParameter.NPercentDetectedInOneGroup = NPercentDetectedInOneGroup;
@@ -231,6 +239,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
             IsIdentificationOnlyPerformedForAlignmentFile = parameter.RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile;
+            UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
 
             if (parameter is MsdialGcmsParameter gcms) {
                 IndexType = gcms.AlignmentIndexType;

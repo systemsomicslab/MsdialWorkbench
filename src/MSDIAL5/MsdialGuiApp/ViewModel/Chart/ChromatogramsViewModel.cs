@@ -30,13 +30,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public AxisItemSelector<double> HorizontalSelector => _model.ChromAxisItemSelector;
         public AxisItemSelector<double> VerticalSelector => _model.AbundanceAxisItemSelector;
 
-        public IAxisManager<double> HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
-        public IAxisManager<double> VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager;
+        public IAxisManager<double>? HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem?.AxisManager;
+        public IAxisManager<double>? VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem?.AxisManager;
 
         public string GraphTitle => _model.GraphTitle;
 
-        public string HorizontalTitle => _model.ChromAxisItemSelector.SelectedAxisItem.GraphLabel;
-        public string VerticalTitle => _model.AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel;
+        public string HorizontalTitle => _model.ChromAxisItemSelector.SelectedAxisItem?.GraphLabel ?? string.Empty;
+        public string VerticalTitle => _model.AbundanceAxisItemSelector.SelectedAxisItem?.GraphLabel ?? string.Empty;
 
         public string HorizontalProperty => _model.HorizontalProperty;
         public string VerticalProperty => _model.VerticalProperty;

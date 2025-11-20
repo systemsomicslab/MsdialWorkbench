@@ -22,17 +22,17 @@ namespace CompMs.Common.Algorithm.Scoring {
         public double Intensity { get; set; }
         public double MatchedIntensity { get; set; }
     }
-    public sealed class MsScanMatching {
-        private MsScanMatching() { }
-
+    public static class MsScanMatching {
         private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
-            if (obj1 == null || obj2 == null || obj1.Count == 0 || obj2.Count == 0) return false;
-            return true;
+            return obj1 is not null && obj2 is not null && obj1.Count != 0 && obj2.Count != 0;
         }
 
         private static bool IsComparedAvailable(IMSScanProperty obj1, IMSScanProperty obj2) {
-            if (obj1.Spectrum == null || obj2.Spectrum == null || obj1.Spectrum.Count == 0 || obj2.Spectrum.Count == 0) return false;
-            return true;
+            return obj1.Spectrum is not null && obj2.Spectrum is not null && obj1.Spectrum.Count != 0 && obj2.Spectrum.Count != 0;
+        }
+
+        private static bool IsAvailableSpectrum(IMSScanProperty? obj) {
+            return obj?.Spectrum is { Count: > 0 };
         }
 
         public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
@@ -439,9 +439,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             result.MatchedPeaksCount = (float)matchedPeaksScores[1];
             result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
 
-            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
                 result.IsSpectrumMatch = true;
@@ -478,9 +478,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             result.MatchedPeaksCount = matchedPeaks.Count(n => n.IsMatched);
             result.MatchedPeaksPercentage = (float)(result.MatchedPeaksCount / matchedPeaks.Count());
 
-            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch &&
                 result.AndromedaScore >= param.AndromedaScoreCutOff) {
@@ -512,6 +512,25 @@ namespace CompMs.Common.Algorithm.Scoring {
             MsRefSearchParameterBase param, double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (isUseRetentionIndex) {
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            else {
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            return result;
+        }
+
+        public static MsScanMatchResult CompareEIMSScanProperties(
+            IMSScanProperty scan1, IMSScanProperty scan2, 
+            MsRefSearchParameterBase param, 
+            double eiThreshold, double rtTol, double riTol,
+            double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, (float)rtTol, (float)riTol, param.Ms1Tolerance, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (msMatchedScore > eiThreshold) {
+                result.IsSpectrumMatch = true;
+            }
             if (isUseRetentionIndex) {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
             }
@@ -553,6 +572,33 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
+        public static MsScanMatchResult CompareMSScanProperties(
+            IMSScanProperty scanProp, 
+            IMSScanProperty refSpec,
+            MsRefSearchParameterBase param,
+            float rtTol,
+            float riTol,
+            float ms1Tol,
+            float ms2Tol, 
+            float massRangeBegin, 
+            float massRangeEnd) {
+
+            var result = CompareBasicMSScanProperties(scanProp, refSpec, rtTol, riTol, ms1Tol, ms2Tol, massRangeBegin, massRangeEnd);
+            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+
+            result.MatchedPeaksCount = (float)matchedPeaksScores[1];
+            result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
+                result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.IsSpectrumMatch = true;
+            }
+
+            return result;
+        }
+
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
            float ms2Tol, float massRangeBegin, float massRangeEnd) {
 
@@ -561,9 +607,9 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             result.MatchedPeaksCount = (float)matchedPeaksScores[1];
             result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
-            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
-                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
-                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+            if (result.SquaredWeightedDotProduct >= param.SquaredWeightedDotProductCutOff &&
+                result.SquaredSimpleDotProduct >= param.SquaredSimpleDotProductCutOff &&
+                result.SquaredReverseDotProduct >= param.SquaredReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
                 result.IsSpectrumMatch = true;
@@ -583,18 +629,23 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
            float ms2Tol, float massRangeBegin, float massRangeEnd) {
-            
+            return CompareBasicMSScanProperties(scanProp, refSpec, param.RtTolerance, param.RiTolerance, param.Ms1Tolerance, ms2Tol, massRangeBegin, massRangeEnd);
+        }
+
+        public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, float rttolerance, float ritolerance, float ms1tolerance,
+           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+
             var isRtMatch = false;
             var isRiMatch = false;
             var isMs1Match = false;
 
-            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
-            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
+            var sqweightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var sqsimpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var sqreverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, rttolerance, out isRtMatch);
+            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, ritolerance, out isRiMatch);
 
-            var ms1Tol = param.Ms1Tolerance;
+            var ms1Tol = ms1tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
             if (scanProp.PrecursorMz > 500) {
                 ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
@@ -602,17 +653,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
 
             var result = new MsScanMatchResult() {
-                LibraryID = refSpec.ScanID, 
-                WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                LibraryID = refSpec.ScanID,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct,
+                SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
                 RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };
 
             return result;
         }
-
-
 
 
 
@@ -740,7 +789,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             if (libCounter == 0) return new double[2] { 0, 0 };
             else
-                return new double[2] { (double)counter / (double)libCounter, libCounter };
+                return new double[2] { (double)counter / (double)libCounter, counter };
         }
 
         public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
@@ -848,15 +897,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
 
-            var score = 0.0;
+            var sqscore = 0.0;
             var matched = 0.0;
             if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                score = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                sqscore = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 var matchedscores = GetMatchedPeaksScores(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 matched = matchedscores[1];
             }
             else {
-                score = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                sqscore = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 var matchedscores = GetMatchedPeaksScores(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
                 matched = matchedscores[1];
             }
@@ -864,7 +913,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (matched == 0) {
                 return new double[] { 0, 0 };
             }
-            return new double[] { score, matched };
+            return new double[] { sqscore, matched };
         }
 
         public static void SearchMatchedPeaks(
@@ -1203,6 +1252,50 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
             }
             else { // currently default value is retured for other lipids
+                if (comment == "SPLASH" && compClass == "CE") return new double[] { -1, -1 };
+                return resultArray;
+            }
+        }
+
+        public static double[] GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForOAD(IMSScanProperty msScanProp, MoleculeMsReference molMsRef,
+            double bin, double massBegin, double massEnd) {
+
+            if (!IsComparedAvailable(msScanProp, molMsRef)) return new double[] { -1, -1 };
+
+            // in lipidomics project, currently, the well-known lipid classes now including
+            // PC, PE, PI, PS, PG, BMP, SM, TAG are now evaluated.
+            // if the lipid class diagnostic fragment (like m/z 184 in PC and SM in ESI(+)) is observed, 
+            // the bonus 0.5 is added to the normal presence score
+
+            var resultArray = GetMatchedPeaksScores(msScanProp, molMsRef, bin, massBegin, massEnd); // [0] matched ratio [1] matched count
+            var compClass = molMsRef.CompoundClass;
+            var comment = molMsRef.Comment;
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+                if (molecule == null || molecule.Adduct == null) return resultArray;
+                //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
+
+                var result = GetLipidMoleculerSpeciesLevelAnnotationResultForOAD(msScanProp, molecule, bin);
+                if (result != null) {
+                    if (result.AnnotationLevel == 1) {
+                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
+                            resultArray[0] = 2.0;
+                            return resultArray; // add bonus
+                        } else {
+                            resultArray[0] = 1.0;
+                            return resultArray; // add bonus
+                        }
+                    }
+                    else if (result.AnnotationLevel >= 2) {
+                        resultArray[0] = 2.0;
+                        return resultArray; // add bonus
+                    }
+                    else
+                        return resultArray;
+                } else {
+                    return resultArray;
+                }
+            } else { // currently default value is retured for other lipids
                 if (comment == "SPLASH" && compClass == "CE") return new double[] { -1, -1 };
                 return resultArray;
             }
@@ -1613,6 +1706,22 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.Cer_ABP:
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.HexCer_AP:
@@ -2152,6 +2261,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2159,6 +2271,825 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return null;
             }
         }
+
+        public static string GetRefinedLipidAnnotationLevelForOAD(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
+            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
+
+            isLipidClassMatched = false;
+            isLipidChainMatched = false;
+            isLipidPositionMatched = false;
+            isOthers = false;
+            if (!IsComparedAvailable(msScanProp, molMsRef)) return string.Empty;
+
+            // in lipidomics project, currently, the well-known lipid classes now including
+            // PC, PE, PI, PS, PG, SM, TAG are now evaluated.
+            // if the lipid class diagnostic fragment (like m/z 184 in PC and SM in ESI(+)) is observed, 
+            // the bonus 0.5 is added to the normal presence score
+
+            var compClass = molMsRef.CompoundClass;
+            var comment = molMsRef.Comment;
+
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+
+                if (compClass == "Cholesterol" || compClass == "CholesterolSulfate" ||
+                    compClass == "Undefined" || compClass == "BileAcid" ||
+                    compClass == "Ac2PIM1" || compClass == "Ac2PIM2" || compClass == "Ac3PIM2" || compClass == "Ac4PIM2" ||
+                    compClass == "LipidA") {
+                    isOthers = true;
+                    return molMsRef.Name; // currently default value is retured for these lipids
+                }
+
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+                if (molecule == null || molecule.Adduct == null) {
+                    isOthers = true;
+                    return molMsRef.Name;
+                }
+
+                var result = GetLipidMoleculerSpeciesLevelAnnotationResultForOAD(msScanProp, molecule, bin);
+                if (result != null) {
+                    var refinedName = string.Empty;
+                    if (result.AnnotationLevel == 1) {
+                        refinedName = result.SublevelLipidName;
+                        isLipidClassMatched = true;
+                        isLipidChainMatched = false;
+                        isLipidPositionMatched = false;
+                    }
+                    else if (result.AnnotationLevel >= 2) {
+                        isLipidClassMatched = true;
+                        isLipidChainMatched = true;
+                        isLipidPositionMatched = false;
+                        if (result.SublevelLipidName == result.LipidName) {
+                            refinedName = result.SublevelLipidName;
+                        } else {
+                            refinedName = result.SublevelLipidName + "|" + result.LipidName;
+                        }
+                    }
+                    else
+                        return string.Empty;
+                    return refinedName;
+                } else {
+                    return string.Empty;
+                }
+            }
+            else
+            { // currently default value is retured for other lipids
+                isOthers = true;
+                return molMsRef.Name;
+            }
+        }
+
+        public static LipidMolecule GetLipidMoleculerSpeciesLevelAnnotationResultForOAD(IMSScanProperty msScanProp,
+            LipidMolecule molecule, double ms2tol) {
+            var lipidclass = molecule.LipidClass;
+            var refMz = molecule.Mz;
+            var adduct = molecule.Adduct;
+
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
+            var totalOxidized = molecule.TotalOxidizedCount;
+
+            var sn1Carbon = molecule.Sn1CarbonCount;
+            var sn1DbBond = molecule.Sn1DoubleBondCount;
+            var sn1Oxidized = molecule.Sn1Oxidizedount;
+            var sn2Oxidized = molecule.Sn2Oxidizedount;
+
+            // Console.WriteLine(molecule.LipidName);
+            var lipidheader = LipidomicsConverter.GetLipidHeaderString(molecule.LipidName);
+            // Console.WriteLine(lipidheader + "\t" + lipidclass.ToString());
+
+            switch (lipidclass) {
+                case LbmClass.PC: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylcholine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PE: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylethanolamine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PS: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylserine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.PG: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.BMP: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfBismonoacylglycerophosphate(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PI: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylinositol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.SM: //OAD
+                    if (molecule.TotalChainString.Contains("O3")) {
+                        return LipidOadMsmsCharacterization.JudgeIfSphingomyelinPhyto(msScanProp, ms2tol, refMz,
+                       totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    } else {
+                        return LipidOadMsmsCharacterization.JudgeIfSphingomyelin(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                    }
+                case LbmClass.LNAPE:
+                    return LipidMsmsCharacterization.JudgeIfNacylphosphatidylethanolamine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.LNAPS:
+                    return LipidMsmsCharacterization.JudgeIfNacylphosphatidylserine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.CE: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfCholesterylEster(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct);
+                case LbmClass.CAR: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfAcylcarnitine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.DG: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfDag(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.MG: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfMag(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MGDG:
+                    return LipidMsmsCharacterization.JudgeIfMgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DGDG:
+                    return LipidMsmsCharacterization.JudgeIfDgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.PMeOH:
+                    return LipidMsmsCharacterization.JudgeIfPmeoh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.PEtOH:
+                    return LipidMsmsCharacterization.JudgeIfPetoh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.PBtOH:
+                    return LipidMsmsCharacterization.JudgeIfPbtoh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.LPC: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLysopc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPE: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLysope(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.PA: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfPhosphatidicacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.LPA:
+                    return LipidMsmsCharacterization.JudgeIfLysopa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.LPG: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLysopg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPI: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLysopi(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPS: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLysops(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+
+                case LbmClass.EtherPC: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfEtherpc(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.EtherPE: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfEtherpe(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.EtherLPC: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfEtherlysopc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherLPE: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfEtherlysope(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.OxPC:
+                    return LipidMsmsCharacterization.JudgeIfOxpc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+                case LbmClass.OxPE:
+                    return LipidMsmsCharacterization.JudgeIfOxpe(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+                case LbmClass.OxPG:
+                    return LipidMsmsCharacterization.JudgeIfOxpg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+                case LbmClass.OxPI:
+                    return LipidMsmsCharacterization.JudgeIfOxpi(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+                case LbmClass.OxPS:
+                    return LipidMsmsCharacterization.JudgeIfOxps(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+
+                case LbmClass.EtherMGDG:
+                    return LipidMsmsCharacterization.JudgeIfEthermgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherDGDG:
+                    return LipidMsmsCharacterization.JudgeIfEtherdgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DGTS: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfDgts(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.LDGTS: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfLdgts(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DGCC:
+                    return LipidMsmsCharacterization.JudgeIfDgcc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.LDGCC:
+                    return LipidMsmsCharacterization.JudgeIfLdgcc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DGGA:
+                    return LipidMsmsCharacterization.JudgeIfGlcadg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.SQDG:
+                    return LipidMsmsCharacterization.JudgeIfSqdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DLCL:
+                    return LipidMsmsCharacterization.JudgeIfDilysocardiolipin(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.FA:
+                    return LipidMsmsCharacterization.JudgeIfFattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.OxFA:
+                    return LipidMsmsCharacterization.JudgeIfOxfattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.FAHFA:
+                    return LipidMsmsCharacterization.JudgeIfFahfa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DMEDFAHFA: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfFahfaDMED(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DMEDFA: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfDmedFattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DMEDOxFA: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfDmedOxfattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.EtherOxPC:
+                    return LipidMsmsCharacterization.JudgeIfEtheroxpc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+
+                case LbmClass.EtherOxPE:
+                    return LipidMsmsCharacterization.JudgeIfEtheroxpe(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized, sn1Oxidized, sn2Oxidized);
+
+                case LbmClass.Cer_NS:
+                    return LipidMsmsCharacterization.JudgeIfCeramidens(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NDS:
+                    return LipidMsmsCharacterization.JudgeIfCeramidends(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.HexCer_NS:
+                    return LipidMsmsCharacterization.JudgeIfHexceramidens(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.HexCer_NDS:
+                    return LipidMsmsCharacterization.JudgeIfHexceramidends(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Hex2Cer:
+                    return LipidMsmsCharacterization.JudgeIfHexhexceramidens(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Hex3Cer:
+                    return LipidMsmsCharacterization.JudgeIfHexhexhexceramidens(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AP:
+                    return LipidMsmsCharacterization.JudgeIfCeramideap(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_ABP:
+                    return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.HexCer_AP:
+                    return LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+
+                case LbmClass.SHexCer: //EIEIO
+                    return LipidOadMsmsCharacterization.JudgeIfShexcer(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.GM3:
+                    return LipidMsmsCharacterization.JudgeIfGm3(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DHSph:
+                    return LipidMsmsCharacterization.JudgeIfSphinganine(msScanProp, ms2tol, refMz,
+                        molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, adduct);
+
+                case LbmClass.Sph:
+                    return LipidOadMsmsCharacterization.JudgeIfSphingosine(msScanProp, ms2tol, refMz,
+                        molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, adduct);
+
+                case LbmClass.PhytoSph:
+                    return LipidMsmsCharacterization.JudgeIfPhytosphingosine(msScanProp, ms2tol, refMz,
+                        molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, adduct);
+
+                case LbmClass.TG: //EIEIO
+                    var sn2Carbon = molecule.Sn2CarbonCount;
+                    var sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfTriacylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.ADGGA:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfAcylglcadg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+                case LbmClass.HBMP: //EIEIO
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfHemiismonoacylglycerophosphate(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.EtherTG:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfEthertag(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.MLCL:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfLysocardiolipin(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.Cer_EOS:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfCeramideeos(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.Cer_EODS:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfCeramideeods(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.HexCer_EOS:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfHexceramideeos(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.ASM:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidOadMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn2Carbon, sn1DbBond, sn2DbBond, adduct);
+
+                case LbmClass.Cer_EBDS:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfAcylcerbds(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.AHexCer:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfAcylhexcer(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.ASHexCer:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfAshexcer(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.CL: //EIEIO
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    var sn3Carbon = molecule.Sn3CarbonCount;
+                    var sn3DbBond = molecule.Sn3DoubleBondCount;
+                    if (sn3Carbon < 1) {
+                        return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
+                    }
+
+                case LbmClass.EtherPI:
+                    return LipidMsmsCharacterization.JudgeIfEtherpi(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherPS:
+                    return LipidMsmsCharacterization.JudgeIfEtherps(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherDG:
+                    return LipidMsmsCharacterization.JudgeIfEtherDAG(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.PI_Cer:
+                    return LipidOadMsmsCharacterization.JudgeIfPicermide(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.PE_Cer:
+                    return LipidMsmsCharacterization.JudgeIfPecermide(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.DCAE:
+                    return LipidMsmsCharacterization.JudgeIfDcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.GDCAE:
+                    return LipidMsmsCharacterization.JudgeIfGdcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.GLCAE:
+                    return LipidMsmsCharacterization.JudgeIfGlcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.TDCAE:
+                    return LipidMsmsCharacterization.JudgeIfTdcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.TLCAE:
+                    return LipidMsmsCharacterization.JudgeIfTlcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.NAE:
+                    return LipidMsmsCharacterization.JudgeIfAnandamide(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.NAGly:
+                    if (totalCarbon == sn1Carbon) {
+                        return LipidOadMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                    } else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamidegly(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+
+                case LbmClass.NAGlySer:
+                    if (totalCarbon == sn1Carbon) {
+                        return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                    } else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideglyser(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+
+                case LbmClass.SL:
+                    return LipidMsmsCharacterization.JudgeIfSulfonolipid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+
+                case LbmClass.EtherPG:
+                    return LipidMsmsCharacterization.JudgeIfEtherpg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherLPG:
+                    return LipidMsmsCharacterization.JudgeIfEtherlysopg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.CoQ:
+                    return LipidMsmsCharacterization.JudgeIfCoenzymeq(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
+
+                case LbmClass.Vitamin_E:
+                    return LipidMsmsCharacterization.JudgeIfVitaminEmolecules(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.Vitamin_D:
+                    return LipidMsmsCharacterization.JudgeIfVitaminDmolecules(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
+
+                case LbmClass.VAE:
+                    return LipidMsmsCharacterization.JudgeIfVitaminaestermolecules(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
+
+                case LbmClass.NAOrn:
+                    if (totalCarbon == sn1Carbon) {
+                        return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    } else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideorn(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+
+
+                case LbmClass.BRSE:
+                    return LipidMsmsCharacterization.JudgeIfBrseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.CASE:
+                    return LipidMsmsCharacterization.JudgeIfCaseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.SISE:
+                    return LipidMsmsCharacterization.JudgeIfSiseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.STSE:
+                    return LipidMsmsCharacterization.JudgeIfStseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+
+
+                case LbmClass.AHexBRS:
+                    return LipidMsmsCharacterization.JudgeIfAhexbrseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.AHexCAS:
+                    return LipidMsmsCharacterization.JudgeIfAhexcaseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.AHexCS:
+                    return LipidMsmsCharacterization.JudgeIfAhexceSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.AHexSIS:
+                    return LipidMsmsCharacterization.JudgeIfAhexsiseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+                case LbmClass.AHexSTS:
+                    return LipidMsmsCharacterization.JudgeIfAhexstseSpecies(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.Cer_AS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfCeramideas(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_ADS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfCeramideads(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_BS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfCeramidebs(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_BDS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfCeramidebds(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_NP: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfCeramidenp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_OS:
+                    return LipidMsmsCharacterization.JudgeIfCeramideos(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_HS:
+                    return LipidMsmsCharacterization.JudgeIfCeramideo(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_HDS:
+                    return LipidMsmsCharacterization.JudgeIfCeramideo(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.Cer_NDOS:
+                    return LipidMsmsCharacterization.JudgeIfCeramidedos(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.HexCer_HS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfHexceramideo(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.HexCer_HDS: //EIEIO
+                    return LipidMsmsCharacterization.JudgeIfHexceramideo(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.SHex:
+                    return LipidMsmsCharacterization.JudgeIfSterolHexoside(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.BAHex:
+                    return LipidMsmsCharacterization.JudgeIfSterolHexoside(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.SSulfate:
+                    return LipidMsmsCharacterization.JudgeIfSterolSulfate(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.BASulfate:
+                    return LipidMsmsCharacterization.JudgeIfSterolSulfate(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.CerP:
+                    return LipidMsmsCharacterization.JudgeIfCeramidePhosphate(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.SMGDG:
+                    return LipidMsmsCharacterization.JudgeIfSmgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.EtherSMGDG:
+                    return LipidMsmsCharacterization.JudgeIfEtherSmgdg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                
+                case LbmClass.LCAE:
+                    return LipidMsmsCharacterization.JudgeIfLcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.KLCAE:
+                    return LipidMsmsCharacterization.JudgeIfKlcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+                case LbmClass.KDCAE:
+                    return LipidMsmsCharacterization.JudgeIfKdcae(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct, totalOxidized);
+
+                case LbmClass.DMPE:
+                    return LipidMsmsCharacterization.JudgeIfDiMethylPE(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MMPE:
+                    return LipidMsmsCharacterization.JudgeIfMonoMethylPE(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MIPC:
+                    return LipidMsmsCharacterization.JudgeIfMipc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.EGSE:
+                    return LipidMsmsCharacterization.JudgeIfErgoSESpecies(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DEGSE:
+                    return LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                
+                case LbmClass.OxTG:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfOxTriacylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, totalOxidized, adduct);
+                case LbmClass.TG_EST:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    sn3Carbon = molecule.Sn3CarbonCount;
+                    sn3DbBond = molecule.Sn3DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfFahfaTriacylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
+                        sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
+                
+                case LbmClass.DSMSE:
+                    return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                //add20210216
+                case LbmClass.GPNAE:
+                    return LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.MGMG:
+                    return LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DGMG:
+                    return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.GD1a:
+                    return LipidMsmsCharacterization.JudgeIfGD1a(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD1b:
+                    return LipidMsmsCharacterization.JudgeIfGD1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD2:
+                    return LipidMsmsCharacterization.JudgeIfGD2(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD3:
+                    return LipidMsmsCharacterization.JudgeIfGD3(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GM1:
+                    return LipidMsmsCharacterization.JudgeIfGM1(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GQ1b:
+                    return LipidMsmsCharacterization.JudgeIfGQ1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GT1b:
+                    return LipidMsmsCharacterization.JudgeIfGT1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.NGcGM3:
+                    return LipidMsmsCharacterization.JudgeIfNGcGM3(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.ST:
+                    return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.CSLPHex:
+                case LbmClass.BRSLPHex:
+                case LbmClass.CASLPHex:
+                case LbmClass.SISLPHex:
+                case LbmClass.STSLPHex:
+                    return LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.CSPHex:
+                case LbmClass.BRSPHex:
+                case LbmClass.CASPHex:
+                case LbmClass.SISPHex:
+                case LbmClass.STSPHex:
+                    return LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                
+                case LbmClass.SPE:
+                    return LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                
+                case LbmClass.NAPhe:
+                    return LipidMsmsCharacterization.JudgeIfNAcylPheFa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NATau:
+                    return LipidMsmsCharacterization.JudgeIfNAcylTauFa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                
+                case LbmClass.PT:
+                    return LipidMsmsCharacterization.JudgeIfPhosphatidylThreonine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.PC_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylcholineD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PE_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PS_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylserineD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PG_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylglycerolD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.PI_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfPhosphatidylinositolD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.LPC_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfLysopcD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPE_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfLysopeD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPG_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfLysopgD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPI_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfLysopiD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.LPS_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfLysopsD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
+                case LbmClass.TG_d5: //OAD
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidOadMsmsCharacterization.JudgeIfTriacylglycerolD5(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond,
+                        sn1Carbon, sn2Carbon, totalCarbon - sn1Carbon - sn2Carbon,
+                        sn1DbBond, sn2DbBond, totalDbBond - sn1DbBond - sn2DbBond, adduct);
+                case LbmClass.DG_d5: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfDagD5(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.SM_d9: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfSphingomyelinD9(msScanProp, ms2tol, refMz,
+                    totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.CE_d7: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfCholesterylEsterD7(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct);
+                case LbmClass.Cer_NS_d7: //OAD
+                    return LipidOadMsmsCharacterization.JudgeIfCeramidensD7(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                
+                case LbmClass.bmPC:
+                    return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                //20230612
+                case LbmClass.NATryA:
+                    return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                case LbmClass.NA5HT:
+                    return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.WE:
+                    return LipidMsmsCharacterization.JudgeIfWaxEster(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
+                
+                case LbmClass.NAAla:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAla(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAGln:
+                    return LipidMsmsCharacterization.JudgeIfNAcylGln(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NALeu:
+                    return LipidMsmsCharacterization.JudgeIfNAcylLeu(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAVal:
+                    return LipidMsmsCharacterization.JudgeIfNAcylVal(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NASer:
+                    return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.BisMeLPA:
+                    return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                default:
+                    return null;
+            }
+        }
+
 
         public static LipidMolecule GetLipidMoleculeAnnotationResult(IMSScanProperty msScanProp,
             LipidMolecule molecule, double ms2tol) {
@@ -2408,6 +3339,22 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.Cer_ABP:
                     return LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_AH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH_d9:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.Cer_NH:
+                    return LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.HexCer_AP:
@@ -2923,9 +3870,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 //20230612
-                case LbmClass.NATryA:
-                    return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2949,8 +3893,26 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20230630
+                case LbmClass.NATryA:
+                    if (totalCarbon < 29)
+                    {
+                        return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                case LbmClass.NAGABA:
+                    return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
 
                 default:
@@ -2975,6 +3937,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
+        /// <remarks>
+        /// This value represents the square of a typical dot product.
+        /// </remarks>>
         public static double GetReverseDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
             double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
@@ -3109,6 +4074,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
+        /// <remarks>
+        /// This value represents the square of a typical dot product.
+        /// </remarks>>
         public static double GetWeightedDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
             double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
@@ -3227,6 +4195,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
 
+        /// <remarks>
+        /// This value represents the square of a typical dot product.
+        /// </remarks>>
         public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin, double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
@@ -3236,14 +4207,19 @@ namespace CompMs.Common.Algorithm.Scoring {
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
 
-            double minMz = Math.Min(peaks1[0].Mass, peaks2[0].Mass);
             double maxMz = Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass);
-            double focusedMz = minMz;
-            int remaindIndexM = 0, remaindIndexL = 0;
-
-            if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
+            int remaindIndexM = 0, remaindIndexL = 0;
+            while (remaindIndexM < peaks1.Count && peaks1[remaindIndexM].Mass < massBegin - bin) {
+                ++remaindIndexM;
+            }
+            while (remaindIndexL < peaks2.Count && peaks2[remaindIndexL].Mass < massBegin - bin) {
+                ++remaindIndexL;
+            }
 
+            double focusedMz = Math.Min(
+                peaks1.ElementAtOrDefault(remaindIndexM)?.Mass ?? double.MaxValue,
+                peaks2.ElementAtOrDefault(remaindIndexL)?.Mass ?? double.MaxValue);
 
             SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
             SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
@@ -3253,18 +4229,18 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             while (focusedMz <= maxMz) {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; remaindIndexM = ++i) {
                     if (peaks1[i].Mass < focusedMz - bin) { continue; }
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
-                    else { remaindIndexM = i; break; }
+                    else { break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; remaindIndexL = ++i) {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumR += peaks2[i].Intensity;
-                    else { remaindIndexL = i; break; }
+                    else { break; }
                 }
 
                 measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
@@ -3275,6 +4251,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                 size++;
 
                 if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
+                if (remaindIndexM >= peaks1.Count || remaindIndexL >= peaks2.Count) {
+                    focusedMz = remaindIndexL >= peaks2.Count
+                        ? peaks1[remaindIndexM].Mass
+                        : peaks2[remaindIndexL].Mass;
+                    continue;
+                }
                 if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
                     focusedMz = peaks1[remaindIndexM].Mass;
                 else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
@@ -3306,6 +4288,109 @@ namespace CompMs.Common.Algorithm.Scoring {
             else {
                 return Math.Pow(covariance, 2) / scalarM / scalarR;
             }
+        }
+
+        public static double[][] GetBatchSimpleDotProduct(IReadOnlyList<IMSScanProperty?> props, double bin, double massBegin, double massEnd) {
+            var result = new double[props.Count][];
+            for (int i = 0; i < props.Count; i++) {
+                result[i] = new double[props.Count];
+#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+                Array.Fill(result[i], -1);
+#else
+                for (int j = 0; j < result[i].Length; j++) {
+                    result[i][j] = -1;
+                }
+#endif
+                result[i][i] = 1d;
+            }
+
+            var availableIndex = Enumerable.Range(0, props.Count).Where(i => IsAvailableSpectrum(props[i])).ToList();
+
+            var totPeaks = availableIndex.Select(k => props[k].Spectrum.Count).Sum();
+            var mergedPeaks = new (double Mz, double Intensity, int ID)[totPeaks];
+            var used = 0;
+            for (int k = 0; k < availableIndex.Count; k++) {
+                var peaks = props[availableIndex[k]].Spectrum;
+                for (int l = 0; l < peaks.Count; l++) {
+                    mergedPeaks[l + used] = (peaks[l].Mass, peaks[l].Intensity, k);
+                }
+                used += peaks.Count;
+            }
+            Array.Sort(mergedPeaks, (a, b) => a.Mz.CompareTo(b.Mz));
+
+            double[][] focusedlasts = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(double.MinValue, availableIndex.Count).ToArray()).ToArray();
+            double[] summed = ArrayPool<double>.Shared.Rent(availableIndex.Count);
+            bool[] isExists = Enumerable.Repeat(false, availableIndex.Count).ToArray();
+            int[] existsID = ArrayPool<int>.Shared.Rent(availableIndex.Count);
+            double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
+            double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
+            int klo = 0, khi = 0;
+
+            double focusedMz = mergedPeaks.Any() ? Math.Max(mergedPeaks.First().Mz, massBegin) : massBegin;
+            double maxMz = mergedPeaks.Any() ? Math.Min(massEnd, mergedPeaks.Last().Mz) : massEnd;
+
+            for (int k = 0; k < mergedPeaks.Length; k++) {
+                if (mergedPeaks[k].Mz < massBegin - bin) {
+                    continue;
+                }
+                var focus = mergedPeaks[k];
+                scalars[focus.ID] += focus.Intensity;
+
+                var p = k;
+                var existsIDIdx = 0;
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, intensity, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        summed[ID] = 0d;
+                    }
+                    summed[ID] += intensity;
+                }
+
+                p = k;
+                existsIDIdx = 0;
+                for (int l = 0; l < isExists.Length; l++) {
+                    isExists[l] = false;
+                }
+                while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
+                    var (_, _, ID) = mergedPeaks[p++];
+                    if (!isExists[ID]) {
+                        isExists[ID] = true;
+                        existsID[existsIDIdx++] = ID;
+                    }
+                }
+
+                while (--existsIDIdx >= 0) {
+                    var anotherID = existsID[existsIDIdx];
+                    isExists[anotherID] = false;
+                    if (anotherID != focus.ID && focus.Mz - bin < focusedlasts[anotherID][focus.ID]) {
+                        continue;
+                    }
+                    focusedlasts[anotherID][focus.ID] = focusedlasts[focus.ID][anotherID] = focus.Mz;
+                    if (anotherID == focus.ID) {
+                        for (int l = 0; l < availableIndex.Count; l++) {
+                            if (focusedlasts[l][focus.ID] < focus.Mz - bin) {
+                                focusedlasts[focus.ID][l] = focusedlasts[l][focus.ID] = focus.Mz;
+                            }
+                        }
+                    }
+                    var cov = Math.Sqrt(summed[anotherID] * summed[focus.ID]);
+                    covariances[focus.ID][anotherID] = (covariances[anotherID][focus.ID] += cov);
+                }
+            }
+
+            for (int i = 0; i < availableIndex.Count; i++) {
+                for (int j = i + 1; j < availableIndex.Count; j++) {
+                    result[availableIndex[j]][availableIndex[i]] = result[availableIndex[i]][availableIndex[j]] = scalars[i] != 0d && scalars[j] != 0d
+                        ? Math.Pow(covariances[i][j], 2) / scalars[i] / scalars[j]
+                        : 0;
+                }
+            }
+
+            ArrayPool<double>.Shared.Return(summed);
+            ArrayPool<int>.Shared.Return(existsID);
+
+            return result;
         }
 
         public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance) {

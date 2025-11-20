@@ -21,13 +21,12 @@ namespace CompMs.App.Msdial.Model.Loader
     public sealed class AlignmentEicLoader : DisposableModelBase
     {
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
-        private readonly string _eicFile;
+        private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<FileChromatogram> _fileChromatograms;
 
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
-            _eicFile = eicFile ?? throw new ArgumentNullException(nameof(eicFile));
-            // var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
+            _alignmentFile = alignmentFile ?? throw new ArgumentNullException(nameof(alignmentFile));
             var classToProp = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
                 .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop)).ToReactiveProperty().AddTo(Disposables);
             _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp)).ToList();           
@@ -38,13 +37,14 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public IObservable<List<PeakChromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
             if (target != null) {
-                var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
+                var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_alignmentFile.EicFilePath, target.MasterAlignmentID);
                 var ps = Enumerable.Range(0, _fileChromatograms.Count)
                     .Select(i => target.AlignedPeakPropertiesModelProperty.Select(peaks => peaks?[i]));
                 return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info))
                     .CombineLatest()
                     .Throttle(TimeSpan.FromSeconds(.05d))
-                    .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList());
+                    .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList())
+                    .Replay(1).RefCount();
             }
             else {
                 return Observable.Return(new List<PeakChromatogram>(0));

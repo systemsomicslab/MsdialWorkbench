@@ -62,6 +62,17 @@
             <ui:LabeledContent PrependLabel="Reverse dot product score:">
                 <TextBox Text="{Binding ReverseDotProductCutOff.Value}"/>
             </ui:LabeledContent>
+            <HeaderedContentControl Margin="8">
+                <HeaderedContentControl.Header>
+                    <TextBlock Text="IMPORTANT NOTICE:" FontWeight="Bold" Foreground="Red"/>
+                </HeaderedContentControl.Header>
+                <TextBlock FontSize="11" TextWrapping="WrapWithOverflow">
+                    The definition of cutoff values for dot product, weighted dot product, and reverse dot product has been changed from version 5.5.250625.<LineBreak/>
+                    While the previous value was the squared value of dot product, we use the native dot product values from this version or later.<LineBreak/>
+                    To obtain the equivalent thresholds, put the square root values of the previously used cutoff values in your project.<LineBreak/>
+                    This change also affects the total score value in the MS-DIAL output.
+                </TextBlock>
+            </HeaderedContentControl>
             <ui:LabeledContent PrependLabel="Matched spectrum percentage:"
                                AppendLabel="%">
                 <TextBox Text="{Binding MatchedPeaksPercentageCutOff.Value}"/>

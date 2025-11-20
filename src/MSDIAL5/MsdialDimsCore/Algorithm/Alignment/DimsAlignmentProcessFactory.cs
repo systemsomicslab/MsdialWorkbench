@@ -26,7 +26,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return new DimsDataAccessor();
         }
 
-        public override GapFiller CreateGapFiller() {
+        public override IGapFiller CreateGapFiller() {
             return new DimsGapFiller(DimsParameter);
         }
 
