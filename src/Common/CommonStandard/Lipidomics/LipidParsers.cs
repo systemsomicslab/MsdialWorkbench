@@ -482,6 +482,33 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
+    public class LPCSN1LipidParser : ILipidParser {
+        public string Target { get; } = "LPC";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPC\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 8,
+            MassDiffDictionary.HydrogenMass * 18,
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPC, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
     public class LPELipidParser : ILipidParser {
         public string Target { get; } = "LPE";
 
@@ -1740,15 +1767,15 @@ namespace CompMs.Common.Lipidomics
     public class Ac2PIM1LipidParser : ILipidParser {
         public string Target { get; } = "Ac2PIM1";
 
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
         public static readonly string Pattern = $"^Ac2PIM1\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 12,
-            MassDiffDictionary.HydrogenMass * 21,
-            MassDiffDictionary.OxygenMass * 18,
+            MassDiffDictionary.CarbonMass * 15,
+            MassDiffDictionary.HydrogenMass * 27,
+            MassDiffDictionary.OxygenMass * 16,
             MassDiffDictionary.PhosphorusMass * 1,
         }.Sum();
 
@@ -1766,15 +1793,15 @@ namespace CompMs.Common.Lipidomics
     public class Ac2PIM2LipidParser : ILipidParser {
         public string Target { get; } = "Ac2PIM2";
 
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
         public static readonly string Pattern = $"^Ac2PIM2\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 18,
-            MassDiffDictionary.HydrogenMass * 31,
-            MassDiffDictionary.OxygenMass * 18,
+            MassDiffDictionary.CarbonMass * 21,
+            MassDiffDictionary.HydrogenMass * 37,
+            MassDiffDictionary.OxygenMass * 21,
             MassDiffDictionary.PhosphorusMass * 1,
         }.Sum();
 
@@ -1792,15 +1819,15 @@ namespace CompMs.Common.Lipidomics
     public class Ac3PIM2LipidParser : ILipidParser {
         public string Target { get; } = "Ac3PIM2";
 
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(3);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(3);
         public static readonly string Pattern = $"^Ac3PIM2\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 18,
-            MassDiffDictionary.HydrogenMass * 30,
-            MassDiffDictionary.OxygenMass * 18,
+            MassDiffDictionary.CarbonMass * 21,
+            MassDiffDictionary.HydrogenMass * 36,
+            MassDiffDictionary.OxygenMass * 21,
             MassDiffDictionary.PhosphorusMass * 1,
         }.Sum();
 
@@ -1818,15 +1845,15 @@ namespace CompMs.Common.Lipidomics
     public class Ac4PIM2LipidParser : ILipidParser {
         public string Target { get; } = "Ac4PIM2";
 
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(4);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(4);
         public static readonly string Pattern = $"^Ac4PIM2\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 18,
-            MassDiffDictionary.HydrogenMass * 29,
-            MassDiffDictionary.OxygenMass * 18,
+            MassDiffDictionary.CarbonMass * 21,
+            MassDiffDictionary.HydrogenMass * 35,
+            MassDiffDictionary.OxygenMass * 21,
             MassDiffDictionary.PhosphorusMass * 1,
         }.Sum();
 

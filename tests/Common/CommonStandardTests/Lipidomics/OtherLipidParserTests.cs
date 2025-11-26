@@ -551,7 +551,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest()
         {
-            var parser = new PimsLipidParser();
+            var parser = new Ac2PIM1LipidParser();
             var lipid = parser.Parse("Ac2PIM1 20:0_15:0");//C50H95O18P
             var lipidMass = new[]
                                     {
@@ -567,7 +567,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest2()
         {
-            var parser = new PimsLipidParser();
+            var parser = new Ac2PIM2LipidParser();
             var lipid = parser.Parse("Ac2PIM2 18:0_18:1");//C57H105O23P
             var lipidMass = new[]
                                     {
@@ -582,7 +582,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest3()
         {
-            var parser = new PimsLipidParser();
+            var parser = new Ac3PIM2LipidParser();
             var lipid = parser.Parse("Ac3PIM2 16:0_19:0_18:0");//C74H139O24P
             var lipidMass = new[]
                                     {
@@ -597,7 +597,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest4()
         {
-            var parser = new PimsLipidParser();
+            var parser = new Ac4PIM2LipidParser();
             var lipid = parser.Parse("Ac4PIM2 18:2_16:0_16:1_18:1");//C89H159O25P
             var lipidMass = new[]
                                     {

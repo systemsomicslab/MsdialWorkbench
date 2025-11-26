@@ -292,7 +292,25 @@
             <LbmClass>LPC</LbmClass>
         </LbmClasses>
     </Lipid>
-    <Lipid>
+	<Lipid>
+		<Name>LPCSN1</Name>
+		<Abbreviation>LPC</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>2</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>8</Carbon>
+			<Hydrogen>18</Hydrogen>
+			<Oxygen>6</Oxygen>
+			<Nitrogen/>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>LPC</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
         <Name>LPE</Name>
         <Abbreviation>LPE</Abbreviation>
         <Chains>
@@ -1102,13 +1120,12 @@
 		<Name>Ac2PIM1</Name>
 		<Abbreviation>Ac2PIM1</Abbreviation>
 		<Chains>
-			<Ceramide/>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
-			<Carbon>12</Carbon>
-			<Hydrogen>21</Hydrogen>
-			<Oxygen>18</Oxygen>
+			<Carbon>15</Carbon>
+			<Hydrogen>27</Hydrogen>
+			<Oxygen>16</Oxygen>
 			<Phosphorus>1</Phosphorus>
 		</Skelton>
 		<LbmClasses>
@@ -1119,13 +1136,12 @@
 		<Name>Ac2PIM2</Name>
 		<Abbreviation>Ac2PIM2</Abbreviation>
 		<Chains>
-			<Ceramide/>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
-			<Carbon>18</Carbon>
-			<Hydrogen>31</Hydrogen>
-			<Oxygen>18</Oxygen>
+			<Carbon>21</Carbon>
+			<Hydrogen>37</Hydrogen>
+			<Oxygen>21</Oxygen>
 			<Phosphorus>1</Phosphorus>
 		</Skelton>
 		<LbmClasses>
@@ -1136,13 +1152,12 @@
 		<Name>Ac3PIM2</Name>
 		<Abbreviation>Ac3PIM2</Abbreviation>
 		<Chains>
-			<Ceramide/>
 			<Total>3</Total>
 		</Chains>
 		<Skelton>
-			<Carbon>18</Carbon>
-			<Hydrogen>30</Hydrogen>
-			<Oxygen>18</Oxygen>
+			<Carbon>21</Carbon>
+			<Hydrogen>36</Hydrogen>
+			<Oxygen>21</Oxygen>
 			<Phosphorus>1</Phosphorus>
 		</Skelton>
 		<LbmClasses>
@@ -1153,13 +1168,12 @@
 		<Name>Ac4PIM2</Name>
 		<Abbreviation>Ac4PIM2</Abbreviation>
 		<Chains>
-			<Ceramide/>
 			<Total>4</Total>
 		</Chains>
 		<Skelton>
-			<Carbon>18</Carbon>
-			<Hydrogen>29</Hydrogen>
-			<Oxygen>18</Oxygen>
+			<Carbon>21</Carbon>
+			<Hydrogen>35</Hydrogen>
+			<Oxygen>21</Oxygen>
 			<Phosphorus>1</Phosphorus>
 		</Skelton>
 		<LbmClasses>

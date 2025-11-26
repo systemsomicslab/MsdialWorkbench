@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics
     {
         public string Target { get; } = "CoQ";
 
-        public static readonly string Pattern = $"^CoQ(?<length>\\d)$";
+        public static readonly string Pattern = $"^CoQ\\s*(?<length>\\d*)$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]

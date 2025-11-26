@@ -238,6 +238,11 @@ namespace CompMs.Common.Lipidomics
                         new VitELipidParser(),
                         new LipidALipidParser(),
                         new CeramideD9LipidParser(),
+                        new CoqLipidParser(),
+                        new Ac2PIM1LipidParser(),
+                        new Ac2PIM2LipidParser(),
+                        new Ac3PIM2LipidParser(),
+                        new Ac4PIM2LipidParser(),
 
                     }.ForEach(parser.Add);
                     @default = parser;
