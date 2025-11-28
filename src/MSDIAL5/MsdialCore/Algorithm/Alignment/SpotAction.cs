@@ -1,4 +1,7 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
@@ -18,6 +21,100 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
     }
 
+    public class MatchResultAnnotationDeduplicator : ISpotAction 
+    {
+        IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        public MatchResultAnnotationDeduplicator(IMatchResultEvaluator<MsScanMatchResult> evaluator)
+        {
+            _evaluator = evaluator;
+        }
+
+        public void Process(IEnumerable<AlignmentSpotProperty> spots) {
+            var spotList = spots.Where(n => n.IsReferenceMatched(_evaluator)).OrderByDescending(spot => spot.MatchResults.Representative.LibraryID).ToList();
+            var currentPeakId = 0;
+            var currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
+
+            // by ID
+            for (int i = 1; i < spotList.Count; i++) {
+                var libID = spotList[i].MatchResults.Representative.LibraryID;
+                if (libID < 0) break;
+                if (libID != currentLibraryId) {
+                    currentPeakId = i;
+                    currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
+                    continue;
+                }
+                else {
+                    if (spotList[currentPeakId].MatchResults.Representative.TotalScore < spotList[i].MatchResults.Representative.TotalScore) {
+                        ChangeAnnotationToLowScore(spotList[currentPeakId]);
+                        currentPeakId = i;
+                    }
+                    else {
+                        ChangeAnnotationToLowScore(spotList[i]);
+                    }
+                }
+            }
+
+            // by InChIKey
+            spotList = spots
+                       .Where(n => n.IsReferenceMatched(_evaluator))
+                       .Where(n => !string.IsNullOrEmpty(n.MatchResults?.Representative?.InChIKey) && n.MatchResults.Representative.InChIKey.Length > 1)
+                       .OrderByDescending(spot => spot.MatchResults.Representative.InChIKey)
+                       .ToList();
+            currentPeakId = 0;
+            if (spotList.Count > 0) {
+                var currentInChIKey = spotList[currentPeakId].MatchResults.Representative.InChIKey;
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].MatchResults.Representative.InChIKey != currentInChIKey) {
+                        currentPeakId = i;
+                        currentInChIKey = spotList[currentPeakId].MatchResults.Representative.InChIKey;
+                        continue;
+                    }
+                    else {
+                        if (spotList[currentPeakId].MatchResults.Representative.TotalScore < spotList[i].MatchResults.Representative.TotalScore) {
+                            ChangeAnnotationToLowScore(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            ChangeAnnotationToLowScore(spotList[i]);
+                        }
+                    }
+                }
+            }
+
+            // by Name
+            spotList = spots
+                .Where(n => n.IsReferenceMatched(_evaluator))
+                .Where(n => !n.MatchResults.Representative.Name.IsEmptyOrNull())
+                .OrderByDescending(spot => spot.MatchResults.Representative.Name)
+                .ToList();
+            currentPeakId = 0;
+            if (spotList.Count > 0) {
+                var currentName = spotList[currentPeakId].MatchResults.Representative.Name.ToLower();
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].MatchResults.Representative.Name.ToLower() != currentName) {
+                        currentPeakId = i;
+                        currentName = spotList[currentPeakId].MatchResults.Representative.Name;
+                        continue;
+                    }
+                    else {
+                        if (spotList[currentPeakId].MatchResults.Representative.TotalScore < spotList[i].MatchResults.Representative.TotalScore) {
+                            ChangeAnnotationToLowScore(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            ChangeAnnotationToLowScore(spotList[i]);
+                        }
+                    }
+                }
+            }
+        }
+
+        static void ChangeAnnotationToLowScore(AlignmentSpotProperty spot) {
+            spot.MatchResults.Representative.IsReferenceMatched = false;
+            spot.Name = "putative: " + spot.Name;
+        }
+    }
+
     public class MspAnnotationDeduplicator : ISpotAction
     {
         public void Process(IEnumerable<AlignmentSpotProperty> spots) {
@@ -25,7 +122,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             var currentPeakId = 0;
             var currentLibraryId = spotList[currentPeakId].MspID;
-
+            
+            // by ID
             for (int i = 1; i < spotList.Count; i++) {
                 if (spotList[i].MspID < 0) break;
                 if (spotList[i].MspID != currentLibraryId) {
@@ -40,6 +138,54 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     }
                     else {
                         SetDefaultCompoundInformationInMspSearch(spotList[i]);
+                    }
+                }
+            }
+
+            // by InChIKey
+            spotList = spots.Where(n => n.MspBasedMatchResult.InChIKey.Length > 1).OrderByDescending(spot => spot.MspBasedMatchResult.InChIKey).ToList();
+            currentPeakId = 0;
+            if (spotList.Count > 0)
+            {
+                var currentInChIKey = spotList[currentPeakId].MspBasedMatchResult.InChIKey;
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].MspBasedMatchResult.InChIKey != currentInChIKey) {
+                        currentPeakId = i;
+                        currentInChIKey = spotList[currentPeakId].MspBasedMatchResult.InChIKey;
+                        continue;
+                    }
+                    else {
+                        if (spotList[currentPeakId].MspBasedMatchResult.TotalScore < spotList[i].MspBasedMatchResult.TotalScore) {
+                            SetDefaultCompoundInformationInMspSearch(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            SetDefaultCompoundInformationInMspSearch(spotList[i]);
+                        }
+                    }
+                }
+            }
+
+            // by Name
+            spotList = spots.Where(n => !n.MspBasedMatchResult.Name.IsEmptyOrNull()).OrderByDescending(spot => spot.MspBasedMatchResult.Name).ToList();
+            currentPeakId = 0;
+            if (spotList.Count > 0)
+            {
+                var currentName = spotList[currentPeakId].MspBasedMatchResult.Name;
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].MspBasedMatchResult.Name != currentName) {
+                        currentPeakId = i;
+                        currentName = spotList[currentPeakId].MspBasedMatchResult.Name;
+                        continue;
+                    }
+                    else {
+                        if (spotList[currentPeakId].MspBasedMatchResult.TotalScore < spotList[i].MspBasedMatchResult.TotalScore) {
+                            SetDefaultCompoundInformationInMspSearch(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            SetDefaultCompoundInformationInMspSearch(spotList[i]);
+                        }
                     }
                 }
             }
