@@ -108,6 +108,7 @@ namespace CompMs.MsdialDimsCore.Export
                 "Matched peaks percentage",
                 "Total score",
                 "S/N",
+                "Number of MSMS data points",
                 "MS1 isotopes",
                 "MSMS spectrum" };
         }
@@ -127,6 +128,7 @@ namespace CompMs.MsdialDimsCore.Export
             content["m/z matched"] = (matchResult?.IsPrecursorMzMatch ?? false).ToString();
             content["m/z similarity"] = ValueOrNull(matchResult?.AcurateMassSimilarity, "F2");
             content["Reference m/z"] = ValueOrNull(reference?.PrecursorMz, "F5");
+            content["Number of MSMS data points"] = feature.MS2RawSpectrumID2CE.Count.ToString();
 
             return content;
         }
