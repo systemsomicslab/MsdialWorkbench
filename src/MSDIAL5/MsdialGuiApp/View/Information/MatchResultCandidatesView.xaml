@@ -46,10 +46,17 @@
                     </Style>
                 </DataTemplate.Resources>
                 <StackPanel>
-                    <TextBlock Text="{Binding Path=MatchResult.Name, Mode=OneTime, TargetNullValue='Unknown'}"/>
                     <TextBlock>
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}Library name: {0} (score={1})">
+                            <MultiBinding StringFormat="{}{0} (m/z diff={1:F5} mDa)">
+                                <Binding Path="MatchResult.Name" Mode="OneTime" TargetNullValue="Unknown"/>
+                                <Binding Path="MzDiff" Mode="OneTime"/>
+                            </MultiBinding> 
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}Library name: {0} (score={1:F4})">
                                 <Binding Path="Reference.Name" Mode="OneTime" TargetNullValue="Unknown"/>
                                 <Binding Path="MatchResult.TotalScore" Mode="OneTime"/>
                             </MultiBinding> 
