@@ -2441,7 +2441,48 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
         }
 
+        [TestMethod()]
+        public void SMd9adductHCO3Test()
+        {
+            //SM_d9 18:1;O2/12:0 C35H62D9N2O6P
+            var PRECURSORTYPE = "[M+HCO3]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 716.5546,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 716.554583, Intensity =    50, },
+                    new SpectrumPeak { Mass = 654.554189, Intensity =    150, },
+                    new SpectrumPeak { Mass = 586.424199, Intensity =    600, },
+                    new SpectrumPeak { Mass = 560.408549, Intensity =    999, },
+                    new SpectrumPeak { Mass = 348.194533, Intensity =    300, },
+                    new SpectrumPeak { Mass = 191.115259, Intensity = 200, },
+                }
+            };
 
+            var totalCarbon = 30;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfSphingomyelin(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfSphingomyelinD9(target, 0.025,
+                716.5546f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"SM [M+HCO3]- test (SM_d9 18:1;O2/12:0)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
 
     }
 

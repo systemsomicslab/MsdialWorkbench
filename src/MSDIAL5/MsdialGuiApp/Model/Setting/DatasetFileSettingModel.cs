@@ -132,11 +132,13 @@ namespace CompMs.App.Msdial.Model.Setting
             public bool ContainsNetCdf { get; set; }
             public bool ContainsAgilentD { get; set; }
             public bool ContainsShimadzuLcd { get; set; }
+            public bool ContainsHive { get; set; }
 
             public void ClearFileTypeInfo() {
                 ContainsNetCdf = false;
                 ContainsAgilentD = false;
                 ContainsShimadzuLcd = false;
+                ContainsHive = false;
             }
 
             public void CheckFileType(string path) {
@@ -151,6 +153,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     if (Directory.Exists(Path.Combine(path, "AcqData"))) {
                         ContainsAgilentD = true;
                     }
+                }
+                else if (string.Equals(ext, ".hmd", StringComparison.CurrentCultureIgnoreCase)
+                      || string.Equals(ext, ".mzb", StringComparison.CurrentCultureIgnoreCase)) {
+                    ContainsHive = true;
                 }
             }
 
@@ -177,6 +183,13 @@ namespace CompMs.App.Msdial.Model.Setting
                     builder.AppendLine("Shimadzu .lcd Format Notice");
                     builder.AppendLine("The Shimadzu .lcd format may require Visual C++ 2015 for compatibility on newer Windows versions.");
                     builder.AppendLine("If you experience issues while trying to read a file, please download and install the Visual C++ 2015 Runtime from Microsoft: https://www.microsoft.com/en-us/download/details.aspx?id=48145.");
+                }
+                if (ContainsHive) {
+                    if (builder.Length > 0) {
+                        builder.AppendLine();
+                    }
+                    builder.AppendLine("Hive Format Notice");
+                    builder.AppendLine("The Hive data reader may become unavailable after the support period ends. If you are unable to read Hive data, please consider using a newer version of MS-DIAL.");
                 }
 
                 return builder.ToString();

@@ -318,6 +318,26 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentGnpsExportViewModel}">
+                    <Expander Header="GNPS" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Content="GNPS2"
+                                      IsChecked="{Binding IsSelectedGnps2.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"
+                                      Grid.Column="0"/>
+                            <CheckBox Content="GNPS(MSDIAL4 format)"
+                                      IsChecked="{Binding IsSelectedGnps.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"
+                                      Grid.Column="1"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 

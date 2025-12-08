@@ -100,9 +100,11 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
 
         private static List<RawSpectrum> AccumulateRawSpectrums(RawSpectrum[] spectrums, double massTolerance) {
+            var targetmz4ppmcalc = 500.0;
+            var binning = new Binning(targetmz4ppmcalc, massTolerance);
             var ms1Spectrums = spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
             var groups = ms1Spectrums.SelectMany(spectrum => spectrum.Spectrum)
-                .GroupBy(peak => (int)(peak.Mz / massTolerance));
+                .GroupBy(peak => binning.BinningMz(peak.Mz));
             var massBins = new Dictionary<int, double[]>();
             foreach (var group in groups) {
                 var peaks = group.ToList();
@@ -110,13 +112,43 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 var basepeak = peaks.Argmax(peak => peak.Intensity);
                 massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
             }
-            var result = ms1Spectrums.First();
-            SpectrumParser.setSpectrumProperties(result, massBins);
+            var result = ms1Spectrums.First().ShallowCopy();
+            SpectrumParser.setSpectrumProperties(result, massBins, isSortMz: true);
             var results = new[] { result }.Concat(spectrums.Where(spectrum => spectrum.MsLevel != 1)).ToList();
             for (int i = 0; i < results.Count; i++) {
                 results[i].Index = i;
             }
             return results;
+        }
+
+        class Binning
+        {
+            public double Pivot { get; }
+            public double Tolerance { get; }
+            public double Ppm { get; }
+            public double LogTolerance { get; }
+
+            public Binning(double pivot, double tolerance) {
+                Pivot = pivot;
+                Tolerance = tolerance;
+                Ppm = tolerance / Pivot * 1_000_000d;
+                LogTolerance = Math.Log(1 + Ppm / 1_000_000d);
+            }
+
+            /// <summary>
+            /// Calculates the bin index for a given m/z value.
+            /// </summary>
+            /// <param name="mz">The mass-to-charge (m/z) value.</param>
+            /// <returns>The bin index as an integer.</returns>
+            public int BinningMz(double mz) {
+                if (mz <= Pivot) {
+                    return (int)(mz / Tolerance);
+                }
+                else {
+                    int pivotbin = (int)(Pivot / Tolerance) + 1;
+                    return pivotbin + (int)(Math.Log(mz / Pivot) / LogTolerance);
+                }
+            }
         }
     }
 

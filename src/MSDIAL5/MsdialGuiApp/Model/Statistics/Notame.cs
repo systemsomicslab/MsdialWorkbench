@@ -9,7 +9,9 @@ using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -147,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
                             "install.packages('tinytex')}\r\n" +
                             "tinytex::install_tinytex()\r\n" +
                             "tinytex::tlmgr_install('grfext')\r\n\r\n" +
-                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr')\r\n" +
+                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr', 'xfun')\r\n" +
                             "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
                             "if(length(packages_to_install)) {\r\n  " +
                             "install.packages(packages_to_install)}\r\n" +
@@ -173,11 +175,71 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private void ExportReport(REngine engine) {
+            CreateSweave();
             string reportScriptPath = "Resources/Report.R";
             string reportScript = System.IO.File.ReadAllText(reportScriptPath);
 
             engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.Evaluate(reportScript);
+        }
+
+        private void CreateSweave() {
+            string path = Path.Combine(NotameExport, "Sweave.sty");
+
+            string content = @"%% This is file `Sweave.sty`,
+%% generated with the docstrip utility.
+%%
+%% Copyright (C) 2000-2014 R Core Team
+%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Sweave}[2014/09/10 Sweave package]
+\RequirePackage{ifthen}
+
+\newboolean{Sweave@gincl}
+\setboolean{Sweave@gincl}{true}
+
+\newboolean{Sweave@echo}
+\setboolean{Sweave@echo}{true}
+
+\newboolean{Sweave@eval}
+\setboolean{Sweave@eval}{true}
+
+\newboolean{Sweave@keep.source}
+\setboolean{Sweave@keep.source}{false}
+
+\newboolean{Sweave@term}
+\setboolean{Sweave@term}{false}
+
+\newboolean{Sweave@input}
+\setboolean{Sweave@input}{false}
+
+\newboolean{Sweave@strip.white}
+\setboolean{Sweave@strip.white}{false}
+
+\newcommand{\SweaveOpts}[1]{%
+  \setkeys{Gin}{#1}%
+}
+
+\newcommand{\SweaveInput}[1]{%
+  \IfFileExists{#1}{\input{#1}}{\typeout{No file #1}}%
+}
+
+\newenvironment{Schunk}{}{}
+
+\newenvironment{Sinput}{\par\smallskip\noindent\ttfamily}{\par\smallskip}
+\newenvironment{Soutput}{\par\smallskip\noindent\ttfamily}{\par\smallskip}
+\newenvironment{Scode}{\par\smallskip\noindent\ttfamily}{\par\smallskip}
+
+\newenvironment{Sinputverbatim}{\verbatim}{\endverbatim}
+\newenvironment{Soutputverbatim}{\verbatim}{\endverbatim}
+\newenvironment{Scodeverbatim}{\verbatim}{\endverbatim}
+
+\endinput
+%%
+%% End of file `Sweave.sty`.
+";
+
+            File.WriteAllText(path, content, new UTF8Encoding(false));
         }
     }
     public class CustomPackageDialog : Form {

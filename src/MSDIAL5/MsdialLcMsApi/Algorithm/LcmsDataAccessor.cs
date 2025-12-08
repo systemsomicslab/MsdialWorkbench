@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -22,7 +21,7 @@ class LcmsDataAccessor : DataAccessor, IFeatureAccessor<ChromatogramPeakFeature>
         this.lcmsParameter = lcmsParameter;
     }
 
-    public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+    public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
         var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
         var timeMin = detected.Min(x => x.ChromXsTop.RT.Value);
         var timeMax = detected.Max(x => x.ChromXsTop.RT.Value);
@@ -49,6 +48,6 @@ class LcmsDataAccessor : DataAccessor, IFeatureAccessor<ChromatogramPeakFeature>
 
     public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
         var chromatogram = ((IFeatureAccessor<ChromatogramPeakFeature>)this).GetMSScanProperties(analysisFile);
-        return new List<IMSScanProperty>(chromatogram);
+        return [.. chromatogram];
     }
 }

@@ -157,7 +157,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = alignmentFileModel.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileModel, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files,

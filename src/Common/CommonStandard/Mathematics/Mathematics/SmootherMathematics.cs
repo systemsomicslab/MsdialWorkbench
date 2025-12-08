@@ -232,13 +232,14 @@ namespace CompMs.Common.Mathematics.Basic {
                     var fittedValue = 0.0;
                     var aveQcValue = BasicMathematics.Mean(yTrain);
 
+                    var localDevi = 0d;
                     for (int j = 0; j < xTest.Length; j++)
                     {
                         fittedValue = SmootherMathematics.Splint(xTrain, yLoessPreArray, ySplineDeviArray, xTest[j]);
                         if (fittedValue <= 0) fittedValue = aveQcValue;
-                        devi += Math.Pow(fittedValue - yTest[j], 2);
+                        localDevi += Math.Pow(fittedValue - yTest[j], 2);
                     }
-                    devi = devi / (double)xTest.Length;
+                    devi += localDevi / (double)xTest.Length;
                     counter++;
                 }
 

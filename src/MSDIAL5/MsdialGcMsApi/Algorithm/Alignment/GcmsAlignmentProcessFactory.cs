@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -6,7 +7,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
-using System.Collections.Generic;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
@@ -15,16 +15,12 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
     public MsdialGcmsParameter GcmsParameter { get; }
-    public List<AnalysisFileBean> Files { get; }
-    public List<MoleculeMsReference> MspDB { get; }
     public IProgress<int>? Progress { get; set; }
 
-    public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage) : base(storage.Parameter, storage.IupacDatabase) {
-        Files = files;
+    public GcmsAlignmentProcessFactory(IMsdialDataStorage<MsdialGcmsParameter> storage) : base(storage.Parameter, storage.IupacDatabase) {
         GcmsParameter = storage.Parameter;
         _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         _refer = storage.DataBaseMapper;
-        MspDB = storage.MspDB;
     }
 
     public override IAlignmentRefiner CreateAlignmentRefiner() {
@@ -35,13 +31,13 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
         return new GcmsDataAccessor(GcmsParameter);
     }
 
-    public override GapFiller CreateGapFiller() {
+    public override IGapFiller CreateGapFiller() {
         switch (GcmsParameter.AlignmentIndexType) {
             case Common.Enum.AlignmentIndexType.RT:
-                return new GcmsRTGapFiller(Files, MspDB, GcmsParameter);
+                return new GcmsRTGapFiller(GcmsParameter);
             case Common.Enum.AlignmentIndexType.RI:
             default:
-                return new GcmsRIGapFiller(Files, MspDB, GcmsParameter);
+                return new GcmsRIGapFiller(GcmsParameter);
         }
     }
 
@@ -70,5 +66,11 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
                     new GcmsDataAccessor(GcmsParameter),
                     Progress);
         }
+    }
+
+    public PeakQuantCalculation CreatePeakQuantCalculation(IDataProviderFactory<AnalysisFileBean> providerFactory) {
+        var accessor = new GcmsDataAccessor(GcmsParameter);
+        var gapFiller = (GcmsGapFiller)CreateGapFiller();
+        return new PeakQuantCalculation(gapFiller, accessor, providerFactory, GcmsParameter);
     }
 }
