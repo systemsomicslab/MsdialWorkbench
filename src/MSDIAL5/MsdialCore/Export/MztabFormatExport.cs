@@ -318,9 +318,9 @@ namespace CompMs.MsdialCore.Export
             var retentionTimeEnd = "null";
             if (spot.TimesCenter.RT.Value > 0.0)
             {
-                retentionTime = spot.TimesCenter.RT.Value.ToString();
-                retentionTimeStart = spot.TimesMin.RT.Value.ToString();
-                retentionTimeEnd = spot.TimesMax.RT.Value.ToString();
+                retentionTime = (spot.TimesCenter.RT.Value * 60.0).ToString();
+                retentionTimeStart = (spot.TimesMin.RT.Value * 60.0).ToString();
+                retentionTimeEnd = (spot.TimesMax.RT.Value *60.0).ToString();
             }
 
             var adductIons = spot.AdductType.AdductIonName ?? "null";
