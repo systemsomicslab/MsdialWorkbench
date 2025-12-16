@@ -9757,32 +9757,8 @@
           <IsDiagnostic>1</IsDiagnostic>
           </Precursor>
         </Precursors>
-      <ChainIons>
-        <ChainIon>
-          <MZ>M+NaAdduct-SN2Acyl+H-H2O</MZ>
-          <Intensity>150</Intensity>
-          <Comment>[M+Na-SN2acyl]+</Comment>
-          <IsDiagnostic>0</IsDiagnostic>
-          <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          </ChainIon>
-        <ChainIon>
-          <MZ>M+NaAdduct-SN2Acyl+H-NL</MZ>
-          <NL>C6H12O6</NL>
-          <Intensity>150</Intensity>
-          <Comment>[M+Na-SN2acyl-C6H10O5]+</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
-          <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          </ChainIon>
-        </ChainIons>
-      <ClassIons>
-        <ClassIon>
-          <MZ>M+Proton-NL</MZ>
-          <NL>C12H22O11</NL>
-          <Intensity>999</Intensity>
-          <Comment>[M+H-C12H22O11]+</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
-          </ClassIon>
-        </ClassIons>
+      <ChainIons />
+      <ClassIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherDGDG</LipidClass>
@@ -10277,15 +10253,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
-      <ClassIons>
-        <ClassIon>
-          <MZ>M+Proton-NL</MZ>
-          <NL>C6H12O6</NL>
-          <Intensity>200</Intensity>
-          <Comment>[M+H-C6H12O6]-</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
-          </ClassIon>
-        </ClassIons>
+      <ClassIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherMGDG</LipidClass>
@@ -10313,7 +10281,7 @@
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
           <NL>C6H12O6</NL>
-          <Intensity>600</Intensity>
+          <Intensity>100</Intensity>
           <Comment>[M+H-C6H12O6]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           </ClassIon>
