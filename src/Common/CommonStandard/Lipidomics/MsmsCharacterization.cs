@@ -5908,21 +5908,17 @@ namespace CompMs.Common.Lipidomics
                             // 2 x Hex loss
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - 341.108935 - 17.026549;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - 341.108935 - 17.026549;
-                            var nl_SN1_H2O = nl_SN1 - H2O;
-                            var nl_SN2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
                                 new SpectrumPeak() { Mass = nl_SN2, Intensity = 1 },
-                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 1 },
-                                new SpectrumPeak() { Mass = nl_SN2_H2O, Intensity = 1 },
                             };
 
                             var foundCount = 0;
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
+                            if (foundCount >= 1)
                             { // now I set 2 as the correct level
                                 var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("DGDG", LbmClass.DGDG, sn1Carbon, sn1Double,
                                     sn2Carbon, sn2Double, averageIntensity);
@@ -6093,7 +6089,7 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 1;
                     var diagnosticMz = theoreticalMz - 202.04533; // - Hex and Na
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    if (isClassIonFound == false) return null;
+                    //if (isClassIonFound == false) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
