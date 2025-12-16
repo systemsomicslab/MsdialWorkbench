@@ -10595,7 +10595,7 @@ AdductIon adduct)
                     var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    if (isClassIonFound == !true || isClassIon2Found == !true) return null;
+                    if (isClassIonFound == false && isClassIon2Found == false) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -11394,7 +11394,7 @@ AdductIon adduct)
                     var diagnosticMz2 = adductform == "[M+H]+" ? diagnosticMz - H2O : diagnosticMz;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    if (isClassIonFound == !true || isClassIon2Found == !true) return null;
+                    if (isClassIonFound == false && isClassIon2Found == false) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
