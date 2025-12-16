@@ -237,7 +237,7 @@ public sealed class GcmsProcess
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
 
-            var mztabm_filename = alignmentFile.FileName + ".mzTabM";
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
             var msdecs = decResults;

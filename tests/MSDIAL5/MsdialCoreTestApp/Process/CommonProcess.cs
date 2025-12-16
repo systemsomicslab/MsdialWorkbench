@@ -29,13 +29,15 @@ namespace CompMs.App.MsdialConsole.Process
                 Console.WriteLine(CommonProcess.NoFileError());
                 return false;
             }
-            var alignmentfolder = Path.GetDirectoryName(analysisFiles[0].AnalysisFilePath);
-            if (!Directory.Exists(alignmentfolder)) {
+
+            var alignmentFolder = Path.GetDirectoryName(analysisFiles[0].AnalysisFilePath);
+            if (!Directory.Exists(alignmentFolder)) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());
                 return false;
             }
-            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(alignmentfolder);
+
+            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(alignmentFolder);
             if (analysisFiles.IsEmptyOrNull()) {
                 Console.WriteLine(CommonProcess.NoFileError());
                 return false;
