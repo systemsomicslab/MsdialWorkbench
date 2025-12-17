@@ -2483,6 +2483,56 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
         }
+        [TestMethod()]
+        public void CerEODSTest()
+        {
+            //Cer 18:0;O2/16:0;O(FA 12:0)
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 736.6824,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =736.682449, Intensity =200, },
+                    new SpectrumPeak { Mass =554.515383, Intensity =100, },
+                    new SpectrumPeak { Mass =296.260052, Intensity =50, },
+                    new SpectrumPeak { Mass =270.243853, Intensity =50, },
+                    new SpectrumPeak { Mass =239.238039, Intensity =50, },
+                    new SpectrumPeak { Mass =199.170354, Intensity =999, },
+                }
+            };
+
+            var molMsRef = new MoleculeMsReference
+            {
+                Name = "Cer 18:0;O2/16:0;O(FA 12:0)",
+                PrecursorMz = 736.6824,
+                CompoundClass = "Cer_EODS",
+            };
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+            var totalCarbon = molecule.TotalCarbonCount; //46
+            var totalDbBond = molecule.TotalDoubleBondCount; //0
+            var totalOxidized = molecule.TotalOxidizedCount; //4
+            var sn1Carbon = molecule.Sn1CarbonCount; //18
+            var sn1DbBond = molecule.Sn1DoubleBondCount; //0
+            var sn2Carbon = molecule.Sn2CarbonCount; //16
+            var sn2DbBond = molecule.Sn2DoubleBondCount; //0
+            var ExCarbon = molecule.Sn3CarbonCount; //12
+            var ExDbBond = molecule.Sn3DoubleBondCount; //0
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramideeods(target, 0.025,
+                736.6824f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+
+            Console.WriteLine($"CerEODS test (Cer 18:0;O2/16:0;O(FA 12:0))");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
+
 
     }
 

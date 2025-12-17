@@ -12155,15 +12155,15 @@ AdductIon adduct)
         public static LipidMolecule JudgeIfCeramideeos(IMSScanProperty msScanProp, double ms2Tolerance,
         double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
         int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
-        int minOmegaacylCarbon, int maxOmegaacylCarbon, int minOmegaacylDoubleBond, int maxOmegaacylDoubleBond,
+        int minAcylCarbon, int maxAcylCarbon, int minAcylDoubleBond, int maxAcylDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
             if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
-            if (maxOmegaacylCarbon > totalCarbon) maxOmegaacylCarbon = totalCarbon;
-            if (maxOmegaacylDoubleBond > totalDoubleBond) maxOmegaacylDoubleBond = totalDoubleBond;
+            if (maxAcylCarbon > totalCarbon) maxAcylCarbon = totalCarbon;
+            if (maxAcylDoubleBond > totalDoubleBond) maxAcylDoubleBond = totalDoubleBond;
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
@@ -12199,10 +12199,10 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxOmegaacylCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxOmegaacylDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
+                            var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
 
-                            for (int acylCarbon = minOmegaacylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
+                            for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
                                 for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
                                 {
@@ -12386,7 +12386,7 @@ AdductIon adduct)
         public static LipidMolecule JudgeIfCeramideeods(IMSScanProperty msScanProp, double ms2Tolerance,
         double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
         int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
-        int minOmegaacylCarbon, int maxOmegaacylCarbon, int minOmegaacylDoubleBond, int maxOmegaacylDoubleBond,
+        int minAcylCarbon, int maxAcylCarbon, int minAcylDoubleBond, int maxAcylDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
@@ -12420,21 +12420,22 @@ AdductIon adduct)
 
                         var remainCarbon = totalCarbon - sphCarbon;
                         var remainDouble = totalDoubleBond - sphDouble;
-                        var carbonLimit = Math.Min(remainCarbon, maxOmegaacylCarbon);
-                        var doubleLimit = Math.Min(remainDouble, maxOmegaacylDoubleBond);
-                        for (int acylCarbon = minOmegaacylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
+                        var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
+                        var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
+                        for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                         {
                             for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
                             {
                                 var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                 var terminalDouble = totalDoubleBond - sphDouble - acylDouble;
 
-                                var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble)
-                                    + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
+                                //var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble)
+                                //    + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
                                 var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble);
                                 var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble)
                                     + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
-
+                                var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble)
+                                    -(12*2+MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass*5+ MassDiffDictionary.OxygenMass) + Electron;
                                 var query1 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
                                     };
@@ -12448,22 +12449,21 @@ AdductIon adduct)
                                 { // the diagnostic acyl ion must be observed for level 2 annotation
 
                                     var query2 = new List<SpectrumPeak> {
-                                                new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
-                                                new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
-                                                new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
+                                                new SpectrumPeak() { Mass = acylamide, Intensity = 0.1 },
+                                                new SpectrumPeak() { Mass = sphIon, Intensity = 0.1 }
                                             };
 
                                     var foundCount2 = 0;
                                     var averageIntensity2 = 0.0;
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
-                                    if (foundCount2 == 3)
+                                    if (foundCount2 >= 1)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_EOS, "d", sphCarbon, sphDouble,
                                            acylCarbon, acylDouble, terminalCarbon, terminalDouble, averageIntensity1);
                                         candidates.Add(molecule);
                                     }
-                                    else if (foundCount2 == 2)
+                                    else
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2_0("Cer", LbmClass.Cer_EOS, "d", sphCarbon + acylCarbon,
                                          sphDouble + acylDouble, terminalCarbon, terminalDouble, averageIntensity2);
@@ -12496,15 +12496,15 @@ AdductIon adduct)
         public static LipidMolecule JudgeIfHexceramideeos(IMSScanProperty msScanProp, double ms2Tolerance,
         double theoreticalMz, int totalCarbon, int totalDoubleBond, // In positive, HexCer-EOS d18:1/34:0: In negative, HexCer-EOS d38:1-O-18:2
         int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
-        int minOmegaacylCarbon, int maxOmegaacylCarbon, int minOmegaacylDoubleBond, int maxOmegaacylDoubleBond,
+        int minAcylCarbon, int maxAcylCarbon, int minAcylDoubleBond, int maxAcylDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
             if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
-            if (maxOmegaacylCarbon > totalCarbon) maxOmegaacylCarbon = totalCarbon;
-            if (maxOmegaacylDoubleBond > totalDoubleBond) maxOmegaacylDoubleBond = totalDoubleBond;
+            if (maxAcylCarbon > totalCarbon) maxAcylCarbon = totalCarbon;
+            if (maxAcylDoubleBond > totalDoubleBond) maxAcylDoubleBond = totalDoubleBond;
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
@@ -12538,15 +12538,15 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxOmegaacylCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxOmegaacylDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
+                            var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
 
-                            for (int omegaAcylCarbon = minOmegaacylCarbon; omegaAcylCarbon <= carbonLimit; omegaAcylCarbon++)
+                            for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
-                                for (int omegaAcylDouble = 0; omegaAcylDouble <= doubleLimit; omegaAcylDouble++)
+                                for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
                                 {
-                                    var acylCarbon = totalCarbon - sphCarbon - omegaAcylCarbon;
-                                    var acylDouble = totalDoubleBond - sphDouble - omegaAcylDouble;
+                                    var omegaAcylCarbon = totalCarbon - sphCarbon - acylCarbon;
+                                    var omegaAcylDouble = totalDoubleBond - sphDouble - acylDouble;
 
                                     var omegaAcylloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(omegaAcylCarbon, omegaAcylDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
                                     var omegaAcyllossHexloss = omegaAcylloss - 162.052833; // 
@@ -12967,15 +12967,15 @@ AdductIon adduct)
         public static LipidMolecule JudgeIfAcylcerbds(IMSScanProperty msScanProp, double ms2Tolerance,
             double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
             int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
-            int minExtAcylCarbon, int maxExtAcylCarbon, int minExtAcylDoubleBond, int maxExtAcylDoubleBond,
+            int minAcylCarbon, int maxAcylCarbon, int minAcylDoubleBond, int maxAcylDoubleBond,
             AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
             if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
-            if (maxExtAcylCarbon > totalCarbon) maxExtAcylCarbon = totalCarbon;
-            if (maxExtAcylDoubleBond > totalDoubleBond) maxExtAcylDoubleBond = totalDoubleBond;
+            if (maxAcylCarbon > totalCarbon) maxAcylCarbon = totalCarbon;
+            if (maxAcylDoubleBond > totalDoubleBond) maxAcylDoubleBond = totalDoubleBond;
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
@@ -13006,9 +13006,9 @@ AdductIon adduct)
                             var carbonLimit = Math.Min(remainCarbon, maxSphCarbon);
                             var doubleLimit = Math.Min(remainDouble, maxSphDoubleBond);
 
-                            for (int acylCarbon = minExtAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
+                            for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
-                                for (int acylDB = minExtAcylDoubleBond; acylDB <= doubleLimit; acylDB++)
+                                for (int acylDB = minAcylDoubleBond; acylDB <= doubleLimit; acylDB++)
                                 {
                                     var terminalC = totalCarbon - sphCarbon - acylCarbon;
                                     var terminalDB = totalDoubleBond - sphDouble - acylDB;
