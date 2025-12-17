@@ -12532,17 +12532,12 @@ AdductIon adduct)
                     {
                         for (int sphDouble = minSphDoubleBond; sphDouble <= maxSphDoubleBond; sphDouble++)
                         {
-                            var remainCarbon = totalCarbon - sphCarbon;
-                            var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
-
-                            for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
+                            for (int acylCarbon = minAcylCarbon; acylCarbon <= maxAcylCarbon; acylCarbon++)
                             {
-                                for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
+                                for (int acylDouble = 0; acylDouble <= maxAcylDoubleBond; acylDouble++)
                                 {
-                                    var omegaAcylCarbon = totalCarbon - sphCarbon - acylCarbon;
-                                    var omegaAcylDouble = totalDoubleBond - sphDouble - acylDouble;
+                                    var omegaAcylCarbon = acylCarbon;
+                                    var omegaAcylDouble = acylDouble;
 
                                     var omegaAcylloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(omegaAcylCarbon, omegaAcylDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
                                     var omegaAcyllossHexloss = omegaAcylloss - 162.052833; // 
@@ -12559,39 +12554,18 @@ AdductIon adduct)
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = omegaAcylloss, Intensity = 0.01 },
                                         new SpectrumPeak() { Mass = omegaAcyllossHexloss, Intensity = 0.01 },
-                                        new SpectrumPeak() { Mass = omegaAcylFA, Intensity = 0.01 },
                                     };
 
                                     var foundCount = 0;
                                     var averageIntensity = 0.0;
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                                    //if (sphCarbon == 48 && sphDouble == 3 && omegaAcylCarbon == 19 && omegaAcylDouble == 0) {
-                                    //    Console.WriteLine();
-                                    //}
-
-                                    if (foundCount >= 2)
+                                    if (foundCount >= 1)
                                     { // the diagnostic acyl ion must be observed for level 2 annotation
-                                        var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
-                                        var query2 = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
-                                        };
-                                        var foundCount2 = 0;
-                                        var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
-                                        if (foundCount2 == 1)
-                                        {
-                                            var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2("HexCer", LbmClass.HexCer_EOS, "d", sphCarbon, sphDouble,
-                                            acylCarbon, acylDouble, omegaAcylCarbon, omegaAcylDouble, averageIntensity);
+                                            var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2_0("HexCer", LbmClass.HexCer_EOS, "d", sphCarbon,
+                                                sphDouble, omegaAcylCarbon, omegaAcylDouble, averageIntensity);
                                             candidates.Add(molecule);
-                                        }
-                                        else
-                                        {
-                                            var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2_0("HexCer", LbmClass.HexCer_EOS, "d", sphCarbon + acylCarbon,
-                                                sphDouble + acylDouble, omegaAcylCarbon, omegaAcylDouble, averageIntensity);
-                                            candidates.Add(molecule);
-                                        }
                                     }
                                 }
                             }
