@@ -5013,11 +5013,11 @@ namespace CompMs.Common.Lipidomics
                 {
                     var EtherFrag = "e";
                     // case LPE P-
-                    // seek PreCursor -154
+                    // seek PreCursor -154 [SN1ether+C2H8NO]+
                     var threshold = 5.0;
                     var diagnosticMz = theoreticalMz - (12 * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass * 7);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    // seek PreCursor -172
+                    // seek PreCursor -172 [SN1ether+C2H6N]+
                     var threshold2 = 50.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
