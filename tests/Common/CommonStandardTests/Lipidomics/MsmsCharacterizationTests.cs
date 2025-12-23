@@ -2540,7 +2540,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var PRECURSORTYPE = "[M-H]-";
             var target = new MSScanProperty
             {
-                PrecursorMz = 736.6824,
+                PrecursorMz = 896.7196,
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass =896.719622, Intensity =999, },
