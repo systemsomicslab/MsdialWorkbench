@@ -4001,7 +4001,7 @@ namespace CompMs.Common.Lipidomics
             if (maxSn1DoubleBond > totalDoubleBond) maxSn1DoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+")
+                if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 5;
