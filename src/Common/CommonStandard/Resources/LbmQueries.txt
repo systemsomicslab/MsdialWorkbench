@@ -34,7 +34,7 @@ NAE	[M+H]+	Positive	TRUE
 GPNAE	[M+H]+	Positive	TRUE
 MGDG	[M+NH4]+	Positive	TRUE
 DGDG	[M+NH4]+	Positive	TRUE
-DGDG	[M+Na]+	Positive	False
+DGDG	[M+Na]+	Positive	FALSE
 MGMG	[M+NH4]+	Positive	TRUE
 DGMG	[M+NH4]+	Positive	TRUE
 EtherMGDG	[M+NH4]+	Positive	TRUE
