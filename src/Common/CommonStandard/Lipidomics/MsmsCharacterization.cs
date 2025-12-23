@@ -16630,11 +16630,11 @@ AdductIon adduct)
                 }
                 if (adduct.AdductIonName == "[M+H-H2O]+")
                 {
-                    // calc [M+H-H2O]+
-                    var diagnosticMz = theoreticalMz;
-                    diagnosticMz = diagnosticMz - H2O;
-                    var threshold = 1;
-                    var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //// calc [M+H-H2O]+
+                    //var diagnosticMz = theoreticalMz;
+                    //diagnosticMz = diagnosticMz - H2O;
+                    //var threshold = 1;
+                    //var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var candidates = new List<LipidMolecule>();
                     return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 0);
