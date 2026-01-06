@@ -40,6 +40,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqenhancedDotProduct = MsScanMatching.GetEnhancedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd, .6d);
+            var spectrumEntropy = MsScanMatching.GetSpetralEntropySimilarity(scan.Spectrum, reference.Spectrum, parameter.Ms2Tolerance);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
@@ -93,6 +95,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity,
                 IsotopeSimilarity = (float)isotopeSimilarity,
+                EnhancedDotProduct = (float)Math.Sqrt(sqenhancedDotProduct),
+                SpectralEntropy = (float)spectrumEntropy,
                 Source = source,
                 AnnotatorID = id,
                 Priority = priority,

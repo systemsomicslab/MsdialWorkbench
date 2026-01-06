@@ -4058,6 +4058,155 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         /// <summary>
+        /// Calculates an enhanced dot product–based spectral similarity score between a query scan
+        /// and a reference scan over a specified m/z range.
+        /// This method is intended to evaluate the similarity of an experimental MS/MS spectrum
+        /// with respect to a reference (library or theoretical) spectrum.
+        /// </summary>
+        /// <param name="prop1">The query scan to compare (experimental MS/MS spectrum). Must provide a non-null spectrum.</param>
+        /// <param name="prop2">The reference scan to compare against (library or theoretical MS/MS spectrum). Must provide a non-null spectrum.</param>
+        /// <param name="bin">The bin width, in m/z units, used to merge and compare spectral peaks. Must be a positive value.</param>
+        /// <param name="massBegin">The lower bound of the m/z range to include in the comparison.</param>
+        /// <param name="massEnd">The upper bound of the m/z range to include in the comparison.</param>
+        /// <param name="penalty">
+        /// A weighting factor controlling how unmatched peaks in the query scan contribute to the similarity score.
+        /// Values should be between 0 and 1:
+        /// a value of 1 yields behavior equivalent to the reverse dot product,
+        /// while a value of 0 yields behavior equivalent to the standard dot product.
+        /// </param>
+        /// <returns>
+        /// A double value representing the enhanced dot product spectral similarity score.
+        /// Returns -1 if the scans cannot be compared, or 0 if no valid peaks are found
+        /// in the specified m/z range.
+        /// </returns>
+        /// <remarks>
+        /// This method is based on the enhanced dot product similarity approach described in:
+        /// Xing, S., Charron-Lamoureux, V., Zhao, H. N., El Abiead, Y., Wang, M., & Dorrestein, P. C.
+        /// "Reverse Spectral Search Reimagined: A Simple but Overlooked Solution for Chimeric Spectral Annotation."
+        /// Analytical Chemistry, 2025, 97(33).
+        /// https://pubs.acs.org/doi/10.1021/acs.analchem.5c02047
+        /// </remarks>
+        public static double GetEnhancedDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+            double massBegin, double massEnd, double penalty) {
+            double scalarM = 0, scalarR = 0, covariance = 0;
+            double sumM = 0, sumL = 0;
+            if (!IsComparedAvailable(prop1, prop2))
+            {
+                return -1;
+            }
+
+            var peaks1 = prop1.Spectrum;
+            var peaks2 = prop2.Spectrum;
+
+            double minMz = Math.Max(massBegin, Math.Min(peaks1[0].Mass, peaks2[0].Mass));
+            double maxMz = Math.Min(massEnd, Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass));
+
+            double focusedMz = minMz;
+            int remaindIndexM = 0, remaindIndexL = 0;
+            int counter = 0;
+
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            int size = 0;
+
+            double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
+
+            while (focusedMz <= maxMz) {
+                sumL = 0;
+                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                    if (peaks2[i].Mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
+                        sumL += peaks2[i].Intensity;
+                    else { remaindIndexL = i; break; }
+                }
+
+                sumM = 0;
+                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                    if (peaks1[i].Mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
+                        sumM += peaks1[i].Intensity;
+                    else { remaindIndexM = i; break; }
+                }
+
+                if (sumM <= 0) {
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
+                    if (sumM > baseM) baseM = sumM;
+
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
+                    if (sumL > baseR) baseR = sumL;
+                }
+                else {
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
+                    if (sumM > baseM) baseM = sumM;
+
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
+                    if (sumL > baseR) baseR = sumL;
+
+                    counter++;
+                }
+                size++;
+
+                if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
+                if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
+                    focusedMz = peaks1[remaindIndexM].Mass;
+                else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
+                    focusedMz = peaks2[remaindIndexL].Mass;
+                else
+                    focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+            }
+
+            if (baseM == 0 || baseR == 0) {
+                ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+                ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                return 0;
+            }
+
+            var eSpectrumCounter = 0;
+            var lSpectrumCounter = 0;
+            for (int i = 0; i < size; i++) {
+                measuredMassBuffer[i] = new SummedPeak(focusedMz: measuredMassBuffer[i].FocusedMz, intensity: measuredMassBuffer[i].Intensity / baseM);
+                referenceMassBuffer[i] = new SummedPeak(focusedMz: referenceMassBuffer[i].FocusedMz, intensity: referenceMassBuffer[i].Intensity / baseR);
+                sumMeasure += measuredMassBuffer[i].Intensity;
+                sumReference += referenceMassBuffer[i].Intensity;
+
+                if (measuredMassBuffer[i].Intensity > 0.1) eSpectrumCounter++;
+                if (referenceMassBuffer[i].Intensity > 0.1) lSpectrumCounter++;
+            }
+
+            var cutoff = 0.01;
+            for (int i = 0; i < size; i++) {
+                if (referenceMassBuffer[i].Intensity < cutoff) {
+                    continue;
+                }
+
+                if (measuredMassBuffer[i].Intensity == 0d) {
+                    scalarM += measuredMassBuffer[i].Intensity * (1 - penalty) * measuredMassBuffer[i].FocusedMz;
+                }
+                else {
+                    scalarM += measuredMassBuffer[i].Intensity * measuredMassBuffer[i].FocusedMz;
+                }
+                scalarR += referenceMassBuffer[i].Intensity * referenceMassBuffer[i].FocusedMz;
+                covariance += Math.Sqrt(measuredMassBuffer[i].Intensity * referenceMassBuffer[i].Intensity) * measuredMassBuffer[i].FocusedMz;
+            }
+
+            ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+            ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+
+            var peakCountPenalty = 1.0;
+            if (lSpectrumCounter == 1) peakCountPenalty = 0.75;
+            else if (lSpectrumCounter == 2) peakCountPenalty = 0.88;
+            else if (lSpectrumCounter == 3) peakCountPenalty = 0.94;
+            else if (lSpectrumCounter == 4) peakCountPenalty = 0.97;
+
+            if (scalarM == 0 || scalarR == 0) {
+                return 0;
+            }
+            else {
+                return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty;
+            }
+        }
+
+        /// <summary>
         /// This program will return so called dot product similarity as described in the previous resport.
         /// Stein, S. E. An Integrated Method for Spectrum Extraction. J.Am.Soc.Mass.Spectrom, 10, 770-781, 1999.
         /// The spectrum similarity of MS/MS will be calculated in this method.
