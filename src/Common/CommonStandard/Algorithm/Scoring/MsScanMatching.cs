@@ -792,7 +792,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 return new double[2] { (double)counter / (double)libCounter, counter };
         }
 
-        public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
+        public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
             var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(peaks1, peaks2, bin);
