@@ -41,7 +41,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqenhancedDotProduct = MsScanMatching.GetEnhancedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd, .6d);
-            var spectrumEntropy = MsScanMatching.GetSpetralEntropySimilarity(scan.Spectrum, reference.Spectrum, parameter.Ms2Tolerance);
+            var spectrumEntropy = MsScanMatching.GetSpectralEntropySimilarity(scan.Spectrum, reference.Spectrum, parameter.Ms2Tolerance);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
