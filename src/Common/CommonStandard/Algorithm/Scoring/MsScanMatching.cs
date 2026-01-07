@@ -793,6 +793,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
+            if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
+
             var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(peaks1, peaks2, bin);
             var entropy12 = GetSpectralEntropy(combinedSpectrum);
             var entropy1 = GetSpectralEntropy(peaks1);
