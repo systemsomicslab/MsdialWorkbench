@@ -112,8 +112,9 @@ public sealed class GcmsProcess
                 new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectStore).Result;
@@ -203,6 +204,8 @@ public sealed class GcmsProcess
             });
         }
         await Task.WhenAll(tasks);
+        
+        storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
 
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
@@ -220,7 +223,7 @@ public sealed class GcmsProcess
                     break;
             }
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, storage, providerFactory);
+            var factory = new GcmsAlignmentProcessFactory(storage, providerFactory);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
@@ -233,11 +236,28 @@ public sealed class GcmsProcess
             var spotExporter = new AlignmentCSVExporter("\t");
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
+            var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
+            var spots = result.AlignmentSpotProperties; // TODO: cancellation
+            var msdecs = decResults;
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
+
+            using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            mztabM_exporter.MztabFormatExporterCore(
+                tabmstream,
+                spots,
+                msdecs,
+                files,
+                accessor,
+                quantAccessor,
+                stats,
+                mztabm_filename
+            );
         }
 
         if (isProjectSaved)
         {
-            storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

@@ -42,14 +42,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         parameter.Ms1Tolerance.ToUnit(),
                         parameter.Ms2Tolerance.ToUnit(),
                         parameter.RtTolerance.ToUnit(),
-                    }.Merge().StartWith(Unit.Default))
+                    }.Merge()
+                    .StartWith(Unit.Default)
+                    .Throttle(TimeSpan.FromSeconds(.2)))
                 .Where(_ => !ParameterHasErrors.Value)
                 .Select(_ => Observable.FromAsync(model.SearchAsync))
                 .Switch()
                 .Subscribe()
                 .AddTo(Disposables);
-
-            _ = model.SearchAsync(default);
         }
 
         public ReactiveCommand SearchCommand { get; }

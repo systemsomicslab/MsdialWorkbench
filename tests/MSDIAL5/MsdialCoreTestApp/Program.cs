@@ -43,7 +43,20 @@ namespace CompMs.App.MsdialConsole {
             //    , "-o"
             //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\console_fastlc_demo"
             //    , "-m"
-            //    , @"E:\0_SourceCode\msdial_release\MSDIAL.console.v5.5.241113-windows-net48\msdial_console_param4lipidomics.txt"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\console_fastlc_demo\lib\msdial_console_param4lipidomics.txt"
+            //    , "-p"
+            //};
+
+            // lcms csv file import
+            //args = new string[]
+            //{
+            //    "lcms"
+            //    , "-i"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps\consoleapp_demo_csvimportfiles.csv"
+            //    , "-o"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps"
+            //    , "-m"
+            //    , @"D:\0_SourceCode\MsdialWorkbenchDemo\mzml_gnps\msdial_console_param4metabolomics.txt"
             //    , "-p"
             //};
 

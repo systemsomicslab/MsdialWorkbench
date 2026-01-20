@@ -2441,7 +2441,145 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
         }
 
+        [TestMethod()]
+        public void SMd9adductHCO3Test()
+        {
+            //SM_d9 18:1;O2/12:0 C35H62D9N2O6P
+            var PRECURSORTYPE = "[M+HCO3]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 716.5546,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 716.554583, Intensity =    50, },
+                    new SpectrumPeak { Mass = 654.554189, Intensity =    150, },
+                    new SpectrumPeak { Mass = 586.424199, Intensity =    600, },
+                    new SpectrumPeak { Mass = 560.408549, Intensity =    999, },
+                    new SpectrumPeak { Mass = 348.194533, Intensity =    300, },
+                    new SpectrumPeak { Mass = 191.115259, Intensity = 200, },
+                }
+            };
 
+            var totalCarbon = 30;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var minSnCarbon = 6;
+            var minSnDoubleBond = 0;
+            var maxSnCarbon = 22;
+            var maxSnDoubleBond = totalDbBond;
+
+            //public static LipidMolecule JudgeIfSphingomyelin(IMSScanProperty msScanProp, double ms2Tolerance,
+            //    double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            //    AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfSphingomyelinD9(target, 0.025,
+                716.5546f, totalCarbon, totalDbBond,
+                         minSnCarbon, maxSnCarbon, minSnDoubleBond, maxSnDoubleBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+            Console.WriteLine($"SM [M+HCO3]- test (SM_d9 18:1;O2/12:0)");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void CerEODSTest()
+        {
+            //Cer 18:0;O2/16:0;O(FA 12:0)
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 736.6824,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =736.682449, Intensity =200, },
+                    new SpectrumPeak { Mass =554.515383, Intensity =100, },
+                    new SpectrumPeak { Mass =296.260052, Intensity =50, },
+                    new SpectrumPeak { Mass =270.243853, Intensity =50, },
+                    new SpectrumPeak { Mass =239.238039, Intensity =50, },
+                    new SpectrumPeak { Mass =199.170354, Intensity =999, },
+                }
+            };
+
+            var molMsRef = new MoleculeMsReference
+            {
+                Name = "Cer 18:0;O2/16:0;O(FA 12:0)",
+                PrecursorMz = 736.6824,
+                CompoundClass = "Cer_EODS",
+            };
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+            var totalCarbon = molecule.TotalCarbonCount; //46
+            var totalDbBond = molecule.TotalDoubleBondCount; //0
+            var totalOxidized = molecule.TotalOxidizedCount; //4
+            var sn1Carbon = molecule.Sn1CarbonCount; //18
+            var sn1DbBond = molecule.Sn1DoubleBondCount; //0
+            var sn2Carbon = molecule.Sn2CarbonCount; //16
+            var sn2DbBond = molecule.Sn2DoubleBondCount; //0
+            var ExCarbon = molecule.Sn3CarbonCount; //12
+            var ExDbBond = molecule.Sn3DoubleBondCount; //0
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramideeods(target, 0.025,
+                736.6824f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+
+            Console.WriteLine($"CerEODS test (Cer 18:0;O2/16:0;O(FA 12:0))");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
+
+        [TestMethod()]
+        public void HexCerEOSTest()
+        {
+            //HexCer 34:1;O3(FA 12:0)
+            var PRECURSORTYPE = "[M-H]-";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 896.7196,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =896.719622, Intensity =999, },
+                    new SpectrumPeak { Mass =734.666799, Intensity =50, },
+                    new SpectrumPeak { Mass =714.552557, Intensity =100, },
+                    new SpectrumPeak { Mass =696.541992, Intensity =500, },
+                    new SpectrumPeak { Mass =552.499733, Intensity =50, },
+                    new SpectrumPeak { Mass =199.170354, Intensity =50, },
+                }
+            };
+
+            var molMsRef = new MoleculeMsReference
+            {
+                Name = "HexCer 34:1;O3(FA 12:0)",
+                PrecursorMz = 896.7196,
+                CompoundClass = "HexCer_EOS",
+            };
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+            var totalCarbon = molecule.TotalCarbonCount; //46
+            var totalDbBond = molecule.TotalDoubleBondCount; //1
+            var totalOxidized = molecule.TotalOxidizedCount; //3
+            var sn1Carbon = molecule.Sn1CarbonCount; //34
+            var sn1DbBond = molecule.Sn1DoubleBondCount; //1
+            var sn2Carbon = molecule.Sn2CarbonCount; //12
+            var sn2DbBond = molecule.Sn2DoubleBondCount; //0
+
+            var result = LipidMsmsCharacterization.JudgeIfHexceramideeos(target, 0.025,
+                896.7196f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+
+
+            Console.WriteLine($"HexCerEOS test (HexCer 34:1;O3(FA 12:0))");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+        }
 
     }
 

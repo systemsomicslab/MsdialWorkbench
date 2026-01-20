@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public SaveImagesModel SaveImagesModel { get; }
         public AnalysisFileBeanModel File { get; }
         public PeakInformationAnalysisModel PeakInformationModel => ImageResult.AnalysisModel.PeakInformationModel;
-        public MoleculeStructureModel MoleculeStructureModel => ImageResult.AnalysisModel.MoleculeStructureModel;
+        public MoleculeStructureModel? MoleculeStructureModel => ImageResult.AnalysisModel.MoleculeStructureModel;
 
         public async Task AddRoiAsync()
         {

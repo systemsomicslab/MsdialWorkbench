@@ -69,8 +69,9 @@ public sealed class ImmsProcess
                 new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectSaved).Result;
@@ -126,7 +127,7 @@ public sealed class ImmsProcess
             });
         }
         await Task.WhenAll(tasks);
-
+        storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -149,10 +150,28 @@ public sealed class ImmsProcess
             IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
+            var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
+            var spots = result.AlignmentSpotProperties; // TODO: cancellation
+            var msdecs = align_decResults;
+            var accessor = align_accessor;
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
+
+            using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            mztabM_exporter.MztabFormatExporterCore(
+                tabmstream,
+                spots,
+                msdecs,
+                files,
+                accessor,
+                align_quantAccessor,
+                align_stats,
+                mztabm_filename
+            );
         }
 
         if (isProjectSaved) {
-            storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

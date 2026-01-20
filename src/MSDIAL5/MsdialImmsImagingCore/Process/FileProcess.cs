@@ -44,14 +44,5 @@ public sealed class FileProcess
         var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
         var pixels = provider.GetRawPixelFeatures(_elements, provider.GetMaldiFrames(), isNewProcess: true);
 
-        foreach (var element in pixels.PixelPeakFeaturesList) {
-            if (Math.Abs(element.Mz - 885.5472) < 0.01) {
-                Console.WriteLine(element.Mz + "\t" + element.Drift);
-                var frames = pixels.XYFrames;
-                for (int i = 0; i < element.IntensityArray.Length; i++) {
-                    Console.WriteLine(frames[i].XIndexPos + "\t" + frames[i].YIndexPos + "\t" + element.IntensityArray[i]);
-                }
-            }
-        }
     }
 }

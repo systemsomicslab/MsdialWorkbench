@@ -1,4 +1,7 @@
-﻿using CompMs.MsdialDimsCore.Algorithm;
+﻿using CompMs.Common.DataObj;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialDimsCore.Algorithm;
 using CompMs.Raw.Abstractions;
 using MessagePack;
 

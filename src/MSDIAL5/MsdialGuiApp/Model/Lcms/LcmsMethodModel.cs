@@ -83,7 +83,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            List<ExportType> exportTypes = [
+            List<ExportType> quantTypes =
+            [
                 new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
                 new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
                 new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
@@ -95,37 +96,29 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                 new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
             ];
-            AccessPeakMetaModel accessPeakMeta = new(new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter));
+            var peakMeta = new AccessPeakMetaModel(new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter));
+            var fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
-                new ExportMethod(
-                    analysisFiles,
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
-                exportTypes,
-                accessPeakMeta,
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                new ExportMethod(analysisFiles, ExportFormat.Tsv, ExportFormat.Csv),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
             var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, exportTypes.GetRange(0, 4), accessPeakMeta);
+            var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, quantTypes.GetRange(0, 4), peakMeta);
             var annotationResult = new AnnotationResultExportModel(peakSpotSupplyer, storage.DataBaseMapper);
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, productions, spectraAndReference, annotationResult, };
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, gnps, productions, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }

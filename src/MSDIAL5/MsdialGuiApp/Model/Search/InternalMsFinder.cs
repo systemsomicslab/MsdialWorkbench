@@ -32,18 +32,18 @@ namespace CompMs.App.Msdial.Model.Search {
             var ms1 = selectedMetaboliteOx.Select(m => m?.Ms1Spectrum ?? Observable.Never<MsSpectrum>()).Switch();
             var internalMsFinderMs1 = new ObservableMsSpectrum(ms1, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
             var ms1HorizontalAxis = internalMsFinderMs1.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-            var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+            var ms1VerticalAxis = internalMsFinderMs1.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
             var ms2 = selectedMetaboliteOx.Select(m => m?.Ms2Spectrum ?? Observable.Never<MsSpectrum>()).Switch();
             var internalMsFinderMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
             var ms2HorizontalAxis = internalMsFinderMs2.CreateAxisPropertySelectors(new PropertySelector<SpectrumPeak, double>(p => p.Mass), "m/z", "m/z");
-            var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+            var ms2VerticalAxis = internalMsFinderMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
-            var structureMs2 = new ObservableMsSpectrum(ms2, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
+            var structureMs2 = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(_selectedObservedMetabolite._spotData.Ms2Spectrum)), null, Observable.Return<ISpectraExporter?>(null));
             var ms2RefRange = _selectedObservedMetabolite._spotData.Ms2Spectrum.IsEmptyOrNull()
                 ? null
                 : new AxisRange(_selectedObservedMetabolite._spotData.Ms2Spectrum.Min(p => p.Mass), _selectedObservedMetabolite._spotData.Ms2Spectrum.Max(p => p.Mass));
-            var ms2VerticalAxis2 = structureMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "Intensity");
+            var ms2VerticalAxis2 = structureMs2.CreateAxisPropertySelectors2(new PropertySelector<SpectrumPeak, double>(p => p.Intensity), "abundance");
 
             var refMs = selectedMetaboliteOx.Select(m => m?.RefSpectrum ?? Observable.Never<MsSpectrum>()).Switch();
             var structureRef = new ObservableMsSpectrum(refMs, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);

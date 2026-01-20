@@ -29,7 +29,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
         return new LcmsDataAccessor(LcmsParameter);
     }
 
-    public override GapFiller CreateGapFiller() {
+    public override IGapFiller CreateGapFiller() {
         return new LcmsGapFiller(LcmsParameter);
     }
 

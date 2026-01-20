@@ -20,6 +20,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -31,16 +34,18 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Build
-        run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore
+        run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore /property:SkipLibraryDownload=true
       - name: Test
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
 
   publish-msdial5:
     needs: test
-    if: github.event_name == 'push'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -52,7 +57,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported" --framework net48
+        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -p:SkipLibraryDownload=true -o artifact --configuration "Release vendor unsupported" --framework net48
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
@@ -63,7 +68,6 @@ jobs:
 
   publish-msdial5-console:
     needs: test
-    if: github.event_name == 'push'
     runs-on: ${{ matrix.triple.os }}
     strategy:
       matrix:
@@ -74,6 +78,9 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -85,7 +92,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish tests/MSDIAL5/MsdialCoreTestApp/MsdialCoreTestApp.csproj -p:DebugSymbols=false -p:DebugType=None -p:ErrorOnDuplicatePublishOutputFiles=false -o artifact --configuration "Release vendor unsupported" --runtime ${{ matrix.triple.runtime }} --framework ${{ matrix.triple.framework }}  --self-contained
+        run: dotnet publish tests/MSDIAL5/MsdialCoreTestApp/MsdialCoreTestApp.csproj -p:DebugSymbols=false -p:DebugType=None -p:ErrorOnDuplicatePublishOutputFiles=false -p:SkipLibraryDownload=true -o artifact --configuration "Release vendor unsupported" --runtime ${{ matrix.triple.runtime }} --framework ${{ matrix.triple.framework }}  --self-contained
       - name: Copy licenses
         run: |
             cp LGPL.txt artifact
@@ -99,10 +106,12 @@ jobs:
 
   publish-msdial4:
     needs: test
-    if: github.event_name == 'push'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -114,7 +123,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net48
+        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net48 -p:SkipLibraryDownload=true 
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
@@ -125,13 +134,15 @@ jobs:
 
   publish-msdial4-console:
     needs: test
-    if: github.event_name == 'push'
     runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
         pair: [ { os: windows-latest, runtime: win-x64 }, { os: ubuntu-latest, runtime: linux-x64 }, { os: macos-latest, runtime: osx-x64 } ]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -143,7 +154,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }}
+        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }} -p:SkipLibraryDownload=true 
       - name: Copy licenses
         run: |
             cp LGPL.txt artifact

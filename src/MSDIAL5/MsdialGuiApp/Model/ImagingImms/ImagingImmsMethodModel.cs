@@ -38,13 +38,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
-            _projectBaseParameter = projectBaseParameter;
             _broker = broker;
             _projectBaseParameter = projectBaseParameter;
             StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => LoadMeasurement(file, isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
-            ImageModels = new ObservableCollection<ImagingImmsImageModel>();
+            ImageModels = [];
             Image = ImageModels.FirstOrDefault();
 
             ParameterExporModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
@@ -92,7 +91,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
             }
             var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
-            if (!(analysisFile is null)) {
+            if (analysisFile is not null) {
                 Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             }
             return Task.CompletedTask;

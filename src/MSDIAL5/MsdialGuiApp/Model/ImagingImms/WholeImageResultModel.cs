@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -28,14 +27,13 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
 {
-    internal sealed class WholeImageResultModel : DisposableModelBase
+    internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageResultModel
     {
-        private readonly ImmsAnalysisModel _analysisModel;
-        private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
-        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly AnalysisFileBeanModel _file;
+        private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly MaldiFrames _maldiFrames;
+        private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
@@ -44,7 +42,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var peakFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>(filterEnabled).AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
             var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file.File), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, peakFiltering, projectBaseParameterModel, _msfinderSearcherFactory, broker).AddTo(Disposables);
-            _analysisModel = analysisModel;
+            AnalysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
             var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
@@ -61,13 +59,16 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _wholeRoi = wholeRoi;
         }
 
-        public ImmsAnalysisModel AnalysisModel => _analysisModel;
-        public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => _analysisModel.Ms1Peaks;
-        public AnalysisPeakPlotModel PeakPlotModel => _analysisModel.PlotModel;
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => _analysisModel.Target;
+        public ImmsAnalysisModel AnalysisModel { get; }
 
         public ImagingRoiModel ImagingRoiModel { get; }
+
         public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
+
+        public AnalysisPeakPlotModel PeakPlotModel => AnalysisModel.PlotModel;
+
+        public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => AnalysisModel.Ms1Peaks;
+
         public IntensityImageModel? SelectedPeakIntensities
         {
             get => _selectedPeakIntensities;
@@ -75,10 +76,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
         private IntensityImageModel? _selectedPeakIntensities;
 
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => AnalysisModel.Target;
+
         public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
         {
             var loader = roi.GetIntensityOnPixelsLoader(_elements);
-            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, _analysisModel.Ms1Peaks, _analysisModel.Target, loader);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, AnalysisModel.Ms1Peaks, AnalysisModel.Target, loader);
             result.Select();
             return result;
         }
@@ -94,7 +97,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 tasks.Add(Task.Run(async () => {
                     await sem.WaitAsync().ConfigureAwait(false);
                     try {
-                        await ints.SaveAsync(writer);
+                        await ints.SaveAsync(writer, skipUnknownPeaks: true, token: token);
                     }
                     finally {
                         sem.Release();
@@ -105,7 +108,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
 
         public void ResetRawSpectraOnPixels() {
-            using RawDataAccess rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
+            using var rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
             rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
         }
 
@@ -113,9 +116,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return new MaldiFrames(_maldiFrames.Infos.Where(info => sets.Contains((info.XIndexPos, info.YIndexPos))), _maldiFrames);
         }
 
-        public Task SaveAsync()
+        public Task SaveAsync(CancellationToken token = default)
         {
-            return _analysisModel.SaveAsync(default);
+            return AnalysisModel.SaveAsync(token);
         }
     }
 }

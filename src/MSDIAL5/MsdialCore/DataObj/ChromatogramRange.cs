@@ -126,6 +126,10 @@ namespace CompMs.MsdialCore.DataObj
             return new ChromatogramRange(Math.Min(other.Begin, Begin), Math.Max(other.End, End), Type, Unit);
         }
 
+        public static ChromatogramRange FromTimes<T>(T center, double width) where T: IChromX {
+            return new ChromatogramRange(center.Value - width / 2d, center.Value + width / 2d, center.Type, center.Unit);
+        }
+
         /// <summary>
         /// Creates a new chromatogram range from two chromatographic time points.
         /// </summary>

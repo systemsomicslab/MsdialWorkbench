@@ -11,227 +11,218 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.DataObj
+namespace CompMs.MsdialCore.DataObj;
+
+public class RawSpectra : IRawSpectra
 {
-    public class RawSpectra : IRawSpectra
-    {
-        private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
-        private readonly IonMode _ionMode;
-        private readonly AcquisitionType _acquisitionType;
-        private readonly IDataProvider _spectraProvider;
-        public AcquisitionType AcquisitionType { get => _acquisitionType; }
+    private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
+    private readonly IonMode _ionMode;
+    private readonly IDataProvider _spectraProvider;
 
-        private IReadOnlyList<RawSpectrum> Spectra => _spectra ??= _spectraProvider.LoadMsSpectrums();
-        private IReadOnlyList<RawSpectrum>? _spectra;
+    public AcquisitionType AcquisitionType { get; }
 
-        public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
-            _spectraProvider = provider;
-            _ionMode = ionMode;
-            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
-            _acquisitionType = acquisitionType;
+    private IReadOnlyList<RawSpectrum> Spectra => _spectra ??= _spectraProvider.LoadMsSpectrums();
+    private IReadOnlyList<RawSpectrum>? _spectra;
+
+    public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
+        _spectraProvider = provider;
+        _ionMode = ionMode;
+        _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
+        AcquisitionType = acquisitionType;
+    }
+
+    public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
+        _spectra = spectra;
+        _ionMode = ionMode;
+        _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
+        AcquisitionType= acquisitionType;
+        _spectraProvider = spectraProvider;
+    }
+
+    public double StartRt { 
+        get {
+            if (Spectra.IsEmptyOrNull()) return 0;
+            else return Spectra[0].ScanStartTime;
+        } 
+    }
+
+    public double EndRt {
+        get {
+            if (Spectra.IsEmptyOrNull()) return 0;
+            else return Spectra[Spectra.Count - 1].ScanStartTime;
+        }
+    }
+
+    public (int MsLevel, int ExperimentID)[] ExperimentIDs {
+        get => [..Spectra.Select(p => (p.MsLevel, p.ExperimentID)).Distinct()];
+    }
+
+    public async Task<ExtractedIonChromatogram> GetMS1ExtractedChromatogramAsync(MzRange mzRange, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS1ExtractedChromatogramAsync(mzRange.Mz, mzRange.Tolerance, chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
+    }
+
+    public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return impl.GetMS1ExtractedChromatograms(mzs, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+    }
+
+    public async Task<Chromatogram> GetMS1TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS1TotalIonChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
+    }
+
+    public async Task<Chromatogram> GetMS1BasePeakChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS1BasePeakChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
+    }
+
+    public async Task<Chromatogram> GetMS1ExtractedChromatogramByHighestBasePeakMzAsync(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var mz = peaks.Argmax(feature => feature.Intensity).Mass;
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
+    }
+
+    public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
+        var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
+        var driftBinToBasePeakIntensity = new Dictionary<int, double>();
+
+        //accumulating peaks from peak top to peak left
+        for (int i = scanID + 1; i >= 0; i--) {
+            var spectrum = Spectra[i];
+            if (spectrum.MsLevel != 1) continue;
+            if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
+            if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
+            SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
         }
 
-        public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType, IDataProvider spectraProvider) {
-            _spectra = spectra;
-            _ionMode = ionMode;
-            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
-            _acquisitionType= acquisitionType;
-            _spectraProvider = spectraProvider;
+        //accumulating peaks from peak top to peak right
+        for (int i = scanID + 2; i < Spectra.Count; i++) {
+            var spectrum = Spectra[i];
+            if (spectrum.MsLevel != 1) continue;
+            if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
+            if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
+            SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
         }
 
-        public double StartRt { 
-            get {
-                if (Spectra.IsEmptyOrNull()) return 0;
-                else return Spectra[0].ScanStartTime;
-            } 
-        }
+        return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
+    }
 
-        public double EndRt {
-            get {
-                if (Spectra.IsEmptyOrNull()) return 0;
-                else return Spectra[Spectra.Count - 1].ScanStartTime;
-            }
-        }
+    public Task<Chromatogram> GetDriftChromatogramByScanRtMzAsync(int scanID, float rt, float rtWidth, float mz, float mztol, CancellationToken token) {
+        return Task.Run(() => GetDriftChromatogramByScanRtMz(scanID, rt, rtWidth, mz, mztol, float.MinValue, float.MaxValue));
+    }
 
-        public (int MsLevel, int ExperimentID)[] ExperimentIDs {
-            get {
-                var result = new HashSet<(int MsLevel, int ExperimentID)>();
-                foreach (var spec in Spectra) {
-                    result.Add((spec.MsLevel, spec.ExperimentID));
-                }
-                return [.. result];
-            }
-        }
+    /// <summary>
+    /// Generates a total ion chromatogram for MS2 spectra within a specified chromatogram range.
+    /// </summary>
+    /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
+    /// <param name="token">The cancellation token to cancel the operation.</param>
+    /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra within the specified range. The chromatogram includes peaks with details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
+    /// <remarks>
+    /// This method dynamically builds or retrieves an appropriate chromatogram generator based on the specified range type and unit, and then generates the total ion chromatogram for MS2 spectra within the given range.
+    /// </remarks>
+    public async Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, token).ConfigureAwait(false);
+    }
 
-        public async Task<ExtractedIonChromatogram> GetMS1ExtractedChromatogramAsync(MzRange mzRange, ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS1ExtractedChromatogramAsync(mzRange.Mz, mzRange.Tolerance, chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Generates a total ion chromatogram for MS2 spectra from a specific experiment within a specified chromatogram range.
+    /// </summary>
+    /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
+    /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
+    /// <param name="token">The cancellation token to cancel the operation.</param>
+    /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. Each peak in the chromatogram corresponds to an MS2 spectrum, including details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
+    /// <remarks>
+    /// Similar to the overload without the experiment ID, this method also dynamically builds or retrieves a suitable chromatogram generator based on the range type and unit. It then filters the MS2 spectra by the specified experiment ID before generating the chromatogram.
+    /// </remarks>
+    public async Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(int experimentID, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, experimentID, token).ConfigureAwait(false);
+    }
 
-        public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMS1ExtractedChromatograms(mzs, tolerance, chromatogramRange.Begin, chromatogramRange.End);
-        }
+    /// <summary>
+    /// Retrieves a chromatogram for product ions based on specified precursor and product m/z ranges, 
+    /// using the provided chromatogram range settings.
+    /// </summary>
+    /// <param name="precursor">The m/z range for the precursor ions.</param>
+    /// <param name="product">The m/z range for the product ions.</param>
+    /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated,
+    /// including the chromatogram type (e.g., retention time, drift time) and unit.</param>
+    /// <param name="token">The cancellation token to cancel the operation.</param>
+    /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of product ions 
+    /// within the specified precursor and product m/z ranges and chromatogram range.</returns>
+    /// <remarks>
+    /// This method dynamically selects or constructs an appropriate implementation for generating the chromatogram
+    /// based on the type and unit of the chromatogram specified in <paramref name="chromatogramRange"/>.
+    /// It delegates the actual generation of the chromatogram to the selected implementation, ensuring that
+    /// the chromatogram is generated in accordance with the specified parameters.
+    /// </remarks>
+    public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetProductIonChromatogramAsync(precursor, product, chromatogramRange, token).ConfigureAwait(false);
+    }
 
-        public async Task<Chromatogram> GetMS1TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS1TotalIonChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range within a given chromatogram range, filtering by a specific experiment ID.
+    /// </summary>
+    /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified chromatogram range are included in the chromatogram.</param>
+    /// <param name="product">The target m/z range for the extracted ion, including the center m/z value and the tolerance for the extraction.</param>
+    /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, including the chromatogram type (e.g., retention time, drift time) and unit.</param>
+    /// <param name="token">The cancellation token to cancel the operation.</param>
+    /// <returns>An <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of extracted ions within the specified product m/z range and chromatogram range, filtered by the specified experiment ID. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an extracted ion, detailing the spectrum index, chromatogram time (e.g., drift time), base peak m/z value, and summed intensity.</returns>
+    /// <remarks>
+    /// This method filters spectra based on the MS level (MS2), scan polarity, and the specified experiment ID, within the specified chromatogram range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This targeted approach enables detailed analysis of specific ions, facilitating the exploration of their behavior within the experimental setup.
+    /// </remarks>
+    public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(int experimentID, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
+        var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+        return await impl.GetMS2ExtractedIonChromatogramAsync(product, chromatogramRange, experimentID, token).ConfigureAwait(false);
+    }
 
-        public async Task<Chromatogram> GetMS1BasePeakChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS1BasePeakChromatogramAsync(chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
-        }
+    private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {
+        var driftTime = spectrum.DriftTime;
+        var driftBin = (int)(driftTime * 1000);
 
-        public async Task<Chromatogram> GetMS1ExtractedChromatogramByHighestBasePeakMzAsync(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange, CancellationToken token) {
-            var mz = peaks.Argmax(feature => feature.Intensity).Mass;
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS1ExtractedChromatogramAsync(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End, token).ConfigureAwait(false);
-        }
-
-        public Chromatogram GetDriftChromatogramByScanRtMz(int scanID, float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
-            var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
-            var driftBinToBasePeakIntensity = new Dictionary<int, double>();
-
-            //accumulating peaks from peak top to peak left
-            for (int i = scanID + 1; i >= 0; i--) {
-                var spectrum = Spectra[i];
-                if (spectrum.MsLevel != 1) continue;
-                if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
-                if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
-                SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
-            }
-
-            //accumulating peaks from peak top to peak right
-            for (int i = scanID + 2; i < Spectra.Count; i++) {
-                var spectrum = Spectra[i];
-                if (spectrum.MsLevel != 1) continue;
-                if (spectrum.DriftTime < minDt || spectrum.DriftTime > maxDt) continue;
-                if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
-                SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
-            }
-
-            return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
-        }
-
-        public Task<Chromatogram> GetDriftChromatogramByScanRtMzAsync(int scanID, float rt, float rtWidth, float mz, float mztol, CancellationToken token) {
-            return Task.Run(() => GetDriftChromatogramByScanRtMz(scanID, rt, rtWidth, mz, mztol, float.MinValue, float.MaxValue));
-        }
-
-        /// <summary>
-        /// Generates a total ion chromatogram for MS2 spectra within a specified chromatogram range.
-        /// </summary>
-        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
-        /// <param name="token">The cancellation token to cancel the operation.</param>
-        /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra within the specified range. The chromatogram includes peaks with details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
-        /// <remarks>
-        /// This method dynamically builds or retrieves an appropriate chromatogram generator based on the specified range type and unit, and then generates the total ion chromatogram for MS2 spectra within the given range.
-        /// </remarks>
-        public async Task<Chromatogram> GetMS2TotalIonChromatogramAsync(ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, token).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Generates a total ion chromatogram for MS2 spectra from a specific experiment within a specified chromatogram range.
-        /// </summary>
-        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
-        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
-        /// <param name="token">The cancellation token to cancel the operation.</param>
-        /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. Each peak in the chromatogram corresponds to an MS2 spectrum, including details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
-        /// <remarks>
-        /// Similar to the overload without the experiment ID, this method also dynamically builds or retrieves a suitable chromatogram generator based on the range type and unit. It then filters the MS2 spectra by the specified experiment ID before generating the chromatogram.
-        /// </remarks>
-        public async Task<SpecificExperimentChromatogram> GetMS2TotalIonChromatogramAsync(int experimentID, ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS2TotalIonChromatogramAsync(chromatogramRange, experimentID, token).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Retrieves a chromatogram for product ions based on specified precursor and product m/z ranges, 
-        /// using the provided chromatogram range settings.
-        /// </summary>
-        /// <param name="precursor">The m/z range for the precursor ions.</param>
-        /// <param name="product">The m/z range for the product ions.</param>
-        /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated,
-        /// including the chromatogram type (e.g., retention time, drift time) and unit.</param>
-        /// <param name="token">The cancellation token to cancel the operation.</param>
-        /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of product ions 
-        /// within the specified precursor and product m/z ranges and chromatogram range.</returns>
-        /// <remarks>
-        /// This method dynamically selects or constructs an appropriate implementation for generating the chromatogram
-        /// based on the type and unit of the chromatogram specified in <paramref name="chromatogramRange"/>.
-        /// It delegates the actual generation of the chromatogram to the selected implementation, ensuring that
-        /// the chromatogram is generated in accordance with the specified parameters.
-        /// </remarks>
-        public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetProductIonChromatogramAsync(precursor, product, chromatogramRange, token).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range within a given chromatogram range, filtering by a specific experiment ID.
-        /// </summary>
-        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified chromatogram range are included in the chromatogram.</param>
-        /// <param name="product">The target m/z range for the extracted ion, including the center m/z value and the tolerance for the extraction.</param>
-        /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, including the chromatogram type (e.g., retention time, drift time) and unit.</param>
-        /// <param name="token">The cancellation token to cancel the operation.</param>
-        /// <returns>An <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of extracted ions within the specified product m/z range and chromatogram range, filtered by the specified experiment ID. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an extracted ion, detailing the spectrum index, chromatogram time (e.g., drift time), base peak m/z value, and summed intensity.</returns>
-        /// <remarks>
-        /// This method filters spectra based on the MS level (MS2), scan polarity, and the specified experiment ID, within the specified chromatogram range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This targeted approach enables detailed analysis of specific ions, facilitating the exploration of their behavior within the experimental setup.
-        /// </remarks>
-        public async Task<ExtractedIonChromatogram> GetMS2ExtractedIonChromatogramAsync(int experimentID, MzRange product, ChromatogramRange chromatogramRange, CancellationToken token) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return await impl.GetMS2ExtractedIonChromatogramAsync(product, chromatogramRange, experimentID, token).ConfigureAwait(false);
-        }
-
-        private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {
-            var driftTime = spectrum.DriftTime;
-            var driftBin = (int)(driftTime * 1000);
-
-            var intensity = Utility.DataAccess.GetIonAbundanceOfMzInSpectrum(spectrum.Spectrum, mz, mztol, out double basepeakMz, out double basepeakIntensity);
-            if (driftBinToChromPeak.TryGetValue(driftBin, out var chromPeak)) {
-                chromPeak.Intensity += intensity;
-                if (driftBinToBasePeakIntensity[driftBin] < basepeakIntensity) {
-                    driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
-                    chromPeak.Mass = basepeakMz;
-                }
-            }
-            else {
-                driftBinToChromPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec))) { IDType = spectrum.RawSpectrumID.IDType, };
+        var intensity = Utility.DataAccess.GetIonAbundanceOfMzInSpectrum(spectrum.Spectrum, mz, mztol, out double basepeakMz, out double basepeakIntensity);
+        if (driftBinToChromPeak.TryGetValue(driftBin, out var chromPeak)) {
+            chromPeak.Intensity += intensity;
+            if (driftBinToBasePeakIntensity[driftBin] < basepeakIntensity) {
                 driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
+                chromPeak.Mass = basepeakMz;
             }
         }
-
-        public Task<PeakMs2Spectra> GetPeakMs2SpectraAsync(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime, CancellationToken token) {
-            return Task.Run(() => GetPeakMs2Spectra(rtPeakFeature, ms2Tolerance, acquisitionType, driftTime), token);
+        else {
+            driftBinToChromPeak[driftBin] = new ChromatogramPeak((int)spectrum.RawSpectrumID.ID, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec))) { IDType = spectrum.RawSpectrumID.IDType, };
+            driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
         }
+    }
 
-        public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
-            var scanPolarity = rtPeakFeature.IonMode.ToPolarity();
-            var spectra = Enumerable.Range(rtPeakFeature.MS1RawSpectrumIdLeft, rtPeakFeature.MS1RawSpectrumIdRight - rtPeakFeature.MS1RawSpectrumIdLeft + 1)
-                .Select(i => Spectra[i])
-                .Where(spectrum => spectrum.MsLevel == 2)
-                .Where(spectrum => spectrum.ScanPolarity == scanPolarity)
-                .Where(spectrum => spectrum.Precursor.ContainsMz(rtPeakFeature.PeakFeature.Mass, ms2Tolerance, acquisitionType)) // mz is in range
-                .Where(spectrum => spectrum.Precursor.ContainsDriftTime(driftTime) || spectrum.Precursor.IsNotDiapasefData) // in drift time range for diapasef or normal dia
-                .ToArray();
-            return new PeakMs2Spectra(spectra, scanPolarity, acquisitionType);
-        }
+    public Task<PeakMs2Spectra> GetPeakMs2SpectraAsync(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime, CancellationToken token) {
+        return Task.Run(() => GetPeakMs2Spectra(rtPeakFeature, ms2Tolerance, acquisitionType, driftTime), token);
+    }
 
-        private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectraProvider, pair.Item1, pair.Item2, _ionMode, _acquisitionType))).Value;
-        }
+    public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
+        var scanPolarity = rtPeakFeature.IonMode.ToPolarity();
+        var spectra = Enumerable.Range(rtPeakFeature.MS1RawSpectrumIdLeft, rtPeakFeature.MS1RawSpectrumIdRight - rtPeakFeature.MS1RawSpectrumIdLeft + 1)
+            .Select(i => Spectra[i])
+            .Where(spectrum => spectrum.MsLevel == 2)
+            .Where(spectrum => spectrum.ScanPolarity == scanPolarity)
+            .Where(spectrum => spectrum.Precursor.ContainsMz(rtPeakFeature.PeakFeature.Mass, ms2Tolerance, acquisitionType)) // mz is in range
+            .Where(spectrum => spectrum.Precursor.ContainsDriftTime(driftTime) || spectrum.Precursor.IsNotDiapasefData) // in drift time range for diapasef or normal dia
+            .ToArray();
+        return new PeakMs2Spectra(spectra, scanPolarity, acquisitionType);
+    }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IDataProvider spectraProvider, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
-            switch (type) {
-                case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType);
-                case ChromXType.Drift:
-                    return new DriftTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType);
-                default:
-                    throw new ArgumentException($"ChromXType {type} is not supported.");
-            }
-        }
+    private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
+        return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectraProvider, pair.Item1, pair.Item2, _ionMode, AcquisitionType))).Value;
+    }
+
+    private static IChromatogramTypedSpectra BuildTypedSpectra(IDataProvider spectraProvider, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
+        return type switch
+        {
+            ChromXType.RT => new RetentionTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType),
+            ChromXType.Drift => new DriftTimeTypedSpectra(spectraProvider, unit, ionMode, acquisitionType),
+            _ => throw new ArgumentException($"ChromXType {type} is not supported."),
+        };
     }
 }

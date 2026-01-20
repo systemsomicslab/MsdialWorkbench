@@ -13,13 +13,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
 {
     class ImmsDataAccessor : DataAccessor
     {
+        private readonly double _massTolerance;
+
         public ImmsDataAccessor(double massTolerance) {
-            this.massTolerance = massTolerance;
+            _massTolerance = massTolerance;
         }
 
-        private readonly double massTolerance;
-
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        [Obsolete("zzz")]
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(prop => prop.MasterPeakID >= 0).ToArray();
             if (!detected.Any()) {
                 throw new ArgumentException(nameof(spot));
@@ -27,15 +28,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var chromMax = detected.Max(x => x.ChromXsRight.Drift.Value);
             var chromMin = detected.Min(x => x.ChromXsLeft.Drift.Value);
             var tolerance = detected.Average(x => x.PeakWidth(ChromXType.Drift)) * 1.5f;
-            var peaklist = GetMs1Peaklist(
-                spectrum, (float)peak.Mass,
-                massTolerance,
-                peak.IonMode,
-                chromMin - tolerance,
-                chromMax + tolerance);
-            return new ChromatogramPeakInfo(
-                peak.FileID, peaklist,
-                peak.ChromXsTop.Drift, peak.ChromXsLeft.Drift, peak.ChromXsRight.Drift);
+
+            var chromatogram = ms1Spectra.GetMS1ExtractedChromatogramAsync(new MzRange(peak.Mass, _massTolerance), ChromatogramRange.FromTimes(new DriftTime(chromMin - tolerance), new DriftTime(chromMax + tolerance)), default).Result;
+            return new ChromatogramPeakInfo(peak.FileID, ((Chromatogram)chromatogram).AsPeakArray(), peak.ChromXsTop.Drift, peak.ChromXsLeft.Drift, peak.ChromXsRight.Drift);
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {

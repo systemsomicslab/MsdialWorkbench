@@ -91,7 +91,10 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine();
 
             //SML section
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic);
+            //SML Header
+            var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
+            var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
             //SML data
 
             foreach (var spot in spots)
@@ -99,13 +102,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
                         );
                 }
             }
@@ -188,7 +191,9 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
             IReadOnlyList<Database> database,
             IReadOnlyList<string> SmlDataHeader,
-            IReadOnlyDictionary<int, string> internalStandardDic
+            IReadOnlyDictionary<int, string> internalStandardDic,
+            bool hasComment,
+            bool hasMs2
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -268,6 +273,15 @@ namespace CompMs.MsdialCore.Export
             {
                 LineData.AddRange(SetNormalizedData(spot, internalStandardDic));
             }
+            if (hasMs2)
+            {
+                LineData.AddRange(SetMsmsPresence(spot));  // add 20251208
+            }
+            LineData.AddRange(SetSpectrumMatch(matchResult));  // add 20251208
+            if (hasComment)
+            {
+                LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
+            }
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -304,9 +318,9 @@ namespace CompMs.MsdialCore.Export
             var retentionTimeEnd = "null";
             if (spot.TimesCenter.RT.Value > 0.0)
             {
-                retentionTime = spot.TimesCenter.RT.Value.ToString();
-                retentionTimeStart = spot.TimesMin.RT.Value.ToString();
-                retentionTimeEnd = spot.TimesMax.RT.Value.ToString();
+                retentionTime = (spot.TimesCenter.RT.Value * 60.0).ToString();
+                retentionTimeStart = (spot.TimesMin.RT.Value * 60.0).ToString();
+                retentionTimeEnd = (spot.TimesMax.RT.Value *60.0).ToString();
             }
 
             var adductIons = spot.AdductType.AdductIonName ?? "null";
@@ -399,8 +413,7 @@ namespace CompMs.MsdialCore.Export
             {
                 if (properties[i].PeakID < 0) continue;
                 if (!properties[i].IsMsmsAssigned) continue;
-                if (properties[i].MatchResults.Representative.Name != repName
-                    || properties[i].MatchResults.Representative.LibraryID != repLibraryID)
+                if (properties[i].MatchResults.Representative.LibraryID != repLibraryID)
                 { continue; }
 
                 /// to get file id, peak id in aligned spots
@@ -769,7 +782,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -804,6 +817,15 @@ namespace CompMs.MsdialCore.Export
             {
                 SmlDataHeader.Add("opt_global_internalStanderdSMLID");
                 SmlDataHeader.Add("opt_global_internalStanderdMetaboliteName");
+            }
+            if (hasMs2)
+            {
+                SmlDataHeader.Add("opt_global_ms2_presence");
+            }
+            SmlDataHeader.Add("opt_global_spectrum_matched");
+            if (hasComment)
+            {
+                SmlDataHeader.Add("opt_global_user_comment");
             }
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
@@ -912,6 +934,19 @@ namespace CompMs.MsdialCore.Export
             }
             return dataValues;
         }
+        private static List<string> SetMsmsPresence(
+            AlignmentSpotProperty spot
+        )
+        {
+            return new List<string>() { spot.IsMsmsAssigned.ToString() };
+        }
+        private static List<string> SetSpectrumMatch(
+            MsScanMatchResult matchResult
+        )
+        {
+            return new List<string>() { (matchResult?.IsSpectrumMatch ?? false).ToString() };
+        }
+
         private static List<string> SetIMValues(
             AlignmentSpotProperty spot
         )

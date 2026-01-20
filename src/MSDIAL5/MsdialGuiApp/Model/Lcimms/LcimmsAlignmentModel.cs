@@ -39,6 +39,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using CompMs.MsdialCore.Parameter;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -180,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = alignmentFileBean.CreateEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
                 accumulatedTarget,
                 eicLoader,
@@ -210,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var dtEicLoader = alignmentFileBean.CreateEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
                 target,
                 dtEicLoader,
@@ -226,7 +227,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);

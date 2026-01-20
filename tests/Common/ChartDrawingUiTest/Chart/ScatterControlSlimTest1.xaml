@@ -132,12 +132,12 @@
                                   FocusedPoint="{Binding FocusedPoint, Mode=OneWayToSource}"/>
                 <Path Stroke="Crimson" StrokeThickness="2" DataContext="{Binding SelectedPoint, ElementName=scatter}">
                     <Path.Data>
-                        <EllipseGeometry Center="{Binding}" RadiusX="5" RadiusY="5"/>
+                        <EllipseGeometry Center="{Binding TargetNullValue='0,0'}" RadiusX="5" RadiusY="5"/>
                     </Path.Data>
                 </Path>
                 <Path Stroke="Cyan" StrokeThickness="2" DataContext="{Binding FocusedPoint, ElementName=scatter}">
                     <Path.Data>
-                        <EllipseGeometry Center="{Binding}" RadiusX="5" RadiusY="5"/>
+                        <EllipseGeometry Center="{Binding TargetNullValue='0,0'}" RadiusX="5" RadiusY="5"/>
                     </Path.Data>
                 </Path>
             </Grid>

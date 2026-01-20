@@ -25,11 +25,11 @@
 			<_DeployToItemEsd Include="$(OutputPath)\Resources\msfinderLibrary\*.esd" />
 			<_DeployToItemEtm Include="$(OutputPath)\Resources\msfinderLibrary\*.etm" />
 		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
-		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)')" />
-		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)')" />
-		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)')" />
-		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)')" />
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
+		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
+		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
+		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -265,28 +265,28 @@
     </ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho">
+		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif">
+		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm">
+		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd">
+		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2">
+		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb">
+		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid">
+		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd">
+		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd" Condition="'$(SkipLibraryDownload)' == ''">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

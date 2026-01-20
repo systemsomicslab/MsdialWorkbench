@@ -222,6 +222,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         private ParameterBase CreateParameter() {
+            if (SeparationType == SeparationType.Imaging)
+                return new MsdialDimsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
             if (SeparationType == (SeparationType.Imaging | SeparationType.IonMobility))
                 return new MsdialImmsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
             if (Ionization == Ionization.EI && SeparationType == SeparationType.Chromatography) {
@@ -250,7 +252,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Chromatography | SeparationType.IonMobility))
                 return new MsdialLcImMsParameter(GlobalResources.Instance.IsLabPrivate);
             if (Ionization == Ionization.ESI && SeparationType == SeparationType.Infusion)
-                return new MsdialDimsParameter(GlobalResources.Instance.IsLabPrivate);
+                return new MsdialDimsParameter(isImaging: false, GlobalResources.Instance.IsLabPrivate);
             if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Infusion | SeparationType.IonMobility))
                 return new MsdialImmsParameter(isImaging: false, GlobalResources.Instance.IsLabPrivate);
             throw new Exception("Not supported separation type is selected.");

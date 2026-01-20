@@ -501,7 +501,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<IChromatogramPeak> peaklist) {
-            var counterThreshold = 4;
+            var counterThreshold = 15;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
@@ -554,7 +554,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<double[]> peaklist) {
-            var counterThreshold = 4;
+            var counterThreshold = 15;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
@@ -607,7 +607,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram chromatogram) {
-            var counterThreshold = 4;
+            var counterThreshold = 15;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
