@@ -82,7 +82,6 @@ namespace CompMs.MsdialCore.Export
                 "MSMS spectrum" };
         }
 
-        [Obsolete("zzz")]
         protected virtual Dictionary<string, string> GetContentCore(
             ChromatogramPeakFeature feature,
             MSDecResult msdec,
@@ -137,6 +136,7 @@ namespace CompMs.MsdialCore.Export
             };
         }
 
+        [Obsolete("zzz")]
         private string GetIsotopesListContent(ChromatogramPeakFeature feature, IDataProvider provider) {
             return "null";
             var spectrum = provider.LoadSpectrumAsync((ulong)feature.MS1RawSpectrumIdTop, feature.RawDataIDType).Result;
