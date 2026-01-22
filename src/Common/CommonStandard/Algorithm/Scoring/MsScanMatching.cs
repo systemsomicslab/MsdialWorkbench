@@ -795,10 +795,10 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
-            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(peaks1, peaks2, bin);
+            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
             var entropy12 = GetSpectralEntropy(combinedSpectrum);
-            var entropy1 = GetSpectralEntropy(peaks1);
-            var entropy2 = GetSpectralEntropy(peaks2);
+            var entropy1 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
+            var entropy2 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
 
             return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
         }
