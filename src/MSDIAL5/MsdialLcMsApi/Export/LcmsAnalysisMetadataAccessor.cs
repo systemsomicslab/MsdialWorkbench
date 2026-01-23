@@ -13,13 +13,15 @@ namespace CompMs.MsdialLcMsApi.Export
 {
     public class LcmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
-
+        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter, ExportspectraType type, Common.Parameter.MsRefSearchParameterBase? searchParameter = null) : base(refer, parameter, type) {
+            _searchParameter = searchParameter;
         }
 
         public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer, ParameterBase parameter) : base(refer, parameter, parameter.ExportSpectraType) {
 
         }
+
+        private readonly Common.Parameter.MsRefSearchParameterBase? _searchParameter;
 
         protected override string[] GetHeadersCore() {
             return new string[] {
@@ -51,6 +53,8 @@ namespace CompMs.MsdialLcMsApi.Export
                 "Simple dot product",
                 "Weighted dot product",
                 "Reverse dot product",
+                "Enhanced dot product",
+                "Spectrum entropy",
                 "Matched peaks count",
                 "Matched peaks percentage",
                 "Total score",
@@ -79,6 +83,15 @@ namespace CompMs.MsdialLcMsApi.Export
             content["m/z matched"] = (matchResult?.IsPrecursorMzMatch ?? false).ToString();
             content["RT similarity"] = ValueOrNull(matchResult?.RtSimilarity, "F2");
             content["m/z similarity"] = ValueOrNull(matchResult?.AcurateMassSimilarity, "F2");
+
+            var searchparameter = _searchParameter;
+            double? weighteddot = reference is not null ? System.Math.Sqrt(Common.Algorithm.Scoring.MsScanMatching.GetWeightedDotProduct(msdec, reference, searchparameter.Ms2Tolerance, searchparameter.MassRangeBegin, searchparameter.MassRangeEnd)) : null;
+            double? reversedot = reference is not null ? System.Math.Sqrt(Common.Algorithm.Scoring.MsScanMatching.GetReverseDotProduct(msdec, reference, searchparameter.Ms2Tolerance, searchparameter.MassRangeBegin, searchparameter.MassRangeEnd)) : null;
+            double? enhanceddot = reference is not null ? System.Math.Sqrt(Common.Algorithm.Scoring.MsScanMatching.GetEnhancedDotProduct(msdec, reference, searchparameter.Ms2Tolerance, searchparameter.MassRangeBegin, searchparameter.MassRangeEnd, .6d)) : null;
+            double? entropy = reference is not null ? Common.Algorithm.Scoring.MsScanMatching.GetSpectralEntropySimilarity(msdec.Spectrum, reference?.Spectrum, searchparameter.Ms2Tolerance) : null;
+            content["Weighted dot product"] = ValueOrNull(weighteddot/*matchResult?.WeightedDotProduct*/, "F3");
+            content["Enhanced dot product"] = ValueOrNull(enhanceddot/*matchResult?.EnhancedDotProduct*/, "F3");
+            content["Spectrum entropy"] = ValueOrNull(entropy/*matchResult?.SpectralEntropy*/, "F3");
 
             return content;
         }

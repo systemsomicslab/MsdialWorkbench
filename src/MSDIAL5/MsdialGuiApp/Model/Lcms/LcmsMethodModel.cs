@@ -377,7 +377,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted, _storage.DataBases.MetabolomicsDataBases[0].Pairs[0].AnnotationQueryFactory.PrepareParameter())),
                     _providerFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,

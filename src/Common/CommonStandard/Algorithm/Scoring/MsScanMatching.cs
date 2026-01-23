@@ -4083,7 +4083,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// </returns>
         /// <remarks>
         /// This method is based on the enhanced dot product similarity approach described in:
-        /// Xing, S., Charron-Lamoureux, V., Zhao, H. N., El Abiead, Y., Wang, M., & Dorrestein, P. C.
+        /// Shipei Xing, Vincent Charron-Lamoureux, Haoqi Nina Zhao, Yasin El Abiead, Mingxun Wang, and Pieter C. Dorrestein
         /// "Reverse Spectral Search Reimagined: A Simple but Overlooked Solution for Chimeric Spectral Annotation."
         /// Analytical Chemistry, 2025, 97(33).
         /// https://pubs.acs.org/doi/10.1021/acs.analchem.5c02047
@@ -4105,7 +4105,6 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             double focusedMz = minMz;
             int remaindIndexM = 0, remaindIndexL = 0;
-            int counter = 0;
 
             SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
             SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
@@ -4130,22 +4129,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                     else { remaindIndexM = i; break; }
                 }
 
-                if (sumM <= 0) {
-                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
-                    if (sumM > baseM) baseM = sumM;
+                measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
+                if (sumM > baseM) baseM = sumM;
 
-                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
-                    if (sumL > baseR) baseR = sumL;
-                }
-                else {
-                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
-                    if (sumM > baseM) baseM = sumM;
+                referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
+                if (sumL > baseR) baseR = sumL;
 
-                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
-                    if (sumL > baseR) baseR = sumL;
-
-                    counter++;
-                }
                 size++;
 
                 if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
@@ -4175,13 +4164,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (referenceMassBuffer[i].Intensity > 0.1) lSpectrumCounter++;
             }
 
-            var cutoff = 0.01;
             for (int i = 0; i < size; i++) {
-                if (referenceMassBuffer[i].Intensity < cutoff) {
-                    continue;
-                }
-
-                if (measuredMassBuffer[i].Intensity == 0d) {
+                if (referenceMassBuffer[i].Intensity == 0d) {
                     scalarM += measuredMassBuffer[i].Intensity * (1 - penalty) * measuredMassBuffer[i].FocusedMz;
                 }
                 else {
@@ -4326,11 +4310,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (sumReference - 0.5 == 0) wR = 0;
             else wR = 1 / (sumReference - 0.5);
 
-            var cutoff = 0.01;
             for (int i = 0; i < size; i++) {
-                if (measuredMassBuffer[i].Intensity < cutoff)
-                    continue;
-
                 scalarM += measuredMassBuffer[i].Intensity * measuredMassBuffer[i].FocusedMz;
                 scalarR += referenceMassBuffer[i].Intensity * referenceMassBuffer[i].FocusedMz;
                 covariance += Math.Sqrt(measuredMassBuffer[i].Intensity * referenceMassBuffer[i].Intensity) * measuredMassBuffer[i].FocusedMz;
