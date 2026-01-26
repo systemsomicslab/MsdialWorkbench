@@ -5743,6 +5743,12 @@ namespace CompMs.Common.Lipidomics
                         - (12 * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
+                    //reject DGDG
+                    var threshold2 = 1;
+                    var dgdgFrg = diagnosticMz - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5); // two Hex loss
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, dgdgFrg, threshold2);
+                    if (isClassIon2Found == true) return null;
+
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
