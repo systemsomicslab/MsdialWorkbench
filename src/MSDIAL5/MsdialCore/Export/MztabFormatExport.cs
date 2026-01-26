@@ -559,6 +559,8 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Run + "-scan_polarity[1]", RawFileMetadataDicItem.Scan_polarity_cv }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay, RawFileMetadataDicItem.Assay_ref })); //fileName
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-ms_run_ref", RawFileMetadataDicItem.Run }));
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[1]", RawFileMetadataDicItem.AnalysisBatch }));
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[2]", RawFileMetadataDicItem.AnalysisFileAnalyticalOrder }));
             }
 
             foreach (var AnalysisFileClass in AnalysisFileClassDic)
@@ -1300,7 +1302,9 @@ namespace CompMs.MsdialCore.Export
                     Scan_polarity_cv = ionMode.ToString() == "Positive" ? "[MS,MS:1000130,positive scan,]" : "[MS, MS:1000129, negative scan, ]",
                     AnalysisFileExtention = analysisFileExtention,
                     AnalysisClass = files[i].AnalysisFileClass,
-                    AnalysisFileId = files[i].AnalysisFileId
+                    AnalysisFileId = files[i].AnalysisFileId,
+                    AnalysisBatch = "[MS,MS:4000088,batch label," + files[i].AnalysisBatch + "]",
+                    AnalysisFileAnalyticalOrder = "[MS,MS:4000089,injection sequence label," + files[i].AnalysisFileAnalyticalOrder+ "]",
                 });
             }
             return fileMetadataDic;
@@ -1342,8 +1346,10 @@ namespace CompMs.MsdialCore.Export
             public string Assay_ref { get; set; }
             public string AnalysisFileExtention { get; set; }
             public string AnalysisClass { get; set; }
-
             public int AnalysisFileId { get; set; }
+            public string AnalysisFileAnalyticalOrder { get; set; }
+            public string AnalysisBatch { get; set; } 
+
         }
     }
 }
