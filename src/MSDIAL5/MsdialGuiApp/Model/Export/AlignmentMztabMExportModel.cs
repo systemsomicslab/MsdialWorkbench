@@ -43,7 +43,7 @@ internal sealed class AlignmentMztabMExportModel : BindableBase, IAlignmentResul
         if (!IsSelected) {
             return;
         }
-        var filenameTemplate = $"{{0}}_{alignmentFile.FileName}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.mzTab.txt";
+        var filenameTemplate = $"{{0}}_{alignmentFile.FileName}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.mzTab";
         var spots = _peakSpotSupplyer.Supply(alignmentFile, default); // TODO: cancellation
         var msdecs = alignmentFile.LoadMSDecResults();
         var accessor = _accessPeakMeta.GetAccessor();
