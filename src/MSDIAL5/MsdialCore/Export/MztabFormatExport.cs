@@ -350,7 +350,8 @@ namespace CompMs.MsdialCore.Export
                 && spot.Name != "null"
                 && spot.Name != ""
                 && !metadata["Metabolite name"].Contains("no MS2")
-                && spot.MatchResults.IsTextDbBasedRepresentative != true)
+                && spot.MatchResults.IsTextDbBasedRepresentative != true
+                && spot.IsManuallyModifiedForAnnotation != true)
             {
                 smeIDrefs = smfID.ToString();
             }
@@ -569,8 +570,8 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Run + "-scan_polarity[1]", RawFileMetadataDicItem.Scan_polarity_cv }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay, RawFileMetadataDicItem.Assay_ref })); //fileName
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-ms_run_ref", RawFileMetadataDicItem.Run }));
-                //mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[1]", RawFileMetadataDicItem.AnalysisBatch }));// add 20260127
-                //mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[2]", RawFileMetadataDicItem.AnalysisFileAnalyticalOrder }));// add 20260127
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[1]", RawFileMetadataDicItem.AnalysisBatch }));// add 20260127 This output will no longer pass through the validator.
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[2]", RawFileMetadataDicItem.AnalysisFileAnalyticalOrder }));// add 20260127 This output will no longer pass through the validator.
             }
 
             foreach (var AnalysisFileClass in AnalysisFileClassDic)
