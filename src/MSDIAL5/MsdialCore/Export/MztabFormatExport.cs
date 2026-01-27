@@ -144,6 +144,7 @@ namespace CompMs.MsdialCore.Export
             foreach (var spot in spots)
             {
                 if (spot.IsMsmsAssigned != true) { continue; }
+                if (spot.IsManuallyModifiedForAnnotation == true) { continue; }
                 if (spot.MatchResults.IsTextDbBasedRepresentative == true) { continue; }
 
                 if (spot.Name == "") { continue; }
@@ -208,12 +209,20 @@ namespace CompMs.MsdialCore.Export
             var rep = spot?.MatchResults?.Representative;
             if (rep != null &&
                 rep.AnnotatorID != null &&
-                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
                 !string.IsNullOrEmpty(rep.Name))
             {
-                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                if(_annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID))
+                {
+                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                }
+                else
+                {
+                    if (rep.AnnotatorID == "MS-FINDER")
+                    {
+                        databaseIdentifier = "MS-FINDER:" + rep.Name.Split('|').Last();
+                    }
+                }
             }
-
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
 
@@ -969,12 +978,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot
         )
         {
-            var ontologyValue = spot.Ontology.ToString();
-            if (string.IsNullOrEmpty(ontologyValue))
-            {
-                ontologyValue = "null";
-            }
-            return new List<string>() { ontologyValue };
+            return new List<string>() { ValueOrNull(spot.Ontology.ToString()) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1317,8 +1321,8 @@ namespace CompMs.MsdialCore.Export
                     AnalysisFileExtention = analysisFileExtention,
                     AnalysisClass = files[i].AnalysisFileClass,
                     AnalysisFileId = files[i].AnalysisFileId,
-                    AnalysisBatch = "[MS,MS:4000088,batch label," + files[i].AnalysisBatch + "]",
-                    AnalysisFileAnalyticalOrder = "[MS,MS:4000089,injection sequence label," + files[i].AnalysisFileAnalyticalOrder+ "]",
+                    AnalysisBatch = "[MS,MS:4000088,batch label," + files[i].AnalysisBatch.ToString() + "]",
+                    AnalysisFileAnalyticalOrder = "[MS,MS:4000089,injection sequence label," + files[i].AnalysisFileAnalyticalOrder.ToString() + "]",
                 });
             }
             return fileMetadataDic;
