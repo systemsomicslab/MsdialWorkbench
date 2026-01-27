@@ -13922,11 +13922,13 @@ AdductIon adduct)
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
                 //// seek  [C11H17NO8-H]- *2 as 581.19 must be not found
-                var threshold2 = 0.1;
-                var diagnosticMz2 = diagnosticMz1 * 2 + MassDiffDictionary.HydrogenMass;
-                var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                if (isClassIon2Found == true) return null;
-
+                if(adduct.AdductIonName == "[M-2H]2-")
+                {
+                    var threshold2 = 0.1;
+                    var diagnosticMz2 = diagnosticMz1 * 2 + MassDiffDictionary.HydrogenMass;
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    if (isClassIon2Found == true) return null;
+                }
 
                 //   may be not found fragment to define sphingo and acyl chain
                 var candidates = new List<LipidMolecule>();
