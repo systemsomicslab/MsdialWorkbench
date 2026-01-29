@@ -591,6 +591,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -670,6 +672,8 @@
           <DiagnosticIonGroup>0</DiagnosticIonGroup>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -731,6 +735,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -835,6 +841,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -925,6 +933,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -985,6 +995,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ADGGA</LipidClass>
@@ -1028,6 +1040,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -1055,6 +1069,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexBRS</LipidClass>
@@ -1080,6 +1096,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexBRS</LipidClass>
@@ -1106,6 +1124,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -1133,6 +1153,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCAS</LipidClass>
@@ -1158,6 +1180,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCAS</LipidClass>
@@ -1184,6 +1208,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -1265,6 +1291,13 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_AS</LipidClass>
@@ -1351,6 +1384,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_AS</LipidClass>
@@ -1437,6 +1477,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_AS</LipidClass>
@@ -1534,6 +1585,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_AS</LipidClass>
@@ -1624,6 +1677,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -1702,6 +1757,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_NS</LipidClass>
@@ -1784,6 +1846,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_NS</LipidClass>
@@ -1866,6 +1935,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_NS</LipidClass>
@@ -1937,6 +2017,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCer_NS</LipidClass>
@@ -2001,6 +2083,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2028,6 +2112,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCS</LipidClass>
@@ -2053,6 +2139,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexCS</LipidClass>
@@ -2079,6 +2167,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2106,6 +2196,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexSIS</LipidClass>
@@ -2131,6 +2223,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexSIS</LipidClass>
@@ -2157,6 +2251,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2184,6 +2280,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexSTS</LipidClass>
@@ -2209,6 +2307,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>AHexSTS</LipidClass>
@@ -2235,6 +2335,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2273,6 +2375,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2357,6 +2461,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ASHexCer_AS</LipidClass>
@@ -2401,6 +2507,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2485,6 +2593,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ASHexCer_NS</LipidClass>
@@ -2529,6 +2639,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2583,6 +2695,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ASM</LipidClass>
@@ -2635,6 +2749,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>ASM</LipidClass>
@@ -2670,6 +2791,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2705,6 +2828,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>BAHex</LipidClass>
@@ -2738,6 +2863,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>BAHex</LipidClass>
@@ -2762,6 +2889,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2789,6 +2918,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>BASulfate</LipidClass>
@@ -2814,6 +2945,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2871,6 +3004,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2914,6 +3049,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -2985,6 +3122,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>bmPC</LipidClass>
@@ -3061,6 +3200,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>bmPC</LipidClass>
@@ -3137,6 +3278,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>bmPC</LipidClass>
@@ -3192,6 +3340,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3219,6 +3369,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3253,6 +3405,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>BRSLPHex</LipidClass>
@@ -3287,6 +3441,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3323,6 +3479,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>BRSPHex</LipidClass>
@@ -3364,6 +3522,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3391,6 +3551,14 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons>
+        <InvisibleIon>
+          <InvisibleIonMZ>M＋Proton-C3H9N</InvisibleIonMZ>
+          <InvisibleIonIntensity>1</InvisibleIonIntensity>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          </InvisibleIon>
+        </InvisibleIons>
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3418,6 +3586,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3452,6 +3622,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CASLPHex</LipidClass>
@@ -3486,6 +3658,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3522,6 +3696,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CASPHex</LipidClass>
@@ -3563,6 +3739,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3580,6 +3758,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CE</LipidClass>
@@ -3613,6 +3793,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3669,6 +3851,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CerP</LipidClass>
@@ -3690,6 +3874,8 @@
           <Comment>[M+H]+(-H3PO4)-acyl-O</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -3722,6 +3908,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -3763,6 +3951,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_ABP</LipidClass>
@@ -3802,6 +3992,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_ABP</LipidClass>
@@ -3835,6 +4032,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_ABP</LipidClass>
@@ -3930,6 +4129,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -4047,6 +4248,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+HCOOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>200</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_ADS</LipidClass>
@@ -4162,6 +4370,17 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_ADS</LipidClass>
@@ -4269,6 +4488,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -4343,6 +4564,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AH</LipidClass>
@@ -4421,6 +4644,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -4495,6 +4720,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AH_d9</LipidClass>
@@ -4573,6 +4800,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -4635,6 +4864,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AP</LipidClass>
@@ -4695,6 +4926,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AP</LipidClass>
@@ -4748,6 +4986,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AP</LipidClass>
@@ -4829,6 +5069,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AP</LipidClass>
@@ -4855,6 +5097,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AP</LipidClass>
@@ -4929,6 +5173,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -5045,6 +5291,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+HCOOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>200</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AS</LipidClass>
@@ -5159,6 +5412,17 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_AS</LipidClass>
@@ -5267,6 +5531,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -5327,6 +5593,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+HCOOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>200</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_BDS</LipidClass>
@@ -5385,6 +5658,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_BDS</LipidClass>
@@ -5436,6 +5720,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -5502,6 +5788,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+HCOOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_BS</LipidClass>
@@ -5566,6 +5859,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_BS</LipidClass>
@@ -5624,6 +5928,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -5681,6 +5987,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EBDS</LipidClass>
@@ -5736,6 +6044,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EBDS</LipidClass>
@@ -5784,6 +6099,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -5843,6 +6160,13 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EODS</LipidClass>
@@ -5907,6 +6231,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EODS</LipidClass>
@@ -5971,6 +6302,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -6037,6 +6379,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EOS</LipidClass>
@@ -6101,6 +6450,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EOS</LipidClass>
@@ -6158,6 +6518,13 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EOS</LipidClass>
@@ -6212,6 +6579,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_EOS</LipidClass>
@@ -6272,6 +6646,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C6H10O5-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -6327,6 +6708,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_HDS</LipidClass>
@@ -6353,6 +6736,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_HDS</LipidClass>
@@ -6399,6 +6784,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -6454,6 +6841,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_HS</LipidClass>
@@ -6480,6 +6869,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_HS</LipidClass>
@@ -6526,6 +6917,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -6615,6 +7008,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NDS</LipidClass>
@@ -6702,6 +7097,13 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NDS</LipidClass>
@@ -6783,6 +7185,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NDS</LipidClass>
@@ -6852,6 +7256,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NDS</LipidClass>
@@ -6878,6 +7284,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NDS</LipidClass>
@@ -6938,6 +7346,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -7043,6 +7453,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NH</LipidClass>
@@ -7114,6 +7526,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -7219,6 +7633,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NH_d9</LipidClass>
@@ -7290,6 +7706,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -7401,6 +7819,8 @@
           <Comment>[M-H]-</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NP</LipidClass>
@@ -7510,6 +7930,13 @@
           <Comment>[M-H]-</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NP</LipidClass>
@@ -7614,6 +8041,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NP</LipidClass>
@@ -7694,6 +8123,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NP</LipidClass>
@@ -7765,6 +8196,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NP</LipidClass>
@@ -7789,6 +8222,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -7884,6 +8319,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS</LipidClass>
@@ -7977,6 +8414,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS</LipidClass>
@@ -8064,6 +8508,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS</LipidClass>
@@ -8133,6 +8579,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS</LipidClass>
@@ -8159,6 +8607,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS</LipidClass>
@@ -8219,6 +8669,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -8314,6 +8766,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS_d7</LipidClass>
@@ -8407,6 +8861,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS_d7</LipidClass>
@@ -8494,6 +8955,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS_d7</LipidClass>
@@ -8563,6 +9026,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS_d7</LipidClass>
@@ -8589,6 +9054,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Cer_NS_d7</LipidClass>
@@ -8649,6 +9116,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -8666,6 +9135,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CE_d7</LipidClass>
@@ -8699,6 +9170,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -8807,6 +9280,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CL</LipidClass>
@@ -8848,6 +9323,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CL</LipidClass>
@@ -8936,6 +9413,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -8963,6 +9442,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CoQ</LipidClass>
@@ -8988,6 +9469,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CoQ</LipidClass>
@@ -9019,6 +9502,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9053,6 +9538,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CSLPHex</LipidClass>
@@ -9087,6 +9574,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9123,6 +9612,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>CSPHex</LipidClass>
@@ -9164,6 +9655,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9200,6 +9693,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DCAE</LipidClass>
@@ -9226,6 +9721,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9267,6 +9764,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DCAE_OxFA</LipidClass>
@@ -9293,6 +9792,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9320,6 +9821,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DEGSE</LipidClass>
@@ -9352,6 +9855,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DEGSE</LipidClass>
@@ -9377,6 +9882,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9427,6 +9934,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DG</LipidClass>
@@ -9442,6 +9951,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9513,6 +10024,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C5H14NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9605,6 +10123,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGDG</LipidClass>
@@ -9695,6 +10215,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGDG</LipidClass>
@@ -9746,6 +10268,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGDG</LipidClass>
@@ -9810,6 +10334,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9860,6 +10386,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGGA</LipidClass>
@@ -9904,6 +10432,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -9954,6 +10484,8 @@
           <IsDiagnostic>1</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGMG</LipidClass>
@@ -10004,6 +10536,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGMG</LipidClass>
@@ -10054,6 +10588,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10130,6 +10666,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGTS</LipidClass>
@@ -10204,6 +10742,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGTS</LipidClass>
@@ -10273,6 +10813,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DGTS</LipidClass>
@@ -10355,6 +10897,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10405,6 +10949,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DG_d5</LipidClass>
@@ -10420,6 +10966,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10479,6 +11027,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10539,6 +11089,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10566,6 +11118,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10611,6 +11165,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10645,6 +11201,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10724,6 +11282,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DMPE</LipidClass>
@@ -10789,6 +11349,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10816,6 +11378,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DSMSE</LipidClass>
@@ -10848,6 +11412,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>DSMSE</LipidClass>
@@ -10873,6 +11439,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10900,6 +11468,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EGSE</LipidClass>
@@ -10931,6 +11501,8 @@
           <Comment>[M+H]+</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EGSE</LipidClass>
@@ -10956,6 +11528,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -10991,6 +11565,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11043,6 +11619,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherDGDG</LipidClass>
@@ -11093,6 +11671,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherDGDG</LipidClass>
@@ -11108,6 +11688,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherDGDG</LipidClass>
@@ -11151,6 +11733,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11201,6 +11785,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherLPC</LipidClass>
@@ -11249,6 +11835,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherLPC</LipidClass>
@@ -11287,6 +11875,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherLPC</LipidClass>
@@ -11337,6 +11927,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11378,6 +11970,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherLPE_O</LipidClass>
@@ -11412,6 +12006,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11460,6 +12056,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherLPE_P</LipidClass>
@@ -11494,6 +12092,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11545,6 +12145,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11588,6 +12190,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherMGDG</LipidClass>
@@ -11629,6 +12233,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherMGDG</LipidClass>
@@ -11654,6 +12260,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherMGDG</LipidClass>
@@ -11690,6 +12298,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11761,6 +12371,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherOxPC</LipidClass>
@@ -11830,6 +12442,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherOxPC</LipidClass>
@@ -11884,6 +12503,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11929,6 +12550,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -11989,6 +12612,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherPC</LipidClass>
@@ -12047,6 +12672,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherPC</LipidClass>
@@ -12109,6 +12741,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherPC</LipidClass>
@@ -12151,6 +12785,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12187,6 +12823,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherPE_O</LipidClass>
@@ -12222,6 +12860,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12276,6 +12916,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12320,6 +12962,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-C2H2N-Na+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12379,6 +13028,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12432,6 +13083,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12478,6 +13131,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherSMGDG</LipidClass>
@@ -12536,6 +13191,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12572,6 +13229,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>EtherTG</LipidClass>
@@ -12622,6 +13281,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12639,6 +13300,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12683,6 +13346,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -12717,6 +13382,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1a_Cer</LipidClass>
@@ -12749,6 +13416,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1a_Cer</LipidClass>
@@ -12861,6 +13530,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1a_Cer</LipidClass>
@@ -12966,6 +13637,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13000,6 +13673,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1b_Cer</LipidClass>
@@ -13039,6 +13714,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1b_Cer</LipidClass>
@@ -13144,6 +13821,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD1b_Cer</LipidClass>
@@ -13249,6 +13928,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13290,6 +13971,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD2_Cer</LipidClass>
@@ -13329,6 +14012,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13377,6 +14062,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GD3_Cer</LipidClass>
@@ -13430,6 +14117,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13466,6 +14155,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GDCAE</LipidClass>
@@ -13492,6 +14183,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13534,6 +14227,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GDCAE_OxFA</LipidClass>
@@ -13560,6 +14255,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13596,6 +14293,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GLCAE</LipidClass>
@@ -13622,6 +14321,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13664,6 +14365,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GLCAE_OxFA</LipidClass>
@@ -13690,6 +14393,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -13738,6 +14443,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GM1_Cer</LipidClass>
@@ -13784,6 +14491,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C22H34N2O16-Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>5</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>GM1_Cer</LipidClass>
@@ -13900,6 +14614,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GM1_Cer</LipidClass>
@@ -14007,6 +14723,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GM1_Cer</LipidClass>
@@ -14102,6 +14820,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -14205,6 +14925,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GM3_Cer</LipidClass>
@@ -14244,6 +14966,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GM3_Cer</LipidClass>
@@ -14276,6 +15000,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -14326,6 +15052,17 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C3H8PO6+O2-H</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C2H8NO4P</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>100</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>GPNAE</LipidClass>
@@ -14351,6 +15088,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -14401,6 +15140,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GQ1b_Cer</LipidClass>
@@ -14463,6 +15204,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GQ1b_Cer</LipidClass>
@@ -14604,6 +15347,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GQ1b_Cer</LipidClass>
@@ -14745,6 +15490,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -14795,6 +15542,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GT1b_Cer</LipidClass>
@@ -14850,6 +15599,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GT1b_Cer</LipidClass>
@@ -14978,6 +15729,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>GT1b_Cer</LipidClass>
@@ -15100,6 +15853,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -15163,6 +15918,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HBMP</LipidClass>
@@ -15216,6 +15973,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -15314,6 +16073,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex2Cer</LipidClass>
@@ -15347,6 +16113,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex2Cer</LipidClass>
@@ -15403,6 +16171,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex2Cer</LipidClass>
@@ -15459,6 +16234,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10-C6H10O5</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -15580,6 +16366,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex3Cer</LipidClass>
@@ -15613,6 +16401,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex3Cer</LipidClass>
@@ -15678,6 +16468,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Hex3Cer</LipidClass>
@@ -15743,6 +16535,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -15824,6 +16618,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_AP</LipidClass>
@@ -15903,6 +16704,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_AP</LipidClass>
@@ -15976,6 +16788,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_AP</LipidClass>
@@ -16048,6 +16867,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_AP</LipidClass>
@@ -16074,6 +16900,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_AP</LipidClass>
@@ -16146,6 +16974,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -16216,6 +17046,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_EOS</LipidClass>
@@ -16284,6 +17116,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_EOS</LipidClass>
@@ -16346,6 +17185,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_EOS</LipidClass>
@@ -16424,6 +17265,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_EOS</LipidClass>
@@ -16496,6 +17339,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -16553,6 +17398,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HDS</LipidClass>
@@ -16608,6 +17460,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HDS</LipidClass>
@@ -16657,6 +17520,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HDS</LipidClass>
@@ -16735,6 +17605,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HDS</LipidClass>
@@ -16761,6 +17638,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HDS</LipidClass>
@@ -16831,6 +17710,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -16888,6 +17769,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HS</LipidClass>
@@ -16943,6 +17831,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HS</LipidClass>
@@ -16992,6 +17891,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HS</LipidClass>
@@ -17070,6 +17976,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HS</LipidClass>
@@ -17096,6 +18009,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_HS</LipidClass>
@@ -17166,6 +18081,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -17234,6 +18151,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NDS</LipidClass>
@@ -17254,6 +18178,8 @@
           <Comment>[Sph-C2H7NO-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+C2H5N</MZ>
@@ -17261,6 +18187,8 @@
           <Comment>[FAA+C2H3-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+NH2-O</MZ>
@@ -17268,6 +18196,8 @@
           <Comment>[FAA-OH-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17283,6 +18213,8 @@
           <Intensity>500</Intensity>
           <Comment>[M-C6H10O5-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -17292,6 +18224,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NDS</LipidClass>
@@ -17312,6 +18255,8 @@
           <Comment>[Sph-C2H7NO-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+C2H5N</MZ>
@@ -17319,6 +18264,8 @@
           <Comment>[FAA+C2H3-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+NH2-O</MZ>
@@ -17326,6 +18273,8 @@
           <Comment>[FAA-OH-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17335,6 +18284,8 @@
           <Intensity>500</Intensity>
           <Comment>[M-C6H10O5-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -17344,6 +18295,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NDS</LipidClass>
@@ -17377,6 +18335,8 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17385,6 +18345,8 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17401,6 +18363,8 @@
           <Intensity>100</Intensity>
           <Comment>[M-Hex-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
@@ -17417,6 +18381,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NDS</LipidClass>
@@ -17438,9 +18409,13 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NDS</LipidClass>
@@ -17474,6 +18449,8 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17482,6 +18459,8 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17498,6 +18477,8 @@
           <Intensity>100</Intensity>
           <Comment>[M-Hex-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
@@ -17507,6 +18488,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -17575,6 +18558,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NS</LipidClass>
@@ -17595,6 +18585,8 @@
           <Comment>[Sph-C2H7NO-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+C2H5N</MZ>
@@ -17602,6 +18594,8 @@
           <Comment>[FAA+C2H3-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+NH2-O</MZ>
@@ -17609,6 +18603,8 @@
           <Comment>[FAA-OH-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17624,6 +18620,8 @@
           <Intensity>500</Intensity>
           <Comment>[M-C6H10O5-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -17633,6 +18631,17 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NS</LipidClass>
@@ -17653,6 +18662,8 @@
           <Comment>[Sph-C2H7NO-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+C2H5N</MZ>
@@ -17660,6 +18671,8 @@
           <Comment>[FAA+C2H3-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+NH2-O</MZ>
@@ -17667,6 +18680,8 @@
           <Comment>[FAA-OH-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17676,6 +18691,8 @@
           <Intensity>500</Intensity>
           <Comment>[M-C6H10O5-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -17685,6 +18702,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-Proton-C12H20O10</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NS</LipidClass>
@@ -17705,6 +18729,8 @@
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl+Proton+NH2</MZ>
@@ -17719,6 +18745,8 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17727,6 +18755,8 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17743,6 +18773,8 @@
           <Intensity>100</Intensity>
           <Comment>[M-Hex-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
@@ -17759,6 +18791,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H20O10-H2O</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NS</LipidClass>
@@ -17780,9 +18819,13 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>HexCer_NS</LipidClass>
@@ -17803,6 +18846,8 @@
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl+Proton+NH2</MZ>
@@ -17817,6 +18862,8 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17825,6 +18872,8 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17841,6 +18890,8 @@
           <Intensity>100</Intensity>
           <Comment>[M-Hex-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
@@ -17850,6 +18901,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -17886,6 +18939,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>KDCAE</LipidClass>
@@ -17912,6 +18967,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -17954,6 +19011,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>KDCAE_OxFA</LipidClass>
@@ -17980,6 +19039,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18016,6 +19077,13 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C25H37O5+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>5</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>KLCAE</LipidClass>
@@ -18042,6 +19110,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18084,6 +19154,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>KLCAE_OxFA</LipidClass>
@@ -18110,6 +19182,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18146,6 +19220,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LCAE</LipidClass>
@@ -18172,6 +19248,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18214,6 +19292,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LCAE_OxFA</LipidClass>
@@ -18240,6 +19320,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18276,6 +19358,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C5H14NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18313,6 +19402,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LDGTS</LipidClass>
@@ -18348,6 +19439,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LDGTS</LipidClass>
@@ -18395,6 +19488,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LDGTS</LipidClass>
@@ -18434,6 +19529,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18527,6 +19624,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18582,6 +19681,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18620,6 +19721,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18654,6 +19757,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18698,6 +19803,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC</LipidClass>
@@ -18740,6 +19847,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC</LipidClass>
@@ -18772,6 +19881,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C2H8NO4P</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC</LipidClass>
@@ -18819,6 +19935,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC</LipidClass>
@@ -18872,6 +19990,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -18916,6 +20036,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC_d5</LipidClass>
@@ -18958,6 +20080,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC_d5</LipidClass>
@@ -18990,6 +20114,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC_d5</LipidClass>
@@ -19037,6 +20163,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPC_d5</LipidClass>
@@ -19090,6 +20218,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19133,6 +20263,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C2H8NO4P</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19189,6 +20326,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPE</LipidClass>
@@ -19214,6 +20353,17 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-SN1Acyl+CO-2H+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>100</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>SN1Acyl-CO+2H+C2H5NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>100</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19270,6 +20420,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPE_d5</LipidClass>
@@ -19295,6 +20447,17 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-SN1Acyl+CO-2H+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>100</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>SN1Acyl-CO+2H+C2H5NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>100</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19346,6 +20509,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPG</LipidClass>
@@ -19385,6 +20550,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPG</LipidClass>
@@ -19430,6 +20597,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19481,6 +20650,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPG_d5</LipidClass>
@@ -19520,6 +20691,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPG_d5</LipidClass>
@@ -19565,6 +20738,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19625,6 +20800,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPI</LipidClass>
@@ -19664,6 +20841,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPI</LipidClass>
@@ -19709,6 +20888,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19769,6 +20950,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPI_d5</LipidClass>
@@ -19808,6 +20991,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPI_d5</LipidClass>
@@ -19853,6 +21038,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19904,6 +21091,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPS</LipidClass>
@@ -19941,6 +21130,8 @@
           <Comment>[M-C3H7NO3]+</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -19992,6 +21183,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>LPS_d5</LipidClass>
@@ -20031,6 +21224,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20072,6 +21267,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MG</LipidClass>
@@ -20105,6 +21302,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20169,6 +21368,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MGDG</LipidClass>
@@ -20231,6 +21432,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MGDG</LipidClass>
@@ -20277,6 +21480,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C12H22O11</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20304,6 +21514,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MGMG</LipidClass>
@@ -20329,6 +21541,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MGMG</LipidClass>
@@ -20372,6 +21586,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20439,6 +21655,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MIPC_Cer</LipidClass>
@@ -20496,6 +21714,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20569,6 +21789,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20644,6 +21866,8 @@
           <IsDiagnostic>1</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>MMPE</LipidClass>
@@ -20696,6 +21920,8 @@
           <IsDiagnostic>1</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20729,6 +21955,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_FA</LipidClass>
@@ -20761,6 +21989,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_FA</LipidClass>
@@ -20799,6 +22029,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_FA</LipidClass>
@@ -20837,6 +22069,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -20878,6 +22112,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_OxFA</LipidClass>
@@ -20910,6 +22146,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_OxFA</LipidClass>
@@ -20948,6 +22186,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NA5HT_OxFA</LipidClass>
@@ -20986,6 +22226,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21020,6 +22262,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAAla_FA</LipidClass>
@@ -21053,6 +22297,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21094,6 +22340,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAAla_OxFA</LipidClass>
@@ -21127,6 +22375,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21176,6 +22426,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21225,6 +22477,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21242,6 +22496,13 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-H4O2</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>NAE</LipidClass>
@@ -21281,6 +22542,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAE</LipidClass>
@@ -21320,6 +22583,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21356,6 +22621,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGABA_FA</LipidClass>
@@ -21405,6 +22672,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21448,6 +22717,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGABA_OxFA</LipidClass>
@@ -21497,6 +22768,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21545,6 +22818,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGln_FA</LipidClass>
@@ -21599,6 +22874,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21653,6 +22930,8 @@
           <Comment>[M+H-H2O]+</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGln_OxFA</LipidClass>
@@ -21707,6 +22986,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21774,6 +23055,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGlySer_FAHFA</LipidClass>
@@ -21862,6 +23145,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21919,6 +23204,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGlySer_OxFA</LipidClass>
@@ -21951,6 +23238,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -21978,6 +23267,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGly_FA</LipidClass>
@@ -22003,6 +23294,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGly_FA</LipidClass>
@@ -22034,6 +23327,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22091,6 +23386,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGly_FAHFA</LipidClass>
@@ -22147,6 +23444,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGly_FAHFA</LipidClass>
@@ -22209,6 +23508,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22236,6 +23537,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAGly_OxFA</LipidClass>
@@ -22261,6 +23564,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22295,6 +23600,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NALeu_FA</LipidClass>
@@ -22329,6 +23636,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22369,6 +23678,8 @@
           <Comment>[M+H-H2O]+</Comment>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NALeu_OxFA</LipidClass>
@@ -22403,6 +23714,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22437,6 +23750,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22508,6 +23823,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22548,6 +23865,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22605,6 +23924,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAPhe_FA</LipidClass>
@@ -22639,6 +23960,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22703,6 +24026,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAPhe_OxFA</LipidClass>
@@ -22737,6 +24062,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22778,6 +24105,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NASer_FA</LipidClass>
@@ -22841,6 +24170,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22889,6 +24220,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NASer_OxFA</LipidClass>
@@ -22952,6 +24285,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -22995,6 +24330,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATau_FA</LipidClass>
@@ -23027,6 +24364,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATau_FA</LipidClass>
@@ -23065,6 +24404,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23108,6 +24449,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATau_OxFA</LipidClass>
@@ -23140,6 +24483,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATau_OxFA</LipidClass>
@@ -23178,6 +24523,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23212,6 +24559,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_FA</LipidClass>
@@ -23252,6 +24601,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_FA</LipidClass>
@@ -23300,6 +24651,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_FA</LipidClass>
@@ -23348,6 +24701,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23385,6 +24740,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_FAHFA</LipidClass>
@@ -23419,6 +24776,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23462,6 +24821,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_OxFA</LipidClass>
@@ -23519,6 +24880,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_OxFA</LipidClass>
@@ -23582,6 +24945,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NATryA_OxFA</LipidClass>
@@ -23645,6 +25010,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23679,6 +25046,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAVal_FA</LipidClass>
@@ -23711,6 +25080,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23752,6 +25123,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NAVal_OxFA</LipidClass>
@@ -23784,6 +25157,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -23825,6 +25200,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NGcGM3_Cer</LipidClass>
@@ -23857,6 +25234,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NGcGM3_Cer</LipidClass>
@@ -23943,6 +25322,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>NGcGM3_Cer</LipidClass>
@@ -24035,6 +25416,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24052,6 +25435,8 @@
         </Precursors>
       <ChainIons />
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24115,6 +25500,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>OxPC</LipidClass>
@@ -24176,6 +25563,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>OxPC</LipidClass>
@@ -24240,6 +25634,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24294,6 +25690,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24340,6 +25738,17 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-CH3COOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-HCOOAdduct</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>500</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24405,6 +25814,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24461,6 +25872,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24558,6 +25971,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24632,6 +26047,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -24696,6 +26113,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C2H7NO4P</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PC</LipidClass>
@@ -24751,6 +26175,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PC</LipidClass>
@@ -24834,6 +26260,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PC</LipidClass>
@@ -24917,6 +26345,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PC</LipidClass>
@@ -24970,6 +26405,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25034,6 +26471,21 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+Proton-C2H8NO4P</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C5H12NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>10</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C2H8NO4P+Proton</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>30</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PC_d5</LipidClass>
@@ -25089,6 +26541,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PC_d5</LipidClass>
@@ -25172,6 +26626,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PC_d5</LipidClass>
@@ -25255,6 +26711,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M+CH3COOAdduct-HCOOAdduct-CH3</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PC_d5</LipidClass>
@@ -25308,6 +26771,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25382,6 +26847,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C3H6O5P+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PE</LipidClass>
@@ -25426,6 +26898,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PE</LipidClass>
@@ -25472,6 +26946,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25537,6 +27013,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PEtOH</LipidClass>
@@ -25623,6 +27101,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25667,6 +27147,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25741,6 +27223,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>C3H6O5P+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>50</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PE_d5</LipidClass>
@@ -25785,6 +27274,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PE_d5</LipidClass>
@@ -25831,6 +27322,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -25903,6 +27396,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PG</LipidClass>
@@ -25947,6 +27442,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26019,6 +27516,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PG_d5</LipidClass>
@@ -26063,6 +27562,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26117,6 +27618,8 @@
           <DiagnosticIonCount>3</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26200,6 +27703,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PI</LipidClass>
@@ -26243,6 +27748,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PI</LipidClass>
@@ -26268,6 +27775,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26321,6 +27830,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PI_Cer</LipidClass>
@@ -26346,6 +27857,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26429,6 +27942,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PI_d5</LipidClass>
@@ -26472,6 +27987,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PI_d5</LipidClass>
@@ -26497,6 +28014,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26562,6 +28081,13 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-C2H2N-Na+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PMeOH</LipidClass>
@@ -26648,6 +28174,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26726,6 +28254,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-C2H2N-Na+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PS</LipidClass>
@@ -26788,6 +28323,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PS</LipidClass>
@@ -26834,6 +28371,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -26912,6 +28451,13 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons>
+        <ProhibitedIon>
+          <ProhibitedIonMZ>M-C2H2N-Na+Electron</ProhibitedIonMZ>
+          <ProhibitedIonIntensity>300</ProhibitedIonIntensity>
+          </ProhibitedIon>
+        </ProhibitedIons>
       </LipidMS>
     <LipidMS>
       <LipidClass>PS_d5</LipidClass>
@@ -26974,6 +28520,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PS_d5</LipidClass>
@@ -27020,6 +28568,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27105,6 +28655,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>PT</LipidClass>
@@ -27194,6 +28746,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27229,6 +28783,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SHex</LipidClass>
@@ -27262,6 +28818,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SHex</LipidClass>
@@ -27315,6 +28873,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27416,6 +28976,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SHexCer</LipidClass>
@@ -27441,6 +29003,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27468,6 +29032,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SHexCer_O</LipidClass>
@@ -27540,6 +29106,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SHexCer_O</LipidClass>
@@ -27598,6 +29166,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27625,6 +29195,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27659,6 +29231,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SISLPHex</LipidClass>
@@ -27693,6 +29267,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27729,6 +29305,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SISPHex</LipidClass>
@@ -27770,6 +29348,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -27832,6 +29412,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SL</LipidClass>
@@ -27900,6 +29482,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SL</LipidClass>
@@ -27974,6 +29558,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28020,6 +29606,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SL_O</LipidClass>
@@ -28070,6 +29658,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SL_O</LipidClass>
@@ -28126,6 +29716,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28179,6 +29771,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM</LipidClass>
@@ -28230,6 +29824,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM</LipidClass>
@@ -28287,6 +29883,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM</LipidClass>
@@ -28329,6 +29927,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM</LipidClass>
@@ -28370,6 +29970,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28443,6 +30045,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28496,6 +30100,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_d9</LipidClass>
@@ -28516,6 +30122,8 @@
           <Comment>M-Acyl-CD3</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -28525,6 +30133,8 @@
           <Intensity>999</Intensity>
           <Comment>[M-CD3]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -28532,6 +30142,8 @@
           <Intensity>200</Intensity>
           <Comment>[C4D6H5NO4P]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
+          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -28541,6 +30153,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_d9</LipidClass>
@@ -28561,6 +30175,8 @@
           <Comment>[M-H]--C3D9N-sph+C2H7NO</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -28596,6 +30212,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_d9</LipidClass>
@@ -28616,6 +30234,8 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
+          <DiagnosticIonCount>1</DiagnosticIonCount>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -28636,6 +30256,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_d9</LipidClass>
@@ -28677,6 +30299,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28720,6 +30344,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_O</LipidClass>
@@ -28761,6 +30387,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SM_O</LipidClass>
@@ -28793,6 +30421,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28827,6 +30457,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SPE</LipidClass>
@@ -28859,6 +30491,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28909,6 +30543,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -28943,6 +30579,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SPGHex</LipidClass>
@@ -28982,6 +30620,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29041,6 +30681,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29105,6 +30747,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SQDG</LipidClass>
@@ -29186,6 +30830,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29213,6 +30859,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>SSulfate</LipidClass>
@@ -29238,6 +30886,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29264,6 +30914,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ST</LipidClass>
@@ -29294,6 +30946,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ST</LipidClass>
@@ -29318,6 +30972,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>ST</LipidClass>
@@ -29362,6 +31018,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29389,6 +31047,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29423,6 +31083,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>STSLPHex</LipidClass>
@@ -29457,6 +31119,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29493,6 +31157,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>STSPHex</LipidClass>
@@ -29534,6 +31200,8 @@
           <DiagnosticIonCount>2</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29570,6 +31238,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TDCAE</LipidClass>
@@ -29596,6 +31266,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29638,6 +31310,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TDCAE_OxFA</LipidClass>
@@ -29664,6 +31338,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29709,6 +31385,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TG</LipidClass>
@@ -29759,6 +31437,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29804,6 +31484,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TG_d5</LipidClass>
@@ -29854,6 +31536,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29933,6 +31617,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -29969,6 +31655,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TLCAE</LipidClass>
@@ -29995,6 +31683,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -30037,6 +31727,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>TLCAE_OxFA</LipidClass>
@@ -30063,6 +31755,8 @@
           </ChainIon>
         </ChainIons>
       <ClassIons />
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -30139,6 +31833,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>VAE</LipidClass>
@@ -30212,6 +31908,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -30248,6 +31946,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -30281,6 +31981,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Vitamin_E</LipidClass>
@@ -30312,6 +32014,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     <LipidMS>
       <LipidClass>Vitamin_E</LipidClass>
@@ -30351,6 +32055,8 @@
           <DiagnosticIonCount>1</DiagnosticIonCount>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   <LipidMSs>
@@ -30385,6 +32091,8 @@
           <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
+      <InvisibleIons />
+      <ProhibitedIons />
       </LipidMS>
     </LipidMSs>
   </Root>

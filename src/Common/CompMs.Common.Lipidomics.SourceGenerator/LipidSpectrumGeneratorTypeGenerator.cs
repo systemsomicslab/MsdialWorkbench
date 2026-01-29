@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using System.ComponentModel;
 using System.Text;
 using System.Xml.Linq;
 
@@ -191,8 +192,18 @@ namespace CompMs.Common.Lipidomics {
         {
             var lipidClass = group.Key;
 
-            var lipidMSs = group.Select(e => ToLipidMS(ctx, e)).ToList();
+            var lipidMSsAll = group.Select(e => ToLipidMS(ctx, e)).ToList();
+            var targetKeys = new HashSet<string> { "Precursors", "ChainIons", "ClassIons" };
+            var lipidMSs = lipidMSsAll
+                .Select(ms =>
+                {
+                    var filteredIons = ms.Ions
+                        .Where(kvp => targetKeys.Contains(kvp.Key))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+                    return new LipidMS(ms.Adduct, ms.LSILevel, filteredIons);
+                })
+                .ToList();
             result.AppendLine();
             result.AppendLine($"    public sealed class {lipidClass}{category ?? string.Empty}LipidSpectrumGenerator  {{");
 
