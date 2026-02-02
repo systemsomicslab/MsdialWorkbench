@@ -6113,19 +6113,19 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN1 = diagnosticMz - sn1alkyl + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
                             };
 
                             var foundCount = 0;
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount == 1)
-                            { // 
-                                var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("MGDG", LbmClass.EtherMGDG, sn1Carbon, sn1Double,
-                                    sn2Carbon, sn2Double, averageIntensity, "e");
-                                candidates.Add(molecule);
-                            }
+                            //if (foundCount == 1)
+                            //{ // 
+                            //    var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("MGDG", LbmClass.EtherMGDG, sn1Carbon, sn1Double,
+                            //        sn2Carbon, sn2Double, averageIntensity, "e");
+                            //    candidates.Add(molecule);
+                            //}
                         }
                     }
                     if (candidates.Count == 0) return null;
