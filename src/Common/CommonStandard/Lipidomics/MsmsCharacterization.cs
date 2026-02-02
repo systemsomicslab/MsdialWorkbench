@@ -4461,7 +4461,7 @@ namespace CompMs.Common.Lipidomics
                             var NL_sn2AndWater = NL_sn2 + 18.0105642;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = sn2, Intensity = 30.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 5.0 },
                                 //new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 },
                                 //new SpectrumPeak() { Mass = NL_sn2AndWater, Intensity = 0.1 }
                             };
