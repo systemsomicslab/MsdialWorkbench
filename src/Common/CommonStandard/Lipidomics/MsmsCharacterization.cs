@@ -15680,7 +15680,7 @@ AdductIon adduct)
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
                     var diagnosticMz1 = 197.0808164;  // seek [(C9H9O4)+CH3+H]+
-                    var threshold1 = 1.0;
+                    var threshold1 = 0.1;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found != true) return null;
 
@@ -15780,9 +15780,9 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
-                    // calc [M+H]+
+                    // calc [M+H]+ -Hex
                     var diagnosticMz = theoreticalMz - 179.0561136;
-                    var threshold = 0.01;
+                    var threshold = 1;
 
                     var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isSterolFrag == true)
@@ -16142,7 +16142,7 @@ AdductIon adduct)
             if (spectrum == null || spectrum.Count == 0) return null;
             if (adduct.IonMode == IonMode.Positive)
             { // Positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+Na]+")
                 {
                     // seek 367.335928  sterol structure (Desmosterol - H2O)
                     var threshold = 10;
