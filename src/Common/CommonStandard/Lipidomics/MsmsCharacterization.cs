@@ -6422,7 +6422,7 @@ AdductIon adduct)
                     var threshold = 1;
                     var diagnosticMz = theoreticalMz - 341.10838 - 22.9892207 + Proton; // - 2Hex and Na
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    if (isClassIonFound == false) return null;
+                    //if (isClassIonFound == false) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -6448,12 +6448,12 @@ AdductIon adduct)
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount == 1)
-                            { // 
-                                var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("DGDG", LbmClass.EtherDGDG, sn1Carbon, sn1Double,
-                                    sn2Carbon, sn2Double, averageIntensity, "e");
-                                candidates.Add(molecule);
-                            }
+                            //if (foundCount == 1)
+                            //{ // 
+                            //    var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("DGDG", LbmClass.EtherDGDG, sn1Carbon, sn1Double,
+                            //        sn2Carbon, sn2Double, averageIntensity, "e");
+                            //    candidates.Add(molecule);
+                            //}
                         }
                     }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("DGDG", LbmClass.EtherDGDG, "e", theoreticalMz, adduct,
