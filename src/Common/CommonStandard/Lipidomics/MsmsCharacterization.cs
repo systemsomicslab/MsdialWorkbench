@@ -6161,7 +6161,7 @@ namespace CompMs.Common.Lipidomics
 
                             var query = new List<SpectrumPeak> {
                             new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
-                            new SpectrumPeak() { Mass = NL_sn2, Intensity = 5.0 }
+                            new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
