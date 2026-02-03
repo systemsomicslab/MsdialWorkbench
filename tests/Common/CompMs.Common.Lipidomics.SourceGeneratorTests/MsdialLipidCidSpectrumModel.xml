@@ -3961,12 +3961,14 @@
           <Intensity>200</Intensity>
           <Comment>[M-H]-Acyl</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>M+H-Proton-Acyl-H2O</MZ>
           <Intensity>200</Intensity>
           <Comment>[M-H]-Acyl-H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -8193,6 +8195,7 @@
           <MZ>M-Proton</MZ>
           <Intensity>999</Intensity>
           <Comment>[M-H]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -8309,6 +8312,7 @@
           <MZ>M-Proton</MZ>
           <Intensity>999</Intensity>
           <Comment>[M-H]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -10255,6 +10259,8 @@
           <MZ>SN1Acyl-Proton+OH-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -11651,14 +11657,14 @@
           <MZ>SN1Acyl+O+Electron</MZ>
           <Intensity>50</Intensity>
           <Comment>SN1FA-</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>SN2Acyl+O+Electron</MZ>
           <Intensity>50</Intensity>
           <Comment>SN2FA-</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
@@ -12098,6 +12104,7 @@
           <MZ>M+Proton</MZ>
           <Intensity>10</Intensity>
           <Comment>[M+H]+</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -12192,6 +12199,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
           <MZ>M-SN2Acyl-H2O+Electron</MZ>
@@ -12208,6 +12216,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -12218,6 +12227,7 @@
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -12244,6 +12254,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
           <MZ>M-SN2Acyl-H2O+Electron</MZ>
@@ -12260,6 +12271,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -12270,6 +12282,7 @@
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -12790,6 +12803,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
           <MZ>SN2Acyl+O+Electron</MZ>
@@ -12799,6 +12813,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -12833,6 +12848,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
           <MZ>SN2Acyl+O+Electron</MZ>
@@ -12842,6 +12858,7 @@
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -13337,6 +13354,7 @@
           <Intensity>200</Intensity>
           <Comment>[M-C3H9N-SN2Acyl]-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>SN2Acyl+O+Electron</MZ>
@@ -13651,12 +13669,14 @@
           <MZ>M-Proton-SN2Acyl+H</MZ>
           <Intensity>100</Intensity>
           <Comment>[M-H-SN2acyl]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>M-Proton-SN2Acyl-HO</MZ>
           <Intensity>100</Intensity>
           <Comment>[M-H-SN2acyl-H2O]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
@@ -14108,42 +14128,49 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -14230,42 +14257,49 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -14424,42 +14458,49 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -14539,42 +14580,49 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -14791,6 +14839,7 @@
           <Intensity>50</Intensity>
           <Comment>ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -14938,6 +14987,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -15082,6 +15132,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -15186,6 +15237,7 @@
           <Intensity>50</Intensity>
           <Comment>ceramidefragment</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -15250,12 +15302,14 @@
           <Intensity>200</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>100</Intensity>
           <Comment>[Ceramidefragment+H]++H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -15366,30 +15420,35 @@
           <Intensity>700</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>200</Intensity>
           <Comment>[Ceramidefragment+H]+-H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>300</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O//36:1-&gt;728.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>100</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -15483,18 +15542,21 @@
           <Intensity>700</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>200</Intensity>
           <Comment>[Ceramidefragment+H]+-H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>300</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -15715,6 +15777,7 @@
           <NL>C11H17NO8</NL>
           <Intensity>10</Intensity>
           <Comment>[M-C11H17NO8-H]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -15984,48 +16047,56 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+2sugars//36:1-&gt;872.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O//36:1-&gt;890.7</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10+C11H17NO8</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+2sugars+C11H17NO8//36:1-&gt;1163.746</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -16136,48 +16207,56 @@
           <Intensity>500</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton</MZ>
           <Intensity>50</Intensity>
           <Comment>[Ceramidefragment+H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+2sugars//36:1-&gt;872.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugars+H2O//36:1-&gt;890.7</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10+C11H17NO8</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+2sugars+C11H17NO8//36:1-&gt;1163.746</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -16401,36 +16480,42 @@
           <Intensity>400</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>100</Intensity>
           <Comment>[Ceramidefragment+H]+-H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O//36:1-&gt;728.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugar//36:1-&gt;872</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugar+H2O//36:1-&gt;890</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -16447,6 +16532,7 @@
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugar+C8H13NO5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -16540,36 +16626,42 @@
           <Intensity>400</Intensity>
           <Comment>Ceramidefragment//36:1-&gt;548.5</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O-H2O</MZ>
           <Intensity>100</Intensity>
           <Comment>[Ceramidefragment+H]+-H2O</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C6H10O5</MZ>
           <Intensity>150</Intensity>
           <Comment>Ceramidefragment+1sugar//36:1-&gt;710.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C6H10O5</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+1sugar+H2O//36:1-&gt;728.6</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton-H2O+C12H20O10</MZ>
           <Intensity>100</Intensity>
           <Comment>Ceramidefragment+2sugar//36:1-&gt;872</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Acyl+Proton+C12H20O10</MZ>
           <Intensity>50</Intensity>
           <Comment>Ceramidefragment+2sugar+H2O//36:1-&gt;890</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+Proton+H-H2O-H2O</MZ>
@@ -16805,6 +16897,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -16823,6 +16916,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -16912,6 +17006,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17086,6 +17181,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17104,6 +17200,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -17212,6 +17309,7 @@
           <Intensity>50</Intensity>
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -17406,6 +17504,7 @@
           <Intensity>100</Intensity>
           <Comment>[FA+NCC-3H]-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+H2O</MZ>
@@ -17496,6 +17595,7 @@
           <Intensity>100</Intensity>
           <Comment>[FA+NCC-3H]-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+H2O</MZ>
@@ -17590,6 +17690,7 @@
           <Intensity>100</Intensity>
           <Comment>[FA+NCC-3H]-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl-H-Proton+H2O</MZ>
@@ -17635,6 +17736,7 @@
           <PI>C6H11O6</PI>
           <Intensity>200</Intensity>
           <Comment>[C6H12O6-H]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -17858,7 +17960,7 @@
           <Comment>NLofEFA</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -17877,7 +17979,7 @@
           <Comment>NLofEFA+C6H10O5</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -17887,7 +17989,7 @@
           <Comment>[EFA-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -17937,7 +18039,7 @@
           <Comment>NLofEFA</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -17956,7 +18058,7 @@
           <Comment>NLofEFA+C6H10O5</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -17966,7 +18068,7 @@
           <Comment>[EFA-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -18020,7 +18122,7 @@
           <Comment>NLofEFA</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -18039,7 +18141,7 @@
           <Comment>NLofEFA+C6H10O5</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -18049,7 +18151,7 @@
           <Comment>[EFA-H]-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>1</DiagnosticIonIntensity>
           </ChainIon>
@@ -18094,7 +18196,7 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -18105,7 +18207,7 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -18116,7 +18218,7 @@
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -18184,7 +18286,7 @@
           <Comment>[Sph-H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -18195,7 +18297,7 @@
           <Comment>[Sph-2H2O+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -18206,7 +18308,7 @@
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -19078,6 +19180,7 @@
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -19154,6 +19257,7 @@
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -19228,12 +19332,14 @@
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
+          <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
           <PI>C6H11O6</PI>
           <Intensity>200</Intensity>
           <Comment>[C6H11O6]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -19262,12 +19368,14 @@
           <Intensity>200</Intensity>
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl+Proton+NH2</MZ>
           <Intensity>100</Intensity>
           <Comment>[FAA+H]</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -19380,12 +19488,14 @@
           <Intensity>200</Intensity>
           <Comment>[Sph-CH4O2+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Acyl+Proton+NH2</MZ>
           <Intensity>100</Intensity>
           <Comment>[FAA+H]</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -19659,6 +19769,7 @@
           <PI>C6H11O6</PI>
           <Intensity>200</Intensity>
           <Comment>[C6H11O6]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -19697,6 +19808,7 @@
           <Intensity>100</Intensity>
           <Comment>[FAA+H]</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -19819,6 +19931,7 @@
           <Intensity>100</Intensity>
           <Comment>[FAA+H]</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>Sph+H+Proton-NL</MZ>
@@ -19981,6 +20094,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -20130,6 +20244,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -20274,6 +20389,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -22159,6 +22275,7 @@
           <NL>H2O</NL>
           <Intensity>10</Intensity>
           <Comment>NLofH2O</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         <ClassIon>
           <MZ>M+Proton-NL</MZ>
@@ -22175,6 +22292,7 @@
           <NL>C3H7NO3</NL>
           <Intensity>150</Intensity>
           <Comment>[M-C3H7NO3]+</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -24046,6 +24164,7 @@
           <NL>H2O</NL>
           <Intensity>100</Intensity>
           <Comment>[M+H-H2O]+</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -24068,7 +24187,7 @@
           <MZ>SN1Acyl-Proton+NH3</MZ>
           <Intensity>500</Intensity>
           <Comment>[FAA]-</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
@@ -24487,7 +24606,7 @@
           <Comment>M-SN2-H2O</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
           <DiagnosticIonIntensity>100</DiagnosticIonIntensity>
           </ChainIon>
@@ -24498,7 +24617,7 @@
           <Comment>M-SN2-H2O-CO2</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24508,7 +24627,7 @@
           <Comment>SN2</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24548,7 +24667,7 @@
           <Comment>M-sn2-H2O</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24559,7 +24678,7 @@
           <Comment>M-sn2-H2O-gly</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24570,7 +24689,7 @@
           <Comment>M-sn2-2H2O-gly</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24607,7 +24726,7 @@
           <Comment>M-sn2-H2O</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain01</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24618,7 +24737,7 @@
           <Comment>M-sn2-H2O-gly</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24629,7 +24748,7 @@
           <Comment>M-sn2-2H2O-gly</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
-          <DiagnosticIonGroup>Class02</DiagnosticIonGroup>
+          <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
           <DiagnosticIonCount>1</DiagnosticIonCount>
           <DiagnosticIonIntensity>50</DiagnosticIonIntensity>
           </ChainIon>
@@ -24829,6 +24948,7 @@
           <NL>H2O</NL>
           <Intensity>100</Intensity>
           <Comment>[M+H-H2O]+</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -25414,7 +25534,7 @@
           <MZ>SN1Acyl-H-Proton</MZ>
           <Intensity>100</Intensity>
           <Comment>[Acyl]-</Comment>
-          <IsDiagnostic>1</IsDiagnostic>
+          <IsDiagnostic>0</IsDiagnostic>
           <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
@@ -26077,6 +26197,7 @@
           <PI>C10H8N</PI>
           <Intensity>50</Intensity>
           <Comment>[Tryptamine-NH3]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -26143,6 +26264,7 @@
           <PI>C10H8N</PI>
           <Intensity>50</Intensity>
           <Comment>[Tryptamine-NH3]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -26209,6 +26331,7 @@
           <PI>C10H8N</PI>
           <Intensity>50</Intensity>
           <Comment>[Tryptamine-NH3]-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
           </ClassIon>
         </ClassIons>
       <InvisibleIons />
@@ -30315,6 +30438,7 @@
           <Intensity>250</Intensity>
           <Comment>[FAA+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         <ChainIon>
           <MZ>M+Proton-Acyl+H-NL</MZ>
@@ -30322,6 +30446,7 @@
           <Intensity>200</Intensity>
           <Comment>[M-FA-H2SO4+H]+</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons>
@@ -32823,6 +32948,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
@@ -33296,6 +33422,7 @@
           <Intensity>50</Intensity>
           <Comment>FA-H2O-</Comment>
           <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
           </ChainIon>
         </ChainIons>
       <ClassIons />
