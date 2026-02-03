@@ -20095,5 +20095,83 @@ AdductIon adduct)
             }
             return null;
         }
+        //20260203
+        public static LipidMolecule JudgeIfSpehex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    var candidates = new List<LipidMolecule>();
+                    var peHex = (12 * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4) + Sugar162;
+                    //[EtAmP+Hex-H2O+H]+
+                    var diagnosticMz01 = peHex
+                        - H2O                       
+                        + Proton;
+                    var threshold01 = 50;
+                    var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
+                    //[SterolFragment]+
+                    var diagnosticMz02 = theoreticalMz
+                        - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
+                        - peHex;
+                    var threshold02 = 50;
+                    var frag02 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz02, threshold02);
+                    if (frag01 && frag02)
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult(lipidname, LbmClass.SPEHex, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                return null;
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfSpghex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            var pg = (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 6);
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    var candidates = new List<LipidMolecule>();
+                    //[G3P+H]+
+                    var diagnosticMz01 = pg + Proton;
+                    var threshold01 = 5;
+                    var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
+                    if (frag01)
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult(lipidname, LbmClass.SPGHex, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                return null;
+            }
+            else if (adduct.IonMode == IonMode.Negative)
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    var candidates = new List<LipidMolecule>();
+                    //[G3P-H2O-H]-
+                    var diagnosticMz01 = pg -H2O - Proton;
+                    var threshold01 = 10;
+                    var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
+                    if (frag01)
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult(lipidname, LbmClass.SPGHex, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                return null;
+            }
+            return null;
+        }            
     }
 }
