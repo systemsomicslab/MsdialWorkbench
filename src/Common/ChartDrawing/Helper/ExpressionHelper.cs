@@ -175,8 +175,11 @@ internal static class ExpressionHelper
     }
 
     public static bool ValidatePropertyString(Type type, string property) {
-        if (string.IsNullOrEmpty(property)) {
+        if (property is null) {
             return false;
+        }
+        if (property == string.Empty) {
+            return true;
         }
         var properties = property.Split('.');
         foreach (var p in properties) {
