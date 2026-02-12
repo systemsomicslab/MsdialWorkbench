@@ -52,7 +52,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
                 var features = new AnnotatedMSDecResult[ms1DecResults.Count];
                 if (_parameter.OnlyReportTopHitInMspSearch) {
-                    var used = new HashSet<MoleculeMsReference>();
+                    var used = new HashSet<MoleculeMsReference>(new MoleculeMsReferenceEqualityComparer());
                     foreach (var (container, i) in containers.WithIndex().OrderByDescending(p => p.Item1.Representative.TotalScore)) {
                         if (container.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
                             ms1DecResults[i].MspIDs.AddRange(containers[i].MatchResults.OrderByDescending(r => r.TotalScore).Select(r => r.LibraryID));
@@ -97,6 +97,45 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
 
             return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
+        }
+    }
+
+    public class MoleculeMsReferenceEqualityComparer : IEqualityComparer<MoleculeMsReference> {
+        public bool Equals(MoleculeMsReference x, MoleculeMsReference y) {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
+
+            if (!string.IsNullOrEmpty(x.InChIKey) && !string.IsNullOrEmpty(y.InChIKey)) {
+                if (x.InChIKey == y.InChIKey) return true;
+            }
+
+            if (x.ScanID != 0 && y.ScanID != 0 && x.ScanID == y.ScanID) {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(x.Name) && !string.IsNullOrEmpty(y.Name)) {
+                if (x.Name.ToLower() == y.Name.ToLower()) return true;
+            }
+
+            return false;
+        }
+
+        public int GetHashCode(MoleculeMsReference obj) {
+            if (obj is null) return 0;
+
+            if (!string.IsNullOrEmpty(obj.InChIKey)) {
+                return obj.InChIKey.GetHashCode();
+            }
+
+            if (obj.ScanID != 0) {
+                return obj.ScanID.GetHashCode();
+            }
+
+            if (!string.IsNullOrEmpty(obj.Name)) {
+                return obj.Name.ToLower().GetHashCode();
+            }
+
+            return 0;
         }
     }
 }
