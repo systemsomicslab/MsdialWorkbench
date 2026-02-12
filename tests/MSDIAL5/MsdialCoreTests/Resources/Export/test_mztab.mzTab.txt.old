@@ -7,16 +7,12 @@ MTD	ms_run[1]-id_format	[,, MS-DIAL set Datapoint Number, ]
 MTD	ms_run[1]-scan_polarity[1]	[MS,MS:1000130,positive scan,]
 MTD	assay[1]	0717_kinetex_wine_50_4min_pos_IDA_E1
 MTD	assay[1]-ms_run_ref	ms_run[1]
-MTD	assay[1]-custom[1]	[MS,MS:4000088,batch label,1]
-MTD	assay[1]-custom[2]	[MS,MS:4000089,injection sequence label,1]
 MTD	ms_run[2]-location	file://./Resources/Export/0717_kinetex_wine_50_4min_pos_IDA_F1.abf
 MTD	ms_run[2]-format	[,, ABF(Analysis Base File) file, ]
 MTD	ms_run[2]-id_format	[,, MS-DIAL set Datapoint Number, ]
 MTD	ms_run[2]-scan_polarity[1]	[MS,MS:1000130,positive scan,]
 MTD	assay[2]	0717_kinetex_wine_50_4min_pos_IDA_F1
 MTD	assay[2]-ms_run_ref	ms_run[2]
-MTD	assay[2]-custom[1]	[MS,MS:4000088,batch label,1]
-MTD	assay[2]-custom[2]	[MS,MS:4000089,injection sequence label,2]
 MTD	study_variable[1]	E
 MTD	study_variable[1]-assay_refs	assay[1]
 MTD	study_variable[1]-description	E
@@ -44,19 +40,19 @@ MTD	id_confidence_measure[7]	[,, Matched peaks count, ]
 MTD	id_confidence_measure[8]	[,, Matched peaks percentage, ]
 MTD	quantification_method	[MS, MS:1002019, Label-free raw feature quantitation, ]
 
-SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]	opt_global_ms2_presence	opt_global_spectrum_matched	opt_global_Ontology
-SML	0	0	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1017	1737	1017.125	1736.875	0	0	False	False	null
-SML	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	300.027	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.5242083	12642	20826	12641.5625	20826.4375	0	0	True	True	Coumestans
-SML	2	2	null	null	null	null	null	null	null	[M+H]1+	999	null	0	5881	15691	5880.5625	15690.8125	0	0	False	False	null
-SML	3	3	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1285	2241	1284.625	2240.625	0	0	False	False	null
-SML	4	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	302.0427	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.6437206	536230	1837469	536230.375	1837468.6875	0	0	True	True	Flavonols
-SML	5	5	null	null	null	null	null	null	null	[M+H]1+	999	null	0	314	5489	314.375	5489.125	0	0	False	False	null
-SML	6	6	null	null	null	null	null	null	null	[M+H]1+	999	null	0	479	1459	478.625	1459	0	0	False	False	null
-SML	7	7	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1451	10300	1450.5625	10300.1875	0	0	False	False	null
-SML	8	8	null	null	null	null	null	null	null	[M+H]1+	999	null	0	390	1732	390.25	1732.375	0	0	False	False	null
-SML	9	9	null	null	null	null	null	null	null	[M+H]1+	999	null	0	248	1531	247.75	1530.5625	0	0	False	False	null
-SML	10	10	null	null	null	null	null	null	null	[M+H]1+	999	null	0	268	1871	268.25	1870.5625	0	0	False	False	null
-SML	11	11	null	null	null	null	null	null	null	[M+H]1+	999	null	0	384	1553	384.375	1553.1875	0	0	False	False	null
+SMH	SML_ID	SMF_ID_REFS	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	theoretical_neutral_mass	adduct_ions	reliability	best_id_confidence_measure	best_id_confidence_value	abundance_assay[1]	abundance_assay[2]	abundance_study_variable[1]	abundance_study_variable[2]	abundance_variation_study_variable[1]	abundance_variation_study_variable[2]	opt_global_ms2_presence	opt_global_spectrum_matched
+SML	0	0	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1017	1737	1017.125	1736.875	0	0	False	False
+SML	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	300.027	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.5242083	12642	20826	12641.5625	20826.4375	0	0	True	True
+SML	2	2	null	null	null	null	null	null	null	[M+H]1+	999	null	0	5881	15691	5880.5625	15690.8125	0	0	False	False
+SML	3	3	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1285	2241	1284.625	2240.625	0	0	False	False
+SML	4	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	302.0427	[M+H]1+	430	[,, MS-DIAL algorithm matching score, ]	1.6437206	536230	1837469	536230.375	1837468.6875	0	0	True	True
+SML	5	5	null	null	null	null	null	null	null	[M+H]1+	999	null	0	314	5489	314.375	5489.125	0	0	False	False
+SML	6	6	null	null	null	null	null	null	null	[M+H]1+	999	null	0	479	1459	478.625	1459	0	0	False	False
+SML	7	7	null	null	null	null	null	null	null	[M+H]1+	999	null	0	1451	10300	1450.5625	10300.1875	0	0	False	False
+SML	8	8	null	null	null	null	null	null	null	[M+H]1+	999	null	0	390	1732	390.25	1732.375	0	0	False	False
+SML	9	9	null	null	null	null	null	null	null	[M+H]1+	999	null	0	248	1531	247.75	1530.5625	0	0	False	False
+SML	10	10	null	null	null	null	null	null	null	[M+H]1+	999	null	0	268	1871	268.25	1870.5625	0	0	False	False
+SML	11	11	null	null	null	null	null	null	null	[M+H]1+	999	null	0	384	1553	384.375	1553.1875	0	0	False	False
 
 SFH	SMF_ID	SME_ID_REFS	SME_ID_REF_ambiguity_code	adduct_ion	isotopomer	exp_mass_to_charge	charge	retention_time_in_seconds	retention_time_in_seconds_start	retention_time_in_seconds_end	abundance_assay[1]	abundance_assay[2]
 SMF	0	null	null	[M+H]1+	null	300.1852722167969	1	115.687	115.687	115.687	1017	1737

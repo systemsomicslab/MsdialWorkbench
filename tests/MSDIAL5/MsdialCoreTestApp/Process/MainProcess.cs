@@ -110,7 +110,7 @@ namespace CompMs.App.MsdialConsole.Process
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.";
+                               <option -p>           is an option to generate .mdproject file to be loaded in MSDIAL5 GUI application.";
 
             Console.Error.WriteLine(error);
 
@@ -125,7 +125,7 @@ namespace CompMs.App.MsdialConsole.Process
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
+                               <option -p>           is an option to generate .mdproject file to be loaded in MSDIAL5 GUI application.
                                <option -target> is an option to run as target mode. please set m/z";
 
             Console.Error.WriteLine(error);

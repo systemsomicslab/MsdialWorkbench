@@ -814,8 +814,6 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
                             msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
-
-
                     case LbmClass.CSPHex:
                     case LbmClass.BRSPHex:
                     case LbmClass.CASPHex:
@@ -961,7 +959,15 @@ namespace CompMs.Common.Lipidomics
                     case LbmClass.NAGABA:
                         return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
-
+                    //20260203
+                    case LbmClass.SPEHex:
+                        result = LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                            totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.SPGHex:
+                        result = LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                            totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                     default:
                         return null;
                 }

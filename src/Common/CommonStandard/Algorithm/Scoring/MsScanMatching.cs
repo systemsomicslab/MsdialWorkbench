@@ -2269,6 +2269,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20260203
+                case LbmClass.SPEHex:
+                    return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.SPGHex:
+                    return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, totalOxidized, adduct);
                 default:
                     return null;
             }
@@ -3916,7 +3923,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.NAGABA:
                     return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
-
+                //20260203
+                case LbmClass.SPEHex:
+                    return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.SPGHex:
+                    return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, totalOxidized, adduct);
                 default:
                     return null;
             }
