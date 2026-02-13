@@ -119,6 +119,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
                 },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
+                },
                 new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
             var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
