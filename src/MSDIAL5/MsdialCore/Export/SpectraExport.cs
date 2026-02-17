@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum);
+                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, true, false);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -324,7 +324,7 @@ namespace CompMs.MsdialCore.Export
             Stream stream, 
             AlignmentSpotProperty spotProperty, 
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoMs2Molecule = false,
+            bool exportNoMs2Molecule = true,
             bool Set2dCoordinates = false
             )
         {
@@ -351,13 +351,17 @@ namespace CompMs.MsdialCore.Export
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoMs2Molecule = false,
+            bool exportNoMs2Molecule = true,
             bool Set2dCoordinates = false
             )
         {
+            if (!exportNoMs2Molecule && !chromPeakFeature.IsMsmsContained)
+            {
+                return;
+            }
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
             {
-                if (chromPeakFeature.SMILES != null)
+                if (chromPeakFeature.IsMsmsContained)
                 {
                     MolBlockFromSmiles(sw, chromPeakFeature.SMILES, Set2dCoordinates);
                 }
