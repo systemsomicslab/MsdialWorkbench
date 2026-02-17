@@ -12,14 +12,8 @@ namespace CompMs.MsdialCore.Export
         public AnalysisSdfExporter(Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> loaderFuctory) {
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
         }
-        private readonly bool _exportNoMs2Molecule;
-        private readonly bool _set2dCoordinates;
-        public AnalysisSdfExporter(bool exportNoMs2Molecule, bool set2dCoordinates)
-        {
-            _exportNoMs2Molecule = exportNoMs2Molecule;
-            _set2dCoordinates = set2dCoordinates;
-        }
-        public AnalysisSdfExporter() : this(exportNoMs2Molecule: true, set2dCoordinates: true) { }
+        private readonly bool _exportNoMs2Molecule = true;
+        private readonly bool _set2dCoordinates = true;
 
         void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection, ExportStyle exportStyle) {
             var loader = _loaderFactory(analysisFile);
