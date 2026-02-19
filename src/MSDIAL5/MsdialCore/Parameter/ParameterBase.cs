@@ -604,7 +604,10 @@ namespace CompMs.MsdialCore.Parameter
 
             pStrings.Add("\r\n");
             pStrings.Add("# Deconvolution");
+            pStrings.Add($"Run RT deconvolution: {ChromDecBaseParam.ExecuteChromDeconvolution}");
             pStrings.Add(String.Join(": ", new string[] { "Sigma window value", SigmaWindowValue.ToString() }));
+            pStrings.Add($"Run Q1 deconvolution: {ChromDecBaseParam.ExecuteQ1Deconvolution}");
+            pStrings.Add($"MS/MS acquisition radius on Q1 deconvolution: {ChromDecBaseParam.Q1DeconvolutionMs2AcquisitionRadius}");
             pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", ChromDecBaseParam.AmplitudeCutoff.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cut off", ChromDecBaseParam.RelativeAmplitudeCutoff.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
@@ -1230,6 +1233,8 @@ namespace CompMs.MsdialCore.Parameter
         public bool ExecuteChromDeconvolution { get; set; } = true;
         [Key(11)]
         public bool ExecuteQ1Deconvolution { get; set; } = false;
+        [Key(12)]
+        public int Q1DeconvolutionMs2AcquisitionRadius { get; set; } = 2;
     }
 
     [MessagePackObject]
