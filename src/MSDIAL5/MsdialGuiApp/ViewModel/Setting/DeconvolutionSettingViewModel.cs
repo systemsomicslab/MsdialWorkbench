@@ -52,6 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ExecuteChromDeconvolution = model.ToReactivePropertySlimAsSynchronized(m => m.ExecuteChromDeconvolution).AddTo(Disposables);
             ExecuteQ1Deconvolution = model.ToReactivePropertySlimAsSynchronized(m => m.ExecuteQ1Deconvolution).AddTo(Disposables);
+            Q1DeconvolutionMs2AcquisitionRadius = model.ToReactivePropertySlimAsSynchronized(m => m.Q1DeconvolutionMs2AcquisitionRadius).AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -116,6 +117,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> ExecuteChromDeconvolution { get; }
         public ReactivePropertySlim<bool> ExecuteQ1Deconvolution { get; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "MS/MS acquisition radius should be positive value.")]
+        public ReactivePropertySlim<int> Q1DeconvolutionMs2AcquisitionRadius { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

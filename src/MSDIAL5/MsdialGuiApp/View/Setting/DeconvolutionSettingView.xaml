@@ -105,6 +105,21 @@
                         </TextBlock>
                     </ui:LabeledContent.ToolTip>
                 </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Q1Dec ms/ms acquisition radius:"
+                                   Style="{StaticResource AlignedContent}">
+                    <TextBox Text="{Binding Path=Q1DeconvolutionMs2AcquisitionRadius.Value}"
+                             IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}" />
+                    <ui:LabeledContent.ToolTip>
+                        <TextBlock>
+                            Number of MS/MS scans to acquire on each side of the target MS/MS during Q1 deconvolution.<LineBreak/>
+                            E.g., value=2 acquires 2 scans before and after the target.<LineBreak/>
+                            Enter a positive integer.<LineBreak/>
+                            Larger values increase data acquisition volume and processing time.<LineBreak/>
+                            Recommended: 1–5.
+                        </TextBlock>
+                    </ui:LabeledContent.ToolTip>
+                </ui:LabeledContent>
             </StackPanel>
         </Expander>
     </Grid>
