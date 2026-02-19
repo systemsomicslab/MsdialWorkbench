@@ -278,7 +278,7 @@ namespace CompMs.App.Msdial.Model.Setting
             var factory = new FacadeDataProviderFactory(file => {
                 if (file.AnalysisFilePath.EndsWith(".wiff2")) {
                     lock (_wiff2FactoryLock) {
-                        return new Wiff2DataProviderFactory() { NumThreads = 40, PeakTopSearchRange = 2, }.ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
+                        return new Wiff2DataProviderFactory() { NumThreads = 40, PeakTopSearchRange = storage.Parameter.ChromDecBaseParam.Q1DeconvolutionMs2AcquisitionRadius, }.ContraMap((AnalysisFileBean file) => file.AnalysisFilePath).CacheMS1();
                     }
                 }
                 return new StandardDataProviderFactory() { Retry = 5, IsGuiProcess = true, }.ContraMap((AnalysisFileBean file) => (file.AnalysisFilePath, file.RetentionTimeCorrectionBean.PredictedRt));

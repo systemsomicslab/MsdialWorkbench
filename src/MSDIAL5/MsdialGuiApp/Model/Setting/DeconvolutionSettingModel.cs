@@ -71,6 +71,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _executeQ1Deconvolution;
 
+        public int Q1DeconvolutionMs2AcquisitionRadius {
+            get => _q1DeconvolutionMs2AcquisitionRadius;
+            set => SetProperty(ref _q1DeconvolutionMs2AcquisitionRadius, value);
+        }
+        private int _q1DeconvolutionMs2AcquisitionRadius;
+
         public void Commit() {
             if (IsReadOnly) {
                 return;
@@ -83,6 +89,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
             _parameter.ExecuteChromDeconvolution = ExecuteChromDeconvolution;
             _parameter.ExecuteQ1Deconvolution = ExecuteQ1Deconvolution;
+            _parameter.Q1DeconvolutionMs2AcquisitionRadius = Q1DeconvolutionMs2AcquisitionRadius;
         }
 
         public void LoadParameter(ChromDecBaseParameter parameter) {
@@ -97,6 +104,7 @@ namespace CompMs.App.Msdial.Model.Setting
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
             ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
             ExecuteQ1Deconvolution = parameter.ExecuteQ1Deconvolution;
+            Q1DeconvolutionMs2AcquisitionRadius = parameter.Q1DeconvolutionMs2AcquisitionRadius;
         }
     }
 }
