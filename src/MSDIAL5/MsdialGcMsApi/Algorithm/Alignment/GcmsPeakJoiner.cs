@@ -45,7 +45,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         _comparer = comparer;
         _alignmentParameter = parameter.AlignmentBaseParam;
         _riCompoundType = riCompoundType;
-        _msMatchParam = msMatchParam;
+        _msMatchParam = new MsRefSearchParameterBase() { Ms1Tolerance = 0.5F, Ms2Tolerance = 0.5F, MassRangeBegin = 0, MassRangeEnd = 2000 };
         _parameter = parameter;
         _evaluator = evaluator;
         _refer = refer;
