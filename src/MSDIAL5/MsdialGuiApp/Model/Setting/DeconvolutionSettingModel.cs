@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
             ExecuteQ1Deconvolution = parameter.ExecuteQ1Deconvolution;
             ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
+            Q1DeconvolutionMs2AcquisitionRadius = parameter.Q1DeconvolutionMs2AcquisitionRadius;
         }
 
         public bool IsReadOnly { get; }
