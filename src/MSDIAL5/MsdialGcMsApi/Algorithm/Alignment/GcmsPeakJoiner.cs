@@ -113,8 +113,10 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
             results.Add(spot);
         }
+        var counter = 0;
+        foreach (var spot in results) { spot.MasterAlignmentID = counter; spot.AlignmentID = counter; counter++; }
 
-        return spots;
+        return results;
     }
 
     private bool QuantMassExists(double quantMass, MSDecResult result) {
