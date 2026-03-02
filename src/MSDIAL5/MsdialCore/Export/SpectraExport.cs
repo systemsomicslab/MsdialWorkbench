@@ -415,15 +415,18 @@ namespace CompMs.MsdialCore.Export
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name)? "Unknown": spotProperty.Name);
             WriteSdfDataItem(sb, "SCANS", spotProperty.MasterAlignmentID.ToString());
-            WriteSdfDataItem(sb, "PRECURSOR MZ", Math.Round(spotProperty.MassCenter,5).ToString());
+            WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.MassCenter, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
 
             if (spotProperty.IsMsmsAssigned)
             {
                 if (spotProperty.AdductType != null) WriteSdfDataItem(sb, "PRECURSOR TYPE", spotProperty.AdductType.AdductIonName);
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.FormulaString)) WriteSdfDataItem(sb, "FORMULA", spotProperty.Formula.FormulaString);
-                if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "FORMULA", spotProperty.InChIKey);
-                if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "FORMULA", spotProperty.SMILES);
+                if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
+                if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
+                if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
+                if (!string.IsNullOrWhiteSpace(spotProperty.TimesCenter.RT.Value.ToString())) WriteSdfDataItem(sb, "RETENTION TIME", spotProperty.TimesCenter.RT.Value.ToString());
+                if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
                 WriteSdfDataItem(sb, "MS LEVEL", "MS2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
@@ -443,15 +446,18 @@ namespace CompMs.MsdialCore.Export
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
             WriteSdfDataItem(sb, "SCANS", spotProperty.PeakID.ToString());
-            WriteSdfDataItem(sb, "PRECURSOR MZ", Math.Round(spotProperty.PrecursorMz, 5).ToString());
+            WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.PrecursorMz, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
 
             if (spotProperty.IsMsmsContained)
             {
                 if (spotProperty.AdductType != null) WriteSdfDataItem(sb, "PRECURSOR TYPE", spotProperty.AdductType.AdductIonName);
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.FormulaString)) WriteSdfDataItem(sb, "FORMULA", spotProperty.Formula.FormulaString);
-                if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "FORMULA", spotProperty.InChIKey);
-                if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "FORMULA", spotProperty.SMILES);
+                if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
+                if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
+                if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
+                if (!string.IsNullOrWhiteSpace(spotProperty.ChromXs.RT.Value.ToString())) WriteSdfDataItem(sb, "RETENTION TIME", spotProperty.ChromXs.RT.Value.ToString());
+                if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
                 WriteSdfDataItem(sb, "MS LEVEL", "MS2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
