@@ -425,7 +425,8 @@ namespace CompMs.MsdialCore.Export
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
-                if (!string.IsNullOrWhiteSpace(spotProperty.TimesCenter.RT.Value.ToString())) WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
+                if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
+                    WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
                 WriteSdfDataItem(sb, "MS LEVEL", "MS2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
