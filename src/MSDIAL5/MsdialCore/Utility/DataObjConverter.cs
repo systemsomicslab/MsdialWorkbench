@@ -99,14 +99,22 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.PeakShape = peak.PeakShape;
         }
 
-        public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
+        public static void SetRepresentativeFileID(AlignmentSpotProperty spot) {
             var alignment = spot.AlignedPeakProperties;
             var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
 
             var repId = GetRepresentativeFileID(alignedPeaks);
             var representative = repId >= 0 ? alignment[repId] : alignedPeaks.First();
-            var chromXType = representative.ChromXsTop.MainType;
             spot.RepresentativeFileID = representative.FileID;
+        }
+
+        public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
+            var alignment = spot.AlignedPeakProperties;
+            var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
+
+            var repId = spot.RepresentativeFileID;
+            var representative = alignment[repId];
+            var chromXType = representative.ChromXsTop.MainType;
 
             spot.IonMode = representative.IonMode;
             spot.Name = representative.Name;
