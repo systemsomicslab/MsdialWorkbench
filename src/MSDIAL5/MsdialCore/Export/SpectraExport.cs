@@ -422,7 +422,7 @@ namespace CompMs.MsdialCore.Export
             {
                 if (spotProperty.AdductType != null) WriteSdfDataItem(sb, "PRECURSOR TYPE", spotProperty.AdductType.AdductIonName);
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.FormulaString)) WriteSdfDataItem(sb, "FORMULA", spotProperty.Formula.FormulaString);
-                if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
+                if (spotProperty.Formula.Mass > 0d) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
                 if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
