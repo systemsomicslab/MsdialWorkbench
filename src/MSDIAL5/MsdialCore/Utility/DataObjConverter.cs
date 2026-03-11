@@ -174,6 +174,10 @@ namespace CompMs.MsdialCore.Utility
                 Mz = new MzValue(spot.MassCenter, representative.ChromXsTop.Mz.Unit),
                 Drift = new DriftTime(alignedPeaks.Average(peak => peak.ChromXsTop.Drift.Value), representative.ChromXsTop.Drift.Unit),
             };
+
+            if (spot.QuantMass > 0) {
+                spot.MassCenter = spot.QuantMass;
+            }
         }
 
         public static AlignmentChromPeakFeature? GetRepresentativePeak(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
