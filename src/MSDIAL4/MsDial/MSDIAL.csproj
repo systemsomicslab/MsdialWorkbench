@@ -258,7 +258,7 @@
     <ItemGroup>
       <_DeployToItem Include="$(TargetDir)\*.lbm*" />
     </ItemGroup>
-    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
+    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)')" ContinueOnError="true"/>
     <Exec Command="xcopy &quot;$(ProjectDir)CytoscapeLocalBrowser&quot; &quot;$(TargetDir)CytoscapeLocalBrowser&quot; /D/E/C/I/H/Y" />
   </Target>
 </Project>

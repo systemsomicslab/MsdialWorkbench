@@ -76,6 +76,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
                 var reference = _refer.Refer(spot.MatchResults.Representative);
                 if (reference is not null && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
                     spot.MassCenter = reference.QuantMass;
+                    spot.QuantMass = reference.QuantMass;
                     results.Add(spot);
                     continue;
                 }
@@ -90,6 +91,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
             if (_parameter.IsRepresentativeQuantMassBasedOnBasePeakMz) {
                 spot.QuantMass = msdec.Spectrum.Argmax(s => s.Intensity).Mass;
+                spot.MassCenter = spot.QuantMass;
                 results.Add(spot);
                 continue;
             }
@@ -110,7 +112,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             else {
                 spot.QuantMass = msdec.Spectrum.Argmax(s => s.Intensity).Mass;
             }
-
+            spot.MassCenter = spot.QuantMass;
             results.Add(spot);
         }
         var counter = 0;
