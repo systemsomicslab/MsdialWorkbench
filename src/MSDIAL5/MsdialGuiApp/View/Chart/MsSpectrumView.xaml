@@ -141,6 +141,7 @@
                                                            VerticalProperty="{Binding VerticalProperty}"
                                                            LineBrush="{Binding Brush.Value}"
                                                            LineThickness="{Binding LineThickness.Value}"
+                                                           StrokeDashArray="{Binding StrokeDashArray.Value}"
                                                            HueProperty="SpectrumComment">
                                 <chart:LineSpectrumControlSlim.ToolTip>
                                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -162,7 +163,8 @@
                                              Brush="Black"
                                              Overlap="Horizontal, Direct"
                                              Format="F4"
-                                             ClipToBounds="True"/>
+                                             ClipToBounds="True"
+                                             Visibility="{Binding IsAnnotationVisible.Value, Converter={StaticResource BooleanToVisibility}}"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -190,6 +192,7 @@
                                                HorizontalProperty="{Binding HorizontalProperty}"
                                                VerticalProperty="{Binding VerticalProperty}"
                                                LineBrush="{Binding Brush.Value}"
+                                               StrokeDashArray="{Binding StrokeDashArray.Value}"
                                                HueProperty="SpectrumComment">
                     <chart:LineSpectrumControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"

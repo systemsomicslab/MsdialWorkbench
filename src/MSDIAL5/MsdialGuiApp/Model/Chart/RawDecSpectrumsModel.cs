@@ -1,8 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Design;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -37,17 +40,37 @@ namespace CompMs.App.Msdial.Model.Chart
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
+
+            IsRawSpectrumOverlayVisible = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
+
+
+            var decRawOverlaySpectrumModel = rawSpectrumModel.Clone().AddTo(Disposables);
+            decRawOverlaySpectrumModel.IsVisible.Value = false;
+            decRawOverlaySpectrumModel.IsAnnotationVisible.Value = false;
+            decRawOverlaySpectrumModel.LineThickness.Value = 1d;
+            decRawOverlaySpectrumModel.StrokeDashArray.Value = new DoubleCollection { 3d, 3d };
+            decRawOverlaySpectrumModel.Brush = new ConstantBrushMapper<object>(Brushes.DarkGray);
+
             DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
                 GraphTitle =  "Deconvolution vs. Reference",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Relative abundacne",
             }.AddTo(Disposables);
+            DecRefSpectrumModels.UpperSpectraModel.Insert(0, decRawOverlaySpectrumModel);
+
+            IsRawSpectrumOverlayVisible
+                .Subscribe(isVisible => {
+                    decRawOverlaySpectrumModel.IsVisible.Value = isVisible;
+                })
+                .AddTo(Disposables);
+
             RawLoader = loader;
         }
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
+        public ReactivePropertySlim<bool> IsRawSpectrumOverlayVisible { get; }
         public MultiMsmsRawSpectrumLoader? RawLoader { get; }
     }
 }
