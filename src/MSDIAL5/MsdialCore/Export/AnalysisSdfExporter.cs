@@ -12,8 +12,6 @@ namespace CompMs.MsdialCore.Export
         public AnalysisSdfExporter(Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> loaderFuctory) {
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
         }
-        private readonly bool _exportNoMs2Molecule = true;
-        private readonly bool _set2dCoordinates = true;
 
         void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection, ExportStyle exportStyle) {
             var loader = _loaderFactory(analysisFile);
@@ -21,9 +19,7 @@ namespace CompMs.MsdialCore.Export
                 SpectraExport.SaveSpectraTableAsSdfFormat(
                     stream, 
                     peak, 
-                    loader.Load(peak).Spectrum,
-                    _exportNoMs2Molecule,
-                    _set2dCoordinates
+                    loader.Load(peak).Spectrum
             );
             }
         }
