@@ -10,7 +10,7 @@ namespace CompMs.MsdialCore.Export
     {
         private readonly Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> _loaderFactory;
         private readonly ParameterBase _parameter;
-        private bool _exportNoStructurePeak;
+        private bool _exportNoStructurePeak = true;
         public AnalysisSdfExporter(Func<AnalysisFileBean, IMsScanPropertyLoader<ChromatogramPeakFeature>> loaderFuctory,ParameterBase parameter) {
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));

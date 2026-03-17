@@ -354,7 +354,6 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter
             )
         {
-            var instrumentType = parameter.ProjectParam.InstrumentType;
             if (!exportNoStructurePeak && (!spotProperty.IsMsmsAssigned || spotProperty.SMILES.IsEmptyOrNull()))
             {
                 return;
@@ -368,9 +367,9 @@ namespace CompMs.MsdialCore.Export
             {
                 EmptyMolBlock(sb);
             }
-            WriteChromPeakFeatureInfoAsSdf(sb, spotProperty, spectrum, instrumentType);
+            WriteChromPeakFeatureInfoAsSdf(sb, spotProperty, spectrum, parameter);
             sb.AppendLine("$$$$");
-            var bytes = Encoding.ASCII.GetBytes(sb.ToString());
+            var bytes = Encoding.ASCII.GetBytes(sb.ToString().Replace("\r\n", "\n"));
             stream.Write(bytes, 0, bytes.Length);
         }
         public static void SaveSpectraTableAsSdfFormat(
@@ -381,7 +380,6 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter
             )
         {
-            var instrumentType = parameter.ProjectParam.InstrumentType;
             if (!exportNoStructurePeak && (!chromPeakFeature.IsMsmsContained || chromPeakFeature.SMILES.IsEmptyOrNull()))
             {
                 return;
@@ -395,21 +393,21 @@ namespace CompMs.MsdialCore.Export
             {
                 EmptyMolBlock(sb);
             }
-            WriteChromPeakFeatureInfoAsSdf(sb, chromPeakFeature, spectrum, instrumentType);
-            sb.AppendLine("");
+            WriteChromPeakFeatureInfoAsSdf(sb, chromPeakFeature, spectrum, parameter);
+            sb.AppendLine();
             sb.AppendLine("$$$$");
-            var bytes = Encoding.ASCII.GetBytes(sb.ToString());
+            var bytes = Encoding.ASCII.GetBytes(sb.ToString().Replace("\r\n", "\n"));
             stream.Write(bytes, 0, bytes.Length);
         }
         private static void WriteSdfDataItem(StringBuilder sb, string fieldName, string value)
         {
             sb.AppendLine(">  <" + fieldName + ">");
             sb.AppendLine(value ?? string.Empty);
-            sb.AppendLine("");
+            sb.AppendLine();
         }
         private static void EmptyMolBlock(StringBuilder sb)
         {
-            sb.AppendLine("");
+            sb.AppendLine();
             sb.AppendLine("       MS-DIAL");
             sb.AppendLine();
             sb.AppendLine("  0  0  0  0  0  0  0  0  0  0999 V2000");
@@ -437,7 +435,7 @@ namespace CompMs.MsdialCore.Export
             StringBuilder sb,
             AlignmentSpotProperty spotProperty,
             IEnumerable<ISpectrumPeak> spectrum,
-            string instrumentType
+            ParameterBase parameter
             )
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
@@ -448,7 +446,9 @@ namespace CompMs.MsdialCore.Export
             {
                 WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
             }
-            if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
+            if (!string.IsNullOrEmpty(parameter.InstrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", parameter.InstrumentType);
+            if (!string.IsNullOrEmpty(parameter.Instrument)) WriteSdfDataItem(sb, "INSTRUMENT", parameter.Instrument);
+            if (!string.IsNullOrEmpty(parameter.CollisionEnergy)) WriteSdfDataItem(sb, "COLLISION ENERGY", parameter.CollisionEnergy);
 
             if (spotProperty.IsMsmsAssigned)
             {
@@ -474,7 +474,7 @@ namespace CompMs.MsdialCore.Export
             StringBuilder sb,
             ChromatogramPeakFeature spotProperty,
             IEnumerable<ISpectrumPeak> spectrum,
-            string instrumentType)
+            ParameterBase parameter)
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
             WriteSdfDataItem(sb, "PEAK ID", spotProperty.PeakID.ToString());
@@ -484,7 +484,9 @@ namespace CompMs.MsdialCore.Export
             {
                 WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.ChromXs.RT.Value, 3).ToString());
             }
-            if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
+            if (!string.IsNullOrEmpty(parameter.InstrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", parameter.InstrumentType);
+            if (!string.IsNullOrEmpty(parameter.Instrument)) WriteSdfDataItem(sb, "INSTRUMENT", parameter.Instrument);
+            if (!string.IsNullOrEmpty(parameter.CollisionEnergy)) WriteSdfDataItem(sb, "COLLISION ENERGY", parameter.CollisionEnergy);
 
             if (spotProperty.IsMsmsContained)
             {
