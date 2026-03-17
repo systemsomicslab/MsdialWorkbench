@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoStructurePeak: false, parameter);
+                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoStructurePeak: true, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoStructurePeak: false, parameter);
+                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoStructurePeak: true, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
