@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum);
+                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoStructurePeak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum);
+                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoStructurePeak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
@@ -349,11 +349,13 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsSdfFormat(
             Stream stream,
             AlignmentSpotProperty spotProperty,
-            IEnumerable<ISpectrumPeak> spectrum
+            IEnumerable<ISpectrumPeak> spectrum,
+            bool exportNoStructurePeak,
+            ParameterBase parameter
             )
         {
-            (bool exportNoMs2Molecule, string instrumentType) = (true, "");
-            if (!exportNoMs2Molecule && (!spotProperty.IsMsmsAssigned || spotProperty.SMILES.IsEmptyOrNull()))
+            var instrumentType = parameter.ProjectParam.InstrumentType;
+            if (!exportNoStructurePeak && (!spotProperty.IsMsmsAssigned || spotProperty.SMILES.IsEmptyOrNull()))
             {
                 return;
             }
@@ -374,11 +376,13 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsSdfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> spectrum
+            IEnumerable<ISpectrumPeak> spectrum,
+            bool exportNoStructurePeak,
+            ParameterBase parameter
             )
         {
-            (bool exportNoMs2Molecule, string instrumentType) = (true,"LCMS");
-            if (!exportNoMs2Molecule && (!chromPeakFeature.IsMsmsContained || chromPeakFeature.SMILES.IsEmptyOrNull()))
+            var instrumentType = parameter.ProjectParam.InstrumentType;
+            if (!exportNoStructurePeak && (!chromPeakFeature.IsMsmsContained || chromPeakFeature.SMILES.IsEmptyOrNull()))
             {
                 return;
             }
@@ -437,9 +441,14 @@ namespace CompMs.MsdialCore.Export
             )
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
-            WriteSdfDataItem(sb, "SCANS", spotProperty.MasterAlignmentID.ToString());
+            WriteSdfDataItem(sb, "ALIGNMENT ID", spotProperty.MasterAlignmentID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.MassCenter, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
+            if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
+            {
+                WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
+            }
+            if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
 
             if (spotProperty.IsMsmsAssigned)
             {
@@ -448,10 +457,7 @@ namespace CompMs.MsdialCore.Export
                 if (spotProperty.Formula.Mass > 0d) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
-                if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
-                    WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
-                if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
                 WriteSdfDataItem(sb, "SPECTRUM TYPE", "2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
@@ -471,9 +477,14 @@ namespace CompMs.MsdialCore.Export
             string instrumentType)
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
-            WriteSdfDataItem(sb, "SCANS", spotProperty.PeakID.ToString());
+            WriteSdfDataItem(sb, "PEAK ID", spotProperty.PeakID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.PrecursorMz, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
+            if (spotProperty.ChromXs != null && spotProperty.ChromXs.RT != null && spotProperty.ChromXs.RT.Value >= 0)
+            {
+                WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.ChromXs.RT.Value, 3).ToString());
+            }
+            if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
 
             if (spotProperty.IsMsmsContained)
             {
@@ -482,9 +493,7 @@ namespace CompMs.MsdialCore.Export
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
-                if (!string.IsNullOrWhiteSpace(spotProperty.ChromXs.RT.Value.ToString())) WriteSdfDataItem(sb, "RETENTION TIME", spotProperty.ChromXs.RT.Value.ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
-                if (!string.IsNullOrEmpty(instrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", instrumentType);
                 WriteSdfDataItem(sb, "SPECTRUM TYPE", "2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
