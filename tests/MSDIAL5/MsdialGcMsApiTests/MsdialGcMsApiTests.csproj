@@ -22,8 +22,4 @@
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialGcMsApi\MsdialGcMsApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Algorithm\Alignment\" />
-  </ItemGroup>
-
 </Project>
