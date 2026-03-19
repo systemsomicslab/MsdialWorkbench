@@ -11,11 +11,11 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
-using CompMs.RawDataHandler.Core;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -34,13 +34,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
-            _projectBaseParameter = projectBaseParameter;
             _broker = broker;
             _projectBaseParameter = projectBaseParameter;
             StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
-            ImageModels = new ObservableCollection<ImagingImmsImageModel>();
+            ImageModels = [];
             Image = ImageModels.FirstOrDefault();
 
             ParameterExporModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
@@ -88,7 +87,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
             }
             var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
-            if (!(analysisFile is null)) {
+            if (analysisFile is not null) {
                 Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             }
             return Task.CompletedTask;
@@ -151,6 +150,15 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     FilePrefix = "Mgf",
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(file.LoadRawMeasurement(true, true, 5, 5000)), _storage.Parameter.MS2DataType),_storage.Parameter),
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };

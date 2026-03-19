@@ -91,7 +91,10 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine();
 
             //SML section
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic);
+            //SML Header
+            var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
+            var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
             //SML data
 
             foreach (var spot in spots)
@@ -99,13 +102,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
                         );
                 }
             }
@@ -141,6 +144,7 @@ namespace CompMs.MsdialCore.Export
             foreach (var spot in spots)
             {
                 if (spot.IsMsmsAssigned != true) { continue; }
+                if (spot.IsManuallyModifiedForAnnotation == true) { continue; }
                 if (spot.MatchResults.IsTextDbBasedRepresentative == true) { continue; }
 
                 if (spot.Name == "") { continue; }
@@ -188,7 +192,9 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
             IReadOnlyList<Database> database,
             IReadOnlyList<string> SmlDataHeader,
-            IReadOnlyDictionary<int, string> internalStandardDic
+            IReadOnlyDictionary<int, string> internalStandardDic,
+            bool hasComment,
+            bool hasMs2
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -203,12 +209,20 @@ namespace CompMs.MsdialCore.Export
             var rep = spot?.MatchResults?.Representative;
             if (rep != null &&
                 rep.AnnotatorID != null &&
-                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
                 !string.IsNullOrEmpty(rep.Name))
             {
-                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                if(_annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID))
+                {
+                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                }
+                else
+                {
+                    if (rep.AnnotatorID == "MS-FINDER")
+                    {
+                        databaseIdentifier = "MS-FINDER:" + rep.Name.Split('|').Last();
+                    }
+                }
             }
-
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
 
@@ -268,6 +282,16 @@ namespace CompMs.MsdialCore.Export
             {
                 LineData.AddRange(SetNormalizedData(spot, internalStandardDic));
             }
+            if (hasMs2)
+            {
+                LineData.AddRange(SetMsmsPresence(spot));  // add 20251208
+            }
+            LineData.AddRange(SetSpectrumMatch(matchResult));  // add 20251208
+            if (hasComment)
+            {
+                LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
+            }
+            LineData.AddRange(SetOntology(spot));  // add 20260127
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -304,9 +328,9 @@ namespace CompMs.MsdialCore.Export
             var retentionTimeEnd = "null";
             if (spot.TimesCenter.RT.Value > 0.0)
             {
-                retentionTime = spot.TimesCenter.RT.Value.ToString();
-                retentionTimeStart = spot.TimesMin.RT.Value.ToString();
-                retentionTimeEnd = spot.TimesMax.RT.Value.ToString();
+                retentionTime = (spot.TimesCenter.RT.Value * 60.0).ToString();
+                retentionTimeStart = (spot.TimesMin.RT.Value * 60.0).ToString();
+                retentionTimeEnd = (spot.TimesMax.RT.Value *60.0).ToString();
             }
 
             var adductIons = spot.AdductType.AdductIonName ?? "null";
@@ -326,7 +350,8 @@ namespace CompMs.MsdialCore.Export
                 && spot.Name != "null"
                 && spot.Name != ""
                 && !metadata["Metabolite name"].Contains("no MS2")
-                && spot.MatchResults.IsTextDbBasedRepresentative != true)
+                && spot.MatchResults.IsTextDbBasedRepresentative != true
+                && spot.IsManuallyModifiedForAnnotation != true)
             {
                 smeIDrefs = smfID.ToString();
             }
@@ -399,8 +424,7 @@ namespace CompMs.MsdialCore.Export
             {
                 if (properties[i].PeakID < 0) continue;
                 if (!properties[i].IsMsmsAssigned) continue;
-                if (properties[i].MatchResults.Representative.Name != repName
-                    || properties[i].MatchResults.Representative.LibraryID != repLibraryID)
+                if (properties[i].MatchResults.Representative.LibraryID != repLibraryID)
                 { continue; }
 
                 /// to get file id, peak id in aligned spots
@@ -546,6 +570,8 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Run + "-scan_polarity[1]", RawFileMetadataDicItem.Scan_polarity_cv }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay, RawFileMetadataDicItem.Assay_ref })); //fileName
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-ms_run_ref", RawFileMetadataDicItem.Run }));
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[1]", RawFileMetadataDicItem.AnalysisBatch }));// add 20260127 This output will no longer pass through the validator.
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[2]", RawFileMetadataDicItem.AnalysisFileAnalyticalOrder }));// add 20260127 This output will no longer pass through the validator.
             }
 
             foreach (var AnalysisFileClass in AnalysisFileClassDic)
@@ -769,7 +795,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -805,6 +831,17 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_internalStanderdSMLID");
                 SmlDataHeader.Add("opt_global_internalStanderdMetaboliteName");
             }
+            if (hasMs2)
+            {
+                SmlDataHeader.Add("opt_global_ms2_presence");
+            }
+            SmlDataHeader.Add("opt_global_spectrum_matched");
+            if (hasComment)
+            {
+                SmlDataHeader.Add("opt_global_user_comment");
+            }
+            SmlDataHeader.Add("opt_global_Ontology");
+
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
         }
@@ -912,6 +949,19 @@ namespace CompMs.MsdialCore.Export
             }
             return dataValues;
         }
+        private static List<string> SetMsmsPresence(
+            AlignmentSpotProperty spot
+        )
+        {
+            return new List<string>() { spot.IsMsmsAssigned.ToString() };
+        }
+        private static List<string> SetSpectrumMatch(
+            MsScanMatchResult matchResult
+        )
+        {
+            return new List<string>() { (matchResult?.IsSpectrumMatch ?? false).ToString() };
+        }
+
         private static List<string> SetIMValues(
             AlignmentSpotProperty spot
         )
@@ -924,6 +974,12 @@ namespace CompMs.MsdialCore.Export
         )
         {
             return new List<string>() { spot.InternalStandardAlignmentID.ToString(), internalStandardDic[spot.InternalStandardAlignmentID] };
+        }
+        private static List<string> SetOntology(
+            AlignmentSpotProperty spot
+        )
+        {
+            return new List<string>() { ValueOrNull(spot.Ontology.ToString()) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1265,7 +1321,9 @@ namespace CompMs.MsdialCore.Export
                     Scan_polarity_cv = ionMode.ToString() == "Positive" ? "[MS,MS:1000130,positive scan,]" : "[MS, MS:1000129, negative scan, ]",
                     AnalysisFileExtention = analysisFileExtention,
                     AnalysisClass = files[i].AnalysisFileClass,
-                    AnalysisFileId = files[i].AnalysisFileId
+                    AnalysisFileId = files[i].AnalysisFileId,
+                    AnalysisBatch = "[MS,MS:4000088,batch label," + files[i].AnalysisBatch.ToString() + "]",
+                    AnalysisFileAnalyticalOrder = "[MS,MS:4000089,injection sequence label," + files[i].AnalysisFileAnalyticalOrder.ToString() + "]",
                 });
             }
             return fileMetadataDic;
@@ -1307,8 +1365,10 @@ namespace CompMs.MsdialCore.Export
             public string Assay_ref { get; set; }
             public string AnalysisFileExtention { get; set; }
             public string AnalysisClass { get; set; }
-
             public int AnalysisFileId { get; set; }
+            public string AnalysisFileAnalyticalOrder { get; set; }
+            public string AnalysisBatch { get; set; } 
+
         }
     }
 }

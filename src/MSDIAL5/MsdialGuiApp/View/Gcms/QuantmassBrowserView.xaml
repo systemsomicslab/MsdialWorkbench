@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Gcms.QuantmassBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Gcms"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:QuantmassBrowserViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DataGrid ItemsSource="{Binding Path=Spots}" 
+                  SelectedItem="{Binding Path=Spots/}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  AutoGenerateColumns="False" 
+                  SelectionMode="Extended" 
+                  SelectionUnit="FullRow" 
+                  CanUserAddRows="False" 
+                  CanUserDeleteRows="False" 
+                  CanUserReorderColumns="False" 
+                  CanUserSortColumns="True" 
+                  ClipboardCopyMode="ExcludeHeader">
+      
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Width="*" Binding="{Binding Path=MasterAlignmentID}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Retention index" Width="*" Binding="{Binding Path=RI}" IsReadOnly="True" />
+                <DataGridTextColumn Header="RT(min)" Width="*" Binding="{Binding Path=RT, StringFormat=0.00}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Metabolite name" Width="*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+              
+                <DataGridTemplateColumn SortMemberPath="QuantMass" Width="*" Header="Quant mass" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=QuantMass, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"  
+                                     IsReadOnly="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=ScanMatchResult.LibraryID}" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

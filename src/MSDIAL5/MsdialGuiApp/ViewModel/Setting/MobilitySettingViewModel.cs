@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.InteropServices;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -32,24 +33,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 IsDtims,
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.AgilentBeta).Select(b => b > -1).StartWith(info.AgilentBeta > -1))
-                    .CombineLatestValuesAreAllTrue(),
-                CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.AgilentTFix).Select(t => t > -1).StartWith(info.AgilentTFix > -1))
-                    .CombineLatestValuesAreAllTrue(),
+                    .Select(info => new[] {
+                        info.ObserveProperty(i => i.AgilentBeta).Select(u => u == -1),
+                        info.ObserveProperty(i => i.AgilentTFix).Select(u => u == -1),
+                    }.CombineLatestValuesAreAllTrue())
+                    .CombineLatestValuesAreAllFalse(),
             }.CombineLatestValuesAreAllTrue();
             var TwimsInfoImported = new[]
             {
                 IsTwims,
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersCoefficient).Select(c => c > -1).StartWith(info.WatersCoefficient > -1))
-                    .CombineLatestValuesAreAllTrue(),
-                CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersT0).Select(t => t > -1).StartWith(info.WatersT0 > -1))
-                    .CombineLatestValuesAreAllTrue(),
-                CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersExponent).Select(e => e > -1).StartWith(info.WatersExponent > -1))
-                    .CombineLatestValuesAreAllTrue(),
+                    .Select(info => new[] {
+                        info.ObserveProperty(i => i.WatersCoefficient).Select(u => u == -1),
+                        info.ObserveProperty(i => i.WatersT0).Select(u => u == -1),
+                        info.ObserveProperty(i => i.WatersExponent).Select(u => u == -1),
+                    }.CombineLatestValuesAreAllTrue())
+                    .CombineLatestValuesAreAllFalse(),
             }.CombineLatestValuesAreAllTrue();
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);

@@ -73,6 +73,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
 
+            QuantmassBrowserViewModel = new QuantmassBrowserViewModel(model.QuantmassBrowserModel).AddTo(Disposables);
+            ShowQuantmassBrowserCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(QuantmassBrowserViewModel)).AddTo(Disposables);
+
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(NormalizationSetViewModel)).AddTo(Disposables);
 
@@ -119,7 +122,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public GcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
-
         public ICommand InternalStandardSetCommand { get; }
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
@@ -137,6 +139,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public GcgcAlignmentPeakPlotViewModel GcgcPlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
+
+        public QuantmassBrowserViewModel QuantmassBrowserViewModel { get; }
+        public ReactiveCommand ShowQuantmassBrowserCommand { get; }
 
         public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
         public ReactiveCommand<MultivariateAnalysisOption> ShowMultivariateAnalysisSettingCommand { get; }

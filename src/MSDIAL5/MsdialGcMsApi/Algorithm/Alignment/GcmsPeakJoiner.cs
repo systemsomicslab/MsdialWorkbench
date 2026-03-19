@@ -22,12 +22,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 
 public abstract class GcmsPeakJoiner : IPeakJoiner
 {
-    public static GcmsPeakJoiner CreateRTJoiner(MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
-        return new GcmsRTPeakJoiner(parameter.RiCompoundType, msMatchParam, parameter, evaluator, refer, accessor, progress);
+    public static GcmsPeakJoiner CreateRTJoiner(MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
+        return new GcmsRTPeakJoiner(parameter.RiCompoundType, parameter, evaluator, refer, accessor, progress);
     }
 
-    public static GcmsPeakJoiner CreateRIJoiner(MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
-        return new GcmsRIPeakJoiner(parameter.RiCompoundType, msMatchParam, riTol, parameter, evaluator, refer, accessor, progress);
+    public static GcmsPeakJoiner CreateRIJoiner(double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null) {
+        return new GcmsRIPeakJoiner(parameter.RiCompoundType, riTol, parameter, evaluator, refer, accessor, progress);
     }
 
     protected readonly AlignmentIndexType _indextype;
@@ -40,12 +40,12 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
     private readonly int _binPrecision;
 
-    protected GcmsPeakJoiner(AlignmentIndexType indextype, RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, IComparer<IMSScanProperty> comparer, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+    protected GcmsPeakJoiner(AlignmentIndexType indextype, RiCompoundType riCompoundType, IComparer<IMSScanProperty> comparer, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
         _indextype = indextype;
         _comparer = comparer;
         _alignmentParameter = parameter.AlignmentBaseParam;
         _riCompoundType = riCompoundType;
-        _msMatchParam = msMatchParam;
+        _msMatchParam = new MsRefSearchParameterBase() { Ms1Tolerance = 0.5F, Ms2Tolerance = 0.5F, MassRangeBegin = 0, MassRangeEnd = 2000 };
         _parameter = parameter;
         _evaluator = evaluator;
         _refer = refer;
@@ -76,6 +76,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
                 var reference = _refer.Refer(spot.MatchResults.Representative);
                 if (reference is not null && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
                     spot.MassCenter = reference.QuantMass;
+                    spot.QuantMass = reference.QuantMass;
                     results.Add(spot);
                     continue;
                 }
@@ -90,6 +91,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
             if (_parameter.IsRepresentativeQuantMassBasedOnBasePeakMz) {
                 spot.QuantMass = msdec.Spectrum.Argmax(s => s.Intensity).Mass;
+                spot.MassCenter = spot.QuantMass;
                 results.Add(spot);
                 continue;
             }
@@ -110,11 +112,13 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             else {
                 spot.QuantMass = msdec.Spectrum.Argmax(s => s.Intensity).Mass;
             }
-
+            spot.MassCenter = spot.QuantMass;
             results.Add(spot);
         }
+        var counter = 0;
+        foreach (var spot in results) { spot.MasterAlignmentID = counter; spot.AlignmentID = counter; counter++; }
 
-        return spots;
+        return results;
     }
 
     private bool QuantMassExists(double quantMass, MSDecResult result) {
@@ -136,13 +140,17 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance, 
+            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.TotalScore > _alignmentParameter.Ms1AlignmentTolerance && isRetentionMatch;
+        return result.IsSpectrumMatch && isRetentionMatch;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         return result.TotalScore;
     }
 
@@ -197,8 +205,8 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
     private readonly AlignmentBaseParameter _alignmentParameter;
 
-    public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
-        : base(AlignmentIndexType.RT, riCompoundType, msMatchParam, ChromXsComparer.RTComparer, parameter, evaluator, refer) {
+    public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
+        : base(AlignmentIndexType.RT, riCompoundType, ChromXsComparer.RTComparer, parameter, evaluator, refer) {
         _alignmentParameter = parameter.AlignmentBaseParam;
         _rtTol = parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance;
         _rtBucket = parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance * 2;
@@ -252,6 +260,9 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                     if (IsSimilarTo(candidate, target)) {
                         if (!candidate.AnnotatedMSDecResult.IsReferenceMatched(_evaluator) && target.AnnotatedMSDecResult.IsReferenceMatched(_evaluator)) {
                             master[rtIdc].RemoveAt(i);
+                            if (!master.ContainsKey(rtTarget)) {
+                                master[rtTarget] = [];
+                            }
                             master[rtTarget].Add(target);
                             return true;
                         }
@@ -317,8 +328,8 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
     private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
     private readonly AlignmentBaseParameter _alignmentParameter;
 
-    public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
-        : base(AlignmentIndexType.RI, riCompoundType, msMatchParam, ChromXsComparer.RIComparer, parameter, evaluator, refer) {
+    public GcmsRIPeakJoiner(RiCompoundType riCompoundType, double riTol, MsdialGcmsParameter parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IFeatureAccessor<SpectrumFeature> accessor, IProgress<int> progress = null)
+        : base(AlignmentIndexType.RI, riCompoundType, ChromXsComparer.RIComparer, parameter, evaluator, refer) {
         _alignmentParameter = parameter.AlignmentBaseParam;
         _evaluator = evaluator;
         _riTol = riTol;

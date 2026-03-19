@@ -11,7 +11,7 @@ using CompMs.MsdialDimsCore.Parameter;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 {
-    public class DimsGapFiller : GapFiller
+    public class DimsGapFiller : GapFiller, IGapFiller
     {
         private readonly Dictionary<int, RawPeakElement[]> peakElementsMemo;
         protected readonly double mzTol;

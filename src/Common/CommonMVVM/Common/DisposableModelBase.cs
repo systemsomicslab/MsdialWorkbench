@@ -1,26 +1,26 @@
 ﻿using CompMs.CommonMVVM.Common;
 using System;
 
-namespace CompMs.CommonMVVM
+namespace CompMs.CommonMVVM;
+
+public class DisposableModelBase : BindableBase, IDisposable
 {
-    public class DisposableModelBase : BindableBase, IDisposable
-    {
-        protected DisposableCollection Disposables { get; } = new DisposableCollection();
+    protected DisposableCollection Disposables { get; } = [];
 
-        protected bool disposedValue;
+    protected bool disposedValue;
 
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    Disposables.Dispose();
-                }
-                disposedValue = true;
+    protected virtual void Dispose(bool disposing) {
+        if (!disposedValue) {
+            if (disposing) {
+                Disposables.Dispose();
+                Disposables.Clear();
             }
+            disposedValue = true;
         }
+    }
 
-        public void Dispose() {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose() {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

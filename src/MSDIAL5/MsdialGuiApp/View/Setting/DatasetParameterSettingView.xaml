@@ -91,20 +91,12 @@
                           IsChecked="{Binding Imaging.Value, Mode=TwoWay}"
                           Margin="8,8,0,0"
                           Visibility="Visible"
+                          IsEnabled="{Binding Path=DirectInfution.Value}"
                           Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                    <CheckBox.IsEnabled>
-                        <MultiBinding Converter="{StaticResource BooleanAll}">
-                            <Binding Path="DirectInfution.Value"/>
-                            <Binding Path="SeparationIonMobility.Value"/>
-                        </MultiBinding> 
-                    </CheckBox.IsEnabled>
                     <CheckBox.Style>
                         <Style TargetType="CheckBox">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding DirectInfution.Value}" Value="False">
-                                    <Setter Property="IsChecked" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding SeparationIonMobility.Value}" Value="False">
                                     <Setter Property="IsChecked" Value="False"/>
                                 </DataTrigger>
                             </Style.Triggers>

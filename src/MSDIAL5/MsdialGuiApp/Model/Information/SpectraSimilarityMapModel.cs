@@ -183,12 +183,13 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         Result = result;
 
         var tree = StatisticsMathematics.ClusteringWard2Distance(matrix, StatisticsMathematics.CalculateSpearmanCorrelationDistance);
-        OrderedFiles = [];
+        var files = new List<AnalysisFileBeanModel>(matrix.GetLength(0));
         tree.NodePreOrder(i => {
             if (tree[i].Count() == 0) {
-                OrderedFiles.Add(Files.AnalysisFiles[i]);
+                files.Add(Files.AnalysisFiles[i]);
             }
         });
+        OrderedFiles = files;
     }
 
     public async Task UpdateSimilaritiesAsync(AlignmentSpotPropertyModel spot, IReadOnlyList<IMSScanProperty?> scans, CancellationToken token = default) {
@@ -216,12 +217,13 @@ internal sealed class SpectraSimilarityMapModel : DisposableModelBase
         Result = result;
 
         var tree = StatisticsMathematics.ClusteringWard2Distance(matrix, StatisticsMathematics.CalculateSpearmanCorrelationDistance);
-        OrderedFiles = [];
+        var files = new List<AnalysisFileBeanModel>(matrix.GetLength(0));
         tree.NodePreOrder(i => {
             if (tree[i].Count() == 0) {
-                OrderedFiles.Add(Files.AnalysisFiles[i]);
+                files.Add(Files.AnalysisFiles[i]);
             }
         });
+        OrderedFiles = files;
     }
 
     private SamplePeakScan CreateSamplePeakScan(int i, IReadOnlyList<IMSScanProperty?> scans, AlignmentSpotPropertyModel spot) {

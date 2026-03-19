@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(_spectrumFeatures.Items, new SpectrumFeatureFiltering()).AddTo(_disposables);
             filterRegistrationManager.AttachFilter(_spectrumFeatures.Items, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            var label = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).Select(l => l ?? string.Empty).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_disposables);
+            var label = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(_disposables);
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(projectParameter.TargetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);

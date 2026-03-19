@@ -250,7 +250,7 @@ namespace CompMs.Graphics.Chart
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         private void OnLineBrushPropertyChanged(IBrushMapper oldValue, IBrushMapper newValue) {
-            Selector.Update(newValue, LineThickness);
+            Selector.Update(newValue, LineThickness, StrokeDashArray);
         }
 
         public static readonly DependencyProperty HuePropertyProperty =
@@ -310,7 +310,32 @@ namespace CompMs.Graphics.Chart
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         private void OnLineThicknessChanged(double oldValue, double newValue) {
-            Selector.Update(LineBrush, newValue);
+            Selector.Update(LineBrush, newValue, StrokeDashArray);
+        }
+
+        public static readonly DependencyProperty StrokeDashArrayProperty =
+            DependencyProperty.Register(
+                nameof(StrokeDashArray),
+                typeof(DoubleCollection),
+                typeof(LineSpectrumControlSlim),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnStrokeDashArrayChanged));
+
+        public DoubleCollection StrokeDashArray {
+            get => (DoubleCollection)GetValue(StrokeDashArrayProperty);
+            set => SetValue(StrokeDashArrayProperty, value);
+        }
+
+        private static void OnStrokeDashArrayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var c = (LineSpectrumControlSlim)d;
+            c.OnStrokeDashArrayChanged((DoubleCollection)e.OldValue, (DoubleCollection)e.NewValue);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        private void OnStrokeDashArrayChanged(DoubleCollection oldValue, DoubleCollection newValue) {
+            Selector.Update(LineBrush, LineThickness, newValue);
         }
 
         private PenSelector Selector {
@@ -318,7 +343,7 @@ namespace CompMs.Graphics.Chart
                 if (selector is null) {
                     selector = new PenSelector();
                     if (!(LineBrush is null)) {
-                        selector.Update(LineBrush, LineThickness);
+                        selector.Update(LineBrush, LineThickness, StrokeDashArray);
                     }
                 }
                 return selector;

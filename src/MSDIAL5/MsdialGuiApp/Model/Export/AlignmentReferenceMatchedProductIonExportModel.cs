@@ -49,6 +49,10 @@ internal sealed class AlignmentReferenceMatchedProductIonExportModel : BindableB
     }
 
     public async Task ExportAsync(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification, CancellationToken token = default) {
+        if (!IsSelected) {
+            return;
+        }
+
         var alignmentPeaksSpectraLoader = new AlignmentPeaksSpectraLoader(_fileCollection);
         var mapper = new MzMapper();
         var quantifier = new Ms2Quantifier();

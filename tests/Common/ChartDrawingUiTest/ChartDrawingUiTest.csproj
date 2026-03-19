@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,6 +9,7 @@
     <RootNamespace>ChartDrawingUiTest</RootNamespace>
     <AssemblyName>ChartDrawingUiTest</AssemblyName>
     <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -15,7 +17,7 @@
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <LangVersion>12</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,6 +66,13 @@
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL4\DataProcessingStandard\DataProcessingStandard.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="data\testmatrix.txt" />

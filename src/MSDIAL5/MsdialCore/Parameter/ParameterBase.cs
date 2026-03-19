@@ -1148,7 +1148,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(3)]
         public float SpectrumSimilarityAlignmentFactor { get; set; } = 0.5F;
         [Key(4)]
-        public float Ms1AlignmentTolerance { get; set; } = 0.015F;
+        public float Ms1AlignmentTolerance { get; set; } = 0.5F;
         [Key(5)]
         public float RetentionTimeAlignmentTolerance { get; set; } = 0.10F;
         [Key(6)]

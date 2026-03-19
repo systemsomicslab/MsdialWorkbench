@@ -31,27 +31,29 @@ public sealed class ReportProgress(IProgress<int>? progress, double initialProgr
         }
     }
 
+    private readonly static ReportProgress _empty = new(null, 0d, 100d);
+
     public static ReportProgress FromLength(Action<int>? reportAction, double initialProgress, double progressLength) {
-        return new ReportProgress(reportAction is not null ? new Progress<int>(reportAction) : null, initialProgress, progressLength);
+        return reportAction is null ? _empty : new ReportProgress(new Progress<int>(reportAction), initialProgress, progressLength);
     }
 
     public static ReportProgress FromRange(Action<int>? reportAction, double initialProgress, double endProgress) {
-        return new ReportProgress(reportAction is not null ? new Progress<int>(reportAction) : null, initialProgress, endProgress - initialProgress);
+        return reportAction is null ? _empty : new ReportProgress(new Progress<int>(reportAction), initialProgress, endProgress - initialProgress);
     }
 
     public static ReportProgress FromLength(IProgress<int>? progress, double initialProgress, double progressLength) {
-        return new ReportProgress(progress, initialProgress, progressLength);
+        return progress is null ? _empty : new ReportProgress(progress, initialProgress, progressLength);
     }
 
     public static ReportProgress FromRange(IProgress<int>? progress, double initialProgress, double endProgress) {
-        return new ReportProgress(progress, initialProgress, endProgress - initialProgress);
+        return progress is null ? _empty : new ReportProgress(progress, initialProgress, endProgress - initialProgress);
     }
 
     public static ReportProgress FromLength(Action<double>? reportAction, double initialProgress, double progressLength) {
-        return new ReportProgress(reportAction is not null ? new Progress<int>(v => reportAction.Invoke(v)) : null, initialProgress, progressLength);
+        return reportAction is null ? _empty : new ReportProgress(new Progress<int>(v => reportAction.Invoke(v)), initialProgress, progressLength);
     }
 
     public static ReportProgress FromRange(Action<double>? reportAction, double initialProgress, double endProgress) {
-        return new ReportProgress(reportAction is not null ? new Progress<int>(v => reportAction.Invoke(v)) : null, initialProgress, endProgress - initialProgress);
+        return reportAction is null ? _empty : new ReportProgress(new Progress<int>(v => reportAction.Invoke(v)), initialProgress, endProgress - initialProgress);
     }
 }

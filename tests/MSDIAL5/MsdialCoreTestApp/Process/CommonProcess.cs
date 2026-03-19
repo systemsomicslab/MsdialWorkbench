@@ -24,7 +24,18 @@ namespace CompMs.App.MsdialConsole.Process
 
             Console.WriteLine("Loading analysis files..");
             analysisFiles = AnalysisFilesParser.ReadInput(input);
-            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(input);
+            if (analysisFiles.IsEmptyOrNull()) {
+                alignmentFile = new AlignmentFileBean();
+                Console.WriteLine(CommonProcess.NoFileError());
+                return false;
+            }
+            var alignmentFolder = Path.GetDirectoryName(analysisFiles[0].AnalysisFilePath);
+            if (!Directory.Exists(alignmentFolder)) {
+                alignmentFile = new AlignmentFileBean();
+                Console.WriteLine(CommonProcess.NoFileError());
+                return false;
+            }
+            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(alignmentFolder);
             if (analysisFiles.IsEmptyOrNull()) {
                 Console.WriteLine(CommonProcess.NoFileError());
                 return false;

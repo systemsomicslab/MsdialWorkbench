@@ -780,8 +780,11 @@ namespace CompMs.MsdialCore.Utility {
             //set initial mz
             foreach (var peak in curatedSpectrum) {
                 var massBin = (int)(peak.Mass * binMultiplyFactor + 0.5);
-                var index = 0;
-                driftTimeCounter.Add(massBin, index + 1);
+                if (!driftTimeCounter.ContainsKey(massBin))
+                {
+                    var index = 0;
+                    driftTimeCounter.Add(massBin, index + 1);
+                }
             }
 
             //accumulating peaks from peak top to peak left

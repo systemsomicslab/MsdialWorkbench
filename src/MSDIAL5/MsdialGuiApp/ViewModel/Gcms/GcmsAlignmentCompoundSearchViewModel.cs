@@ -60,13 +60,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                         parameter.TotalScoreCutoff.ToUnit(),
                         parameter.IsUseTimeForAnnotationScoring.ToUnit(),
                         SearchCommand.ToUnit(),
-                    }.Merge().StartWith(Unit.Default))
+                    }.Merge()
+                    .StartWith(Unit.Default)
+                    .Throttle(TimeSpan.FromSeconds(.2)))
                 .Switch()
                 .Where(_ => !_parameterHasErrors.Value)
                 .Select(_ => Observable.FromAsync(model.SearchAsync)).Switch()
                 .Subscribe().AddTo(Disposables);
-
-            _ = model.SearchAsync(default);
         }
 
         public ReactiveCommand SearchCommand { get; }
