@@ -46,7 +46,7 @@ public abstract class GcmsGapFiller : IGapFiller
         var chromXCenter = GetCenter(spot, detected);
         var peakWidth = GetPeakWidth(detected);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
-        target.Mass = chromXCenter.Mz.Value;
+        target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
     }
 
@@ -59,7 +59,7 @@ public abstract class GcmsGapFiller : IGapFiller
         var chromXCenter = GetCenter(spot, detected);
         var peakWidth = GetPeakWidth(detected);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
-        target.Mass = chromXCenter.Mz.Value;
+        target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
     }
 
