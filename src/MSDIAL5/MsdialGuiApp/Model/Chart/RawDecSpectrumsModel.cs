@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
 
-            IsRawSpectrumOverlayVisible = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
+            IsRawSpectrumOverlayVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
 
 
             var decRawOverlaySpectrumModel = rawSpectrumModel.Clone().AddTo(Disposables);
