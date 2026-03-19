@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoStructurePeak: true, parameter);
+                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoMs2Peak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoStructurePeak: true, parameter);
+                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoMs2Peak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
@@ -350,11 +350,11 @@ namespace CompMs.MsdialCore.Export
             Stream stream,
             AlignmentSpotProperty spotProperty,
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoStructurePeak,
+            bool exportNoMs2Peak,
             ParameterBase parameter
             )
         {
-            if (!exportNoStructurePeak && (!spotProperty.IsMsmsAssigned || spotProperty.SMILES.IsEmptyOrNull()))
+            if (!exportNoMs2Peak && !spotProperty.IsMsmsAssigned)
             {
                 return;
             }
@@ -376,11 +376,11 @@ namespace CompMs.MsdialCore.Export
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoStructurePeak,
+            bool exportNoMs2Peak,
             ParameterBase parameter
             )
         {
-            if (!exportNoStructurePeak && (!chromPeakFeature.IsMsmsContained || chromPeakFeature.SMILES.IsEmptyOrNull()))
+            if (!exportNoMs2Peak && !chromPeakFeature.IsMsmsContained)
             {
                 return;
             }

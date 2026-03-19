@@ -9,18 +9,18 @@ namespace CompMs.MsdialCore.Export;
 public sealed class AlignmentSdfExporter : IAlignmentSpectraExporter
 {
     private readonly ParameterBase _parameter;
-    private bool _exportNoStructurePeak;
-    public AlignmentSdfExporter(bool exportNoStructurePeak, ParameterBase parameter)
+    private bool _exportNoMs2Peak;
+    public AlignmentSdfExporter(bool exportNoMs2Peak, ParameterBase parameter)
     {
-        _exportNoStructurePeak = exportNoStructurePeak;
+        _exportNoMs2Peak = exportNoMs2Peak;
         _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
     }
     public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult)
     { 
-        Export(stream, spot, msdecResult, _exportNoStructurePeak, _parameter);
+        Export(stream, spot, msdecResult, _exportNoMs2Peak, _parameter);
     }
-    public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, bool exportNoStructurePeak, ParameterBase parameter)
+    public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, bool exportNoMs2Peak, ParameterBase parameter)
     {
-        SpectraExport.SaveSpectraTableAsSdfFormat(stream, spot, msdecResult.Spectrum, exportNoStructurePeak, parameter);
+        SpectraExport.SaveSpectraTableAsSdfFormat(stream, spot, msdecResult.Spectrum, exportNoMs2Peak, parameter);
     }
 }

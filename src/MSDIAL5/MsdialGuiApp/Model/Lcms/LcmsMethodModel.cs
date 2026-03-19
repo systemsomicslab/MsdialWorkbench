@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
-                new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(true, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
