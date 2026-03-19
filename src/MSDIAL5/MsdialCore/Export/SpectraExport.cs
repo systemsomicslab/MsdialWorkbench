@@ -25,14 +25,16 @@ namespace CompMs.MsdialCore.Export
     public static class SpectraExport
     {
         public static void SaveSpectraTable(
-            ExportSpectraFileFormat spectraFormat, 
+            ExportSpectraFileFormat spectraFormat,
             Stream exportStream,
-            ChromatogramPeakFeature chromPeakFeature, 
+            ChromatogramPeakFeature chromPeakFeature,
             IMSScanProperty scan,
             IReadOnlyList<RawSpectrum> spectrumList,
             DataBaseMapper mapper,
-            ParameterBase parameter) {
-            switch (spectraFormat) {
+            ParameterBase parameter)
+        {
+            switch (spectraFormat)
+            {
                 case ExportSpectraFileFormat.msp:
                     SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
@@ -40,7 +42,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, true, true);
+                    SaveSpectraTableAsSdfFormat(exportStream, chromPeakFeature, scan.Spectrum, exportNoMs2Peak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -55,15 +57,16 @@ namespace CompMs.MsdialCore.Export
         }
 
         public static void SaveSpectraTable(
-            ExportSpectraFileFormat spectraFormat, 
+            ExportSpectraFileFormat spectraFormat,
             Stream exportStream,
-            AlignmentSpotProperty spotProperty, 
+            AlignmentSpotProperty spotProperty,
             IMSScanProperty scan,
             DataBaseMapper mapper,
             ParameterBase parameter,
             AlignmentSpotProperty isotopeTrackedLastSpot = null)
         {
-            switch (spectraFormat) {
+            switch (spectraFormat)
+            {
                 case ExportSpectraFileFormat.msp:
                     SaveSpectraTableAsNistFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
@@ -71,7 +74,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.sdf:
-                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, true, true);
+                    SaveSpectraTableAsSdfFormat(exportStream, spotProperty, scan.Spectrum, exportNoMs2Peak: false, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
@@ -84,7 +87,7 @@ namespace CompMs.MsdialCore.Export
                     break;
             }
         }
-        
+
         #region msp
         /// <summary>
         /// Saves spectral data along with chromatographic peak and molecular property information in NIST MSP format to a specified stream.
@@ -105,11 +108,13 @@ namespace CompMs.MsdialCore.Export
             IEnumerable<ISpectrumPeak> massSpectra,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter)
-            where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject {
+            where T : IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
+        {
             var builder = new NistRecordBuilder();
             builder.SetNameProperty(chromPeakFeature.Name);
             builder.SetChromatogramPeakProperties(chromPeakFeature);
-            switch (chromPeakFeature) {
+            switch (chromPeakFeature)
+            {
                 case ChromatogramPeakFeature peak:
                     builder.SetComment(peak);
                     break;
@@ -129,8 +134,10 @@ namespace CompMs.MsdialCore.Export
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> massSpectra,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
+            ParameterBase parameter)
+        {
+            using (var file = File.Open(exportFilePath, FileMode.Create))
+            {
                 SaveSpectraTableAsNistFormat(file, chromPeakFeature, massSpectra, refer, parameter);
             }
         }
@@ -140,7 +147,8 @@ namespace CompMs.MsdialCore.Export
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> massSpectra,
             IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+        {
             var builder = new NistRecordBuilder();
             builder.SetNameProperty(chromPeakFeature.Name);
             builder.SetChromatogramPeakFeatureProperties(chromPeakFeature, chromPeakFeature.MasterPeakID);
@@ -158,9 +166,11 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spotProperty,
             IEnumerable<ISpectrumPeak> massSpectra,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+        {
 
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
+            using (var file = File.Open(exportFilePath, FileMode.Create))
+            {
                 SaveSpectraTableAsNistFormat(file, spotProperty, massSpectra, refer, parameter);
             }
         }
@@ -170,7 +180,8 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spotProperty,
             IEnumerable<ISpectrumPeak> massSpectra,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> mapper,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+        {
             var builder = new NistRecordBuilder();
             builder.SetNameProperty(spotProperty.Name);
             builder.SetChromatogramPeakProperties(spotProperty);
@@ -185,7 +196,8 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromPeakFeatureInfoAsMSP(
             StreamWriter sw,
             ChromatogramPeakFeature feature,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+        {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.PrecursorMz);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
@@ -200,7 +212,8 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromPeakFeatureInfoAsMSP(
             StreamWriter sw,
             AlignmentSpotProperty feature,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+        {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.MassCenter);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
@@ -216,7 +229,8 @@ namespace CompMs.MsdialCore.Export
             StreamWriter sw,
             T feature,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
-            where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject {
+            where T : IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
+        {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.Mass);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
@@ -231,12 +245,14 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromXFieldAsMSP(
             StreamWriter sw,
             ChromXs chromXs,
-            double ccs) {
+            double ccs)
+        {
             if (chromXs.RT.Value > 0)
                 sw.WriteLine("RETENTIONTIME: " + chromXs.RT.Value);
             if (chromXs.RI.Value > 0)
                 sw.WriteLine("RETENTIONINDEX: " + chromXs.RI.Value);
-            if (chromXs.Drift.Value > 0) {
+            if (chromXs.Drift.Value > 0)
+            {
                 sw.WriteLine("MOBILITY: " + chromXs.Drift.Value);
                 sw.WriteLine("CCS: " + ccs);
             }
@@ -247,8 +263,10 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsMgfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> massSpectra) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+            IEnumerable<ISpectrumPeak> massSpectra)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature);
                 WriteSpectrumPeakInfo(sw, massSpectra);
@@ -257,8 +275,10 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void SaveSpectraTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> spectrum, bool exportNumOfPeaks = true) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+        public static void SaveSpectraTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> spectrum, bool exportNumOfPeaks = true)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
                 WriteSpectrumPeakInfo(sw, spectrum, exportNumOfPeaks);
@@ -267,7 +287,8 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void SavePeakTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty) {
+        public static void SavePeakTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty)
+        {
             using StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true);
             sw.WriteLine("BEGIN IONS");
             WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
@@ -275,7 +296,8 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine();
         }
 
-        public static void WriteChromPeakFeatureInfoAsMgf(StreamWriter sw, ChromatogramPeakFeature feature) {
+        public static void WriteChromPeakFeatureInfoAsMgf(StreamWriter sw, ChromatogramPeakFeature feature)
+        {
             var nameField = GetNameField(feature);
             var commentField = GetCommentField(feature);
             var chargeChar = feature.AdductType.IonMode == IonMode.Positive ? "+" : "-";
@@ -290,7 +312,8 @@ namespace CompMs.MsdialCore.Export
 
         public static void WriteChromPeakFeatureInfoAsMgf(
             StreamWriter sw,
-            AlignmentSpotProperty feature) {
+            AlignmentSpotProperty feature)
+        {
             var nameField = GetNameField(feature);
             var commentField = GetCommentField(feature);
             var chargeChar = feature.AdductType.IonMode == IonMode.Positive ? "+" : "-";
@@ -308,12 +331,14 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromXFieldAsMGF(
             StreamWriter sw,
             ChromXs chromXs,
-            double ccs) {
+            double ccs)
+        {
             if (chromXs.RT.Value > 0)
                 sw.WriteLine("RTINMINUTES=" + chromXs.RT.Value);
             if (chromXs.RI.Value > 0)
                 sw.WriteLine("RETENTIONINDEX=" + chromXs.RI.Value);
-            if (chromXs.Drift.Value > 0) {
+            if (chromXs.Drift.Value > 0)
+            {
                 sw.WriteLine("DRIFTTIME=" + chromXs.Drift.Value);
                 sw.WriteLine("CCS=" + ccs);
             }
@@ -322,74 +347,74 @@ namespace CompMs.MsdialCore.Export
 
         #region sdf
         public static void SaveSpectraTableAsSdfFormat(
-            Stream stream, 
-            AlignmentSpotProperty spotProperty, 
+            Stream stream,
+            AlignmentSpotProperty spotProperty,
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoMs2Molecule,
-            bool Set2dCoordinates
+            bool exportNoMs2Peak,
+            ParameterBase parameter
             )
         {
-            if (!exportNoMs2Molecule && !spotProperty.IsMsmsAssigned)
+            if (!exportNoMs2Peak && !spotProperty.IsMsmsAssigned)
             {
                 return;
             }
             var sb = new StringBuilder(8 * 1024);
-            if(spotProperty.IsMsmsAssigned)
+            if (spotProperty.IsMsmsAssigned)
             {
-                MolBlockFromSmiles(sb, spotProperty.SMILES, Set2dCoordinates);
+                MolBlockFromSmiles(sb, spotProperty.SMILES);
             }
             else
             {
                 EmptyMolBlock(sb);
             }
-            WriteChromPeakFeatureInfoAsSdf(sb, spotProperty, spectrum);
+            WriteChromPeakFeatureInfoAsSdf(sb, spotProperty, spectrum, parameter);
             sb.AppendLine("$$$$");
-            sb.AppendLine();
-            var bytes = Encoding.ASCII.GetBytes(sb.ToString());
+            var bytes = Encoding.ASCII.GetBytes(sb.ToString().Replace("\r\n", "\n"));
             stream.Write(bytes, 0, bytes.Length);
         }
         public static void SaveSpectraTableAsSdfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> spectrum,
-            bool exportNoMs2Molecule,
-            bool Set2dCoordinates
+            bool exportNoMs2Peak,
+            ParameterBase parameter
             )
         {
-            if (!exportNoMs2Molecule && !chromPeakFeature.IsMsmsContained)
+            if (!exportNoMs2Peak && !chromPeakFeature.IsMsmsContained)
             {
                 return;
             }
             var sb = new StringBuilder(8 * 1024);
             if (chromPeakFeature.IsMsmsContained)
             {
-                MolBlockFromSmiles(sb, chromPeakFeature.SMILES, Set2dCoordinates);
+                MolBlockFromSmiles(sb, chromPeakFeature.SMILES);
             }
             else
             {
                 EmptyMolBlock(sb);
             }
-            WriteChromPeakFeatureInfoAsSdf(sb, chromPeakFeature, spectrum);
-            sb.AppendLine("$$$$");
+            WriteChromPeakFeatureInfoAsSdf(sb, chromPeakFeature, spectrum, parameter);
             sb.AppendLine();
-            var bytes = Encoding.ASCII.GetBytes(sb.ToString());
+            sb.AppendLine("$$$$");
+            var bytes = Encoding.ASCII.GetBytes(sb.ToString().Replace("\r\n", "\n"));
             stream.Write(bytes, 0, bytes.Length);
         }
         private static void WriteSdfDataItem(StringBuilder sb, string fieldName, string value)
         {
             sb.AppendLine(">  <" + fieldName + ">");
             sb.AppendLine(value ?? string.Empty);
+            sb.AppendLine();
         }
         private static void EmptyMolBlock(StringBuilder sb)
         {
-            sb.AppendLine("");
+            sb.AppendLine();
             sb.AppendLine("       MS-DIAL");
             sb.AppendLine();
-            sb.AppendLine("  0  0  0  0  0  0            999 V2000");
+            sb.AppendLine("  0  0  0  0  0  0  0  0  0  0999 V2000");
             sb.AppendLine("M  END");
 
         }
-        private static void MolBlockFromSmiles(StringBuilder sb, string smiles, bool Set2dCoordinates)
+        private static void MolBlockFromSmiles(StringBuilder sb, string smiles)
         {
             var sp = new SmilesParser();
             IAtomContainer mol = sp.ParseSmiles(smiles);
@@ -397,26 +422,33 @@ namespace CompMs.MsdialCore.Export
             {
                 Molecule = mol
             };
-            if(Set2dCoordinates)
-            {
-                sdg.GenerateCoordinates();
-            }
+            sdg.GenerateCoordinates();
             mol = sdg.Molecule;
             using var tw = new StringWriter(sb, CultureInfo.InvariantCulture);
             using (var w = new MDLV2000Writer(tw))
             {
                 w.Write(mol);
-            };
+            }
+            ;
         }
         private static void WriteChromPeakFeatureInfoAsSdf(
             StringBuilder sb,
-            AlignmentSpotProperty spotProperty, 
-            IEnumerable<ISpectrumPeak> spectrum)
+            AlignmentSpotProperty spotProperty,
+            IEnumerable<ISpectrumPeak> spectrum,
+            ParameterBase parameter
+            )
         {
-            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name)? "Unknown": spotProperty.Name);
-            WriteSdfDataItem(sb, "SCANS", spotProperty.MasterAlignmentID.ToString());
+            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
+            WriteSdfDataItem(sb, "ALIGNMENT ID", spotProperty.MasterAlignmentID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.MassCenter, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
+            if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
+            {
+                WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
+            }
+            if (!string.IsNullOrEmpty(parameter.InstrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", parameter.InstrumentType);
+            if (!string.IsNullOrEmpty(parameter.Instrument)) WriteSdfDataItem(sb, "INSTRUMENT", parameter.Instrument);
+            if (!string.IsNullOrEmpty(parameter.CollisionEnergy)) WriteSdfDataItem(sb, "COLLISION ENERGY", parameter.CollisionEnergy);
 
             if (spotProperty.IsMsmsAssigned)
             {
@@ -425,16 +457,14 @@ namespace CompMs.MsdialCore.Export
                 if (spotProperty.Formula.Mass > 0d) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
-                if (spotProperty.TimesCenter != null && spotProperty.TimesCenter.RT != null && spotProperty.TimesCenter.RT.Value >= 0)
-                    WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.TimesCenter.RT.Value, 3).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
-                WriteSdfDataItem(sb, "MS LEVEL", "MS2");
+                WriteSdfDataItem(sb, "SPECTRUM TYPE", "2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
                 var peaksText = string.Join(
                     "\n",
                     spectrum.Select(p =>
-                        $"{Math.Round(p.Mass, 4)} {Math.Round(p.Intensity,0)}"
+                        $"{Math.Round(p.Mass, 4)} {Math.Round(p.Intensity, 0)}"
                     )
                 );
                 WriteSdfDataItem(sb, "MASS SPECTRAL PEAKS", peaksText);
@@ -443,12 +473,20 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromPeakFeatureInfoAsSdf(
             StringBuilder sb,
             ChromatogramPeakFeature spotProperty,
-            IEnumerable<ISpectrumPeak> spectrum)
+            IEnumerable<ISpectrumPeak> spectrum,
+            ParameterBase parameter)
         {
             WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
-            WriteSdfDataItem(sb, "SCANS", spotProperty.PeakID.ToString());
+            WriteSdfDataItem(sb, "PEAK ID", spotProperty.PeakID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.PrecursorMz, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
+            if (spotProperty.ChromXs != null && spotProperty.ChromXs.RT != null && spotProperty.ChromXs.RT.Value >= 0)
+            {
+                WriteSdfDataItem(sb, "RETENTION TIME", Math.Round(spotProperty.ChromXs.RT.Value, 3).ToString());
+            }
+            if (!string.IsNullOrEmpty(parameter.InstrumentType)) WriteSdfDataItem(sb, "INSTRUMENT TYPE", parameter.InstrumentType);
+            if (!string.IsNullOrEmpty(parameter.Instrument)) WriteSdfDataItem(sb, "INSTRUMENT", parameter.Instrument);
+            if (!string.IsNullOrEmpty(parameter.CollisionEnergy)) WriteSdfDataItem(sb, "COLLISION ENERGY", parameter.CollisionEnergy);
 
             if (spotProperty.IsMsmsContained)
             {
@@ -457,9 +495,8 @@ namespace CompMs.MsdialCore.Export
                 if (!string.IsNullOrWhiteSpace(spotProperty.Formula.Mass.ToString())) WriteSdfDataItem(sb, "EXACT MASS", Math.Round(spotProperty.Formula.Mass, 5).ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.InChIKey)) WriteSdfDataItem(sb, "INCHIKEY", spotProperty.InChIKey);
                 if (!string.IsNullOrWhiteSpace(spotProperty.SMILES)) WriteSdfDataItem(sb, "SMILES", spotProperty.SMILES);
-                if (!string.IsNullOrWhiteSpace(spotProperty.ChromXs.RT.Value.ToString())) WriteSdfDataItem(sb, "RETENTION TIME", spotProperty.ChromXs.RT.Value.ToString());
                 if (!string.IsNullOrWhiteSpace(spotProperty.Ontology)) WriteSdfDataItem(sb, "ONTOLOGY", spotProperty.Ontology);
-                WriteSdfDataItem(sb, "MS LEVEL", "MS2");
+                WriteSdfDataItem(sb, "SPECTRUM TYPE", "2");
                 var peaks = spectrum.Where(spec => spec.Intensity > 0).ToList();
                 WriteSdfDataItem(sb, "NUM PEAKS", peaks.Count.ToString());
                 var peaksText = string.Join(
@@ -475,20 +512,24 @@ namespace CompMs.MsdialCore.Export
 
         #region mat
         private static void SaveSpectraTableAsMatFormat(
-            Stream stream, 
-            ChromatogramPeakFeature feature, 
+            Stream stream,
+            ChromatogramPeakFeature feature,
             IEnumerable<SpectrumPeak> spectrum,
             IReadOnlyList<RawSpectrum> spectrumList,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, 
-            ParameterBase parameter) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            ParameterBase parameter)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
                 sw.WriteLine("IONMODE: " + feature.IonMode);
                 WriteParameterInfoAsNist(sw, parameter);
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
-                if (ms1Spectrum != null) {
+                if (ms1Spectrum != null)
+                {
                     var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
-                    if (!isotopes.IsEmptyOrNull()) {
+                    if (!isotopes.IsEmptyOrNull())
+                    {
                         sw.WriteLine("MSTYPE: MS1");
                         WriteSpectrumPeakInfo(sw, isotopes);
                     }
@@ -502,19 +543,23 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsMatFormat(
             Stream stream,
             AlignmentSpotProperty feature,
-            IEnumerable<SpectrumPeak> spectrum, 
+            IEnumerable<SpectrumPeak> spectrum,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
-            AlignmentSpotProperty isotopeTrackedLastSpot) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+            AlignmentSpotProperty isotopeTrackedLastSpot)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
                 sw.WriteLine("IONMODE: " + feature.IonMode);
-                if (isotopeTrackedLastSpot != null) {
+                if (isotopeTrackedLastSpot != null)
+                {
                     WriteIsotopeTrackingFeature(sw, feature, parameter, isotopeTrackedLastSpot);
                 }
                 WriteParameterInfoAsNist(sw, parameter);
                 var isotopes = feature.IsotopicPeaks;
-                if (!isotopes.IsEmptyOrNull()) {
+                if (!isotopes.IsEmptyOrNull())
+                {
                     sw.WriteLine("MSTYPE: MS1");
                     WriteSpectrumPeakInfo(sw, isotopes);
                 }
@@ -524,15 +569,18 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeakFeature peakFeature, ProjectBaseParameter projectParameter) {
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeakFeature peakFeature, ProjectBaseParameter projectParameter)
+        {
             SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peakFeature.Mass, peakFeature.PeakHeightTop, projectParameter);
         }
 
-        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeak peak, ProjectBaseParameter projectParameter) {
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeak peak, ProjectBaseParameter projectParameter)
+        {
             SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peak.Mass, peak.Intensity, projectParameter);
         }
 
-        private static void SaveSpectraTableForGcmsAsMatFormatCore(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, double quantmass, double peakHeight, ProjectBaseParameter projectParameter) {
+        private static void SaveSpectraTableForGcmsAsMatFormatCore(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, double quantmass, double peakHeight, ProjectBaseParameter projectParameter)
+        {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true))
             {
                 sw.Write("NAME: ");
@@ -543,7 +591,8 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine("QUANTMASS: " + quantmass);
 
                 var precursorMz = quantmass;
-                if (scan.Spectrum.Count > 0) {
+                if (scan.Spectrum.Count > 0)
+                {
                     precursorMz = scan.Spectrum.Max(s => s.Mass);
                 }
 
@@ -559,31 +608,38 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine("SMILES: " + molecule.SMILES);
                 sw.WriteLine("FORMULA: " + molecule.Formula);
 
-                if (projectParameter.FinalSavedDate != default) {
+                if (projectParameter.FinalSavedDate != default)
+                {
                     sw.WriteLine("DATE: " + projectParameter.FinalSavedDate.Date);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.Authors)) {
+                if (!string.IsNullOrEmpty(projectParameter.Authors))
+                {
                     sw.WriteLine("AUTHORS: " + projectParameter.Authors);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.License)) {
+                if (!string.IsNullOrEmpty(projectParameter.License))
+                {
                     sw.WriteLine("LICENSE: " + projectParameter.License);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.CollisionEnergy)) {
+                if (!string.IsNullOrEmpty(projectParameter.CollisionEnergy))
+                {
                     sw.WriteLine("COLLISIONENERGY: " + projectParameter.CollisionEnergy);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.InstrumentType)) {
+                if (!string.IsNullOrEmpty(projectParameter.InstrumentType))
+                {
                     sw.WriteLine("INSTRUMENTTYPE: " + projectParameter.InstrumentType);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.Instrument)) {
+                if (!string.IsNullOrEmpty(projectParameter.Instrument))
+                {
                     sw.WriteLine("INSTRUMENT: " + projectParameter.Instrument);
                 }
 
-                if (!string.IsNullOrEmpty(projectParameter.Comment)) {
+                if (!string.IsNullOrEmpty(projectParameter.Comment))
+                {
                     sw.WriteLine("COMMENT: " + projectParameter.Comment);
                 }
 
@@ -601,15 +657,17 @@ namespace CompMs.MsdialCore.Export
             }
         }
         private static void WriteIsotopeTrackingFeature(
-            StreamWriter sw, 
-            AlignmentSpotProperty feature, 
-            ParameterBase parameter, 
-            AlignmentSpotProperty lastFeature) {
+            StreamWriter sw,
+            AlignmentSpotProperty feature,
+            ParameterBase parameter,
+            AlignmentSpotProperty lastFeature)
+        {
             var isotopeLabel = parameter.IsotopeTrackingDictionary;
             var labelType = isotopeLabel.IsotopeElements[isotopeLabel.SelectedID].ElementName;
             var isotopeTrackNum = lastFeature.PeakCharacter.IsotopeWeightNumber;
             sw.WriteLine("#Specific field for labeled experiment");
-            switch (labelType) {
+            switch (labelType)
+            {
                 case "13C":
                     sw.WriteLine("CarbonCount: " + isotopeTrackNum);
                     break;
@@ -641,20 +699,24 @@ namespace CompMs.MsdialCore.Export
 
         #region sirius ms
         private static void SaveSpectraTableAsSiriusMsFormat(
-            Stream stream, 
+            Stream stream,
             ChromatogramPeakFeature feature,
-            IEnumerable<SpectrumPeak> spectrum, 
-            IReadOnlyList<RawSpectrum> spectrumList, 
-            DataBaseMapper mapper, 
-            ParameterBase parameter) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+            IEnumerable<SpectrumPeak> spectrum,
+            IReadOnlyList<RawSpectrum> spectrumList,
+            DataBaseMapper mapper,
+            ParameterBase parameter)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 WriteChromPeakFeatureInfoAsSiriusMs(sw, feature, mapper);
                 sw.WriteLine();
 
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
-                if (ms1Spectrum != null) {
+                if (ms1Spectrum != null)
+                {
                     var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
-                    if (!isotopes.IsEmptyOrNull()) {
+                    if (!isotopes.IsEmptyOrNull())
+                    {
                         sw.WriteLine(">ms1");
                         WriteSpectrumPeakInfo(sw, isotopes);
                     }
@@ -671,16 +733,19 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty feature,
             IEnumerable<SpectrumPeak> spectrum,
             DataBaseMapper mapper,
-            ParameterBase parameter) {
-            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+            ParameterBase parameter)
+        {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true))
+            {
                 WriteChromPeakFeatureInfoAsSiriusMs(sw, feature, mapper);
                 sw.WriteLine();
                 var isotopes = feature.IsotopicPeaks;
-                if (!isotopes.IsEmptyOrNull()) {
+                if (!isotopes.IsEmptyOrNull())
+                {
                     sw.WriteLine(">ms1");
                     WriteSpectrumPeakInfo(sw, isotopes);
                 }
-                
+
                 sw.WriteLine();
                 sw.WriteLine(">ms2");
                 WriteSpectrumPeakInfo(sw, spectrum);
@@ -689,9 +754,10 @@ namespace CompMs.MsdialCore.Export
         }
 
         private static void WriteChromPeakFeatureInfoAsSiriusMs(
-            StreamWriter sw, 
-            ChromatogramPeakFeature feature, 
-            DataBaseMapper mapper) {
+            StreamWriter sw,
+            ChromatogramPeakFeature feature,
+            DataBaseMapper mapper)
+        {
             sw.WriteLine(">compound " + GetNameField(feature));
             sw.WriteLine(">parentmass " + feature.PrecursorMz);
             sw.WriteLine(">ionization " + feature.AdductType.AdductIonName);
@@ -701,7 +767,8 @@ namespace CompMs.MsdialCore.Export
         private static void WriteChromPeakFeatureInfoAsSiriusMs(
             StreamWriter sw,
             AlignmentSpotProperty feature,
-            DataBaseMapper mapper) {
+            DataBaseMapper mapper)
+        {
             sw.WriteLine(">compound " + GetNameField(feature));
             sw.WriteLine(">parentmass " + feature.MassCenter);
             sw.WriteLine(">ionization " + feature.AdductType.AdductIonName);
@@ -709,7 +776,8 @@ namespace CompMs.MsdialCore.Export
         }
         #endregion
 
-        private static string GetCommentField(ChromatogramPeakFeature feature) {
+        private static string GetCommentField(ChromatogramPeakFeature feature)
+        {
             var comment = feature.Comment;
             var id = "|PEAKID=" + feature.MasterPeakID.ToString();
             var ms1 = "|MS1SCAN=" + feature.MS1RawSpectrumIdTop;
@@ -720,25 +788,31 @@ namespace CompMs.MsdialCore.Export
             return comment + id + ms1 + ms2 + height + area + isotope;
         }
 
-        private static string GetCommentField(AlignmentSpotProperty feature) {
+        private static string GetCommentField(AlignmentSpotProperty feature)
+        {
             var comment = feature.Comment;
             var id = "|PEAKID=" + feature.MasterAlignmentID.ToString();
             var isotope = "|ISOTOPE=" + "M+" + feature.PeakCharacter.IsotopeWeightNumber.ToString();
             return comment + id + isotope;
         }
 
-        private static string GetCommentField(IChromatogramPeak feature) {
-            if (feature is ChromatogramPeakFeature chromatogramPeakFeature) {
+        private static string GetCommentField(IChromatogramPeak feature)
+        {
+            if (feature is ChromatogramPeakFeature chromatogramPeakFeature)
+            {
                 return GetCommentField(chromatogramPeakFeature);
             }
-            if (feature is AlignmentSpotProperty alignmentSpotProperty) {
+            if (feature is AlignmentSpotProperty alignmentSpotProperty)
+            {
                 return GetCommentField(alignmentSpotProperty);
             }
             return $"PEAKID={feature.ID}|PEAKHEIGHT={Math.Round(feature.Intensity, 0)}";
         }
 
-        private static string GetNameField(ChromatogramPeakFeature feature) {
-            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
+        private static string GetNameField(ChromatogramPeakFeature feature)
+        {
+            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown")
+            {
                 var id = "|ID=" + feature.MasterPeakID.ToString();
                 var rt = feature.PeakFeature.ChromXsTop.RT.Value > 0 ? "|RT=" + Math.Round(feature.PeakFeature.ChromXsTop.RT.Value, 3) : string.Empty;
                 var ri = feature.PeakFeature.ChromXsTop.RI.Value > 0 ? "|RI=" + Math.Round(feature.PeakFeature.ChromXsTop.RI.Value, 3) : string.Empty;
@@ -746,13 +820,16 @@ namespace CompMs.MsdialCore.Export
                 var mz = "|MZ=" + Math.Round(feature.PrecursorMz, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
-            else {
+            else
+            {
                 return feature.Name;
             }
         }
 
-        private static string GetNameField(AlignmentSpotProperty feature) {
-            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
+        private static string GetNameField(AlignmentSpotProperty feature)
+        {
+            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown")
+            {
                 var id = "|ID=" + feature.MasterAlignmentID;
                 var rt = feature.TimesCenter.RT.Value > 0 ? "|RT=" + Math.Round(feature.TimesCenter.RT.Value, 3) : string.Empty;
                 var ri = feature.TimesCenter.RI.Value > 0 ? "|RI=" + Math.Round(feature.TimesCenter.RI.Value, 3) : string.Empty;
@@ -760,13 +837,16 @@ namespace CompMs.MsdialCore.Export
                 var mz = "|MZ=" + Math.Round(feature.MassCenter, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
-            else {
+            else
+            {
                 return feature.Name;
             }
         }
 
-        private static string GetNameField<T>(T feature) where T : IMoleculeProperty, IChromatogramPeak {
-            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
+        private static string GetNameField<T>(T feature) where T : IMoleculeProperty, IChromatogramPeak
+        {
+            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown")
+            {
                 var id = "|ID=" + feature.ID;
                 var rt = feature.ChromXs.RT.Value > 0 ? "|RT=" + Math.Round(feature.ChromXs.RT.Value, 3) : string.Empty;
                 var ri = feature.ChromXs.RI.Value > 0 ? "|RI=" + Math.Round(feature.ChromXs.RI.Value, 3) : string.Empty;
@@ -774,45 +854,54 @@ namespace CompMs.MsdialCore.Export
                 var mz = Math.Round(feature.Mass, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
-            else {
+            else
+            {
                 return feature.Name;
             }
         }
 
         private static void WriteParameterInfoAsNist(StreamWriter sw, ParameterBase parameter)
         {
-            if (!string.IsNullOrEmpty(parameter.Authors)) {
+            if (!string.IsNullOrEmpty(parameter.Authors))
+            {
                 sw.WriteLine("AUTHORS: " + parameter.Authors);
             }
 
-            if (!string.IsNullOrEmpty(parameter.License)) {
+            if (!string.IsNullOrEmpty(parameter.License))
+            {
                 sw.WriteLine("LICENSE: " + parameter.License);
             }
 
-            if (!string.IsNullOrEmpty(parameter.CollisionEnergy)) {
+            if (!string.IsNullOrEmpty(parameter.CollisionEnergy))
+            {
                 sw.WriteLine("COLLISIONENERGY: " + parameter.CollisionEnergy);
             }
 
-            if (!string.IsNullOrEmpty(parameter.InstrumentType)) {
+            if (!string.IsNullOrEmpty(parameter.InstrumentType))
+            {
                 sw.WriteLine("INSTRUMENTTYPE: " + parameter.InstrumentType);
             }
 
-            if (!string.IsNullOrEmpty(parameter.Instrument)) {
+            if (!string.IsNullOrEmpty(parameter.Instrument))
+            {
                 sw.WriteLine("INSTRUMENT: " + parameter.Instrument);
             }
 
-            if (!string.IsNullOrEmpty(parameter.Comment)) {
+            if (!string.IsNullOrEmpty(parameter.Comment))
+            {
                 sw.WriteLine("PARAMETERCOMMENT: " + parameter.Comment);
             }
         }
 
         private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<ISpectrumPeak> massSpectra, bool exportNumOfPeaks = true)
         {
-            if (massSpectra is null) {
+            if (massSpectra is null)
+            {
                 return;
             }
             var peaks = massSpectra.Where(spec => spec.Intensity > 0).ToList();
-            if (exportNumOfPeaks) {
+            if (exportNumOfPeaks)
+            {
                 sw.WriteLine("Num Peaks: " + peaks.Count);
             }
             foreach (var peak in peaks)
@@ -821,11 +910,14 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<IsotopicPeak> isotopes) {
-            if (!isotopes.IsEmptyOrNull()) {
+        private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<IsotopicPeak> isotopes)
+        {
+            if (!isotopes.IsEmptyOrNull())
+            {
                 var peaks = isotopes.Where(spec => spec.AbsoluteAbundance > 0).ToList();
                 sw.WriteLine("Num Peaks: " + peaks.Count);
-                foreach (var peak in peaks) {
+                foreach (var peak in peaks)
+                {
                     sw.WriteLine(Math.Round(peak.Mass, 5) + "\t" + Math.Round(peak.AbsoluteAbundance, 0));
                 }
             }

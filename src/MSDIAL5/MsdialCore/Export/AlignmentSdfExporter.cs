@@ -1,28 +1,26 @@
 ﻿using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using System;
 using System.IO;
 
 namespace CompMs.MsdialCore.Export;
 
 public sealed class AlignmentSdfExporter : IAlignmentSpectraExporter
 {
-    private readonly bool _exportNoMs2Molecule;
-    private readonly bool _set2dCoordinates;
-    public AlignmentSdfExporter(bool exportNoMs2Molecule, bool set2dCoordinates)
+    private readonly ParameterBase _parameter;
+    private bool _exportNoMs2Peak;
+    public AlignmentSdfExporter(bool exportNoMs2Peak, ParameterBase parameter)
     {
-        _exportNoMs2Molecule = exportNoMs2Molecule;
-        _set2dCoordinates = set2dCoordinates;
+        _exportNoMs2Peak = exportNoMs2Peak;
+        _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
     }
-    public AlignmentSdfExporter() : this(exportNoMs2Molecule: true, set2dCoordinates: true) { }
-
-    void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult)
+    public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult)
+    { 
+        Export(stream, spot, msdecResult, _exportNoMs2Peak, _parameter);
+    }
+    public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, bool exportNoMs2Peak, ParameterBase parameter)
     {
-        SpectraExport.SaveSpectraTableAsSdfFormat(
-            stream,
-            spot,
-            msdecResult.Spectrum,
-            _exportNoMs2Molecule,
-            _set2dCoordinates
-        );
+        SpectraExport.SaveSpectraTableAsSdfFormat(stream, spot, msdecResult.Spectrum, exportNoMs2Peak, parameter);
     }
 }
