@@ -6,7 +6,7 @@ Param(
     [string]$Configuration='Debug',
     [ValidateSet('net472', 'net48', 'net8')]
     [string]$Framework='net8',
-    [ValidateSet('windows-x64', 'osx-x64', 'linux-x64')]
+    [ValidateSet('win-x64', 'osx-x64', 'linux-x64')]
     [string]$Runtime='linux-x64'
 )
 
