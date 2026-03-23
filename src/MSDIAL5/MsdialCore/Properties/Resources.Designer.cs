@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.5.260319.
+        ///   Looks up a localized string similar to 5.5.260323.
         /// </summary>
         internal static string VERSION {
             get {
