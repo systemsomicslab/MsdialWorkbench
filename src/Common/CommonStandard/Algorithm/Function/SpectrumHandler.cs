@@ -64,6 +64,11 @@ namespace CompMs.Common.Algorithm.Function {
             return spectrum.Select(n => new SpectrumPeak { Mass = n.Mass, Intensity = Math.Pow(n.Intensity, powFactor) / maxIntensity * maxValue }).ToList();
         }
 
+        public static List<SpectrumPeak> GetNormalizedByTotalIntensityPeaks(List<SpectrumPeak> spectrum) {
+            var sumIntensity = spectrum.Sum(n => n.Intensity);
+            return spectrum.Select(n => new SpectrumPeak { Mass = n.Mass, Intensity = n.Intensity / sumIntensity }).ToList();
+        }
+
         public static List<SpectrumPeak> GetBinnedSpectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
 
             var peaks = new List<SpectrumPeak>();
