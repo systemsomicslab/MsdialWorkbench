@@ -19,6 +19,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -157,6 +158,15 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     FilePrefix = "Mgf",
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(immsProviderFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };

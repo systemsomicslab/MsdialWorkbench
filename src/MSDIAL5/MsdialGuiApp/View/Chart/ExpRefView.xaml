@@ -71,6 +71,12 @@
                          ToolTip="Show deconvoluted spectra vs. reference spectra"
                          Style="{StaticResource IconRadioButton}"/>
 
+            <CheckBox VerticalAlignment="Center"
+                      Margin="8,0,0,0"
+                      Content="Raw (dashed)"
+                      ToolTip="Overlay raw spectrum as dashed line on Q1Dec/Deconvolution views"
+                      IsChecked="{Binding RawDecSpectrumsViewModel.IsRawSpectrumOverlayVisible.Value, Mode=TwoWay}"/>
+
             <Button Name="Button_CompoundSearchPeakViewer"
                     Command="{Binding SearchCompoundCommand, Mode=OneTime}"
                     Content="/Resources/CompoundSearchIcon.ico"

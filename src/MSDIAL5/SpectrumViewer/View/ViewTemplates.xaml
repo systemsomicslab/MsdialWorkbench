@@ -370,12 +370,13 @@
                                                         </ToolTip>
                                                     </chart:LineSpectrumControlSlim.ToolTip>
                                                 </chart:LineSpectrumControlSlim>
-                                                <chart:Annotator ItemsSource="{Binding Spectrum}"
+                                                <chart:Annotator ItemsSource="{Binding Path=SpectrumLabel}"
                                                                  HorizontalPropertyName="Mass"
                                                                  VerticalPropertyName="Intensity"
                                                                  Overlap="Direct, Horizontal"
                                                                  OrderingPropertyName="Intensity"
-                                                                 LabelPropertyName="Mass"
+                                                                 LabelPropertyName="{Binding Path=DataContext.LabelProperty.Value, FallbackValue=Mass,
+                                                                                             RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                  Format="N4"
                                                                  TopN="10"
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
@@ -438,12 +439,13 @@
                                                         </ToolTip>
                                                     </chart:LineSpectrumControlSlim.ToolTip>
                                                 </chart:LineSpectrumControlSlim>
-                                                <chart:Annotator ItemsSource="{Binding Spectrum}"
+                                                <chart:Annotator ItemsSource="{Binding Path=SpectrumLabel}"
                                                                  HorizontalPropertyName="Mass"
                                                                  VerticalPropertyName="Intensity"
                                                                  Overlap="Direct, Horizontal"
                                                                  OrderingPropertyName="Intensity"
-                                                                 LabelPropertyName="Mass"
+                                                                 LabelPropertyName="{Binding Path=DataContext.LabelProperty.Value, FallbackValue=Mass,
+                                                                                             RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                  Format="N4"
                                                                  TopN="10"
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
@@ -853,6 +855,14 @@
                 <StackPanel Orientation="Horizontal" Margin="8,0">
                     <TextBlock Text="Lower label:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
                     <CheckBox IsChecked="{Binding LowerSpectrumsViewModel.IsLabelVisible.Value}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Label type:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <ComboBox SelectedValuePath="Tag" SelectedIndex="0"
+                              SelectedValue="{Binding Path=LabelProperty.Value, Mode=OneWayToSource}">
+                        <ComboBoxItem Content="m/z" Tag="Mass"/>
+                        <ComboBoxItem Content="NL" Tag="NeutralLoss"/>
+                    </ComboBox>
                 </StackPanel>
             </StackPanel>
             <ContentControl Style="{StaticResource ViewChartStyle}"

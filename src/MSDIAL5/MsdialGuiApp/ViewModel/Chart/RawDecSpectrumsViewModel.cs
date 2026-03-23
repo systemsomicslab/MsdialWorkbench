@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
         public MsSpectrumViewModel? Q1DecRefSpectrumViewModels { get; }
         public MsSpectrumViewModel DecRefSpectrumViewModels { get; }
+        public ReactivePropertySlim<bool> IsRawSpectrumOverlayVisible => _model.IsRawSpectrumOverlayVisible;
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
         public ReactivePropertySlim<MsSelectionItem?> SelectedMs2Id { get; }

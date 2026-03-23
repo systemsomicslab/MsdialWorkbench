@@ -100,6 +100,9 @@ public class PeakAligner {
         // from 40 to 80
         var counter = 0;
         ReportProgress reporter = ReportProgress.FromLength(Progress, 40.0, 40.0);
+        foreach (var spot in spots) {
+            SetRepresentativeFileIDs(spot);
+        }
         foreach (var (analysisFile, file_) in analysisFiles.ZipInternal(tempFiles)) {
             var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
             foreach (var spot in spots) {
@@ -191,6 +194,12 @@ public class PeakAligner {
         foreach (var child in spot.AlignmentDriftSpotFeatures)
             SetRepresentativeProperties(child);
         DataObjConverter.SetRepresentativeProperty(spot);
+    }
+
+    private void SetRepresentativeFileIDs(AlignmentSpotProperty spot) {
+        foreach (var child in spot.AlignmentDriftSpotFeatures)
+            SetRepresentativeFileIDs(child);
+        DataObjConverter.SetRepresentativeFileID(spot);
     }
 
     private void SerializeSpotInfo(

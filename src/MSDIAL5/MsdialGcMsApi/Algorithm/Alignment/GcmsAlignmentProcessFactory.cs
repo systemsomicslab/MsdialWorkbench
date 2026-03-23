@@ -50,7 +50,6 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
         switch (GcmsParameter.AlignmentIndexType) {
             case Common.Enum.AlignmentIndexType.RT:
                 return GcmsPeakJoiner.CreateRTJoiner(
-                    GcmsParameter.MspSearchParam,
                     GcmsParameter,
                     _evaluator,
                     _refer,
@@ -59,7 +58,6 @@ public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
             case Common.Enum.AlignmentIndexType.RI:
             default:
                 return GcmsPeakJoiner.CreateRIJoiner(
-                    GcmsParameter.MspSearchParam,
                     GcmsParameter.RetentionIndexAlignmentTolerance,
                     GcmsParameter,
                     _evaluator,

@@ -104,6 +104,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             RemoveScanCommand = new ReactiveCommand()
                 .WithSubscribe(model.RemoveScan)
                 .AddTo(Disposables);
+
+            LabelProperty = new ReactiveProperty<string>(string.Empty).AddTo(Disposables);
         }
 
         public SplitSpectrumsModel Model { get; }
@@ -131,5 +133,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReactiveCommand ShiftScanCommand { get; }
 
         public ReactiveCommand RemoveScanCommand { get; }
+
+        public ReactiveProperty<string> LabelProperty { get; }
     }
 }

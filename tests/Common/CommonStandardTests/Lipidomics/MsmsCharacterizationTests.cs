@@ -2580,6 +2580,109 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
 
         }
+        [TestMethod()]
+        public void SPEHexTest()
+        {
+            //SG 27:1;O;Hex;PE
+            var PRECURSORTYPE = "[M+NH4]+";
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 689.450045,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =689.450045, Intensity =100, },
+                    new SpectrumPeak { Mass =369.351578, Intensity =999, },
+                    new SpectrumPeak { Mass =304.079194, Intensity =750, },
+                    new SpectrumPeak { Mass =286.06863, Intensity =950, },
+                    new SpectrumPeak { Mass =142.026371, Intensity =700, },
+                }
+            };
+
+            var molMsRef = new MoleculeMsReference
+            {
+                Name = "SG 27:1;O;Hex;PE",
+                PrecursorMz = 689.450045,
+                CompoundClass = "SPEHex",
+            };
+            var lipidname = "SG 27:1;O;Hex;PE";
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+            var totalCarbon = molecule.TotalCarbonCount; 
+            var totalDbBond = molecule.TotalDoubleBondCount; 
+            var totalOxidized = molecule.TotalOxidizedCount;
+
+            var result = LipidMsmsCharacterization.JudgeIfSpehex(lipidname,target, 0.025,
+                689.450045f, totalCarbon, totalDbBond, totalOxidized,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
+            Console.WriteLine($"SPEHexTest");
+            Console.WriteLine(PRECURSORTYPE);
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+        }
+        [TestMethod()]
+        public void SPGHexTest()
+        {
+            //SG 27:1;O;Hex;PG
+            var PRECURSORTYPE01 = "[M+NH4]+";
+            var target01 = new MSScanProperty
+            {
+                PrecursorMz = 720.444625,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =720.444625, Intensity =5, },
+                    new SpectrumPeak { Mass =369.351578, Intensity =600, },
+                    new SpectrumPeak { Mass =317.06321, Intensity =650, },
+                    new SpectrumPeak { Mass =173.020951, Intensity =999, },
+                }
+            };
+            var molMsRef01 = new MoleculeMsReference
+            {
+                Name = "SG 27:1;O;Hex;PG",
+                PrecursorMz = 720.444625,
+                CompoundClass = "SPGHex",
+            };
+
+            var PRECURSORTYPE02 = "[M-H]-";
+            var target02 = new MSScanProperty
+            {
+                PrecursorMz = 701.4035,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass =701.403523, Intensity =999, },
+                    new SpectrumPeak { Mass =315.048657, Intensity =50, },
+                    new SpectrumPeak { Mass =152.995834, Intensity =300, },
+                }
+            };
+            var molMsRef02 = new MoleculeMsReference
+            {
+                Name = "SG 27:1;O;Hex;PG",
+                PrecursorMz = 701.4035,
+                CompoundClass = "SPGHex",
+            };
+
+
+            var lipidname = "SG 27:1;O;Hex;PG";
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef01);
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
+            var totalOxidized = molecule.TotalOxidizedCount;
+
+            var result01 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target01, 0.025,
+                molMsRef01.PrecursorMz, totalCarbon, totalDbBond, totalOxidized,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE01));
+            Console.WriteLine($"SPGHexTest");
+            Console.WriteLine(PRECURSORTYPE01);
+            Console.WriteLine($"LipidName:{result01.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result01.AnnotationLevel}");
+
+            var result02 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target02, 0.025,
+                molMsRef02.PrecursorMz, totalCarbon, totalDbBond, totalOxidized,
+                         adduct = AdductIon.GetAdductIon(PRECURSORTYPE02));
+            Console.WriteLine($"SPGHexTest");
+            Console.WriteLine(PRECURSORTYPE02);
+            Console.WriteLine($"LipidName:{result02.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result02.AnnotationLevel}");
+
+        }
 
     }
 

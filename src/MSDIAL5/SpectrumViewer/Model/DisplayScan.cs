@@ -4,6 +4,7 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.App.SpectrumViewer.Model
 {
@@ -35,6 +36,7 @@ namespace CompMs.App.SpectrumViewer.Model
         public ChromXs ChromXs { get => Scan.ChromXs; set => Scan.ChromXs = value; }
         public IonMode IonMode { get => Scan.IonMode; set => Scan.IonMode = value; }
         public double PrecursorMz { get => Scan.PrecursorMz; set => Scan.PrecursorMz = value; }
+        public object[] SpectrumLabel => Scan.Spectrum.Select(p => new { p.Mass, p.Intensity, NeutralLoss = p.Mass - Scan.PrecursorMz }).ToArray();
 
         public void AddPeak(double mass, double intensity, string comment = null) {
             Scan.AddPeak(mass, intensity, comment);

@@ -30,7 +30,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         public void Process(IEnumerable<AlignmentSpotProperty> spots) {
-            var spotList = spots.Where(n => n.IsReferenceMatched(_evaluator)).OrderByDescending(spot => spot.MatchResults.Representative.LibraryID).ToList();
+            var spotList = spots.Where(n => n.IsReferenceMatched(_evaluator) && !n.Name.StartsWith("Putative")).OrderByDescending(spot => spot.MatchResults.Representative.LibraryID).ToList();
             var currentPeakId = 0;
             var currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
 
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // by InChIKey
             spotList = spots
-                       .Where(n => n.IsReferenceMatched(_evaluator))
+                       .Where(n => n.IsReferenceMatched(_evaluator) && !n.Name.StartsWith("Putative"))
                        .Where(n => !string.IsNullOrEmpty(n.MatchResults?.Representative?.InChIKey) && n.MatchResults.Representative.InChIKey.Length > 1)
                        .OrderByDescending(spot => spot.MatchResults.Representative.InChIKey)
                        .ToList();
@@ -83,7 +83,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // by Name
             spotList = spots
-                .Where(n => n.IsReferenceMatched(_evaluator))
+                .Where(n => n.IsReferenceMatched(_evaluator) && !n.Name.StartsWith("Putative"))
                 .Where(n => !n.MatchResults.Representative.Name.IsEmptyOrNull())
                 .OrderByDescending(spot => spot.MatchResults.Representative.Name)
                 .ToList();
@@ -110,8 +110,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         static void ChangeAnnotationToLowScore(AlignmentSpotProperty spot) {
-            spot.MatchResults.Representative.IsReferenceMatched = false;
-            spot.Name = "putative: " + spot.Name;
+            //spot.MatchResults.Representative.IsReferenceMatched = false;
+            spot.Name = "Putative: " + spot.Name;
         }
     }
 

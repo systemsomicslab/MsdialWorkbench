@@ -10,7 +10,10 @@ namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
     public class MsdialGcmsParameter : ParameterBase {
 
-        public MsdialGcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) { this.MachineCategory = MachineCategory.GCMS; }
+        public MsdialGcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
+            this.MachineCategory = MachineCategory.GCMS;
+            AlignmentBaseParam.Ms1AlignmentTolerance = .5f;
+        } 
 
         [SerializationConstructor]
         public MsdialGcmsParameter() : this(isLabUseOnly: false) { }

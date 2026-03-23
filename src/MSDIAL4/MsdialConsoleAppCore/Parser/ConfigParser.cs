@@ -53,21 +53,21 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             switch (method)
             {
                 //Data type
-                case "data type": 
-                    if (value == "Centroid" || value == "Profile") 
-                        param.DataType = (DataType)Enum.Parse(typeof(DataType), value, true); 
-                        return;
+                case "data type":
+                    if (value == "Centroid" || value == "Profile")
+                        param.DataType = (DataType)Enum.Parse(typeof(DataType), value, true);
+                    return;
 
-                case "ion mode": 
-                    if (value == "Positive" || value == "Negative") 
-                        param.IonMode = (IonMode)Enum.Parse(typeof(IonMode), value, true); 
-                        return;
+                case "ion mode":
+                    if (value == "Positive" || value == "Negative")
+                        param.IonMode = (IonMode)Enum.Parse(typeof(IonMode), value, true);
+                    return;
 
-                case "accuracy type": 
-                    if (value == "IsNominal" || value == "IsAccurate") 
-                        param.AccuracyType = (AccuracyType)Enum.Parse(typeof(AccuracyType), value, true); 
-                        return;
-                
+                case "accuracy type":
+                    if (value == "IsNominal" || value == "IsAccurate")
+                        param.AccuracyType = (AccuracyType)Enum.Parse(typeof(AccuracyType), value, true);
+                    return;
+
                 //Data correction
                 case "retention time begin": if (float.TryParse(value, out f)) param.RetentionTimeBegin = f; return;
                 case "retention time end": if (float.TryParse(value, out f)) param.RetentionTimeEnd = f; return;
@@ -75,10 +75,10 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 case "mass range end": if (float.TryParse(value, out f)) param.MassRangeEnd = f; return;
 
                 //Peak detection param
-                case "smoothing method": 
+                case "smoothing method":
                     if (value == "SimpleMovingAverage" || value == "LinearWeightedMovingAverage" || value == "SavitzkyGolayFilter" || value == "BinomialFilter")
-                        param.SmoothingMethod = (SmoothingMethod)Enum.Parse(typeof(SmoothingMethod), value, true); 
-                        return;
+                        param.SmoothingMethod = (SmoothingMethod)Enum.Parse(typeof(SmoothingMethod), value, true);
+                    return;
                 case "smoothing level": if (int.TryParse(value, out i)) param.SmoothingLevel = i; return;
                 case "average peak width": if (int.TryParse(value, out i)) param.AveragePeakWidth = i; return;
                 case "minimum peak height": if (int.TryParse(value, out i)) param.MinimumAmplitude = i; return;
@@ -92,14 +92,14 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 //Identification
                 case "msp file": param.MspFilePath = value; return;
                 case "ri index file pathes": param.RiDictionaryFilePath = value; return;
-                case "retention type": 
-                    if (value == "RT" || value == "RI") 
-                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), value, true); 
-                        return;
-                case "ri compound": 
-                    if (value == "Fames" || value == "Alkanes") 
-                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), value, true); 
-                        return;
+                case "retention type":
+                    if (value == "RT" || value == "RI")
+                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), value, true);
+                    return;
+                case "ri compound":
+                    if (value == "Fames" || value == "Alkanes")
+                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), value, true);
+                    return;
 
                 case "retention time tolerance for identification": if (float.TryParse(value, out f)) param.RetentionTimeLibrarySearchTolerance = f; return;
                 case "retention index tolerance for identification": if (float.TryParse(value, out f)) param.RetentionIndexLibrarySearchTolerance = f; return;
@@ -134,7 +134,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
         #region // to get analysisparam for msdial lcms
         public static AnalysisParametersBean ReadForLcmsParameter(string filepath)
         {
-            var param = new AnalysisParametersBean() { MsdialVersionNumber = Resources.VERSION }; 
+            var param = new AnalysisParametersBean() { MsdialVersionNumber = Resources.VERSION };
             using (var sr = new StreamReader(filepath, Encoding.ASCII))
             {
                 while (sr.Peek() > -1)
@@ -176,15 +176,18 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
                 //Isotope
                 case "maximum charged number": if (int.TryParse(value, out i)) param.MaxChargeNumber = i; return;
+                //case "consider cl and br elements": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.isBrClConsideredForIsotopes = bool.Parse(value); return;
+                // inaccessible due to protection 
 
                 // max number of CPU threads
                 case "number of threads": if (int.TryParse(value, out i)) param.NumThreads = i; Console.WriteLine("Asked for {0} threads", i); return;
 
                 //Retentiontime correction
-                case "excute rt correction": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = bool.Parse(value); return;
+                case "excute rt correction": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = bool.Parse(value); return;  // typo in  public bool ExcuteRtCorrection { get; set; } = false;
                 case "rt correction with smoothing for rt diff": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = bool.Parse(value); return;
                 case "user setting intercept": if (float.TryParse(value, out f)) param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept = f; return;
-                case "rt diff calc method": if (value == "SampleMinusSampleAverage" || value == "SampleMinusReference")
+                case "rt diff calc method":
+                    if (value == "SampleMinusSampleAverage" || value == "SampleMinusReference")
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.RtDiffCalcMethod = (Rfx.Riken.OsakaUniv.RetentionTimeCorrection.RtDiffCalcMethod)Enum.Parse(typeof(Rfx.Riken.OsakaUniv.RetentionTimeCorrection.RtDiffCalcMethod), value, true);
                     return;
                 case "interpolation method":
@@ -200,10 +203,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd = (Rfx.Riken.OsakaUniv.RetentionTimeCorrection.ExtrapolationMethodEnd)Enum.Parse(typeof(Rfx.Riken.OsakaUniv.RetentionTimeCorrection.ExtrapolationMethodEnd), value, true);
                     return;
                 case "istd file":
-                    if (System.IO.File.Exists(value)) {
+                    if (System.IO.File.Exists(value))
+                    {
                         var error = string.Empty;
                         param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParcer.StandardTextLibraryReader(value, out error);
-                        if (error != string.Empty) {
+                        if (error != string.Empty)
+                        {
                             Console.WriteLine(error);
                         }
                     }
@@ -221,8 +226,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
                 //Deconvolution
                 case "sigma window value": if (float.TryParse(value, out f)) param.SigmaWindowValue = f; return;
-                case "amplitude cut off": if (float.TryParse(value, out f)) param.AmplitudeCutoff = f; return;
-                case "exclude after precursor": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RemoveAfterPrecursor = bool.Parse(value); return; 
+                case "msms abundance cut off": if (float.TryParse(value, out f)) param.AmplitudeCutoff = f; return;
+                case "exclude after precursor ion": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RemoveAfterPrecursor = bool.Parse(value); return;
                 case "keep isotope until": if (float.TryParse(value, out f)) param.KeptIsotopeRange = f; return;
                 case "keep original precursor isotopes": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.KeepOriginalPrecursorIsotopes = bool.Parse(value); return;
 
@@ -238,6 +243,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 case "retention time tolerance for post identification": if (float.TryParse(value, out f)) param.RetentionTimeToleranceOfPostIdentification = f; return;
                 case "accurate ms1 tolerance for post identification": if (float.TryParse(value, out f)) param.AccurateMassToleranceOfPostIdentification = f; return;
                 case "post identification score cut off": if (float.TryParse(value, out f)) param.PostIdentificationScoreCutOff = f; return;
+                case "relative abundance cut off": if (float.TryParse(value, out f)) param.RelativeAbundanceCutOff = f; return;
+                case "top candidate report": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.OnlyReportTopHitForPostAnnotation = bool.Parse(value); return;
 
                 //Alignment parameters setting
                 case "retention time tolerance for alignment": if (float.TryParse(value, out f)) param.RetentionTimeAlignmentTolerance = f; return;
@@ -265,12 +272,14 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
                 //CorrDec settings
                 case "corrdec excute":
-                    if (value.ToUpper() == "FALSE") {
+                    if (value.ToUpper() == "FALSE")
+                    {
                         if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
                         param.AnalysisParamOfMsdialCorrDec.CanExcute = false;
                     }
-                    return;                    
-                case "corrdec ms2 tolerance": if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
+                    return;
+                case "corrdec ms2 tolerance":
+                    if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
                     if (float.TryParse(value, out f)) param.AnalysisParamOfMsdialCorrDec.MS2Tolerance = f; return;
                 case "corrdec minimum ms2 peak height":
                     if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
@@ -300,8 +309,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
                     if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.AnalysisParamOfMsdialCorrDec.RemoveAfterPrecursor = bool.Parse(value); return;
 
-                // ion mobility setting
-                case "accumulated rt ragne": if (float.TryParse(value, out f)) param.AccumulatedRtRagne = f; return;
+                // ion mobility setting, not tested
+                case "mobility type": if (float.TryParse(value, out f)) param.IonMobilityType = (IonMobilityType)f; return;  // { Tims, Dtims, Twims, CCS }
+                case "accumulated rt ragne": if (float.TryParse(value, out f)) param.AccumulatedRtRagne = f; return;  //typo ragne > range
                 case "ccs search tolerance": if (float.TryParse(value, out f)) param.CcsSearchTolerance = f; return;
                 case "mobility axis alignment tolerance": if (float.TryParse(value, out f)) param.DriftTimeAlignmentTolerance = f; return;
                 case "use ccs for identification scoring": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.IsUseCcsForIdentificationScoring = bool.Parse(value); return;
@@ -312,8 +322,10 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
         public static void ReadAdductIonInfo(List<AdductIonInformationBean> adductList, string filepath)
         {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII))
+            {
+                while (sr.Peek() > -1)
+                {
                     var line = sr.ReadLine();
                     if (line == string.Empty) continue;
                     if (line.Length < 2) continue;
@@ -325,11 +337,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     var method = lineArray[0].Trim().ToLower();
                     var value = line.Substring(line.Split(':')[0].Length + 1).Trim();
 
-                    if (method == "adduct list") {
+                    if (method == "adduct list")
+                    {
                         var adductStrings = value.Split(',').ToList();
-                        foreach (var adduct in adductList) {
-                            foreach (var adductString in adductStrings) {
-                                if (adduct.AdductName == adductString) {
+                        foreach (var adduct in adductList)
+                        {
+                            foreach (var adductString in adductStrings)
+                            {
+                                if (adduct.AdductName == adductString)
+                                {
                                     adduct.Included = true;
                                 }
                             }
@@ -339,7 +355,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             }
         }
 
-        public static int FindAlignmentReferenceFileByName(String filepath, List<AnalysisFileBean> files) {
+        public static int FindAlignmentReferenceFileByName(String filepath, List<AnalysisFileBean> files)
+        {
 
             using (var sr = new StreamReader(filepath, Encoding.ASCII))
             {
@@ -357,9 +374,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     var value = line.Substring(line.Split(':')[0].Length + 1).Trim();
 
                     // match filename in configuration to loaded analysis files without suffix, case-sensitive
-                    if (method.ToLower() == "alignment reference file name") {
-                        foreach (var file in files) {
-                            if (file.AnalysisFilePropertyBean.AnalysisFileName == value) {
+                    if (method.ToLower() == "alignment reference file name")
+                    {
+                        foreach (var file in files)
+                        {
+                            if (file.AnalysisFilePropertyBean.AnalysisFileName == value)
+                            {
                                 Console.WriteLine("Setting alignment reference file to id {0}: {1}", file.AnalysisFilePropertyBean.AnalysisFileId, value);
                                 return file.AnalysisFilePropertyBean.AnalysisFileId;
                             }
@@ -374,11 +394,13 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             return 0;
         }
 
-        public static void SetGCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param) {
+        public static void SetGCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param)
+        {
             param.AlignmentReferenceFileID = FindAlignmentReferenceFileByName(filepath, files);
         }
 
-        public static void SetLCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParametersBean param) {
+        public static void SetLCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParametersBean param)
+        {
             param.AlignmentReferenceFileID = FindAlignmentReferenceFileByName(filepath, files);
         }
         #endregion
@@ -388,8 +410,11 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
         {
             var dt = DateTime.Now;
             var projectFile = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
-            var projectProp = new ProjectPropertyBean() {
-                ProjectDate = dt, ProjectFolderPath = inputFolder, ProjectFilePath = Path.Combine(inputFolder, projectFile + ".mtd")
+            var projectProp = new ProjectPropertyBean()
+            {
+                ProjectDate = dt,
+                ProjectFolderPath = inputFolder,
+                ProjectFilePath = Path.Combine(inputFolder, projectFile + ".mtd")
             };
 
             using (var sr = new StreamReader(filepath, Encoding.ASCII))
@@ -416,7 +441,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
         private static void projectPropertyUpdate(ProjectPropertyBean projectProp, string method, string value)
         {
-            switch (method) {
+            switch (method)
+            {
                 //Data type
                 case "ms1 data type":
                     if (value == "Centroid" || value == "Profile")
@@ -442,7 +468,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 // Private version
                 case "is private version of Tada":
                     if (value.ToUpper() == "TRUE")
-                        projectProp.IsLabPrivateVersionTada = true;                    
+                        projectProp.IsLabPrivateVersionTada = true;
                     return;
             }
         }
@@ -450,48 +476,72 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
         #region to obtain ccs calibration data
 
-        public static void SetCalibrateInformation(AnalysisParametersBean param, List<AnalysisFileBean> files) {
+        public static void SetCalibrateInformation(AnalysisParametersBean param, List<AnalysisFileBean> files)
+        {
             if (param.FileidToCcsCalibrantData != null && param.FileidToCcsCalibrantData.Count > 0) return;
             param.FileidToCcsCalibrantData = new Dictionary<int, CoefficientsForCcsCalculation>();
 
             var isAllCalibrantImported = true;
-            foreach (var file in files) {
+            foreach (var file in files)
+            {
                 var ibfpath = file.AnalysisFilePropertyBean.AnalysisFilePath;
-                using (var access = new RawDataAccess(ibfpath, 0, false, false, true)) {
+                using (var access = new RawDataAccess(ibfpath, 0, false, false, true))
+                {
                     var calinfo = access.ReadIonmobilityCalibrationInfo();
                     var fileid = file.AnalysisFilePropertyBean.AnalysisFileId;
                     CoefficientsForCcsCalculation ccsCalinfo;
-                    if (calinfo == null) {
-                        ccsCalinfo = new CoefficientsForCcsCalculation() {
-                            IsAgilentIM = false, AgilentBeta = -1, AgilentTFix = -1,
-                            IsBrukerIM = false, IsWatersIM = false, WatersCoefficient = -1, WatersExponent = -1, WatersT0 = -1
+                    if (calinfo == null)
+                    {
+                        ccsCalinfo = new CoefficientsForCcsCalculation()
+                        {
+                            IsAgilentIM = false,
+                            AgilentBeta = -1,
+                            AgilentTFix = -1,
+                            IsBrukerIM = false,
+                            IsWatersIM = false,
+                            WatersCoefficient = -1,
+                            WatersExponent = -1,
+                            WatersT0 = -1
                         };
                     }
-                    else {
-                        ccsCalinfo = new CoefficientsForCcsCalculation() {
-                            IsAgilentIM = calinfo.IsAgilentIM, AgilentBeta = calinfo.AgilentBeta, AgilentTFix = calinfo.AgilentTFix,
-                            IsBrukerIM = calinfo.IsBrukerIM, IsWatersIM = calinfo.IsWatersIM, WatersCoefficient = calinfo.WatersCoefficient, WatersExponent = calinfo.WatersExponent, WatersT0 = calinfo.WatersT0
+                    else
+                    {
+                        ccsCalinfo = new CoefficientsForCcsCalculation()
+                        {
+                            IsAgilentIM = calinfo.IsAgilentIM,
+                            AgilentBeta = calinfo.AgilentBeta,
+                            AgilentTFix = calinfo.AgilentTFix,
+                            IsBrukerIM = calinfo.IsBrukerIM,
+                            IsWatersIM = calinfo.IsWatersIM,
+                            WatersCoefficient = calinfo.WatersCoefficient,
+                            WatersExponent = calinfo.WatersExponent,
+                            WatersT0 = calinfo.WatersT0
                         };
-                        if (calinfo.IsAgilentIM) {
+                        if (calinfo.IsAgilentIM)
+                        {
                             param.IonMobilityType = IonMobilityType.Dtims;
                         }
-                        else if (calinfo.IsWatersIM) {
+                        else if (calinfo.IsWatersIM)
+                        {
                             param.IonMobilityType = IonMobilityType.Twims;
                         }
-                        else {
+                        else
+                        {
                             param.IonMobilityType = IonMobilityType.Tims;
                         }
                     }
 
                     param.FileidToCcsCalibrantData[fileid] = ccsCalinfo;
                     if (ccsCalinfo.AgilentBeta == -1 && ccsCalinfo.AgilentTFix == -1 &&
-                        ccsCalinfo.WatersCoefficient == -1 && ccsCalinfo.WatersExponent == -1 && ccsCalinfo.WatersT0 == -1) {
+                        ccsCalinfo.WatersCoefficient == -1 && ccsCalinfo.WatersExponent == -1 && ccsCalinfo.WatersT0 == -1)
+                    {
                         isAllCalibrantImported = false;
                     }
                 }
             }
             param.IsAllCalibrantDataImported = isAllCalibrantImported;
-            if (!isAllCalibrantImported) {
+            if (!isAllCalibrantImported)
+            {
                 var errorMessage = param.IonMobilityType == IonMobilityType.Dtims
                     ? "For Agilent single fieled-based CCS calculation, you have to set the coefficients for all files. "
                     : "For Waters CCS calculation, you have to set the coefficients for all files. ";

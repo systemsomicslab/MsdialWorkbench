@@ -400,7 +400,7 @@
                 <MenuItem Name="MenuItem_AlignmentResultExport" Header="Alignment result" Click="menuItem_AlignmentResultExport_Click"/>
                 <MenuItem Name="MenuItem_MolecularSpectrumNetworkingExport" Header="Molecular spectrum networking export" Click="menuItem_MolecularSpectrumNetworkingExport_Click"/>
                 <MenuItem Name="MenuItem_CopyScreenshotToClipboard" Header="Copy screenshot to clipboard (emf)" Click="menuItem_CopyScreenshotToClipboard_Click"/>
-                <MenuItem Name="MenuItem_ParameterExport" Header="Parameter export (Tab-delimited text)" Click="menuItem_ParameterExport_Click" />
+                <MenuItem Name="MenuItem_ParameterExport" Header="Parameter export (text)" Click="menuItem_ParameterExport_Click" />
                 <MenuItem Name="MenuItem_LipoqualityDatabaseFormatExport" Header="Export as lipoquality database format" 
                           Click="menuItem_LipoqualityDatabaseFormatExport_Click"/>
                 <MenuItem Name="MenuItem_NormalizationResultExport" Header="Export normalization result" 

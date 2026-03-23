@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -24,10 +25,13 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak))?.Property ?? throw new Exception("Valid PropertySelector is not found.");
             VerticalProperty = VerticalPropertySelectors.GetSelector(typeof(SpectrumPeak))?.Property ?? throw new Exception("Valid PropertySelector is not found.");
             _hueItem = hueItem;
+            Brush = hueItem.Brush;
             Labels = graphLabels;
 
             IsVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
+            IsAnnotationVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
             LineThickness = new ReactivePropertySlim<double>(2d).AddTo(Disposables);
+            StrokeDashArray = new ReactivePropertySlim<DoubleCollection?>(null).AddTo(Disposables);
         }
 
         public IObservable<MsSpectrum?> MsSpectrum => _observableMsSpectrum.MsSpectrum;
@@ -38,12 +42,14 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
         public AxisItemSelector<double> VerticalAxisItemSelector => VerticalPropertySelectors.AxisItemSelector;
         public string VerticalProperty { get; }
-        public IBrushMapper Brush => _hueItem.Brush;
+        public IBrushMapper Brush { get; set; }
         public string HueProperty => _hueItem.Property;
         public GraphLabels Labels { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded => _observableMsSpectrum.Loaded;
         public ReactivePropertySlim<bool> IsVisible { get; }
+        public ReactivePropertySlim<bool> IsAnnotationVisible { get; }
         public ReactivePropertySlim<double> LineThickness { get; }
+        public ReactivePropertySlim<DoubleCollection?> StrokeDashArray { get; }
 
         public IObservable<bool> CanSave => _observableMsSpectrum.CanSave;
 
@@ -80,6 +86,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 _hueItem, Labels);
             spectrumModel.Disposables.Add(msSpectrum);
             return spectrumModel;
+        }
+
+        public SingleSpectrumModel Clone() {
+            return new SingleSpectrumModel(_observableMsSpectrum, HorizontalPropertySelectors, VerticalPropertySelectors, _hueItem, Labels);
         }
     }
 }
