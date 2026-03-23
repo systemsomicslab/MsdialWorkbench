@@ -36,6 +36,8 @@ namespace CompMs.MsdialCore.Export.Tests
             "Simple dot product",
             "Weighted dot product",
             "Reverse dot product",
+            "Enhanced dot product",
+            "Spectrum entropy",
             "Matched peaks count",
             "Matched peaks percentage",
             "Total score",

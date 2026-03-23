@@ -126,6 +126,10 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsAnnotationSuggested { get; set; } = false;
         [Key(36)]
         public double CollisionEnergy { get; set; }
+        [Key(37)]
+        public float EnhancedDotProduct { get; set; }
+        [Key(38)]
+        public float SpectralEntropy { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();
