@@ -71,22 +71,22 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PROJECT_ZTScan\20241214\rawdata\01_ReversePhase_Lx_ZTScan\result\UniqueProductIonAbundances.tsv");
 
             msdialpeaktableobjcuration.AdhocJson2Table20250709(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_POS.json",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_POS.tsv");
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_POS.json",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_POS.tsv");
 
             msdialpeaktableobjcuration.AdhocJson2Table20250709(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_NEG.json",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_NEG.tsv");
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_NEG.json",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_NEG.tsv");
 
             msdialpeaktableobjcuration.ExtractTargetedLipids(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_POS.tsv",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\curatedlipididlist.txt",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_POS_Extracted.txt",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_POS.tsv",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\curatedlipididlist.txt",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_POS_Extracted.txt",
                 "positive");
             msdialpeaktableobjcuration.ExtractTargetedLipids(
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_NEG.tsv",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\curatedlipididlist.txt",
-                @"E:\6_Projects\PROJECT_ZTScan\SCIEX_JP\Liver\result_20250804_q1deconly\UniqueProductIonAbundances_NEG_Extracted.txt",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_NEG.tsv",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\curatedlipididlist.txt",
+                @"D:\6_Projects\PROJECT_ZTScan\SCIEX_JP\NISTplasma\result_260409\UniqueProductIonAbundances_NEG_Extracted.txt",
                 "negative");
 
             //msdialpeaktableobjcuration.ExtractTargetedLipids(
