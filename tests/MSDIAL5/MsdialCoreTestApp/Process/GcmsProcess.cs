@@ -231,11 +231,29 @@ public sealed class GcmsProcess
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, decResults);
 
             var accessor = new GcmsAlignmentMetadataAccessor(storage.DataBaseMapper, storage.MsdialGcmsParameter, false);
-            var quantAccessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
             var stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var spotExporter = new AlignmentCSVExporter("\t");
-            using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
-            spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+
+            // Match the default export set of the Windows GUI (GcmsMethodModel.cs)
+            var exportTypes = new (string Label, string ExportType, string FileSuffix)[] {
+                ("Raw data (Height)", "Height", "Height"),
+                ("Raw data (Area)",   "Area",   "Area"),
+                ("Peak ID",           "ID",     "PeakID"),
+                ("Quant mass",        "MZ",     "QuantMass"),
+                ("Retention time",    "RT",     "Rt"),
+                ("Retention index",   "RI",     "Ri"),
+                ("S/N",               "SN",     "SN"),
+            };
+
+            LegacyQuantValueAccessor? primaryQuantAccessor = null;
+            foreach (var et in exportTypes) {
+                var qAccessor = new LegacyQuantValueAccessor(et.ExportType, storage.MsdialGcmsParameter);
+                primaryQuantAccessor ??= qAccessor; // Height drives mzTab (matches GUI default)
+                var outFile = Path.Combine(outputFolder, $"{alignmentFile.FileName}_{et.FileSuffix}.mdalign");
+                Console.WriteLine($"Exporting {et.Label} -> {Path.GetFileName(outFile)}");
+                using var stream = File.Open(outFile, FileMode.Create, FileAccess.Write, FileShare.Read);
+                spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, qAccessor, stats);
+            }
 
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
@@ -250,7 +268,7 @@ public sealed class GcmsProcess
                 msdecs,
                 files,
                 accessor,
-                quantAccessor,
+                primaryQuantAccessor!,
                 stats,
                 mztabm_filename
             );
