@@ -32,24 +32,26 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         public void Process(IEnumerable<AlignmentSpotProperty> spots) {
             var spotList = spots.Where(n => n.IsReferenceMatched(_evaluator) && !n.Name.StartsWith("Putative")).OrderByDescending(spot => spot.MatchResults.Representative.LibraryID).ToList();
             var currentPeakId = 0;
-            var currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
 
             // by ID
-            for (int i = 1; i < spotList.Count; i++) {
-                var libID = spotList[i].MatchResults.Representative.LibraryID;
-                if (libID < 0) break;
-                if (libID != currentLibraryId) {
-                    currentPeakId = i;
-                    currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
-                    continue;
-                }
-                else {
-                    if (spotList[currentPeakId].MatchResults.Representative.TotalScore < spotList[i].MatchResults.Representative.TotalScore) {
-                        ChangeAnnotationToLowScore(spotList[currentPeakId]);
+            if (spotList.Count > 0) {
+                var currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
+                for (int i = 1; i < spotList.Count; i++) {
+                    var libID = spotList[i].MatchResults.Representative.LibraryID;
+                    if (libID < 0) break;
+                    if (libID != currentLibraryId) {
                         currentPeakId = i;
+                        currentLibraryId = spotList[currentPeakId].MatchResults.Representative.LibraryID;
+                        continue;
                     }
                     else {
-                        ChangeAnnotationToLowScore(spotList[i]);
+                        if (spotList[currentPeakId].MatchResults.Representative.TotalScore < spotList[i].MatchResults.Representative.TotalScore) {
+                            ChangeAnnotationToLowScore(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            ChangeAnnotationToLowScore(spotList[i]);
+                        }
                     }
                 }
             }
@@ -121,23 +123,25 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var spotList = spots.OrderByDescending(spot => spot.MspID).ToList();
 
             var currentPeakId = 0;
-            var currentLibraryId = spotList[currentPeakId].MspID;
-            
+
             // by ID
-            for (int i = 1; i < spotList.Count; i++) {
-                if (spotList[i].MspID < 0) break;
-                if (spotList[i].MspID != currentLibraryId) {
-                    currentPeakId = i;
-                    currentLibraryId = spotList[currentPeakId].MspID;
-                    continue;
-                }
-                else {
-                    if (spotList[currentPeakId].MspBasedMatchResult.TotalScore < spotList[i].MspBasedMatchResult.TotalScore) {
-                        SetDefaultCompoundInformationInMspSearch(spotList[currentPeakId]);
+            if (spotList.Count > 0) {
+                var currentLibraryId = spotList[currentPeakId].MspID;
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].MspID < 0) break;
+                    if (spotList[i].MspID != currentLibraryId) {
                         currentPeakId = i;
+                        currentLibraryId = spotList[currentPeakId].MspID;
+                        continue;
                     }
                     else {
-                        SetDefaultCompoundInformationInMspSearch(spotList[i]);
+                        if (spotList[currentPeakId].MspBasedMatchResult.TotalScore < spotList[i].MspBasedMatchResult.TotalScore) {
+                            SetDefaultCompoundInformationInMspSearch(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            SetDefaultCompoundInformationInMspSearch(spotList[i]);
+                        }
                     }
                 }
             }
@@ -213,22 +217,24 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var spotList = spots.OrderByDescending(spot => spot.TextDbID).ToList();
 
             var currentPeakId = 0;
-            var currentLibraryId = spotList[currentPeakId].TextDbID;
+            if (spotList.Count > 0) {
+                var currentLibraryId = spotList[currentPeakId].TextDbID;
 
-            for (int i = 1; i < spotList.Count; i++) {
-                if (spotList[i].TextDbID < 0) break;
-                if (spotList[i].TextDbID != currentLibraryId) {
-                    currentPeakId = i;
-                    currentLibraryId = spotList[currentPeakId].TextDbID;
-                    continue;
-                }
-                else {
-                    if (spotList[currentPeakId].TextDbBasedMatchResult.TotalScore < spotList[i].TextDbBasedMatchResult.TotalScore) {
-                        SetDefaultCompoundInformationInTextSearch(spotList[currentPeakId]);
+                for (int i = 1; i < spotList.Count; i++) {
+                    if (spotList[i].TextDbID < 0) break;
+                    if (spotList[i].TextDbID != currentLibraryId) {
                         currentPeakId = i;
+                        currentLibraryId = spotList[currentPeakId].TextDbID;
+                        continue;
                     }
                     else {
-                        SetDefaultCompoundInformationInTextSearch(spotList[i]);
+                        if (spotList[currentPeakId].TextDbBasedMatchResult.TotalScore < spotList[i].TextDbBasedMatchResult.TotalScore) {
+                            SetDefaultCompoundInformationInTextSearch(spotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            SetDefaultCompoundInformationInTextSearch(spotList[i]);
+                        }
                     }
                 }
             }
