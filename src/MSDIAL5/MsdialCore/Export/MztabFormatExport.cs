@@ -979,7 +979,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot
         )
         {
-            return new List<string>() { ValueOrNull(spot.Ontology.ToString()) };
+            return new List<string>() { ValueOrNull(spot.Ontology?.ToString()) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
