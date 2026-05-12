@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
@@ -19,18 +20,31 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public ChromatogramPeakFeatureModel Peak { get; }
 
-        public double AccumulatedIntensity {
+        public double? AccumulatedIntensity {
             get {
-                if (_accumulatedIntensity is null) {
-                    CalculateAccumulatedIntensity();
+                if (_accumulatedIntensity is null && !_isAccumulatedIntensityLoading) {
+                    _ = EnsureCalculateAccumulatedIntensityAsync();
                 }
-                return _accumulatedIntensity ?? 0d;
+                return _accumulatedIntensity;
             }
+
+            private set => SetProperty(ref _accumulatedIntensity, value);
+
         }
         private double? _accumulatedIntensity = null;
 
-        private void  CalculateAccumulatedIntensity() {
-            _accumulatedIntensity = _access.Access(_intensitiesLoader.Load(_peakIndex).PixelPeakFeaturesList[0].IntensityArray).Average();
+        public bool IsAccumulatedIntensityLoading {
+            get => _isAccumulatedIntensityLoading;
+            private set => SetProperty(ref _isAccumulatedIntensityLoading, value);
+        }
+        private bool _isAccumulatedIntensityLoading = false;
+
+        private async Task EnsureCalculateAccumulatedIntensityAsync() {
+            IsAccumulatedIntensityLoading = true;
+            var pixelsTask = _intensitiesLoader.LoadAsync(_peakIndex);
+            var pixels = await pixelsTask.ConfigureAwait(false);
+            AccumulatedIntensity = _access.Access(pixels.PixelPeakFeaturesList[0].IntensityArray).Average();
+            IsAccumulatedIntensityLoading = false;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 
                 var factory = () => {
                     var image = new byte[width * stride * height];
-                    var pixels = _intensitiesLoader.Load(_peakIndex);
+                    var pixels = _intensitiesLoader.LoadAsync(_peakIndex).Result;
                     var features = pixels.PixelPeakFeaturesList[0];
                     var sorted = features.IntensityArray.OrderBy(x => x).ToArray();
                     var length = sorted.Length;
@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Imaging
             if (skipUnknownPeaks && string.IsNullOrEmpty(Peak.Name)) {
                 return;
             }
-            var pixels = _intensitiesLoader.Load(_peakIndex);
+            var pixels = await _intensitiesLoader.LoadAsync(_peakIndex, token).ConfigureAwait(false);
             var row = string.Format("{0},{1},{2},{3},", Peak.MasterPeakID, Peak.Name, Mz.Value, Drift.Value) + string.Join(",", pixels.PixelPeakFeaturesList[0].IntensityArray);
             var encoded = UTF8Encoding.Default.GetBytes(row + "\n");
             await stream.WriteAsync(encoded, 0, encoded.Length, token).ConfigureAwait(false);
