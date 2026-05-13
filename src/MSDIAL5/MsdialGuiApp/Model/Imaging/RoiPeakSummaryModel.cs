@@ -21,15 +21,8 @@ namespace CompMs.App.Msdial.Model.Imaging
         public ChromatogramPeakFeatureModel Peak { get; }
 
         public double? AccumulatedIntensity {
-            get {
-                if (_accumulatedIntensity is null && !_isAccumulatedIntensityLoading) {
-                    _ = EnsureCalculateAccumulatedIntensityAsync();
-                }
-                return _accumulatedIntensity;
-            }
-
+            get => _accumulatedIntensity;
             private set => SetProperty(ref _accumulatedIntensity, value);
-
         }
         private double? _accumulatedIntensity = null;
 
@@ -39,7 +32,10 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
         private bool _isAccumulatedIntensityLoading = false;
 
-        private async Task EnsureCalculateAccumulatedIntensityAsync() {
+        public async Task EnsureCalculateAccumulatedIntensityAsync() {
+            if (_accumulatedIntensity is not null || _isAccumulatedIntensityLoading) {
+                return;
+            }
             IsAccumulatedIntensityLoading = true;
             var pixelsTask = _intensitiesLoader.LoadAsync(_peakIndex);
             var pixels = await pixelsTask.ConfigureAwait(false);

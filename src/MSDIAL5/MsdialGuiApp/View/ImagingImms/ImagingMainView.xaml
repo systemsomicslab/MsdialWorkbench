@@ -197,12 +197,12 @@
                                                     Padding="5,0"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Bottom">
-                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity}">
+                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value}">
                                                     <Rectangle.Fill>
                                                         <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
                                                     </Rectangle.Fill>
                                                     <Rectangle.ToolTip>
-                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity, StringFormat=Average intensity: {0:F0}}"/>
+                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, StringFormat=Average intensity: {0:F0}}"/>
                                                     </Rectangle.ToolTip>
                                                 </Rectangle>
                                             </Border>
