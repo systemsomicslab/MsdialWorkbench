@@ -29,13 +29,13 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public Task SaveAsync(CancellationToken token = default)
         {
-            var image = _imageResult.SelectedPeakIntensities?.BitmapImageModel;
+            var image = _imageResult.IntensityImagePlaceholder.CurrentImage;
             if (image is null) {
                 return Task.CompletedTask;
             }
             var rois = _roiModels.Where(roi => roi.IsSelected).Select(roi => roi.Roi.RoiImage).ToArray();
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 if (string.IsNullOrEmpty(Path)) {
                     return;
@@ -53,6 +53,9 @@ namespace CompMs.App.Msdial.Model.Imaging
                 {
                     return;
                 }
+
+                await Task.WhenAll([image.EnsureBitmapSourceAsync(), .. rois.Select(roi => roi.EnsureBitmapSourceAsync())]).ConfigureAwait(false);
+
                 encoder.Frames.Add(BitmapFrame.Create(image.BitmapSource));
                 foreach (var roi in rois)
                 {

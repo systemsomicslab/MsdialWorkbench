@@ -187,7 +187,7 @@
                                                     Padding="5,0"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Bottom">
-                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value}">
+                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, TargetNullValue=0}">
                                                     <Rectangle.Fill>
                                                         <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
                                                     </Rectangle.Fill>
@@ -359,7 +359,7 @@
                         <Grid Width="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Width}"
                               Height="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Height}"
                               behavior:AddMovabilityBehavior.IsEnabled="False">
-                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"/>
+                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.IntensityImagePlaceholder.Value}"/>
                             <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>

@@ -1,5 +1,7 @@
 ﻿using CompMs.CommonMVVM;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -9,8 +11,9 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         public static readonly int ImageMargin = 1;
 
+        private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
+
         private Func<BitmapSource>? _bitmapSourceFactory;
-        private BitmapSource? _bitmapSource;
 
         public BitmapImageModel(BitmapSource bitmapSource, string title) {
             _bitmapSource = bitmapSource;
@@ -23,7 +26,38 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public string Title { get; }
-        public BitmapSource BitmapSource => _bitmapSource ?? _bitmapSourceFactory!.Invoke();
+
+        public BitmapSource? BitmapSource {
+            get => _bitmapSource;
+            private set => SetProperty(ref _bitmapSource, value);
+        }
+        private BitmapSource? _bitmapSource;
+
+        public bool LoadingBitmap {
+            get => _loadingBitmap;
+            private set => SetProperty(ref _loadingBitmap, value);
+        }
+        private bool _loadingBitmap = false;
+
+        public async Task EnsureBitmapSourceAsync() {
+            if (_bitmapSource is not null || LoadingBitmap) {
+                return;
+            }
+
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
+            try {
+                if (_bitmapSource is not null || LoadingBitmap) {
+                    return;
+                }
+                LoadingBitmap = true;
+                BitmapSource = await Task.Run(() => _bitmapSourceFactory!.Invoke()).ConfigureAwait(false);
+                LoadingBitmap = false;
+            }
+            finally {
+                _semaphoreSlim.Release();
+            }
+        }
 
         public BitmapImageModel WithPalette(BitmapPalette palette) {
             if (_bitmapSource is null) {

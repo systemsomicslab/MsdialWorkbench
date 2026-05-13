@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Imaging
     {
         private readonly MaldiFrames _frameInfos;
         private readonly RawIntensityOnPixelsLoader _intensitiesLoader;
-        private readonly int _peakIndex;
+        internal readonly int _peakIndex;
 
         public IntensityImageModel(MaldiFrames frameInfos, ChromatogramPeakFeatureModel peak, MaldiFrameLaserInfo laserInfo, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
             _frameInfos = frameInfos;
