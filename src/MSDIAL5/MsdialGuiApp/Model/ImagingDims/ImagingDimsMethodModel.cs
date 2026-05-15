@@ -67,7 +67,8 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         if (option.HasFlag(ProcessOption.Identification)) {
             var queryFatoires = _storage.CreateAnnotationQueryFactoryStorage();
             var annotationProcess = new StandardAnnotationProcess(queryFatoires.MoleculeQueryFactories, _evaluator, _storage.DataBaseMapper);
-            var processor = new ProcessFile(_providerFactory, _storage, annotationProcess, _evaluator);
+            var providerFactory = _storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+            var processor = new ProcessFile(providerFactory, _storage, annotationProcess, _evaluator);
             var runner = new ProcessRunner(processor, 2);
             await runner.RunAllAsync(_storage.AnalysisFiles, option, Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
             foreach (var file in files) {
