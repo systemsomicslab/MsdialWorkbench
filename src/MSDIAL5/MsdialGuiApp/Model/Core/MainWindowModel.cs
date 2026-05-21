@@ -205,10 +205,6 @@ namespace CompMs.App.Msdial.Model.Core
             using (nowLoading.ProcessStart()){
                 try
                 {
-                    if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath))
-                    {
-                        return;
-                    }
                     var resembleProjects = _previousProjects.Where(projectCrumb.MaybeSame).ToList();
                     foreach (var resembleProject in resembleProjects)
                     {

@@ -167,7 +167,7 @@
                                 </Button.ToolTip>
                                     <Button.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Delete"
+                                            <MenuItem Header="Remove from recent projects"
                                                       Command="{Binding Data, Source={StaticResource delete}}"
                                                       CommandParameter="{Binding}"/>
                                         </ContextMenu>
