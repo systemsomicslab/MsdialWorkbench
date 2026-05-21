@@ -34,6 +34,9 @@ internal sealed class IntensityImagePlaceholderModel : BindableBase
 
     public async Task EnsureImageAsync(int index, string title, CancellationToken token = default) {
         if (_cache.TryGet(index, out var imageModel)) {
+            if (imageModel.Title != title) {
+                imageModel.Title = title;
+            }
             CurrentImage = imageModel;
             return;
         }

@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Title = title;
         }
 
-        public string Title { get; }
+        public string Title { get; internal set; }
 
         public BitmapSource? BitmapSource {
             get => _bitmapSource;

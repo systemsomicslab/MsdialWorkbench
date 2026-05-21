@@ -318,14 +318,21 @@
                 <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
             </Grid.InputBindings>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto" MaxWidth="240"/>
                 </Grid.ColumnDefinitions>
+                <TextBlock d:Text="Image Title"
+                           Text="{Binding SelectedImageViewModel.ImageResultViewModel.IntensityImagePlaceholder.Value.Title}"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Margin="8,0"/>
                 <StackPanel Orientation="Vertical"
                             Margin="8"
+                            Grid.Row="1"
                             Grid.Column="1">
                     <GroupBox Header="ROI commands">
                         <ItemsControl>
@@ -365,6 +372,7 @@
                 </StackPanel>
                 <Border x:Name="ImageContainer"
                         ClipToBounds="True"
+                        Grid.Row="1"
                         Grid.Column="0">
                     <Viewbox behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}"
                              behavior:AddMovabilityBehavior.IsEnabled="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Converter={StaticResource NegativeConverter}}"

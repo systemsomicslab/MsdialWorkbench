@@ -57,7 +57,11 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
                     IntensityImagePlaceholder.ResetImage();
                 }
                 else {
-                    _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, "");
+                    var title = $"m/z {intensity.Mz.Value}";
+                    if (!string.IsNullOrEmpty(intensity.Peak.Name)) {
+                        title = $"{intensity.Peak.Name}, {title}";
+                    }
+                    _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, title);
                 }
             }).AddTo(Disposables);
         _file = file;

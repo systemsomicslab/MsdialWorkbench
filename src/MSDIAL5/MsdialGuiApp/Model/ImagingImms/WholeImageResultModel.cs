@@ -57,7 +57,11 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                         IntensityImagePlaceholder.ResetImage();
                     }
                     else {
-                        _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, "");
+                        var title = $"m/z {intensity.Mz.Value}, Mobility {intensity.Drift.Value} [1/K0]";
+                        if (!string.IsNullOrEmpty(intensity.Peak.Name)) {
+                            title = $"{intensity.Peak.Name}, {title}";
+                        }
+                        _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, title);
                     }
                 })
                 .AddTo(Disposables);
