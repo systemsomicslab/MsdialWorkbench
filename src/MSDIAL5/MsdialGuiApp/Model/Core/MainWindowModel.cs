@@ -89,7 +89,21 @@ namespace CompMs.App.Msdial.Model.Core
                 return;
             }
             using (nowSaving.ProcessStart()) {
-                await CurrentProject.SaveAsync().ConfigureAwait(false);
+                await CurrentProject.SaveAsync().ConfigureAwait(true);
+                var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                if (_previousProjects.Any(currentCrumb.MaybeSame))
+                {
+                    _previousProjects.Remove(_previousProjects.First(currentCrumb.MaybeSame));
+                }
+                _previousProjects.Insert(0, currentCrumb);
+                if (_previousProjects.Count > 50)
+                {
+                    while (_previousProjects.Count > 50)
+                    {
+                        _previousProjects.RemoveAt(_previousProjects.Count - 1);
+                    }
+                }
+                _settings.PreviousProjects = PreviousProjects.ToList();
                 _settings.Save();
             }
         }

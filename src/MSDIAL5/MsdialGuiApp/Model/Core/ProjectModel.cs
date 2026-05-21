@@ -19,6 +19,8 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal sealed class ProjectModel : BindableBase, IProjectModel
     {
+
+
         public ProjectModel(ProjectDataStorage storage, IMessageBroker broker) {
             Storage = storage;
             _broker = broker;
