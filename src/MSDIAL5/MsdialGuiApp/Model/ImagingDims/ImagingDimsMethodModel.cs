@@ -38,7 +38,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         _projectBaseParameter = projectBaseParameter;
         StudyContext = studyContext;
         _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
+        _providerFactory = storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true); //new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
         ImageModels = [];
         Image = ImageModels.FirstOrDefault();
 
