@@ -35,8 +35,8 @@ namespace CompMs.App.Msdial.Model.Core
                 _settings.PreviousProjects = new List<ProjectCrumb>();
                 _settings.Save();
             }
-            _previousProjects = _settings.PreviousProjects;
-            PreviousProjects = _previousProjects.AsReadOnly();
+            _previousProjects = new ObservableCollection<ProjectCrumb>(_settings.PreviousProjects);
+            PreviousProjects = new ReadOnlyObservableCollection<ProjectCrumb>(_previousProjects);
 
             //InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Negative);
         }
@@ -61,19 +61,25 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private ProjectSettingModel projectSetting;
 
-        public ReadOnlyCollection<ProjectCrumb> PreviousProjects { get; }
-        private readonly List<ProjectCrumb> _previousProjects;
+        public ReadOnlyObservableCollection<ProjectCrumb> PreviousProjects { get; }
+        private readonly ObservableCollection<ProjectCrumb> _previousProjects;
 
         private Task SetNewProject(IProjectModel project) {
             CurrentProject = project;
             ProjectSetting = new ProjectSettingModel(SetNewProject, _broker);
             var currentCrumb = new ProjectCrumb(project.Storage.ProjectParameter);
             if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                _previousProjects.RemoveAll(currentCrumb.MaybeSame);
+                var resembleProjects = _previousProjects.Where(currentCrumb.MaybeSame).ToList();
+                foreach (var resembleProject in resembleProjects)
+                {
+                    _previousProjects.Remove(resembleProject);
+                }
             }
             _previousProjects.Insert(0, currentCrumb);
             if (_previousProjects.Count > 50) {
-                _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
+                while (_previousProjects.Count > 50) {
+                    _previousProjects.RemoveAt(_previousProjects.Count - 1);
+                }
             }
             return Task.CompletedTask;
         }
@@ -83,7 +89,21 @@ namespace CompMs.App.Msdial.Model.Core
                 return;
             }
             using (nowSaving.ProcessStart()) {
-                await CurrentProject.SaveAsync().ConfigureAwait(false);
+                await CurrentProject.SaveAsync().ConfigureAwait(true);
+                var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                if (_previousProjects.Any(currentCrumb.MaybeSame))
+                {
+                    _previousProjects.Remove(_previousProjects.First(currentCrumb.MaybeSame));
+                }
+                _previousProjects.Insert(0, currentCrumb);
+                if (_previousProjects.Count > 50)
+                {
+                    while (_previousProjects.Count > 50)
+                    {
+                        _previousProjects.RemoveAt(_previousProjects.Count - 1);
+                    }
+                }
+                _settings.PreviousProjects = PreviousProjects.ToList();
                 _settings.Save();
             }
         }
@@ -123,11 +143,17 @@ namespace CompMs.App.Msdial.Model.Core
                     CurrentProject = loadedProject;
                     var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
                     if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                        _previousProjects.RemoveAll(currentCrumb.MaybeSame);
+                        var resembleProjects = _previousProjects.Where(currentCrumb.MaybeSame).ToList();
+                        foreach (var resembleProject in resembleProjects)
+                        {
+                            _previousProjects.Remove(resembleProject);
+                        }
                     }
                     _previousProjects.Insert(0, currentCrumb);
                     if (_previousProjects.Count > 50) {
-                        _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
+                        while (_previousProjects.Count > 50) {
+                            _previousProjects.RemoveAt(_previousProjects.Count - 1);
+                        }
                     }
                 }
                 catch {
@@ -153,16 +179,44 @@ namespace CompMs.App.Msdial.Model.Core
                     CurrentProject = loadedProject;
                     var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
                     if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                        _previousProjects.RemoveAll(currentCrumb.MaybeSame);
+                        var resembleProjects = _previousProjects.Where(currentCrumb.MaybeSame).ToList();
+                        foreach (var resembleProject in resembleProjects)
+                        {
+                            _previousProjects.Remove(resembleProject);
+                        }
                     }
                     _previousProjects.Insert(0, currentCrumb);
                     if (_previousProjects.Count > 50) {
-                        _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
+                        while (_previousProjects.Count > 50) {
+                            _previousProjects.RemoveAt(_previousProjects.Count - 1);
+                        }
                     }
                 }
                 catch {
                     await Application.Current.Dispatcher.InvokeAsync(() => {
                         MessageBox.Show("Failed to load project.\nPlease check your project.");
+                        return Task.CompletedTask;
+                    });
+                }
+            }
+        }
+
+        public async Task DeleteProjectAsync(ProjectCrumb projectCrumb){
+            using (nowLoading.ProcessStart()){
+                try
+                {
+                    var resembleProjects = _previousProjects.Where(projectCrumb.MaybeSame).ToList();
+                    foreach (var resembleProject in resembleProjects)
+                    {
+                        _previousProjects.Remove(resembleProject);
+                    }
+                    _settings.PreviousProjects = PreviousProjects.ToList();
+                    _settings.Save();
+                }
+                catch
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() => {
+                        MessageBox.Show("Failed to delete project.\nPlease check your project.");
                         return Task.CompletedTask;
                     });
                 }

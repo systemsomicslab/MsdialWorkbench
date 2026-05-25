@@ -8,6 +8,7 @@
               xmlns:properties="clr-namespace:CompMs.App.Msdial.Properties"
               xmlns:util="clr-namespace:CompMs.App.Msdial.Utility"
               xmlns:progressbar="clr-namespace:CompMs.Graphics.UI.ProgressBar;assembly=ChartDrawing"
+              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
               mc:Ignorable="d"
               Icon="/Resources/msdial_icon.ico"
               d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
@@ -138,6 +139,9 @@
                 <ItemsControl ItemsSource="{Binding PreviousProjects}"
                               BorderThickness="0.5"
                               BorderBrush="Black">
+                    <ItemsControl.Resources>
+                            <mvvm:BindingProxy x:Key="delete" Data="{Binding Path=DeletePreviousProjectCommand}"/>
+                        </ItemsControl.Resources>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Command="{Binding Path=DataContext.OpenPreviousProjectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -161,7 +165,14 @@
                                         <TextBlock Text="{Binding FilePath}"/>
                                     </ToolTip>
                                 </Button.ToolTip>
-                            </Button>
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Remove from recent projects"
+                                                      Command="{Binding Data, Source={StaticResource delete}}"
+                                                      CommandParameter="{Binding}"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
