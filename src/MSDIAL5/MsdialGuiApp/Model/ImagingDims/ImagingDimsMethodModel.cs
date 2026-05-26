@@ -115,7 +115,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
             return Task.CompletedTask;
         }
 
-        return Image.ImageResult.SaveAsync();
+        return Task.WhenAll(ImageModels.Select(image => image.ImageResult.SaveAsync()));
     }
 
     public AnalysisResultExportModel CreateExportAnalysisModel() {
