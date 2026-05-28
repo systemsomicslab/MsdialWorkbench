@@ -1,4 +1,5 @@
 ﻿using CompMs.CommonMVVM;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,22 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public Task SaveAsync(CancellationToken token = default)
         {
+            string? filePath = Path;
+            if (string.IsNullOrEmpty(filePath)) {
+                var dialog = new SaveFileDialog
+                {
+                    Filter = "PNG Image|*.png|GIF Image|*.gif",
+                    DefaultExt = "png",
+                    FileName = "image.png",
+                };
+                if (dialog.ShowDialog() == true) {
+                    filePath = dialog.FileName;
+                }
+            }
+            if (string.IsNullOrEmpty(filePath)) {
+                return Task.CompletedTask;
+            }
+
             var image = _imageResult.IntensityImagePlaceholder.CurrentImage;
             if (image is null) {
                 return Task.CompletedTask;
@@ -37,15 +54,12 @@ namespace CompMs.App.Msdial.Model.Imaging
 
             return Task.Run(async () =>
             {
-                if (string.IsNullOrEmpty(Path)) {
-                    return;
-                }
                 BitmapEncoder? encoder = null;
-                if (Path.EndsWith("png"))
+                if (filePath.EndsWith("png"))
                 {
                     encoder = new PngBitmapEncoder();
                 }
-                else if (Path.EndsWith("gif"))
+                else if (filePath.EndsWith("gif"))
                 {
                     encoder = new GifBitmapEncoder();
                 }
@@ -61,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Imaging
                 {
                     encoder.Frames.Add(BitmapFrame.Create(roi.BitmapSource));
                 }
-                using (var stream = File.Open(Path, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
                     encoder.Save(stream);
                 }

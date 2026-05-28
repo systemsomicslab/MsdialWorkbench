@@ -390,7 +390,7 @@
                                              VerticalAlignment="Stretch"
                                              HorizontalAlignment="Stretch"
                                              IsSelectable="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Mode=OneWay}"
-                                             Visibility="{Binding IsChecked, ElementName=SelectorVisibility, Converter={StaticResource BooleanToVisibility}}"/>
+                                             Visibility="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Mode=OneWay, Converter={StaticResource BooleanToVisibility}}"/>
                         </Grid>
                     </Viewbox>
                 </Border>

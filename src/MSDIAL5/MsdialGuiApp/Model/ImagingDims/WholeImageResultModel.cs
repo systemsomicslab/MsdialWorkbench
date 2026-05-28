@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.RawDataHandler.Core;
+using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -91,8 +92,21 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         return result;
     }
 
-    public async Task SaveIntensitiesAsync(CancellationToken token = default) {
-        using var writer = File.Open("pixel_intensities.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+    public async Task<bool> SaveIntensitiesAsync(CancellationToken token = default) {
+        var filePath = string.Empty;
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Pixel intensity file|*.csv",
+            DefaultExt = "csv",
+            FileName = "pixel_intensities.csv",
+        };
+        if (dialog.ShowDialog() == true) {
+            filePath = dialog.FileName;
+        }
+        if (string.IsNullOrEmpty(filePath)) {
+            return false;
+        }
+        using var writer = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
         var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
         var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
         writer.Write(encoded, 0, encoded.Length);
@@ -110,6 +124,11 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
             }, token));
         }
         await Task.WhenAll(tasks).ConfigureAwait(false);
+        var task = Task.CompletedTask;
+        await task;
+        task.Wait();
+
+        return true;
     }
 
     public void ResetRawSpectraOnPixels() {
