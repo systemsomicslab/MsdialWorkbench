@@ -2,143 +2,470 @@
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Extension;
 using System;
+using System.CommandLine;
 using System.IO;
 
-namespace CompMs.App.MsdialConsole.Process
+namespace CompMs.App.MsdialConsole.Process;
+
+public static class MainProcess
 {
-    public sealed class MainProcess
-    {
-        private MainProcess() { }
+    public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
+        new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
+        return 1;
+    }
 
-        public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
-            new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
-            return 1;
-        }
-
-        public static int Run(string[] args) {
-            if (args.Length == 0) return argsError();
-
-            if (args[0] == "eic") {
-                return new EicProcess().Run(args);
+    public static void SetGcmsCommand(Command root) {
+        var cmd = new Command("gcms", "Run GC-MS data processing");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
             }
-
-            if (args.Length < 7) return argsError();
-
-            var inputFolder = string.Empty;
-            var targetFolder = string.Empty;
-            var methodFile = string.Empty;
-            var outputFolder = string.Empty;
-            var isProjectStore = false;
-            var isAif = false;
-            var targetMz = -1.0f;
-            var ionmode = "Positive";
-            var overwrite = false;
-            var isAllEdgeExport = false;
-
-            for (int i = 1; i < args.Length; i++) {
-                if (args[i] == "-i" && i + 1 < args.Length) inputFolder = args[i + 1];
-                else if (args[i] == "-m" && i + 1 < args.Length) methodFile = args[i + 1];
-                else if (args[i] == "-t" && i + 1 < args.Length) targetFolder = args[i + 1];
-                else if (args[i] == "-o" && i + 1 < args.Length) outputFolder = args[i + 1];
-                else if (args[i] == "-p") isProjectStore = true;
-                else if (args[i] == "-target" && i + 1 < args.Length) {
-                    if (!float.TryParse(args[i + 1], out targetMz)) {
-                        return argsError2();
-                    }
-                }
-                else if (args[i] == "-ionmode" && i + 1 < args.Length) ionmode = args[i + 1];
-                else if (args[i] == "-overwrite" && i + 1 < args.Length) {
-                    var booleanstring = args[i + 1];
-                    if (bool.TryParse(booleanstring, out bool isoverwirte)) {
-                        overwrite = isoverwirte;
-                    }
-                }
-                else if (args[i] == "-a") isAllEdgeExport = true;
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
             }
-            inputFolder = Path.GetFullPath(inputFolder);
-            methodFile = Path.GetFullPath(methodFile);
-            outputFolder = Path.GetFullPath(outputFolder);
-
-            if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
-            var analysisType = args[0];
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.SetAction(parseResult => {
             try {
-                switch (analysisType) {
-                    case "gcms":
-                        return new GcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore);
-                    case "lcms":
-                        return new LcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                    case "lcimms":
-                        return new LcimmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                    case "dims":
-                        return new DimsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                    case "imms":
-                        return new ImmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                    case "msn":
-
-                        if (Directory.Exists(inputFolder)) {
-                            if (isAllEdgeExport){
-                                return new MoleculerNetworkProcess().Run4AllEdgeGeneration(inputFolder, outputFolder, methodFile, ionmode, overwrite);
-                            }
-                            else
-                                return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode, overwrite);
-                        }
-                        else {
-                            if (!targetFolder.IsEmptyOrNull()) {
-                                return new MoleculerNetworkProcess().Map2TargetFile(targetFolder, inputFolder, methodFile, outputFolder, ionmode);
-                            }
-                            else {
-                                return new MoleculerNetworkProcess().Run4Onefile(inputFolder, outputFolder, methodFile, ionmode);
-                            }
-                        }
-                    case "eic":
-                        return new EicProcess().Run(args);
-                    default:
-                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcms', 'lcimms', 'dims', 'imms', 'msn', 'eic'");
-                        return -1;
-                }
-            } 
+                var input = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                return new GcmsProcess().Run(input.FullName, outputFolder.FullName, methodFile.FullName, isProjectStore);
+            }
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
                 Console.WriteLine(msg);
-                return ex.GetHashCode(); 
+                return 1;
             }
-        }
+        });
+        root.Add(cmd);
+    }
 
-        /// <summary>
-        /// Shows console application usage help
-        /// </summary>
-        /// <returns>error code -1</returns>
-        private static int argsError() {
-            var error = @$"Msdial Console App Version {Resources.VERSION}
+    public static void SetLcmsCommand(Command root) {
+        var cmd = new Command("lcms", "Run LC-MS data processing");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t")
+        {
+            Description = "Option to run as target mode. please set m/z",
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var inputFolder = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                return new LcmsProcess().Run(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, isProjectStore, targetMz);
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
 
-                        Msdial Console App requires the following args:
-						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-						Where: <analysisType>	is one of gcms, lcms, eic	(required)
-							   <input folder>	is the folder containing the files to be processed	(required)
-							   <output folder>	is the folder to save results	(required)
-							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate .mdproject file to be loaded in MSDIAL5 GUI application.";
 
-            Console.Error.WriteLine(error);
+    public static void SetLcimmsCommand(Command root) {
+        var cmd = new Command("lcimms", "Run LC-IM-MS data processing");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t")
+        {
+            Description = "Option to run as target mode. please set m/z",
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var inputFolder = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                return new LcimmsProcess().Run(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, isProjectStore, targetMz);
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
 
-            return -1;
-        }
-        private static int argsError2() {
-            var error = @$"Msdial Console App Version {Resources.VERSION}
+    public static void SetDimsCommand(Command root) {
+        var cmd = new Command("dims", "Run DI-MS data processing");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t")
+        {
+            Description = "Option to run as target mode. please set m/z",
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var inputFolder = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                return new DimsProcess().Run(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, isProjectStore, targetMz);
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
 
-                        Msdial Console App requires the following args:
-						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
-						Where: <analysisType>	is one of gcms, lcms	(required)
-							   <input folder>	is the folder containing the files to be processed	(required)
-							   <output folder>	is the folder to save results	(required)
-							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate .mdproject file to be loaded in MSDIAL5 GUI application.
-                               <option -target> is an option to run as target mode. please set m/z";
+    public static void SetImmsCommand(Command root) {
+        var cmd = new Command("imms", "Run IC-MS data processing");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t")
+        {
+            Description = "Option to run as target mode. please set m/z",
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var inputFolder = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                return new ImmsProcess().Run(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, isProjectStore, targetMz);
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
 
-            Console.Error.WriteLine(error);
+    public static void SetMsnCommand(Command root) {
+        var cmd = new Command("msn", "Run molecular networking data processing");
+        var inputOpt = new Option<string>("--input", "-i")
+        {
+            Description = "Input folder containing the files to be processed or a single file",
+            Required = true,
+        };
+        var outputOpt = new Option<string>("--output", "-o")
+        {
+            Description = "Output folder to save results or a single result file",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var targetFileOpt = new Option<FileInfo>("--targetFile", "-t")
+        {
+            Description = "Option",
+        };
+        var ionmodeOpt = new Option<string>("--ionmode", "-ionmode")
+        {
+            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'",
+            DefaultValueFactory = _ => "Positive",
+        };
+        var overwriteOpt = new Option<bool>("--overwrite", "-overwrite")
+        {
+            Description = "Option to overwrite existing output files. Default is false.",
+            DefaultValueFactory = _ => false,
+        };
+        var allEdgeExportOpt = new Option<bool>("--all-edge-export", "-a")
+        {
+            Description = "Option to export all edges in the molecular network. Default is false.",
+            DefaultValueFactory = _ => false,
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (!input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (!methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(targetFileOpt);
+        cmd.Options.Add(ionmodeOpt);
+        cmd.Options.Add(overwriteOpt);
+        cmd.Options.Add(allEdgeExportOpt);
+        cmd.Validators.Add(result => {
+            string input = result.GetRequiredValue(inputOpt);
+            string output = result.GetRequiredValue(outputOpt);
 
-            return -1;
-        }
+            if (!Directory.Exists(input) && !File.Exists(input)) {
+                result.AddError("Input path does not exist.");
+            }
+            if (Directory.Exists(input) && File.Exists(output)) {
+                result.AddError("Output path cannot be a file when input is a directory.");
+            }
+            if (File.Exists(input) && Directory.Exists(output)) {
+                result.AddError("Output path cannot be a directory when input is a file.");
+            }
+        });
+        ionmodeOpt.Validators.Add(result => {
+            var value = result.GetValueOrDefault<string>();
+            if (value is not ("Positive" or "Negative")) {
+                result.AddError("Ion mode must be Positive or Negative.");
+            }
+        });
+        cmd.SetAction(parseResult => {
+            try {
+                var input = Path.GetFullPath(parseResult.GetRequiredValue(inputOpt));
+                var output = Path.GetFullPath(parseResult.GetRequiredValue(outputOpt));
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var targetFile = parseResult.GetValue(targetFileOpt);
+                var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
+                var overwrite = parseResult.GetValue(overwriteOpt);
+                var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
 
+                if (Directory.Exists(input)) {
+                    if (allEdgeExport){
+                        return new MoleculerNetworkProcess().Run4AllEdgeGeneration(input, output, methodFile.FullName, ionmode, overwrite);
+                    }
+                    else
+                        return new MoleculerNetworkProcess().Run(input, output, methodFile.FullName, ionmode, overwrite);
+                }
+                else {
+                    if (targetFile != null && targetFile.Exists) {
+                        return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
+                    }
+                    else {
+                        return new MoleculerNetworkProcess().Run4Onefile(input, output, methodFile.FullName, ionmode);
+                    }
+                }
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+
+        root.Add(cmd);
+    }
+
+    public static void SetImageGenCommand(Command root) {
+        var cmd = new Command("imagegen", "Run image generation process for MALDI imaging data");
+        var inputOpt = new Option<FileInfo>("--input", "-i")
+        {
+            Description = "Input .mddata file containing the peak data to be processed",
+            Required = true,
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileInfo>();
+            if (!input.Exists) {
+                result.AddError("Input .mddata file does not exist.");
+            }
+        });
+        cmd.Options.Add(inputOpt);
+        cmd.SetAction(async parseResult => {
+            try {
+                var inputFile = parseResult.GetRequiredValue(inputOpt);
+                await new ImageGenerationProcess().RunAsync(inputFile.FullName);
+                return 0;
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
     }
 }

@@ -1,11 +1,13 @@
 ﻿using CompMs.App.MsdialConsole.Process;
-using System;
-using System.Collections.Generic;
+using CompMs.App.MsdialConsole.Properties;
 using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole;
 class Program {
-    public static int Main(string[] args) {
+    public static Task<int> Main(string[] args) {
         // gcms
         // args = new string[] {
         //     "gcms"
@@ -169,84 +171,28 @@ class Program {
         //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_filtered.edge",
         //     @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_for_model.msp");
 
-        var analysisArg = new Argument<string>("analysisType") {
-            Description = "gcms | lcms | lcimms | dims | imms | msn | imagegen"
-        };
+        var root = new RootCommand($"MSDIAL Console Application {Resources.VERSION}");
+        if (root.Options.OfType<VersionOption>().SingleOrDefault() is { } versionOption) {
+            versionOption.Action = new VersionAction();
+        }
 
-        var inputOpt = new Option<string>("--input", "-i") {
-            Description = "input folder or file",
-            Required = true,
-        };
-        var outputOpt = new Option<string>("--output", "-o") {
-            Description = "output folder",
-            Required = true,
-        };
-        var methodOpt = new Option<string>("--method", "-m") {
-            Description = "method file",
-            Required = true,
-        };
-        var projectOpt = new Option<bool>("--project", "-p") {
-            Description = "generate .mdproject file",
-        };
-        var targetFolderOpt = new Option<string?>("--targetFolder", "-t") {
-            Description = "target folder or file",
-        };
-        var targetMzOpt = new Option<string?>("--target") {
-            Description = "target m/z",
-        };
-        var ionmodeOpt = new Option<string>("--ionmode") {
-            Description = "ion mode",
-            Arity = ArgumentArity.ZeroOrOne,
-            DefaultValueFactory = _ => "Positive",
-        };
-        var overwriteOpt = new Option<bool>("--overwrite") {
-            Description = "overwrite",
-            Arity = ArgumentArity.ExactlyOne,
-            DefaultValueFactory = _ => false,
-        };
-        var allEdgeOpt = new Option<bool>("--allEdgeExport", "-a") {
-            Description = "export all edges",
-        };
+        MainProcess.SetGcmsCommand(root);
+        MainProcess.SetLcmsCommand(root);
+        MainProcess.SetLcimmsCommand(root);
+        MainProcess.SetDimsCommand(root);
+        MainProcess.SetImmsCommand(root);
+        MainProcess.SetMsnCommand(root);
+        MainProcess.SetImageGenCommand(root);
 
-        var root = new RootCommand("MSDIAL Console Application");
-        root.Arguments.Add(analysisArg);
-        root.Options.Add(inputOpt);
-        root.Options.Add(outputOpt);
-        root.Options.Add(methodOpt);
-        root.Options.Add(projectOpt);
-        root.Options.Add(targetFolderOpt);
-        root.Options.Add(targetMzOpt);
-        root.Options.Add(ionmodeOpt);
-        root.Options.Add(overwriteOpt);
-        root.Options.Add(allEdgeOpt);
+        var parseResult = root.Parse(args);
+        return parseResult.InvokeAsync();
+    }
 
-        root.SetAction(parseResult => {
-            var analysisType = parseResult.GetRequiredValue(analysisArg);
-            var input = parseResult.GetResult(inputOpt);
-            var output = parseResult.GetResult(outputOpt);
-            var method = parseResult.GetResult(methodOpt);
-            var project = parseResult.GetResult(projectOpt);
-            var targetFolder = parseResult.GetResult(targetFolderOpt);
-            var targetMz = parseResult.GetResult(targetMzOpt);
-            var ionmode = parseResult.GetResult(ionmodeOpt);
-            var overwrite = parseResult.GetResult(overwriteOpt);
-            var allEdge = parseResult.GetResult(allEdgeOpt);
-
-            var argList = new List<string> { analysisType };
-            if (input?.GetValueOrDefault<string>() is { Length: > 0 } inputStr) { argList.Add("-i"); argList.Add(inputStr); }
-            if (method?.GetValueOrDefault<string>() is { Length: > 0 } methodStr) { argList.Add("-m"); argList.Add(methodStr); }
-            if (targetFolder?.GetValueOrDefault<string>() is { Length: > 0 } targetFolderStr) { argList.Add("-t"); argList.Add(targetFolderStr); }
-            if (output?.GetValueOrDefault<string>() is { Length: > 0 } outputStr) { argList.Add("-o"); argList.Add(outputStr); }
-            if (project?.GetValueOrDefault<bool>() ?? false) argList.Add("-p");
-            if (targetMz?.GetValueOrDefault<string>() is { Length: > 0 } targetMzStr) { argList.Add("-target"); argList.Add(targetMzStr); }
-            if (ionmode?.GetValueOrDefault<string>() is { Length: > 0 } ionmodeStr) { argList.Add("-ionmode"); argList.Add(ionmodeStr); }
-            if (overwrite?.GetValueOrDefault<bool>() ?? false) argList.Add("-overwrite");
-            if (allEdge?.GetValueOrDefault<bool>() ?? false) argList.Add("-a");
-
-            var rc = MainProcess.Run(argList.ToArray());
-            Environment.Exit(rc);
-        });
-
-        return root.Parse(args).Invoke();
+    internal class VersionAction : SynchronousCommandLineAction
+    {
+        public override int Invoke(ParseResult parseResult) {
+            System.Console.WriteLine(Resources.VERSION);
+            return 0;
+        }
     }
 }
