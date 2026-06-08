@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 
 namespace CompMs.Common.DataStructure.Tests;
@@ -63,5 +64,41 @@ public class PriorityQueueTest
         Assert.AreEqual(19, q.Pop());
         Assert.AreEqual(42, q.Pop());
         Assert.AreEqual(52, q.Pop());
+    }
+
+    [TestMethod]
+    public void PopPush_ReplacesRootAndReturnsPreviousRoot() {
+        List<int> v = new List<int> { 1, 5, 0, 1, -4, 42, 52, -78, 0, 19, 8 };
+        var q = new PriorityQueue<int>(v, (a, b) => a.CompareTo(b));
+
+        Assert.AreEqual(-78, q.PopPush(7));
+        Assert.AreEqual(-4, q.Pop());
+        Assert.AreEqual(0, q.Pop());
+        Assert.AreEqual(0, q.Pop());
+        Assert.AreEqual(1, q.Pop());
+    }
+
+    [TestMethod]
+    public void Peek_ReturnsCurrentMinimumWithoutRemovingIt() {
+        List<int> v = new List<int> { 1, 5, 0, 1, -4, 42, 52, -78, 0, 19, 8 };
+        var q = new PriorityQueue<int>(v, (a, b) => a.CompareTo(b));
+
+        Assert.AreEqual(-78, q.Peek());
+        Assert.AreEqual(-78, q.Peek());
+        Assert.AreEqual(-78, q.Pop());
+    }
+
+    [TestMethod]
+    public void PopPush_EmptyQueue_ThrowsInvalidOperationException() {
+        var q = new PriorityQueue<int>((a, b) => a.CompareTo(b));
+
+        Assert.ThrowsException<InvalidOperationException>(() => q.PopPush(1));
+    }
+
+    [TestMethod]
+    public void Pop_EmptyQueue_ThrowsInvalidOperationException() {
+        var q = new PriorityQueue<int>((a, b) => a.CompareTo(b));
+
+        Assert.ThrowsException<InvalidOperationException>(() => q.Pop());
     }
 }
