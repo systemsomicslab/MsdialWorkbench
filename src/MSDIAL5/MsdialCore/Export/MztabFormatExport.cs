@@ -979,7 +979,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot
         )
         {
-            return new List<string>() { ValueOrNull(spot.Ontology.ToString()) };
+            return new List<string>() { ValueOrNull(spot.Ontology) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1339,7 +1339,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
-        static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
+        static string ValueOrNull(string? value) => string.IsNullOrEmpty(value) ? "null" : value;
 
 
         public class Database
