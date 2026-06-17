@@ -149,6 +149,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), value, true);
                     return true;
                 case "ri compound":
+                case "ri compound type":
                     if (value == "fames" || value == "alkanes")
                         param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), value, true);
                     return true;
@@ -357,8 +358,8 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //Peak detection param
                 case "smoothing method":
-                    if (valueLower == "simplemovingaverage" || valueLower == "linearweightedmovingaverage" || valueLower == "savitzkygolayfilter" || valueLower == "binomialfilter")
-                        param.SmoothingMethod = (SmoothingMethod)Enum.Parse(typeof(SmoothingMethod), valueLower, true);
+                    if (Enum.TryParse(value, true, out SmoothingMethod smoothingMethod))
+                        param.SmoothingMethod = smoothingMethod;
                     return true;
                 case "smoothing level": if (int.TryParse(valueLower, out int smoothlevel)) param.SmoothingLevel = smoothlevel; return true;
                 case "average peak width": if (int.TryParse(valueLower, out int avepeakwidth)) param.AveragePeakWidth = avepeakwidth; return true;
