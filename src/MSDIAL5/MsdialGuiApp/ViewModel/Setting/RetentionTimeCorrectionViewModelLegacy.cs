@@ -38,6 +38,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 .Select(std => std.PeakSelectionResult)
                 .OfType<RetentionTimeCorrectionPeakSelectionResult>()
                 .ToList();
+        /// <summary>
+        /// Gets the rows shown in the RT correction peak selection summary tab.
+        /// </summary>
+        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionRow> PeakSelectionRows
+            => RetentionTimeCorrectionPeakSelectionPresenter.CreateRows(CommonStdList);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -313,6 +318,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.AnalysisFiles,
                 SampleListVMs,
                 this.RtCorrectionCommon);
+            OnPropertyChanged(nameof(PeakSelectionResults));
+            OnPropertyChanged(nameof(PeakSelectionRows));
         }
 
         #endregion
@@ -604,6 +611,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             //this.RtCorrectionCommon.CommonStdList = CommonStdList;
 
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            OnPropertyChanged(nameof(PeakSelectionResults));
+            OnPropertyChanged(nameof(PeakSelectionRows));
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -615,6 +624,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            OnPropertyChanged(nameof(PeakSelectionResults));
+            OnPropertyChanged(nameof(PeakSelectionRows));
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;

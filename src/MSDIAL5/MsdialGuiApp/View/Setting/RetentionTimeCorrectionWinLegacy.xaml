@@ -382,6 +382,49 @@
                             </Button>
                         </Grid>
                     </TabItem>
+                    <TabItem Header="Peak selection"
+                             Background="LightSteelBlue"
+                             Height="28">
+                        <Grid Name="Grid_PeakSelection">
+                            <DataGrid Name="DataGrid_PeakSelection"
+                                      Background="WhiteSmoke"
+                                      ItemsSource="{Binding PeakSelectionRows}"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      CanUserReorderColumns="False"
+                                      CanUserSortColumns="True"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Width="40" Binding="{Binding Path=ReferenceId}" />
+                                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=StandardName}" />
+                                    <DataGridTextColumn Header="Ref RT" Width="70" Binding="{Binding Path=ReferenceRt, StringFormat=0.00}" />
+                                    <DataGridTextColumn Header="Sel RT" Width="70" Binding="{Binding Path=SelectedRt, StringFormat=0.00}" />
+                                    <DataGridTextColumn Header="Sel m/z" Width="75" Binding="{Binding Path=SelectedMz, StringFormat=0.0000}" />
+                                    <DataGridTextColumn Header="Height" Width="75" Binding="{Binding Path=SelectedPeakHeight, StringFormat=0}" />
+                                    <DataGridTextColumn Header="Candidates" Width="75" Binding="{Binding Path=CandidateCount}" />
+                                    <DataGridTextColumn Header="Rejected" Width="65" Binding="{Binding Path=RejectedCount}" />
+                                    <DataGridTextColumn Header="Reason" Width="180" Binding="{Binding Path=SelectedReason}" />
+                                    <DataGridTextColumn Header="Rejected reasons" Width="*" Binding="{Binding Path=RejectedReasons}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
                 </TabControl>
 
             </Grid>
