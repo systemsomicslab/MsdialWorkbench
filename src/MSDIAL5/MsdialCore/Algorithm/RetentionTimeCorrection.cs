@@ -34,6 +34,9 @@ namespace CompMs.MsdialCore.Algorithm {
             return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
+        /// <summary>
+        /// Builds the per-standard RT correction pair by detecting chromatogram peaks and selecting the best match.
+        /// </summary>
         private static List<StandardPair> GetStdPair(
             AnalysisFileBean file,
             IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
@@ -45,21 +48,9 @@ namespace CompMs.MsdialCore.Algorithm {
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
-                var endMass = i.PrecursorMz + i.MassTolerance;
                 var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
-                
-                ChromatogramPeakFeature pab = null;
-                if (pabCollection != null) {
-                    foreach (var p in pabCollection) {
-                        if (Math.Abs(p.ChromXs.RT.Value - i.ChromXs.RT.Value) < i.RetentionTimeTolerance && p.PeakHeightTop > i.MinimumPeakHeight)
-                            if (pab == null)
-                                pab = p;
-                            else
-                                if (pab.PeakHeightTop < p.PeakHeightTop) pab = p;
-
-                    }
-                }
-                if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
+                var selection = RetentionTimeCorrectionPeakSelector.Select(i, pabCollection);
+                ChromatogramPeakFeature pab = selection.SelectedPeak ?? new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
