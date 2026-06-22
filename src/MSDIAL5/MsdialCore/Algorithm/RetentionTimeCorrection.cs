@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var selection = RetentionTimeCorrectionPeakSelector.Select(i, pabCollection);
                 ChromatogramPeakFeature pab = selection.SelectedPeak ?? new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
-                targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
+                targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist, PeakSelectionResult = selection });
             }
             /*   foreach(var t in targetList) {
                    t.WriteSet();
