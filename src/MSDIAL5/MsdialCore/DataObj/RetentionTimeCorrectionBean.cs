@@ -155,7 +155,7 @@ namespace CompMs.MsdialCore.DataObj
         /// Gets the evaluated peak selection details for this standard, if peak selection has already been run.
         /// </summary>
         [IgnoreMember]
-        public RetentionTimeCorrectionPeakSelectionResult PeakSelectionResult { get; set; }
+        public RetentionTimeCorrectionPeakSelectionResult? PeakSelectionResult { get; set; }
 
         [IgnoreMember]
         public double RtDiff { get { return (SamplePeakAreaBean.ChromXsTop.Value - Reference.ChromXs.Value); } }
@@ -203,15 +203,46 @@ namespace CompMs.MsdialCore.DataObj
 
     public class CommonStdData
     {
+        /// <summary>
+        /// Gets the reference standard that this summary entry corresponds to.
+        /// </summary>
         public MoleculeMsReference Reference { get; set; }
+        /// <summary>
+        /// Gets the chromatogram snapshots collected for this standard.
+        /// </summary>
         public List<IReadOnlyList<IChromatogramPeak>> Chromatograms { get; set; } = new List<IReadOnlyList<IChromatogramPeak>>();
+        /// <summary>
+        /// Gets the sample peak heights collected for this standard.
+        /// </summary>
         public List<double> PeakHeightList { get; set; } = new List<double>();
+        /// <summary>
+        /// Gets the sample peak areas collected for this standard.
+        /// </summary>
         public List<double> PeakAreaList { get; set; } = new List<double>();
+        /// <summary>
+        /// Gets the sample peak widths collected for this standard.
+        /// </summary>
         public List<double> PeakWidthList { get; set; } = new List<double>();
+        /// <summary>
+        /// Gets the detected m/z values collected for this standard.
+        /// </summary>
         public List<double> MzList { get; set; } = new List<double>();
+        /// <summary>
+        /// Gets the detected retention times collected for this standard.
+        /// </summary>
         public List<double> RetentionTimeList { get; set; } = new List<double>();
+        /// <summary>
+        /// Gets the average retention time across all matched samples.
+        /// </summary>
         public float AverageRetentionTime { get; set; }
+        /// <summary>
+        /// Gets the number of samples with a non-zero RT hit.
+        /// </summary>
         public int NumHit { get; set; } = 0;
+        /// <summary>
+        /// Gets the peak selection result used to populate this summary, if available.
+        /// </summary>
+        public RetentionTimeCorrectionPeakSelectionResult? PeakSelectionResult { get; set; }
 
         public CommonStdData(MoleculeMsReference comp) {
             Reference = comp;
@@ -220,6 +251,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public void SetStandard(StandardPair std) {
             this.Chromatograms.Add(std.Chromatogram);
+            this.PeakSelectionResult = std.PeakSelectionResult;
             if (std.SamplePeakAreaBean.ChromXsTop.Value == 0) {
                 this.PeakAreaList.Add(0);
                 this.PeakHeightList.Add(0);

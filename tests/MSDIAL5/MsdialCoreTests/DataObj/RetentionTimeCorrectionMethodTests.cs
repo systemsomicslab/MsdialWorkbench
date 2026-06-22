@@ -1,5 +1,6 @@
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,39 @@ public class RetentionTimeCorrectionMethodTests {
 
         Assert.AreEqual(6.25f, edited[0].AverageRetentionTime, 1e-6);
         CollectionAssert.AreEqual(new[] { 5.5, 7.0 }, edited[0].RetentionTimeList.ToArray());
+    }
+
+    [TestMethod]
+    public void CommonStdData_SetStandard_PreservesPeakSelectionResult() {
+        var reference = CreateReference();
+        var peak = new ChromatogramPeakFeature {
+            PrecursorMz = reference.PrecursorMz,
+            ChromXs = new ChromXs(5.0, ChromXType.RT, ChromXUnit.Min),
+            PeakHeightTop = 2000d,
+        };
+        var selection = new RetentionTimeCorrectionPeakSelectionResult(
+            reference,
+            peak,
+            new[] {
+                new RetentionTimeCorrectionPeakCandidateResult(
+                    peak,
+                    0d,
+                    0d,
+                    RetentionTimeCorrectionPeakRejectReason.None),
+            },
+            RetentionTimeCorrectionPeakSelectionReason.SelectedSingleCandidate);
+        var std = new StandardPair {
+            Reference = reference,
+            SamplePeakAreaBean = peak,
+            Chromatogram = new List<ChromatogramPeak>(),
+            PeakSelectionResult = selection,
+        };
+
+        var common = new CommonStdData(reference);
+        common.SetStandard(std);
+
+        Assert.AreSame(selection, common.PeakSelectionResult);
+        Assert.AreSame(selection, std.PeakSelectionResult);
     }
 
     private static AnalysisFileBean CreateAnalysisFile(double rt, MoleculeMsReference reference) {

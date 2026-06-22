@@ -10,9 +10,21 @@ namespace CompMs.MsdialCore.Algorithm {
     /// </summary>
     [Flags]
     public enum RetentionTimeCorrectionPeakRejectReason {
+        /// <summary>
+        /// The candidate passed every filter.
+        /// </summary>
         None = 0,
+        /// <summary>
+        /// The candidate mass exceeded the allowed tolerance.
+        /// </summary>
         MassTolerance = 1,
+        /// <summary>
+        /// The candidate RT exceeded the allowed tolerance.
+        /// </summary>
         RetentionTimeTolerance = 2,
+        /// <summary>
+        /// The candidate peak height was below the minimum threshold.
+        /// </summary>
         MinimumPeakHeight = 4,
     }
 
@@ -20,9 +32,21 @@ namespace CompMs.MsdialCore.Algorithm {
     /// Describes how a peak was selected for RT correction.
     /// </summary>
     public enum RetentionTimeCorrectionPeakSelectionReason {
+        /// <summary>
+        /// No candidate passed the configured filters.
+        /// </summary>
         None = 0,
+        /// <summary>
+        /// No candidate was available for selection.
+        /// </summary>
         NoCandidates = 1,
+        /// <summary>
+        /// Exactly one candidate passed the filters.
+        /// </summary>
         SelectedSingleCandidate = 2,
+        /// <summary>
+        /// Multiple candidates passed the filters, and the highest peak height was selected.
+        /// </summary>
         SelectedByHighestPeakHeight = 3,
     }
 
@@ -44,9 +68,21 @@ namespace CompMs.MsdialCore.Algorithm {
             RejectReason = rejectReason;
         }
 
+        /// <summary>
+        /// Gets the evaluated chromatogram peak.
+        /// </summary>
         public ChromatogramPeakFeature Peak { get; }
+        /// <summary>
+        /// Gets the absolute difference between the candidate m/z and the reference m/z.
+        /// </summary>
         public double MassDifference { get; }
+        /// <summary>
+        /// Gets the absolute difference between the candidate RT and the reference RT.
+        /// </summary>
         public double RtDifference { get; }
+        /// <summary>
+        /// Gets the rejection reasons applied to this candidate.
+        /// </summary>
         public RetentionTimeCorrectionPeakRejectReason RejectReason { get; }
         /// <summary>
         /// Gets a value indicating whether this candidate passed every filter.
@@ -72,6 +108,9 @@ namespace CompMs.MsdialCore.Algorithm {
             SelectedReason = reason;
         }
 
+        /// <summary>
+        /// Gets the reference standard used for the selection.
+        /// </summary>
         public MoleculeMsReference Reference { get; }
         /// <summary>
         /// Gets the peak chosen for correction, or null when no candidate passed the filters.

@@ -7,6 +7,7 @@ using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.UI.Message;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -29,6 +30,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public RetentionTimeCorrectionCommon RtCorrectionCommon { get; set; }
         public RetentionTimeCorrectionParam RtCorrectionParam { get; set; }
         public List<CommonStdData> CommonStdList { get; set; } = new List<CommonStdData>(0);
+        /// <summary>
+        /// Gets the peak selection results that were propagated from the RT correction core.
+        /// </summary>
+        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionResult> PeakSelectionResults
+            => CommonStdList
+                .Select(std => std.PeakSelectionResult)
+                .OfType<RetentionTimeCorrectionPeakSelectionResult>()
+                .ToList();
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
