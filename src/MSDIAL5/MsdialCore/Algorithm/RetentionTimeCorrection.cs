@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -46,12 +47,13 @@ namespace CompMs.MsdialCore.Algorithm {
             var peakpickCore = new PeakSpottingCore(param);
             var rawSpectra = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
+                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
+                var pabCollection = peakpickCore.GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
                 var selection = RetentionTimeCorrectionPeakSelector.Select(i, pabCollection);
                 ChromatogramPeakFeature pab = selection.SelectedPeak ?? new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }

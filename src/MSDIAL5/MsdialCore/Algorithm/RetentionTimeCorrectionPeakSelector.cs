@@ -9,7 +9,7 @@ namespace CompMs.MsdialCore.Algorithm {
     /// Describes why a candidate peak was rejected during RT correction peak selection.
     /// </summary>
     [Flags]
-    internal enum RetentionTimeCorrectionPeakRejectReason {
+    public enum RetentionTimeCorrectionPeakRejectReason {
         None = 0,
         MassTolerance = 1,
         RetentionTimeTolerance = 2,
@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Algorithm {
     /// <summary>
     /// Describes how a peak was selected for RT correction.
     /// </summary>
-    internal enum RetentionTimeCorrectionPeakSelectionReason {
+    public enum RetentionTimeCorrectionPeakSelectionReason {
         None = 0,
         NoCandidates = 1,
         SelectedSingleCandidate = 2,
@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm {
     /// <summary>
     /// Represents a single evaluated candidate peak and the rejection conditions that applied to it.
     /// </summary>
-    internal sealed class RetentionTimeCorrectionPeakCandidateResult {
+    public sealed class RetentionTimeCorrectionPeakCandidateResult {
         /// <summary>
         /// Initializes a new candidate evaluation result.
         /// </summary>
@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.Algorithm {
     /// <summary>
     /// Represents the outcome of selecting the RT correction peak for a reference compound.
     /// </summary>
-    internal sealed class RetentionTimeCorrectionPeakSelectionResult {
+    public sealed class RetentionTimeCorrectionPeakSelectionResult {
         /// <summary>
         /// Initializes a new peak selection result.
         /// </summary>
@@ -98,7 +98,7 @@ namespace CompMs.MsdialCore.Algorithm {
     /// <summary>
     /// Selects the best RT correction peak from a set of chromatogram candidates.
     /// </summary>
-    internal static class RetentionTimeCorrectionPeakSelector {
+    public static class RetentionTimeCorrectionPeakSelector {
         /// <summary>
         /// Evaluates all candidates against the reference tolerances and returns the selected peak.
         /// </summary>

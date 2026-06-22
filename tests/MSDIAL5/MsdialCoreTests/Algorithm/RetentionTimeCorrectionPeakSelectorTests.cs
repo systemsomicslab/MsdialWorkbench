@@ -59,6 +59,28 @@ public class RetentionTimeCorrectionPeakSelectorTests {
     }
 
     [TestMethod]
+    public void Select_RejectsCandidateOutsideMassToleranceEvenIfRtAndHeightPass() {
+        var reference = CreateReference();
+        var candidate = CreatePeak(mass: 100.06, rt: 5.02, height: 1500d);
+
+        var result = RetentionTimeCorrectionPeakSelector.Select(reference, new[] { candidate });
+
+        Assert.IsFalse(result.HasSelection);
+        Assert.AreEqual(RetentionTimeCorrectionPeakRejectReason.MassTolerance, result.Candidates[0].RejectReason);
+    }
+
+    [TestMethod]
+    public void Select_RejectsCandidateOutsideRtToleranceEvenIfMassAndHeightPass() {
+        var reference = CreateReference();
+        var candidate = CreatePeak(mass: 100.00, rt: 5.11, height: 1500d);
+
+        var result = RetentionTimeCorrectionPeakSelector.Select(reference, new[] { candidate });
+
+        Assert.IsFalse(result.HasSelection);
+        Assert.AreEqual(RetentionTimeCorrectionPeakRejectReason.RetentionTimeTolerance, result.Candidates[0].RejectReason);
+    }
+
+    [TestMethod]
     public void Select_ReturnsEmptySelectionWhenNoCandidatesAreProvided() {
         var reference = CreateReference();
 
