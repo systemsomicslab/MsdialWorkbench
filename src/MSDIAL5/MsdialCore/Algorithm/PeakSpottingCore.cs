@@ -180,7 +180,7 @@ namespace CompMs.MsdialCore.Algorithm {
         public List<double> GetFocusedMassList(float startMass, float endMass, float massStep) {
             var massList = new List<double>();
             var focusedMass = startMass;
-            while (focusedMass < endMass) {
+            while (focusedMass <= endMass) {
                 massList.Add(focusedMass);
                 focusedMass += massStep;
             }
