@@ -38,8 +38,9 @@ public sealed class LcmsProcess
             return -1;
         }
 
-        CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
-            out var mspDB, out var txtDB, 
+        var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
+        CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, out IupacDatabase iupacDB,
+            out var mspDBs, out var txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out var lbmDB);
 
@@ -52,11 +53,15 @@ public sealed class LcmsProcess
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB is { Database.Count: > 0 }) {
-            var annotator = new LcmsMspAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
-            dbStorage.AddMoleculeDataBase(mspDB, [
-                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-            ]);
+        foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
+            var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
+            foreach (var setting in mspDB.AnnotatorSettings) {
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, param.TargetOmics, setting.AnnotatorId, setting.Priority);
+                annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
+            }
+            if (annotatorPairs.Count > 0) {
+                dbStorage.AddMoleculeDataBase(mspDB.DataBase, annotatorPairs);
+            }
         }
         if (lbmDB is { Database.Count: > 0 }) {
             var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
