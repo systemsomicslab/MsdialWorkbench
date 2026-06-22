@@ -43,6 +43,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         /// </summary>
         public IReadOnlyList<RetentionTimeCorrectionPeakSelectionRow> PeakSelectionRows
             => RetentionTimeCorrectionPeakSelectionPresenter.CreateRows(CommonStdList);
+        /// <summary>
+        /// Gets the editable RT override rows for sample-standard pairs.
+        /// </summary>
+        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionEditRow> PeakSelectionEditRows
+            => RetentionTimeCorrectionPeakSelectionEditPresenter.CreateRows(AnalysisFiles, ApplyManualPeakSelectionRt);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -320,6 +325,25 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.RtCorrectionCommon);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
+            OnPropertyChanged(nameof(PeakSelectionEditRows));
+        }
+
+        /// <summary>
+        /// Applies a manual RT override from the peak selection tab.
+        /// </summary>
+        public void ApplyManualPeakSelectionRt(int sampleIndex, int standardIndex, double rt) {
+            if (sampleIndex < 0 || sampleIndex >= SampleListVMs.Count) {
+                return;
+            }
+            if (standardIndex < 0 || standardIndex >= SampleListVMs[sampleIndex].Values.Count) {
+                return;
+            }
+
+            var cell = SampleListVMs[sampleIndex].Values[standardIndex];
+            cell.CanBgChange = true;
+            cell.Rt = (float)rt;
+            updateRtTune();
+            SettingChanged();
         }
 
         #endregion
@@ -613,6 +637,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
+            OnPropertyChanged(nameof(PeakSelectionEditRows));
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -626,6 +651,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
+            OnPropertyChanged(nameof(PeakSelectionEditRows));
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;
