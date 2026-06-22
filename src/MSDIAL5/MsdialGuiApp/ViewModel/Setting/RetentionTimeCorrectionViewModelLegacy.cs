@@ -300,16 +300,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void updateRtTune() {
-            RtCorrectionCommon.SampleCellInfoListList = new List<List<SampleListCellInfo>>();
-            for (var i = 0; i < SampleListVMs.Count; i++) {
-                var l = new List<SampleListCellInfo>();
-                for (var j = 0; j < SampleListVMs[i].Values.Count; j++) {
-                    l.Add(SampleListVMs[i].Values[j].SampleListCellInfo);
-                    this.AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT = new RetentionTime(SampleListVMs[i].Values[j].Rt, AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT.Unit);
-                }
-                RtCorrectionCommon.SampleCellInfoListList.Add(l);
-            }
-            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionEditSynchronizer.SynchronizeSampleRtEdits(
+                this.AnalysisFiles,
+                SampleListVMs,
+                this.RtCorrectionCommon);
         }
 
         #endregion
