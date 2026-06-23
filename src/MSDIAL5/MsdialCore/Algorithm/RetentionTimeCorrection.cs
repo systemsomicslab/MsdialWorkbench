@@ -65,16 +65,27 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
 
+        /// <summary>
+        /// Calculates RT correction values by subtracting the per-standard average RT from each sample RT.
+        /// </summary>
+        /// <param name="rtParam">RT correction settings.</param>
+        /// <param name="stdList">Per-sample standard peak pairs.</param>
+        /// <param name="xOriginal">Original RT axis used for interpolation.</param>
+        /// <param name="commonStdList">Per-standard summary rows that contain the average RT for each target standard.</param>
+        /// <returns>The original RT axis, interpolated RT differences, and predicted RT values.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the summary list contains duplicate ScanID values.</exception>
         public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBean_SampleMinusAverage(
             RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
             double[] xOriginal, List<CommonStdData> commonStdList) {
+            var commonStdLookup = CreateCommonStdLookup(commonStdList);
             var xList = new List<double>();
             var yList = new List<double>();
             for (var i = 0; i < stdList.Count; i++) {
                 var val = stdList[i];
                 if (val.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                if (!commonStdLookup.TryGetValue(val.Reference.ScanID, out var commonStd)) continue;
                 var x = val.SamplePeakAreaBean.ChromXs.RT.Value;
-                var y = x - commonStdList[i].AverageRetentionTime;
+                var y = x - commonStd.AverageRetentionTime;
                 xList.Add(x); yList.Add(y);
             }
             if (yList.Count == 0) return new (xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
@@ -184,6 +195,23 @@ namespace CompMs.MsdialCore.Algorithm {
 
         public static double LinearInterpolation(double x0, double x1, double y0, double y1, double xVal) {
             return y0 + (xVal - x0) / (x1 - x0) * (y1 - y0);
+        }
+
+        /// <summary>
+        /// Builds a ScanID lookup for the common standard summary rows.
+        /// </summary>
+        /// <param name="commonStdList">Common standard summary rows to index.</param>
+        /// <returns>A dictionary keyed by ScanID.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when duplicate ScanID values are encountered.</exception>
+        private static Dictionary<int, CommonStdData> CreateCommonStdLookup(IEnumerable<CommonStdData> commonStdList) {
+            var lookup = new Dictionary<int, CommonStdData>();
+            foreach (var commonStd in commonStdList ?? Enumerable.Empty<CommonStdData>()) {
+                if (lookup.ContainsKey(commonStd.Reference.ScanID)) {
+                    throw new InvalidOperationException($"Duplicate ScanID found in common standard list: {commonStd.Reference.ScanID}.");
+                }
+                lookup[commonStd.Reference.ScanID] = commonStd;
+            }
+            return lookup;
         }
     }
 }

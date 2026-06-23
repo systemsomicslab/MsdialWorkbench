@@ -363,21 +363,82 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        /// <summary>
+        /// Builds the common standard summary rows across all analysis files.
+        /// </summary>
+        /// <param name="analysisFiles">Analysis files that contain the per-sample RT correction results.</param>
+        /// <param name="iStdList">The standard library used to define which standards participate in the summary.</param>
+        /// <returns>The per-standard summary rows with averages calculated across samples.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the target standard library contains duplicate ScanID values.</exception>
         public static List<CommonStdData> MakeCommonStdList(List<AnalysisFileBean> analysisFiles, List<MoleculeMsReference> iStdList) {
             var commonStdList = new List<CommonStdData>();
             var tmpStdList = iStdList.Where(x => x.IsTargetMolecule).OrderBy(x => x.ChromXs.RT.Value);
             foreach (var std in tmpStdList) {
                 commonStdList.Add(new CommonStdData(std));
             }
+            ValidateUniqueScanIds(commonStdList);
             for (var i = 0; i < analysisFiles.Count; i++) {
+                var standardLookup = CreateStandardPairLookup(analysisFiles[i].RetentionTimeCorrectionBean.StandardList);
                 for (var j = 0; j < commonStdList.Count; j++) {
-                    commonStdList[j].SetStandard(analysisFiles[i].RetentionTimeCorrectionBean.StandardList[j]);
+                    if (standardLookup.TryGetValue(commonStdList[j].Reference.ScanID, out var std)) {
+                        commonStdList[j].SetStandard(std);
+                    }
+                    else {
+                        commonStdList[j].SetStandard(CreateEmptyStandardPair(commonStdList[j].Reference));
+                    }
                 }
             }
             foreach (var d in commonStdList) {
                 d.CalcAverageRetentionTime();
             }
             return commonStdList;
+        }
+
+        /// <summary>
+        /// Builds a ScanID lookup for a sample's standard pairs.
+        /// </summary>
+        /// <param name="standardList">The sample standard pairs to index.</param>
+        /// <returns>A dictionary keyed by ScanID.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when duplicate ScanID values are encountered.</exception>
+        private static Dictionary<int, StandardPair> CreateStandardPairLookup(IEnumerable<StandardPair> standardList) {
+            var lookup = new Dictionary<int, StandardPair>();
+            foreach (var std in standardList ?? Enumerable.Empty<StandardPair>()) {
+                if (lookup.ContainsKey(std.Reference.ScanID)) {
+                    throw new InvalidOperationException($"Duplicate ScanID found in sample standard list: {std.Reference.ScanID}.");
+                }
+                lookup[std.Reference.ScanID] = std;
+            }
+            return lookup;
+        }
+
+        /// <summary>
+        /// Creates a zero-valued placeholder standard pair for a missing sample standard entry.
+        /// </summary>
+        /// <param name="reference">The reference standard for the placeholder row.</param>
+        /// <returns>A standard pair with zero RT and zero peak information.</returns>
+        private static StandardPair CreateEmptyStandardPair(MoleculeMsReference reference) {
+            return new StandardPair {
+                Reference = reference,
+                SamplePeakAreaBean = new ChromatogramPeakFeature {
+                    PrecursorMz = reference.PrecursorMz,
+                    ChromXs = new ChromXs(0, ChromXType.RT, ChromXUnit.Min),
+                },
+                Chromatogram = new List<ChromatogramPeak>(),
+            };
+        }
+
+        /// <summary>
+        /// Ensures that the target summary rows are uniquely keyed by ScanID.
+        /// </summary>
+        /// <param name="commonStdList">The common summary rows to validate.</param>
+        /// <exception cref="InvalidOperationException">Thrown when duplicate ScanID values are encountered.</exception>
+        private static void ValidateUniqueScanIds(IEnumerable<CommonStdData> commonStdList) {
+            var seen = new HashSet<int>();
+            foreach (var commonStd in commonStdList ?? Enumerable.Empty<CommonStdData>()) {
+                if (!seen.Add(commonStd.Reference.ScanID)) {
+                    throw new InvalidOperationException($"Duplicate ScanID found in common standard list: {commonStd.Reference.ScanID}.");
+                }
+            }
         }
     }
 }

@@ -183,6 +183,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         #region Retention time difference, private function to show label
         private static void SetLabel_RtDiff_V1(AnalysisFileBean analysisFile, SeriesList slist, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList, 
             RtDiffLabel label, SolidColorBrush brush) {
+            var commonStdLookup = CreateCommonStdLookup(commonStdList);
             var labelList = new List<string>();
             var point = new Series() {
                 ChartType = ChartType.Point,
@@ -213,18 +214,24 @@ namespace CompMs.App.Msdial.Model.Chart {
             else {
                 if (label == RtDiffLabel.id)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.ScanID.ToString());
                     }
                 else if (label == RtDiffLabel.name)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.Name);
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.Name);
                     }
                 else if (label == RtDiffLabel.rt)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.ChromXs.RT.Value.ToString());
                     }
 
             }
@@ -233,8 +240,33 @@ namespace CompMs.App.Msdial.Model.Chart {
 
         }
 
-        private static float CalcRtDiff_SampleMinusAverage(AnalysisFileBean file, List<CommonStdData> list, int i) {
-            return (float)(file.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value - (float)list[i].AverageRetentionTime) * 60f;
+        /// <summary>
+        /// Calculates the RT difference for the selected standard using ScanID-based lookup.
+        /// </summary>
+        /// <param name="file">The analysis file that contains the sample RT.</param>
+        /// <param name="commonStdLookup">The per-standard average RT lookup.</param>
+        /// <param name="scanId">The standard ScanID.</param>
+        /// <returns>The RT difference in seconds.</returns>
+        internal static float CalcRtDiff_SampleMinusAverage(StandardPair standard, IReadOnlyDictionary<int, CommonStdData> commonStdLookup) {
+            if (!commonStdLookup.TryGetValue(standard.Reference.ScanID, out var commonStd)) {
+                return 0f;
+            }
+            return (float)(standard.SamplePeakAreaBean.ChromXs.RT.Value - commonStd.AverageRetentionTime) * 60f;
+        }
+
+        /// <summary>
+        /// Builds a ScanID lookup for RT correction summary rows.
+        /// </summary>
+        /// <param name="commonStdList">The summary rows to index.</param>
+        /// <returns>A dictionary keyed by ScanID.</returns>
+        private static IReadOnlyDictionary<int, CommonStdData> CreateCommonStdLookup(IEnumerable<CommonStdData> commonStdList) {
+            var lookup = new Dictionary<int, CommonStdData>();
+            foreach (var commonStd in commonStdList ?? Enumerable.Empty<CommonStdData>()) {
+                if (!lookup.ContainsKey(commonStd.Reference.ScanID)) {
+                    lookup.Add(commonStd.Reference.ScanID, commonStd);
+                }
+            }
+            return lookup;
         }
         #endregion
 
