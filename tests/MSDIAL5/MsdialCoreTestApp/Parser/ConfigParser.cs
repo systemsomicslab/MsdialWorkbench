@@ -76,6 +76,18 @@ namespace CompMs.App.MsdialConsole.Parser
             return ReadMspAnnotatorSettingsTable(settingsFilePath, param);
         }
 
+        public static List<TextAnnotatorSetting> ReadTextAnnotatorSettings(string filepath, ParameterBase param) {
+            var settingsFilePath = ReadTextAnnotatorSettingsFilePath(filepath);
+            if (settingsFilePath.IsEmptyOrNull()) {
+                return new List<TextAnnotatorSetting>();
+            }
+            if (!Path.IsPathRooted(settingsFilePath)) {
+                var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+                settingsFilePath = Path.Combine(baseDirectory, settingsFilePath);
+            }
+            return ReadTextAnnotatorSettingsTable(settingsFilePath, param);
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
@@ -87,6 +99,25 @@ namespace CompMs.App.MsdialConsole.Parser
                         case "msp annotator settings file path":
                         case "msp annotation settings file path":
                         case "msp search settings file path":
+                            return value;
+                    }
+                }
+            }
+            return string.Empty;
+        }
+
+        private static string ReadTextAnnotatorSettingsFilePath(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "text annotator settings file path":
+                        case "text library annotator settings file path":
+                        case "text db annotator settings file path":
+                        case "text annotation settings file path":
                             return value;
                     }
                 }
@@ -152,6 +183,68 @@ namespace CompMs.App.MsdialConsole.Parser
                 var searchParameter = new MsRefSearchParameterBase(param.MspSearchParam);
                 ApplyMspSearchParameter(searchParameter, fields, headers);
                 settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter));
+            }
+            return settings;
+        }
+
+        private static List<TextAnnotatorSetting> ReadTextAnnotatorSettingsTable(string filepath, ParameterBase param) {
+            if (!File.Exists(filepath)) {
+                Console.WriteLine($"Text annotator settings file was not found: {filepath}");
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var rows = new List<string>();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine()?.TrimEnd('\r', '\n');
+                    if (!line.IsEmptyOrNull() && !line.TrimStart().StartsWith("#")) {
+                        rows.Add(line);
+                    }
+                }
+            }
+            if (rows.Count == 0) {
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var headers = rows[0].Split('\t').Select(NormalizeHeader).ToArray();
+            var pathIndex = FindColumn(headers, "textdbfilepath", "textlibraryfilepath", "textfilepath", "filepath", "path");
+            if (pathIndex < 0) {
+                Console.WriteLine("Text annotator settings TSV requires a 'text_db_file_path' column.");
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var settings = new List<TextAnnotatorSetting>();
+            var usedAnnotatorIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+            for (var i = 1; i < rows.Count; i++) {
+                var fields = rows[i].Split('\t');
+                var textDbFilePath = GetField(fields, pathIndex);
+                if (textDbFilePath.IsEmptyOrNull()) {
+                    continue;
+                }
+                if (!Path.IsPathRooted(textDbFilePath)) {
+                    textDbFilePath = Path.Combine(baseDirectory, textDbFilePath);
+                }
+
+                var settingIndex = settings.Count + 1;
+                var annotatorId = GetField(fields, headers, "annotatorid", "id", "name");
+                if (annotatorId.IsEmptyOrNull()) {
+                    annotatorId = $"TextDB_{settingIndex}";
+                }
+                if (!usedAnnotatorIds.Add(annotatorId)) {
+                    Console.WriteLine($"Duplicated Text annotator_id was skipped: {annotatorId}");
+                    continue;
+                }
+
+                var priority = settingIndex;
+                var priorityText = GetField(fields, headers, "priority");
+                if (!priorityText.IsEmptyOrNull() && int.TryParse(priorityText, out var parsedPriority)) {
+                    priority = parsedPriority;
+                }
+
+                var searchParameter = new MsRefSearchParameterBase(param.TextDbSearchParam);
+                ApplyMspSearchParameter(searchParameter, fields, headers);
+                settings.Add(new TextAnnotatorSetting(annotatorId, textDbFilePath, priority, searchParameter));
             }
             return settings;
         }

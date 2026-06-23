@@ -39,8 +39,9 @@ public sealed class LcmsProcess
         }
 
         var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
-        CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, out IupacDatabase iupacDB,
-            out var mspDBs, out var txtDB,
+        var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
+        CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, textAnnotatorSettings, out IupacDatabase iupacDB,
+            out var mspDBs, out var textDBs,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out var lbmDB);
 
@@ -69,11 +70,15 @@ public sealed class LcmsProcess
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB is { Database.Count: > 0 }) {
-            var textannotator = new LcmsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 2);
-            dbStorage.AddMoleculeDataBase(txtDB, [
-                new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
-            ]);
+        foreach (var textDB in textDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
+            var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
+            foreach (var setting in textDB.AnnotatorSettings) {
+                var annotator = new LcmsTextDBAnnotator(textDB.DataBase, setting.SearchParameter, setting.AnnotatorId, setting.Priority);
+                annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: false)));
+            }
+            if (annotatorPairs.Count > 0) {
+                dbStorage.AddMoleculeDataBase(textDB.DataBase, annotatorPairs);
+            }
         }
         container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;

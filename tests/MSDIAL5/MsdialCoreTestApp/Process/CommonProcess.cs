@@ -29,6 +29,17 @@ namespace CompMs.App.MsdialConsole.Process
         public List<MspAnnotatorSetting> AnnotatorSettings { get; }
     }
 
+    public sealed class TextDataBaseAnnotatorSetting
+    {
+        public TextDataBaseAnnotatorSetting(MoleculeDataBase dataBase, List<TextAnnotatorSetting> annotatorSettings) {
+            DataBase = dataBase;
+            AnnotatorSettings = annotatorSettings;
+        }
+
+        public MoleculeDataBase DataBase { get; }
+        public List<TextAnnotatorSetting> AnnotatorSettings { get; }
+    }
+
     public static class CommonProcess {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
@@ -133,13 +144,13 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        public static void ParseLibraries(ParameterBase param, float targetMz, IReadOnlyList<MspAnnotatorSetting> mspAnnotatorSettings,
-            out IupacDatabase iupacDB, out List<MspDataBaseAnnotatorSetting> mspDBs, out MoleculeDataBase? txtDB,
+        public static void ParseLibraries(ParameterBase param, float targetMz, IReadOnlyList<MspAnnotatorSetting> mspAnnotatorSettings, IReadOnlyList<TextAnnotatorSetting> textAnnotatorSettings,
+            out IupacDatabase iupacDB, out List<MspDataBaseAnnotatorSetting> mspDBs, out List<TextDataBaseAnnotatorSetting> textDBs,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out MoleculeDataBase? lbmDB) {
 
             mspDBs = new List<MspDataBaseAnnotatorSetting>();
-            txtDB = null;
+            textDBs = new List<TextDataBaseAnnotatorSetting>();
             lbmDB = null;
             iupacDB = IupacResourceParser.GetIUPACDatabase();
             isotopeTextDB = new List<MoleculeMsReference>();
@@ -166,7 +177,7 @@ namespace CompMs.App.MsdialConsole.Process
                 var mspList = LibraryHandler.ReadMsLibrary(mspFilePath, param, out var mspError);
                 var dbId = mspFileGroups.Count == 1 && effectiveMspSettings.Count == 1 && effectiveMspSettings[0].AnnotatorId == param.MspFilePath
                     ? "MspDB"
-                    : GetSafeMspDataBaseId(mspFilePath, i + 1);
+                    : GetSafeDataBaseId("MspDB", mspFilePath, i + 1);
                 var mspDB = new MoleculeDataBase(mspList, dbId, DataBaseSource.Msp, SourceType.MspDB, mspFilePath);
                 if (mspError != string.Empty) {
                     Console.WriteLine(mspError);
@@ -182,12 +193,33 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            if (ErrorHandler.IsFileExist(param.TextDBFilePath)) {
-                var txtList = LibraryHandler.ReadMsLibrary(param.TextDBFilePath, param, out var txtError);
-                txtDB = new MoleculeDataBase(txtList, "TextDB", DataBaseSource.Text, SourceType.TextDB, param.TextDBFilePath);
+            var effectiveTextSettings = textAnnotatorSettings?
+                .Where(setting => !setting.TextDbFilePath.IsEmptyOrNull())
+                .ToList() ?? new List<TextAnnotatorSetting>();
+            if (effectiveTextSettings.Count == 0 && ErrorHandler.IsFileExist(param.TextDBFilePath)) {
+                effectiveTextSettings.Add(new TextAnnotatorSetting(param.TextDBFilePath, param.TextDBFilePath, 2, param.TextDbSearchParam));
+            }
+
+            var textFileGroups = effectiveTextSettings
+                .GroupBy(setting => Path.GetFullPath(setting.TextDbFilePath), StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            for (var i = 0; i < textFileGroups.Count; i++) {
+                var group = textFileGroups[i];
+                var textDbFilePath = group.Key;
+                if (!ErrorHandler.IsFileExist(textDbFilePath)) {
+                    Console.WriteLine($"Text DB file was not found: {textDbFilePath}");
+                    continue;
+                }
+
+                var txtList = LibraryHandler.ReadMsLibrary(textDbFilePath, param, out var txtError);
+                var dbId = textFileGroups.Count == 1 && effectiveTextSettings.Count == 1 && effectiveTextSettings[0].AnnotatorId == param.TextDBFilePath
+                    ? "TextDB"
+                    : GetSafeDataBaseId("TextDB", textDbFilePath, i + 1);
+                var txtDB = new MoleculeDataBase(txtList, dbId, DataBaseSource.Text, SourceType.TextDB, textDbFilePath);
                 if (txtError != string.Empty) {
                     Console.WriteLine(txtError);
                 }
+                textDBs.Add(new TextDataBaseAnnotatorSetting(txtDB, group.ToList()));
             }
 
             if (ErrorHandler.IsFileExist(param.IsotopeTextDBFilePath)) {
@@ -208,8 +240,8 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static string GetSafeMspDataBaseId(string mspFilePath, int index) {
-            var name = Path.GetFileNameWithoutExtension(mspFilePath);
+        private static string GetSafeDataBaseId(string prefix, string filePath, int index) {
+            var name = Path.GetFileNameWithoutExtension(filePath);
             var safeName = new string(name.Select(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' ? c : '_').ToArray());
             if (safeName.Length > 64) {
                 safeName = safeName.Substring(0, 64);
@@ -217,7 +249,7 @@ namespace CompMs.App.MsdialConsole.Process
             if (safeName.IsEmptyOrNull()) {
                 safeName = "library";
             }
-            return $"MspDB_{index}_{safeName}";
+            return $"{prefix}_{index}_{safeName}";
         }
 
         public static void SetLipidQueries(ParameterBase param) {
