@@ -2,8 +2,12 @@ using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj.Tests;
 
@@ -59,6 +63,51 @@ public class RetentionTimeCorrectionMethodTests {
         CollectionAssert.AreEqual(new[] { 5.0, 6.0 }, result.originalRt.ToArray());
         CollectionAssert.AreEqual(new[] { -0.5, -0.5 }, result.rtDiff.ToArray());
         CollectionAssert.AreEqual(new[] { 5.5, 6.5 }, result.predictedRt.ToArray());
+    }
+
+    [TestMethod]
+    public void UpdateRtCorrectionBean_RefreshesCachedPredictedRtForReferenceMode() {
+        var reference = CreateReference(1, "TARGET", 5d, true);
+        var stdList = new List<StandardPair> {
+            CreateStandardPair(reference, 6.0),
+        };
+        var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.rtc");
+
+        try {
+            RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(
+                tempPath,
+                new List<double> { 5.0, 6.0, 7.0 },
+                new List<double> { 9.0, 9.0, 9.0 },
+                new List<double> { 1.0, 2.0, 3.0 });
+
+            var bean = new RetentionTimeCorrectionBean(tempPath, new List<double> { 5.0, 6.0, 7.0 }) {
+                StandardList = stdList,
+            };
+            var file = new AnalysisFileBean {
+                RetentionTimeCorrectionBean = bean,
+            };
+            var rtParam = new RetentionTimeCorrectionParam {
+                InterpolationMethod = InterpolationMethod.Linear,
+                ExtrapolationMethodBegin = ExtrapolationMethodBegin.FirstPoint,
+                ExtrapolationMethodEnd = ExtrapolationMethodEnd.LinearExtrapolation,
+                RtDiffCalcMethod = RtDiffCalcMethod.SampleMinusReference,
+            };
+
+            CollectionAssert.AreEqual(new[] { 1.0, 2.0, 3.0 }, bean.PredictedRt.ToArray());
+
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(
+                new List<AnalysisFileBean> { file },
+                new ParallelOptions { MaxDegreeOfParallelism = 1 },
+                rtParam,
+                new List<CommonStdData>());
+
+            CollectionAssert.AreEqual(new[] { 4.0, 5.0, 6.0 }, bean.PredictedRt.ToArray());
+        }
+        finally {
+            if (File.Exists(tempPath)) {
+                File.Delete(tempPath);
+            }
+        }
     }
 
     [TestMethod]

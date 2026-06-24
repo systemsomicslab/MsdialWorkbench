@@ -302,32 +302,33 @@ namespace CompMs.App.Msdial.Model.Chart {
             area.Margin.Top = 25;
             var title = GetTitleV1(13, "Original EIC");
             var slist = new SeriesList();
-            var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
-            var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
-            var minRT = Math.Min(commonStd.Reference.ChromXs.RT.Value, minRTtmp);
-            var maxRT = Math.Max(commonStd.Reference.ChromXs.RT.Value, commonStd.RetentionTimeList.Max());
-            var widhtList = commonStd.PeakWidthList.Where(x => x > 0);
-            var rtTol = widhtList.Count() > 0 ? widhtList.Average() : 2;
-            var minRTrange = Math.Max(0, (minRT - rtTol));
+            var (minRT, maxRT) = GetEicDisplayRange(commonStd);
             for (var i = 0; i < commonStd.PeakAreaList.Count; i++) {
                 if (commonStd.Chromatograms[i] == null || commonStd.Chromatograms[i].Count == 0) continue;
                 var brush = brushDict[analysisFiles[i].AnalysisFileClass];
                 var point = new Series() {
-                    ChartType = ChartType.Line,
+                    ChartType = ChartType.Chromatogram,
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
+                    Accessory = new Accessory(),
                 };
-                var smoothedChromatogram = new Chromatogram(commonStd.Chromatograms[i], ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
-                foreach (var peak in smoothedChromatogram) {
-                    if (peak.ChromXs.RT.Value < minRTrange) continue;
-                    if (peak.ChromXs.RT.Value > maxRT + rtTol) break;
+                using var smoothedChromatogram = new Chromatogram(commonStd.Chromatograms[i], ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var peaks = smoothedChromatogram.AsPeakArray();
+                foreach (var peak in peaks) {
+                    if (peak.ChromXs.RT.Value < minRT) continue;
+                    if (peak.ChromXs.RT.Value > maxRT) break;
                     point.AddPoint((float)peak.ChromXs.RT.Value, (float)peak.Intensity);
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
+                if (commonStd.PeakSelectionResult?.SelectedPeak is not null) {
+                    var leftRt = commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsLeft.RT.Value;
+                    var rightRt = commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsRight.RT.Value;
+                    point.Accessory.SetChromatogram(-1d, leftRt, rightRt);
+                }
             }
             var drawing = new DrawVisual(area, title, slist);
-            SetDrawingMinAndMaxXY_constValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
             SetDrawingMaxY_ratio(drawing, 0.05f);
 
             drawing.Initialize();
@@ -342,33 +343,37 @@ namespace CompMs.App.Msdial.Model.Chart {
             area.Margin.Top = 25;
             var title = GetTitleV1(13, "Corrected EIC");
             var slist = new SeriesList();
-            var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
-            var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
-            var minRT = Math.Min(commonStd.Reference.ChromXs.RT.Value, minRTtmp);
-            var maxRT = Math.Max(commonStd.Reference.ChromXs.RT.Value, commonStd.RetentionTimeList.Max());
-            var widhtList = commonStd.PeakWidthList.Where(x => x > 0);
-            var rtTol = widhtList.Count() > 0 ? widhtList.Average() : 2;
-            var minRTrange = Math.Max(0, (minRT - rtTol));
+            var (minRT, maxRT) = GetEicDisplayRange(commonStd);
             for (var i = 0; i < commonStd.PeakAreaList.Count; i++) {
                 if (commonStd.Chromatograms[i] == null || commonStd.Chromatograms[i].Count == 0) continue;
                 var brush = brushDict[analysisFiles[i].AnalysisFileClass];
                 var point = new Series() {
-                    ChartType = ChartType.Line,
+                    ChartType = ChartType.Chromatogram,
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
+                    Accessory = new Accessory(),
                 };
                 var rtList = GetSmoothedRetentionTime(analysisFiles[i].RetentionTimeCorrectionBean, param, commonStd.Chromatograms[i]);
                 for (var j = 0; j < rtList.Count; j++) {
                     var peak = rtList[j];
-                    if (peak.ChromXs.RT.Value < minRTrange) continue;
-                    if (peak.ChromXs.RT.Value > maxRT + rtTol) break;
+                    if (peak.ChromXs.RT.Value < minRT) continue;
+                    if (peak.ChromXs.RT.Value > maxRT) break;
                     point.AddPoint((float)peak.ChromXs.RT.Value, (float)peak.Intensity);
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
+                if (commonStd.PeakSelectionResult?.SelectedPeak is not null) {
+                    var leftRtIndex = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt.BinarySearch(commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsLeft.RT.Value);
+                    if (leftRtIndex < 0) leftRtIndex = ~leftRtIndex - 1;
+                    var rightRtIndex = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt.BinarySearch(commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsRight.RT.Value);
+                    if (rightRtIndex < 0) rightRtIndex = ~rightRtIndex - 1;
+                    var leftRt = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt[leftRtIndex];
+                    var rightRt = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt[rightRtIndex];
+                    point.Accessory.SetChromatogram(-1d, leftRt, rightRt);
+                }
             }
             var drawing = new DrawVisual(area, title, slist);
-            SetDrawingMinAndMaxXY_constValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
             SetDrawingMaxY_ratio(drawing, 0.05f);
 
             drawing.Initialize();
@@ -384,7 +389,40 @@ namespace CompMs.App.Msdial.Model.Chart {
             for (var i = 0; i < peaks.Count; i++) {
                 correctedPeakList.Add(ChromatogramPeak.Create(peaks[i].ID, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[peaks[i].ID])));
             }
-            return new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+            using var smoothed = new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            return smoothed.AsPeakArray();
+        }
+
+        /// <summary>
+        /// Computes the RT display window by intersecting the reference RT window with each detected peak window.
+        /// </summary>
+        /// <param name="commonStd">The standard row that contains the reference RT and per-sample detection results.</param>
+        /// <returns>The lower and upper RT bounds for the chart.</returns>
+        internal static (float minX, float maxX) GetEicDisplayRange(CommonStdData commonStd) {
+            var referenceRt = (float)commonStd.Reference.ChromXs.RT.Value;
+            var referenceTolerance = commonStd.Reference.RetentionTimeTolerance > 0
+                ? commonStd.Reference.RetentionTimeTolerance
+                : 2f;
+            var referenceMin = Math.Max(0f, referenceRt - referenceTolerance);
+            var referenceMax = referenceRt + referenceTolerance;
+
+            var minX = referenceMin;
+            var maxX = referenceMax;
+            var peakWidth = commonStd.PeakWidthList.Where(x => x > 0).DefaultIfEmpty(2f).Average();
+            for (var i = 0; i < commonStd.RetentionTimeList.Count; i++) {
+                var peakRt = commonStd.RetentionTimeList[i];
+                if (peakRt <= 0) {
+                    continue;
+                }
+
+                minX = Math.Min(minX, (float)(peakRt - peakWidth));
+                maxX = Math.Max(maxX, (float)(peakRt + peakWidth));
+            }
+
+            if (minX >= maxX) {
+                maxX = minX + 0.01f;
+            }
+            return (minX, maxX);
         }
         #endregion
 

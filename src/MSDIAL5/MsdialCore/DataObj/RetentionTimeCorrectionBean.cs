@@ -295,6 +295,7 @@ namespace CompMs.MsdialCore.DataObj
                             var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
                                 rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray(), commonStdList);
                             SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                            f.RetentionTimeCorrectionBean.ClearCache();
                         }
                     }
                 });
@@ -307,6 +308,7 @@ namespace CompMs.MsdialCore.DataObj
                             var items = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
                                 rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray());
                             SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, items.originalRt, items.rtDiff, items.predictedRt);
+                            f.RetentionTimeCorrectionBean.ClearCache();
                         }
                     }
                 });

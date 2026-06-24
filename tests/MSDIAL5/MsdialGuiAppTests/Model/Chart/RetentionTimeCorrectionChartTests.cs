@@ -33,6 +33,32 @@ public class RetentionTimeCorrectionChartTests {
         Assert.AreEqual(-30f, diff, 1e-6);
     }
 
+    [TestMethod]
+    public void GetEicDisplayRange_UsesOverlapBetweenReferenceAndPeakWindows() {
+        var commonStd = new CommonStdData(CreateReference(1, rt: 5.0, rtTolerance: 0.2f)) {
+            RetentionTimeList = new List<double> { 5.05, 6.0 },
+            PeakWidthList = new List<double> { 0.1, 0.3 },
+        };
+
+        var (minX, maxX) = RetentionTimeCorrectionChart.GetEicDisplayRange(commonStd);
+
+        Assert.AreEqual(4.95f, minX, 1e-6);
+        Assert.AreEqual(5.15f, maxX, 1e-6);
+    }
+
+    [TestMethod]
+    public void GetEicDisplayRange_FallsBackToReferenceWindowWhenNoPeakWindowOverlaps() {
+        var commonStd = new CommonStdData(CreateReference(1, rt: 5.0, rtTolerance: 0.2f)) {
+            RetentionTimeList = new List<double> { 7.0 },
+            PeakWidthList = new List<double> { 0.1 },
+        };
+
+        var (minX, maxX) = RetentionTimeCorrectionChart.GetEicDisplayRange(commonStd);
+
+        Assert.AreEqual(4.8f, minX, 1e-6);
+        Assert.AreEqual(5.2f, maxX, 1e-6);
+    }
+
     private static StandardPair CreateStandardPair(int scanId, double rt) {
         var reference = CreateReference(scanId);
         return new StandardPair {
@@ -47,13 +73,17 @@ public class RetentionTimeCorrectionChartTests {
     }
 
     private static MoleculeMsReference CreateReference(int scanId) {
+        return CreateReference(scanId, 5d, 0.05f);
+    }
+
+    private static MoleculeMsReference CreateReference(int scanId, double rt, float rtTolerance) {
         return new MoleculeMsReference {
             ScanID = scanId,
             Name = $"STD-{scanId}",
             PrecursorMz = 100d,
-            ChromXs = new ChromXs(5d, ChromXType.RT, ChromXUnit.Min),
+            ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
             MassTolerance = 0.05f,
-            RetentionTimeTolerance = 0.10f,
+            RetentionTimeTolerance = rtTolerance,
             MinimumPeakHeight = 1000f,
             IsTargetMolecule = true,
         };
