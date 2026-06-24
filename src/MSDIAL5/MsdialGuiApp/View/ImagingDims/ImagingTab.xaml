@@ -21,7 +21,7 @@
         <RibbonButton Label="Load ROIs" Command="{Binding Path=SelectedImageViewModel.LoadRoiCommand, Mode=OneWay}"/>
     </RibbonGroup>
     <RibbonGroup Header="Export">
-        <RibbonButton Label="Export images" Command="{Binding Path=SelectedImageViewModel.SaveImagesViewModel.SaveCommand, Mode=OneTime}"/>
-        <RibbonButton Label="Export intensities" Command="{Binding Path=SelectedImageViewModel.SaveIntensitiesCommand, Mode=OneTime}"/>
+        <RibbonButton Label="Export images" Command="{Binding Path=SelectedImageViewModel.SaveImagesViewModel.SaveCommand, Mode=OneWay}"/>
+        <RibbonButton Label="Export intensities" Command="{Binding Path=SelectedImageViewModel.ExportIntensitiesCommand, Mode=OneWay}"/>
     </RibbonGroup>
 </RibbonTab>

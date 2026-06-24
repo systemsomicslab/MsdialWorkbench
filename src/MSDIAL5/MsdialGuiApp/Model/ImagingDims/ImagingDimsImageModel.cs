@@ -100,6 +100,10 @@ internal sealed class ImagingDimsImageModel : DisposableModelBase
         await Task.WhenAll([SaveRoisAsync(token), ImageResult.SaveIntensitiesAsync(token)]).ConfigureAwait(false);
     }
 
+    public async Task ExportIntensitiesAsync(CancellationToken token = default) {
+        await ImageResult.SaveIntensitiesAsync(token).ConfigureAwait(false);
+    }
+
     public void LoadRoi() {
         string? path = null;
         var request = new OpenFileRequest(p => path = p)
