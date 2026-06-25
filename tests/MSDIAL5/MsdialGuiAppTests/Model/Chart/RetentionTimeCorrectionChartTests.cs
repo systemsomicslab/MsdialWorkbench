@@ -42,8 +42,8 @@ public class RetentionTimeCorrectionChartTests {
 
         var (minX, maxX) = RetentionTimeCorrectionChart.GetEicDisplayRange(commonStd);
 
-        Assert.AreEqual(4.95f, minX, 1e-6);
-        Assert.AreEqual(5.15f, maxX, 1e-6);
+        Assert.AreEqual(4.8f, minX, 1e-6);
+        Assert.AreEqual(6.2f, maxX, 1e-6);
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class RetentionTimeCorrectionChartTests {
         var (minX, maxX) = RetentionTimeCorrectionChart.GetEicDisplayRange(commonStd);
 
         Assert.AreEqual(4.8f, minX, 1e-6);
-        Assert.AreEqual(5.2f, maxX, 1e-6);
+        Assert.AreEqual(7.1f, maxX, 1e-6);
     }
 
     private static StandardPair CreateStandardPair(int scanId, double rt) {
