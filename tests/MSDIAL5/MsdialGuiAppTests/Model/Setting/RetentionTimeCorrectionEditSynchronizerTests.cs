@@ -46,6 +46,52 @@ public class RetentionTimeCorrectionEditSynchronizerTests {
         CollectionAssert.AreEqual(new[] { 5.5, 7.0 }, commonStdList[0].RetentionTimeList.ToArray());
     }
 
+    [TestMethod]
+    public void SynchronizeSampleRtEdits_UsesEditedResultTableValues() {
+        var reference = CreateReference();
+        var file = CreateAnalysisFile("sample", reference, 5.0);
+        var analysisFiles = new List<AnalysisFileBean> { file };
+
+        var vm = CreateSampleVm(file, 5.0f);
+        vm.Values[0].CanBgChange = true;
+        vm.Values[0].Rt = 6.0f;
+
+        var rtCorrectionCommon = new RetentionTimeCorrectionCommon {
+            StandardLibrary = new List<MoleculeMsReference> { reference },
+        };
+
+        var commonStdList = RetentionTimeCorrectionEditSynchronizer.SynchronizeSampleRtEdits(
+            analysisFiles,
+            new List<SampleListVM> { vm },
+            rtCorrectionCommon);
+
+        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(6.0f, commonStdList[0].AverageRetentionTime, 1e-6);
+    }
+
+    [TestMethod]
+    public void SynchronizeSampleRtEdits_UpdatesSampleEditStateWithoutManualOverrideTable() {
+        var reference = CreateReference();
+        var file = CreateAnalysisFile("sample", reference, 5.0);
+        var analysisFiles = new List<AnalysisFileBean> { file };
+
+        var vm = CreateSampleVm(file, 5.0f);
+        vm.Values[0].CanBgChange = true;
+        vm.Values[0].Rt = 6.0f;
+
+        var rtCorrectionCommon = new RetentionTimeCorrectionCommon {
+            StandardLibrary = new List<MoleculeMsReference> { reference },
+        };
+
+        var commonStdList = RetentionTimeCorrectionEditSynchronizer.SynchronizeSampleRtEdits(
+            analysisFiles,
+            new List<SampleListVM> { vm },
+            rtCorrectionCommon);
+
+        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(6.0f, commonStdList[0].AverageRetentionTime, 1e-6);
+    }
+
     private static AnalysisFileBean CreateAnalysisFile(string name, MoleculeMsReference reference, double rt) {
         var samplePeak = new ChromatogramPeakFeature {
             PrecursorMz = reference.PrecursorMz,

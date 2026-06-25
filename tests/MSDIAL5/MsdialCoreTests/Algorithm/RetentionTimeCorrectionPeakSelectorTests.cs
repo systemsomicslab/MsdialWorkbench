@@ -40,6 +40,37 @@ public class RetentionTimeCorrectionPeakSelectorTests {
     }
 
     [TestMethod]
+    public void Select_PreservesSelectedPeakForCommonStandardSummaries() {
+        var reference = CreateReference();
+        var selectedPeak = CreatePeak(mass: 100.00, rt: 5.03, height: 2200d);
+        var selection = new RetentionTimeCorrectionPeakSelectionResult(
+            reference,
+            selectedPeak,
+            new[] {
+                new RetentionTimeCorrectionPeakCandidateResult(
+                    selectedPeak,
+                    0.00d,
+                    0.03d,
+                    RetentionTimeCorrectionPeakRejectReason.None),
+            },
+            RetentionTimeCorrectionPeakSelectionReason.SelectedSingleCandidate);
+
+        var standardPair = new StandardPair {
+            Reference = reference,
+            SamplePeakAreaBean = selectedPeak,
+            Chromatogram = new List<ChromatogramPeak>(),
+            PeakSelectionResult = selection,
+        };
+
+        var commonStd = new CommonStdData(reference);
+        commonStd.SetStandard(standardPair);
+
+        Assert.IsNotNull(commonStd.PeakSelectionResult);
+        Assert.AreSame(selection, commonStd.PeakSelectionResult);
+        Assert.AreEqual(5.03d, commonStd.RetentionTimeList[0], 1e-6);
+    }
+
+    [TestMethod]
     public void Select_RejectsCandidatesOutsideToleranceOrBelowMinimumHeight() {
         var reference = CreateReference();
         var candidate = CreatePeak(mass: 100.12, rt: 5.12, height: 900d);

@@ -140,6 +140,13 @@ namespace CompMs.MsdialCore.DataObj
             this.rtDiff = null;
             this.predictedRt = null;
         }
+
+        public void UpdateRetentionCorrectionResult(List<double> originalRt, List<double> rtDiff, List<double> predictedRt) {
+            this.originalRt = originalRt;
+            this.rtDiff = rtDiff;
+            this.predictedRt = predictedRt;
+            RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(this.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
+        }
     }
 
     [MessagePackObject]

@@ -377,103 +377,12 @@
                                     Height="25" Width="100" VerticalAlignment="Bottom" 
                                     HorizontalAlignment="Right" Margin="0, 0, 5, 2">
                                 <ToolTipService.ToolTip>
-                                    <ToolTip Content="Update RT correction by using you manually changed" />
+                                    <ToolTip Content="Recalculate predicted RTs after editing detected RT values in the Result table" />
                                 </ToolTipService.ToolTip>
                             </Button>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Peak selection"
-                             Background="LightSteelBlue"
-                             Height="28">
-                        <Grid Name="Grid_PeakSelection">
-                            <DataGrid Name="DataGrid_PeakSelection"
-                                      Background="WhiteSmoke"
-                                      ItemsSource="{Binding PeakSelectionRows}"
-                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      CanUserAddRows="False"
-                                      CanUserDeleteRows="False"
-                                      CanUserReorderColumns="False"
-                                      CanUserSortColumns="True"
-                                      AutoGenerateColumns="False"
-                                      IsReadOnly="True">
-                                <DataGrid.ColumnHeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.ColumnHeaderStyle>
-                                <DataGrid.CellStyle>
-                                    <Style TargetType="DataGridCell">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.CellStyle>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Width="40" Binding="{Binding Path=ReferenceId}" />
-                                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=StandardName}" />
-                                    <DataGridTextColumn Header="Ref RT" Width="70" Binding="{Binding Path=ReferenceRt, StringFormat=0.00}" />
-                                    <DataGridTextColumn Header="Sel RT" Width="70" Binding="{Binding Path=SelectedRt, StringFormat=0.00}" />
-                                    <DataGridTextColumn Header="Sel m/z" Width="75" Binding="{Binding Path=SelectedMz, StringFormat=0.0000}" />
-                                    <DataGridTextColumn Header="Height" Width="75" Binding="{Binding Path=SelectedPeakHeight, StringFormat=0}" />
-                                    <DataGridTextColumn Header="Candidates" Width="75" Binding="{Binding Path=CandidateCount}" />
-                                    <DataGridTextColumn Header="Rejected" Width="65" Binding="{Binding Path=RejectedCount}" />
-                                    <DataGridTextColumn Header="Reason" Width="180" Binding="{Binding Path=SelectedReason}" />
-                                    <DataGridTextColumn Header="Rejected reasons" Width="*" Binding="{Binding Path=RejectedReasons}" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="RT override"
-                             Background="LightSteelBlue"
-                             Height="28">
-                        <Grid Name="Grid_PeakSelectionEdit">
-                            <DataGrid Name="DataGrid_PeakSelectionEdit"
-                                      Background="WhiteSmoke"
-                                      ItemsSource="{Binding PeakSelectionEditRows}"
-                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      CanUserAddRows="False"
-                                      CanUserDeleteRows="False"
-                                      CanUserReorderColumns="False"
-                                      CanUserSortColumns="True"
-                                      AutoGenerateColumns="False">
-                                <DataGrid.ColumnHeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.ColumnHeaderStyle>
-                                <DataGrid.CellStyle>
-                                    <Style TargetType="DataGridCell">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-                                    </Style>
-                                </DataGrid.CellStyle>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Sample" Width="100" Binding="{Binding Path=SampleName}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Standard" Width="*" Binding="{Binding Path=StandardName}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Ref RT" Width="70" Binding="{Binding Path=ReferenceRt, StringFormat=0.00}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Detected RT" Width="80" Binding="{Binding Path=DetectedRt, StringFormat=0.00}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Current RT" Width="80" Binding="{Binding Path=CurrentRt, StringFormat=0.00}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Manual RT" Width="80" Binding="{Binding Path=ManualRt, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=0.00}" />
-                                    <DataGridTextColumn Header="Reason" Width="170" Binding="{Binding Path=SelectedReason}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Rejected" Width="*" Binding="{Binding Path=RejectedReasons}" IsReadOnly="True" />
-                                    <DataGridTemplateColumn Header="Apply" Width="65">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button Content="Apply" Command="{Binding Path=ApplyManualRtCommand}" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </TabItem>
                 </TabControl>
-
             </Grid>
             <Grid Name="ButtonSpace" Grid.Row="2">
                 <Button Content="Run" Command="{Binding Next}"  CommandParameter="{Binding Path=Processed}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>

@@ -10,6 +10,7 @@ using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CoreRtDiffCalcMethod = CompMs.MsdialCore.DataObj.RtDiffCalcMethod;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,11 +44,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         /// </summary>
         public IReadOnlyList<RetentionTimeCorrectionPeakSelectionRow> PeakSelectionRows
             => RetentionTimeCorrectionPeakSelectionPresenter.CreateRows(CommonStdList);
-        /// <summary>
-        /// Gets the editable RT override rows for sample-standard pairs.
-        /// </summary>
-        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionEditRow> PeakSelectionEditRows
-            => RetentionTimeCorrectionPeakSelectionEditPresenter.CreateRows(AnalysisFiles, ApplyManualPeakSelectionRt);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -364,25 +360,30 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.RtCorrectionCommon);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
-            OnPropertyChanged(nameof(PeakSelectionEditRows));
+            RecalculatePredictedRts();
+            SettingChanged();
         }
 
-        /// <summary>
-        /// Applies a manual RT override from the peak selection tab.
-        /// </summary>
-        public void ApplyManualPeakSelectionRt(int sampleIndex, int standardIndex, double rt) {
-            if (sampleIndex < 0 || sampleIndex >= SampleListVMs.Count) {
-                return;
-            }
-            if (standardIndex < 0 || standardIndex >= SampleListVMs[sampleIndex].Values.Count) {
-                return;
-            }
+        private void RecalculatePredictedRts() {
+            for (var i = 0; i < this.AnalysisFiles.Count; i++) {
+                var bean = this.AnalysisFiles[i].RetentionTimeCorrectionBean;
+                if (bean is null || bean.StandardList is null || bean.StandardList.Count == 0) {
+                    continue;
+                }
 
-            var cell = SampleListVMs[sampleIndex].Values[standardIndex];
-            cell.CanBgChange = true;
-            cell.Rt = (float)rt;
-            updateRtTune();
-            SettingChanged();
+                (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) = this.RtCorrectionParam.RtDiffCalcMethod == CoreRtDiffCalcMethod.SampleMinusSampleAverage
+                    ? RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
+                        this.RtCorrectionParam,
+                        bean.StandardList,
+                        bean.OriginalRt.ToArray(),
+                        CommonStdList)
+                    : RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
+                        this.RtCorrectionParam,
+                        bean.StandardList,
+                        bean.OriginalRt.ToArray());
+
+                bean.UpdateRetentionCorrectionResult(originalRt, rtDiff, predictedRt);
+            }
         }
 
         #endregion
@@ -676,7 +677,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
-            OnPropertyChanged(nameof(PeakSelectionEditRows));
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -690,7 +690,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
-            OnPropertyChanged(nameof(PeakSelectionEditRows));
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;
