@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -31,8 +31,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 return;
             }
 
-            var maxIntensity = features.Max(n => n.PeakHeightTop);
-            var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.DriftChromFeatures).Max(n => n.PeakHeightTop) : 0.0;
+            var maxIntensity = features.Max(n => n.PeakFeature.PeakHeightTop);
+            var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.DriftChromFeatures).Max(n => n.PeakFeature.PeakHeightTop) : 0.0;
             var isAllQueriesFocusOnMS1 = queries.Count() == queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).Count();
             foreach (var feature in features) {
                 var featureStatus = feature.FeatureFilterStatus;
