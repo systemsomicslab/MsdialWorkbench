@@ -323,6 +323,8 @@ namespace CompMs.App.Msdial.Model.Chart {
                     var rightRt = commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsRight.RT.Value;
                     point.Accessory.SetChromatogram(-1d, leftRt, rightRt);
                 }
+                var referenceRt = (float)commonStd.RetentionTimeList[i];
+                AddReferenceRtMarker(slist, referenceRt, GetChromatogramIntensityAtRt(commonStd.Chromatograms[i], referenceRt));
             }
             var drawing = new DrawVisual(area, title, slist);
             SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
@@ -359,15 +361,8 @@ namespace CompMs.App.Msdial.Model.Chart {
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
-                if (commonStd.PeakSelectionResult?.SelectedPeak is not null) {
-                    var leftRtIndex = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt.BinarySearch(commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsLeft.RT.Value);
-                    if (leftRtIndex < 0) leftRtIndex = ~leftRtIndex - 1;
-                    var rightRtIndex = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt.BinarySearch(commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsRight.RT.Value);
-                    if (rightRtIndex < 0) rightRtIndex = ~rightRtIndex - 1;
-                    var leftRt = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt[leftRtIndex];
-                    var rightRt = analysisFiles[i].RetentionTimeCorrectionBean.PredictedRt[rightRtIndex];
-                    point.Accessory.SetChromatogram(-1d, leftRt, rightRt);
-                }
+                var referenceRt = GetCorrectedRt(analysisFiles[i], commonStd.RetentionTimeList[i]);
+                AddReferenceRtMarker(slist, referenceRt, GetChromatogramIntensityAtRt(commonStd.Chromatograms[i], (float)commonStd.RetentionTimeList[i]));
             }
             var drawing = new DrawVisual(area, title, slist);
             SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
@@ -388,6 +383,54 @@ namespace CompMs.App.Msdial.Model.Chart {
             }
             using var smoothed = new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             return smoothed.AsPeakArray();
+        }
+
+        private static void AddReferenceRtMarker(SeriesList slist, float referenceRt, float topIntensity) {
+            var markerTop = topIntensity > 0f ? topIntensity : 1f;
+            var marker = new Series() {
+                ChartType = ChartType.Line,
+                MarkerType = MarkerType.None,
+                Brush = Brushes.Red,
+                Pen = new Pen(Brushes.Red, 1.0)
+                {
+                    DashStyle = DashStyles.DashDot,
+                },
+            };
+            marker.AddPoint(referenceRt, 0f);
+            marker.AddPoint(referenceRt, markerTop);
+            slist.Series.Add(marker);
+        }
+
+        private static float GetCorrectedRt(AnalysisFileBean analysisFile, double baseRt) {
+            var originalRt = baseRt;
+            var bean = analysisFile.RetentionTimeCorrectionBean;
+            if (bean?.OriginalRt is null || bean.OriginalRt.Count == 0 || bean.PredictedRt is null || bean.PredictedRt.Count == 0) {
+                return (float)originalRt;
+            }
+
+            var originalIndex = bean.OriginalRt.BinarySearch(originalRt);
+            if (originalIndex < 0) {
+                originalIndex = ~originalIndex - 1;
+            }
+            if (originalIndex < 0) {
+                return (float)originalRt;
+            }
+
+            if (originalIndex >= bean.PredictedRt.Count) {
+                return (float)originalRt;
+            }
+
+            return (float)bean.PredictedRt[originalIndex];
+        }
+
+        private static float GetChromatogramIntensityAtRt(IReadOnlyList<IChromatogramPeak> chromatogram, float rt) {
+            if (chromatogram is null || chromatogram.Count == 0) {
+                return 1f;
+            }
+            var topIntensity = 0f;
+            var nearest = chromatogram.OrderBy(peak => Math.Abs((float)peak.ChromXs.RT.Value - rt)).FirstOrDefault();
+            topIntensity = Math.Max(topIntensity, (float)nearest.Intensity);
+            return topIntensity > 0f ? topIntensity : 1f;
         }
 
         /// <summary>
