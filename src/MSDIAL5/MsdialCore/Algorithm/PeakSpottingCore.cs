@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.Algorithm {
             cmbinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, provider, type);
 
             // test
-            cmbinedFeatures = cmbinedFeatures.OrderBy(n => n.Mass).ThenBy(n => n.ChromXs.Value).ToList();
+            cmbinedFeatures = cmbinedFeatures.OrderBy(n => n.PeakFeature.Mass).ThenBy(n => n.PeakFeature.ChromXsTop.Value).ToList();
             cmbinedFeatures = GetFurtherCleanupedChromPeakFeatures(cmbinedFeatures);
             cmbinedFeatures = GetOtherChromPeakFeatureProperties(cmbinedFeatures);
 
@@ -311,9 +311,9 @@ namespace CompMs.MsdialCore.Algorithm {
             driftFeature.PeakID = peakId;
             driftFeature.ParentPeakID = rtPeakFeature.PeakID;
             driftFeature.IonMode = rtPeakFeature.IonMode;
-            driftFeature.ChromXsLeft.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5, unit: driftFeature.ChromXsLeft.RT.Unit);
-            driftFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value, unit: driftFeature.ChromXsTop.RT.Unit);
-            driftFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.ChromXsRight.RT.Unit);
+            driftFeature.PeakFeature.ChromXsLeft.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5, unit: driftFeature.PeakFeature.ChromXsLeft.RT.Unit);
+            driftFeature.PeakFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value, unit: driftFeature.PeakFeature.ChromXsTop.RT.Unit);
+            driftFeature.PeakFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.PeakFeature.ChromXsRight.RT.Unit);
             var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, rawSpectra.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);
@@ -403,9 +403,9 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> accSpecList, IReadOnlyList<IChromatogramPeak> peaklist) {
 
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1AccumulatedMs1RawSpectrumIdLeft = peaklist[chromLeftID].ID;
             feature.MS1AccumulatedMs1RawSpectrumIdTop = peaklist[chromTopID].ID;
@@ -420,9 +420,9 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IDataProvider provider) {
 
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1AccumulatedMs1RawSpectrumIdLeft = provider.LoadMs1SpectrumFromIndex(chromLeftID).Index;
             feature.MS1AccumulatedMs1RawSpectrumIdTop = provider.LoadMs1SpectrumFromIndex(chromTopID).Index;

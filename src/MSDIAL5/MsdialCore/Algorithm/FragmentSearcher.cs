@@ -221,10 +221,10 @@ namespace CompMs.MsdialCore.Algorithm {
             var ms1Queries = queries.Where(q => q.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).ToList();
             if (ms1Queries.Count == 0) return true; // 
 
-            var featureRt = feature.ChromXsTop.RT.Value;
-            var featureDt = feature.ChromXsTop.HasDrift() ? feature.ChromXsTop.Drift.Value : 0.0;
-            var featureMz = feature.Mass;
-            var featureHeight = feature.PeakHeightTop;
+            var featureRt = feature.PeakFeature.ChromXsTop.RT.Value;
+            var featureDt = feature.PeakFeature.ChromXsTop.HasDrift() ? feature.PeakFeature.ChromXsTop.Drift.Value : 0.0;
+            var featureMz = feature.PeakFeature.Mass;
+            var featureHeight = feature.PeakFeature.PeakHeightTop;
             var relativeHeight = featureHeight / maxIntensity * 100.0;
             var charge = feature.PeakCharacter?.Charge ?? 0;
 
