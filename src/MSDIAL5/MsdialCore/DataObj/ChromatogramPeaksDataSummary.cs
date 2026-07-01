@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.Algorithm;
@@ -221,7 +220,7 @@ namespace CompMs.MsdialCore.DataObj {
             var maxPeakWidthOnRtAxis = (float)peakWidthArray.Max();
             var stdevPeakWidthOnRtAxis = (float)BasicMathematics.Stdev(peakWidthArray);
 
-            var peakHeightArray = chromatogramPeakFeatures.Select(chromatogramPeakFeature => chromatogramPeakFeature.PeakHeightTop).ToArray();
+            var peakHeightArray = chromatogramPeakFeatures.Select(chromatogramPeakFeature => chromatogramPeakFeature.PeakFeature.PeakHeightTop).ToArray();
             var minPeakHeightOnRtAxis = (float)peakHeightArray.Min();
             var averagePeakHeightOnRtAxis = (float)peakHeightArray.Average();
             var medianPeakHeightOnRtAxis = (float)BasicMathematics.Median(peakHeightArray);
