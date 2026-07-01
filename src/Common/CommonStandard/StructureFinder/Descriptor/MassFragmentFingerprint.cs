@@ -6115,7 +6115,7 @@ namespace CompMs.Common.StructureFinder.Descriptor
             var ring3ID = -1;
             var ring4ID = -1;
             var ring5ID = -1;
-            var ring6ID = -1;
+            //var ring6ID = -1;
             var targetRingID = -1;
 
             switch (connectString)
@@ -6266,8 +6266,8 @@ namespace CompMs.Common.StructureFinder.Descriptor
             var ring3ID = -1;
             var ring4ID = -1;
             var ring5ID = -1;
-            var ring6ID = -1;
-            var targetRingID = -1;
+            //var ring6ID = -1;
+            //var targetRingID = -1;
             switch (connectString)
             {
                 case "C-C-C-C-C-C-C-C-C-C": //Trinorlupeol
@@ -6340,7 +6340,7 @@ namespace CompMs.Common.StructureFinder.Descriptor
             var ring4ID = -1;
             var ring5ID = -1;
             var ring6ID = -1;
-            var targetRingID = -1;
+            //var targetRingID = -1;
 
             if (bond2.IsSharedBondInRings && bond4.IsSharedBondInRings && bond6.IsSharedBondInRings &&
                         atom3.AtomEnv.SingleBond_CarbonCount >= 4 && atom7.AtomEnv.SingleBond_CarbonCount >= 4 &&
@@ -6788,11 +6788,11 @@ namespace CompMs.Common.StructureFinder.Descriptor
             Dictionary<int, RingProperty> ringDictionary, Dictionary<int, RingsetProperty> ringsetDictionary)
         {
 
-            var ring1ID = -1;
-            var ring2ID = -1;
-            var ring3ID = -1;
-            var ring4ID = -1;
-            var ring5ID = -1;
+            //var ring1ID = -1;
+            //var ring2ID = -1;
+            //var ring3ID = -1;
+            //var ring4ID = -1;
+            //var ring5ID = -1;
             var targetRingID = -1;
 
             switch (connectString)
@@ -6824,8 +6824,8 @@ namespace CompMs.Common.StructureFinder.Descriptor
            BondProperty bond6, BondProperty bond7, BondProperty bond8,
            Dictionary<int, RingProperty> ringDictionary, Dictionary<int, RingsetProperty> ringsetDictionary)
         {
-            var ring1ID = -1;
-            var ring2ID = -1;
+            //var ring1ID = -1;
+            //var ring2ID = -1;
             var targetRingID = -1;
 
             switch (connectString)

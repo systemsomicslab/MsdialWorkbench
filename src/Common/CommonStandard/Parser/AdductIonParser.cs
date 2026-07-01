@@ -67,7 +67,6 @@ namespace CompMs.Common.Parser {
                 return string.Empty;
 
             var isCharacterMappeared = false;
-            var isNextEquationAppreared = false;
             var contentString = string.Empty;
 
             for (int i = 0; i < trimedAdductName.Length; i++) {

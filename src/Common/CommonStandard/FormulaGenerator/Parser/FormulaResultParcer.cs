@@ -303,19 +303,19 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             }
 
             using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
-                var versionNum = 1;
+                //var versionNum = 1;
                 var isHeaderChecked = false;
 
                 while (sr.Peek() > -1) {
                     wkstr = sr.ReadLine();
 
                     if (isHeaderChecked == false) {
-                        if (wkstr.Contains("Version:")) {
-                            var versionString = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
-                            switch (versionString) {
-                                case "2": versionNum = 2; break;
-                            }
-                        }
+                        //if (wkstr.Contains("Version:")) {
+                        //    var versionString = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
+                        //    switch (versionString) {
+                        //        case "2": versionNum = 2; break;
+                        //    }
+                        //}
                         isHeaderChecked = true;
                     }
 

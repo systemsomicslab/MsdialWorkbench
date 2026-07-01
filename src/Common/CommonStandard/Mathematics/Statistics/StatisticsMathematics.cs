@@ -1,13 +1,12 @@
-﻿using System;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.Enum;
+using CompMs.Common.Mathematics.Basic;
+using CompMs.Common.Mathematics.Matrix;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using CompMs.Common.DataStructure;
-using CompMs.Common.Enum;
-using CompMs.Common.Mathematics.Basic;
-using CompMs.Common.Mathematics.Matrix;
 
 namespace CompMs.Common.Mathematics.Statistics {
     public sealed class StatisticsMathematics
@@ -891,7 +890,7 @@ namespace CompMs.Common.Mathematics.Statistics {
                 // po: loading vector calculation
                 // wo: weight (X) factor calculation
 
-                double[] u, t, p, w, to, po, wo;
+                double[] u, t, p, to, po, wo;
                 double c;
 
                 OplsVectorsCalculations(yArray, dataArray, wfirst, out u, out t, out c, out p,
@@ -911,7 +910,7 @@ namespace CompMs.Common.Mathematics.Statistics {
             ssPredList.Add(currentSS);
 
             // finally, pls modeling is performed to the filtered matrix by othrogonal components
-            double[] uf, tf, pf, wf, tof, pof, wof;
+            double[] uf, tf, pf, tof, pof, wof;
             double cf;
             OplsVectorsCalculations(yArray, dataArray, wfirst, out uf, out tf, out cf, out pf,
                 out wof, out tof, out pof);
