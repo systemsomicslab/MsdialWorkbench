@@ -24,7 +24,7 @@ namespace CompMs.Common.Lipidomics {
 
             try {
                 System.Diagnostics.Process.Start(url);
-            } catch (Win32Exception ex) {
+            } catch (Win32Exception) {
 
             }
         }
