@@ -132,8 +132,11 @@ public sealed class LcmsProcess
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+            factory.Progress = CreateConsoleProgressReporter("Alignment");
             var aligner = factory.CreatePeakAligner();
+            Console.WriteLine("Alignment started.");
             var result = aligner.Alignment(files, alignmentFile, serializer);
+            Console.WriteLine("Alignment finished.");
             result.Save(alignmentFile);
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
@@ -180,6 +183,26 @@ public sealed class LcmsProcess
         }
 
         return 0;
+    }
+
+    private static IProgress<int> CreateConsoleProgressReporter(string label) {
+        var sync = new object();
+        var lastReported = -1;
+        var nextBucket = 0;
+        return new Progress<int>(value => {
+            var percent = Math.Max(0, Math.Min(100, value));
+            lock (sync) {
+                if (percent == lastReported) {
+                    return;
+                }
+                if (percent < 100 && percent < nextBucket) {
+                    return;
+                }
+                Console.WriteLine($"{label} progress: {percent}%");
+                lastReported = percent;
+                nextBucket = percent < 100 ? Math.Min(100, ((percent / 10) + 1) * 10) : 101;
+            }
+        });
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
