@@ -121,7 +121,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Save() {
-            return new EadLipidDatabaseRestorationKey(Key, Priority, _parameter, SourceType.GeneratedLipid);
+            return new EadLipidDatabaseRestorationKey(Id, Priority, _parameter, SourceType.GeneratedLipid);
         }
     }
 }
