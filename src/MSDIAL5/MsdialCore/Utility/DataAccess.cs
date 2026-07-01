@@ -749,9 +749,9 @@ namespace CompMs.MsdialCore.Utility {
             var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
-            var rt = rtChromPeakFeature.ChromXsTop.Value;
-            var rtLeft = rtChromPeakFeature.ChromXsLeft.Value;
-            var rtRight = rtChromPeakFeature.ChromXsRight.Value;
+            var rt = rtChromPeakFeature.PeakFeature.ChromXsTop.Value;
+            var rtLeft = rtChromPeakFeature.PeakFeature.ChromXsLeft.Value;
+            var rtRight = rtChromPeakFeature.PeakFeature.ChromXsRight.Value;
 
             var binMultiplyFactor = 1000;
             var accumulatedRtRange = 1f;
@@ -764,7 +764,7 @@ namespace CompMs.MsdialCore.Utility {
                 rtLeft = rt - accumulatedRtRange;
             }
 
-            var mz = rtChromPeakFeature.Mass;
+            var mz = rtChromPeakFeature.PeakFeature.Mass;
             var scanID = rtChromPeakFeature.MS1RawSpectrumIdTop;
 
             // <mzBin, <driftTimeIndex, [driftTimeBin, accumulatedIntensity]>>
@@ -870,7 +870,6 @@ namespace CompMs.MsdialCore.Utility {
                 var targetMz = Math.Round((double)mzBin / binMultiplyFactor, 3);
                 // <driftTimeIndex, [driftBin, accumulatedIntensity]>
                 var targetChromato = chromatogramBin[mzBin];
-                var counter = 0;
                 var tmpDriftTimeBinSet = new HashSet<int>();
                 foreach (var values in targetChromato.Values) {
                     tmpDriftTimeBinSet.Add((int)(values[0] + 0.5));
@@ -1021,9 +1020,9 @@ namespace CompMs.MsdialCore.Utility {
 
         public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IDataProvider provider,
             ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
-            var rt = rtChromFeature.ChromXsTop.Value;
-            var rtLeft = rtChromFeature.ChromXsLeft.Value;
-            var rtRight = rtChromFeature.ChromXsRight.Value;
+            var rt = rtChromFeature.PeakFeature.ChromXsTop.Value;
+            var rtLeft = rtChromFeature.PeakFeature.ChromXsLeft.Value;
+            var rtRight = rtChromFeature.PeakFeature.ChromXsRight.Value;
 
             var rtRange = 1f;
 
@@ -1036,9 +1035,9 @@ namespace CompMs.MsdialCore.Utility {
                 rtLeft = rt - rtRange;
             }
 
-            var mz = rtChromFeature.Mass;
+            var mz = rtChromFeature.PeakFeature.Mass;
             var scanID = dtChromFeature.MS1RawSpectrumIdTop;
-            var dataPointDriftBin = (int)(dtChromFeature.ChromXsTop.Value * 1000);
+            var dataPointDriftBin = (int)(dtChromFeature.PeakFeature.ChromXsTop.Value * 1000);
 
             var spectrumBin = new Dictionary<int, double[]>();
             //accumulating peaks from peak top to peak left

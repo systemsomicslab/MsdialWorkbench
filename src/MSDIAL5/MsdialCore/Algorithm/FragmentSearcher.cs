@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -31,8 +31,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 return;
             }
 
-            var maxIntensity = features.Max(n => n.PeakHeightTop);
-            var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.DriftChromFeatures).Max(n => n.PeakHeightTop) : 0.0;
+            var maxIntensity = features.Max(n => n.PeakFeature.PeakHeightTop);
+            var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.DriftChromFeatures).Max(n => n.PeakFeature.PeakHeightTop) : 0.0;
             var isAllQueriesFocusOnMS1 = queries.Count() == queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).Count();
             foreach (var feature in features) {
                 var featureStatus = feature.FeatureFilterStatus;
@@ -221,10 +221,10 @@ namespace CompMs.MsdialCore.Algorithm {
             var ms1Queries = queries.Where(q => q.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).ToList();
             if (ms1Queries.Count == 0) return true; // 
 
-            var featureRt = feature.ChromXsTop.RT.Value;
-            var featureDt = feature.ChromXsTop.HasDrift() ? feature.ChromXsTop.Drift.Value : 0.0;
-            var featureMz = feature.Mass;
-            var featureHeight = feature.PeakHeightTop;
+            var featureRt = feature.PeakFeature.ChromXsTop.RT.Value;
+            var featureDt = feature.PeakFeature.ChromXsTop.HasDrift() ? feature.PeakFeature.ChromXsTop.Drift.Value : 0.0;
+            var featureMz = feature.PeakFeature.Mass;
+            var featureHeight = feature.PeakFeature.PeakHeightTop;
             var relativeHeight = featureHeight / maxIntensity * 100.0;
             var charge = feature.PeakCharacter?.Charge ?? 0;
 
