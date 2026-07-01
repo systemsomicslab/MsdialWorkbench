@@ -1,5 +1,4 @@
-﻿using Accord.Diagnostics;
-using CompMs.Common.Algorithm.PeakPick;
+﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -69,14 +68,14 @@ namespace CompMs.MsdialCore.DataObj
         public double Mass { get => PeakFeature.Mass; set => PeakFeature.Mass = value; }
         public double PeakWidth(ChromXType type) {
             switch (type) {
-                case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;
-                case ChromXType.RI: return ChromXsRight.RI.Value - ChromXsLeft.RI.Value;
-                case ChromXType.Drift: return ChromXsRight.Drift.Value - ChromXsLeft.Drift.Value;
-                default: return ChromXsRight.Value - ChromXsLeft.Value;
+                case ChromXType.RT: return PeakFeature.ChromXsRight.RT.Value - PeakFeature.ChromXsLeft.RT.Value;
+                case ChromXType.RI: return PeakFeature.ChromXsRight.RI.Value - PeakFeature.ChromXsLeft.RI.Value;
+                case ChromXType.Drift: return PeakFeature.ChromXsRight.Drift.Value - PeakFeature.ChromXsLeft.Drift.Value;
+                default: return PeakFeature.ChromXsRight.Value - PeakFeature.ChromXsLeft.Value;
             }
         }
         public double PeakWidth() {
-            return ChromXsRight.Value - ChromXsLeft.Value;
+            return PeakFeature.ChromXsRight.Value - PeakFeature.ChromXsLeft.Value;
         }
 
         // basic ID metadata
