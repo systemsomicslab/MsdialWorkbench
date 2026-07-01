@@ -314,13 +314,11 @@ namespace CompMs.MsdialCore.Export
 
             var matchResult = spot.MatchResults.Representative;
 
-            var id = -1;
             var smfID = metadata["Alignment ID"];
             var smeIDrefs = "null";
 
             var smeIDrefAmbiguity_code = "null";
             var isotopomer = "null";
-            var isManuallyModified = "false";
             var expMassToCharge = spot.MassCenter.ToString();
 
             var retentionTime = "null";
