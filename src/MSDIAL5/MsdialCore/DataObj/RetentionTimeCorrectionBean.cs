@@ -165,11 +165,11 @@ namespace CompMs.MsdialCore.DataObj
         public RetentionTimeCorrectionPeakSelectionResult? PeakSelectionResult { get; set; }
 
         [IgnoreMember]
-        public double RtDiff { get { return (SamplePeakAreaBean.ChromXsTop.Value - Reference.ChromXs.Value); } }
+        public double RtDiff { get { return (SamplePeakAreaBean.PeakFeature.ChromXsTop.Value - Reference.ChromXs.Value); } }
         public void Write() {
             Console.WriteLine("Name: " + Reference.Name + ", mass diff: " + (Math.Abs(SamplePeakAreaBean.PrecursorMz - Reference.PrecursorMz)) +
                 " Da (ref: " + Reference.PrecursorMz + ", act: " + SamplePeakAreaBean.PrecursorMz + "), RT diff: " +
-                RtDiff + " min (ref: " + Reference.ChromXs.Value + ", act: " + SamplePeakAreaBean.ChromXsTop.Value + ")");
+                RtDiff + " min (ref: " + Reference.ChromXs.Value + ", act: " + SamplePeakAreaBean.PeakFeature.ChromXsTop.Value + ")");
             if (PeakSelectionResult != null) {
                 Console.WriteLine("  selection: " + PeakSelectionResult.SelectedReason + ", candidates: " + PeakSelectionResult.Candidates.Count);
             }
@@ -259,7 +259,7 @@ namespace CompMs.MsdialCore.DataObj
         public void SetStandard(StandardPair std) {
             this.Chromatograms.Add(std.Chromatogram);
             this.PeakSelectionResult = std.PeakSelectionResult;
-            if (std.SamplePeakAreaBean.ChromXsTop.Value == 0) {
+            if (std.SamplePeakAreaBean.PeakFeature.ChromXsTop.Value == 0) {
                 this.PeakAreaList.Add(0);
                 this.PeakHeightList.Add(0);
                 this.PeakWidthList.Add(0);
@@ -267,11 +267,11 @@ namespace CompMs.MsdialCore.DataObj
                 this.MzList.Add(0);
             }
             else {
-                this.PeakAreaList.Add(std.SamplePeakAreaBean.PeakAreaAboveZero);
-                this.PeakHeightList.Add(std.SamplePeakAreaBean.PeakHeightTop);
-                if (std.SamplePeakAreaBean.ChromXsRight != null && std.SamplePeakAreaBean.ChromXsLeft != null)
-                    this.PeakWidthList.Add(std.SamplePeakAreaBean.ChromXsRight.Value - std.SamplePeakAreaBean.ChromXsLeft.Value);
-                this.RetentionTimeList.Add(std.SamplePeakAreaBean.ChromXsTop.Value);
+                this.PeakAreaList.Add(std.SamplePeakAreaBean.PeakFeature.PeakAreaAboveZero);
+                this.PeakHeightList.Add(std.SamplePeakAreaBean.PeakFeature.PeakHeightTop);
+                if (std.SamplePeakAreaBean.PeakFeature.ChromXsRight != null && std.SamplePeakAreaBean.PeakFeature.ChromXsLeft != null)
+                    this.PeakWidthList.Add(std.SamplePeakAreaBean.PeakFeature.ChromXsRight.Value - std.SamplePeakAreaBean.PeakFeature.ChromXsLeft.Value);
+                this.RetentionTimeList.Add(std.SamplePeakAreaBean.PeakFeature.ChromXsTop.Value);
                 this.MzList.Add(std.SamplePeakAreaBean.PrecursorMz);
 
                 this.NumHit++;

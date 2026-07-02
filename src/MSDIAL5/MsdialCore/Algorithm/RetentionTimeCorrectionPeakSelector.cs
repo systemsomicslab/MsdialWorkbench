@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
 
             var selected = acceptedCandidates
-                .OrderByDescending(candidate => candidate.Peak.PeakHeightTop)
+                .OrderByDescending(candidate => candidate.Peak.PeakFeature.PeakHeightTop)
                 .First();
             return new RetentionTimeCorrectionPeakSelectionResult(
                 reference,
@@ -179,7 +179,7 @@ namespace CompMs.MsdialCore.Algorithm {
             MoleculeMsReference reference,
             ChromatogramPeakFeature candidate) {
             var massDifference = Math.Abs(candidate.PrecursorMz - reference.PrecursorMz);
-            var rtDifference = Math.Abs(candidate.ChromXsTop.RT.Value - reference.ChromXs.RT.Value);
+            var rtDifference = Math.Abs(candidate.PeakFeature.ChromXsTop.RT.Value - reference.ChromXs.RT.Value);
             var rejectReason = RetentionTimeCorrectionPeakRejectReason.None;
 
             if (massDifference > reference.MassTolerance) {
@@ -188,7 +188,7 @@ namespace CompMs.MsdialCore.Algorithm {
             if (rtDifference >= reference.RetentionTimeTolerance) {
                 rejectReason |= RetentionTimeCorrectionPeakRejectReason.RetentionTimeTolerance;
             }
-            if (candidate.PeakHeightTop <= reference.MinimumPeakHeight) {
+            if (candidate.PeakFeature.PeakHeightTop <= reference.MinimumPeakHeight) {
                 rejectReason |= RetentionTimeCorrectionPeakRejectReason.MinimumPeakHeight;
             }
 
