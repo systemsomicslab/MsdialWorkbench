@@ -66,7 +66,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public List<StandardCompoundVM> StandardData {
             get { return _standardData; }
             set {
+                var old = _standardData;
                 if (SetProperty(ref _standardData, value)) {
+                    UnhookStandardDataEvents(old);
                     HookStandardDataEvents();
                     StandardDataChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -209,6 +211,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             return true;
         }
         #endregion
+
+        private void UnhookStandardDataEvents(List<StandardCompoundVM>? data) {
+            if (data == null) {
+                return;
+            }
+
+            foreach (var standard in data) {
+                standard.PropertyChanged -= StandardDataItem_PropertyChanged;
+            }
+        }
 
         private void HookStandardDataEvents() {
             if (StandardData == null) {
