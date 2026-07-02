@@ -238,11 +238,10 @@ namespace CompMs.App.Msdial.Model.Chart {
         }
 
         /// <summary>
-        /// Calculates the RT difference for the selected standard using ScanID-based lookup.
+        /// Calculates the RT difference for the provided standard using ScanID-based lookup.
         /// </summary>
-        /// <param name="file">The analysis file that contains the sample RT.</param>
+        /// <param name="standard">The standard pair that contains the sample RT.</param>
         /// <param name="commonStdLookup">The per-standard average RT lookup.</param>
-        /// <param name="scanId">The standard ScanID.</param>
         /// <returns>The RT difference in seconds.</returns>
         internal static float CalcRtDiff_SampleMinusAverage(StandardPair standard, IReadOnlyDictionary<int, CommonStdData> commonStdLookup) {
             if (!commonStdLookup.TryGetValue(standard.Reference.ScanID, out var commonStd)) {
