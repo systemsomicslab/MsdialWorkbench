@@ -10,7 +10,6 @@ using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CoreRtDiffCalcMethod = CompMs.MsdialCore.DataObj.RtDiffCalcMethod;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -346,30 +345,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.AnalysisFiles,
                 SampleListVMs,
                 this.RtCorrectionCommon);
-
-            RecalculatePredictedRts();
-        }
-
-        private void RecalculatePredictedRts() {
-            for (var i = 0; i < this.AnalysisFiles.Count; i++) {
-                var bean = this.AnalysisFiles[i].RetentionTimeCorrectionBean;
-                if (bean is null || bean.StandardList is null || bean.StandardList.Count == 0) {
-                    continue;
-                }
-
-                (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) = this.RtCorrectionParam.RtDiffCalcMethod == CoreRtDiffCalcMethod.SampleMinusSampleAverage
-                    ? RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
-                        this.RtCorrectionParam,
-                        bean.StandardList,
-                        bean.OriginalRt.ToArray(),
-                        CommonStdList)
-                    : RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
-                        this.RtCorrectionParam,
-                        bean.StandardList,
-                        bean.OriginalRt.ToArray());
-
-                bean.UpdateRetentionCorrectionResult(originalRt, rtDiff, predictedRt);
-            }
         }
 
         #endregion
