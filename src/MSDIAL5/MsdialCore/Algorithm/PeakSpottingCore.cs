@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.Algorithm {
             cmbinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, provider, type);
 
             // test
-            cmbinedFeatures = cmbinedFeatures.OrderBy(n => n.Mass).ThenBy(n => n.ChromXs.Value).ToList();
+            cmbinedFeatures = cmbinedFeatures.OrderBy(n => n.PeakFeature.Mass).ThenBy(n => n.PeakFeature.ChromXsTop.Value).ToList();
             cmbinedFeatures = GetFurtherCleanupedChromPeakFeatures(cmbinedFeatures);
             cmbinedFeatures = GetOtherChromPeakFeatureProperties(cmbinedFeatures);
 
@@ -274,7 +274,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 //if (rtWidth < 0.2) rtWidth = 0.2F;
 
                 // accumulatedRtRange can be replaced by rtWidth actually, but for alignment results, we have to adjust the RT range to equally estimate the peaks on drift axis
-                var chromatogram = rawSpectra.GetDriftChromatogramByScanRtMz(peakSpot.MS1RawSpectrumIdTop, (float)peakSpot.ChromXs.Value, accumulatedRtRange, (float)peakSpot.Mass, _parameter.CentroidMs1Tolerance);
+                var chromatogram = rawSpectra.GetDriftChromatogramByScanRtMz(peakSpot.MS1RawSpectrumIdTop, (float)peakSpot.ChromXs.Value, accumulatedRtRange, (float)peakSpot.PeakFeature.Mass, _parameter.CentroidMs1Tolerance);
                 if (chromatogram.IsEmpty) continue;
                 var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(chromatogram, peakSpot, rawSpectra, accumulatedRtRange);
                 if (peaksOnDriftTime == null || peaksOnDriftTime.Count == 0) continue;
@@ -307,14 +307,14 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         private ChromatogramPeakFeature BuildDriftPeakFeature(PeakDetectionResult result, ChromatogramPeakFeature rtPeakFeature, int peakId, Chromatogram chromatogram, RawSpectra rawSpectra, double accumulatedRtRange) {
-            var driftFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, rtPeakFeature.Mass);
+            var driftFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, rtPeakFeature.PeakFeature.Mass);
             driftFeature.PeakID = peakId;
             driftFeature.ParentPeakID = rtPeakFeature.PeakID;
             driftFeature.IonMode = rtPeakFeature.IonMode;
-            driftFeature.ChromXsLeft.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5, unit: driftFeature.ChromXsLeft.RT.Unit);
-            driftFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value, unit: driftFeature.ChromXsTop.RT.Unit);
-            driftFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.ChromXsRight.RT.Unit);
-            var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
+            driftFeature.PeakFeature.ChromXsLeft.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5, unit: driftFeature.PeakFeature.ChromXsLeft.RT.Unit);
+            driftFeature.PeakFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value, unit: driftFeature.PeakFeature.ChromXsTop.RT.Unit);
+            driftFeature.PeakFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.PeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.PeakFeature.ChromXsRight.RT.Unit);
+            var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.PeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, rawSpectra.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);
             return driftFeature;
@@ -403,9 +403,9 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> accSpecList, IReadOnlyList<IChromatogramPeak> peaklist) {
 
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1AccumulatedMs1RawSpectrumIdLeft = peaklist[chromLeftID].ID;
             feature.MS1AccumulatedMs1RawSpectrumIdTop = peaklist[chromTopID].ID;
@@ -420,9 +420,9 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IDataProvider provider) {
 
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1AccumulatedMs1RawSpectrumIdLeft = provider.LoadMs1SpectrumFromIndex(chromLeftID).Index;
             feature.MS1AccumulatedMs1RawSpectrumIdTop = provider.LoadMs1SpectrumFromIndex(chromTopID).Index;
@@ -461,9 +461,9 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, IReadOnlyList<IChromatogramPeak> peaklist, AcquisitionType type) {
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].ID;
             feature.MS1RawSpectrumIdTop = peaklist[chromTopID].ID;
@@ -473,9 +473,9 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, IReadOnlyList<double[]> peaklist, AcquisitionType type) {
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1RawSpectrumIdLeft = (int)peaklist[chromLeftID][0];
             feature.MS1RawSpectrumIdTop = (int)peaklist[chromTopID][0];
@@ -485,9 +485,9 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, AcquisitionType type) {
-            var chromLeftID = feature.ChromScanIdLeft;
-            var chromTopID = feature.ChromScanIdTop;
-            var chromRightID = feature.ChromScanIdRight;
+            var chromLeftID = feature.PeakFeature.ChromScanIdLeft;
+            var chromTopID = feature.PeakFeature.ChromScanIdTop;
+            var chromRightID = feature.PeakFeature.ChromScanIdRight;
 
             feature.MS1RawSpectrumIdLeft = provider.LoadMs1SpectrumFromIndex(chromLeftID).Index;
             feature.MS1RawSpectrumIdTop = provider.LoadMs1SpectrumFromIndex(chromTopID).Index;
@@ -498,7 +498,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         public void SetMS2RawSpectrumIDs2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, int scanBegin, int scanTop, int scanEnd, AcquisitionType type) {
 
-            var mass = feature.Mass;
+            var mass = feature.PeakFeature.Mass;
             var minDiff = int.MaxValue;
             var msSpectrumList = provider.LoadMsSpectrums();
             var ms2SpectrumList = provider.LoadMsNSpectrums(level:2);
@@ -552,16 +552,16 @@ namespace CompMs.MsdialCore.Algorithm {
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
-                var peakTop = feature.ChromScanIdTop;
-                var peakLeft = feature.ChromScanIdLeft;
-                var peakRight = feature.ChromScanIdRight;
+                var peakTop = feature.PeakFeature.ChromScanIdTop;
+                var peakLeft = feature.PeakFeature.ChromScanIdLeft;
+                var peakRight = feature.PeakFeature.ChromScanIdRight;
 
                 if (peakTop - 1 < 0 || peakTop + 1 > peaklist.Count - 1) continue;
                 if (peaklist[peakTop - 1].Intensity <= 0 || peaklist[peakTop + 1].Intensity <= 0) continue;
 
                 var trackingNumber = 10 * (peakRight - peakLeft); if (trackingNumber > 50) trackingNumber = 50;
 
-                var ampDiff = Math.Max(feature.PeakHeightTop - feature.PeakHeightLeft, feature.PeakHeightTop - feature.PeakHeightRight);
+                var ampDiff = Math.Max(feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightLeft, feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightRight);
                 var counter = 0;
 
                 double spikeMax = -1, spikeMin = -1;
@@ -605,16 +605,16 @@ namespace CompMs.MsdialCore.Algorithm {
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
-                var peakTop = feature.ChromScanIdTop;
-                var peakLeft = feature.ChromScanIdLeft;
-                var peakRight = feature.ChromScanIdRight;
+                var peakTop = feature.PeakFeature.ChromScanIdTop;
+                var peakLeft = feature.PeakFeature.ChromScanIdLeft;
+                var peakRight = feature.PeakFeature.ChromScanIdRight;
 
                 if (peakTop - 1 < 0 || peakTop + 1 > peaklist.Count - 1) continue;
                 if (peaklist[peakTop - 1][3] <= 0 || peaklist[peakTop + 1][3] <= 0) continue;
 
                 var trackingNumber = 10 * (peakRight - peakLeft); if (trackingNumber > 50) trackingNumber = 50;
 
-                var ampDiff = Math.Max(feature.PeakHeightTop - feature.PeakHeightLeft, feature.PeakHeightTop - feature.PeakHeightRight);
+                var ampDiff = Math.Max(feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightLeft, feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightRight);
                 var counter = 0;
 
                 double spikeMax = -1, spikeMin = -1;
@@ -658,14 +658,14 @@ namespace CompMs.MsdialCore.Algorithm {
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
             foreach (var feature in chromPeakFeatures) {
-                var peakTop = feature.ChromScanIdTop;
-                var peakLeft = feature.ChromScanIdLeft;
-                var peakRight = feature.ChromScanIdRight;
+                var peakTop = feature.PeakFeature.ChromScanIdTop;
+                var peakLeft = feature.PeakFeature.ChromScanIdLeft;
+                var peakRight = feature.PeakFeature.ChromScanIdRight;
 
                 if (!chromatogram.IsValidPeakTop(peakTop)) continue;
 
                 var trackingNumber = 10 * (peakRight - peakLeft); if (trackingNumber > 50) trackingNumber = 50;
-                var ampDiff = Math.Max(feature.PeakHeightTop - feature.PeakHeightLeft, feature.PeakHeightTop - feature.PeakHeightRight);
+                var ampDiff = Math.Max(feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightLeft, feature.PeakFeature.PeakHeightTop - feature.PeakFeature.PeakHeightRight);
                 var counter = 0;
                 counter += chromatogram.CountSpikes(peakLeft - trackingNumber, peakLeft, ampDiff / 3d);
                 counter += chromatogram.CountSpikes(peakRight, peakRight + trackingNumber, ampDiff / 3d);
@@ -685,9 +685,9 @@ namespace CompMs.MsdialCore.Algorithm {
                 var targetSpot = cmbinedFeatures[i];
                 for (int j = i + 1; j < cmbinedFeatures.Count; j++) {
                     var searchedSpot = cmbinedFeatures[j];
-                    if ((searchedSpot.Mass - targetSpot.Mass) > massTolerance) break;
-                    if (Math.Abs(targetSpot.ChromXs.Value - searchedSpot.ChromXs.Value) < rtTolerance) {
-                        if ((targetSpot.PeakHeightTop - searchedSpot.PeakHeightTop) > 0) {
+                    if ((searchedSpot.PeakFeature.Mass - targetSpot.PeakFeature.Mass) > massTolerance) break;
+                    if (Math.Abs(targetSpot.PeakFeature.ChromXsTop.Value - searchedSpot.PeakFeature.ChromXsTop.Value) < rtTolerance) {
+                        if ((targetSpot.PeakFeature.PeakHeightTop - searchedSpot.PeakFeature.PeakHeightTop) > 0) {
                             if (!excludeList.Contains(j))
                                 excludeList.Add(j);
                         }
@@ -716,17 +716,17 @@ namespace CompMs.MsdialCore.Algorithm {
                 //    Console.WriteLine();
                 //}
                 for (int j = 0; j < parentPeakAreaBeanList.Count; j++) {
-                    if (Math.Abs(parentPeakAreaBeanList[j].Mass - chromPeakFeatures[i].Mass) <=
+                    if (Math.Abs(parentPeakAreaBeanList[j].PeakFeature.Mass - chromPeakFeatures[i].PeakFeature.Mass) <=
                         massStep * 0.5) {
 
                         var isOverlaped = isOverlapedChecker(parentPeakAreaBeanList[j], chromPeakFeatures[i]);
                         if (!isOverlaped) continue;
-                        var hwhm = ((parentPeakAreaBeanList[j].ChromXsRight.Value - parentPeakAreaBeanList[j].ChromXsLeft.Value) +
-                            (chromPeakFeatures[i].ChromXsRight.Value - chromPeakFeatures[i].ChromXsLeft.Value)) * 0.25;
+                        var hwhm = ((parentPeakAreaBeanList[j].PeakFeature.ChromXsRight.Value - parentPeakAreaBeanList[j].PeakFeature.ChromXsLeft.Value) +
+                            (chromPeakFeatures[i].PeakFeature.ChromXsRight.Value - chromPeakFeatures[i].PeakFeature.ChromXsLeft.Value)) * 0.25;
 
                         var tolerance = Math.Min(hwhm, 0.03);
                         if (Math.Abs(parentPeakAreaBeanList[j].ChromXs.Value - chromPeakFeatures[i].ChromXs.Value) <= tolerance) {
-                            if (chromPeakFeatures[i].PeakHeightTop > parentPeakAreaBeanList[j].PeakHeightTop) {
+                            if (chromPeakFeatures[i].PeakFeature.PeakHeightTop > parentPeakAreaBeanList[j].PeakFeature.PeakHeightTop) {
                                 parentPeakAreaBeanList.RemoveAt(j);
                                 j--;
                                 continue;
@@ -747,10 +747,10 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private bool isOverlapedChecker(ChromatogramPeakFeature peak1, ChromatogramPeakFeature peak2) {
             if (peak1.ChromXs.Value > peak2.ChromXs.Value) {
-                if (peak1.ChromXsLeft.Value < peak2.ChromXs.Value) return true;
+                if (peak1.PeakFeature.ChromXsLeft.Value < peak2.ChromXs.Value) return true;
             }
             else {
-                if (peak2.ChromXsLeft.Value < peak1.ChromXs.Value) return true;
+                if (peak2.PeakFeature.ChromXsLeft.Value < peak1.ChromXs.Value) return true;
             }
             return false;
         }
@@ -940,7 +940,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> GetOtherChromPeakFeatureProperties(List<ChromatogramPeakFeature> chromPeakFeatures) {
-            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromXs.Value).ThenBy(n => n.Mass).ToList();
+            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromXs.Value).ThenBy(n => n.PeakFeature.Mass).ToList();
 
             var masterPeakID = 0; // used for LC-IM-MS/MS project
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -958,7 +958,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
             }
 
-            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakHeightTop).ToList();
+            chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakFeature.PeakHeightTop).ToList();
 
             if (chromPeakFeatures.Count - 1 > 0) {
                 for (int i = 0; i < chromPeakFeatures.Count; i++) {

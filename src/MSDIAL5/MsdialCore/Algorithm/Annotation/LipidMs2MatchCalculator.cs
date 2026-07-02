@@ -82,7 +82,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.IsOtherLipidMatch = IsOtherLipidMatch;
         }
 
-        public static LipidMs2MatchResult Empty =>
+        public static new LipidMs2MatchResult Empty =>
             empty ?? (empty = new LipidMs2MatchResult(string.Empty, 0, 0, 0, 0, 0, false, false, false, false, false));
         private static LipidMs2MatchResult empty;
     }

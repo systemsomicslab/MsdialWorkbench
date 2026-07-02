@@ -314,13 +314,11 @@ namespace CompMs.MsdialCore.Export
 
             var matchResult = spot.MatchResults.Representative;
 
-            var id = -1;
             var smfID = metadata["Alignment ID"];
             var smeIDrefs = "null";
 
             var smeIDrefAmbiguity_code = "null";
             var isotopomer = "null";
-            var isManuallyModified = "false";
             var expMassToCharge = spot.MassCenter.ToString();
 
             var retentionTime = "null";
@@ -979,7 +977,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot
         )
         {
-            return new List<string>() { ValueOrNull(spot.Ontology.ToString()) };
+            return new List<string>() { ValueOrNull(spot.Ontology) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1339,7 +1337,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
-        static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
+        static string ValueOrNull(string? value) => string.IsNullOrEmpty(value) ? "null" : value;
 
 
         public class Database

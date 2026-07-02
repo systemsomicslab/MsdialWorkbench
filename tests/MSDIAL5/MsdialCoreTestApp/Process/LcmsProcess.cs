@@ -38,8 +38,10 @@ public sealed class LcmsProcess
             return -1;
         }
 
-        CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
-            out var mspDB, out var txtDB, 
+        var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
+        var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
+        CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, textAnnotatorSettings, out IupacDatabase iupacDB,
+            out var mspDBs, out var textDBs,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out var lbmDB);
 
@@ -52,11 +54,15 @@ public sealed class LcmsProcess
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB is { Database.Count: > 0 }) {
-            var annotator = new LcmsMspAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, param.MspFilePath, 1);
-            dbStorage.AddMoleculeDataBase(mspDB, [
-                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
-            ]);
+        foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
+            var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
+            foreach (var setting in mspDB.AnnotatorSettings) {
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, param.TargetOmics, setting.AnnotatorId, setting.Priority);
+                annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
+            }
+            if (annotatorPairs.Count > 0) {
+                dbStorage.AddMoleculeDataBase(mspDB.DataBase, annotatorPairs);
+            }
         }
         if (lbmDB is { Database.Count: > 0 }) {
             var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
@@ -64,11 +70,15 @@ public sealed class LcmsProcess
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB is { Database.Count: > 0 }) {
-            var textannotator = new LcmsTextDBAnnotator(txtDB, param.TextDbSearchParam, param.TextDBFilePath, 2);
-            dbStorage.AddMoleculeDataBase(txtDB, [
-                new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
-            ]);
+        foreach (var textDB in textDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
+            var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
+            foreach (var setting in textDB.AnnotatorSettings) {
+                var annotator = new LcmsTextDBAnnotator(textDB.DataBase, setting.SearchParameter, setting.AnnotatorId, setting.Priority);
+                annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: false)));
+            }
+            if (annotatorPairs.Count > 0) {
+                dbStorage.AddMoleculeDataBase(textDB.DataBase, annotatorPairs);
+            }
         }
         container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
@@ -122,8 +132,11 @@ public sealed class LcmsProcess
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+            factory.Progress = CreateConsoleProgressReporter("Alignment");
             var aligner = factory.CreatePeakAligner();
+            Console.WriteLine("Alignment started.");
             var result = aligner.Alignment(files, alignmentFile, serializer);
+            Console.WriteLine("Alignment finished.");
             result.Save(alignmentFile);
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
@@ -170,6 +183,26 @@ public sealed class LcmsProcess
         }
 
         return 0;
+    }
+
+    private static IProgress<int> CreateConsoleProgressReporter(string label) {
+        var sync = new object();
+        var lastReported = -1;
+        var nextBucket = 0;
+        return new Progress<int>(value => {
+            var percent = Math.Max(0, Math.Min(100, value));
+            lock (sync) {
+                if (percent == lastReported) {
+                    return;
+                }
+                if (percent < 100 && percent < nextBucket) {
+                    return;
+                }
+                Console.WriteLine($"{label} progress: {percent}%");
+                lastReported = percent;
+                nextBucket = percent < 100 ? Math.Min(100, ((percent / 10) + 1) * 10) : 101;
+            }
+        });
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
