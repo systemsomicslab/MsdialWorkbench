@@ -31,19 +31,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public RetentionTimeCorrectionParam RtCorrectionParam { get; set; }
         public List<CommonStdData> CommonStdList { get; set; } = new List<CommonStdData>(0);
         public event EventHandler? StandardDataChanged;
-        /// <summary>
-        /// Gets the peak selection results that were propagated from the RT correction core.
-        /// </summary>
-        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionResult> PeakSelectionResults
-            => CommonStdList
-                .Select(std => std.PeakSelectionResult)
-                .OfType<RetentionTimeCorrectionPeakSelectionResult>()
-                .ToList();
-        /// <summary>
-        /// Gets the rows shown in the RT correction peak selection summary tab.
-        /// </summary>
-        public IReadOnlyList<RetentionTimeCorrectionPeakSelectionRow> PeakSelectionRows
-            => RetentionTimeCorrectionPeakSelectionPresenter.CreateRows(CommonStdList);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -359,8 +346,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.AnalysisFiles,
                 SampleListVMs,
                 this.RtCorrectionCommon);
-            OnPropertyChanged(nameof(PeakSelectionResults));
-            OnPropertyChanged(nameof(PeakSelectionRows));
+
             RecalculatePredictedRts();
         }
 
@@ -675,8 +661,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             //this.RtCorrectionCommon.CommonStdList = CommonStdList;
 
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
-            OnPropertyChanged(nameof(PeakSelectionResults));
-            OnPropertyChanged(nameof(PeakSelectionRows));
+
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -688,8 +673,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
-            OnPropertyChanged(nameof(PeakSelectionResults));
-            OnPropertyChanged(nameof(PeakSelectionRows));
+
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;

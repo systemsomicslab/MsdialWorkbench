@@ -123,36 +123,24 @@ public class RetentionTimeCorrectionMethodTests {
     }
 
     [TestMethod]
-    public void CommonStdData_SetStandard_PreservesPeakSelectionResult() {
+    public void CommonStdData_SetStandard_PopulatesRetentionStatisticsWithoutPeakSelectionResult() {
         var reference = CreateReference();
         var peak = new ChromatogramPeakFeature {
             PrecursorMz = reference.PrecursorMz,
             ChromXs = new ChromXs(5.0, ChromXType.RT, ChromXUnit.Min),
-            PeakHeightTop = 2000d,
         };
-        var selection = new RetentionTimeCorrectionPeakSelectionResult(
-            reference,
-            peak,
-            new[] {
-                new RetentionTimeCorrectionPeakCandidateResult(
-                    peak,
-                    0d,
-                    0d,
-                    RetentionTimeCorrectionPeakRejectReason.None),
-            },
-            RetentionTimeCorrectionPeakSelectionReason.SelectedSingleCandidate);
+        peak.PeakFeature.PeakHeightTop = 2000d;
         var std = new StandardPair {
             Reference = reference,
             SamplePeakAreaBean = peak,
             Chromatogram = new List<ChromatogramPeak>(),
-            PeakSelectionResult = selection,
         };
 
         var common = new CommonStdData(reference);
         common.SetStandard(std);
 
-        Assert.AreSame(selection, common.PeakSelectionResult);
-        Assert.AreSame(selection, std.PeakSelectionResult);
+        Assert.AreEqual(5d, common.RetentionTimeList[0], 1e-6);
+        Assert.AreEqual(1, common.NumHit);
     }
 
     private static AnalysisFileBean CreateAnalysisFile(params (MoleculeMsReference Reference, double Rt)[] standards) {
@@ -167,8 +155,8 @@ public class RetentionTimeCorrectionMethodTests {
         var samplePeak = new ChromatogramPeakFeature {
             PrecursorMz = reference.PrecursorMz,
             ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
-            PeakHeightTop = 2000d,
         };
+        samplePeak.PeakFeature.PeakHeightTop = 2000d;
 
         return new StandardPair {
             Reference = reference,

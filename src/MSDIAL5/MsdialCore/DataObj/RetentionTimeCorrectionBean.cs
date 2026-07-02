@@ -158,21 +158,12 @@ namespace CompMs.MsdialCore.DataObj
         public MoleculeMsReference Reference { get; set; }
         [Key(2)]
         public List<ChromatogramPeak> Chromatogram { get; set; }
-        /// <summary>
-        /// Gets the evaluated peak selection details for this standard, if peak selection has already been run.
-        /// </summary>
-        [IgnoreMember]
-        public RetentionTimeCorrectionPeakSelectionResult? PeakSelectionResult { get; set; }
-
         [IgnoreMember]
         public double RtDiff { get { return (SamplePeakAreaBean.PeakFeature.ChromXsTop.Value - Reference.ChromXs.Value); } }
         public void Write() {
             Console.WriteLine("Name: " + Reference.Name + ", mass diff: " + (Math.Abs(SamplePeakAreaBean.PrecursorMz - Reference.PrecursorMz)) +
                 " Da (ref: " + Reference.PrecursorMz + ", act: " + SamplePeakAreaBean.PrecursorMz + "), RT diff: " +
                 RtDiff + " min (ref: " + Reference.ChromXs.Value + ", act: " + SamplePeakAreaBean.PeakFeature.ChromXsTop.Value + ")");
-            if (PeakSelectionResult != null) {
-                Console.WriteLine("  selection: " + PeakSelectionResult.SelectedReason + ", candidates: " + PeakSelectionResult.Candidates.Count);
-            }
         }
     }
 
@@ -246,11 +237,6 @@ namespace CompMs.MsdialCore.DataObj
         /// Gets the number of samples with a non-zero RT hit.
         /// </summary>
         public int NumHit { get; set; } = 0;
-        /// <summary>
-        /// Gets the peak selection result used to populate this summary, if available.
-        /// </summary>
-        public RetentionTimeCorrectionPeakSelectionResult? PeakSelectionResult { get; set; }
-
         public CommonStdData(MoleculeMsReference comp) {
             Reference = comp;
         }
@@ -258,7 +244,6 @@ namespace CompMs.MsdialCore.DataObj
 
         public void SetStandard(StandardPair std) {
             this.Chromatograms.Add(std.Chromatogram);
-            this.PeakSelectionResult = std.PeakSelectionResult;
             if (std.SamplePeakAreaBean.PeakFeature.ChromXsTop.Value == 0) {
                 this.PeakAreaList.Add(0);
                 this.PeakHeightList.Add(0);

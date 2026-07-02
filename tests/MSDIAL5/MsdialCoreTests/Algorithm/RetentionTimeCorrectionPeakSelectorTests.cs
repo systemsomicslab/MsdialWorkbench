@@ -59,15 +59,13 @@ public class RetentionTimeCorrectionPeakSelectorTests {
             Reference = reference,
             SamplePeakAreaBean = selectedPeak,
             Chromatogram = new List<ChromatogramPeak>(),
-            PeakSelectionResult = selection,
         };
 
         var commonStd = new CommonStdData(reference);
         commonStd.SetStandard(standardPair);
 
-        Assert.IsNotNull(commonStd.PeakSelectionResult);
-        Assert.AreSame(selection, commonStd.PeakSelectionResult);
         Assert.AreEqual(5.03d, commonStd.RetentionTimeList[0], 1e-6);
+        Assert.AreEqual(1, commonStd.NumHit);
     }
 
     [TestMethod]

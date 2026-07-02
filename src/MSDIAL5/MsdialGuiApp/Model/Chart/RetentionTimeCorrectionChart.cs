@@ -318,11 +318,6 @@ namespace CompMs.App.Msdial.Model.Chart {
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
-                if (commonStd.PeakSelectionResult?.SelectedPeak is not null) {
-                    var leftRt = commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsLeft.RT.Value;
-                    var rightRt = commonStd.PeakSelectionResult.SelectedPeak.PeakFeature.ChromXsRight.RT.Value;
-                    point.Accessory.SetChromatogram(-1d, leftRt, rightRt);
-                }
                 var referenceRt = (float)commonStd.RetentionTimeList[i];
                 AddReferenceRtMarker(slist, referenceRt, GetChromatogramIntensityAtRt(commonStd.Chromatograms[i], referenceRt));
             }
