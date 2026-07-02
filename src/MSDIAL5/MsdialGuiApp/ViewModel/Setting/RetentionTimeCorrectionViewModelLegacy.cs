@@ -7,13 +7,13 @@ using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.UI.Message;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,6 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public RetentionTimeCorrectionCommon RtCorrectionCommon { get; set; }
         public RetentionTimeCorrectionParam RtCorrectionParam { get; set; }
         public List<CommonStdData> CommonStdList { get; set; } = new List<CommonStdData>(0);
+        public event EventHandler? StandardDataChanged;
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
         public bool Processed { get; set; } = false;
@@ -65,8 +66,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public List<StandardCompoundVM> StandardData {
             get { return _standardData; }
             set {
-                if (_standardData == value) return;
-                _standardData = value; OnPropertyChanged("StandardData");
+                var old = _standardData;
+                if (SetProperty(ref _standardData, value)) {
+                    UnhookStandardDataEvents(old);
+                    HookStandardDataEvents();
+                    StandardDataChanged?.Invoke(this, EventArgs.Empty);
+                }
             }
         }
         #endregion
@@ -78,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 return allRtDiffUc;
             }
             set {
-                allRtDiffUc = value; OnPropertyChanged("AllRtDiffUC");
+                SetProperty(ref allRtDiffUc, value);
             }
         }
 
@@ -88,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 return _stackEachRtDiffUc;
             }
             set {
-                _stackEachRtDiffUc = value; OnPropertyChanged("StackPanel_EachRtDiffUc");
+                SetProperty(ref _stackEachRtDiffUc, value);
             }
         }
 
@@ -98,7 +103,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 return _stackEachPeakHeight;
             }
             set {
-                _stackEachPeakHeight = value; OnPropertyChanged("StackPanel_EachStdPeakHeightUc");
+                SetProperty(ref _stackEachPeakHeight, value);
             }
         }
 
@@ -109,7 +114,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 return _grid_EachStdEICUc;
             }
             set {
-                _grid_EachStdEICUc = value; OnPropertyChanged("Grid_EachStdEICUc");
+                SetProperty(ref _grid_EachStdEICUc, value);
             }
         }
 
@@ -143,6 +148,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 this.RtWin.ComboBox_RtDiffCalcMethod.SelectedIndex = (int)RtCorrectionParam.RtDiffCalcMethod;
                 RtCorrectionResUpdate(false);
             }
+            HookStandardDataEvents();
+            RtCorrection.RaiseCanExecuteChanged();
         }
 
 
@@ -159,7 +166,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void excuteLoadLibrary() {
-            StandardData = RetentionTimeCorrectionModelLegacy.LoadLibraryFile();
+            var loadedStandardData = RetentionTimeCorrectionModelLegacy.LoadLibraryFile();
+            if (loadedStandardData is null) {
+                return;
+            }
+            StandardData = loadedStandardData;
             Processed = false;
             OnPropertyChanged("Processed");
             RtCorrection.RaiseCanExecuteChanged();
@@ -193,15 +204,57 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 return false;
             }
 
-            var targetNum = this.StandardData.Count(x => x.IsTarget == true);
-            if (targetNum == 0) {
-                //ShowMessage_PleaseSelectStd();
+            if (!HasRunnableStandard()) {
                 return false;
             }
 
             return true;
         }
         #endregion
+
+        private void UnhookStandardDataEvents(List<StandardCompoundVM>? data) {
+            if (data == null) {
+                return;
+            }
+
+            foreach (var standard in data) {
+                standard.PropertyChanged -= StandardDataItem_PropertyChanged;
+            }
+        }
+
+        private void HookStandardDataEvents() {
+            if (StandardData == null) {
+                return;
+            }
+
+            foreach (var standard in StandardData) {
+                standard.PropertyChanged -= StandardDataItem_PropertyChanged;
+                standard.PropertyChanged += StandardDataItem_PropertyChanged;
+            }
+        }
+
+        private void StandardDataItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            if (sender is not StandardCompoundVM standard) {
+                return;
+            }
+
+            if (e.PropertyName == nameof(StandardCompoundVM.IsTarget)
+                || e.PropertyName == nameof(StandardCompoundVM.RetentionTime)
+                || e.PropertyName == nameof(StandardCompoundVM.RetentionTimeTolerance)
+                || e.PropertyName == nameof(StandardCompoundVM.AccurateMass)
+                || e.PropertyName == nameof(StandardCompoundVM.AccurateMassTolerance)) {
+                RtCorrection.RaiseCanExecuteChanged();
+                StandardDataChanged?.Invoke(standard, EventArgs.Empty);
+            }
+        }
+
+        private bool HasRunnableStandard() {
+            return StandardData != null && StandardData.Any(x => x.IsTarget
+                && x.RetentionTime > 0
+                && x.RetentionTimeTolerance > 0
+                && x.AccurateMass > 0
+                && x.AccurateMassTolerance > 0);
+        }
 
         #region AutoFill
         private DelegateCommand<bool>? _autoFill;
@@ -300,16 +353,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void updateRtTune() {
-            RtCorrectionCommon.SampleCellInfoListList = new List<List<SampleListCellInfo>>();
-            for (var i = 0; i < SampleListVMs.Count; i++) {
-                var l = new List<SampleListCellInfo>();
-                for (var j = 0; j < SampleListVMs[i].Values.Count; j++) {
-                    l.Add(SampleListVMs[i].Values[j].SampleListCellInfo);
-                    this.AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT = new RetentionTime(SampleListVMs[i].Values[j].Rt, AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT.Unit);
-                }
-                RtCorrectionCommon.SampleCellInfoListList.Add(l);
-            }
-            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionEditSynchronizer.SynchronizeSampleRtEdits(
+                this.AnalysisFiles,
+                SampleListVMs,
+                this.RtCorrectionCommon);
         }
 
         #endregion
@@ -601,6 +648,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             //this.RtCorrectionCommon.CommonStdList = CommonStdList;
 
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -612,6 +660,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;

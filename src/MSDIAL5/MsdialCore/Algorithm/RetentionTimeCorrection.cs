@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -34,6 +35,9 @@ namespace CompMs.MsdialCore.Algorithm {
             return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
+        /// <summary>
+        /// Builds the per-standard RT correction pair by detecting chromatogram peaks and selecting the best match.
+        /// </summary>
         private static List<StandardPair> GetStdPair(
             AnalysisFileBean file,
             IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
@@ -43,25 +47,14 @@ namespace CompMs.MsdialCore.Algorithm {
             var peakpickCore = new PeakSpottingCore(param);
             var rawSpectra = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
-                var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
-                
-                ChromatogramPeakFeature pab = null;
-                if (pabCollection != null) {
-                    foreach (var p in pabCollection) {
-                        if (Math.Abs(p.ChromXs.RT.Value - i.ChromXs.RT.Value) < i.RetentionTimeTolerance && p.PeakFeature.PeakHeightTop > i.MinimumPeakHeight)
-                            if (pab == null)
-                                pab = p;
-                            else
-                                if (pab.PeakFeature.PeakHeightTop < p.PeakFeature.PeakHeightTop) pab = p;
-
-                    }
-                }
-                if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
-                var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var pabCollection = peakpickCore.GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
+                var selection = RetentionTimeCorrectionPeakSelector.Select(i, pabCollection);
+                ChromatogramPeakFeature pab = selection.SelectedPeak ?? new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
+                var peaklist = ((Chromatogram)chromatogram).AsPeakArray();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {
@@ -72,16 +65,27 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
 
+        /// <summary>
+        /// Calculates RT correction values by subtracting the per-standard average RT from each sample RT.
+        /// </summary>
+        /// <param name="rtParam">RT correction settings.</param>
+        /// <param name="stdList">Per-sample standard peak pairs.</param>
+        /// <param name="xOriginal">Original RT axis used for interpolation.</param>
+        /// <param name="commonStdList">Per-standard summary rows that contain the average RT for each target standard.</param>
+        /// <returns>The original RT axis, interpolated RT differences, and predicted RT values.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the summary list contains duplicate ScanID values.</exception>
         public static (List<double> originalRt, List<double> rtDiff, List<double> predictedRt) GetRetentionTimeCorrectionBean_SampleMinusAverage(
             RetentionTimeCorrectionParam rtParam, List<StandardPair> stdList,
             double[] xOriginal, List<CommonStdData> commonStdList) {
+            var commonStdLookup = CreateCommonStdLookup(commonStdList);
             var xList = new List<double>();
             var yList = new List<double>();
             for (var i = 0; i < stdList.Count; i++) {
                 var val = stdList[i];
                 if (val.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                if (!commonStdLookup.TryGetValue(val.Reference.ScanID, out var commonStd)) continue;
                 var x = val.SamplePeakAreaBean.ChromXs.RT.Value;
-                var y = x - commonStdList[i].AverageRetentionTime;
+                var y = x - commonStd.AverageRetentionTime;
                 xList.Add(x); yList.Add(y);
             }
             if (yList.Count == 0) return new (xOriginal.ToList(), xOriginal.ToList(), xOriginal.ToList());
@@ -191,6 +195,23 @@ namespace CompMs.MsdialCore.Algorithm {
 
         public static double LinearInterpolation(double x0, double x1, double y0, double y1, double xVal) {
             return y0 + (xVal - x0) / (x1 - x0) * (y1 - y0);
+        }
+
+        /// <summary>
+        /// Builds a ScanID lookup for the common standard summary rows.
+        /// </summary>
+        /// <param name="commonStdList">Common standard summary rows to index.</param>
+        /// <returns>A dictionary keyed by ScanID.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when duplicate ScanID values are encountered.</exception>
+        private static Dictionary<int, CommonStdData> CreateCommonStdLookup(IEnumerable<CommonStdData> commonStdList) {
+            var lookup = new Dictionary<int, CommonStdData>();
+            foreach (var commonStd in commonStdList ?? Enumerable.Empty<CommonStdData>()) {
+                if (lookup.ContainsKey(commonStd.Reference.ScanID)) {
+                    throw new InvalidOperationException($"Duplicate ScanID found in common standard list: {commonStd.Reference.ScanID}.");
+                }
+                lookup[commonStd.Reference.ScanID] = commonStd;
+            }
+            return lookup;
         }
     }
 }
