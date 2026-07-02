@@ -427,14 +427,12 @@ namespace CompMs.App.Msdial.Model.Chart {
             if (chromatogram is null || chromatogram.Count == 0) {
                 return 1f;
             }
-            var topIntensity = 0f;
-            var nearest = chromatogram.OrderBy(peak => Math.Abs((float)peak.ChromXs.RT.Value - rt)).FirstOrDefault();
-            topIntensity = Math.Max(topIntensity, (float)nearest.Intensity);
-            return topIntensity > 0f ? topIntensity : 1f;
+            var intensity = (float)chromatogram.OrderBy(peak => Math.Abs((float)peak.ChromXs.RT.Value - rt)).First().Intensity;
+            return intensity > 0f ? intensity : 1f;
         }
 
         /// <summary>
-        /// Computes the RT display window by intersecting the reference RT window with each detected peak window.
+        /// Computes the RT display window by expanding the reference RT window to include detected peak windows.
         /// </summary>
         /// <param name="commonStd">The standard row that contains the reference RT and per-sample detection results.</param>
         /// <returns>The lower and upper RT bounds for the chart.</returns>
