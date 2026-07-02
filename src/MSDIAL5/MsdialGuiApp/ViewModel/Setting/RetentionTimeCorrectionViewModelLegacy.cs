@@ -81,6 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             get { return _standardData; }
             set {
                 if (SetProperty(ref _standardData, value)) {
+                    HookStandardDataEvents();
                     StandardDataChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
