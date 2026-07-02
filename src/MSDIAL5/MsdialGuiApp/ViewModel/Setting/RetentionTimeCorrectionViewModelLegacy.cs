@@ -362,7 +362,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             OnPropertyChanged(nameof(PeakSelectionResults));
             OnPropertyChanged(nameof(PeakSelectionRows));
             RecalculatePredictedRts();
-            SettingChanged();
         }
 
         private void RecalculatePredictedRts() {
