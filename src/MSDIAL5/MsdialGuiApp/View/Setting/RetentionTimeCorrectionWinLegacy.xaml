@@ -377,13 +377,12 @@
                                     Height="25" Width="100" VerticalAlignment="Bottom" 
                                     HorizontalAlignment="Right" Margin="0, 0, 5, 2">
                                 <ToolTipService.ToolTip>
-                                    <ToolTip Content="Update RT correction by using you manually changed" />
+                                    <ToolTip Content="Recalculate predicted RTs after editing detected RT values in the Result table" />
                                 </ToolTipService.ToolTip>
                             </Button>
                         </Grid>
                     </TabItem>
                 </TabControl>
-
             </Grid>
             <Grid Name="ButtonSpace" Grid.Row="2">
                 <Button Content="Run" Command="{Binding Next}"  CommandParameter="{Binding Path=Processed}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
