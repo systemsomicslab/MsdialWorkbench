@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using NCDK.Graphs.InChI;
 using NCDK.Smiles;
-using NCDK.Graphs.InChI;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
@@ -100,14 +98,6 @@ namespace CompMs.Common.Lipidomics
     }
     public class SmilesInchikey
     {
-        private string smiles;
-        private string inchikey;
-
-        public SmilesInchikey()
-        {
-            smiles = null;
-            inchikey = null;
-        }
         public string Smiles { get; set; }
         public string InchiKey { get; set; }
     }

@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
@@ -42,7 +41,6 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.CarbonMass*2,
             MassDiffDictionary.OxygenMass*2,
         }.Sum();
-        private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public LPCd5OadSpectrumGenerator() {

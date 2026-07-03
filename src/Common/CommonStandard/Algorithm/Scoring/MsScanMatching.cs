@@ -4389,7 +4389,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
             int size = 0;
 
-            double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
+            double baseM = double.MinValue, baseR = double.MinValue;
 
             while (focusedMz <= maxMz) {
                 sumM = 0;
@@ -4488,7 +4488,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             int[] existsID = ArrayPool<int>.Shared.Rent(availableIndex.Count);
             double[] scalars = Enumerable.Repeat(0d, availableIndex.Count).ToArray();
             double[][] covariances = Enumerable.Repeat(0, availableIndex.Count).Select(_ => Enumerable.Repeat(0d, availableIndex.Count).ToArray()).ToArray();
-            int klo = 0, khi = 0;
 
             double focusedMz = mergedPeaks.Any() ? Math.Max(mergedPeaks.First().Mz, massBegin) : massBegin;
             double maxMz = mergedPeaks.Any() ? Math.Min(massEnd, mergedPeaks.Last().Mz) : massEnd;

@@ -1,23 +1,20 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Proteomics.DataObj;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Proteomics.Function {
     public sealed class SequenceToSpec {
         private SequenceToSpec() { }
 
-        private static double OH = 17.002739652;
+        //private static double OH = 17.002739652;
         private static double H = 1.00782503207;
         private static double H2O = 18.010564684;
         private static double Proton = 1.00727646688;
-        private static double Electron = 0.0005485799;
+        //private static double Electron = 0.0005485799;
         private static double NH3 = 17.026549101;
         private static double NH2 = 16.01872407;
         private static double H3PO4 = 97.976895575;

@@ -77,7 +77,6 @@ namespace CompMs.Common.Lipidomics
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
             var spectrum = new List<SpectrumPeak>();
-            var nlMass = 0.0;
             spectrum.AddRange(GetLPGSpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
