@@ -46,6 +46,25 @@ namespace CompMs.Common.MessagePack.Tests
         }
 
         [TestMethod()]
+        public void SerializeAndDeserializeSmallSampleBytesTest() {
+            var datas = new SmallSample[] {
+                new SmallSample(),
+                new SmallSample(),
+            };
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, datas);
+            var bytes = memory.ToArray();
+
+            memory.Position = 0;
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(memory);
+            var roundTrip = new MemoryStream();
+            LargeListMessagePack.Serialize(roundTrip, actual);
+
+            CollectionAssert.AreEqual(bytes, roundTrip.ToArray());
+            Assert.AreEqual(datas.Length, actual.Count);
+        }
+
+        [TestMethod()]
         [DataRow(100, 100)]
         [DataRow(1000000, 100)]
         //[DataRow(10000000, 100)]
