@@ -8,7 +8,6 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.MsdialCore.Parser
 {
-    [MessagePack.MessagePackObject]
     public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         public DataBaseRestorationKey(string key, int priority) {
@@ -81,7 +80,6 @@ namespace CompMs.MsdialCore.Parser
         }
     }
 
-    [MessagePack.MessagePackObject]
     public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
         public FastaDbRestorationKey(string key, int priority) {
             Key = key;
