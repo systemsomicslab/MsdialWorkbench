@@ -169,35 +169,31 @@ namespace CompMs.Common.DataObj.Property
 
         class AdductIonFormatter : IMessagePackFormatter<AdductIon>
         {
-            AdductIon IMessagePackFormatter<AdductIon>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
-                readSize = MessagePackBinary.ReadNextBlock(bytes, offset);
-                if (MessagePackBinary.IsNil(bytes, offset)) {
+            public AdductIon Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                if (reader.TryReadNil()) {
                     return Default;
                 }
-                var count = MessagePackBinary.ReadArrayHeader(bytes, offset, out var tmp);
+                var count = reader.ReadArrayHeader();
                 if (count < 3) {
                     return Default;
                 }
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out var read);
-                tmp += read;
+                reader.Skip();
+                reader.Skip();
+                var name = reader.ReadString();
                 var adduct = GetAdductIon(name);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                adduct.M1Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
-                tmp += read;
-                adduct.M2Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
-                tmp += read;
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                adduct.IsIncluded |= MessagePackBinary.ReadBoolean(bytes, offset + tmp, out _);
+                reader.Skip();
+                reader.Skip();
+                reader.Skip();
+                adduct.M1Intensity = reader.ReadDouble();
+                adduct.M2Intensity = reader.ReadDouble();
+                reader.Skip();
+                adduct.IsIncluded |= reader.ReadBoolean();
                 return adduct;
             }
 
-            int IMessagePackFormatter<AdductIon>.Serialize(ref byte[] bytes, int offset, AdductIon value, IFormatterResolver formatterResolver) {
+            public void Serialize(ref MessagePackWriter writer, AdductIon value, MessagePackSerializerOptions options) {
                 var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
-                return formatter.Serialize(ref bytes, offset, value, formatterResolver);
+                formatter.Serialize(ref writer, value, options);
             }
         }
     }

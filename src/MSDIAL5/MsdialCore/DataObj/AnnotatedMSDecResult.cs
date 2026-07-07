@@ -62,11 +62,11 @@ namespace CompMs.MsdialCore.DataObj
             return MessagePackDefaultHandler.LoadFromStream<AnnotatedMSDecResult>(stream);
         }
 
-        internal class AnnotatedMSDecResultFormatter : IMessagePackFormatter<AnnotatedMSDecResult>
+        internal class AnnotatedMSDecResultFormatter : IMessagePackFormatter<AnnotatedMSDecResult?>
         {
             public AnnotatedMSDecResult Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
                 var currentOffset = offset;
-                var contentSize = MessagePackBinary.ReadArrayHeader(bytes, currentOffset, out int readTmp);
+                var contentSize = MessagePackBinary.ReadArrayHeader(bytes, currentOffset, out var readTmp);
                 currentOffset += readTmp;
                 var raw = formatterResolver.GetFormatterWithVerify<byte[]>().Deserialize(bytes, currentOffset, formatterResolver, out readTmp);
                 currentOffset += readTmp;
@@ -82,6 +82,11 @@ namespace CompMs.MsdialCore.DataObj
                 return new AnnotatedMSDecResult(mSDecResult, matchResults, molecule, quantMass);
             }
 
+            public AnnotatedMSDecResult Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+            {
+                throw new System.NotImplementedException();
+            }
+
             public int Serialize(ref byte[] bytes, int offset, AnnotatedMSDecResult value, IFormatterResolver formatterResolver) {
                 var currentOffset = offset;
                 currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 4);
@@ -94,6 +99,11 @@ namespace CompMs.MsdialCore.DataObj
                 currentOffset += MoleculePropertyExtension.Formatter.Serialize(ref bytes, currentOffset, value.Molecule, formatterResolver);
                 currentOffset += formatterResolver.GetFormatterWithVerify<double>().Serialize(ref bytes, currentOffset, value.QuantMass, formatterResolver);
                 return currentOffset - offset;
+            }
+
+            public void Serialize(ref MessagePackWriter writer, AnnotatedMSDecResult value, MessagePackSerializerOptions options)
+            {
+                throw new System.NotImplementedException();
             }
         }
     }

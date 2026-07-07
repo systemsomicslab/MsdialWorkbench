@@ -42,35 +42,34 @@ namespace CompMs.Common.Interfaces {
 
     public class ChromatogramPeakFeatureInterfaceFormatter : IMessagePackFormatter<IChromatogramPeakFeature>
     {
-        public IChromatogramPeakFeature Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
-            return formatterResolver.GetFormatterWithVerify<BaseChromatogramPeakFeature>().Deserialize(bytes, offset, formatterResolver, out readSize);
+        public IChromatogramPeakFeature Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+            return options.Resolver.GetFormatterWithVerify<BaseChromatogramPeakFeature>().Deserialize(ref reader, options);
         }
 
-        public int Serialize(ref byte[] bytes, int offset, IChromatogramPeakFeature value, IFormatterResolver formatterResolver) {
+        public void Serialize(ref MessagePackWriter writer, IChromatogramPeakFeature value, MessagePackSerializerOptions options) {
             if (value == null) {
-                return MessagePackBinary.WriteNil(ref bytes, offset);
+                writer.WriteNil();
+                return;
             }
             if (value is BaseChromatogramPeakFeature bp) {
-                return formatterResolver.GetFormatterWithVerify<BaseChromatogramPeakFeature>().Serialize(ref bytes, offset, bp, formatterResolver);
+                options.Resolver.GetFormatterWithVerify<BaseChromatogramPeakFeature>().Serialize(ref writer, bp, options);
+                return;
             }
-            else {
-                var currentOffset = offset;
-                currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 12);
-                currentOffset += MessagePackBinary.WriteInt32(ref bytes, currentOffset, value.ChromScanIdLeft);
-                currentOffset += MessagePackBinary.WriteInt32(ref bytes, currentOffset, value.ChromScanIdTop);
-                currentOffset += MessagePackBinary.WriteInt32(ref bytes, currentOffset, value.ChromScanIdRight);
-                var chromFormatter = formatterResolver.GetFormatterWithVerify<ChromXs>();
-                currentOffset += chromFormatter.Serialize(ref bytes, currentOffset, value.ChromXsLeft, formatterResolver);
-                currentOffset += chromFormatter.Serialize(ref bytes, currentOffset, value.ChromXsTop, formatterResolver);
-                currentOffset += chromFormatter.Serialize(ref bytes, currentOffset, value.ChromXsRight, formatterResolver);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.PeakHeightLeft);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.PeakHeightTop);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.PeakHeightRight);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.PeakAreaAboveZero);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.PeakAreaAboveBaseline);
-                currentOffset += MessagePackBinary.WriteDouble(ref bytes, currentOffset, value.Mass);
-                return currentOffset - offset;
-            }
+
+            writer.WriteArrayHeader(12);
+            writer.Write(value.ChromScanIdLeft);
+            writer.Write(value.ChromScanIdTop);
+            writer.Write(value.ChromScanIdRight);
+            var chromFormatter = options.Resolver.GetFormatterWithVerify<ChromXs>();
+            chromFormatter.Serialize(ref writer, value.ChromXsLeft, options);
+            chromFormatter.Serialize(ref writer, value.ChromXsTop, options);
+            chromFormatter.Serialize(ref writer, value.ChromXsRight, options);
+            writer.Write(value.PeakHeightLeft);
+            writer.Write(value.PeakHeightTop);
+            writer.Write(value.PeakHeightRight);
+            writer.Write(value.PeakAreaAboveZero);
+            writer.Write(value.PeakAreaAboveBaseline);
+            writer.Write(value.Mass);
         }
     }
 }
