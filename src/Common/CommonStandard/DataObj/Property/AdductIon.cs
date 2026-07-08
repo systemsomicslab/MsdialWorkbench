@@ -167,7 +167,7 @@ namespace CompMs.Common.DataObj.Property
             }
         }
 
-        class AdductIonFormatter : IMessagePackFormatter<AdductIon>
+        internal class AdductIonFormatter : IMessagePackFormatter<AdductIon?>
         {
             public AdductIon Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
                 if (reader.TryReadNil()) {
@@ -192,8 +192,26 @@ namespace CompMs.Common.DataObj.Property
             }
 
             public void Serialize(ref MessagePackWriter writer, AdductIon value, MessagePackSerializerOptions options) {
-                var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
-                formatter.Serialize(ref writer, value, options);
+                //var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
+                //formatter.Serialize(ref writer, value, options);
+                if (value is null)
+                {
+                    writer.WriteNil();
+                    return;
+                }
+
+                writer.WriteArrayHeader(10);
+
+                writer.Write(value.AdductIonAccurateMass); // Key 0
+                writer.Write(value.AdductIonXmer);         // Key 1
+                writer.Write(value.AdductIonName);         // Key 2
+                writer.Write(value.ChargeNumber);          // Key 3
+                writer.Write((int)value.IonMode);          // Key 4
+                writer.Write(value.FormatCheck);           // Key 5
+                writer.Write(value.M1Intensity);           // Key 6
+                writer.Write(value.M2Intensity);           // Key 7
+                writer.Write(value.IsRadical);             // Key 8
+                writer.Write(value.IsIncluded);            // Key 9
             }
         }
     }

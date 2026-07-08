@@ -32,6 +32,7 @@ namespace CompMs.Common.DataObj.Property.Tests
             var adductIon = AdductIon.GetAdductIon(adductName);
             var memory = new MemoryStream();
             MessagePackDefaultHandler.SaveToStream(adductIon, memory);
+            memory.Position = 0;
             var newAdduct = MessagePackDefaultHandler.LoadFromStream<AdductIon>(memory);
             Assert.AreEqual(adductIon, newAdduct);
         }
@@ -41,6 +42,7 @@ namespace CompMs.Common.DataObj.Property.Tests
             var adductIon = (AdductIon)null;
             var memory = new MemoryStream();
             MessagePackDefaultHandler.SaveToStream(adductIon, memory);
+            memory.Position = 0;
             var newAdduct = MessagePackDefaultHandler.LoadFromStream<AdductIon>(memory);
             Assert.AreEqual(AdductIon.Default, newAdduct);
         }
