@@ -42,7 +42,7 @@ namespace CompMs.Common.Interfaces
 
         public static readonly IMessagePackFormatter<IMoleculeProperty> Formatter = new MoleculePropertyFormatter();
 
-        class MoleculePropertyFormatter : IMessagePackFormatter<IMoleculeProperty>
+        internal class MoleculePropertyFormatter : IMessagePackFormatter<IMoleculeProperty?>
         {
             public IMoleculeProperty Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
                 var count = reader.ReadArrayHeader();

@@ -25,7 +25,7 @@ namespace CompMs.Common.MessagePack {
             }
         }
         public static void SaveToStream<T>(T obj, Stream s) {
-            MessagePackSerializer.Serialize(s, obj, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(StandardResolver.Instance));
+            MessagePackSerializer.Serialize(s, obj, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray));
         }
 
         // large list

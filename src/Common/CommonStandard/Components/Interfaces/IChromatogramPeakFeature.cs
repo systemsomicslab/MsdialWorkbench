@@ -4,7 +4,8 @@ using MessagePack.Formatters;
 using System;
 
 namespace CompMs.Common.Interfaces {
-    [Union(0, typeof(BaseChromatogramPeakFeature))]
+    //[Union(0, typeof(BaseChromatogramPeakFeature))]
+    [MessagePackFormatter(typeof(ChromatogramPeakFeatureInterfaceFormatter))]
     public interface IChromatogramPeakFeature {
 
         // basic property
@@ -40,7 +41,7 @@ namespace CompMs.Common.Interfaces {
         }
     }
 
-    public class ChromatogramPeakFeatureInterfaceFormatter : IMessagePackFormatter<IChromatogramPeakFeature>
+    public class ChromatogramPeakFeatureInterfaceFormatter : IMessagePackFormatter<IChromatogramPeakFeature?>
     {
         public IChromatogramPeakFeature Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
             return options.Resolver.GetFormatterWithVerify<BaseChromatogramPeakFeature>().Deserialize(ref reader, options);
