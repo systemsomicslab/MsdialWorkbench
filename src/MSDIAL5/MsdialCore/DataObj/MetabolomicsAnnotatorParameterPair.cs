@@ -15,12 +15,13 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [SerializationConstructor]
-        public MetabolomicsAnnotatorParameterPair(IAnnotationQueryFactoryGenerationKey<MoleculeDataBase> serializableAnnotatorKey) {
+        public MetabolomicsAnnotatorParameterPair(IReferRestorationKey serializableAnnotatorKey) {
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
         }
 
-        [Key(nameof(SerializableAnnotatorKey))]
-        public IAnnotationQueryFactoryGenerationKey<MoleculeDataBase> SerializableAnnotatorKey { get; }
+        [Key("SerializableAnnotatorKey")]
+        //public IAnnotationQueryFactoryGenerationKey<MoleculeDataBase> SerializableAnnotatorKey { get; }
+        public IReferRestorationKey SerializableAnnotatorKey { get; }
 
         [IgnoreMember]
         public string AnnotatorID => AnnotationQueryFactory?.AnnotatorId ?? SerializableAnnotatorKey.Key;

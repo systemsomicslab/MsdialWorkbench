@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -15,13 +14,14 @@ namespace CompMs.MsdialCore.Parser.Tests
     {
         [TestMethod()]
         public void MspDbRestorationKeyTest() {
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey", -1);
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected = key;
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
+            IReferRestorationKey key = new MspDbRestorationKey("MspKey", -1);
+            IReferRestorationKey expected = key;
+            IReferRestorationKey actual;
 
             using (var stream = new MemoryStream()) {
-                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(key, stream);
-                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
+                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey>(key, stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey>(stream);
             }
 
             Assert.AreEqual(expected.Key, actual.Key);

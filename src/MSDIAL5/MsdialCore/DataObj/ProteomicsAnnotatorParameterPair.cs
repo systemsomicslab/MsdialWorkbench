@@ -17,15 +17,16 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [SerializationConstructor]
-        public ProteomicsAnnotatorParameterPair(IAnnotationQueryFactoryGenerationKey<ShotgunProteomicsDB> serializableAnnotatorKey, ProteomicsParameter proteomicsParameter) {
+        public ProteomicsAnnotatorParameterPair(IReferRestorationKey serializableAnnotatorKey, ProteomicsParameter proteomicsParameter) {
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
             ProteomicsParameter = proteomicsParameter ?? throw new System.ArgumentNullException(nameof(proteomicsParameter));
         }
 
-        [Key(nameof(SerializableAnnotatorKey))]
-        public IAnnotationQueryFactoryGenerationKey<ShotgunProteomicsDB> SerializableAnnotatorKey { get; }
+        [Key("SerializableAnnotatorKey")]
+        //public IAnnotationQueryFactoryGenerationKey<ShotgunProteomicsDB> SerializableAnnotatorKey { get; }
+        public IReferRestorationKey SerializableAnnotatorKey { get; }
 
-        [Key(nameof(ProteomicsParameter))]
+        [Key("ProteomicsParameter")]
         public ProteomicsParameter ProteomicsParameter { get; }
 
         [IgnoreMember]

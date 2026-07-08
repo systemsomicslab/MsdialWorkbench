@@ -9,7 +9,12 @@ namespace CompMs.MsdialCore.DataObj
     [Union(0, typeof(MetabolomicsAnnotatorParameterPair))]
     [Union(1, typeof(ProteomicsAnnotatorParameterPair))]
     [Union(2, typeof(EadLipidAnnotatorParameterPair))]
-    public interface IAnnotatorParameterPair<TDataBase> where TDataBase : IReferenceDataBase
+    public interface IAnnotatorParameterPair
+    {
+
+    }
+
+    public interface IAnnotatorParameterPair<TDataBase> : IAnnotatorParameterPair where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }
         IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; }
