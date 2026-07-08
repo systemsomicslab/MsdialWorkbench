@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 
 namespace CompMs.Common.MessagePack.Tests
 {
@@ -62,6 +63,30 @@ namespace CompMs.Common.MessagePack.Tests
 
             CollectionAssert.AreEqual(bytes, roundTrip.ToArray());
             Assert.AreEqual(datas.Length, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedSmallSampleBytesTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedFixedSampleBytesTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<FixedSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+        }
+
+        private static byte[] HexToBytes(string hex) {
+            var bytes = new byte[hex.Length / 2];
+            for (var i = 0; i < bytes.Length; i++) {
+                bytes[i] = byte.Parse(hex.Substring(i * 2, 2), NumberStyles.HexNumber);
+            }
+            return bytes;
         }
 
         [TestMethod()]
