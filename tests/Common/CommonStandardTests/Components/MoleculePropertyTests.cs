@@ -1,11 +1,10 @@
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.Interfaces;
+using MessagePack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
-using MessagePack.Resolvers;
 
 namespace CompMs.Common.Components.Tests
 {
@@ -16,15 +15,18 @@ namespace CompMs.Common.Components.Tests
         [DynamicData(nameof(GetSerializedMoleculePropertyTestData))]
         public void DeserializeSavedMoleculePropertyBytesTest(string name, string hexBytes) {
             var bytes = HexToBytes(hexBytes);
-            var formatter = MoleculePropertyExtension.Formatter;
-            var actual = formatter.Deserialize(bytes, 0, StandardResolver.Instance, out var readSize);
-            var buffer = new byte[bytes.Length + 32];
-            var writeSize = formatter.Serialize(ref buffer, 0, actual, StandardResolver.Instance);
 
-            Assert.AreEqual(bytes.Length, readSize);
-            var actualBytes = new byte[writeSize];
-            Buffer.BlockCopy(buffer, 0, actualBytes, 0, writeSize);
-            CollectionAssert.AreEqual(bytes, actualBytes);
+            var formatter = MoleculePropertyExtension.Formatter;
+            MessagePackReader reader = new MessagePackReader(bytes);
+            var actual = formatter.Deserialize(ref reader,  MessagePackSerializerOptions.Standard);
+
+            var arraywriter = new TestBufferWriter();
+            var writer = new MessagePackWriter(arraywriter);
+            formatter.Serialize(ref writer, actual, MessagePackSerializerOptions.Standard);
+            writer.Flush();
+
+            Assert.AreEqual(bytes.Length, reader.Consumed);
+            CollectionAssert.AreEqual(bytes, arraywriter.WrittenMemory.ToArray());
             Assert.AreEqual(name, actual.Name);
         }
 
@@ -40,6 +42,41 @@ namespace CompMs.Common.Components.Tests
                 bytes[i] = byte.Parse(hex.Substring(i * 2, 2), NumberStyles.HexNumber);
             }
             return bytes;
+        }
+
+        sealed class TestBufferWriter : IBufferWriter<byte>
+        {
+            private byte[] _buffer = new byte[256];
+            private int _written;
+
+            public int WrittenCount => _written;
+
+            public void Advance(int count) => _written += count;
+
+            public Memory<byte> GetMemory(int sizeHint = 0)
+            {
+                Ensure(sizeHint);
+                return _buffer.AsMemory(_written);
+            }
+
+            public Span<byte> GetSpan(int sizeHint = 0)
+            {
+                Ensure(sizeHint);
+                return _buffer.AsSpan(_written);
+            }
+
+            public ReadOnlyMemory<byte> WrittenMemory => _buffer.AsMemory(0, _written);
+
+            private void Ensure(int sizeHint)
+            {
+                sizeHint = Math.Max(sizeHint, 1);
+
+                if (_buffer.Length - _written >= sizeHint)
+                    return;
+
+                Array.Resize(ref _buffer,
+                    Math.Max(_buffer.Length * 2, _written + sizeHint));
+            }
         }
     }
 }
