@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
+    <PackageReference Include="MessagePackAnalyzer" Version="3.1.7" />
   </ItemGroup>
 
 </Project>

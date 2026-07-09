@@ -14,13 +14,18 @@ namespace CompMs.MsdialCore.DataObj
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
         }
 
-        [SerializationConstructor]
         public EadLipidAnnotatorParameterPair(IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> serializableAnnotatorKey) {
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
         }
 
-        [Key(nameof(SerializableAnnotatorKey))]
-        public IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> SerializableAnnotatorKey { get; }
+        [SerializationConstructor]
+        public EadLipidAnnotatorParameterPair(IReferRestorationKey serializableAnnotatorKey) {
+            SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
+        }
+
+        [Key("SerializableAnnotatorKey")]
+        //public IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> SerializableAnnotatorKey { get; }
+        public IReferRestorationKey SerializableAnnotatorKey { get; }
 
         [IgnoreMember]
         public IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; private set; }
