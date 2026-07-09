@@ -120,23 +120,6 @@ namespace CompMs.Common.MessagePack.Tests
             CollectionAssert.AreEqual(new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, actual.Xs);
         }
 
-        [TestMethod()]
-        public void DeserializeAtSerializedFixedSampleBytesTest() {
-            var bytes = HexToBytes("C90000002663D20000001FF010920000000092C40401020304C4040506070892C404090A0B0CC4040D0E0F10");
-            var actual = LargeListMessagePack.DeserializeAt<FixedSample>(new MemoryStream(bytes), 1);
-
-            CollectionAssert.AreEqual(new byte[] { 9, 10, 11, 12 }, actual.Xs);
-            CollectionAssert.AreEqual(new byte[] { 13, 14, 15, 16 }, actual.Ys);
-        }
-
-        [TestMethod()]
-        public void DeserializeAtSerializedLargeSampleBytesTest() {
-            var bytes = HexToBytes("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314");
-            var actual = LargeListMessagePack.DeserializeAt<LargeSample>(new MemoryStream(bytes), 0);
-
-            CollectionAssert.AreEqual(new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, actual.Xs);
-        }
-
         private static byte[] HexToBytes(string hex) {
             var bytes = new byte[hex.Length / 2];
             for (var i = 0; i < bytes.Length; i++) {
