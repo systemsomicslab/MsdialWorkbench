@@ -1,16 +1,13 @@
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
-using CompMs.Common.DataObj.Property;
-using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.MSDec.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MessagePack;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
-using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Buffers;
 using System.IO;
-using NCDK;
 
 namespace CompMs.MsdialCore.DataObj.Tests
 {
@@ -122,31 +119,27 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         private static byte[] SerializeToBytes<T>(T value, IMessagePackFormatter<T> formatter = null) {
-            var bytes = new byte[256];
-            var resolver = formatter is null ? StandardResolver.Instance : new CompositeResolver<T>(formatter);
-            var offset = resolver.GetFormatterWithVerify<T>().Serialize(ref bytes, 0, value, resolver);
-            Array.Resize(ref bytes, offset);
+            var option = MessagePackSerializerOptions.Standard;
+            if (formatter is not null) {
+                var resolver = CompositeResolver.Create([formatter], [StandardResolver.Instance]);
+                option = option.WithResolver(resolver);
+            }
+            var arraywriter = new ArrayBufferWriter<byte>();
+            var writer = new MessagePackWriter(arraywriter);
+            MessagePackSerializer.Serialize(ref writer, value, option);
+            writer.Flush();
+            var bytes = new byte[arraywriter.WrittenCount];
+            arraywriter.WrittenMemory.CopyTo(bytes);
             return bytes;
         }
 
         private static T Deserialize<T>(byte[] bytes, IMessagePackFormatter<T> formatter = null) {
-            var resolver = formatter is null ? StandardResolver.Instance : new CompositeResolver<T>(formatter);
-            return resolver.GetFormatterWithVerify<T>().Deserialize(bytes, 0, resolver, out _);
-        }
-
-        private sealed class CompositeResolver<TValue> : IFormatterResolver {
-            private readonly IMessagePackFormatter<TValue> formatter;
-
-            public CompositeResolver(IMessagePackFormatter<TValue> formatter) {
-                this.formatter = formatter;
+            var option = MessagePackSerializerOptions.Standard;
+            if (formatter is not null) {
+                var resolver = CompositeResolver.Create([formatter], [StandardResolver.Instance]);
+                option = option.WithResolver(resolver);
             }
-
-            public IMessagePackFormatter<T> GetFormatter<T>() {
-                if (formatter is IMessagePackFormatter<T> typed) {
-                    return typed;
-                }
-                return StandardResolver.Instance.GetFormatter<T>();
-            }
+            return MessagePackSerializer.Deserialize<T>(bytes, option);
         }
     }
 }

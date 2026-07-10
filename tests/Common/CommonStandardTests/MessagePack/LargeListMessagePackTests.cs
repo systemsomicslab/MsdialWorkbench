@@ -96,6 +96,16 @@ namespace CompMs.Common.MessagePack.Tests
         }
 
         [TestMethod()]
+        public void DeserializeSerializedSmallSampleBytesRoundTripTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(bytes));
+            var roundTrip = new MemoryStream();
+            LargeListMessagePack.Serialize(roundTrip, actual);
+
+            Assert.AreEqual(actual.Count, LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(roundTrip.ToArray())).Count);
+        }
+
+        [TestMethod()]
         public void DeserializeSerializedFixedSampleLegacyBytesTest() {
             var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
             var actual = LargeListMessagePack.Deserialize<FixedSample>(new MemoryStream(bytes));
