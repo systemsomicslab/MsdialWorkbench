@@ -66,7 +66,7 @@ namespace CompMs.Common.MessagePack.Tests
         }
 
         [TestMethod()]
-        public void DeserializeSerializedLargeSampleBytesTest() {
+        public void DeserializeSerializedLargeSampleLegacyBytesTest() {
             var bytes = HexToBytes("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314");
             var actual = LargeListMessagePack.Deserialize<LargeSample>(new MemoryStream(bytes));
 
@@ -174,7 +174,11 @@ namespace CompMs.Common.MessagePack.Tests
         [TestMethod()]
         public void DeserializeSerializedLargeSampleBytesTest() {
             byte[] bytes = {
-                0x91, 0x91, 0x9A,
+                0xC9, 0x00, 0x00, 0x00, 
+                0x18, 0x63, 0xD2, 0x00, 
+                0x00, 0x00, 0x11, 0xF0, 
+                0x02, 0x91, 0x00, 0x00, 
+                0x00, 0x00, 0x91, 0x9A, 
                 0x00, 0x01, 0x02, 0x03, 0x04,
                 0x05, 0x06, 0x07, 0x08, 0x09
             };
