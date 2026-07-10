@@ -78,6 +78,19 @@ namespace CompMs.Common.MessagePack.Tests
             Assert.AreEqual(datas.Length, actual.Count);
         }
 
+        [TestMethod()]
+        public void DeserializeSerializedLargeSampleBytesTest() {
+            byte[] bytes = {
+                0x91, 0x91, 0x9A,
+                0x00, 0x01, 0x02, 0x03, 0x04,
+                0x05, 0x06, 0x07, 0x08, 0x09
+            };
+            using var memory = new MemoryStream(bytes);
+            var actual = LargeListMessagePack.Deserialize<LargeSample>(memory);
+            Assert.AreEqual(1, actual.Count);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, actual[0].Xs);
+        }
+
         [DataTestMethod()]
         [DataRow(1, 0)]
         [DataRow(100, 64)]
