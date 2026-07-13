@@ -58,6 +58,11 @@ namespace CompMs.Common.Interfaces
             }
 
             public void Serialize(ref MessagePackWriter writer, IMoleculeProperty value, MessagePackSerializerOptions options) {
+                if (value is null)
+                {
+                    writer.WriteNil();
+                    return;
+                }
                 writer.WriteArrayHeader(5);
                 writer.Write(value?.Name);
                 options.Resolver.GetFormatterWithVerify<Formula>().Serialize(ref writer, value?.Formula, options);
