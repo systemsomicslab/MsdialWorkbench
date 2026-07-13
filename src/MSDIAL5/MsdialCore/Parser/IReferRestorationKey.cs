@@ -23,6 +23,6 @@ namespace CompMs.MsdialCore.Parser
     }
 
     public interface IAnnotationQueryFactoryGenerationKey<in TDatabase> : IReferRestorationKey {
-        IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annoatorVIsitor, TDatabase database);
+        IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database);
     }
 }
