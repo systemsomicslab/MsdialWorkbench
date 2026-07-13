@@ -44,7 +44,10 @@ namespace CompMs.Common.Interfaces
 
         internal class MoleculePropertyFormatter : IMessagePackFormatter<IMoleculeProperty?>
         {
-            public IMoleculeProperty Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+            public IMoleculeProperty? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                if (reader.TryReadNil()) {
+                    return null;
+                }
                 var count = reader.ReadArrayHeader();
                 if (count != 5) {
                     throw new MessagePackSerializationException($"Unexpected array length for {nameof(IMoleculeProperty)}: {count}.");
