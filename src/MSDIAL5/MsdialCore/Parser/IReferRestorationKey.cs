@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Parser
     public interface IReferRestorationKey
     {
         ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept<TQuery, TReference, TResult, TDatabase>(ILoadAnnotatorVisitor visitor, TDatabase database);
-        IAnnotationQueryFactory<MsScanMatchResult> Accept<TDatabase>(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annoatorVIsitor, TDatabase database);
+        IAnnotationQueryFactory<MsScanMatchResult> Accept<TDatabase>(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database);
 
         int Priority { get; }
         string Key { get; }
