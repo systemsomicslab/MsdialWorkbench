@@ -28,11 +28,82 @@ namespace CompMs.MsdialCore.Parser.Tests
         }
 
         [TestMethod()]
+        public void MspDbRestorationKeySerializedBytesTest() {
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey", -1);
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected = key;
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
+
+            var bytes = Convert.FromBase64String("kgGCo0tleaZNc3BLZXmoUHJpb3JpdHn/");
+            using (var stream = new MemoryStream(bytes)) {
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
+            }
+
+            Assert.AreEqual(expected.Key, actual.Key);
+        }
+
+        [TestMethod()]
+        public void TextDbRestorationKeyTest() {
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new TextDbRestorationKey("TextKey", 3);
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
+
+            using (var stream = new MemoryStream()) {
+                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(key, stream);
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
+            }
+
+            Assert.AreEqual(key.Key, actual.Key);
+            Assert.AreEqual(key.Priority, actual.Priority);
+            Assert.IsInstanceOfType(actual, typeof(TextDbRestorationKey));
+        }
+
+        [TestMethod()]
+        public void ShotgunProteomicsRestorationKeyTest() {
+            var parameter = new CompMs.Common.Parameter.MsRefSearchParameterBase();
+            var proteomicsParameter = RoundTrip(new CompMs.MsdialCore.Parameter.ProteomicsParameter());
+            IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> key = new ShotgunProteomicsRestorationKey("ShotgunKey", 5, parameter, proteomicsParameter, CompMs.Common.DataObj.Result.SourceType.MspDB);
+            var actual = RoundTrip(key);
+
+            Assert.AreEqual(key.Key, actual.Key);
+            Assert.AreEqual(key.Priority, actual.Priority);
+            Assert.AreEqual(CompMs.Common.DataObj.Result.SourceType.MspDB, ((ShotgunProteomicsRestorationKey)actual).SourceType);
+            Assert.IsNotNull(((ShotgunProteomicsRestorationKey)actual).MsRefSearchParameter);
+            Assert.IsNotNull(((ShotgunProteomicsRestorationKey)actual).ProteomicsParameter);
+            Assert.IsInstanceOfType(actual, typeof(ShotgunProteomicsRestorationKey));
+        }
+
+        [TestMethod()]
+        public void ProteomicsParameterRoundTripsDefaultPayload() {
+            var actual = RoundTrip(new CompMs.MsdialCore.Parameter.ProteomicsParameter());
+
+            Assert.IsNotNull(actual.VariableModifications);
+            Assert.IsNotNull(actual.FixedModifications);
+            Assert.IsTrue(actual.MaxNumberOfModificationsPerPeptide >= 0);
+        }
+
+        [TestMethod()]
+        public void EadLipidDatabaseRestorationKeyTest() {
+            var parameter = new CompMs.Common.Parameter.MsRefSearchParameterBase();
+            IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> key = new EadLipidDatabaseRestorationKey("EadKey", 7, parameter, CompMs.Common.DataObj.Result.SourceType.MspDB);
+            var actual = RoundTrip(key);
+
+            Assert.AreEqual(key.Key, actual.Key);
+            Assert.AreEqual(key.Priority, actual.Priority);
+            Assert.IsInstanceOfType(actual, typeof(EadLipidDatabaseRestorationKey));
+        }
+
+        [TestMethod()]
         public void AcceptTest() {
             var key = new MspDbRestorationKey("MspKey", -1);
             var visitor = new MockLoadAnnotator(key);
             key.Accept(visitor, null);
             Assert.IsTrue(visitor.Called);
+        }
+
+        private static T RoundTrip<T>(T value) {
+            using var stream = new MemoryStream();
+            Common.MessagePack.MessagePackDefaultHandler.SaveToStream(value, stream);
+            stream.Position = 0;
+            return Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<T>(stream);
         }
     }
 
