@@ -23,7 +23,6 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [Key("SerializableAnnotatorKey")]
-        //public IAnnotationQueryFactoryGenerationKey<ShotgunProteomicsDB> SerializableAnnotatorKey { get; }
         public IReferRestorationKey SerializableAnnotatorKey { get; }
 
         [Key("ProteomicsParameter")]

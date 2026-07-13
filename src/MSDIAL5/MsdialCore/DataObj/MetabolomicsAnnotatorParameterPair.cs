@@ -20,7 +20,6 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [Key("SerializableAnnotatorKey")]
-        //public IAnnotationQueryFactoryGenerationKey<MoleculeDataBase> SerializableAnnotatorKey { get; }
         public IReferRestorationKey SerializableAnnotatorKey { get; }
 
         [IgnoreMember]

@@ -24,7 +24,6 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [Key("SerializableAnnotatorKey")]
-        //public IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> SerializableAnnotatorKey { get; }
         public IReferRestorationKey SerializableAnnotatorKey { get; }
 
         [IgnoreMember]

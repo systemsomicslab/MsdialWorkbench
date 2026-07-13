@@ -162,7 +162,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             AnnotatorID = AnnotatorKey.Key;
         }
 
-        [SerializationConstructor]
         public ShotgunProteomicsDBAnnotatorContainer(
             IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotatorKey,
             ShotgunProteomicsDB database,
@@ -274,7 +273,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        //public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> AnnotatorKey { get; set; }
         public IReferRestorationKey AnnotatorKey { get; set; }
 
         [Key("Parameter")]
