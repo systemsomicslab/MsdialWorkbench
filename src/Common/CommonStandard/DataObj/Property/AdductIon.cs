@@ -2,7 +2,6 @@
 using CompMs.Common.Parser;
 using MessagePack;
 using MessagePack.Formatters;
-using MessagePack.Resolvers;
 using System;
 using System.Collections.Concurrent;
 
@@ -175,6 +174,9 @@ namespace CompMs.Common.DataObj.Property
                 }
                 var count = reader.ReadArrayHeader();
                 if (count < 3) {
+                    for (int i = 0; i < count; i++) {
+                        reader.Skip();
+                    }
                     return Default;
                 }
                 reader.Skip();
