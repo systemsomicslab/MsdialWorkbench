@@ -29,13 +29,13 @@ namespace CompMs.MsdialCore.Parser.Tests
 
         [TestMethod()]
         public void MspDbRestorationKeySerializedBytesTest() {
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey", -1);
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected = key;
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
+            IReferRestorationKey key = new MspDbRestorationKey("MspKey", -1);
+            IReferRestorationKey expected = key;
+            IReferRestorationKey actual;
 
             var bytes = Convert.FromBase64String("kgGCo0tleaZNc3BLZXmoUHJpb3JpdHn/");
             using (var stream = new MemoryStream(bytes)) {
-                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey>(stream);
             }
 
             Assert.AreEqual(expected.Key, actual.Key);
@@ -44,11 +44,12 @@ namespace CompMs.MsdialCore.Parser.Tests
         [TestMethod()]
         public void TextDbRestorationKeyTest() {
             IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new TextDbRestorationKey("TextKey", 3);
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
+            IReferRestorationKey actual;
 
             using (var stream = new MemoryStream()) {
-                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(key, stream);
-                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
+                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey>(key, stream);
+                stream.Position = 0;
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey>(stream);
             }
 
             Assert.AreEqual(key.Key, actual.Key);
@@ -61,7 +62,7 @@ namespace CompMs.MsdialCore.Parser.Tests
             var parameter = new CompMs.Common.Parameter.MsRefSearchParameterBase();
             var proteomicsParameter = RoundTrip(new CompMs.MsdialCore.Parameter.ProteomicsParameter());
             IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> key = new ShotgunProteomicsRestorationKey("ShotgunKey", 5, parameter, proteomicsParameter, CompMs.Common.DataObj.Result.SourceType.MspDB);
-            var actual = RoundTrip(key);
+            var actual = RoundTrip<IReferRestorationKey>(key);
 
             Assert.AreEqual(key.Key, actual.Key);
             Assert.AreEqual(key.Priority, actual.Priority);
@@ -84,7 +85,7 @@ namespace CompMs.MsdialCore.Parser.Tests
         public void EadLipidDatabaseRestorationKeyTest() {
             var parameter = new CompMs.Common.Parameter.MsRefSearchParameterBase();
             IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> key = new EadLipidDatabaseRestorationKey("EadKey", 7, parameter, CompMs.Common.DataObj.Result.SourceType.MspDB);
-            var actual = RoundTrip(key);
+            var actual = RoundTrip<IReferRestorationKey>(key);
 
             Assert.AreEqual(key.Key, actual.Key);
             Assert.AreEqual(key.Priority, actual.Priority);
