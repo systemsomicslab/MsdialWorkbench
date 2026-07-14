@@ -17,6 +17,11 @@ namespace CompMs.App.MsdialConsole.Process
 
         public static int Run(string[] args) {
             if (args.Length == 0) return argsError();
+
+            if (args[0] == "eic") {
+                return new EicProcess().Run(args);
+            }
+
             if (args.Length < 7) return argsError();
 
             var inputFolder = string.Empty;
@@ -85,8 +90,10 @@ namespace CompMs.App.MsdialConsole.Process
                                 return new MoleculerNetworkProcess().Run4Onefile(inputFolder, outputFolder, methodFile, ionmode);
                             }
                         }
+                    case "eic":
+                        return new EicProcess().Run(args);
                     default:
-                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms'");
+                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms', 'eic'");
                         return -1;
                 }
             } 
@@ -106,7 +113,7 @@ namespace CompMs.App.MsdialConsole.Process
 
                         Msdial Console App requires the following args:
 						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-						Where: <analysisType>	is one of gcms, lcms	(required)
+						Where: <analysisType>	is one of gcms, lcms, eic	(required)
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
