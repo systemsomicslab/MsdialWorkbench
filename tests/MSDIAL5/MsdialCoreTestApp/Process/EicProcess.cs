@@ -1,5 +1,6 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.RawDataHandler.Core;
 using System;
@@ -33,8 +34,7 @@ namespace CompMs.App.MsdialConsole.Process
         private int RunRaw(string[] args) {
             var inputFile = string.Empty;
             var outputFile = string.Empty;
-            var targetMz = double.NaN;
-            var mzTolerance = 0.01d;
+            var targets = new List<TargetQuery>();
 
             for (var i = 2; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) {
@@ -43,19 +43,17 @@ namespace CompMs.App.MsdialConsole.Process
                 else if (args[i] == "-o" && i + 1 < args.Length) {
                     outputFile = args[i + 1];
                 }
-                else if (args[i] == "-mz" && i + 1 < args.Length) {
-                    if (!double.TryParse(args[i + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out targetMz)) {
+                else if (args[i] == "-target" && i + 2 < args.Length) {
+                    if (!double.TryParse(args[i + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out var mz)
+                        || !double.TryParse(args[i + 2], NumberStyles.Float, CultureInfo.InvariantCulture, out var tolerance)) {
                         return argsError();
                     }
-                }
-                else if (args[i] == "-tolerance" && i + 1 < args.Length) {
-                    if (!double.TryParse(args[i + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out mzTolerance)) {
-                        return argsError();
-                    }
+                    targets.Add(new TargetQuery(mz, tolerance));
+                    i += 2;
                 }
             }
 
-            if (inputFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull() || double.IsNaN(targetMz)) {
+            if (inputFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull() || targets.Count == 0) {
                 return argsError();
             }
 
@@ -67,13 +65,20 @@ namespace CompMs.App.MsdialConsole.Process
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
             using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
-            writer.WriteLine("ScanId,RT,Intensity");
+            writer.WriteLine("ScanId,RT,TargetMz,Tolerance,Intensity");
 
             foreach (var spectrum in spectra.Where(n => n.MsLevel == 1)) {
-                var intensity = spectrum.Spectrum
-                    .Where(peak => Math.Abs(peak.Mz - targetMz) <= mzTolerance)
-                    .Sum(peak => peak.Intensity);
-                writer.WriteLine(string.Join(",", spectrum.ScanNumber, spectrum.ScanStartTime.ToString(CultureInfo.InvariantCulture), intensity.ToString(CultureInfo.InvariantCulture)));
+                foreach (var target in targets) {
+                    var intensity = spectrum.Spectrum
+                        .Where(peak => Math.Abs(peak.Mz - target.Mz) <= target.Tolerance)
+                        .Sum(peak => peak.Intensity);
+                    writer.WriteLine(string.Join(",",
+                        spectrum.ScanNumber,
+                        spectrum.ScanStartTime.ToString(CultureInfo.InvariantCulture),
+                        target.Mz.ToString(CultureInfo.InvariantCulture),
+                        target.Tolerance.ToString(CultureInfo.InvariantCulture),
+                        intensity.ToString(CultureInfo.InvariantCulture)));
+                }
             }
 
             return 0;
@@ -81,29 +86,36 @@ namespace CompMs.App.MsdialConsole.Process
 
         private int RunProject(string[] args) {
             var inputFile = string.Empty;
+            var rawFile = string.Empty;
             var outputFile = string.Empty;
-            var maxPoints = 20;
+            var outputFormat = "json";
 
             for (var i = 2; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) {
                     inputFile = args[i + 1];
                 }
+                else if (args[i] == "-raw" && i + 1 < args.Length) {
+                    rawFile = args[i + 1];
+                }
                 else if (args[i] == "-o" && i + 1 < args.Length) {
                     outputFile = args[i + 1];
                 }
-                else if (args[i] == "-maxPoints" && i + 1 < args.Length) {
-                    if (!int.TryParse(args[i + 1], NumberStyles.Integer, CultureInfo.InvariantCulture, out maxPoints) || maxPoints <= 0) {
-                        return argsError();
-                    }
+                else if (args[i] == "-format" && i + 1 < args.Length) {
+                    outputFormat = args[i + 1];
                 }
             }
 
-            if (inputFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
+            if (inputFile.IsEmptyOrNull() || rawFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
                 return argsError();
             }
 
             if (!File.Exists(inputFile)) {
                 Console.Error.WriteLine($"Project peak file was not found: {inputFile}");
+                return -1;
+            }
+
+            if (!File.Exists(rawFile)) {
+                Console.Error.WriteLine($"Raw data file was not found: {rawFile}");
                 return -1;
             }
 
@@ -113,19 +125,57 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
+            var measurement = LoadMeasurement(rawFile);
+            if (measurement == null || measurement.Count == 0) {
+                Console.Error.WriteLine("No raw spectra were found for project export.");
+                return -1;
+            }
+
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
-            var json = BuildProjectJson(Path.GetFullPath(inputFile), peaks, maxPoints);
+            if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase)) {
+                WriteProjectCsv(outputFile, peaks, measurement);
+                return 0;
+            }
+
+            var json = BuildProjectJson(Path.GetFullPath(inputFile), peaks, measurement);
             File.WriteAllText(outputFile, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             return 0;
         }
 
-        private static string BuildProjectJson(string source, IReadOnlyList<CompMs.MsdialCore.DataObj.ChromatogramPeakFeature> peaks, int maxPoints) {
+        private static void WriteProjectCsv(string outputFile, IReadOnlyList<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement) {
+            using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
+            writer.WriteLine("PeakId,MasterPeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
+            foreach (var peak in peaks) {
+                WriteProjectRawCsvRows(writer, peak, measurement);
+            }
+        }
+
+        private static void WriteProjectRawCsvRows(StreamWriter writer, ChromatogramPeakFeature peak, IReadOnlyList<RawSpectrum> measurement) {
+            var targetMz = peak.PeakFeature.Mass;
+            var tolerance = EstimateTolerance(peak);
+            foreach (var spectrum in measurement.Where(n => n.MsLevel == 1)) {
+                var intensity = spectrum.Spectrum
+                    .Where(point => Math.Abs(point.Mz - targetMz) <= tolerance)
+                    .Sum(point => point.Intensity);
+                writer.WriteLine(string.Join(",",
+                    peak.PeakID,
+                    peak.MasterPeakID,
+                    CsvEscape(peak.Name),
+                    spectrum.ScanNumber,
+                    spectrum.ScanStartTime.ToString(CultureInfo.InvariantCulture),
+                    targetMz.ToString(CultureInfo.InvariantCulture),
+                    tolerance.ToString(CultureInfo.InvariantCulture),
+                    intensity.ToString(CultureInfo.InvariantCulture)));
+            }
+        }
+
+        private static string BuildProjectJson(string source, IReadOnlyList<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement) {
             var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine($"  \"source\": \"{EscapeJson(source)}\",");
             sb.AppendLine("  \"peaks\": [");
             for (var i = 0; i < peaks.Count; i++) {
-                sb.Append(BuildProjectPeakJson(peaks[i], maxPoints));
+                sb.Append(BuildProjectPeakJson(peaks[i], measurement));
                 if (i < peaks.Count - 1) {
                     sb.AppendLine(",");
                 }
@@ -138,8 +188,8 @@ namespace CompMs.App.MsdialConsole.Process
             return sb.ToString();
         }
 
-        private static string BuildProjectPeakJson(CompMs.MsdialCore.DataObj.ChromatogramPeakFeature peak, int maxPoints) {
-            var points = BuildPeakPoints(peak).Take(maxPoints).ToList();
+        private static string BuildProjectPeakJson(ChromatogramPeakFeature peak, IReadOnlyList<RawSpectrum> measurement) {
+            var chromatogram = ExtractPeakChromatogram(peak, measurement);
             var sb = new StringBuilder();
             sb.AppendLine("    {");
             sb.AppendLine($"      \"id\": {peak.PeakID},");
@@ -151,25 +201,40 @@ namespace CompMs.App.MsdialConsole.Process
             sb.AppendLine($"        \"top\": {GetChromValue(peak.PeakFeature.ChromXsTop).ToString(CultureInfo.InvariantCulture)},");
             sb.AppendLine($"        \"right\": {GetChromValue(peak.PeakFeature.ChromXsRight).ToString(CultureInfo.InvariantCulture)}");
             sb.AppendLine("      },");
-            sb.AppendLine("      \"points\": [");
-            for (var i = 0; i < points.Count; i++) {
-                sb.Append($"        {{ \"rt\": {points[i].Rt.ToString(CultureInfo.InvariantCulture)}, \"intensity\": {points[i].Intensity.ToString(CultureInfo.InvariantCulture)} }}");
-                if (i < points.Count - 1) {
-                    sb.AppendLine(",");
-                }
-                else {
-                    sb.AppendLine();
-                }
-            }
-            sb.AppendLine("      ]");
+            sb.AppendLine("      \"chromatogram\": {");
+            sb.AppendLine($"        \"rts\": [{string.Join(", ", chromatogram.Rts.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
+            sb.AppendLine($"        \"intensities\": [{string.Join(", ", chromatogram.Intensities.Select(v => v.ToString(CultureInfo.InvariantCulture)))}]");
+            sb.AppendLine("      }");
             sb.Append("    }");
             return sb.ToString();
         }
 
-        private static IEnumerable<ProjectPoint> BuildPeakPoints(CompMs.MsdialCore.DataObj.ChromatogramPeakFeature peak) {
-            yield return new ProjectPoint(GetChromValue(peak.PeakFeature.ChromXsLeft), peak.PeakFeature.PeakHeightLeft);
-            yield return new ProjectPoint(GetChromValue(peak.PeakFeature.ChromXsTop), peak.PeakFeature.PeakHeightTop);
-            yield return new ProjectPoint(GetChromValue(peak.PeakFeature.ChromXsRight), peak.PeakFeature.PeakHeightRight);
+        private static ProjectChromatogram ExtractPeakChromatogram(ChromatogramPeakFeature peak, IReadOnlyList<RawSpectrum> measurement) {
+            var rts = new List<double>();
+            var intensities = new List<double>();
+            var targetMz = peak.PeakFeature.Mass;
+            var tolerance = EstimateTolerance(peak);
+            foreach (var spectrum in measurement.Where(n => n.MsLevel == 1)) {
+                var intensity = spectrum.Spectrum
+                    .Where(point => Math.Abs(point.Mz - targetMz) <= tolerance)
+                    .Sum(point => point.Intensity);
+                rts.Add(spectrum.ScanStartTime);
+                intensities.Add(intensity);
+            }
+            if (rts.Count == 0) {
+                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsLeft, peak.PeakFeature.PeakHeightLeft);
+                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsTop, peak.PeakFeature.PeakHeightTop);
+                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsRight, peak.PeakFeature.PeakHeightRight);
+            }
+            return new ProjectChromatogram(rts, intensities);
+        }
+
+        private static void AddChromPoint(List<double> rts, List<double> intensities, CompMs.Common.Components.ChromXs chromXs, double intensity) {
+            if (chromXs == null) {
+                return;
+            }
+            rts.Add(chromXs.Value);
+            intensities.Add(intensity);
         }
 
         private static string EscapeJson(string value) {
@@ -180,18 +245,28 @@ namespace CompMs.App.MsdialConsole.Process
                 .Replace("\n", "\\n");
         }
 
+        private static string CsvEscape(string value) {
+            if (value == null) {
+                return string.Empty;
+            }
+            return value.Contains(",") || value.Contains("\"")
+                ? $"\"{value.Replace("\"", "\"\"")}\""
+                : value;
+        }
+
         private static double GetChromValue(CompMs.Common.Components.ChromXs chromXs) {
             return chromXs?.Value ?? 0d;
         }
 
-        private readonly struct ProjectPoint {
-            public ProjectPoint(double rt, double intensity) {
-                Rt = rt;
-                Intensity = intensity;
+        private static double EstimateTolerance(ChromatogramPeakFeature peak) {
+            var left = GetChromValue(peak.PeakFeature.ChromXsLeft);
+            var top = GetChromValue(peak.PeakFeature.ChromXsTop);
+            var right = GetChromValue(peak.PeakFeature.ChromXsRight);
+            var width = Math.Max(0d, right - left);
+            if (width > 0d) {
+                return width / 2d;
             }
-
-            public double Rt { get; }
-            public double Intensity { get; }
+            return Math.Max(0.01d, Math.Abs(top - left));
         }
 
         private static IReadOnlyList<RawSpectrum> LoadMeasurement(string inputFile) {
@@ -201,9 +276,30 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         private static int argsError() {
-            Console.Error.WriteLine("MsdialConsoleApp.exe eic raw -i <input file> -o <output csv> -mz <target m/z> [-tolerance <mz tolerance>]");
-            Console.Error.WriteLine("MsdialConsoleApp.exe eic project -i <peak file> -o <output json> [-maxPoints <count>]");
+            Console.Error.WriteLine("MsdialConsoleApp.exe eic raw -i <input file> -o <output csv> -target <mz> <tolerance> [-target <mz> <tolerance> ...]");
+            Console.Error.WriteLine("MsdialConsoleApp.exe eic project -i <peak file> -raw <raw file> -o <output file> [-format csv|json]");
             return -1;
+        }
+
+        private readonly struct TargetQuery {
+            public TargetQuery(double mz, double tolerance) {
+                Mz = mz;
+                Tolerance = tolerance;
+            }
+
+            public double Mz { get; }
+            public double Tolerance { get; }
+        }
+
+        private readonly struct ProjectChromatogram {
+            public ProjectChromatogram(List<double> rts, List<double> intensities) {
+                Rts = rts;
+                Intensities = intensities;
+            }
+
+            public List<double> Rts { get; }
+            public List<double> Intensities { get; }
+            public int PointCount => Math.Min(Rts.Count, Intensities.Count);
         }
     }
 }
