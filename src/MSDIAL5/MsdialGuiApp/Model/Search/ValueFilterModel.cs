@@ -58,6 +58,12 @@ namespace CompMs.App.Msdial.Model.Search
             return Lower <= value && value <= Upper;
         }
 
+        public void Reset() {
+            Lower = Minimum;
+            Upper = Maximum;
+            IsEnabled = false;
+        }
+
         public bool IsEnabled {
             get => _isEnabled;
             set => SetProperty(ref _isEnabled, value);

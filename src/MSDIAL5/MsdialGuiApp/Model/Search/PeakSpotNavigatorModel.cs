@@ -46,6 +46,17 @@ namespace CompMs.App.Msdial.Model.Search
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
+        public void ResetFilters() {
+            AmplitudeFilterModel.Reset();
+            foreach (var valueFilterModel in ValueFilterModels) {
+                valueFilterModel.Reset();
+            }
+            foreach (var keywordFilterModel in KeywordFilterModels) {
+                keywordFilterModel.ClearKeywords();
+            }
+            TagSearchQueryBuilder.Reset();
+        }
+
         public void RefreshCollectionViews() {
             foreach (var view in PeakSpotsCollection) {
                 view.Refresh();

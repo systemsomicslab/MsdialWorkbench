@@ -56,6 +56,10 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
+        public void ClearKeywords() {
+            SetKeywords(Enumerable.Empty<string>());
+        }
+
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
             _keywords.AddRange(keywords);
