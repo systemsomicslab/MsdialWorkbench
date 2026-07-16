@@ -1,6 +1,9 @@
+using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.RawDataHandler.Core;
 using System;
@@ -103,6 +106,7 @@ namespace CompMs.App.MsdialConsole.Process
         private int RunProject(string[] args) {
             var inputFile = string.Empty;
             var rawFile = string.Empty;
+            var parameterFile = string.Empty;
             var outputFile = string.Empty;
             var outputFormat = "json";
 
@@ -113,6 +117,9 @@ namespace CompMs.App.MsdialConsole.Process
                 else if (args[i] == "-raw" && i + 1 < args.Length) {
                     rawFile = args[i + 1];
                 }
+                else if (args[i] == "-param" && i + 1 < args.Length) {
+                    parameterFile = args[i + 1];
+                }
                 else if (args[i] == "-o" && i + 1 < args.Length) {
                     outputFile = args[i + 1];
                 }
@@ -121,7 +128,7 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            if (inputFile.IsEmptyOrNull() || rawFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
+            if (inputFile.IsEmptyOrNull() || rawFile.IsEmptyOrNull() || parameterFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
                 return ArgsError();
             }
 
@@ -147,53 +154,59 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
+            if (!File.Exists(parameterFile)) {
+                Console.Error.WriteLine($"Project parameter file was not found: {parameterFile}");
+                return -1;
+            }
+
+            var parameter = ConfigParser.ReadForLcmsParameter(parameterFile);
+
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
             if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase))
             {
-                WriteProjectCsv(outputFile, peaks, measurement);
+                WriteProjectCsv(outputFile, peaks, measurement, parameter);
                 return 0;
             }
             else
             {
-                var json = BuildProjectJson(Path.GetFullPath(inputFile), peaks, measurement);
+                var json = BuildProjectJson(Path.GetFullPath(inputFile), peaks, measurement, parameter);
                 File.WriteAllText(outputFile, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 return 0;
             }
         }
 
-        private static void WriteProjectCsv(string outputFile, List<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement)
+        private static void WriteProjectCsv(string outputFile, List<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement, ParameterBase parameter)
         {
+            var rawSpectra = new RawSpectra(measurement, parameter.IonMode, parameter.ProjectParam.AcquisitionType);
             using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
             writer.WriteLine("MasterPeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
             {
-                foreach (var peak in peaks)
+                var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
+                var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
+                foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
                 {
-                    var targetMz = peak.PeakFeature.Mass;
-                    var tolerance = EstimateTolerance(peak);
-                    foreach (var spectrum in measurement.Where(n => n.MsLevel == 1)) {
-                        var intensity = spectrum.Spectrum
-                            .Where(point => Math.Abs(point.Mz - targetMz) <= tolerance)
-                            .Sum(point => point.Intensity);
+                    foreach (var dataPoint in chromatogram.AsPeakArray()) {
                         writer.WriteLine(string.Join(",",
                             peak.MasterPeakID,
                             CsvEscape(peak.Name),
-                            spectrum.ScanNumber,
-                            spectrum.ScanStartTime.ToString(CultureInfo.InvariantCulture),
-                            targetMz.ToString(CultureInfo.InvariantCulture),
-                            tolerance.ToString(CultureInfo.InvariantCulture),
-                            intensity.ToString(CultureInfo.InvariantCulture)));
+                            dataPoint.Id,
+                            dataPoint.Time.ToString(CultureInfo.InvariantCulture),
+                            chromatogram.ExtractedMz.ToString(CultureInfo.InvariantCulture),
+                            parameter.CentroidMs1Tolerance.ToString(CultureInfo.InvariantCulture),
+                            dataPoint.Intensity.ToString(CultureInfo.InvariantCulture)));
                     }
                 }
             }
         }
 
-        private static string BuildProjectJson(string source, IReadOnlyList<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement) {
+        private static string BuildProjectJson(string source, IReadOnlyList<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement, ParameterBase parameter) {
+            var rawSpectra = new RawSpectra(measurement, parameter.IonMode, parameter.ProjectParam.AcquisitionType);
             var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine($"  \"source\": \"{EscapeJson(source)}\",");
             sb.AppendLine("  \"peaks\": [");
             for (var i = 0; i < peaks.Count; i++) {
-                sb.Append(BuildProjectPeakJson(peaks[i], measurement));
+                sb.Append(BuildProjectPeakJson(peaks[i], rawSpectra, parameter));
                 if (i < peaks.Count - 1) {
                     sb.AppendLine(",");
                 }
@@ -206,8 +219,8 @@ namespace CompMs.App.MsdialConsole.Process
             return sb.ToString();
         }
 
-        private static string BuildProjectPeakJson(ChromatogramPeakFeature peak, IReadOnlyList<RawSpectrum> measurement) {
-            var chromatogram = ExtractPeakChromatogram(peak, measurement);
+        private static string BuildProjectPeakJson(ChromatogramPeakFeature peak, RawSpectra rawSpectra, ParameterBase parameter) {
+            var chromatogram = ExtractPeakChromatogram(peak, rawSpectra, parameter);
             var sb = new StringBuilder();
             sb.AppendLine("    {");
             sb.AppendLine($"      \"id\": {peak.PeakID},");
@@ -227,32 +240,16 @@ namespace CompMs.App.MsdialConsole.Process
             return sb.ToString();
         }
 
-        private static ProjectChromatogram ExtractPeakChromatogram(ChromatogramPeakFeature peak, IReadOnlyList<RawSpectrum> measurement) {
+        private static ProjectChromatogram ExtractPeakChromatogram(ChromatogramPeakFeature peak, RawSpectra rawSpectra, ParameterBase parameter) {
             var rts = new List<double>();
             var intensities = new List<double>();
             var targetMz = peak.PeakFeature.Mass;
-            var tolerance = EstimateTolerance(peak);
-            foreach (var spectrum in measurement.Where(n => n.MsLevel == 1)) {
-                var intensity = spectrum.Spectrum
-                    .Where(point => Math.Abs(point.Mz - targetMz) <= tolerance)
-                    .Sum(point => point.Intensity);
-                rts.Add(spectrum.ScanStartTime);
-                intensities.Add(intensity);
-            }
-            if (rts.Count == 0) {
-                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsLeft, peak.PeakFeature.PeakHeightLeft);
-                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsTop, peak.PeakFeature.PeakHeightTop);
-                AddChromPoint(rts, intensities, peak.PeakFeature.ChromXsRight, peak.PeakFeature.PeakHeightRight);
+            var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, parameter.CentroidMs1Tolerance), new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min));
+            foreach (var dataPoint in chromatogram.AsPeakArray()) {
+                rts.Add(dataPoint.Time);
+                intensities.Add(dataPoint.Intensity);
             }
             return new ProjectChromatogram(rts, intensities);
-        }
-
-        private static void AddChromPoint(List<double> rts, List<double> intensities, Common.Components.ChromXs chromXs, double intensity) {
-            if (chromXs == null) {
-                return;
-            }
-            rts.Add(chromXs.Value);
-            intensities.Add(intensity);
         }
 
         private static string EscapeJson(string value) {
@@ -274,17 +271,6 @@ namespace CompMs.App.MsdialConsole.Process
 
         private static double GetChromValue(Common.Components.ChromXs chromXs) {
             return chromXs?.Value ?? 0d;
-        }
-
-        private static double EstimateTolerance(ChromatogramPeakFeature peak) {
-            var left = GetChromValue(peak.PeakFeature.ChromXsLeft);
-            var top = GetChromValue(peak.PeakFeature.ChromXsTop);
-            var right = GetChromValue(peak.PeakFeature.ChromXsRight);
-            var width = Math.Max(0d, right - left);
-            if (width > 0d) {
-                return width / 2d;
-            }
-            return Math.Max(0.01d, Math.Abs(top - left));
         }
 
         private static IReadOnlyList<RawSpectrum> LoadMeasurement(string inputFile) {
