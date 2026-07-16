@@ -83,20 +83,21 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
+            Directory.CreateDirectory(Path.GetFullPath(outputFile));
             WriteRawCsv(outputFile, targets, spectra, acquisitionType);
 
             return 0;
         }
 
-        private static void WriteRawCsv(string outputFile, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
+        private static void WriteRawCsv(string outputPath, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
         {
             var rawSpectra = new RawSpectra(spectra, IonMode.Positive, acquisitionType);
-            using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
-            writer.WriteLine( "ScanId,RT,TargetMz,Tolerance,Intensity");
             var chromatogramRange = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             foreach (var target in targets)
             {
+                var targetFile = CreateSplitOutputPath(outputPath, $"mz-{SanitizeFileName(target.Mz.ToString(CultureInfo.InvariantCulture))}_tol-{SanitizeFileName(target.Tolerance.ToString(CultureInfo.InvariantCulture))}", ".csv");
+                using var writer = new StreamWriter(targetFile, false, Encoding.ASCII);
+                writer.WriteLine("ScanId,RT,TargetMz,Tolerance,Intensity");
                 using var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(target.Mz, target.Tolerance), chromatogramRange);
                 for (var i = 0; i < chromatogram.Length; i++)
                 {
@@ -136,7 +137,6 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
             var project = LoadProject(inputFile);
             var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
             if (files.Count == 0) {
@@ -151,16 +151,13 @@ namespace CompMs.App.MsdialConsole.Process
             }
             else
             {
-                var json = BuildProjectJson(Path.GetFullPath(inputFile), project);
-                File.WriteAllText(outputFile, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+                WriteProjectJson(outputFile, Path.GetFullPath(inputFile), project);
                 return 0;
             }
         }
 
-        private static void WriteProjectCsv(string outputFile, IMsdialDataStorage<ParameterBase> project)
+        private static void WriteProjectCsv(string outputPath, IMsdialDataStorage<ParameterBase> project)
         {
-            using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
-            writer.WriteLine("FileId,FileName,PeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
             var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded))
             {
@@ -177,6 +174,9 @@ namespace CompMs.App.MsdialConsole.Process
                 var parameter = project.Parameter;
                 var rawSpectra = new RawSpectra(measurement, parameter.IonMode, file.AcquisitionType);
                 var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
+                var fileOutput = CreateSplitOutputPath(outputPath, SanitizeFileName(file.AnalysisFileName), ".csv");
+                using var writer = new StreamWriter(fileOutput, false, Encoding.ASCII);
+                writer.WriteLine("FileId,FileName,PeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
                 foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
                 {
                     for (var i = 0; i < chromatogram.Length; i++)
@@ -196,21 +196,23 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static string BuildProjectJson(string source, IMsdialDataStorage<ParameterBase> project) {
+        private static void WriteProjectJson(string outputPath, string source, IMsdialDataStorage<ParameterBase> project) {
+            var rootOutput = Path.GetDirectoryName(Path.GetFullPath(outputPath)) ?? ".";
+            Directory.CreateDirectory(rootOutput);
+            foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded)) {
+                var fileOutput = CreateSplitOutputPath(outputPath, SanitizeFileName(file.AnalysisFileName), ".json");
+                var json = BuildProjectJson(source, project, file);
+                File.WriteAllText(fileOutput, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            }
+        }
+
+        private static string BuildProjectJson(string source, IMsdialDataStorage<ParameterBase> project, AnalysisFileBean file) {
             var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine($"  \"source\": \"{EscapeJson(source)}\",");
             sb.AppendLine("  \"peaks\": [");
-            var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
-            for (var i = 0; i < files.Count; i++) {
-                sb.Append(BuildProjectPeakJson(project, files[i]));
-                if (i < files.Count - 1) {
-                    sb.AppendLine(",");
-                }
-                else {
-                    sb.AppendLine();
-                }
-            }
+            sb.Append(BuildProjectPeakJson(project, file));
+            sb.AppendLine();
             sb.AppendLine("  ]");
             sb.AppendLine("}");
             return sb.ToString();
@@ -276,6 +278,21 @@ namespace CompMs.App.MsdialConsole.Process
             return value.Contains(",") || value.Contains("\"")
                 ? $"\"{value.Replace("\"", "\"\"")}\""
                 : value;
+        }
+
+        private static string CreateSplitOutputPath(string outputPath, string suffix, string extension) {
+            var fullPath = Path.GetFullPath(outputPath);
+            var directory = Path.GetDirectoryName(fullPath) ?? ".";
+            var fileName = Path.GetFileNameWithoutExtension(fullPath);
+            return Path.Combine(directory, $"{fileName}_{suffix}{extension}");
+        }
+
+        private static string SanitizeFileName(string value) {
+            var sanitized = value ?? string.Empty;
+            foreach (var invalid in Path.GetInvalidFileNameChars()) {
+                sanitized = sanitized.Replace(invalid, '_');
+            }
+            return sanitized.IsEmptyOrNull() ? "output" : sanitized;
         }
 
         private static double GetChromValue(Common.Components.ChromXs chromXs) {
