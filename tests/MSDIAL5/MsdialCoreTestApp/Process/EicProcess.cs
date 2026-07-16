@@ -1,6 +1,7 @@
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -38,6 +39,7 @@ namespace CompMs.App.MsdialConsole.Process
         {
             var inputFile = string.Empty;
             var outputFile = string.Empty;
+            var acquisitionType = AcquisitionType.DDA;
             var targets = new List<TargetQuery>();
 
             for (var i = 2; i < args.Length; i++)
@@ -49,6 +51,13 @@ namespace CompMs.App.MsdialConsole.Process
                 else if (args[i] == "-o" && i + 1 < args.Length)
                 {
                     outputFile = args[i + 1];
+                }
+                else if (args[i] == "-acquisitiontype" && i + 1 < args.Length)
+                {
+                    if (!Enum.TryParse(args[i + 1], true, out acquisitionType))
+                    {
+                        return ArgsError();
+                    }
                 }
                 else if (args[i] == "-target" && i + 2 < args.Length)
                 {
@@ -75,30 +84,28 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
-            WriteRawCsv(outputFile, targets, spectra);
+            WriteRawCsv(outputFile, targets, spectra, acquisitionType);
 
             return 0;
         }
 
-        private static void WriteRawCsv(string outputFile, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra)
+        private static void WriteRawCsv(string outputFile, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
         {
+            var rawSpectra = new RawSpectra(spectra, IonMode.Positive, acquisitionType);
             using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
             writer.WriteLine( "ScanId,RT,TargetMz,Tolerance,Intensity");
+            var chromatogramRange = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
+            foreach (var target in targets)
             {
-                foreach (var spectrum in spectra.Where(n => n.MsLevel == 1))
+                using var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(target.Mz, target.Tolerance), chromatogramRange);
+                for (var i = 0; i < chromatogram.Length; i++)
                 {
-                    foreach (var target in targets)
-                    {
-                        var intensity = spectrum.Spectrum
-                            .Where(peak => Math.Abs(peak.Mz - target.Mz) <= target.Tolerance)
-                            .Sum(peak => peak.Intensity);
-                        writer.WriteLine(string.Join(",",
-                            spectrum.ScanNumber,
-                            spectrum.ScanStartTime.ToString(CultureInfo.InvariantCulture),
-                            target.Mz.ToString(CultureInfo.InvariantCulture),
-                            target.Tolerance.ToString(CultureInfo.InvariantCulture),
-                            intensity.ToString(CultureInfo.InvariantCulture)));
-                    }
+                    writer.WriteLine(string.Join(",",
+                        chromatogram.Id(i),
+                        chromatogram.Time(i).ToString(CultureInfo.InvariantCulture),
+                        target.Mz.ToString(CultureInfo.InvariantCulture),
+                        target.Tolerance.ToString(CultureInfo.InvariantCulture),
+                        chromatogram.Intensity(i).ToString(CultureInfo.InvariantCulture)));
                 }
             }
         }
@@ -180,21 +187,19 @@ namespace CompMs.App.MsdialConsole.Process
             var rawSpectra = new RawSpectra(measurement, parameter.IonMode, parameter.ProjectParam.AcquisitionType);
             using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
             writer.WriteLine("MasterPeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
+            var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
+            var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
+            foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
             {
-                var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
-                var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
-                foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
-                {
-                    foreach (var dataPoint in chromatogram.AsPeakArray()) {
-                        writer.WriteLine(string.Join(",",
-                            peak.MasterPeakID,
-                            CsvEscape(peak.Name),
-                            dataPoint.Id,
-                            dataPoint.Time.ToString(CultureInfo.InvariantCulture),
-                            chromatogram.ExtractedMz.ToString(CultureInfo.InvariantCulture),
-                            parameter.CentroidMs1Tolerance.ToString(CultureInfo.InvariantCulture),
-                            dataPoint.Intensity.ToString(CultureInfo.InvariantCulture)));
-                    }
+                foreach (var dataPoint in chromatogram.AsPeakArray()) {
+                    writer.WriteLine(string.Join(",",
+                        peak.MasterPeakID,
+                        CsvEscape(peak.Name),
+                        dataPoint.Id,
+                        dataPoint.Time.ToString(CultureInfo.InvariantCulture),
+                        chromatogram.ExtractedMz.ToString(CultureInfo.InvariantCulture),
+                        parameter.CentroidMs1Tolerance.ToString(CultureInfo.InvariantCulture),
+                        dataPoint.Intensity.ToString(CultureInfo.InvariantCulture)));
                 }
             }
         }
