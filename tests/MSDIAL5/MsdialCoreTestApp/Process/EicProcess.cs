@@ -112,20 +112,12 @@ namespace CompMs.App.MsdialConsole.Process
 
         private int RunProject(string[] args) {
             var inputFile = string.Empty;
-            var rawFile = string.Empty;
-            var parameterFile = string.Empty;
             var outputFile = string.Empty;
             var outputFormat = "json";
 
             for (var i = 2; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) {
                     inputFile = args[i + 1];
-                }
-                else if (args[i] == "-raw" && i + 1 < args.Length) {
-                    rawFile = args[i + 1];
-                }
-                else if (args[i] == "-param" && i + 1 < args.Length) {
-                    parameterFile = args[i + 1];
                 }
                 else if (args[i] == "-o" && i + 1 < args.Length) {
                     outputFile = args[i + 1];
@@ -135,84 +127,84 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            if (inputFile.IsEmptyOrNull() || rawFile.IsEmptyOrNull() || parameterFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
+            if (inputFile.IsEmptyOrNull() || outputFile.IsEmptyOrNull()) {
                 return ArgsError();
             }
 
             if (!File.Exists(inputFile)) {
-                Console.Error.WriteLine($"Project peak file was not found: {inputFile}");
+                Console.Error.WriteLine($"Project file was not found: {inputFile}");
                 return -1;
             }
-
-            if (!File.Exists(rawFile)) {
-                Console.Error.WriteLine($"Raw data file was not found: {rawFile}");
-                return -1;
-            }
-
-            var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(inputFile);
-            if (peaks == null || peaks.Count == 0) {
-                Console.Error.WriteLine("No chromatogram peaks were found.");
-                return -1;
-            }
-
-            var measurement = LoadMeasurement(rawFile);
-            if (measurement == null || measurement.Count == 0) {
-                Console.Error.WriteLine("No raw spectra were found for project export.");
-                return -1;
-            }
-
-            if (!File.Exists(parameterFile)) {
-                Console.Error.WriteLine($"Project parameter file was not found: {parameterFile}");
-                return -1;
-            }
-
-            var parameter = ConfigParser.ReadForLcmsParameter(parameterFile);
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
+            var project = LoadProject(inputFile);
+            var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
+            if (files.Count == 0) {
+                Console.Error.WriteLine("No included analysis files were found in the project.");
+                return -1;
+            }
+
             if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase))
             {
-                WriteProjectCsv(outputFile, peaks, measurement, parameter);
+                WriteProjectCsv(outputFile, project);
                 return 0;
             }
             else
             {
-                var json = BuildProjectJson(Path.GetFullPath(inputFile), peaks, measurement, parameter);
+                var json = BuildProjectJson(Path.GetFullPath(inputFile), project);
                 File.WriteAllText(outputFile, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 return 0;
             }
         }
 
-        private static void WriteProjectCsv(string outputFile, List<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement, ParameterBase parameter)
+        private static void WriteProjectCsv(string outputFile, IMsdialDataStorage<ParameterBase> project)
         {
-            var rawSpectra = new RawSpectra(measurement, parameter.IonMode, parameter.ProjectParam.AcquisitionType);
             using var writer = new StreamWriter(outputFile, false, Encoding.ASCII);
-            writer.WriteLine("MasterPeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
+            writer.WriteLine("FileId,FileName,PeakId,Name,ScanId,RT,TargetMz,Tolerance,Intensity");
             var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
-            var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
-            foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
+            foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded))
             {
-                foreach (var dataPoint in chromatogram.AsPeakArray()) {
-                    writer.WriteLine(string.Join(",",
-                        peak.MasterPeakID,
-                        CsvEscape(peak.Name),
-                        dataPoint.Id,
-                        dataPoint.Time.ToString(CultureInfo.InvariantCulture),
-                        chromatogram.ExtractedMz.ToString(CultureInfo.InvariantCulture),
-                        parameter.CentroidMs1Tolerance.ToString(CultureInfo.InvariantCulture),
-                        dataPoint.Intensity.ToString(CultureInfo.InvariantCulture)));
+                if (file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()) {
+                    continue;
+                }
+
+                var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+                var measurement = LoadMeasurement(file.AnalysisFilePath);
+                if (measurement.Count == 0) {
+                    continue;
+                }
+
+                var parameter = project.Parameter;
+                var rawSpectra = new RawSpectra(measurement, parameter.IonMode, file.AcquisitionType);
+                var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), parameter.CentroidMs1Tolerance, range);
+                foreach (var (chromatogram, peak) in chromatograms.Zip(peaks, (c, p) => (c, p)))
+                {
+                    for (var i = 0; i < chromatogram.Length; i++)
+                    {
+                        writer.WriteLine(string.Join(",",
+                            file.AnalysisFileId,
+                            CsvEscape(file.AnalysisFileName),
+                            peak.MasterPeakID,
+                            CsvEscape(peak.Name),
+                            chromatogram.Id(i),
+                            chromatogram.Time(i).ToString(CultureInfo.InvariantCulture),
+                            chromatogram.ExtractedMz.ToString(CultureInfo.InvariantCulture),
+                            parameter.CentroidMs1Tolerance.ToString(CultureInfo.InvariantCulture),
+                            chromatogram.Intensity(i).ToString(CultureInfo.InvariantCulture)));
+                    }
                 }
             }
         }
 
-        private static string BuildProjectJson(string source, IReadOnlyList<ChromatogramPeakFeature> peaks, IReadOnlyList<RawSpectrum> measurement, ParameterBase parameter) {
-            var rawSpectra = new RawSpectra(measurement, parameter.IonMode, parameter.ProjectParam.AcquisitionType);
+        private static string BuildProjectJson(string source, IMsdialDataStorage<ParameterBase> project) {
             var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine($"  \"source\": \"{EscapeJson(source)}\",");
             sb.AppendLine("  \"peaks\": [");
-            for (var i = 0; i < peaks.Count; i++) {
-                sb.Append(BuildProjectPeakJson(peaks[i], rawSpectra, parameter));
-                if (i < peaks.Count - 1) {
+            var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
+            for (var i = 0; i < files.Count; i++) {
+                sb.Append(BuildProjectPeakJson(project, files[i]));
+                if (i < files.Count - 1) {
                     sb.AppendLine(",");
                 }
                 else {
@@ -224,18 +216,25 @@ namespace CompMs.App.MsdialConsole.Process
             return sb.ToString();
         }
 
-        private static string BuildProjectPeakJson(ChromatogramPeakFeature peak, RawSpectra rawSpectra, ParameterBase parameter) {
-            var chromatogram = ExtractPeakChromatogram(peak, rawSpectra, parameter);
+        private static string BuildProjectPeakJson(IMsdialDataStorage<ParameterBase> project, AnalysisFileBean file) {
+            var measurement = LoadMeasurement(file.AnalysisFilePath);
+            var peaks = file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()
+                ? []
+                : MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath) ?? [];
+            var rawSpectra = new RawSpectra(measurement, project.Parameter.IonMode, (CompMs.Common.Enum.AcquisitionType)file.AcquisitionType);
+            var chromatogram = peaks.Count > 0
+                ? ExtractPeakChromatogram(rawSpectra, project.Parameter, peaks[0].PrecursorMz)
+                : new ProjectChromatogram([], []);
             var sb = new StringBuilder();
             sb.AppendLine("    {");
-            sb.AppendLine($"      \"id\": {peak.PeakID},");
-            sb.AppendLine($"      \"masterPeakId\": {peak.MasterPeakID},");
-            sb.AppendLine($"      \"name\": \"{EscapeJson(peak.Name)}\",");
-            sb.AppendLine($"      \"mz\": {peak.PeakFeature.Mass.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"      \"id\": {file.AnalysisFileId},");
+            sb.AppendLine($"      \"masterPeakId\": {file.AnalysisFileId},");
+            sb.AppendLine($"      \"name\": \"{EscapeJson(file.AnalysisFileName)}\",");
+            sb.AppendLine($"      \"mz\": {(peaks.Count > 0 ? peaks[0].PrecursorMz : 0d).ToString(CultureInfo.InvariantCulture)},");
             sb.AppendLine("      \"rt\": {");
-            sb.AppendLine($"        \"left\": {GetChromValue(peak.PeakFeature.ChromXsLeft).ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"top\": {GetChromValue(peak.PeakFeature.ChromXsTop).ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"right\": {GetChromValue(peak.PeakFeature.ChromXsRight).ToString(CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"        \"left\": {0.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"        \"top\": {0.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"        \"right\": {0.ToString(CultureInfo.InvariantCulture)}");
             sb.AppendLine("      },");
             sb.AppendLine("      \"chromatogram\": {");
             sb.AppendLine($"        \"rts\": [{string.Join(", ", chromatogram.Rts.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
@@ -245,16 +244,21 @@ namespace CompMs.App.MsdialConsole.Process
             return sb.ToString();
         }
 
-        private static ProjectChromatogram ExtractPeakChromatogram(ChromatogramPeakFeature peak, RawSpectra rawSpectra, ParameterBase parameter) {
+        private static ProjectChromatogram ExtractPeakChromatogram(RawSpectra rawSpectra, ParameterBase parameter, double targetMz) {
             var rts = new List<double>();
             var intensities = new List<double>();
-            var targetMz = peak.PeakFeature.Mass;
             var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, parameter.CentroidMs1Tolerance), new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min));
             foreach (var dataPoint in chromatogram.AsPeakArray()) {
                 rts.Add(dataPoint.Time);
                 intensities.Add(dataPoint.Intensity);
             }
             return new ProjectChromatogram(rts, intensities);
+        }
+
+        private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFile) {
+            using var stream = new FileStream(projectFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var manager = ZipStreamManager.OpenGet(stream);
+            return MsdialDataStorage.Serializer.LoadAsync(manager, Path.GetFileName(projectFile), Path.GetDirectoryName(Path.GetFullPath(projectFile)) ?? string.Empty, string.Empty).GetAwaiter().GetResult();
         }
 
         private static string EscapeJson(string value) {
