@@ -47,6 +47,9 @@ namespace CompMs.App.Msdial.Model.Search
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
         public void ResetFilters() {
+            foreach (var peakFilterModel in PeakFilters) {
+                peakFilterModel.CheckedFilter = DisplayFilter.Unset;
+            }
             AmplitudeFilterModel.Reset();
             foreach (var valueFilterModel in ValueFilterModels) {
                 valueFilterModel.Reset();
