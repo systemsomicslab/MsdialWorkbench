@@ -23,6 +23,9 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .SelectSwitch(keywords => Observable.FromAsync(token => model.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
+            model.ObserveProperty(m => m.Keywords)
+                .Subscribe(_ => Keywords.Value = string.Join(" ", model.Keywords))
+                .AddTo(Disposables);
         }
 
         public string Label => _model.Label;

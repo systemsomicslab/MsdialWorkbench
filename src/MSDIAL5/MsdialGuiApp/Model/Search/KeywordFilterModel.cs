@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public KeywordFilterModel(string label, KeywordFilteringType type = KeywordFilteringType.IgnoreIfWordIsNull) {
             _sem = new SemaphoreSlim(1, 1).AddTo(Disposables);
-            _keywords = new List<string>();
+            _keywords = [];
             Keywords = _keywords.AsReadOnly();
             switch (type) {
                 case KeywordFilteringType.ExactMatch:
@@ -33,6 +33,7 @@ namespace CompMs.App.Msdial.Model.Search
                     _method = new KeepIfWordIsNull();
                     break;
                 case KeywordFilteringType.IgnoreIfWordIsNull:
+                case KeywordFilteringType.None:
                 default:
                     _method = new IgnoreIfWordIsNull();
                     break;
@@ -57,13 +58,14 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public void ClearKeywords() {
-            SetKeywords(Enumerable.Empty<string>());
+            SetKeywords([]);
         }
 
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
             _keywords.AddRange(keywords);
             IsEnabled = _keywords.Count > 0;
+            OnPropertyChanged(nameof(Keywords));
         }
 
         public bool Match(string word) {

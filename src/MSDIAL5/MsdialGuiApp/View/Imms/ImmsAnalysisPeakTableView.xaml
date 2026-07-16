@@ -86,7 +86,7 @@
                     <DataTemplate DataType="{x:Type searchvm:KeywordFilterViewModel}">
                         <StackPanel Margin="5,0,0,0">
                             <TextBlock Text="{Binding Label, Mode=OneTime}"/>
-                            <TextBox Text="{Binding Keywords.Value, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding Keywords.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      HorizontalAlignment="Stretch"/>
                         </StackPanel>
                     </DataTemplate>

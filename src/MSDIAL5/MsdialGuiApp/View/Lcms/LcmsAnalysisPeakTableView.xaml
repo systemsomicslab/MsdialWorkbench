@@ -88,7 +88,7 @@
                         <StackPanel Margin="5,0,0,0">
                             <TextBlock Text="{Binding Label, Mode=OneTime}"/>
                             <Grid>
-                                <TextBox Text="{Binding Keywords.Value, UpdateSourceTrigger=PropertyChanged}"
+                                <TextBox Text="{Binding Keywords.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          HorizontalAlignment="Stretch"/>
                                 <Button Content="&#xE894;"
                                         FontFamily="Segoe MDL2 Assets"
