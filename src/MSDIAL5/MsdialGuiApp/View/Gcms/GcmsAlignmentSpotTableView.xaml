@@ -127,6 +127,11 @@
                         Margin="8,0"
                         VerticalAlignment="Center" HorizontalAlignment="Left"
                         Width="128"/>
+                <Button Content="Reset filter"
+                        Command="{Binding PeakSpotNavigatorViewModel.ResetFiltersCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Width="64"/>
             </StackPanel>
         </Grid>
 
