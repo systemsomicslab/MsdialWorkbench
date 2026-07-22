@@ -17,14 +17,24 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public KeywordFilterViewModel(KeywordFilterModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             Keywords = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            ClearCommand = new ReactiveCommand().AddTo(Disposables);
+            ClearCommand.Subscribe(_ => Clear()).AddTo(Disposables);
             Keywords.Where(keywords => keywords != null)
                 .SelectSwitch(keywords => Observable.FromAsync(token => model.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
+                .AddTo(Disposables);
+            model.ObserveProperty(m => m.Keywords)
+                .Subscribe(_ => Keywords.Value = string.Join(" ", model.Keywords))
                 .AddTo(Disposables);
         }
 
         public string Label => _model.Label;
         public ReactivePropertySlim<string> Keywords { get; }
+        public ReactiveCommand ClearCommand { get; }
+
+        public void Clear() {
+            Keywords.Value = string.Empty;
+        }
 
         public IObservable<Unit> ObserveChanged => Keywords.ToUnit();
     }
