@@ -57,9 +57,15 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public void ClearKeywords() {
-            SetKeywords([]);
-        }
+public void ClearKeywords() {
+    _sem.Wait();
+    try {
+        SetKeywords([]);
+    }
+    finally {
+        _sem.Release();
+    }
+}
 
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
