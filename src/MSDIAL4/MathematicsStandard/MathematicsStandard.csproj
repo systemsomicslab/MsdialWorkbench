@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
+    <PackageReference Include="MessagePackAnalyzer" Version="3.1.7" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 

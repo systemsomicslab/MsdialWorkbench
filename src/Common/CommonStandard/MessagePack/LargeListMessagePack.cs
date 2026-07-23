@@ -1,327 +1,198 @@
-﻿using MessagePack;
-using MessagePack.LZ4;
+using MessagePack;
+using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CompMs.Common.MessagePack {
-    public static class LargeListMessagePack
-    {
-        public static int OffsetCutoff = 1073741824;
+    public static class LargeListMessagePack {
         public const sbyte ExtensionTypeCode = 99;
-        public const int NotCompressionSize = 64;
-        public const int HeaderSize = 11;
 
-        private static byte[] GetBuffer()
-        {
-            return new byte[65536];
-            //if (buffer is null)
-            //{
-            //    buffer = new byte[65536];
-            //}
-            //return buffer;
-        }
+        public static void Serialize<T>(Stream stream, IReadOnlyList<T> value) {
+            if (value is null) {
+                MessagePackSerializer.Serialize(stream, value, MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance).WithCompression(MessagePackCompression.Lz4BlockArray));
+                return;
+            }
 
-        private static byte[] GetBufferLZ4()
-        {
-            return new byte[65536];
-            //if (bufferLz is null)
-            //{
-            //    bufferLz = new byte[65536];
-            //}
-            //return bufferLz;
-        }
-
-        public static IFormatterResolver DefaultResolver {
-            get {
-                return StandardResolver.Instance;
+            var options = MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance).WithCompression(MessagePackCompression.Lz4BlockArray);
+            Memory<T> memory = (value as T[]) ?? value.ToArray();
+            var length = memory.Length;
+            var size = (int)Math.Sqrt(length) + 1;
+            var iteration = (length + size - 1) / size;
+            for (int i = 0; i < iteration; i++) {
+                MessagePackSerializer.Serialize(stream, new SerializingDataContainer<T> { Data = memory.Slice(i * size, Math.Min(size, length - i * size)) }, options);
             }
         }
 
-        public static void Serialize<T>(Stream stream, IReadOnlyList<T> value, IFormatterResolver resolver = null)
-        {
-            if (resolver == null) resolver = DefaultResolver;
-            var bytes = GetBuffer();
-            var offset = 0;
-            if (value == null)
-            {
-                offset += MessagePackBinary.WriteNil(ref bytes, offset);
-                stream.Write(bytes, 0, offset);
-            }
-            else
-            {
-                var formatter = resolver.GetFormatterWithVerify<T>();
-                var startOffSet = offset;
-                var c = value.Count;
-                offset = 5;
-                var lastCounter = -1;
-                var bufferLz4 = GetBufferLZ4();
-                for (int i = 0; i < c; i++)
-                {
-                    offset += formatter.Serialize(ref bytes, offset, value[i], resolver);
-                    if (offset > OffsetCutoff)
-                    {
-                        MessagePackBinary.WriteArrayHeader(ref bytes, startOffSet, i - lastCounter);
-                        lastCounter = i;
-                        bufferLz4 = ToLZ4Binary(new ArraySegment<byte>(bytes, 0, offset));
-                        stream.Write(bufferLz4, 0, bufferLz4.Length);
-                        offset = 5; // size of MessagePackBinary.WriteArrayHeader
-                        bytes = GetBuffer();
-                    }
-                }
-                if (lastCounter < c - 1)
-                {
-                    MessagePackBinary.WriteArrayHeader(ref bytes, startOffSet, c - lastCounter - 1);
-                    bufferLz4 = ToLZ4Binary(new ArraySegment<byte>(bytes, 0, offset));
-                    stream.Write(bufferLz4, startOffSet, bufferLz4.Length);
-                }
+        public static List<T> Deserialize<T>(Stream stream) {
+            return DeserializeCore<T>(stream, MessagePackSerializerOptions.Standard);
+        }
+
+        public static IEnumerable<List<T>> DeserializeIncremental<T>(Stream stream) {
+            foreach (var result in DeserializeIncrementalCore<T>(stream, MessagePackSerializerOptions.Standard)) {
+                yield return result;
             }
         }
 
-        public static byte[] ToLZ4Binary(ArraySegment<byte> messagePackBinary)
-        {
-            var buffer = ToLZ4BinaryCore(messagePackBinary);
-            return MessagePackBinary.FastCloneWithResize(buffer.Array, buffer.Count);
+        public static T DeserializeAt<T>(Stream stream, int index) {
+            return DeserializeAt<T>(stream, MessagePackSerializerOptions.Standard, index);
         }
 
-
-        static ArraySegment<byte> ToLZ4BinaryCore(ArraySegment<byte> serializedData)
-        {
-            //if (serializedData.Count < NotCompressionSize)
-            //{
-            //    // This data couldn't decode.
-            //    return serializedData;
-            //}
-            //else
-            //{
-                var offset = 0;
-                var buffer = GetBufferLZ4();
-                var maxOutCount = LZ4Codec.MaximumOutputLength(serializedData.Count);
-                if (buffer.Length < 6 + 5 + maxOutCount) // (ext header size + fixed length size)
-                {
-                    buffer = new byte[6 + 5 + maxOutCount];
+        public static T DeserializeAt<T>(Stream stream, MessagePackSerializerOptions options, int index) {
+            while (index >= 0) {
+                var success = TryDeserializeAtOrSkip<T>(stream, options, index, out var result, out int skipArraySize);
+                if (success) {
+                    return result;
                 }
-
-                // acquire ext header position
-                var extHeaderOffset = offset;
-                offset += (6 + 5);
-
-                // write body
-                var lz4Length = LZ4Codec.Encode(serializedData.Array, serializedData.Offset, serializedData.Count, buffer, offset, buffer.Length - offset);
-                // Console.WriteLine("lz4Length" + lz4Length);
-                // write extension header(always 6 bytes)
-                extHeaderOffset += MessagePackBinary.WriteExtensionFormatHeaderForceExt32Block(ref buffer, extHeaderOffset, (sbyte)ExtensionTypeCode, lz4Length + 5);
-
-                // write length(always 5 bytes)
-                MessagePackBinary.WriteInt32ForceInt32Block(ref buffer, extHeaderOffset, serializedData.Count);
-
-                return new ArraySegment<byte>(buffer, 0, 6 + 5 + lz4Length);
-            //}
-        }
-
-        public static List<T> Deserialize<T>(Stream stream, IFormatterResolver resolver = null)
-        {
-            return DeserializeCore<T>(stream, resolver);
-        }
-
-        public static IEnumerable<List<T>> DeserializeIncremental<T>(Stream stream, IFormatterResolver resolver = null) {
-            return DeserializeIncrementalCore<T>(stream, resolver);
-        }
-
-        static bool FillFromStream(Stream input, ref byte[] buffer, int offset, int readSize)
-        {
-            int length = 0;
-            int read;
-            if ((read = input.Read(buffer, offset, readSize)) > 0)
-            {
-                length += read;
-                // Console.WriteLine("read length: " + length);
-                if (length == buffer.Length)
-                {
-                    MessagePackBinary.FastResize(ref buffer, length * 2);
+                else if (skipArraySize == 0) {
+                    break;
                 }
-                return true;
+                index -= skipArraySize;
             }
-            return false;
+
+            return default;
         }
 
-
-        static List<T> DeserializeCore<T>(Stream stream, IFormatterResolver resolver)
-        {
-            var buffer = GetBuffer();
+        private static List<T> DeserializeCore<T>(Stream stream, MessagePackSerializerOptions options) {
             var res = new List<T>();
-            // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
-            while (FillFromStream(stream, ref buffer, 0, HeaderSize))
-            {
-                var tmp = DeserializeEach<T>(stream, buffer, resolver);
-                if (tmp != null && tmp.Count > 0)
-                {
-                    AddList(res, tmp);
+            while (true) {
+                var tmp = DeserializeEach<T>(stream, options);
+                if (tmp is null) {
+                    break;
                 }
+                res.AddRange(tmp);
             }
             return res;
         }
 
-        private static IEnumerable<List<T>> DeserializeIncrementalCore<T>(Stream stream, IFormatterResolver resolver) {
-            var buffer = GetBuffer();
-            // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
-            while (FillFromStream(stream, ref buffer, 0, HeaderSize))
-            {
-                yield return DeserializeEach<T>(stream, buffer, resolver);
-            }
-        }
-
-        static void AddList<T>(List<T> original, List<T> tmp)
-        {
-            foreach (var t in tmp)
-            {
-                original.Add(t);
-            }
-        }
-
-        static List<T> DeserializeEach<T>(Stream stream, byte[] buffer, IFormatterResolver resolver)
-        {
-            var bytes = new ArraySegment<byte>(buffer, 0, HeaderSize);
-            int readSize;
-            // Console.WriteLine("MessagePackType: " + MessagePackBinary.GetMessagePackType(bytes.Array, bytes.Offset));
-            if (MessagePackBinary.GetMessagePackType(bytes.Array, bytes.Offset) == MessagePackType.Extension)
-            {
-                var header = MessagePackBinary.ReadExtensionFormatHeader(bytes.Array, bytes.Offset, out readSize);
-                if (header.TypeCode == ExtensionTypeCode)
-                {
-                    // decode lz4
-                    var offset = bytes.Offset + readSize;
-                    var length = MessagePackBinary.ReadInt32(bytes.Array, offset, out readSize);
-                    offset += readSize;
-                    int bufferLength = (int)header.Length - 5;
-                    buffer = GetBuffer(); // use LZ4 Pool
-
-                    if (buffer.Length < bufferLength)
-                    {
-                        buffer = new byte[bufferLength];
-                    }
-
-                    if (FillFromStream(stream, ref buffer, 0, bufferLength))
-                    {
-                        bytes = new ArraySegment<byte>(buffer, 0, bufferLength);
-                        offset = 0;
-                        // LZ4 Decode
-                        var len = bytes.Count;
-                        var bufferLz4 = new byte[length];
-                        LZ4Codec.Decode(bytes.Array, bytes.Offset, len, bufferLz4, 0, length);
-                        return DeserializeList<T>(bufferLz4, offset, resolver, out readSize);
-                    }
+        private static IEnumerable<List<T>> DeserializeIncrementalCore<T>(Stream stream, MessagePackSerializerOptions options) {
+            while (true) {
+                var data = DeserializeEach<T>(stream, options);
+                if (data is null) {
+                    yield break;
                 }
-            }
-            // Console.WriteLine("Not working well");
-            return new List<T>();
-        }
-        static List<T> DeserializeList<T>(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
-        {
-            if (formatterResolver == null) formatterResolver = DefaultResolver;
-            if (MessagePackBinary.IsNil(bytes, offset))
-            {
-                readSize = 1;
-                return null;
-            }
-            else
-            {
-                var startOffset = 0;
-                var formatter = formatterResolver.GetFormatterWithVerify<T>();
-                var len = MessagePackBinary.ReadArrayHeader(bytes, offset, out readSize);
-                offset = 5;
-                var list = new List<T>(len);
-                for (int i = 0; i < len; i++)
-                {
-                    list.Add(formatter.Deserialize(bytes, offset, formatterResolver, out readSize));
-                    offset += readSize;
-                }
-                readSize = offset - startOffset;
-                return list;
+                yield return data;
             }
         }
 
-        public static T DeserializeAt<T>(Stream stream, int index, IFormatterResolver resolver = null)
-        {
-            var buffer = GetBuffer();
-            // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
-            while (FillFromStream(stream, ref buffer, 0, HeaderSize))
-            {
-                var success = TryDeserializeAtOrSkip<T>(stream, buffer, resolver, index, out var result, out int skipArraySize);
-                if (success) {
-                    return result;
-                }
-                index -= skipArraySize;
+        private static List<T>? DeserializeEach<T>(Stream stream, MessagePackSerializerOptions options) {
+            var resolver = CompositeResolver.Create(
+                [new DeserializedDataContainer<T>.DeserializedDataContainerFormatter(),],
+                [StandardResolver.Instance]);
+            try {
+                return MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(stream, options.WithResolver(resolver).WithCompression(MessagePackCompression.Lz4BlockArray))?.Data;
             }
-            return default;
+            catch (MessagePackSerializationException) {
+                return default;
+            }
         }
 
-        static bool TryDeserializeAtOrSkip<T>(Stream stream, byte[] buffer, IFormatterResolver resolver, int index, out T result, out int skipArraySize)
-        {
-            var bytes = new ArraySegment<byte>(buffer, 0, HeaderSize);
-            if (MessagePackBinary.GetMessagePackType(bytes.Array, bytes.Offset) == MessagePackType.Extension)
-            {
-                var header = MessagePackBinary.ReadExtensionFormatHeader(bytes.Array, bytes.Offset, out int readSize);
-                if (header.TypeCode == ExtensionTypeCode)
-                {
-                    // decode lz4
-                    var offset = bytes.Offset + readSize;
-                    var length = MessagePackBinary.ReadInt32(bytes.Array, offset, out readSize);
-                    offset += readSize;
-                    int bufferLength = (int)header.Length - 5;
-                    buffer = GetBuffer(); // use LZ4 Pool
-
-                    if (buffer.Length < bufferLength)
-                    {
-                        buffer = new byte[bufferLength];
-                    }
-
-                    if (FillFromStream(stream, ref buffer, 0, bufferLength))
-                    {
-                        bytes = new ArraySegment<byte>(buffer, 0, bufferLength);
-                        offset = 0;
-                        // LZ4 Decode
-                        var len = bytes.Count;
-                        var bufferLz4 = new byte[length];
-                        LZ4Codec.Decode(bytes.Array, bytes.Offset, len, bufferLz4, 0, length);
-                        var success = TryDeserializeAt(bufferLz4, offset, resolver, index, out result, out skipArraySize);
-                        if (success) {
-                            return true;
-                        }
-                    }
-                }
+        private static bool TryDeserializeAtOrSkip<T>(Stream stream, MessagePackSerializerOptions options, int index, out T? result, out int skipArraySize) {
+            var resolver = CompositeResolver.Create(
+                [DeserializedDataContainer<T>.CreateFormatter(index),],
+                [StandardResolver.Instance]);
+            var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(resolver);
+            try {
+                var deserialized = MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(stream, newOptions);
+                result = deserialized.Data is null ? default : deserialized.Data.FirstOrDefault();
+                skipArraySize = deserialized.Length;
+                return result != null;
             }
-            result = default;
-            skipArraySize = 0;
-            return false;
-        }
-
-        private static bool TryDeserializeAt<T>(byte[] bytes, int offset, IFormatterResolver formatterResolver, int index, out T result, out int skipArraySize) {
-            if (formatterResolver == null) formatterResolver = DefaultResolver;
-            if (MessagePackBinary.IsNil(bytes, offset))
-            {
-                skipArraySize = 1;
+            catch (MessagePackSerializationException) {
                 result = default;
-                return index == 0;
-            }
-            else
-            {
-                var formatter = formatterResolver.GetFormatterWithVerify<T>();
-                var len = MessagePackBinary.ReadArrayHeader(bytes, offset, out var readSize);
-                skipArraySize = len;
-                offset += 5;
-                if (len > index) {
-                    for (int i = 0; i < index; i++)
-                    {
-                        offset += MessagePackBinary.ReadNextBlock(bytes, offset);
-                    }
-                    result = formatter.Deserialize(bytes, offset, formatterResolver, out int tmpReadSize);
-                    return true;
-                }
-                result = default;
+                skipArraySize = 0;
                 return false;
             }
+        }
+
+        [MessagePackFormatter(typeof(DataContainerFormatter<>))]
+        internal sealed class SerializingDataContainer<T> {
+            public sbyte VersionCode { get; } = 2;
+            public Memory<T> Data { get; set; }
+        }
+
+        internal class DataContainerFormatter<T> : IMessagePackFormatter<SerializingDataContainer<T>?> {
+            public SerializingDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                throw new NotSupportedException();
+            }
+
+            public void Serialize(ref MessagePackWriter writer, SerializingDataContainer<T> value, MessagePackSerializerOptions options) {
+                writer.WriteInt8(value.VersionCode);
+                writer.WriteArrayHeader(value.Data.Length);
+                for (int i = 0; i < value.Data.Length; i++) {
+                    MessagePackSerializer.Serialize(ref writer, value.Data.Span[i], options);
+                }
+            }
+        }
+
+        private sealed class DeserializedDataContainer<T> {
+            public List<T> Data { get; set; }
+            public int Length { get; set; }
+
+            public static IMessagePackFormatter<DeserializedDataContainer<T>> CreateFormatter(int index) => new SpecificDataFormatter(index);
+
+#pragma warning disable MsgPack009, MsgPack010
+            internal class DeserializedDataContainerFormatter : IMessagePackFormatter<DeserializedDataContainer<T>?> {
+                public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                    int length;
+                    if (reader.NextCode == MessagePackCode.Int8) {
+                        _ = reader.ReadSByte();
+                        length = reader.ReadArrayHeader();
+                    }
+                    else {
+                        var reader_ = reader.CreatePeekReader();
+                        length = reader_.ReadArrayHeader();
+                        reader.ReadRaw(5);
+                    }
+                    var data = new List<T>(length);
+                    for (int i = 0; i < length; i++) {
+                        data.Add(MessagePackSerializer.Deserialize<T>(ref reader, options));
+                    }
+                    return new DeserializedDataContainer<T> { Length = length, Data = data };
+                }
+
+                public void Serialize(ref MessagePackWriter writer, DeserializedDataContainer<T> value, MessagePackSerializerOptions options) {
+                    throw new NotSupportedException();
+                }
+            }
+
+            internal class SpecificDataFormatter : IMessagePackFormatter<DeserializedDataContainer<T>?> {
+                private readonly int _index;
+
+                public SpecificDataFormatter(int index) {
+                    _index = index;
+                }
+
+                public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                    int length;
+                    if (reader.NextCode == MessagePackCode.Int8) {
+                        _ = reader.ReadSByte();
+                        length = reader.ReadArrayHeader();
+                    }
+                    else {
+                        var reader_ = reader.CreatePeekReader();
+                        length = reader_.ReadArrayHeader();
+                        reader.ReadRaw(5);
+                    }
+                    if (length <= _index) {
+                        for (int i = 0; i < length; i++) {
+                            reader.Skip();
+                        }
+                        return new DeserializedDataContainer<T> { Length = length, };
+                    }
+                    for (int i = 0; i < _index; i++) {
+                        reader.Skip();
+                    }
+                    return new DeserializedDataContainer<T> { Data = new List<T> { MessagePackSerializer.Deserialize<T>(ref reader, options) }, Length = length };
+                }
+
+                public void Serialize(ref MessagePackWriter writer, DeserializedDataContainer<T> value, MessagePackSerializerOptions options) {
+                    throw new NotSupportedException();
+                }
+            }
+#pragma warning restore MsgPack009, MsgPack010
         }
     }
 }

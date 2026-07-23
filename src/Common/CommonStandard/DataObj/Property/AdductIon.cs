@@ -2,7 +2,6 @@
 using CompMs.Common.Parser;
 using MessagePack;
 using MessagePack.Formatters;
-using MessagePack.Resolvers;
 using System;
 using System.Collections.Concurrent;
 
@@ -167,37 +166,54 @@ namespace CompMs.Common.DataObj.Property
             }
         }
 
-        class AdductIonFormatter : IMessagePackFormatter<AdductIon>
+        internal class AdductIonFormatter : IMessagePackFormatter<AdductIon?>
         {
-            AdductIon IMessagePackFormatter<AdductIon>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
-                readSize = MessagePackBinary.ReadNextBlock(bytes, offset);
-                if (MessagePackBinary.IsNil(bytes, offset)) {
+            public AdductIon Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                if (reader.TryReadNil()) {
                     return Default;
                 }
-                var count = MessagePackBinary.ReadArrayHeader(bytes, offset, out var tmp);
+                var count = reader.ReadArrayHeader();
                 if (count < 3) {
+                    for (int i = 0; i < count; i++) {
+                        reader.Skip();
+                    }
                     return Default;
                 }
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out var read);
-                tmp += read;
+                reader.Skip();
+                reader.Skip();
+                var name = reader.ReadString();
                 var adduct = GetAdductIon(name);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                adduct.M1Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
-                tmp += read;
-                adduct.M2Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
-                tmp += read;
-                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                adduct.IsIncluded |= MessagePackBinary.ReadBoolean(bytes, offset + tmp, out _);
+                reader.Skip();
+                reader.Skip();
+                reader.Skip();
+                adduct.M1Intensity = reader.ReadDouble();
+                adduct.M2Intensity = reader.ReadDouble();
+                reader.Skip();
+                adduct.IsIncluded |= reader.ReadBoolean();
                 return adduct;
             }
 
-            int IMessagePackFormatter<AdductIon>.Serialize(ref byte[] bytes, int offset, AdductIon value, IFormatterResolver formatterResolver) {
-                var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
-                return formatter.Serialize(ref bytes, offset, value, formatterResolver);
+            public void Serialize(ref MessagePackWriter writer, AdductIon value, MessagePackSerializerOptions options) {
+                //var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
+                //formatter.Serialize(ref writer, value, options);
+                if (value is null)
+                {
+                    writer.WriteNil();
+                    return;
+                }
+
+                writer.WriteArrayHeader(10);
+
+                writer.Write(value.AdductIonAccurateMass); // Key 0
+                writer.Write(value.AdductIonXmer);         // Key 1
+                writer.Write(value.AdductIonName);         // Key 2
+                writer.Write(value.ChargeNumber);          // Key 3
+                writer.Write((int)value.IonMode);          // Key 4
+                writer.Write(value.FormatCheck);           // Key 5
+                writer.Write(value.M1Intensity);           // Key 6
+                writer.Write(value.M2Intensity);           // Key 7
+                writer.Write(value.IsRadical);             // Key 8
+                writer.Write(value.IsIncluded);            // Key 9
             }
         }
     }

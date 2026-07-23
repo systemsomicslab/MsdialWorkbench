@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using System;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
@@ -6,9 +7,14 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 
+[assembly: MessagePack.MessagePackAssumedFormattable(typeof(IAnnotationQuery<MsScanMatchResult>))]
+[assembly: MessagePack.MessagePackAssumedFormattable(typeof((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference)))]
+
 namespace CompMs.MsdialCore.Parser
 {
-    [MessagePack.MessagePackObject]
+    [MessagePack.Union(1, typeof(MspDbRestorationKey))]
+    [MessagePack.Union(2, typeof(TextDbRestorationKey))]
+    [MessagePack.Union(3, typeof(StandardRestorationKey))]
     public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         public DataBaseRestorationKey(string key, int priority) {
@@ -24,6 +30,22 @@ namespace CompMs.MsdialCore.Parser
 
         public abstract ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
         public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database);
+
+        public ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept<TQuery, TReference, TResult, TDatabase>(ILoadAnnotatorVisitor visitor, TDatabase database)
+        {
+            if (typeof(TQuery) == typeof(IAnnotationQuery<MsScanMatchResult>) && typeof(TReference) == typeof(MoleculeMsReference) && typeof(TResult) == typeof(MsScanMatchResult) && typeof(TDatabase) == typeof(MoleculeDataBase)) {
+                return (ISerializableAnnotator<TQuery, TReference, TResult, TDatabase>)Accept(visitor, database as MoleculeDataBase);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TQuery)}, {typeof(TReference)}, {typeof(TResult)}, {typeof(TDatabase)}");
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept<TDatabase>(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database)
+        {
+            if (typeof(TDatabase) == typeof(MoleculeDataBase)) {
+                return Accept(factoryVisitor, annotatorVisitor, database as MoleculeDataBase);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TDatabase)}");
+        }
     }
 
     [MessagePack.MessagePackObject]
@@ -81,7 +103,7 @@ namespace CompMs.MsdialCore.Parser
         }
     }
 
-    [MessagePack.MessagePackObject]
+    [MessagePack.Union(4, typeof(ShotgunProteomicsRestorationKey))]
     public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
         public FastaDbRestorationKey(string key, int priority) {
             Key = key;
@@ -96,6 +118,22 @@ namespace CompMs.MsdialCore.Parser
 
         public abstract ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database);
         public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database);
+
+        public ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept<TQuery, TReference, TResult, TDatabase>(ILoadAnnotatorVisitor visitor, TDatabase database)
+        {
+            if (typeof(TQuery) == typeof(IPepAnnotationQuery) && typeof(TReference) == typeof(PeptideMsReference) && typeof(TResult) == typeof(MsScanMatchResult) && typeof(TDatabase) == typeof(ShotgunProteomicsDB)) {
+                return (ISerializableAnnotator<TQuery, TReference, TResult, TDatabase>)Accept(visitor, database as ShotgunProteomicsDB);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TQuery)}, {typeof(TReference)}, {typeof(TResult)}, {typeof(TDatabase)}");
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept<TDatabase>(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database)
+        {
+            if (typeof(TDatabase) == typeof(ShotgunProteomicsDB)) {
+                return Accept(factoryVisitor, annotatorVisitor, database as ShotgunProteomicsDB);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TDatabase)}");
+        }
     }
 
     [MessagePack.MessagePackObject]
@@ -157,6 +195,22 @@ namespace CompMs.MsdialCore.Parser
 
         public IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        }
+
+        public ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept<TQuery, TReference, TResult, TDatabase>(ILoadAnnotatorVisitor visitor, TDatabase database)
+        {
+            if (typeof(TQuery) == typeof((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference)) && typeof(TReference) == typeof(MoleculeMsReference) && typeof(TResult) == typeof(MsScanMatchResult) && typeof(TDatabase) == typeof(EadLipidDatabase)) {
+                return (ISerializableAnnotator<TQuery, TReference, TResult, TDatabase>)Accept(visitor, database as EadLipidDatabase);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TQuery)}, {typeof(TReference)}, {typeof(TResult)}, {typeof(TDatabase)}");
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept<TDatabase>(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database)
+        {
+            if (typeof(TDatabase) == typeof(EadLipidDatabase)) {
+                return Accept(factoryVisitor, annotatorVisitor, database as EadLipidDatabase);
+            }
+            throw new NotSupportedException($"Unsupported type: {typeof(TDatabase)}");
         }
     }
 }
