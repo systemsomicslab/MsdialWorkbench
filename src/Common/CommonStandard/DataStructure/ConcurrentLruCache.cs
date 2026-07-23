@@ -49,17 +49,17 @@ public sealed class ConcurrentLruCache<TKey, TValue>
     }
 
     public bool TryGet(TKey key, out TValue value) {
-        _locker.EnterReadLock();
+        _locker.EnterWriteLock();
         try {
             if (_cache.ContainsKey(key)) {
                 value = _cache.Get(key);
                 return true;
             }
-            value = default;
+            value = default!;
             return false;
         }
         finally {
-            _locker.ExitReadLock();
+            _locker.ExitWriteLock();
         }
     }
 }
