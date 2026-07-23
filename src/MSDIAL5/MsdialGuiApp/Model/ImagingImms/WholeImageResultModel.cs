@@ -50,8 +50,20 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
             _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
             Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
+            IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, rawIntensityLoader);
             analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .Subscribe(intensity => SelectedPeakIntensities = intensity)
+                .Subscribe(intensity => {
+                    if (intensity is null) {
+                        IntensityImagePlaceholder.ResetImage();
+                    }
+                    else {
+                        var title = $"m/z {intensity.Mz.Value}, Mobility {intensity.Drift.Value} [1/K0]";
+                        if (!string.IsNullOrEmpty(intensity.Peak.Name)) {
+                            title = $"{intensity.Peak.Name}, {title}";
+                        }
+                        _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, title);
+                    }
+                })
                 .AddTo(Disposables);
             _file = file;
             _maldiFrames = maldiFrames;
@@ -64,16 +76,11 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
 
+        public IntensityImagePlaceholderModel IntensityImagePlaceholder { get; }
+
         public AnalysisPeakPlotModel PeakPlotModel => AnalysisModel.PlotModel;
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => AnalysisModel.Ms1Peaks;
-
-        public IntensityImageModel? SelectedPeakIntensities
-        {
-            get => _selectedPeakIntensities;
-            set => SetProperty(ref _selectedPeakIntensities, value);
-        }
-        private IntensityImageModel? _selectedPeakIntensities;
 
         public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => AnalysisModel.Target;
 

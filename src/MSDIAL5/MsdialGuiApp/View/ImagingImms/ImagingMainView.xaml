@@ -197,12 +197,12 @@
                                                     Padding="5,0"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Bottom">
-                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity}">
+                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, TargetNullValue=0}">
                                                     <Rectangle.Fill>
                                                         <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
                                                     </Rectangle.Fill>
                                                     <Rectangle.ToolTip>
-                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity, StringFormat=Average intensity: {0:F0}}"/>
+                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, StringFormat=Average intensity: {0:F0}}"/>
                                                     </Rectangle.ToolTip>
                                                 </Rectangle>
                                             </Border>
@@ -318,14 +318,21 @@
                 <KeyBinding Gesture="Ctrl+Y" Command="{x:Static ui:AreaSelector.RedoCommand}" CommandTarget="{Binding ElementName=roiSelector}"/>
             </Grid.InputBindings>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto" MaxWidth="240"/>
                 </Grid.ColumnDefinitions>
+                <TextBlock d:Text="Image Title"
+                           Text="{Binding SelectedImageViewModel.ImageResultViewModel.IntensityImagePlaceholder.Value.Title}"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Margin="8,0"/>
                 <StackPanel Orientation="Vertical"
                             Margin="8"
+                            Grid.Row="1"
                             Grid.Column="1">
                     <GroupBox Header="ROI commands">
                         <ItemsControl>
@@ -365,6 +372,7 @@
                 </StackPanel>
                 <Border x:Name="ImageContainer"
                         ClipToBounds="True"
+                        Grid.Row="1"
                         Grid.Column="0">
                     <Viewbox behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}"
                              behavior:AddMovabilityBehavior.IsEnabled="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Converter={StaticResource NegativeConverter}}"
@@ -372,7 +380,7 @@
                         <Grid Width="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Width}"
                               Height="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Height}"
                               behavior:AddMovabilityBehavior.IsEnabled="False">
-                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"/>
+                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.IntensityImagePlaceholder.Value}"/>
                             <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>

@@ -9,7 +9,6 @@ using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -25,18 +24,17 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             AnalysisViewModel = analysisViewModel;
 
             Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
-            SelectedPeakIntensities = model.ToReactivePropertyAsSynchronized(
-                m => m.SelectedPeakIntensities,
-                mox => mox.Select(m => Intensities.FirstOrDefault(vm => vm.Model == m)),
-                vmox => vmox.Select(vm => vm?.Model))
-                .AddTo(Disposables);
             ImagingRoiViewModel = new ImagingRoiViewModel(model.ImagingRoiModel).AddTo(Disposables);
+            IntensityImagePlaceholder = model.IntensityImagePlaceholder.ObserveProperty(m => m.CurrentImage)
+                .Select(m => m is null ? null : new BitmapImageViewModel(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public ImmsAnalysisViewModel AnalysisViewModel { get; }
         public AnalysisPeakPlotViewModel PeakPlotViewModel => AnalysisViewModel.PlotViewModel;
         public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
-        public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
+        public ReadOnlyReactivePropertySlim<BitmapImageViewModel?> IntensityImagePlaceholder { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
 
         public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;

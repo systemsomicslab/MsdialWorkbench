@@ -26,19 +26,18 @@ internal sealed class WholeImageResultViewModel : ViewModelBase
         AnalysisViewModel = analysisViewModel;
 
         Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
-        SelectedPeakIntensities = model.ToReactivePropertyAsSynchronized(
-            m => m.SelectedPeakIntensities,
-            mox => mox.Select(m => Intensities.FirstOrDefault(vm => vm.Model == m)),
-            vmox => vmox.Select(vm => vm?.Model))
-            .AddTo(Disposables);
         ImagingRoiViewModel = new ImagingRoiViewModel(model.ImagingRoiModel).AddTo(Disposables);
+        IntensityImagePlaceholder = model.IntensityImagePlaceholder.ObserveProperty(m => m.CurrentImage)
+            .Select(m => m is null ? null : new BitmapImageViewModel(m))
+            .DisposePreviousValue()
+            .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
     }
 
     public DimsAnalysisViewModel AnalysisViewModel { get; }
     public ImagingRoiViewModel ImagingRoiViewModel { get; }
     public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
     public AnalysisPeakPlotViewModel PeakPlotViewModel => AnalysisViewModel.PlotViewModel;
-    public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
+    public ReadOnlyReactivePropertySlim<BitmapImageViewModel?> IntensityImagePlaceholder { get; }
 
     public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;
 

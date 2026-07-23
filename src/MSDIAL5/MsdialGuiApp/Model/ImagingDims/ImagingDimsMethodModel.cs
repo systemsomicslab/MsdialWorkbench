@@ -38,7 +38,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         _projectBaseParameter = projectBaseParameter;
         StudyContext = studyContext;
         _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
+        _providerFactory = storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true); //new StandardDataProviderFactory().ContraMap((AnalysisFileBean file) => file.LoadRawMeasurement(isImagingMsData: true, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000));
         ImageModels = [];
         Image = ImageModels.FirstOrDefault();
 
@@ -67,7 +67,8 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         if (option.HasFlag(ProcessOption.Identification)) {
             var queryFatoires = _storage.CreateAnnotationQueryFactoryStorage();
             var annotationProcess = new StandardAnnotationProcess(queryFatoires.MoleculeQueryFactories, _evaluator, _storage.DataBaseMapper);
-            var processor = new ProcessFile(_providerFactory, _storage, annotationProcess, _evaluator);
+            var providerFactory = _storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+            var processor = new ProcessFile(providerFactory, _storage, annotationProcess, _evaluator);
             var runner = new ProcessRunner(processor, 2);
             await runner.RunAllAsync(_storage.AnalysisFiles, option, Enumerable.Repeat<IProgress<int>?>(null, _storage.AnalysisFiles.Count), null, token).ConfigureAwait(false);
             foreach (var file in files) {
@@ -114,7 +115,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
             return Task.CompletedTask;
         }
 
-        return Image.ImageResult.SaveAsync();
+        return Task.WhenAll(ImageModels.Select(image => image.ImageResult.SaveAsync()));
     }
 
     public AnalysisResultExportModel CreateExportAnalysisModel() {

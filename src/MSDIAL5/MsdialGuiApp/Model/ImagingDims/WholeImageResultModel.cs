@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.RawDataHandler.Core;
+using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -50,9 +51,20 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
         _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
         Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
+        IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, rawIntensityLoader);
         analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-            .Subscribe(intensity => SelectedPeakIntensities = intensity)
-            .AddTo(Disposables);
+            .Subscribe(intensity => {
+                if (intensity is null) {
+                    IntensityImagePlaceholder.ResetImage();
+                }
+                else {
+                    var title = $"m/z {intensity.Mz.Value}";
+                    if (!string.IsNullOrEmpty(intensity.Peak.Name)) {
+                        title = $"{intensity.Peak.Name}, {title}";
+                    }
+                    _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, title);
+                }
+            }).AddTo(Disposables);
         _file = file;
         _maldiFrames = maldiFrames;
         _wholeRoi = wholeRoi;
@@ -68,12 +80,7 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
 
     public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => AnalysisModel.Ms1Peaks;
 
-    public IntensityImageModel? SelectedPeakIntensities
-    {
-        get => _selectedPeakIntensities;
-        set => SetProperty(ref _selectedPeakIntensities, value);
-    }
-    private IntensityImageModel? _selectedPeakIntensities;
+    public IntensityImagePlaceholderModel IntensityImagePlaceholder { get; }
 
     public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => AnalysisModel.Target;
 
@@ -85,8 +92,21 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         return result;
     }
 
-    public async Task SaveIntensitiesAsync(CancellationToken token = default) {
-        using var writer = File.Open("pixel_intensities.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+    public async Task<bool> SaveIntensitiesAsync(CancellationToken token = default) {
+        var filePath = string.Empty;
+        var dialog = new SaveFileDialog
+        {
+            Filter = "Pixel intensity file|*.csv",
+            DefaultExt = "csv",
+            FileName = "pixel_intensities.csv",
+        };
+        if (dialog.ShowDialog() == true) {
+            filePath = dialog.FileName;
+        }
+        if (string.IsNullOrEmpty(filePath)) {
+            return false;
+        }
+        using var writer = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
         var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
         var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
         writer.Write(encoded, 0, encoded.Length);
@@ -104,6 +124,11 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
             }, token));
         }
         await Task.WhenAll(tasks).ConfigureAwait(false);
+        var task = Task.CompletedTask;
+        await task;
+        task.Wait();
+
+        return true;
     }
 
     public void ResetRawSpectraOnPixels() {

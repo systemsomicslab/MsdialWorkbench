@@ -10,6 +10,7 @@ namespace CompMs.MsdialDimsCore.Parameter
     [Union(0, typeof(DimsBpiDataProviderFactoryParameter))]
     [Union(1, typeof(DimsTicDataProviderFactoryParameter))]
     [Union(2, typeof(DimsAverageDataProviderFactoryParameter))]
+    [Union(3, typeof(DimsAccumulateDataProviderFactoryParameter))]
     public interface IDimsDataProviderFactoryParameter
     {
         IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
@@ -82,6 +83,31 @@ namespace CompMs.MsdialDimsCore.Parameter
 
         public IDataProviderFactory<RawMeasurement> Create() {
             return new DimsAverageDataProviderFactory(MassTolerance, TimeBegin, TimeEnd);
+        }
+    }
+
+    [MessagePackObject]
+    public class DimsAccumulateDataProviderFactoryParameter: IDimsDataProviderFactoryParameter
+    {
+        public DimsAccumulateDataProviderFactoryParameter(double timeBegin, double timeEnd, double massTolerance) {
+            TimeBegin = timeBegin;
+            TimeEnd = timeEnd;
+            MassTolerance = massTolerance;
+        }
+
+        [Key(nameof(TimeBegin))]
+        public double TimeBegin { get; }
+        [Key(nameof(TimeEnd))]
+        public double TimeEnd { get; }
+        [Key(nameof(MassTolerance))]
+        public double MassTolerance { get; }
+
+        public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
+            return new DimsAccumulateDataProviderFactory(MassTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new DimsAccumulateDataProviderFactory(MassTolerance, TimeBegin, TimeEnd);
         }
     }
 }

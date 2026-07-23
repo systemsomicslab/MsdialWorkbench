@@ -1,4 +1,5 @@
 ﻿using CompMs.CommonMVVM;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,23 +30,36 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public Task SaveAsync(CancellationToken token = default)
         {
-            var image = _imageResult.SelectedPeakIntensities?.BitmapImageModel;
+            string? filePath = Path;
+            if (string.IsNullOrEmpty(filePath)) {
+                var dialog = new SaveFileDialog
+                {
+                    Filter = "PNG Image|*.png|GIF Image|*.gif",
+                    DefaultExt = "png",
+                    FileName = "image.png",
+                };
+                if (dialog.ShowDialog() == true) {
+                    filePath = dialog.FileName;
+                }
+            }
+            if (string.IsNullOrEmpty(filePath)) {
+                return Task.CompletedTask;
+            }
+
+            var image = _imageResult.IntensityImagePlaceholder.CurrentImage;
             if (image is null) {
                 return Task.CompletedTask;
             }
             var rois = _roiModels.Where(roi => roi.IsSelected).Select(roi => roi.Roi.RoiImage).ToArray();
 
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
-                if (string.IsNullOrEmpty(Path)) {
-                    return;
-                }
                 BitmapEncoder? encoder = null;
-                if (Path.EndsWith("png"))
+                if (filePath.EndsWith("png"))
                 {
                     encoder = new PngBitmapEncoder();
                 }
-                else if (Path.EndsWith("gif"))
+                else if (filePath.EndsWith("gif"))
                 {
                     encoder = new GifBitmapEncoder();
                 }
@@ -53,12 +67,15 @@ namespace CompMs.App.Msdial.Model.Imaging
                 {
                     return;
                 }
+
+                await Task.WhenAll([image.EnsureBitmapSourceAsync(), .. rois.Select(roi => roi.EnsureBitmapSourceAsync())]).ConfigureAwait(false);
+
                 encoder.Frames.Add(BitmapFrame.Create(image.BitmapSource));
                 foreach (var roi in rois)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(roi.BitmapSource));
                 }
-                using (var stream = File.Open(Path, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
                     encoder.Save(stream);
                 }

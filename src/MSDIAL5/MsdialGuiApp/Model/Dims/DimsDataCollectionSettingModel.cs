@@ -33,6 +33,12 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private bool useAverageMs1 = false;
 
+        public bool UseAccumulateMs1 {
+            get => useAccumulateMs1;
+            set => SetProperty(ref useAccumulateMs1, value);
+        }
+        private bool useAccumulateMs1 = false;
+
         public double TimeBegin {
             get => timeBegin;
             set => SetProperty(ref timeBegin, value);
@@ -65,6 +71,9 @@ namespace CompMs.App.Msdial.Model.Dims
             else if (UseAverageMs1) {
                 return new DimsAverageDataProviderFactoryParameter(TimeBegin, TimeEnd, MassTolerance);
             }
+            else if (UseAccumulateMs1) {
+                return new DimsAccumulateDataProviderFactoryParameter(TimeBegin, TimeEnd, MassTolerance);
+            }
             throw new NotSupportedException();
         }
 
@@ -91,6 +100,13 @@ namespace CompMs.App.Msdial.Model.Dims
                     TimeBegin = averageParameter.TimeBegin;
                     TimeEnd = averageParameter.TimeEnd;
                     MassTolerance = averageParameter.MassTolerance;
+                    break;
+                case DimsAccumulateDataProviderFactoryParameter accumulateParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAccumulateMs1 = true;
+                    TimeBegin = accumulateParameter.TimeBegin;
+                    TimeEnd = accumulateParameter.TimeEnd;
+                    MassTolerance = accumulateParameter.MassTolerance;
                     break;
             }
         }

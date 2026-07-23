@@ -6,6 +6,8 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -66,9 +68,9 @@ namespace CompMs.App.Msdial.Model.Imaging
         public Color Color { get; }
         public BitmapImageModel RoiImage { get; }
 
-        public RawSpectraOnPixels RetrieveRawSpectraOnPixels(List<Raw2DElement> targetElements) {
+        public async Task<RawSpectraOnPixels> RetrieveRawSpectraOnPixelsAsync(List<Raw2DElement> targetElements, CancellationToken token = default) {
             using RawDataAccess rawDataAccess = new RawDataAccess(File.AnalysisFilePath, 0, true, true, true);
-            return rawDataAccess.GetRawPixelFeatures(targetElements, [.. Frames.Infos], isNewProcess: false)
+            return await rawDataAccess.GetRawPixelFeaturesAsync(targetElements, [.. Frames.Infos], isNewProcess: false, token).ConfigureAwait(false)
                 ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
         }
 
