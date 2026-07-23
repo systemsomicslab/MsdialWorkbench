@@ -52,9 +52,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 }
                 LoadingBitmap = true;
                 BitmapSource = await Task.Run(() => _bitmapSourceFactory!.Invoke()).ConfigureAwait(false);
-                LoadingBitmap = false;
             }
             finally {
+                LoadingBitmap = false;
                 _semaphoreSlim.Release();
             }
         }
