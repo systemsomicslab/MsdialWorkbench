@@ -19,12 +19,12 @@ public sealed class ConcurrentLruCache<TKey, TValue>
     }
 
     public TValue Get(TKey key) {
-        _locker.EnterReadLock();
+        _locker.EnterWriteLock();
         try {
             return _cache.Get(key);
         }
         finally {
-            _locker.ExitReadLock();
+            _locker.ExitWriteLock();
         }
     }
 
