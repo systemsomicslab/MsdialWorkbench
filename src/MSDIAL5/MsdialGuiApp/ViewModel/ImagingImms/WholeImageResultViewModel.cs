@@ -23,7 +23,6 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             var analysisViewModel = new ImmsAnalysisViewModel(model.AnalysisModel, peakSpotTableService, broker, focusManager).AddTo(Disposables);
             AnalysisViewModel = analysisViewModel;
 
-            Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
             ImagingRoiViewModel = new ImagingRoiViewModel(model.ImagingRoiModel).AddTo(Disposables);
             IntensityImagePlaceholder = model.IntensityImagePlaceholder.ObserveProperty(m => m.CurrentImage)
                 .Select(m => m is null ? null : new BitmapImageViewModel(m))
@@ -33,7 +32,6 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
 
         public ImmsAnalysisViewModel AnalysisViewModel { get; }
         public AnalysisPeakPlotViewModel PeakPlotViewModel => AnalysisViewModel.PlotViewModel;
-        public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
         public ReadOnlyReactivePropertySlim<BitmapImageViewModel?> IntensityImagePlaceholder { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
 

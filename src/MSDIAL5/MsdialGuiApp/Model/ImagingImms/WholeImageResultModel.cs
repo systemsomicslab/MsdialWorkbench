@@ -48,23 +48,22 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, _elements).AddTo(Disposables);
             ImagingRoiModel.Select();
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
-            Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
+            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(peak, laserInfo, rawIntensityLoader, index)));
+            var peakIds = analysisModel.Ms1Peaks.Select((peak, index) => (peak, index)).ToDictionary(p => p.peak.MasterPeakID, p => p.index);
             IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, rawIntensityLoader);
-            analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .Subscribe(intensity => {
-                    if (intensity is null) {
+            analysisModel.Target
+                .Subscribe(p => {
+                    if (p is null) {
                         IntensityImagePlaceholder.ResetImage();
                     }
                     else {
-                        var title = $"m/z {intensity.Mz.Value}, Mobility {intensity.Drift.Value} [1/K0]";
-                        if (!string.IsNullOrEmpty(intensity.Peak.Name)) {
-                            title = $"{intensity.Peak.Name}, {title}";
+                        var title = $"m/z {p.Mass}, Mobility {p.ChromXs.Drift.Value} [1/K0]";
+                        if (!string.IsNullOrEmpty(p.Name)) {
+                            title = $"{p.Name}, {title}";
                         }
-                        _ = IntensityImagePlaceholder.EnsureImageAsync(intensity._peakIndex, title);
+                        _ = IntensityImagePlaceholder.EnsureImageAsync(peakIds[p.MasterPeakID], title);
                     }
-                })
-                .AddTo(Disposables);
+                }).AddTo(Disposables);
             _file = file;
             _maldiFrames = maldiFrames;
             _wholeRoi = wholeRoi;
@@ -73,8 +72,6 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImmsAnalysisModel AnalysisModel { get; }
 
         public ImagingRoiModel ImagingRoiModel { get; }
-
-        public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
 
         public IntensityImagePlaceholderModel IntensityImagePlaceholder { get; }
 
@@ -97,8 +94,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
             writer.Write(encoded, 0, encoded.Length);
             using var sem = new SemaphoreSlim(8, 8);
-            var tasks = new List<Task>(Intensities.Count);
-            foreach (var ints in Intensities) {
+            var tasks = new List<Task>(_intensities.Count);
+            foreach (var ints in _intensities) {
                 tasks.Add(Task.Run(async () => {
                     await sem.WaitAsync().ConfigureAwait(false);
                     try {
