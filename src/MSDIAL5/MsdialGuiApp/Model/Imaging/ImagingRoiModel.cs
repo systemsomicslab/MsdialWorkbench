@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Utility;
+using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
@@ -17,13 +17,14 @@ namespace CompMs.App.Msdial.Model.Imaging
     internal sealed class ImagingRoiModel : DisposableModelBase {
         private readonly RoiAccess _access;
 
-        public ImagingRoiModel(string id, RoiModel roi, RoiModel? wholeRoi, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak, RawIntensityOnPixelsLoader intensitiesLoader) {
+        public ImagingRoiModel(string id, RoiModel roi, RoiModel? wholeRoi, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak, List<Raw2DElement> elements) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
             _access = new RoiAccess(roi, wholeRoi);
 
+            var intensitiesLoader = roi.GetIntensityOnPixelsLoader(elements).AddTo(Disposables);
             RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(peaks.Select((peak, idx) => new RoiPeakSummaryModel(_access, peak, intensitiesLoader, idx)));
-            RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
+            selectedPeak.Select(p => RoiPeakSummaries.FirstOrDefault(m => m.Peak == p)).Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 
         public string Id {

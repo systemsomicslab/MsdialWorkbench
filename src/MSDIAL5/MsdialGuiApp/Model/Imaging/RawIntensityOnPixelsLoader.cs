@@ -1,13 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.DataObj;
 using CompMs.RawDataHandler.Core;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Imaging;
 
-internal sealed class RawIntensityOnPixelsLoader
+internal sealed class RawIntensityOnPixelsLoader : IDisposable
 {
     private readonly List<Raw2DElement> _targets;
     private readonly AnalysisFileBeanModel _file;
@@ -24,5 +25,9 @@ internal sealed class RawIntensityOnPixelsLoader
 
     public async Task<RawSpectraOnPixels> LoadAsync(int index, CancellationToken token = default) {
         return await _rawDataAccess.GetRawPixelFeatureAsync(_targets, index, [.. _frames.Infos], isNewProcess: false, token: token).ConfigureAwait(false);
+    }
+
+    public void Dispose() {
+        ((IDisposable)_rawDataAccess).Dispose();
     }
 }

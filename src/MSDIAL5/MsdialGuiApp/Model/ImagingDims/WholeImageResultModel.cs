@@ -45,8 +45,8 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         AnalysisModel = analysisModel;
 
         _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
-        var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
-        ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
+        var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements).AddTo(Disposables);
+        ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, _elements).AddTo(Disposables);
         ImagingRoiModel.Select();
         MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
         _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
@@ -86,8 +86,7 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
 
     public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
     {
-        var loader = roi.GetIntensityOnPixelsLoader(_elements);
-        var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, AnalysisModel.Ms1Peaks, AnalysisModel.Target, loader);
+        var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, AnalysisModel.Ms1Peaks, AnalysisModel.Target, _elements);
         result.Select();
         return result;
     }

@@ -75,7 +75,10 @@ internal sealed class ImagingDimsImageModel : DisposableModelBase
     }
 
     public void RemoveRoi(ImagingRoiModel model) {
-        ImagingRoiModels.Remove(model);
+        if (model != ImageResult.ImagingRoiModel && ImagingRoiModels.Remove(model)) {
+            model.Dispose();
+            Disposables.Remove(model);
+        }
     }
 
     public async Task<bool> SaveRoisAsync(CancellationToken token = default) {
