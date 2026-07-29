@@ -55,14 +55,14 @@ namespace CompMs.App.Msdial.Model.Imaging
             using var stream = File.Open(Path.Combine(directoryPath, $"{Id}.csv"), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             var header = string.Join(",", ["XIndex", "YIndex", "Pos"]);
             var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
-            await stream.WriteAsync(encoded, 0, encoded.Length).ConfigureAwait(false);
+            await stream.WriteAsync(encoded, 0, encoded.Length, token).ConfigureAwait(false);
             var builder = new StringBuilder();
             foreach (var info in Roi.Frames.Infos) {
                 builder.AppendFormat("{0},{1},{0}_{1}\n", info.XIndexPos, info.YIndexPos);
             }
             var contents = builder.ToString();
             var cEncoded = UTF8Encoding.Default.GetBytes(contents);
-            await stream.WriteAsync(cEncoded, 0, cEncoded.Length).ConfigureAwait(false);
+            await stream.WriteAsync(cEncoded, 0, cEncoded.Length, token).ConfigureAwait(false);
         }
     }
 }
