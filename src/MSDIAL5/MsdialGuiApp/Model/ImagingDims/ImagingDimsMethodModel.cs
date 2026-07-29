@@ -75,7 +75,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
                 var model = new ImagingDimsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
                 ImageModels.Add(model);
                 if (option.HasFlag(ProcessOption.PeakSpotting)) {
-                    model.ImageResult.ResetRawSpectraOnPixels();
+                    await model.ImageResult.ResetRawSpectraOnPixelsAsync(token);
                 }
             }
         }

@@ -117,9 +117,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return true;
         }
 
-        public void ResetRawSpectraOnPixels() {
+        public async Task ResetRawSpectraOnPixelsAsync(CancellationToken token = default) {
             using var rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
-            rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
+            await rawDataAccess.SaveRawPixelFeaturesAsync(_elements, _maldiFrames.Infos.ToList(), token).ConfigureAwait(false);
         }
 
         public MaldiFrames GetFramesFromPositions(HashSet<(int, int)> sets) {
