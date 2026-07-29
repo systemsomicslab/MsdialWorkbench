@@ -37,10 +37,13 @@ namespace CompMs.App.Msdial.Model.Imaging
                 return;
             }
             IsAccumulatedIntensityLoading = true;
-            var pixelsTask = _intensitiesLoader.LoadAsync(_peakIndex);
-            var pixels = await pixelsTask.ConfigureAwait(false);
-            AccumulatedIntensity = _access.Access(pixels.PixelPeakFeaturesList[0].IntensityArray).Average();
-            IsAccumulatedIntensityLoading = false;
+            try {
+                var pixels = await _intensitiesLoader.LoadAsync(_peakIndex).ConfigureAwait(false);
+                AccumulatedIntensity = _access.Access(pixels.PixelPeakFeaturesList[0].IntensityArray).Average();
+            }
+            finally {
+                IsAccumulatedIntensityLoading = false;
+            }
         }
     }
 }
