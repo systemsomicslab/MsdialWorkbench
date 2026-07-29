@@ -70,9 +70,15 @@ namespace CompMs.App.Msdial.Model.Imaging
 
                 await Task.WhenAll([image.EnsureBitmapSourceAsync(), .. rois.Select(roi => roi.EnsureBitmapSourceAsync())]).ConfigureAwait(false);
 
+                if (image.BitmapSource is null) {
+                    return;
+                }
                 encoder.Frames.Add(BitmapFrame.Create(image.BitmapSource));
                 foreach (var roi in rois)
                 {
+                    if (roi.BitmapSource is null) {
+                        continue;
+                    }
                     encoder.Frames.Add(BitmapFrame.Create(roi.BitmapSource));
                 }
                 using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
