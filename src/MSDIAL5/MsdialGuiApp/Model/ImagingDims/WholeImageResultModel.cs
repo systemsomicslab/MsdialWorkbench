@@ -31,9 +31,9 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
 {
     private readonly List<Raw2DElement> _elements;
     private readonly AnalysisFileBeanModel _file;
-    private readonly ObservableCollection<IntensityImageModel> _intensities;
     private readonly MaldiFrames _maldiFrames;
     private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
+    private readonly RawIntensityOnPixelsLoader _rawIntensityLoader;
     private readonly RoiModel _wholeRoi;
 
     public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialDimsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
@@ -45,12 +45,11 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         AnalysisModel = analysisModel;
 
         _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
-        var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements).AddTo(Disposables);
         ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, _elements).AddTo(Disposables);
         ImagingRoiModel.Select();
-        _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(peak, rawIntensityLoader, index)));
         var peakIds = analysisModel.Ms1Peaks.Select((peak, index) => (peak, index)).ToDictionary(p => p.peak.MasterPeakID, p => p.index);
-        IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, rawIntensityLoader);
+        _rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements).AddTo(Disposables);
+        IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, _rawIntensityLoader);
         analysisModel.Target
             .Subscribe(p => {
                 if (p is null) {
@@ -102,27 +101,17 @@ internal sealed class WholeImageResultModel : DisposableModelBase, IWholeImageRe
         if (string.IsNullOrEmpty(filePath)) {
             return false;
         }
-        using var writer = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-        var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
-        var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
-        writer.Write(encoded, 0, encoded.Length);
-        using var sem = new SemaphoreSlim(8, 8);
-        var tasks = new List<Task>(_intensities.Count);
-        foreach (var ints in _intensities) {
-            tasks.Add(Task.Run(async () => {
-                await sem.WaitAsync().ConfigureAwait(false);
-                try {
-                    await ints.SaveAsync(writer, skipUnknownPeaks: false, token: token);
-                }
-                finally {
-                    sem.Release();
-                }
-            }, token));
+
+        using var handle = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+        using var writer = new StreamWriter(handle, UTF8Encoding.Default);
+        var header = string.Join(",", new[] { "ID", "Name", "m/z", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
+        await writer.WriteLineAsync(header).ConfigureAwait(false);
+        for (int i = 0; i < AnalysisModel.Ms1Peaks.Count; i++) {
+            var peak = AnalysisModel.Ms1Peaks[i];
+            var pixels = await _rawIntensityLoader.LoadAsync(i, token);
+            var row = string.Format("{0},{1},{2},", peak.MasterPeakID, peak.Name, peak.Mz.Value) + string.Join(",", pixels.PixelPeakFeaturesList[0].IntensityArray);
+            await writer.WriteLineAsync(row);
         }
-        await Task.WhenAll(tasks).ConfigureAwait(false);
-        var task = Task.CompletedTask;
-        await task;
-        task.Wait();
 
         return true;
     }
