@@ -192,7 +192,7 @@
                                                         <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
                                                     </Rectangle.Fill>
                                                     <Rectangle.ToolTip>
-                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, StringFormat=Average intensity: {0:F0}}"/>
+                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity.Value, StringFormat=Average intensity: {0:F0}, TargetNullValue=0}"/>
                                                     </Rectangle.ToolTip>
                                                 </Rectangle>
                                             </Border>
