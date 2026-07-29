@@ -47,8 +47,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements).AddTo(Disposables);
             ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, _elements).AddTo(Disposables);
             ImagingRoiModel.Select();
-            MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(peak, laserInfo, rawIntensityLoader, index)));
+            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(peak, rawIntensityLoader, index)));
             var peakIds = analysisModel.Ms1Peaks.Select((peak, index) => (peak, index)).ToDictionary(p => p.peak.MasterPeakID, p => p.index);
             IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, rawIntensityLoader);
             analysisModel.Target

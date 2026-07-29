@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using System.IO;
 using System.Text;
@@ -13,7 +12,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         private readonly RawIntensityOnPixelsLoader _intensitiesLoader;
         internal readonly int _peakIndex;
 
-        public IntensityImageModel(ChromatogramPeakFeatureModel peak, MaldiFrameLaserInfo laserInfo, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
+        public IntensityImageModel(ChromatogramPeakFeatureModel peak, RawIntensityOnPixelsLoader intensitiesLoader, int peakIndex) {
             Peak = peak;
             _intensitiesLoader = intensitiesLoader;
             _peakIndex = peakIndex;
