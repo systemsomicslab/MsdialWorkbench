@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.RawDataHandler.Core;
+using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -20,7 +21,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,9 +30,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
     {
         private readonly List<Raw2DElement> _elements;
         private readonly AnalysisFileBeanModel _file;
-        private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly MaldiFrames _maldiFrames;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
+        private readonly RawIntensityOnPixelsLoader _rawIntensityLoader;
         private readonly RoiModel _wholeRoi;
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
@@ -44,15 +44,24 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             AnalysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
-            var rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements);
-            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, rawIntensityLoader).AddTo(Disposables);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, null, analysisModel.Ms1Peaks, analysisModel.Target, _elements).AddTo(Disposables);
             ImagingRoiModel.Select();
-            MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<IntensityImageModel>(analysisModel.Ms1Peaks.Select((peak, index) => new IntensityImageModel(maldiFrames, peak, laserInfo, rawIntensityLoader, index)));
-            Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
-            analysisModel.Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .Subscribe(intensity => SelectedPeakIntensities = intensity)
-                .AddTo(Disposables);
+            _rawIntensityLoader = wholeRoi.GetIntensityOnPixelsLoader(_elements).AddTo(Disposables);
+            var peakIds = analysisModel.Ms1Peaks.Select((peak, index) => (peak, index)).ToDictionary(p => p.peak.MasterPeakID, p => p.index);
+            IntensityImagePlaceholder = new IntensityImagePlaceholderModel(maldiFrames, _rawIntensityLoader);
+            analysisModel.Target
+                .Subscribe(p => {
+                    if (p is null) {
+                        IntensityImagePlaceholder.ResetImage();
+                    }
+                    else {
+                        var title = $"m/z {p.Mass}, Mobility {p.ChromXs.Drift.Value} [1/K0]";
+                        if (!string.IsNullOrEmpty(p.Name)) {
+                            title = $"{p.Name}, {title}";
+                        }
+                        _ = IntensityImagePlaceholder.EnsureImageAsync(peakIds[p.MasterPeakID], title);
+                    }
+                }).AddTo(Disposables);
             _file = file;
             _maldiFrames = maldiFrames;
             _wholeRoi = wholeRoi;
@@ -62,53 +71,55 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public ImagingRoiModel ImagingRoiModel { get; }
 
-        public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
+        public IntensityImagePlaceholderModel IntensityImagePlaceholder { get; }
 
         public AnalysisPeakPlotModel PeakPlotModel => AnalysisModel.PlotModel;
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => AnalysisModel.Ms1Peaks;
 
-        public IntensityImageModel? SelectedPeakIntensities
-        {
-            get => _selectedPeakIntensities;
-            set => SetProperty(ref _selectedPeakIntensities, value);
-        }
-        private IntensityImageModel? _selectedPeakIntensities;
-
         public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => AnalysisModel.Target;
 
         public ImagingRoiModel CreateImagingRoiModel(RoiModel roi)
         {
-            var loader = roi.GetIntensityOnPixelsLoader(_elements);
-            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, AnalysisModel.Ms1Peaks, AnalysisModel.Target, loader);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, _wholeRoi, AnalysisModel.Ms1Peaks, AnalysisModel.Target, _elements);
             result.Select();
             return result;
         }
 
-        public async Task SaveIntensitiesAsync(CancellationToken token = default) {
-            using var writer = File.Open("pixel_intensities.csv", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
-            var encoded = UTF8Encoding.Default.GetBytes(header + "\n");
-            writer.Write(encoded, 0, encoded.Length);
-            using var sem = new SemaphoreSlim(8, 8);
-            var tasks = new List<Task>(Intensities.Count);
-            foreach (var ints in Intensities) {
-                tasks.Add(Task.Run(async () => {
-                    await sem.WaitAsync().ConfigureAwait(false);
-                    try {
-                        await ints.SaveAsync(writer, skipUnknownPeaks: true, token: token);
-                    }
-                    finally {
-                        sem.Release();
-                    }
-                }, token));
+        public async Task<bool> SaveIntensitiesAsync(CancellationToken token = default) {
+            var filePath = string.Empty;
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Pixel intensity file|*.csv",
+                DefaultExt = "csv",
+                FileName = "pixel_intensities.csv",
+            };
+            if (dialog.ShowDialog() == true) {
+                filePath = dialog.FileName;
             }
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(filePath)) {
+                return false;
+            }
+
+            using var handler = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(handler); 
+            var header = string.Join(",", new[] { "ID", "Name", "m/z", "Drift", }.Concat(_maldiFrames.Infos.Select(info => $"{info.XIndexPos}_{info.YIndexPos}")));
+            await writer.WriteLineAsync(header).ConfigureAwait(false);
+            for (int i = 0; i < AnalysisModel.Ms1Peaks.Count; i++) {
+                var peak = AnalysisModel.Ms1Peaks[i];
+                if (string.IsNullOrEmpty(peak.Name)) {
+                    continue;
+                }
+                var pixels = await _rawIntensityLoader.LoadAsync(i, token);
+                var row = string.Format("{0},{1},{2},{3},", peak.MasterPeakID, peak.Name, peak.Mz.Value, peak.Drift.Value) + string.Join(",", pixels.PixelPeakFeaturesList[0].IntensityArray);
+                await writer.WriteLineAsync(row);
+            }
+            return true;
         }
 
-        public void ResetRawSpectraOnPixels() {
+        public async Task ResetRawSpectraOnPixelsAsync(CancellationToken token = default) {
             using var rawDataAccess = new RawDataAccess(_file.AnalysisFilePath, 0, getProfileData: true, isImagingMsData: true, isGuiProcess: true);
-            rawDataAccess.SaveRawPixelFeatures(_elements, _maldiFrames.Infos.ToList());
+            await rawDataAccess.SaveRawPixelFeaturesAsync(_elements, _maldiFrames.Infos.ToList(), token).ConfigureAwait(false);
         }
 
         public MaldiFrames GetFramesFromPositions(HashSet<(int, int)> sets) {

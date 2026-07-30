@@ -34,10 +34,15 @@ namespace CompMs.App.Msdial.Model.Loader
                         return null;
                     }
                     var rep = ((IAnnotatedObject)prop).MatchResults.Representative;
-                    if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
-                        return loader.LoadMSDecResult(prop.MSDecResultID);
+                    try {
+                        if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
+                            return loader.LoadMSDecResult(prop.MSDecResultID);
+                        }
+                        return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
                     }
-                    return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
+                    catch (ArgumentOutOfRangeException) {
+                        return null;
+                    }
                 });
         }
 

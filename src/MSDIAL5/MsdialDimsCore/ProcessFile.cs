@@ -79,7 +79,7 @@ public sealed class ProcessFile : IFileProcessor {
         // faeture detections
         Console.WriteLine("Peak picking started");
         var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
-        var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
+        var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, param.MassRangeBegin, param.MassRangeEnd);
         var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
         var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);

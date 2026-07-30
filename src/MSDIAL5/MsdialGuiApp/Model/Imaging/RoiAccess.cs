@@ -28,6 +28,9 @@ internal sealed class RoiAccess
     }
 
     public T[] Access<T>(T[] array) {
+        if (array.Length == _idxs.Count) {
+            return array;
+        }
         var result = new T[_idxs.Count];
         for (int i = 0; i < _idxs.Count; i++) {
             result[i] = array[_idxs[i]];
