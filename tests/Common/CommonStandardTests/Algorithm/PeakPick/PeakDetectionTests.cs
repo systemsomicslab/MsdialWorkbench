@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +35,31 @@ namespace CompMs.Common.Algorithm.PeakPick.Tests
             Assert.AreEqual(0, actual[0].ScanNumAtLeftPeakEdge);
             Assert.AreEqual(10, actual[0].ScanNumAtPeakTop);
             Assert.AreEqual(19, actual[0].ScanNumAtRightPeakEdge);
+            Assert.AreEqual(20, actual[0].DataPointCount);
             Assert.AreEqual(19, actual[1].ScanNumAtLeftPeakEdge);
             Assert.AreEqual(31, actual[1].ScanNumAtPeakTop);
             Assert.AreEqual(41, actual[1].ScanNumAtRightPeakEdge);
+            Assert.AreEqual(23, actual[1].DataPointCount);
+        }
+
+        [TestMethod()]
+        public void PeakDetectionVS1FiltersPeaksNarrowerThanMinimumDatapoints()
+        {
+            var peak = BuildPeak(0, 10, 700d, 10000d, 1000000d, 0.01);
+            var actual = PeakDetection.PeakDetectionVS1(peak.ToList(), 21, 1000);
+
+            Assert.AreEqual(0, actual.Count);
+        }
+
+        [TestMethod()]
+        public void PeakDetectionVS1ChromatogramFiltersPeaksNarrowerThanMinimumDatapoints()
+        {
+            var peak = BuildPeak(0, 10, 700d, 10000d, 1000000d, 0.01);
+            using var chromatogram = new Chromatogram(peak, ChromXType.RT, ChromXUnit.Min);
+            var detector = new PeakDetection(21, 1000);
+            var actual = detector.PeakDetectionVS1(chromatogram);
+
+            Assert.AreEqual(0, actual.Count);
         }
 
         private ChromatogramPeak[] BuildPeak(int start, int radian, double mass, double baseIntensity, double topIntensity, double baseTime)
