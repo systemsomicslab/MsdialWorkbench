@@ -145,7 +145,7 @@ public class PeakAligner {
                 if (Filler.NeedsGapFill(spot, analysisFile)) {
                     Filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, analysisFile.AnalysisFileId);
                 }
-                if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
+                if (spot.RepresentativeFileID == analysisFile.AnalysisFileId) {
                     var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
                     if (index < 0 || spectra == null || index >= spectra.Count) {
                         spot.IsotopicPeaks = new List<IsotopicPeak>(0);

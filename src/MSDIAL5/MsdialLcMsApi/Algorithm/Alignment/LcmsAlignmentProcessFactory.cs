@@ -14,6 +14,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
 
     public MsdialLcmsParameter LcmsParameter { get; }
     public IProgress<int>? Progress { get; set; }
+    public bool SkipIonAbundanceCorrelationLinks { get; set; }
 
     public LcmsAlignmentProcessFactory(
         IMsdialDataStorage<MsdialLcmsParameter> storage, 
@@ -23,7 +24,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     }
 
     public override IAlignmentRefiner CreateAlignmentRefiner() {
-        return new LcmsAlignmentRefiner(LcmsParameter, Iupac, _evaluator, Progress);
+        return new LcmsAlignmentRefiner(LcmsParameter, Iupac, _evaluator, Progress, SkipIonAbundanceCorrelationLinks);
     }
 
     public override DataAccessor CreateDataAccessor() {
