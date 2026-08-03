@@ -1,7 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.ImagingDims;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Imaging;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -16,7 +19,7 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.ImagingDims;
 
-internal sealed class WholeImageResultViewModel : ViewModelBase
+internal sealed class WholeImageResultViewModel : ViewModelBase, IResultViewModel
 {
     private readonly WholeImageResultModel _model;
 
@@ -40,4 +43,12 @@ internal sealed class WholeImageResultViewModel : ViewModelBase
     public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;
 
     public ICommand SearchCompoundCommand => AnalysisViewModel.SearchCompoundCommand;
+
+    // IResultViewModel
+    public IResultModel Model => ((IResultViewModel)AnalysisViewModel).Model;
+    public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel => AnalysisViewModel.PeakSpotNavigatorViewModel;
+    public FocusNavigatorViewModel FocusNavigatorViewModel => AnalysisViewModel.FocusNavigatorViewModel;
+    public ICommand SetUnknownCommand => AnalysisViewModel.SetUnknownCommand;
+    public UndoManagerViewModel UndoManagerViewModel => AnalysisViewModel.UndoManagerViewModel;
+    public ViewModelBase[] PeakDetailViewModels => AnalysisViewModel.PeakDetailViewModels;
 }
