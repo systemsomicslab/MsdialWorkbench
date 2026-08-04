@@ -76,8 +76,10 @@ namespace CompMs.MsdialCore.Export
             var id = spot.MasterAlignmentID.ToString();
             var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
             foreach (var file in files) {
+                var peak = spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == file.AnalysisFileId);
+                var peakFileName = peak?.FileName ?? file.AnalysisFileName;
                 IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }
-                    .Concat(dicts.Select(dict => dict[file.AnalysisFileName]))
+                    .Concat(dicts.Select(dict => dict[peakFileName]))
                     .Select(WrapField);
                 writer.WriteLine(string.Join(_separator, row));
             }
