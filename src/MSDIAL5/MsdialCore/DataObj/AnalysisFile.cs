@@ -23,6 +23,10 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(0)]
         public string AnalysisFilePath { get; set; } = string.Empty;
         [Key(1)]
+        /// <summary>
+        /// The current display name. Persisted alignment peak names may be an older snapshot;
+        /// use <see cref="AnalysisFileId"/> to associate persisted peak data with this file.
+        /// </summary>
         public string AnalysisFileName { get; set; } = string.Empty;
         [Key(2)]
         public AnalysisFileType AnalysisFileType { get; set; }
