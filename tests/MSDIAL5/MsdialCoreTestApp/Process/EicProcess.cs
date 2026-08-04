@@ -83,7 +83,7 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
-            Directory.CreateDirectory(Path.GetFullPath(outputFile));
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
             WriteRawCsv(outputFile, targets, spectra, acquisitionType);
 
             return 0;
@@ -93,11 +93,10 @@ namespace CompMs.App.MsdialConsole.Process
         {
             var rawSpectra = new RawSpectra(spectra, IonMode.Positive, acquisitionType);
             var chromatogramRange = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
+            using var writer = new StreamWriter(outputPath, false, Encoding.ASCII);
+            writer.WriteLine("ScanId,RT,TargetMz,Tolerance,Intensity");
             foreach (var target in targets)
             {
-                var targetFile = CreateSplitOutputPath(outputPath, $"mz-{SanitizeFileName(target.Mz.ToString(CultureInfo.InvariantCulture))}_tol-{SanitizeFileName(target.Tolerance.ToString(CultureInfo.InvariantCulture))}", ".csv");
-                using var writer = new StreamWriter(targetFile, false, Encoding.ASCII);
-                writer.WriteLine("ScanId,RT,TargetMz,Tolerance,Intensity");
                 using var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(target.Mz, target.Tolerance), chromatogramRange);
                 for (var i = 0; i < chromatogram.Length; i++)
                 {
@@ -151,7 +150,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
             else
             {
-                WriteProjectJson(outputFile, Path.GetFullPath(inputFile), project);
+                WriteProjectJson(outputFile, project);
                 return 0;
             }
         }
@@ -196,71 +195,77 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static void WriteProjectJson(string outputPath, string source, IMsdialDataStorage<ParameterBase> project) {
+        private static void WriteProjectJson(string outputPath, IMsdialDataStorage<ParameterBase> project) {
             var rootOutput = Path.GetDirectoryName(Path.GetFullPath(outputPath)) ?? ".";
             Directory.CreateDirectory(rootOutput);
             foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded)) {
                 var fileOutput = CreateSplitOutputPath(outputPath, SanitizeFileName(file.AnalysisFileName), ".json");
-                var json = BuildProjectJson(source, project, file);
+                var json = BuildProjectJson(project, file);
                 File.WriteAllText(fileOutput, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             }
         }
 
-        private static string BuildProjectJson(string source, IMsdialDataStorage<ParameterBase> project, AnalysisFileBean file) {
+        private static string BuildProjectJson(IMsdialDataStorage<ParameterBase> project, AnalysisFileBean file) {
+            var peaks = file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()
+                ? []
+                : MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath) ?? [];
+            ChromatogramRange chromatogramRange = new(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
+            IReadOnlyList<RawSpectrum> measurement = LoadMeasurement(file.AnalysisFilePath);
+            RawSpectra rawSpectra = new(measurement, project.Parameter.IonMode, file.AcquisitionType);
             var sb = new StringBuilder();
             sb.AppendLine("{");
-            sb.AppendLine($"  \"source\": \"{EscapeJson(source)}\",");
+            sb.AppendLine($"  \"raw file\": \"{EscapeJson(file.AnalysisFilePath)}\",");
+            sb.AppendLine($"  \"peak file\": \"{EscapeJson(file.PeakAreaBeanInformationFilePath)}\",");
             sb.AppendLine("  \"peaks\": [");
-            sb.Append(BuildProjectPeakJson(project, file));
-            sb.AppendLine();
+
+            var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), project.Parameter.CentroidMs1Tolerance, chromatogramRange);
+            foreach (var (chromatogram, i) in chromatograms.Zip(Enumerable.Range(0, peaks.Count), (c, i) => (c, i))) {
+                BuildProjectPeakJson(sb, peaks[i], chromatogram);
+                if (i < peaks.Count - 1) {
+                    sb.AppendLine(",");
+                }
+                else {
+                    sb.AppendLine();
+                }
+            }
             sb.AppendLine("  ]");
             sb.AppendLine("}");
             return sb.ToString();
         }
 
-        private static string BuildProjectPeakJson(IMsdialDataStorage<ParameterBase> project, AnalysisFileBean file) {
-            var measurement = LoadMeasurement(file.AnalysisFilePath);
-            var peaks = file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()
-                ? []
-                : MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath) ?? [];
-            var rawSpectra = new RawSpectra(measurement, project.Parameter.IonMode, (CompMs.Common.Enum.AcquisitionType)file.AcquisitionType);
-            var chromatogram = peaks.Count > 0
-                ? ExtractPeakChromatogram(rawSpectra, project.Parameter, peaks[0].PrecursorMz)
-                : new ProjectChromatogram([], []);
-            var sb = new StringBuilder();
+        private static void BuildProjectPeakJson(StringBuilder sb, ChromatogramPeakFeature peak, ExtractedIonChromatogram chromatogram1) {
+            var chromatogram = ConvertPeakChromatogram(chromatogram1);
             sb.AppendLine("    {");
-            sb.AppendLine($"      \"id\": {file.AnalysisFileId},");
-            sb.AppendLine($"      \"masterPeakId\": {file.AnalysisFileId},");
-            sb.AppendLine($"      \"name\": \"{EscapeJson(file.AnalysisFileName)}\",");
-            sb.AppendLine($"      \"mz\": {(peaks.Count > 0 ? peaks[0].PrecursorMz : 0d).ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"      \"id\": {peak.MasterPeakID},");
+            sb.AppendLine($"      \"name\": \"{EscapeJson(peak.Name)}\",");
+            sb.AppendLine($"      \"mz\": {peak.PrecursorMz.ToString(CultureInfo.InvariantCulture)},");
             sb.AppendLine("      \"rt\": {");
-            sb.AppendLine($"        \"left\": {0.ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"top\": {0.ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"right\": {0.ToString(CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"        \"left\": {peak.PeakFeature.ChromXsLeft.RT.Value.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"        \"top\": {peak.PeakFeature.ChromXsTop.RT.Value.ToString(CultureInfo.InvariantCulture)},");
+            sb.AppendLine($"        \"right\": {peak.PeakFeature.ChromXsRight.RT.Value.ToString(CultureInfo.InvariantCulture)}");
             sb.AppendLine("      },");
             sb.AppendLine("      \"chromatogram\": {");
-            sb.AppendLine($"        \"rts\": [{string.Join(", ", chromatogram.Rts.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
-            sb.AppendLine($"        \"intensities\": [{string.Join(", ", chromatogram.Intensities.Select(v => v.ToString(CultureInfo.InvariantCulture)))}]");
+            sb.AppendLine($"        \"rts\": [{string.Join(",", chromatogram.Rts.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
+            sb.AppendLine($"        \"intensities\": [{string.Join(",", chromatogram.Intensities.Select(v => v.ToString(CultureInfo.InvariantCulture)))}]");
             sb.AppendLine("      }");
             sb.Append("    }");
-            return sb.ToString();
         }
 
-        private static ProjectChromatogram ExtractPeakChromatogram(RawSpectra rawSpectra, ParameterBase parameter, double targetMz) {
-            var rts = new List<double>();
-            var intensities = new List<double>();
-            var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(targetMz, parameter.CentroidMs1Tolerance), new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min));
-            foreach (var dataPoint in chromatogram.AsPeakArray()) {
-                rts.Add(dataPoint.Time);
-                intensities.Add(dataPoint.Intensity);
+        private static ProjectChromatogram ConvertPeakChromatogram(ExtractedIonChromatogram chromatogram) {
+            var rts = new List<double>(chromatogram.Length);
+            var intensities = new List<double>(chromatogram.Length);
+            for (var i = 0; i < chromatogram.Length; i++) {
+                rts.Add(chromatogram.Time(i));
+                intensities.Add(chromatogram.Intensity(i));
             }
             return new ProjectChromatogram(rts, intensities);
         }
 
         private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFile) {
             using var stream = new FileStream(projectFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<MsdialDataStorage>(stream);
             using var manager = ZipStreamManager.OpenGet(stream);
-            return MsdialDataStorage.Serializer.LoadAsync(manager, Path.GetFileName(projectFile), Path.GetDirectoryName(Path.GetFullPath(projectFile)) ?? string.Empty, string.Empty).GetAwaiter().GetResult();
+            return MsdialDataStorage.Serializer.LoadAsync(manager, Path.GetFileName(projectFile), "", /*Path.GetDirectoryName(Path.GetFullPath(projectFile)) ?? string.Empty,*/ string.Empty).GetAwaiter().GetResult();
         }
 
         private static string EscapeJson(string value) {
