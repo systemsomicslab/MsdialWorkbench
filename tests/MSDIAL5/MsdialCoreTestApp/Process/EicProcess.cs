@@ -209,7 +209,6 @@ namespace CompMs.App.MsdialConsole.Process
             var peaks = file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()
                 ? []
                 : MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath) ?? [];
-            ChromatogramRange chromatogramRange = new(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             IReadOnlyList<RawSpectrum> measurement = LoadMeasurement(file.AnalysisFilePath);
             RawSpectra rawSpectra = new(measurement, project.Parameter.IonMode, file.AcquisitionType);
             var sb = new StringBuilder();
@@ -218,8 +217,10 @@ namespace CompMs.App.MsdialConsole.Process
             sb.AppendLine($"  \"peak file\": \"{EscapeJson(file.PeakAreaBeanInformationFilePath)}\",");
             sb.AppendLine("  \"peaks\": [");
 
-            var chromatograms = rawSpectra.GetMS1ExtractedChromatograms(peaks.Select(p => p.PrecursorMz), project.Parameter.CentroidMs1Tolerance, chromatogramRange);
-            foreach (var (chromatogram, i) in chromatograms.Zip(Enumerable.Range(0, peaks.Count), (c, i) => (c, i))) {
+            for (int i = 0; i < peaks.Count; i++) {
+                var peak = peaks[i];
+                var chromatogramRange = ChromatogramRange.FromPeakFeature(peak).ExtendRelative(1d);
+                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peaks[i].PrecursorMz, project.Parameter.CentroidMs1Tolerance), chromatogramRange);
                 BuildProjectPeakJson(sb, peaks[i], chromatogram);
                 if (i < peaks.Count - 1) {
                     sb.AppendLine(",");
@@ -239,33 +240,42 @@ namespace CompMs.App.MsdialConsole.Process
             sb.AppendLine($"      \"id\": {peak.MasterPeakID},");
             sb.AppendLine($"      \"name\": \"{EscapeJson(peak.Name)}\",");
             sb.AppendLine($"      \"mz\": {peak.PrecursorMz.ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine("      \"rt\": {");
-            sb.AppendLine($"        \"left\": {peak.PeakFeature.ChromXsLeft.RT.Value.ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"top\": {peak.PeakFeature.ChromXsTop.RT.Value.ToString(CultureInfo.InvariantCulture)},");
-            sb.AppendLine($"        \"right\": {peak.PeakFeature.ChromXsRight.RT.Value.ToString(CultureInfo.InvariantCulture)}");
-            sb.AppendLine("      },");
+            switch (peak.ChromXs.GetRepresentativeXAxis().Type)
+            {
+                case ChromXType.RT:
+                    sb.AppendLine("      \"retention time\": {");
+                    sb.AppendLine($"        \"left\": {peak.PeakFeature.ChromXsLeft.RT.Value.ToString(CultureInfo.InvariantCulture)},");
+                    sb.AppendLine($"        \"top\": {peak.PeakFeature.ChromXsTop.RT.Value.ToString(CultureInfo.InvariantCulture)},");
+                    sb.AppendLine($"        \"right\": {peak.PeakFeature.ChromXsRight.RT.Value.ToString(CultureInfo.InvariantCulture)}");
+                    sb.AppendLine("      },");
+                    break;
+                case ChromXType.Drift:
+                    sb.AppendLine("      \"drift time\": {");
+                    sb.AppendLine($"        \"left\": {peak.PeakFeature.ChromXsLeft.Drift.Value.ToString(CultureInfo.InvariantCulture)},");
+                    sb.AppendLine($"        \"top\": {peak.PeakFeature.ChromXsTop.Drift.Value.ToString(CultureInfo.InvariantCulture)},");
+                    sb.AppendLine($"        \"right\": {peak.PeakFeature.ChromXsRight.Drift.Value.ToString(CultureInfo.InvariantCulture)}");
+                    sb.AppendLine("      },");
+                    break;
+            }
             sb.AppendLine("      \"chromatogram\": {");
-            sb.AppendLine($"        \"rts\": [{string.Join(",", chromatogram.Rts.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
+            sb.AppendLine($"        \"times\": [{string.Join(",", chromatogram.Times.Select(v => v.ToString(CultureInfo.InvariantCulture)))}],");
             sb.AppendLine($"        \"intensities\": [{string.Join(",", chromatogram.Intensities.Select(v => v.ToString(CultureInfo.InvariantCulture)))}]");
             sb.AppendLine("      }");
             sb.Append("    }");
         }
 
         private static ProjectChromatogram ConvertPeakChromatogram(ExtractedIonChromatogram chromatogram) {
-            var rts = new List<double>(chromatogram.Length);
+            var times = new List<double>(chromatogram.Length);
             var intensities = new List<double>(chromatogram.Length);
             for (var i = 0; i < chromatogram.Length; i++) {
-                rts.Add(chromatogram.Time(i));
+                times.Add(chromatogram.Time(i));
                 intensities.Add(chromatogram.Intensity(i));
             }
-            return new ProjectChromatogram(rts, intensities);
+            return new ProjectChromatogram(times, intensities);
         }
 
         private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFile) {
-            using var stream = new FileStream(projectFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<MsdialDataStorage>(stream);
-            using var manager = ZipStreamManager.OpenGet(stream);
-            return MsdialDataStorage.Serializer.LoadAsync(manager, Path.GetFileName(projectFile), "", /*Path.GetDirectoryName(Path.GetFullPath(projectFile)) ?? string.Empty,*/ string.Empty).GetAwaiter().GetResult();
+            return Common.MessagePack.MessagePackDefaultHandler.LoadFromFile<MsdialDataStorage>(projectFile);
         }
 
         private static string EscapeJson(string value) {
@@ -322,11 +332,11 @@ namespace CompMs.App.MsdialConsole.Process
             public double Tolerance { get; } = tolerance;
         }
 
-        private readonly struct ProjectChromatogram(List<double> rts, List<double> intensities)
+        private readonly struct ProjectChromatogram(List<double> times, List<double> intensities)
         {
-            public List<double> Rts { get; } = rts;
+            public List<double> Times { get; } = times;
             public List<double> Intensities { get; } = intensities;
-            public int PointCount => Math.Min(Rts.Count, Intensities.Count);
+            public int PointCount => Math.Min(Times.Count, Intensities.Count);
         }
     }
 }
