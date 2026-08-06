@@ -64,6 +64,9 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public static ChromatogramRange FromPeakFeature(IChromatogramPeakFeature peak) {
+            if (peak is null) {
+                throw new ArgumentNullException(nameof(peak));
+            }
             var ax = peak.ChromXsTop.GetRepresentativeXAxis();
             return new ChromatogramRange(peak, ax.Type, ax.Unit);
         }
