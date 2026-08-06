@@ -41,7 +41,7 @@ public static class MainProcess
         cmd.Options.Add(projectOpt);
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
