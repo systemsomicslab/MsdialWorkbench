@@ -163,13 +163,20 @@ namespace CompMs.App.MsdialConsole.Process
             Directory.CreateDirectory(rootOutput);
             var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded))
-                if (file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()) {
+            {
+                if (file.PeakAreaBeanInformationFilePath.IsEmptyOrNull() || !File.Exists(file.PeakAreaBeanInformationFilePath)) {
+                     Console.Error.WriteLine($"Peak feature file was not found: {file.PeakAreaBeanInformationFilePath}");
+                     continue;
+                 }
+                 if (file.AnalysisFilePath.IsEmptyOrNull() || !File.Exists(file.AnalysisFilePath)) {
+                     Console.Error.WriteLine($"Raw file was not found: {file.AnalysisFilePath}");
                     continue;
                 }
 
                 var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
                 var measurement = LoadMeasurement(file.AnalysisFilePath);
                 if (measurement.Count == 0) {
+                    Console.Error.WriteLine($"No raw spectra were found in: {file.AnalysisFilePath}");
                     continue;
                 }
 
