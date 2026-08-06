@@ -486,8 +486,8 @@ public static class MainProcess
             Required = true,
         };
         imagegen.Options.Add(input);
-        imagegen.SetAction(parseResult => {
-            new ImageGenerationProcess().RunAsync(parseResult.GetRequiredValue(input).FullName).GetAwaiter().GetResult();
+        imagegen.SetAction(async (parseResult, token) => {
+            await new ImageGenerationProcess().RunAsync(parseResult.GetRequiredValue(input).FullName, token).ConfigureAwait(false);
             return 0;
         });
         root.Subcommands.Add(imagegen);
