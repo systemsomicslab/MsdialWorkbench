@@ -159,9 +159,10 @@ namespace CompMs.App.MsdialConsole.Process
 
         private static void WriteProjectCsv(string outputPath, IMsdialDataStorage<ParameterBase> project)
         {
+            var rootOutput = Path.GetDirectoryName(Path.GetFullPath(outputPath)) ?? ".";
+            Directory.CreateDirectory(rootOutput);
             var range = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded))
-            {
                 if (file.PeakAreaBeanInformationFilePath.IsEmptyOrNull()) {
                     continue;
                 }
