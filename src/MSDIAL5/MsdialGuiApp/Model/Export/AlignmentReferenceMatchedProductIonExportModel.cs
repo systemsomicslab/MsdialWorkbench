@@ -8,6 +8,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,7 +63,8 @@ internal sealed class AlignmentReferenceMatchedProductIonExportModel : BindableB
 
         var dt = DateTime.Now;
         var outFilePath = Path.Combine(exportDirectory, $"{dt:yyyy_MM_dd_HH_mm_ss}_{alignmentFile.FileName}.json");
-        using var writer = new StreamWriter(outFilePath);
+        using var tempFileStream = new TemporaryFileStream(outFilePath, moveBeforeDispose: false);
+        using var writer = new StreamWriter(tempFileStream);
         using var jsonWriter = new Newtonsoft.Json.JsonTextWriter(writer) { Formatting = Newtonsoft.Json.Formatting.Indented };
         var serializer = new Newtonsoft.Json.JsonSerializer();
         jsonWriter.WriteStartArray();
@@ -137,5 +139,6 @@ internal sealed class AlignmentReferenceMatchedProductIonExportModel : BindableB
 
         jsonWriter.WriteEndArray();
         await writer.FlushAsync().ConfigureAwait(false);
+        tempFileStream.Move();
     }
 }
