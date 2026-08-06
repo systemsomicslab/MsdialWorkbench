@@ -15,11 +15,14 @@ internal sealed class ImageGenerationProcess
 {
     public async Task RunAsync(string inputFile, CancellationToken token = default) {
         var folder = Path.GetDirectoryName(inputFile);
+        if (string.IsNullOrEmpty(folder)) {
+            folder = Directory.GetCurrentDirectory();
+        }
         var title = Path.GetFileName(inputFile);
         var deserializer = new MsdialIntegrateSerializer();
 
         IMsdialDataStorage<ParameterBase> storage;
-        using (IStreamManager manager = new DirectoryTreeStreamManager(folder!)) {
+        using (IStreamManager manager = new DirectoryTreeStreamManager(folder)) {
             storage = await deserializer.LoadAsync(manager, title, folder, string.Empty).ConfigureAwait(false);
             manager.Complete();
         }
