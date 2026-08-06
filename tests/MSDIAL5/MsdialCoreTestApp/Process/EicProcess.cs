@@ -91,7 +91,8 @@ namespace CompMs.App.MsdialConsole.Process
 
         private static void WriteRawCsv(string outputPath, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
         {
-            var rawSpectra = new RawSpectra(spectra, IonMode.Positive, acquisitionType);
+            var ionMode = spectra.FirstOrDefault(s => s.MsLevel == 1)?.ScanPolarity == ScanPolarity.Negative ? IonMode.Negative : IonMode.Positive;
+            var rawSpectra = new RawSpectra(spectra, ionMode, acquisitionType);
             var chromatogramRange = new ChromatogramRange(0d, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             using var writer = new StreamWriter(outputPath, false, Encoding.ASCII);
             writer.WriteLine("ScanId,RT,TargetMz,Tolerance,Intensity");
