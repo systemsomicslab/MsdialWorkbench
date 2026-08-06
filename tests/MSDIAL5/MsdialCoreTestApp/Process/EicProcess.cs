@@ -44,7 +44,10 @@ namespace CompMs.App.MsdialConsole.Process
             for (var i = 0; i < targetValues.Count; i += 2) {
                 targets.Add(new TargetQuery(targetValues[i], targetValues[i + 1]));
             }
+            return RunRaw(inputFile, outputFile, targets, acquisitionType);
+        }
 
+        private int RunRaw(FileInfo inputFile, FileInfo outputFile, IReadOnlyList<TargetQuery> targets, AcquisitionType acquisitionType) {
             var spectra = LoadMeasurement(inputFile.FullName);
             if (spectra.Count == 0) {
                 Console.Error.WriteLine("No raw spectra were found.");
@@ -57,7 +60,29 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         public int RunProject(FileInfo inputFile, FileInfo outputFile, string outputFormat) {
-            return RunProject(new[] { "eic", "project", "-i", inputFile.FullName, "-o", outputFile.FullName, "-format", outputFormat });
+            if (!File.Exists(inputFile.FullName)) {
+                Console.Error.WriteLine($"Project file was not found: {inputFile.FullName}");
+                return -1;
+            }
+
+            var project = LoadProject(inputFile.FullName);
+            var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
+            if (files.Count == 0) {
+                Console.Error.WriteLine("No included analysis files were found in the project.");
+                return -1;
+            }
+
+            if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase)) {
+                WriteProjectCsv(outputFile.FullName, project);
+                return 0;
+            }
+            if (string.Equals(outputFormat, "json", StringComparison.OrdinalIgnoreCase)) {
+                WriteProjectJson(outputFile.FullName, project);
+                return 0;
+            }
+
+            Console.Error.WriteLine($"Invalid output format: {outputFormat}. Valid options are: csv, json.");
+            return -1;
         }
 
         private int RunRaw(string[] args)
@@ -101,20 +126,10 @@ namespace CompMs.App.MsdialConsole.Process
                 return ArgsError();
             }
 
-            var spectra = LoadMeasurement(inputFile);
-            if (spectra.Count == 0)
-            {
-                Console.Error.WriteLine("No raw spectra were found.");
-                return -1;
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile)) ?? ".");
-            WriteRawCsv(outputFile, targets, spectra, acquisitionType);
-
-            return 0;
+            return RunRaw(new FileInfo(inputFile), new FileInfo(outputFile), targets, acquisitionType);
         }
 
-        private static void WriteRawCsv(string outputPath, List<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
+        private static void WriteRawCsv(string outputPath, IReadOnlyList<TargetQuery> targets, IReadOnlyList<RawSpectrum> spectra, AcquisitionType acquisitionType)
         {
             var ionMode = spectra.FirstOrDefault(s => s.MsLevel == 1)?.ScanPolarity == ScanPolarity.Negative ? IonMode.Negative : IonMode.Positive;
             var rawSpectra = new RawSpectra(spectra, ionMode, acquisitionType);
@@ -157,29 +172,7 @@ namespace CompMs.App.MsdialConsole.Process
                 return ArgsError();
             }
 
-            if (!File.Exists(inputFile)) {
-                Console.Error.WriteLine($"Project file was not found: {inputFile}");
-                return -1;
-            }
-
-            var project = LoadProject(inputFile);
-            var files = project.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
-            if (files.Count == 0) {
-                Console.Error.WriteLine("No included analysis files were found in the project.");
-                return -1;
-            }
-
-            if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase)) {
-                WriteProjectCsv(outputFile, project);
-                return 0;
-            }
-            if (string.Equals(outputFormat, "json", StringComparison.OrdinalIgnoreCase)) {
-                WriteProjectJson(outputFile, project);
-                return 0;
-            }
-
-            Console.Error.WriteLine($"Invalid output format: {outputFormat}. Valid options are: csv, json.");
-            return -1;
+            return RunProject(new FileInfo(inputFile), new FileInfo(outputFile), outputFormat);
         }
 
         private static void WriteProjectCsv(string outputPath, IMsdialDataStorage<ParameterBase> project)
