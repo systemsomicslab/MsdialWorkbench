@@ -440,32 +440,4 @@ public static class MainProcess
         root.Add(cmd);
     }
 
-    public static void SetImageGenCommand(Command root) {
-        var cmd = new Command("imagegen", "Run image generation process for MALDI imaging data");
-        var inputOpt = new Option<FileInfo>("--input", "-i")
-        {
-            Description = "Input .mddata file containing the peak data to be processed",
-            Required = true,
-        };
-        inputOpt.Validators.Add(result => {
-            var input = result.GetValueOrDefault<FileInfo>();
-            if (!input.Exists) {
-                result.AddError("Input .mddata file does not exist.");
-            }
-        });
-        cmd.Options.Add(inputOpt);
-        cmd.SetAction(async parseResult => {
-            try {
-                var inputFile = parseResult.GetRequiredValue(inputOpt);
-                await new ImageGenerationProcess().RunAsync(inputFile.FullName);
-                return 0;
-            }
-            catch (Exception ex) {
-                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
-                Console.WriteLine(msg);
-                return 1;
-            }
-        });
-        root.Add(cmd);
-    }
 }

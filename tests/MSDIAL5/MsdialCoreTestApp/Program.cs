@@ -182,8 +182,6 @@ class Program {
         MainProcess.SetDimsCommand(root);
         MainProcess.SetImmsCommand(root);
         MainProcess.SetMsnCommand(root);
-        MainProcess.SetImageGenCommand(root);
-
         var parseResult = root.Parse(args);
         return parseResult.InvokeAsync();
     }
