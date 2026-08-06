@@ -302,7 +302,7 @@ namespace CompMs.App.MsdialConsole.Process
             if (value == null) {
                 return string.Empty;
             }
-            return value.Contains(",") || value.Contains("\"")
+            return value.Contains(",") || value.Contains("\"") || value.Contains("\r") || value.Contains("\n")
                 ? $"\"{value.Replace("\"", "\"\"")}\""
                 : value;
         }
