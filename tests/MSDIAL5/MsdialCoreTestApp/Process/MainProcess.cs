@@ -93,7 +93,7 @@ namespace CompMs.App.MsdialConsole.Process
                     case "eic":
                         return new EicProcess().Run(args);
                     default:
-                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms', 'eic'");
+                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcms', 'lcimms', 'dims', 'imms', 'msn', 'eic'");
                         return -1;
                 }
             } 
