@@ -202,6 +202,15 @@ namespace CompMs.App.MsdialConsole.Process
             var rootOutput = Path.GetDirectoryName(Path.GetFullPath(outputPath)) ?? ".";
             Directory.CreateDirectory(rootOutput);
             foreach (var file in project.AnalysisFiles.Where(file => file.AnalysisFileIncluded)) {
+                if (file.AnalysisFilePath.IsEmptyOrNull() || !File.Exists(file.AnalysisFilePath)) {
+                    Console.Error.WriteLine($"Raw file was not found: {file.AnalysisFilePath}");
+                    continue;
+                }
+                if (!file.PeakAreaBeanInformationFilePath.IsEmptyOrNull() && !File.Exists(file.PeakAreaBeanInformationFilePath)) {
+                    Console.Error.WriteLine($"Peak feature file was not found: {file.PeakAreaBeanInformationFilePath}");
+                    continue;
+                }
+
                 var fileOutput = CreateSplitOutputPath(outputPath, SanitizeFileName(file.AnalysisFileName), ".json");
                 var json = BuildProjectJson(project, file);
                 File.WriteAllText(fileOutput, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
