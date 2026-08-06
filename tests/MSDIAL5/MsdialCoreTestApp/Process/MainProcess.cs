@@ -479,4 +479,18 @@ public static class MainProcess
         root.Subcommands.Add(eic);
     }
 
+    public static void SetImageGenerationCommand(Command root) {
+        var imagegen = new Command("imagegen", "Generate imaging output from an MS-DIAL project");
+        var input = new Option<FileInfo>("--input", "-i") {
+            Description = "MS-DIAL project file containing imaging analysis results",
+            Required = true,
+        };
+        imagegen.Options.Add(input);
+        imagegen.SetAction(parseResult => {
+            new ImageGenerationProcess().RunAsync(parseResult.GetRequiredValue(input).FullName).GetAwaiter().GetResult();
+            return 0;
+        });
+        root.Subcommands.Add(imagegen);
+    }
+
 }
