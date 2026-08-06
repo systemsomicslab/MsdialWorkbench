@@ -183,6 +183,7 @@ class Program {
         MainProcess.SetImmsCommand(root);
         MainProcess.SetMsnCommand(root);
         MainProcess.SetEicCommand(root);
+        MainProcess.SetImageGenerationCommand(root);
         var parseResult = root.Parse(args);
         return parseResult.InvokeAsync();
     }
