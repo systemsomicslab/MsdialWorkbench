@@ -35,6 +35,31 @@ namespace CompMs.App.MsdialConsole.Process
             return -1;
         }
 
+        public int RunRaw(FileInfo inputFile, FileInfo outputFile, IReadOnlyList<double> targetValues, AcquisitionType acquisitionType) {
+            if (targetValues.Count == 0 || targetValues.Count % 2 != 0) {
+                return ArgsError();
+            }
+
+            var targets = new List<TargetQuery>(targetValues.Count / 2);
+            for (var i = 0; i < targetValues.Count; i += 2) {
+                targets.Add(new TargetQuery(targetValues[i], targetValues[i + 1]));
+            }
+
+            var spectra = LoadMeasurement(inputFile.FullName);
+            if (spectra.Count == 0) {
+                Console.Error.WriteLine("No raw spectra were found.");
+                return -1;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outputFile.FullName) ?? ".");
+            WriteRawCsv(outputFile.FullName, targets, spectra, acquisitionType);
+            return 0;
+        }
+
+        public int RunProject(FileInfo inputFile, FileInfo outputFile, string outputFormat) {
+            return RunProject(new[] { "eic", "project", "-i", inputFile.FullName, "-o", outputFile.FullName, "-format", outputFormat });
+        }
+
         private int RunRaw(string[] args)
         {
             var inputFile = string.Empty;

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
 using CompMs.App.MsdialConsole.Properties;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
@@ -446,28 +447,19 @@ public static class MainProcess
         var raw = new Command("raw", "Export EICs from a raw data file");
         var rawInput = new Option<FileInfo>("--input", "-i") { Required = true };
         var rawOutput = new Option<FileInfo>("--output", "-o") { Required = true };
-        var targets = new Option<string[]>("--target", "-target") { Required = true };
+        var targets = new Option<double[]>("--target", "-target") { Required = true };
         targets.Arity = ArgumentArity.OneOrMore;
-        var acquisitionType = new Option<string>("--acquisitiontype") { DefaultValueFactory = _ => "DDA" };
+        var acquisitionType = new Option<AcquisitionType>("--acquisitiontype") { DefaultValueFactory = _ => AcquisitionType.DDA };
         raw.Options.Add(rawInput);
         raw.Options.Add(rawOutput);
         raw.Options.Add(targets);
         raw.Options.Add(acquisitionType);
         raw.SetAction(parseResult => {
-            var args = new List<string> { "eic", "raw", "-i", parseResult.GetRequiredValue(rawInput).FullName, "-o", parseResult.GetRequiredValue(rawOutput).FullName };
-            args.Add("-acquisitiontype");
-            args.Add(parseResult.GetValue(acquisitionType));
-            var targetValues = parseResult.GetValue(targets);
-            if (targetValues.Length % 2 != 0) {
-                Console.Error.WriteLine("Each -target value requires an m/z and tolerance.");
-                return 1;
-            }
-            for (var i = 0; i < targetValues.Length; i += 2) {
-                args.Add("-target");
-                args.Add(targetValues[i]);
-                args.Add(targetValues[i + 1]);
-            }
-            return new EicProcess().Run(args.ToArray());
+            return new EicProcess().RunRaw(
+                parseResult.GetRequiredValue(rawInput),
+                parseResult.GetRequiredValue(rawOutput),
+                parseResult.GetValue(targets),
+                parseResult.GetValue(acquisitionType));
         });
 
         var project = new Command("project", "Export EICs from an MS-DIAL project");
@@ -477,11 +469,10 @@ public static class MainProcess
         project.Options.Add(projectInput);
         project.Options.Add(projectOutput);
         project.Options.Add(format);
-        project.SetAction(parseResult => new EicProcess().Run(new[] {
-            "eic", "project", "-i", parseResult.GetRequiredValue(projectInput).FullName,
-            "-o", parseResult.GetRequiredValue(projectOutput).FullName,
-            "-format", parseResult.GetValue(format),
-        }));
+        project.SetAction(parseResult => new EicProcess().RunProject(
+            parseResult.GetRequiredValue(projectInput),
+            parseResult.GetRequiredValue(projectOutput),
+            parseResult.GetValue(format)));
 
         eic.Subcommands.Add(raw);
         eic.Subcommands.Add(project);
