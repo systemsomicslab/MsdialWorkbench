@@ -487,8 +487,19 @@ public static class MainProcess
         };
         imagegen.Options.Add(input);
         imagegen.SetAction(async (parseResult, token) => {
-            await new ImageGenerationProcess().RunAsync(parseResult.GetRequiredValue(input).FullName, token).ConfigureAwait(false);
-            return 0;
+            try {
+                await new ImageGenerationProcess().RunAsync(parseResult.GetRequiredValue(input).FullName, token).ConfigureAwait(false);
+                return 0;
+            }
+            catch (OperationCanceledException) {
+                Console.WriteLine("Cancelled.");
+                return 1;
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
         });
         root.Subcommands.Add(imagegen);
     }
