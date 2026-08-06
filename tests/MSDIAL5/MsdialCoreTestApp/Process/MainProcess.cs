@@ -47,13 +47,13 @@ public static class MainProcess
         });
         outputOpt.Validators.Add(result => {
             var output = result.GetValueOrDefault<DirectoryInfo>();
-            if (File.Exists(output.FullName)) {
+            if (output is null || File.Exists(output.FullName)) {
                 result.AddError("Output path cannot be a file.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
@@ -99,19 +99,19 @@ public static class MainProcess
         };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
         outputOpt.Validators.Add(result => {
             var output = result.GetValueOrDefault<DirectoryInfo>();
-            if (File.Exists(output.FullName)) {
+            if (output is null || File.Exists(output.FullName)) {
                 result.AddError("Output path cannot be a file.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
@@ -164,19 +164,19 @@ public static class MainProcess
         };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
         outputOpt.Validators.Add(result => {
             var output = result.GetValueOrDefault<DirectoryInfo>();
-            if (File.Exists(output.FullName)) {
+            if (output is null || File.Exists(output.FullName)) {
                 result.AddError("Output path cannot be a file.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
@@ -228,19 +228,19 @@ public static class MainProcess
         };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
         outputOpt.Validators.Add(result => {
             var output = result.GetValueOrDefault<DirectoryInfo>();
-            if (File.Exists(output.FullName)) {
+            if (output is null || File.Exists(output.FullName)) {
                 result.AddError("Output path cannot be a file.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
@@ -292,19 +292,19 @@ public static class MainProcess
         };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
         outputOpt.Validators.Add(result => {
             var output = result.GetValueOrDefault<DirectoryInfo>();
-            if (File.Exists(output.FullName)) {
+            if (output is null || File.Exists(output.FullName)) {
                 result.AddError("Output path cannot be a file.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
@@ -369,13 +369,13 @@ public static class MainProcess
         };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (!input.Exists) {
+            if (input is null || !input.Exists) {
                 result.AddError("Input path does not exist.");
             }
         });
         methodOpt.Validators.Add(result => {
             var methodFile = result.GetValueOrDefault<FileInfo>();
-            if (!methodFile.Exists) {
+            if (methodFile is null || !methodFile.Exists) {
                 result.AddError("Method file does not exist.");
             }
         });
