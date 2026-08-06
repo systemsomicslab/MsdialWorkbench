@@ -322,8 +322,8 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         private static int ArgsError() {
-            Console.Error.WriteLine("MsdialConsoleApp.exe eic raw -i <input file> -o <output csv> -target <mz> <tolerance> [-target <mz> <tolerance> ...]");
-            Console.Error.WriteLine("MsdialConsoleApp.exe eic project -i <peak file> -raw <raw file> -o <output file> [-format csv|json]");
+            Console.Error.WriteLine("MsdialConsoleApp.exe eic raw -i <input file> -o <output csv> -target <mz> <tolerance> [-target <mz> <tolerance> ...] [-acquisitiontype DDA|DIA]");
+            Console.Error.WriteLine("MsdialConsoleApp.exe eic project -i <project file> -o <output file> [-format csv|json]");
             return -1;
         }
 
