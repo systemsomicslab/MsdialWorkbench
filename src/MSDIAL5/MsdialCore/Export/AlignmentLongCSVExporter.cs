@@ -75,8 +75,9 @@ namespace CompMs.MsdialCore.Export
         private void WriteValueContent(StreamWriter writer, AlignmentSpotProperty spot, IReadOnlyList<AnalysisFileBean> files, IQuantValueAccessor[] quantAccessors) {
             var id = spot.MasterAlignmentID.ToString();
             var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
+            var lookupTable = spot.AlignedPeakProperties.ToLookup(p => p.FileID);
             foreach (var file in files) {
-                var peak = spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == file.AnalysisFileId);
+                var peak = lookupTable[file.AnalysisFileId].FirstOrDefault();
                 var peakFileName = peak?.FileName ?? file.AnalysisFileName;
                 IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }
                     .Concat(dicts.Select(dict => dict[peakFileName]))
