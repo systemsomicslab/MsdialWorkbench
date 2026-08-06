@@ -144,16 +144,17 @@ namespace CompMs.App.MsdialConsole.Process
                 return -1;
             }
 
-            if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase))
-            {
+            if (string.Equals(outputFormat, "csv", StringComparison.OrdinalIgnoreCase)) {
                 WriteProjectCsv(outputFile, project);
                 return 0;
             }
-            else
-            {
+            if (string.Equals(outputFormat, "json", StringComparison.OrdinalIgnoreCase)) {
                 WriteProjectJson(outputFile, project);
                 return 0;
             }
+
+            Console.Error.WriteLine($"Invalid output format: {outputFormat}. Valid options are: csv, json.");
+            return -1;
         }
 
         private static void WriteProjectCsv(string outputPath, IMsdialDataStorage<ParameterBase> project)
