@@ -182,6 +182,7 @@ class Program {
         MainProcess.SetDimsCommand(root);
         MainProcess.SetImmsCommand(root);
         MainProcess.SetMsnCommand(root);
+        MainProcess.SetEicCommand(root);
         var parseResult = root.Parse(args);
         return parseResult.InvokeAsync();
     }
