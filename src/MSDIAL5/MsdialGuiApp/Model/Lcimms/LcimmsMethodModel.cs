@@ -220,11 +220,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
 
-            // Set analysis param
-            var annotationProcess = BuildAnnotationProcess();
-
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                // Set analysis param
+                var annotationProcess = BuildAnnotationProcess();
+
                 int usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true);
                 var runner = new ProcessRunner(processor, usable);
