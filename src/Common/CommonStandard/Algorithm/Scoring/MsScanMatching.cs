@@ -4506,15 +4506,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                     if (!isExists[ID]) {
                         isExists[ID] = true;
                         summed[ID] = 0d;
+                        existsID[existsIDIdx++] = ID;
                     }
                     summed[ID] += intensity;
                 }
 
+                for (int l = 0; l < existsIDIdx; l++) {
+                    isExists[existsID[l]] = false;
+                }
+
                 p = k;
                 existsIDIdx = 0;
-                for (int l = 0; l < isExists.Length; l++) {
-                    isExists[l] = false;
-                }
                 while (p < mergedPeaks.Length && mergedPeaks[p].Mz < focus.Mz + bin) {
                     var (_, _, ID) = mergedPeaks[p++];
                     if (!isExists[ID]) {
