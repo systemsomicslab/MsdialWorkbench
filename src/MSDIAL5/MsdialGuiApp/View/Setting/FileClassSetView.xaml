@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
@@ -11,6 +12,7 @@
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="400">
     <UserControl.Resources>
+        <converter:StringToColorConverter x:Key="StringToColorConverter"/>
         <Style TargetType="DataGrid">
             <Setter Property="CanUserAddRows" Value="False"/>
             <Setter Property="CanUserDeleteRows" Value="False"/>
@@ -48,6 +50,9 @@
                         </ui:CompositeColorPicker>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
+                <DataGridTemplateColumn.ClipboardContentBinding>
+                    <Binding Path="Color.Value" Converter="{StaticResource StringToColorConverter}" />
+                </DataGridTemplateColumn.ClipboardContentBinding>
             </DataGridTemplateColumn>
             <DataGridTextColumn Header="Order"
                                 Binding="{Binding Order.Value, UpdateSourceTrigger=PropertyChanged}"

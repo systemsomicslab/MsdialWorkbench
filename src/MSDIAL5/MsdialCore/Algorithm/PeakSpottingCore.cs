@@ -770,7 +770,8 @@ namespace CompMs.MsdialCore.Algorithm {
         public List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AcquisitionType type) {
             // var spectrumList = param.MachineCategory == MachineCategory.LCIMMS ? rawObj.AccumulatedSpectrumList : rawObj.SpectrumList;
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
-            var minDatapoint = 3;
+            var minimumDatapoints = Math.Max(1, (int)Math.Ceiling(_parameter.MinimumDatapoints));
+            var minDatapoint = Math.Max(3, (int)Math.Ceiling((minimumDatapoints - 1) * 0.5));
             // var counter = 0;
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, type);
             foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.ZipInternal(chromPeakFeatures)) {
@@ -884,6 +885,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
                 if (Math.Max(sPeaklist[minLeftId].Intensity, sPeaklist[minRightId].Intensity) >= sPeaklist[maxID].Intensity) continue;
                 if (sPeaklist[maxID].Intensity - Math.Min(sPeaklist[minLeftId].Intensity, sPeaklist[minRightId].Intensity) < _parameter.MinimumAmplitude) continue;
+                if (minRightId - minLeftId + 1 < minimumDatapoints) continue;
 
                 //calculating peak area and finding real max ID
                 var realMaxInt = double.MinValue;

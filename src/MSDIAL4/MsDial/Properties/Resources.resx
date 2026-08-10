@@ -129,4 +129,7 @@
   <data name="VERSION" xml:space="preserve">
     <value>MS-DIAL ver. 4.9.221218</value>
   </data>
+  <data name="CONTACT_EMAIL" xml:space="preserve">
+    <value>msdial-jp@googlegroups.com</value>
+  </data>
 </root>

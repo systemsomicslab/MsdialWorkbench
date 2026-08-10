@@ -87,8 +87,42 @@
                     <DataTemplate DataType="{x:Type searchvm:KeywordFilterViewModel}">
                         <StackPanel Margin="5,0,0,0">
                             <TextBlock Text="{Binding Label, Mode=OneTime}"/>
-                            <TextBox Text="{Binding Keywords.Value, UpdateSourceTrigger=PropertyChanged}"
-                                     HorizontalAlignment="Stretch"/>
+                            <Grid>
+                                <TextBox Text="{Binding Keywords.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         HorizontalAlignment="Stretch"/>
+                                <Button Content="&#xE894;"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="6"
+                                        Width="12"
+                                        Height="12"
+                                        Margin="0,0,2,0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding ClearCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="border"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="10">
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border"
+                                                            Property="Background"
+                                                            Value="#CCC"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -128,6 +162,11 @@
                         Margin="8,0"
                         VerticalAlignment="Center" HorizontalAlignment="Left"
                         Width="128"/>
+                <Button Content="Reset filter"
+                        Command="{Binding PeakSpotNavigatorViewModel.ResetFiltersCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Width="64"/>
             </StackPanel>
         </Grid>
 

@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Export
             // Content
             var contents = accessor.GetContents(files);
             foreach (var content in contents) {
-                sw.WriteLine(string.Join(_separator, content));
+                sw.WriteLine(string.Join(_separator, content.Select(WrapField)));
             }
         }
 
@@ -75,10 +75,22 @@ namespace CompMs.MsdialCore.Export
         private void WriteValueContent(StreamWriter writer, AlignmentSpotProperty spot, IReadOnlyList<AnalysisFileBean> files, IQuantValueAccessor[] quantAccessors) {
             var id = spot.MasterAlignmentID.ToString();
             var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
+            var lookupTable = spot.AlignedPeakProperties.ToLookup(p => p.FileID);
             foreach (var file in files) {
-                IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }.Concat(dicts.Select(dict => dict[file.AnalysisFileName]));
+                var peak = lookupTable[file.AnalysisFileId].FirstOrDefault();
+                var peakFileName = peak?.FileName ?? file.AnalysisFileName;
+                IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }
+                    .Concat(dicts.Select(dict => dict[peakFileName]))
+                    .Select(WrapField);
                 writer.WriteLine(string.Join(_separator, row));
             }
+        }
+
+        private string WrapField(string field) {
+            if (field is null || (!field.Contains(_separator) && !field.Contains('"') && !field.Contains('\r') && !field.Contains('\n'))) {
+                return field;
+            }
+            return $"\"{field.Replace("\"", "\"\"")}\"";
         }
     }
 }

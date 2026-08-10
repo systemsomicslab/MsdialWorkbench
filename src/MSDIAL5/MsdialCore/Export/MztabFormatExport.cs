@@ -241,7 +241,7 @@ namespace CompMs.MsdialCore.Export
             }
             else if (chemicalName != "Unknown")
             {
-                if (spot.Formula != null || spot.Formula.Mass != 0)
+                if (spot.Formula is { Mass: > 0d } formula)
                 {
                     theoreticalNeutralMass = Math.Round(spot.Formula.Mass, 4).ToString(); //// need neutral mass. null ok
                 }

@@ -123,7 +123,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net48 -p:SkipLibraryDownload=true 
+        run: dotnet publish src/MSDIAL4/MsDial/MSDIAL.csproj -o artifact --configuration "Release vendor unsupported" --framework net48 -p:SkipLibraryDownload=true -p:ErrorOnDuplicatePublishOutputFiles=false
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
