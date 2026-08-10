@@ -38,6 +38,14 @@ public sealed class LcmsProcess
             return -1;
         }
 
+        try {
+            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, outputFolder);
+        }
+        catch (Exception ex) {
+            Console.Error.WriteLine($"RT correction failed: {ex}");
+            return -1;
+        }
+
         var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
         var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
         CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, textAnnotatorSettings, out IupacDatabase iupacDB,

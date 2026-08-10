@@ -40,6 +40,48 @@ public class RetentionTimeCorrectionPeakSelectorTests {
     }
 
     [TestMethod]
+    public void Select_CanPrioritizeClosestReferenceRt() {
+        var reference = CreateReference();
+        var intenseFarPeak = CreatePeak(mass: 100.00, rt: 5.09, height: 5000d);
+        var closePeak = CreatePeak(mass: 100.00, rt: 5.01, height: 1500d);
+
+        var result = RetentionTimeCorrectionPeakSelector.Select(
+            reference,
+            new[] { intenseFarPeak, closePeak },
+            RetentionTimeCorrectionPeakSelectionMode.ClosestToReferenceRt,
+            0.5d);
+
+        Assert.AreSame(closePeak, result.SelectedPeak);
+        Assert.AreEqual(
+            RetentionTimeCorrectionPeakSelectionReason.SelectedByClosestReferenceRt,
+            result.SelectedReason);
+    }
+
+    [TestMethod]
+    public void Select_WeightedModeTransitionsBetweenIntensityAndRt() {
+        var reference = CreateReference();
+        var intenseFarPeak = CreatePeak(mass: 100.00, rt: 5.09, height: 5000d);
+        var closePeak = CreatePeak(mass: 100.00, rt: 5.01, height: 1500d);
+
+        var intensityWeighted = RetentionTimeCorrectionPeakSelector.Select(
+            reference,
+            new[] { intenseFarPeak, closePeak },
+            RetentionTimeCorrectionPeakSelectionMode.Weighted,
+            0.1d);
+        var rtWeighted = RetentionTimeCorrectionPeakSelector.Select(
+            reference,
+            new[] { intenseFarPeak, closePeak },
+            RetentionTimeCorrectionPeakSelectionMode.Weighted,
+            0.9d);
+
+        Assert.AreSame(intenseFarPeak, intensityWeighted.SelectedPeak);
+        Assert.AreSame(closePeak, rtWeighted.SelectedPeak);
+        Assert.AreEqual(
+            RetentionTimeCorrectionPeakSelectionReason.SelectedByWeightedScore,
+            rtWeighted.SelectedReason);
+    }
+
+    [TestMethod]
     public void Select_PreservesSelectedPeakForCommonStandardSummaries() {
         var reference = CreateReference();
         var selectedPeak = CreatePeak(mass: 100.00, rt: 5.03, height: 2200d);

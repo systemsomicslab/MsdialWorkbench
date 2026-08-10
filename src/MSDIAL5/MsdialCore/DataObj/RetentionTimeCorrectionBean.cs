@@ -167,6 +167,12 @@ namespace CompMs.MsdialCore.DataObj
         }
     }
 
+    public enum RetentionTimeCorrectionPeakSelectionMode {
+        HighestIntensity,
+        ClosestToReferenceRt,
+        Weighted,
+    }
+
     [MessagePackObject]
     public class RetentionTimeCorrectionParam {
 
@@ -184,6 +190,10 @@ namespace CompMs.MsdialCore.DataObj
         public RtDiffCalcMethod RtDiffCalcMethod { get; set; }
         [Key(6)]
         public bool doSmoothing { get; set; }
+        [Key(7)]
+        public RetentionTimeCorrectionPeakSelectionMode PeakSelectionMode { get; set; } = RetentionTimeCorrectionPeakSelectionMode.HighestIntensity;
+        [Key(8)]
+        public double PeakSelectionRtWeight { get; set; } = 0.5d;
     }
 
     [MessagePackObject]
