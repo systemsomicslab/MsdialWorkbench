@@ -2,5 +2,5 @@
 
 internal interface IWholeImageResultModel
 {
-    public IntensityImageModel? SelectedPeakIntensities { get; }
+    public IntensityImagePlaceholderModel IntensityImagePlaceholder { get; }
 }

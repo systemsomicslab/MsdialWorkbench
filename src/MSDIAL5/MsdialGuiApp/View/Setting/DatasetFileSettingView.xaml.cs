@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.View.Setting
             new FileSelectionItem("Hive HMD file", ".hmd"),
             new FileSelectionItem("Hive mzB file", ".mzb"),
             new FileSelectionItem("mzML file", ".mzml"),
+            new FileSelectionItem("imzML file", ".imzml"),
             new FileSelectionItem("netCDF file", ".cdf"),
             new FileSelectionItem("IBF file", ".ibf"),
             new FileSelectionItem("WIFF file", ".wiff"),
