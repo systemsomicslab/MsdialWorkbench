@@ -168,6 +168,7 @@ public sealed class LcmsProcess
                 ("RT", new LegacyQuantValueAccessor("RT", storage.Parameter)),
                 ("MZ", new LegacyQuantValueAccessor("MZ", storage.Parameter)),
                 ("SN", new LegacyQuantValueAccessor("SN", storage.Parameter)),
+                ("MSMS", new LegacyQuantValueAccessor("MSMS", storage.Parameter)),
                 ("Reference matched", new LegacyQuantValueAccessor("Reference matched", storage.Parameter)));
             Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
 
