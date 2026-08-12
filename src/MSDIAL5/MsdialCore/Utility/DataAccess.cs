@@ -1414,6 +1414,7 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
                 case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
                 case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+                case "Reference matched": return spotProperty.IsReferenceMatched() ? "TRUE" : "FALSE";
                 default: return string.Empty;
             }
         }
@@ -1432,6 +1433,7 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return spotProperty.Mass;
                 case "SN": return spotProperty.PeakShape.SignalToNoise;
                 case "MSMS": return spotProperty.MS2RawSpectrumID;
+                case "Reference matched": return spotProperty.IsReferenceMatched() ? 1d : 0d;
                 default: return -1;
             }
         }
