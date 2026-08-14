@@ -88,6 +88,28 @@ namespace CompMs.App.MsdialConsole.Parser
             return ReadTextAnnotatorSettingsTable(settingsFilePath, param);
         }
 
+        public static bool ReadAlignmentLightMode(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "alignment light mode":
+                        case "alignment light":
+                        case "console alignment light mode":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
