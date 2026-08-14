@@ -150,6 +150,133 @@ public static class MainProcess
         root.Add(cmd);
     }
 
+    public static void SetLcmsMsnCommand(Command root) {
+        var cmd = new Command("lcms-msn", "Run LC-MS peak picking followed by molecular networking");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the raw data files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o") {
+            Description = "Output folder for LC-MS results",
+            Required = true,
+        };
+        var lcmsMethodOpt = new Option<FileInfo>("--lcms-method") {
+            Description = "Method file holding LC-MS processing properties",
+            Required = true,
+        };
+        var msnMethodOpt = new Option<FileInfo>("--msn-method") {
+            Description = "Method file holding molecular networking properties",
+            Required = true,
+        };
+        var msnOutputOpt = new Option<DirectoryInfo>("--msn-output") {
+            Description = "Output folder for molecular networking results. Defaults to <output>/msn",
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application",
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t") {
+            Description = "Option to run LC-MS processing in target mode. Please set m/z",
+        };
+        var ionmodeOpt = new Option<string>("--ionmode", "-ionmode") {
+            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'",
+            DefaultValueFactory = _ => "Positive",
+        };
+        var overwriteOpt = new Option<bool>("--overwrite", "-overwrite") {
+            Description = "Option to overwrite existing molecular networking output files. Default is false.",
+            DefaultValueFactory = _ => false,
+        };
+        var allEdgeExportOpt = new Option<bool>("--all-edge-export", "-a") {
+            Description = "Option to export all edges in the molecular network. Default is false.",
+            DefaultValueFactory = _ => false,
+        };
+
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (input is null || !input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (output is null || File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        lcmsMethodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (methodFile is null || !methodFile.Exists) {
+                result.AddError("LC-MS method file does not exist.");
+            }
+        });
+        msnMethodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (methodFile is null || !methodFile.Exists) {
+                result.AddError("Molecular networking method file does not exist.");
+            }
+        });
+        msnOutputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (output is not null && File.Exists(output.FullName)) {
+                result.AddError("Molecular networking output path cannot be a file.");
+            }
+        });
+        ionmodeOpt.Validators.Add(result => {
+            var value = result.GetValueOrDefault<string>();
+            if (value is not ("Positive" or "Negative")) {
+                result.AddError("Ion mode must be Positive or Negative.");
+            }
+        });
+
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(lcmsMethodOpt);
+        cmd.Options.Add(msnMethodOpt);
+        cmd.Options.Add(msnOutputOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.Options.Add(ionmodeOpt);
+        cmd.Options.Add(overwriteOpt);
+        cmd.Options.Add(allEdgeExportOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var input = parseResult.GetRequiredValue(inputOpt);
+                var output = parseResult.GetRequiredValue(outputOpt);
+                var lcmsMethod = parseResult.GetRequiredValue(lcmsMethodOpt);
+                var msnMethod = parseResult.GetRequiredValue(msnMethodOpt);
+                var msnOutput = parseResult.GetValue(msnOutputOpt)?.FullName
+                    ?? Path.Combine(output.FullName, "msn");
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
+                var overwrite = parseResult.GetValue(overwriteOpt);
+                var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
+
+                var lcmsResult = new LcmsProcess().Run(
+                    input.FullName,
+                    output.FullName,
+                    lcmsMethod.FullName,
+                    isProjectStore,
+                    targetMz);
+                if (lcmsResult != 0) {
+                    return lcmsResult;
+                }
+
+                var msnProcess = new MoleculerNetworkProcess();
+                var msnResult = allEdgeExport
+                    ? msnProcess.Run4AllEdgeGeneration(output.FullName, msnOutput, msnMethod.FullName, ionmode, overwrite)
+                    : msnProcess.Run(output.FullName, msnOutput, msnMethod.FullName, ionmode, overwrite);
+                // Molecular networking currently returns 1 after successful folder processing.
+                return msnResult == 1 ? 0 : msnResult;
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
+
 
     public static void SetLcimmsCommand(Command root) {
         var cmd = new Command("lcimms", "Run LC-IM-MS data processing");
