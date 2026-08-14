@@ -5,6 +5,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using NCDK.QSAR.Descriptors.Atomic;
@@ -187,7 +188,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
-        public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
+        public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite, string? analysisFileCsv = null) {
             var files = ReadInput(inputDir);
             var dt = DateTime.Now;
             var folder = Path.Combine(outputDir);
@@ -199,6 +200,8 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
             var counter = 0;
             var syncObj = new object();
+
+            ExportNodeTable(Path.Combine(folder, "nodes.tsv"), files, ionMode, analysisFileCsv);
 
             Console.WriteLine("Total file count: {0}", files.Count);
             for (int i = 0; i < files.Count; i++) {
@@ -237,7 +240,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     // Console.WriteLine("Time {0} sec", stopwatch.ElapsedMilliseconds * 0.001);
 
                     
-                    ExportEdges(outputPath, edges, inputA, inputB);
+                    ExportEdges(outputPath, edges, inputA, inputB, recordsA, recordsB);
                     lock (syncObj) {
                         progress++;
                         Console.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
@@ -249,7 +252,15 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
-        private void ExportEdges(string path, List<EdgeData> edges, string inputA, string inputB) {
+        private void ExportEdges(
+            string path,
+            List<EdgeData> edges,
+            string inputA,
+            string inputB,
+            IReadOnlyList<MoleculeMsReference> recordsA,
+            IReadOnlyList<MoleculeMsReference> recordsB) {
+            var recordsByScanIdA = recordsA.ToDictionary(record => record.ScanID);
+            var recordsByScanIdB = recordsB.ToDictionary(record => record.ScanID);
             using (var sw = new StreamWriter(path, false)) {
                 if (edges.IsEmptyOrNull()) return;
                 var fedge = edges.FirstOrDefault();
@@ -268,17 +279,119 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     foreach (var edge in edges) {
                         var st = Math.Min(edge.source, edge.target) + "_" + Math.Max(edge.source, edge.target);
                         if (!dones.Contains(st)) {
-                            sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
+                            sw.WriteLine(GetNodeId(inputA, recordsByScanIdA[edge.source], edge.source) + "\t"
+                                + GetNodeId(inputB, recordsByScanIdB[edge.target], edge.target) + "\t"
+                                + String.Join("\t", edge.scores));
                             dones.Add(st);
                         }
                     }
                 }
                 else {
                     foreach (var edge in edges) {
-                        sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
+                        sw.WriteLine(GetNodeId(inputA, recordsByScanIdA[edge.source], edge.source) + "\t"
+                            + GetNodeId(inputB, recordsByScanIdB[edge.target], edge.target) + "\t"
+                            + String.Join("\t", edge.scores));
                     }
                 }
             }
+        }
+
+        private void ExportNodeTable(string outputPath, IReadOnlyList<string> files, string ionMode, string? analysisFileCsv) {
+            var analysisFileMetadata = String.IsNullOrEmpty(analysisFileCsv)
+                ? new Dictionary<string, AnalysisFileBean>(StringComparer.OrdinalIgnoreCase)
+                : AnalysisFilesParser.ReadCsvContents(analysisFileCsv)
+                    .GroupBy(file => file.AnalysisFileName, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+            var nodes = files
+                .SelectMany(file => LibraryHandler.ReadMspLibrary(file)
+                    .Where(record => record.IonMode.ToString() == ionMode && record.Spectrum?.Count > 0)
+                    .Select((record, index) => new {
+                        File = file,
+                        Record = record,
+                        Index = index,
+                        CommentFields = ParseComment(record.Comment),
+                    }))
+                .ToList();
+            var commentKeys = nodes
+                .SelectMany(node => node.CommentFields.Keys)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(key => key, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            using var sw = new StreamWriter(outputPath, false, new UTF8Encoding(false));
+            var header = new List<string> {
+                "ID", "File", "PeakID", "Name", "PrecursorMz", "PrecursorType", "IonMode",
+                "RetentionTime", "Formula", "Ontology", "InChIKey", "SMILES", "Comment",
+                "FilePath", "FileName", "FileType", "ClassID", "AcquisitionType",
+                "BatchOrder", "AnalyticalOrder", "Factor",
+            };
+            header.AddRange(commentKeys.Where(key => !key.Equals("PEAKID", StringComparison.OrdinalIgnoreCase))
+                .Select(key => "Comment_" + key));
+            sw.WriteLine(String.Join("\t", header));
+
+            foreach (var node in nodes) {
+                var peakId = GetPeakId(node.Record, node.Index);
+                var fileName = Path.GetFileNameWithoutExtension(node.File);
+                analysisFileMetadata.TryGetValue(fileName, out var metadata);
+                var values = new List<string> {
+                    GetNodeId(node.File, node.Record, node.Index),
+                    fileName,
+                    peakId,
+                    node.Record.Name,
+                    node.Record.PrecursorMz.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    node.Record.AdductType?.ToString() ?? String.Empty,
+                    node.Record.IonMode.ToString(),
+                    node.Record.ChromXs.RT.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    node.Record.Formula?.FormulaString ?? String.Empty,
+                    node.Record.Ontology,
+                    node.Record.InChIKey,
+                    node.Record.SMILES,
+                    node.Record.Comment,
+                    metadata?.AnalysisFilePath ?? String.Empty,
+                    metadata?.AnalysisFileName ?? fileName,
+                    metadata?.AnalysisFileType.ToString() ?? String.Empty,
+                    metadata?.AnalysisFileClass ?? String.Empty,
+                    metadata?.AcquisitionType.ToString() ?? String.Empty,
+                    metadata?.AnalysisBatch.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? String.Empty,
+                    metadata?.AnalysisFileAnalyticalOrder.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? String.Empty,
+                    metadata?.DilutionFactor.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? String.Empty,
+                };
+                values.AddRange(commentKeys
+                    .Where(key => !key.Equals("PEAKID", StringComparison.OrdinalIgnoreCase))
+                    .Select(key => node.CommentFields.TryGetValue(key, out var value) ? value : String.Empty));
+                sw.WriteLine(String.Join("\t", values.Select(EscapeTsv)));
+            }
+        }
+
+        private static string GetNodeId(string file, MoleculeMsReference record, int fallbackIndex) {
+            return Path.GetFileNameWithoutExtension(file) + "_" + GetPeakId(record, fallbackIndex);
+        }
+
+        private static string GetPeakId(MoleculeMsReference record, int fallbackIndex) {
+            var fields = ParseComment(record.Comment);
+            return fields.TryGetValue("PEAKID", out var peakId) && !String.IsNullOrWhiteSpace(peakId)
+                ? peakId
+                : fallbackIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private static Dictionary<string, string> ParseComment(string comment) {
+            var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var token in (comment ?? String.Empty).Split(new[] { '|', ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+                var separator = token.IndexOf('=');
+                if (separator <= 0) {
+                    continue;
+                }
+                var key = token.Substring(0, separator).Trim();
+                var value = token.Substring(separator + 1).Trim();
+                if (!String.IsNullOrEmpty(key)) {
+                    fields[key] = value;
+                }
+            }
+            return fields;
+        }
+
+        private static string EscapeTsv(string value) {
+            return (value ?? String.Empty).Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');
         }
 
         private List<string> ReadInput(string inputDir) {

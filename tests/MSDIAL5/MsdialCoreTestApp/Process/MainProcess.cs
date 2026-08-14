@@ -262,9 +262,13 @@ public static class MainProcess
                 }
 
                 var msnProcess = new MoleculerNetworkProcess();
+                var analysisFileCsv = input is FileInfo inputFile
+                    && inputFile.Extension.Equals(".csv", StringComparison.OrdinalIgnoreCase)
+                    ? inputFile.FullName
+                    : null;
                 var msnResult = allEdgeExport
                     ? msnProcess.Run4AllEdgeGeneration(output.FullName, msnOutput, msnMethod.FullName, ionmode, overwrite)
-                    : msnProcess.Run(output.FullName, msnOutput, msnMethod.FullName, ionmode, overwrite);
+                    : msnProcess.Run(output.FullName, msnOutput, msnMethod.FullName, ionmode, overwrite, analysisFileCsv);
                 // Molecular networking currently returns 1 after successful folder processing.
                 return msnResult == 1 ? 0 : msnResult;
             }
