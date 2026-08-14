@@ -157,20 +157,26 @@ public sealed class LcmsProcess
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
 
-            var qaOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".qa.tsv");
-            using var qaStream = File.Open(qaOutputFile, FileMode.Create, FileAccess.Write);
-            new AlignmentLongCSVExporter().ExportValueWithFileMetadata(
-                qaStream,
-                result.AlignmentSpotProperties,
-                files,
-                new MulticlassFileMetaAccessor(0),
-                ("Height", new LegacyQuantValueAccessor("Height", storage.Parameter)),
-                ("RT", new LegacyQuantValueAccessor("RT", storage.Parameter)),
-                ("MZ", new LegacyQuantValueAccessor("MZ", storage.Parameter)),
-                ("SN", new LegacyQuantValueAccessor("SN", storage.Parameter)),
-                ("MSMS", new LegacyQuantValueAccessor("MSMS", storage.Parameter)),
-                ("Reference matched", new LegacyQuantValueAccessor("Reference matched", storage.Parameter)));
-            Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
+            if (storage.Parameter.IsHeightMatrixExport) {
+                var qaOutputFolder = String.IsNullOrWhiteSpace(storage.Parameter.ExportFolderPath)
+                    ? outputFolder
+                    : storage.Parameter.ExportFolderPath;
+                Directory.CreateDirectory(qaOutputFolder);
+                var qaOutputFile = Path.Combine(qaOutputFolder, alignmentFile.FileName + ".qa.tsv");
+                using var qaStream = File.Open(qaOutputFile, FileMode.Create, FileAccess.Write);
+                new AlignmentLongCSVExporter().ExportValueWithFileMetadata(
+                    qaStream,
+                    result.AlignmentSpotProperties,
+                    files,
+                    new MulticlassFileMetaAccessor(0),
+                    ("Height", new LegacyQuantValueAccessor("Height", storage.Parameter)),
+                    ("RT", new LegacyQuantValueAccessor("RT", storage.Parameter)),
+                    ("MZ", new LegacyQuantValueAccessor("MZ", storage.Parameter)),
+                    ("SN", new LegacyQuantValueAccessor("SN", storage.Parameter)),
+                    ("MSMS", new LegacyQuantValueAccessor("MSMS", storage.Parameter)),
+                    ("Reference matched", new LegacyQuantValueAccessor("Reference matched", storage.Parameter)));
+                Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
+            }
 
             var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
