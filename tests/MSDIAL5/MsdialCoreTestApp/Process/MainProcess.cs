@@ -11,6 +11,18 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public static class MainProcess
 {
+    public const string LcmsAlignmentQaMatrixCapability = "lcms_alignment_qa_matrix";
+
+    public static void SetCapabilitiesCommand(Command root) {
+        var cmd = new Command("capabilities", "List machine-readable MS-DIAL Console capabilities");
+        cmd.SetAction(_ => {
+            Console.WriteLine("msdial.console.capabilities.v1");
+            Console.WriteLine(LcmsAlignmentQaMatrixCapability);
+            return 0;
+        });
+        root.Add(cmd);
+    }
+
     public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
         new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
         return 1;

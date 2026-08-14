@@ -1414,6 +1414,7 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
                 case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
                 case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? "TRUE" : "FALSE";
                 default: return string.Empty;
             }
         }
@@ -1432,8 +1433,21 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return spotProperty.Mass;
                 case "SN": return spotProperty.PeakShape.SignalToNoise;
                 case "MSMS": return spotProperty.MS2RawSpectrumID;
+                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? 1d : 0d;
                 default: return -1;
             }
+        }
+
+        public static bool IsReferenceMatchedName(string name) {
+            if (string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+            var value = name.TrimStart();
+            return !value.StartsWith("Unknown", StringComparison.OrdinalIgnoreCase)
+                && !value.StartsWith("null", StringComparison.OrdinalIgnoreCase)
+                && !value.StartsWith("empty", StringComparison.OrdinalIgnoreCase)
+                && !value.StartsWith("w/o", StringComparison.OrdinalIgnoreCase)
+                && !value.StartsWith("RIKEN", StringComparison.OrdinalIgnoreCase);
         }
 
         public static List<ChromatogramPeakFeature> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {

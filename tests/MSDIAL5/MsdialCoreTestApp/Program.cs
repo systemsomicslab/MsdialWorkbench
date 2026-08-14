@@ -184,6 +184,7 @@ class Program {
         MainProcess.SetMsnCommand(root);
         MainProcess.SetEicCommand(root);
         MainProcess.SetImageGenerationCommand(root);
+        MainProcess.SetCapabilitiesCommand(root);
         var parseResult = root.Parse(args);
         return parseResult.InvokeAsync();
     }

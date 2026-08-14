@@ -62,6 +62,42 @@ public class AlignmentLongCSVExporterTests
         Assert.AreEqual("ID\tFile\tClass\tHeight\r\n1\trenamed.raw\tclass\tvalue\r\n", Encoding.ASCII.GetString(stream.ToArray()));
     }
 
+    [TestMethod]
+    public void ExportValueWithFileMetadataIncludesRunOrderAndBatch()
+    {
+        var exporter = new AlignmentLongCSVExporter();
+        var file = new AnalysisFileBean
+        {
+            AnalysisFileId = 3,
+            AnalysisFileName = "qc.raw",
+            AnalysisFileClass = "QC",
+            AnalysisFileType = AnalysisFileType.QC,
+            AnalysisFileAnalyticalOrder = 17,
+            AnalysisBatch = 2,
+        };
+        var spot = new AlignmentSpotProperty
+        {
+            MasterAlignmentID = 9,
+            AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                new AlignmentChromPeakFeature { FileID = 3, FileName = "qc.raw" },
+            },
+        };
+        using var stream = new MemoryStream();
+
+        exporter.ExportValueWithFileMetadata(
+            stream,
+            new[] { spot },
+            new[] { file },
+            new MulticlassFileMetaAccessor(0),
+            ("Height", new FakeQuantValueAccessor()));
+
+        Assert.AreEqual(
+            "ID\tFile\tClass\tFile type\tInjection order\tBatch ID\tHeight\r\n" +
+            "9\tqc.raw\tQC\tQC\t17\t2\tvalue\r\n",
+            Encoding.ASCII.GetString(stream.ToArray()));
+    }
+
     private sealed class FakeFileMetaAccessor : IFileClassMetaAccessor
     {
         public IReadOnlyList<string> GetHeaders() => new[] { "Name", "Class" };
