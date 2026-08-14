@@ -297,10 +297,10 @@ namespace CompMs.Common.Algorithm.Function
             var max = peaks1.Count;
             using (var sw = new StreamWriter(outputfile, false)) {
                 if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
-                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
+                    sw.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
                 }
                 else {
-                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tSimilarityScore\tMatchPeakCount", inputA, inputB);
+                    sw.WriteLine("SourceID\tTargetID\tSimilarityScore\tMatchPeakCount");
                 }
 
                 var isABMatched = inputA == inputB;

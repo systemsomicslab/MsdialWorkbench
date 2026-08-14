@@ -131,13 +131,14 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
-        public int Run4AllEdgeGeneration(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
-            var files = ReadInput(inputDir);
+        public int Run4AllEdgeGeneration(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite, IReadOnlyList<string>? inputFiles = null) {
+            var files = inputFiles?.ToList() ?? ReadInput(inputDir);
             var dt = DateTime.Now;
             var folder = Path.Combine(outputDir);
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
+            ExportFileMapping(Path.Combine(folder, "files.tsv"), files);
 
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
 
@@ -188,8 +189,15 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
-        public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite, string? analysisFileCsv = null) {
-            var files = ReadInput(inputDir);
+        public int Run(
+            string inputDir,
+            string outputDir,
+            string methodFile,
+            string ionMode,
+            bool isOverwrite,
+            string? analysisFileCsv = null,
+            IReadOnlyList<string>? inputFiles = null) {
+            var files = inputFiles?.ToList() ?? ReadInput(inputDir);
             var dt = DateTime.Now;
             var folder = Path.Combine(outputDir);
             if (!Directory.Exists(folder)) {
@@ -201,6 +209,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var counter = 0;
             var syncObj = new object();
 
+            ExportFileMapping(Path.Combine(folder, "files.tsv"), files);
             ExportNodeTable(Path.Combine(folder, "nodes.tsv"), files, ionMode, analysisFileCsv);
 
             Console.WriteLine("Total file count: {0}", files.Count);
@@ -265,10 +274,10 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 if (edges.IsEmptyOrNull()) return;
                 var fedge = edges.FirstOrDefault();
                 if (fedge.scores.Count > 2) {
-                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
+                    sw.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
                 }
                 else {
-                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tSimilarityScore\tMatchPeakCount", inputA, inputB);
+                    sw.WriteLine("SourceID\tTargetID\tSimilarityScore\tMatchPeakCount");
                 }
 
                 var isABMatched = inputA == inputB;
@@ -293,6 +302,14 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                             + String.Join("\t", edge.scores));
                     }
                 }
+            }
+        }
+
+        private static void ExportFileMapping(string outputPath, IReadOnlyList<string> files) {
+            using var sw = new StreamWriter(outputPath, false, new UTF8Encoding(false));
+            sw.WriteLine("FileID\tMspFilePath");
+            foreach (var file in files) {
+                sw.WriteLine(EscapeTsv(Path.GetFileNameWithoutExtension(file)) + "\t" + EscapeTsv(Path.GetFullPath(file)));
             }
         }
 
