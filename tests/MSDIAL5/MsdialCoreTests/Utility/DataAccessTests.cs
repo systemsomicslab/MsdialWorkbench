@@ -102,4 +102,19 @@ public class DataAccessTests
             Assert.AreEqual(expected[i].Intensity, actual[i].Intensity);
         }
     }
+
+    [TestMethod()]
+    public void ReferenceMatchedExportUsesAnnotationName() {
+        foreach (var name in new[] { "", " ", "Unknown", "unknown feature", "null", "empty", "w/o MS2: compound", "RIKEN MS/MS" }) {
+            var peak = new AlignmentChromPeakFeature { Name = name };
+            Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
+            Assert.AreEqual(0d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
+        }
+
+        foreach (var name in new[] { "FA 16:0", "PC 34:1", "Reference compound" }) {
+            var peak = new AlignmentChromPeakFeature { Name = name };
+            Assert.AreEqual("TRUE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
+            Assert.AreEqual(1d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
+        }
+    }
 }

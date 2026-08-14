@@ -11,6 +11,18 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public static class MainProcess
 {
+    public const string LcmsAlignmentQaMatrixCapability = "lcms_alignment_qa_matrix";
+
+    public static void SetCapabilitiesCommand(Command root) {
+        var cmd = new Command("capabilities", "List machine-readable MS-DIAL Console capabilities");
+        cmd.SetAction(_ => {
+            Console.WriteLine("msdial.console.capabilities.v1");
+            Console.WriteLine(LcmsAlignmentQaMatrixCapability);
+            return 0;
+        });
+        root.Add(cmd);
+    }
+
     public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
         new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
         return 1;
@@ -474,8 +486,34 @@ public static class MainProcess
             parseResult.GetRequiredValue(projectOutput),
             parseResult.GetValue(format)));
 
+        var rtCorrection = new Command("rtcorrection", "Export RT correction EIC audit data");
+        var rtInputs = new Option<FileSystemInfo[]>("--input", "-i") { Required = true };
+        rtInputs.Arity = ArgumentArity.OneOrMore;
+        var rtLibrary = new Option<FileInfo>("--library") { Required = true };
+        var rtOutput = new Option<FileInfo>("--output", "-o") { Required = true };
+        var rtMethod = new Option<FileInfo?>("--method", "-m");
+        var rtSelection = new Option<FileInfo?>("--selection");
+        var rtIonMode = new Option<IonMode>("--ionmode") { DefaultValueFactory = _ => IonMode.Positive };
+        var rtAcquisitionType = new Option<AcquisitionType>("--acquisitiontype") { DefaultValueFactory = _ => AcquisitionType.DDA };
+        rtCorrection.Options.Add(rtInputs);
+        rtCorrection.Options.Add(rtLibrary);
+        rtCorrection.Options.Add(rtOutput);
+        rtCorrection.Options.Add(rtMethod);
+        rtCorrection.Options.Add(rtSelection);
+        rtCorrection.Options.Add(rtIonMode);
+        rtCorrection.Options.Add(rtAcquisitionType);
+        rtCorrection.SetAction(parseResult => new EicProcess().RunRtCorrection(
+            parseResult.GetRequiredValue(rtInputs),
+            parseResult.GetRequiredValue(rtLibrary),
+            parseResult.GetRequiredValue(rtOutput),
+            parseResult.GetValue(rtMethod),
+            parseResult.GetValue(rtSelection),
+            parseResult.GetValue(rtIonMode),
+            parseResult.GetValue(rtAcquisitionType)));
+
         eic.Subcommands.Add(raw);
         eic.Subcommands.Add(project);
+        eic.Subcommands.Add(rtCorrection);
         root.Subcommands.Add(eic);
     }
 

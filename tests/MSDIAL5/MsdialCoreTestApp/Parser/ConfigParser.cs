@@ -589,12 +589,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     param.CompoundListForRtCorrectionPath = value;
                     if (System.IO.File.Exists(value)) {
                         var error = string.Empty;
-                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParser.CompoundListInTargetModeReader(valueLower, out error);
+                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParser.StandardTextLibraryReader(value, out error);
                         if (error != string.Empty) {
                             Console.WriteLine(error);
                         }
                     }
                     return true;
+                case "rt correction peak selection file path": param.RtCorrectionPeakSelectionFilePath = value; return true;
 
                 // Private version
                 case "is private version of tada":
@@ -766,6 +767,15 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "extrapolation method (end)":
                     if (valueLower == "lastpoint" || valueLower == "linearextrapolation")
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd = (ExtrapolationMethodEnd)Enum.Parse(typeof(ExtrapolationMethodEnd), valueLower, true);
+                    return true;
+                case "rt correction peak selection mode":
+                    if (Enum.TryParse(valueLower, true, out RetentionTimeCorrectionPeakSelectionMode peakSelectionMode))
+                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode = peakSelectionMode;
+                    return true;
+                case "rt correction peak selection rt weight":
+                    if (double.TryParse(valueLower, NumberStyles.Float, CultureInfo.InvariantCulture, out var rtWeight)
+                        && rtWeight >= 0d && rtWeight <= 1d)
+                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight = rtWeight;
                     return true;
 
                 //Isotope tracking setting
