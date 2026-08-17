@@ -719,7 +719,7 @@ namespace CompMs.Common.Parser
             var AdductList = new List<AdductIon>();
             foreach (var adductName in value.Split(',').ToList())
             {
-                var adduct = AdductIonParser.GetAdductIonBean(adductName);
+                var adduct = AdductIon.GetAdductIon(adductName);
                 if (adduct.FormatCheck)
                     AdductList.Add(adduct);
             }

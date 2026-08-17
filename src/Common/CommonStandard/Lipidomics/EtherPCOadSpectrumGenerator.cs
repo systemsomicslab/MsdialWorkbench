@@ -27,7 +27,6 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 3,
             MassDiffDictionary.CarbonMass,
         }.Sum();
-        private static readonly double Electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public EtherPCOadSpectrumGenerator() {

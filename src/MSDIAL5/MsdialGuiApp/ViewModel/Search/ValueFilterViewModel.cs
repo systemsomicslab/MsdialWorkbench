@@ -37,6 +37,10 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactiveProperty<double> Lower { get; }
         public ReactiveProperty<double> Upper { get; }
 
+        public void Reset() {
+            _model.Reset();
+        }
+
         public IObservable<Unit> ObserveChanged { get; }
         public IObservable<bool> ObserveHasErrors { get; }
     }

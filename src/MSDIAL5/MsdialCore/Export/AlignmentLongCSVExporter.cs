@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Export
             // Content
             var contents = accessor.GetContents(files);
             foreach (var content in contents) {
-                sw.WriteLine(string.Join(_separator, content));
+                sw.WriteLine(string.Join(_separator, content.Select(WrapField)));
             }
         }
 
@@ -58,6 +58,24 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
+        public void ExportValueWithFileMetadata(
+            Stream stream,
+            IReadOnlyList<AlignmentSpotProperty> spots,
+            IReadOnlyList<AnalysisFileBean> files,
+            IFileClassMetaAccessor fileMetaAccessor,
+            params (string label, IQuantValueAccessor accessor)[] quantAccessors) {
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true);
+            WriteValueHeader(sw, fileMetaAccessor.GetHeaders(), quantAccessors.Select(pair => pair.label));
+
+            var accessors = quantAccessors.Select(pair => pair.accessor).ToArray();
+            foreach (var spot in spots) {
+                WriteValueContent(sw, spot, files, fileMetaAccessor, accessors);
+                foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>()) {
+                    WriteValueContent(sw, driftSpot, files, fileMetaAccessor, accessors);
+                }
+            }
+        }
+
         private void WriteMetaHeader(StreamWriter writer, IReadOnlyList<string> header) {
             writer.WriteLine(string.Join(_separator, header));
         }
@@ -72,13 +90,49 @@ namespace CompMs.MsdialCore.Export
             writer.WriteLine(string.Join(_separator, new[] { "ID", "File", "Class", }.Concat(header)));
         }
 
+        private void WriteValueHeader(StreamWriter writer, IEnumerable<string> fileMetaHeader, IEnumerable<string> valueHeader) {
+            writer.WriteLine(string.Join(_separator, new[] { "ID", "File", }.Concat(fileMetaHeader).Concat(valueHeader)));
+        }
+
         private void WriteValueContent(StreamWriter writer, AlignmentSpotProperty spot, IReadOnlyList<AnalysisFileBean> files, IQuantValueAccessor[] quantAccessors) {
             var id = spot.MasterAlignmentID.ToString();
             var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
+            var lookupTable = spot.AlignedPeakProperties.ToLookup(p => p.FileID);
             foreach (var file in files) {
-                IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }.Concat(dicts.Select(dict => dict[file.AnalysisFileName]));
+                var peak = lookupTable[file.AnalysisFileId].FirstOrDefault();
+                var peakFileName = peak?.FileName ?? file.AnalysisFileName;
+                IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }
+                    .Concat(dicts.Select(dict => dict[peakFileName]))
+                    .Select(WrapField);
                 writer.WriteLine(string.Join(_separator, row));
             }
+        }
+
+        private void WriteValueContent(
+            StreamWriter writer,
+            AlignmentSpotProperty spot,
+            IReadOnlyList<AnalysisFileBean> files,
+            IFileClassMetaAccessor fileMetaAccessor,
+            IQuantValueAccessor[] quantAccessors) {
+            var id = spot.MasterAlignmentID.ToString();
+            var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
+            var lookupTable = spot.AlignedPeakProperties.ToLookup(peak => peak.FileID);
+            foreach (var file in files) {
+                var peak = lookupTable[file.AnalysisFileId].FirstOrDefault();
+                var peakFileName = peak?.FileName ?? file.AnalysisFileName;
+                IEnumerable<string> row = new[] { id, file.AnalysisFileName }
+                    .Concat(fileMetaAccessor.GetContent(file))
+                    .Concat(dicts.Select(dict => dict[peakFileName]))
+                    .Select(WrapField);
+                writer.WriteLine(string.Join(_separator, row));
+            }
+        }
+
+        private string WrapField(string field) {
+            if (field is null || (!field.Contains(_separator) && !field.Contains('"') && !field.Contains('\r') && !field.Contains('\n'))) {
+                return field;
+            }
+            return $"\"{field.Replace("\"", "\"\"")}\"";
         }
     }
 }

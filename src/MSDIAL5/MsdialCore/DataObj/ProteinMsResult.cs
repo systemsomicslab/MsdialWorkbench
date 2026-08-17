@@ -276,7 +276,7 @@ namespace CompMs.MsdialCore.DataObj {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakHeightTop).ToList();
             }
             else {
-                return new List<double>() { ChromatogramPeakFeature.PeakHeightTop };
+                return new List<double>() { ChromatogramPeakFeature.PeakFeature.PeakHeightTop };
             }
         }
 
@@ -288,7 +288,7 @@ namespace CompMs.MsdialCore.DataObj {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakAreaAboveZero).ToList();
             }
             else {
-                return new List<double>() { ChromatogramPeakFeature.PeakAreaAboveZero };
+                return new List<double>() { ChromatogramPeakFeature.PeakFeature.PeakAreaAboveZero };
             }
         }
 
@@ -300,7 +300,7 @@ namespace CompMs.MsdialCore.DataObj {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakAreaAboveBaseline).ToList();
             }
             else {
-                return new List<double>() { ChromatogramPeakFeature.PeakAreaAboveBaseline };
+                return new List<double>() { ChromatogramPeakFeature.PeakFeature.PeakAreaAboveBaseline };
             }
         }
 

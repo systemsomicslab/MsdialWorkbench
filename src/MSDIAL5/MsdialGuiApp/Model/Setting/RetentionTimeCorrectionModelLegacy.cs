@@ -1,13 +1,8 @@
 ﻿using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Parser;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting {
@@ -59,26 +54,26 @@ namespace CompMs.App.Msdial.Model.Setting {
             return list;
         }
 
-        public static List<StandardCompoundVM> LoadLibraryFile() {
+        public static List<StandardCompoundVM>? LoadLibraryFile() {
             var ofd = new Microsoft.Win32.OpenFileDialog();
 
             ofd.Filter = "Text files(*.txt)|*.txt";
             ofd.Title = "Select standard library file (.txt format)";
             ofd.RestoreDirectory = true;
 
-            if (ofd.ShowDialog() == true) {
-                var error = string.Empty;
-                var list = ConvertTextFormatToCompoundVM(TextLibraryParser.StandardTextLibraryReader(ofd.FileName, out error));
-                if (error != string.Empty) {
-                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                if (list == null || list.Count == 0) return InitializeStandardDataTable();
-                for (var i = list.Count; i < 100; i++) {
-                    list.Add(new StandardCompoundVM() { ReferenceId = i, IsTarget = false });
-                }
-                return list;
+            if (ofd.ShowDialog() != true) {
+                return null;
             }
-            return InitializeStandardDataTable();
+
+            var list = ConvertTextFormatToCompoundVM(TextLibraryParser.StandardTextLibraryReader(ofd.FileName, out var error));
+            if (error != string.Empty) {
+                MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            if (list is null || list.Count == 0) return InitializeStandardDataTable();
+            for (var i = list.Count; i < 100; i++) {
+                list.Add(new StandardCompoundVM() { ReferenceId = i, IsTarget = false });
+            }
+            return list;
         }
 
         public static List<StandardCompoundVM>? ConvertTextFormatToCompoundVM(List<MoleculeMsReference>? lib) {

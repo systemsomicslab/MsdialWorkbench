@@ -132,7 +132,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 //var afFilepath = Path.GetFullPath(Path.Combine(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath))));
                 var afFilepath = Path.GetFullPath(line[0]);
                 Debug.WriteLine("afFilepath: {0}", afFilepath, "");
-                if (System.IO.File.Exists(afFilepath) == false)
+                if (!System.IO.File.Exists(afFilepath) && !System.IO.Directory.Exists(afFilepath))
                 {
                     throw new FileNotFoundException("File not found: " + afFilepath);
                 }
@@ -208,12 +208,13 @@ namespace CompMs.App.MsdialConsole.Parser
 
         public static List<AnalysisFileBean> ReadFolderContents(string folderpath)
         {
-            var filepathes = Directory.GetFiles(folderpath, "*.*", SearchOption.TopDirectoryOnly);
             var importableFiles = new List<string>();
 
-            foreach (var file in filepathes) {
-                if (DataAccess.IsDataFormatSupported(file)) {
-                    importableFiles.Add(file);
+            foreach (var path in Directory.EnumerateFileSystemEntries(folderpath, "*", SearchOption.TopDirectoryOnly)) {
+                var extension = Path.GetExtension(path).ToLowerInvariant();
+                var isVendorDirectory = Directory.Exists(path) && (extension == ".raw" || extension == ".d");
+                if (isVendorDirectory || DataAccess.IsDataFormatSupported(path)) {
+                    importableFiles.Add(path);
                 }
             }
 

@@ -9,6 +9,7 @@
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
              xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
+             xmlns:diimaging="clr-namespace:CompMs.App.Msdial.View.ImagingDims"
              d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingDimsMainViewModel}}">
         <UserControl.Resources>
             <ResourceDictionary>
@@ -30,6 +31,7 @@
         </Ribbon.ApplicationMenu>
         <Ribbon.ContextualTabGroups>
             <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
+            <RibbonContextualTabGroup Header="Imaging" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
         </Ribbon.ContextualTabGroups>
 
         <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
@@ -58,5 +60,6 @@
                                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
                                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                                             Style="{StaticResource FocusWhenVisible}"/>
+        <diimaging:ImagingTab ContextualTabGroupHeader="Imaging"/>
     </Ribbon>
 </UserControl>

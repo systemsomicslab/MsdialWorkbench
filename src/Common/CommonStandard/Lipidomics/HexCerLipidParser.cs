@@ -19,7 +19,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
         public static readonly string Pattern = $"^HexCer\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-        private static readonly string OxidizedPattern = @"[;\(]((?<ox>O(?<oxnum>\d+)?)|((?<oxpos>\d+)OH,?)+\)?)";
+        //private static readonly string OxidizedPattern = @"[;\(]((?<ox>O(?<oxnum>\d+)?)|((?<oxpos>\d+)OH,?)+\)?)";
 
         //public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+).*?\(?((?<sp>\d+)OH,?)+\)?/\d+:\d+.*?(;?(?<h>\(?((?<ab>\d+)OH,?)+\)?|((?<oxnum>\d+)?O)))?";
         public static readonly string CeramideSphPattern = @"\d+:(?<d>\d+).*?([;\(]((?<sphoh>(O(?<sphohnum>\d+)?)|((?<sp>\d+)OH,?)+\))?))";

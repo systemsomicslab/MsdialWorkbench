@@ -80,6 +80,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             OpenPreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
                 .WithSubscribe(Model.LoadProjectAsync)
                 .AddTo(Disposables);
+            DeletePreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
+                .WithSubscribe(Model.DeleteProjectAsync)
+                .AddTo(Disposables);
 
             _taskProgressCollection = new TaskProgressCollection();
             _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
@@ -177,7 +180,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand OpenProjectCommand { get; }
         public AsyncReactiveCommand<ProjectCrumb> OpenPreviousProjectCommand { get; }
-        public ReadOnlyCollection<ProjectCrumb> PreviousProjects => Model.PreviousProjects;
+        public AsyncReactiveCommand<ProjectCrumb> DeletePreviousProjectCommand { get; }
+        public ReadOnlyObservableCollection<ProjectCrumb> PreviousProjects => Model.PreviousProjects;
 
         public AsyncReactiveCommand SaveProjectCommand { get; }
         public AsyncReactiveCommand SaveAsProjectCommand { get; }

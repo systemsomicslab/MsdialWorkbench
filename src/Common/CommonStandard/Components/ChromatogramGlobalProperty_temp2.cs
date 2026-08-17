@@ -242,12 +242,16 @@ internal sealed class ChroChroChromatogram : IDisposable {
                     continue;
                 }
                 var (newStart, peakTopID, newEnd) = _chromatogram.ShrinkPeakRange(start, j + 1, averagePeakWidth);
+                if (newEnd - newStart < minimumDatapointCriteria) {
+                    continue;
+                }
                 var (minPeakHeight, maxPeakHeight) = _chromatogram.PeakHeightFromBounds(newStart, newEnd, peakTopID);
                 if (IsNoise(maxPeakHeight, minPeakHeight, minimumAmplitudeCriteria, amplitudeNoiseFoldCriteria, newStart, newEnd)) {
                     continue;
                 }
                 var result = GetPeakDetectionResult(peakTopID, newStart, newEnd, noiseFactor, maxPeakHeight);
                 if (result is null) continue;
+                if (result.DataPointCount < minimumDatapointCriteria) continue;
                 result.PeakID = results.Count;
                 results.Add(result);
             }

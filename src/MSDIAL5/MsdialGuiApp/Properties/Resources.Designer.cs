@@ -61,6 +61,15 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to msdial-jp@googlegroups.com.
+        /// </summary>
+        public static string CONTACT_EMAIL {
+            get {
+                return ResourceManager.GetString("CONTACT_EMAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         public static string EXPORT_DIR {

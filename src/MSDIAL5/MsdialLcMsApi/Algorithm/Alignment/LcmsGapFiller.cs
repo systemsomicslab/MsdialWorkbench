@@ -49,6 +49,11 @@ public class LcmsGapFiller : IGapFiller
         GapFillCore(target, ms1Spectra, rtCenter, peakWidth);
     }
 
+    public void GapFill(Ms1Spectra ms1Spectra, AlignmentChromPeakFeature target, ChromXs center, double peakWidth, float estimatedNoise) {
+        target.PeakShape.EstimatedNoise = estimatedNoise;
+        GapFillCore(target, ms1Spectra, center, peakWidth);
+    }
+
     public bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
         return spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0;
     }

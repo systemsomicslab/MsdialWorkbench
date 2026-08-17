@@ -21,6 +21,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             UseAverageMs1 = Model
                 .ToReactivePropertySlimAsSynchronized(m => m.UseAverageMs1)
                 .AddTo(Disposables);
+            UseAccumulateMs1 = Model
+                .ToReactivePropertySlimAsSynchronized(m => m.UseAccumulateMs1)
+                .AddTo(Disposables);
             TimeBegin = Model
                 .ToReactivePropertySlimAsSynchronized(m => m.TimeBegin)
                 .AddTo(Disposables);
@@ -44,6 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReactivePropertySlim<bool> UseMs1WithHighestTic { get; }
         public ReactivePropertySlim<bool> UseMs1WithHighestBpi { get; }
         public ReactivePropertySlim<bool> UseAverageMs1 { get; }
+        public ReactivePropertySlim<bool> UseAccumulateMs1 { get; }
         public ReactivePropertySlim<double> TimeBegin { get; }
         public ReactivePropertySlim<double> TimeEnd { get; }
         public ReactivePropertySlim<double> MassTolerance { get; }

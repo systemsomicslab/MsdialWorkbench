@@ -57,7 +57,9 @@ namespace CompMs.MsdialCore.DataObj {
         public AdductIon AdductType { get; [Obsolete("Use SetAdductType")] set; } = AdductIon.Default;
 
         public void SetAdductType(AdductIon adduct) {
+#pragma warning disable CS0618 // Type or member is obsolete
             AdductType = adduct;
+#pragma warning restore CS0618 // Type or member is obsolete
             PeakCharacter.AdductType = adduct;
             PeakCharacter.Charge = adduct.ChargeNumber;
         }
@@ -327,6 +329,7 @@ namespace CompMs.MsdialCore.DataObj {
             foreach (var driftSpot in AlignmentDriftSpotFeatures) {
                 driftSpots.Add(driftSpot.Clone(ref masterId, driftSpot.AlignmentID));
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             var spot = new AlignmentSpotProperty
             {
                 MasterAlignmentID = masterId++,
@@ -391,6 +394,7 @@ namespace CompMs.MsdialCore.DataObj {
                 IsMzFilteredByPostCurator = IsMzFilteredByPostCurator,
                 MSDecResultIdUsed = MSDecResultIdUsed,
             };
+#pragma warning restore CS0618 // Type or member is obsolete
             spot.SetAdductType(AdductType);
             return spot;
         }

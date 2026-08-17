@@ -46,10 +46,10 @@ namespace CompMs.MsdialCore.MSDec {
             var chroms = new ExtractedIonChromatogram[spectrum.Length];
             var modelPeaks = ModelPeakChromatogram;
             var maxIntensity = modelPeaks.DefaultIfEmpty().Max(n => n?.Intensity) ?? 1e-10;
+            var type = modelPeaks.Select(p => p.ChromXs.MainType).FirstOrDefault();
+            var unit = modelPeaks.Select(p => p.ChromXs.Unit).FirstOrDefault();
             for (int i = 0; i < spectrum.Length; i++) {
                 var chrom = new ValuePeak[ModelPeakChromatogram.Count];
-                var type = modelPeaks.Select(p => p.ChromXs.MainType).FirstOrDefault();
-                var unit = modelPeaks.Select(p => p.ChromXs.Unit).FirstOrDefault();
                 for (int j = 0; j < ModelPeakChromatogram.Count; j++) {
                     chrom[j] = new ValuePeak(modelPeaks[j].ID, modelPeaks[j].ChromXs.Value, spectrum[i].Mass, modelPeaks[j].Intensity * spectrum[i].Intensity / maxIntensity);
                 }

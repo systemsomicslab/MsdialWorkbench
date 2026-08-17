@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.PugRestApiStandard
@@ -18,7 +16,6 @@ namespace CompMs.Common.PugRestApiStandard
         private static string inputCid = @"/compound/cid/";
         private string formula;
 
-        private Timer timer;
         private PubResponse result;
         private Dictionary<string, string> restUrl_filepath_Dcit;
 

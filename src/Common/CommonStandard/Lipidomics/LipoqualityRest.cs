@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CompMs.Common.Components;
 using System.ComponentModel;
-using CompMs.Common.Components;
 
 namespace CompMs.Common.Lipidomics {
     public sealed class LipoqualityRest {
@@ -28,7 +24,7 @@ namespace CompMs.Common.Lipidomics {
 
             try {
                 System.Diagnostics.Process.Start(url);
-            } catch (Win32Exception ex) {
+            } catch (Win32Exception) {
 
             }
         }

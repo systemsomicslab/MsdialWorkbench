@@ -57,6 +57,21 @@ public class DataAccessTests
     }
 
     [TestMethod()]
+    public void GetScanStartIndexByRtReturnsLowerBound() {
+        var spectra = new[]
+        {
+            new RawSpectrum { ScanStartTime = 1f },
+            new RawSpectrum { ScanStartTime = 2f },
+            new RawSpectrum { ScanStartTime = 3f },
+            new RawSpectrum { ScanStartTime = 4f },
+        };
+
+        Assert.AreEqual(2, DataAccess.GetScanStartIndexByRt(3.5f, .5f, spectra));
+        Assert.AreEqual(0, DataAccess.GetScanStartIndexByRt(.5f, .5f, spectra));
+        Assert.AreEqual(spectra.Length, DataAccess.GetScanStartIndexByRt(5f, .5f, spectra));
+    }
+
+    [TestMethod()]
     public void GetAverageSpectrumPassIndexTest() {
         var spectra = new[]
         {
@@ -100,6 +115,21 @@ public class DataAccessTests
         for (int i = 0; i < expected.Length; i++) {
             Assert.AreEqual(expected[i].Mass, actual[i].Mass);
             Assert.AreEqual(expected[i].Intensity, actual[i].Intensity);
+        }
+    }
+
+    [TestMethod()]
+    public void ReferenceMatchedExportUsesAnnotationName() {
+        foreach (var name in new[] { "", " ", "Unknown", "unknown feature", "null", "empty", "w/o MS2: compound", "RIKEN MS/MS" }) {
+            var peak = new AlignmentChromPeakFeature { Name = name };
+            Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
+            Assert.AreEqual(0d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
+        }
+
+        foreach (var name in new[] { "FA 16:0", "PC 34:1", "Reference compound" }) {
+            var peak = new AlignmentChromPeakFeature { Name = name };
+            Assert.AreEqual("TRUE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
+            Assert.AreEqual(1d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
         }
     }
 }

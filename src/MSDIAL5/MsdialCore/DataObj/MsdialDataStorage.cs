@@ -139,7 +139,7 @@ namespace CompMs.MsdialCore.DataObj
                 file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
-                file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
+                file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder);
             }
 
             foreach (var file in storage.AlignmentFiles) {

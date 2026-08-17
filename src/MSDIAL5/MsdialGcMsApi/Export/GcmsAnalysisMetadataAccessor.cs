@@ -41,6 +41,7 @@ namespace CompMs.MsdialGcMsApi.Export
                 "Simple dot product",
                 "Weighted dot product",
                 "Reverse dot product",
+                "Matched peaks count",
                 "Fragment presence %",
                 "Total score",
                 "Spectrum"
@@ -69,6 +70,7 @@ namespace CompMs.MsdialGcMsApi.Export
                 ["Simple dot product"] = NegativeIfNull(matchResult?.SimpleDotProduct, "F2"),
                 ["Weighted dot product"] = NegativeIfNull(matchResult?.WeightedDotProduct, "F2"),
                 ["Reverse dot product"] = NegativeIfNull(matchResult?.ReverseDotProduct, "F2"),
+                ["Matched peaks count"] = NegativeIfNull(matchResult?.MatchedPeaksCount, "F0"),
                 ["Fragment presence %"] = NegativeIfNull(matchResult?.MatchedPeaksPercentage, "F2"),
                 ["Total score"] = NegativeIfNull(matchResult?.TotalScore, "F2"),
                 ["Spectrum"] = EncodeSpectrum(scan),

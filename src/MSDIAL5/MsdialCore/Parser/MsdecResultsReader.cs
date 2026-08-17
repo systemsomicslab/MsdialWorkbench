@@ -9,8 +9,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.Parser {
     public sealed class MsdecResultsReader {
-		private static bool SHOW_WARNING = true;
-		public static List<MSDecResult> ReadMSDecResults(string file, out int DCL_VERSION, out List<long> seekPoints) {
+        public static List<MSDecResult> ReadMSDecResults(string file, out int DCL_VERSION, out List<long> seekPoints) {
 			using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 return ReadMSDecResults(fs, out DCL_VERSION, out seekPoints);
 			}

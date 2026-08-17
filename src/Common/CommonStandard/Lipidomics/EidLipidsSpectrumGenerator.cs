@@ -1,12 +1,9 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Enum;
-using System;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Accord.Math.Random;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -98,9 +95,6 @@ namespace CompMs.Common.Lipidomics
             return spectrum.ToArray();
         }
 
-
-        private static readonly double Electron = 0.00054858026;
-
         private static readonly double H2O = new[]
         {
             MassDiffDictionary.HydrogenMass * 2,
@@ -158,6 +152,5 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass * 9,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
-
     }
 }

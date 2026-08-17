@@ -71,7 +71,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     var model = new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
                     ImageModels.Add(model);
                     if (option.HasFlag(ProcessOption.PeakSpotting)) {
-                        model.ImageResult.ResetRawSpectraOnPixels();
+                        await model.ImageResult.ResetRawSpectraOnPixelsAsync(token);
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 return Task.CompletedTask;
             }
 
-            return Image.ImageResult.SaveAsync();
+            return Task.WhenAll(ImageModels.Select(image => image.ImageResult.SaveAsync()));
         }
 
         public AnalysisResultExportModel CreateExportAnalysisModel() {
