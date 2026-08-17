@@ -617,7 +617,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         }
                     }
                     return true;
-                case "rt correction peak selection file path": param.RtCorrectionPeakSelectionFilePath = value; return true;
+                case "rt correction peak selection file path": param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = value; return true;
 
                 // Private version
                 case "is private version of tada":
