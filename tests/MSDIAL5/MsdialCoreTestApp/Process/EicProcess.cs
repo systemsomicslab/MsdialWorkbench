@@ -131,7 +131,7 @@ namespace CompMs.App.MsdialConsole.Process
             parameter.IonMode = ionMode;
             parameter.CompoundListForRtCorrectionPath = libraryFile.FullName;
             parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = true;
-            parameter.RtCorrectionPeakSelectionFilePath = selectionFile?.FullName ?? string.Empty;
+            parameter.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = selectionFile?.FullName ?? string.Empty;
             var analysisFiles = CreateRtCorrectionAnalysisFiles(rawFiles, acquisitionType, outputFile.FullName);
             RetentionTimeCorrectionProcess.Prepare(
                 analysisFiles,

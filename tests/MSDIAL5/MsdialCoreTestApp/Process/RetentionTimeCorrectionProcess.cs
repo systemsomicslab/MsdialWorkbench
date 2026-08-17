@@ -53,9 +53,9 @@ internal static class RetentionTimeCorrectionProcess {
         }
 
         Directory.CreateDirectory(outputFolder);
-        var selectionInput = parameter.RtCorrectionPeakSelectionFilePath;
+        var selectionInput = parameter.ReferenceFileParam.RtCorrectionPeakSelectionFilePath;
         var detectedRts = SnapshotDetectedRetentionTimes(analysisFiles);
-        if (!selectionInput.IsEmptyOrNull()) {
+        if (!string.IsNullOrEmpty(selectionInput)) {
             ApplySelectionFile(selectionInput, analysisFiles, parameter.RetentionTimeCorrectionCommon);
         }
         else {
