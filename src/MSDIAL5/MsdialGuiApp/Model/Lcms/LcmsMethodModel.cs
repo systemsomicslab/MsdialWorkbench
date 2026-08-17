@@ -22,7 +22,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
@@ -252,20 +251,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            IAnnotationProcess annotationProcess;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
-                (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess();
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess();
-            }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                IAnnotationProcess annotationProcess;
+                if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                    annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
+                }
+                else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
+                    (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
+                    annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                }
+                else {
+                    annotationProcess = BuildAnnotationProcess();
+                }
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
                 if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
