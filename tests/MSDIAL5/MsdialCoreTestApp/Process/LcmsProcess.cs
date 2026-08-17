@@ -30,13 +30,18 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public sealed class LcmsProcess
 {
-    public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
+    public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz, bool useRawFileName = false)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
+        }
+        if (useRawFileName) {
+            foreach (var analysisFile in analysisFiles) {
+                analysisFile.AnalysisFileName = Path.GetFileNameWithoutExtension(analysisFile.AnalysisFilePath);
+            }
         }
 
         try {

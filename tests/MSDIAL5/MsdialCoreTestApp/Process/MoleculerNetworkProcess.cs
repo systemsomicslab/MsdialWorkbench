@@ -138,6 +138,8 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
+            var edgeFolder = Path.Combine(folder, "edges");
+            Directory.CreateDirectory(edgeFolder);
             ExportFileMapping(Path.Combine(folder, "files.tsv"), files);
 
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
@@ -158,7 +160,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     var stopwatch = Stopwatch.StartNew();
                     var inputB = files[j];
                     var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
-                    var outputPath = Path.Combine(folder, outputName);
+                    var outputPath = Path.Combine(edgeFolder, outputName);
 
                     if (System.IO.File.Exists(outputPath) && !isOverwrite) {
                         return;
@@ -203,6 +205,8 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
+            var edgeFolder = Path.Combine(folder, "edges");
+            Directory.CreateDirectory(edgeFolder);
 
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
 
@@ -225,7 +229,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     var stopwatch = Stopwatch.StartNew();
                     var inputB = files[j];
                     var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
-                    var outputPath = Path.Combine(folder, outputName);
+                    var outputPath = Path.Combine(edgeFolder, outputName);
 
                     if (System.IO.File.Exists(outputPath) && !isOverwrite) {
                         return;
@@ -314,11 +318,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
         }
 
         private void ExportNodeTable(string outputPath, IReadOnlyList<string> files, string ionMode, string? analysisFileCsv) {
-            var analysisFileMetadata = String.IsNullOrEmpty(analysisFileCsv)
-                ? new Dictionary<string, AnalysisFileBean>(StringComparer.OrdinalIgnoreCase)
-                : AnalysisFilesParser.ReadCsvContents(analysisFileCsv)
-                    .GroupBy(file => file.AnalysisFileName, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+            var analysisFileMetadata = new Dictionary<string, AnalysisFileBean>(StringComparer.OrdinalIgnoreCase);
+            if (!String.IsNullOrEmpty(analysisFileCsv)) {
+                foreach (var analysisFile in AnalysisFilesParser.ReadCsvContents(analysisFileCsv)) {
+                    var rawFileName = Path.GetFileNameWithoutExtension(analysisFile.AnalysisFilePath);
+                    analysisFileMetadata[rawFileName] = analysisFile;
+                }
+            }
             var nodes = files
                 .SelectMany(file => LibraryHandler.ReadMspLibrary(file)
                     .Where(record => record.IonMode.ToString() == ionMode && record.Spectrum?.Count > 0)

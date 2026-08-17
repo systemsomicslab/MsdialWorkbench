@@ -258,7 +258,8 @@ public static class MainProcess
                     output.FullName,
                     lcmsMethod.FullName,
                     isProjectStore,
-                    targetMz);
+                    targetMz,
+                    useRawFileName: true);
                 if (lcmsResult != 0) {
                     return lcmsResult;
                 }
