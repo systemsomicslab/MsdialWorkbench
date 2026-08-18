@@ -763,7 +763,12 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
                     return true;
-                case "sample max / blank average": if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage; return true;
+                case "sample max / blank average":
+                    if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) {
+                        param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage;
+                        param.FoldChangeForBlankFiltering = sampleMaxOverBlankAverage;
+                    }
+                    return true;
                 case "sample average / blank average": if (float.TryParse(valueLower, out float sampleAverageOverBlankAverage)) param.SampleAverageOverBlankAverage = sampleAverageOverBlankAverage; return true;
                 case "keep reference matched metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepRefMatchedMetaboliteFeatures = bool.Parse(valueLower); return true;
                 case "keep suggested metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepSuggestedMetaboliteFeatures = bool.Parse(valueLower); return true;
