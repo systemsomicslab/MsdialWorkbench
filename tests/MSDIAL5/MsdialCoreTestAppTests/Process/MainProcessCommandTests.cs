@@ -21,20 +21,18 @@ public sealed class MainProcessCommandTests
     }
 
     [TestMethod]
-    public void Info_ProvidesMachineReadableFormatForExternalTools() {
+    public void Root_DoesNotExposePartialFeatureInventoryCommands() {
         var root = BuildRoot();
-        var info = root.Subcommands.Single(command => command.Name == "info");
 
-        StringAssert.Contains(info.Description, "external tools");
-        Assert.AreEqual(0, root.Parse(["info", "--format", "json"]).Errors.Count);
+        Assert.IsNull(root.Subcommands.SingleOrDefault(command => command.Name == "info"));
         Assert.IsTrue(root.Parse(["capabilities"]).Errors.Count > 0);
+        Assert.IsTrue(root.Parse(["info"]).Errors.Count > 0);
     }
 
     private static RootCommand BuildRoot() {
         var root = new RootCommand("test");
         MainProcess.SetEicCommand(root);
         MainProcess.SetRtCorrectionCommand(root);
-        MainProcess.SetInfoCommand(root);
         return root;
     }
 }

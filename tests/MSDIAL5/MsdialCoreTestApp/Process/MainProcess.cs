@@ -2,7 +2,6 @@
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -13,54 +12,6 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public static class MainProcess
 {
-    public const string LcmsAlignmentQaMatrixFeature = "lcms_alignment_qa_matrix";
-    public const string RtCorrectionReviewFeature = "rt_correction_review";
-
-    public static void SetInfoCommand(Command root) {
-        var cmd = new Command("info", "Show the Console version and workflow features available to external tools");
-        var format = new Option<string>("--format") {
-            Description = "Output format: text for users or json for external workflow tools",
-            DefaultValueFactory = _ => "text",
-        };
-        cmd.Options.Add(format);
-        cmd.SetAction(parseResult => WriteConsoleInfo(parseResult.GetValue(format)));
-        root.Add(cmd);
-    }
-
-    private static int WriteConsoleInfo(string? format) {
-        if (String.Equals(format, "json", StringComparison.OrdinalIgnoreCase)) {
-            var payload = new {
-                schema = "msdial.console.info.v1",
-                version = Resources.VERSION,
-                features = new object[] {
-                    new {
-                        id = LcmsAlignmentQaMatrixFeature,
-                        description = "Export an LC-MS alignment quality-assurance matrix (*.qa.tsv)",
-                    },
-                    new {
-                        id = RtCorrectionReviewFeature,
-                        description = "Prepare retention-time correction anchor EICs and correction profiles",
-                        command = "rtcorrection",
-                    },
-                },
-            };
-            Console.WriteLine(JsonConvert.SerializeObject(payload, Formatting.Indented));
-            return 0;
-        }
-        if (!String.Equals(format, "text", StringComparison.OrdinalIgnoreCase)) {
-            Console.Error.WriteLine($"Unknown info format: {format}. Use text or json.");
-            return 1;
-        }
-
-        Console.WriteLine($"MS-DIAL Console {Resources.VERSION}");
-        Console.WriteLine("Workflow features detectable by external applications:");
-        Console.WriteLine($"  {LcmsAlignmentQaMatrixFeature}");
-        Console.WriteLine("    Export an LC-MS alignment quality-assurance matrix (*.qa.tsv).");
-        Console.WriteLine($"  {RtCorrectionReviewFeature}");
-        Console.WriteLine("    Prepare retention-time correction anchor EICs and correction profiles with the rtcorrection command.");
-        return 0;
-    }
-
     public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
         new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
         return 1;
