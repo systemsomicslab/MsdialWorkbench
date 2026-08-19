@@ -17,16 +17,29 @@ namespace CompMs.MsdialCore.DataObj
             List<IAnnotatorParameterPair<TDataBase>> pairs) {
             DataBase = dataBase;
             Pairs = pairs;
+            PairsForSerialization = pairs;
+        }
+
+        [SerializationConstructor]
+        public DataBaseItem(
+            TDataBase dataBase,
+            IReadOnlyList<IAnnotatorParameterPair> pairsForSerialization) {
+            DataBase = dataBase;
+            Pairs = pairsForSerialization.Cast<IAnnotatorParameterPair<TDataBase>>().ToList();
+            PairsForSerialization = Pairs;
         }
 
         [IgnoreMember]
         public string DataBaseID => DataBase.Id;
 
-        [Key(nameof(DataBase))]
+        [Key("DataBase")]
         public TDataBase DataBase { get; }
 
-        [Key(nameof(Pairs))]
+        [IgnoreMember]
         public List<IAnnotatorParameterPair<TDataBase>> Pairs { get; }
+
+        [Key("Pairs")]
+        public IReadOnlyList<IAnnotatorParameterPair> PairsForSerialization { get; }
 
         private static readonly string DataBasePath = "DataBase";
         private static readonly string AnnotatorsPath = "Annotators";

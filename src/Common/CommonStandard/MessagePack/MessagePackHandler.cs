@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using MessagePack.Resolvers;
 using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace CompMs.Common.MessagePack {
             return res;
         }
         public static T LoadFromStream<T>(Stream s) {
-            return LZ4MessagePackSerializer.Deserialize<T>(s);
+            return MessagePackSerializer.Deserialize<T>(s, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(StandardResolver.Instance));
         }
 
         public static void SaveToFile<T>(T obj, string path) {
@@ -24,7 +25,7 @@ namespace CompMs.Common.MessagePack {
             }
         }
         public static void SaveToStream<T>(T obj, Stream s) {
-            LZ4MessagePackSerializer.Serialize(s, obj);
+            MessagePackSerializer.Serialize(s, obj, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(StandardResolver.Instance));
         }
 
         // large list
