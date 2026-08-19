@@ -2,25 +2,63 @@
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
+using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Process;
 
 public static class MainProcess
 {
-    public const string LcmsAlignmentQaMatrixCapability = "lcms_alignment_qa_matrix";
+    public const string LcmsAlignmentQaMatrixFeature = "lcms_alignment_qa_matrix";
+    public const string RtCorrectionReviewFeature = "rt_correction_review";
 
-    public static void SetCapabilitiesCommand(Command root) {
-        var cmd = new Command("capabilities", "List machine-readable MS-DIAL Console capabilities");
-        cmd.SetAction(_ => {
-            Console.WriteLine("msdial.console.capabilities.v1");
-            Console.WriteLine(LcmsAlignmentQaMatrixCapability);
-            return 0;
-        });
+    public static void SetInfoCommand(Command root) {
+        var cmd = new Command("info", "Show the Console version and workflow features available to external tools");
+        var format = new Option<string>("--format") {
+            Description = "Output format: text for users or json for external workflow tools",
+            DefaultValueFactory = _ => "text",
+        };
+        cmd.Options.Add(format);
+        cmd.SetAction(parseResult => WriteConsoleInfo(parseResult.GetValue(format)));
         root.Add(cmd);
+    }
+
+    private static int WriteConsoleInfo(string? format) {
+        if (String.Equals(format, "json", StringComparison.OrdinalIgnoreCase)) {
+            var payload = new {
+                schema = "msdial.console.info.v1",
+                version = Resources.VERSION,
+                features = new object[] {
+                    new {
+                        id = LcmsAlignmentQaMatrixFeature,
+                        description = "Export an LC-MS alignment quality-assurance matrix (*.qa.tsv)",
+                    },
+                    new {
+                        id = RtCorrectionReviewFeature,
+                        description = "Prepare retention-time correction anchor EICs and correction profiles",
+                        command = "rtcorrection",
+                    },
+                },
+            };
+            Console.WriteLine(JsonConvert.SerializeObject(payload, Formatting.Indented));
+            return 0;
+        }
+        if (!String.Equals(format, "text", StringComparison.OrdinalIgnoreCase)) {
+            Console.Error.WriteLine($"Unknown info format: {format}. Use text or json.");
+            return 1;
+        }
+
+        Console.WriteLine($"MS-DIAL Console {Resources.VERSION}");
+        Console.WriteLine("Workflow features detectable by external applications:");
+        Console.WriteLine($"  {LcmsAlignmentQaMatrixFeature}");
+        Console.WriteLine("    Export an LC-MS alignment quality-assurance matrix (*.qa.tsv).");
+        Console.WriteLine($"  {RtCorrectionReviewFeature}");
+        Console.WriteLine("    Prepare retention-time correction anchor EICs and correction profiles with the rtcorrection command.");
+        return 0;
     }
 
     public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
@@ -486,15 +524,50 @@ public static class MainProcess
             parseResult.GetRequiredValue(projectOutput),
             parseResult.GetValue(format)));
 
-        var rtCorrection = new Command("rtcorrection", "Export RT correction EIC audit data");
+        eic.Subcommands.Add(raw);
+        eic.Subcommands.Add(project);
+        root.Subcommands.Add(eic);
+    }
+
+    public static void SetRtCorrectionCommand(Command root) {
+        root.Subcommands.Add(CreateRtCorrectionCommand(hidden: false));
+
+        // Keep the pre-release command path working without advertising it in help.
+        var eic = root.Subcommands.FirstOrDefault(command => command.Name == "eic");
+        eic?.Subcommands.Add(CreateRtCorrectionCommand(hidden: true));
+    }
+
+    private static Command CreateRtCorrectionCommand(bool hidden) {
+        var rtCorrection = new Command(
+            "rtcorrection",
+            "Prepare retention-time correction anchor EICs and correction profiles") {
+            Hidden = hidden,
+        };
         var rtInputs = new Option<FileSystemInfo[]>("--input", "-i") { Required = true };
         rtInputs.Arity = ArgumentArity.OneOrMore;
-        var rtLibrary = new Option<FileInfo>("--library") { Required = true };
-        var rtOutput = new Option<FileInfo>("--output", "-o") { Required = true };
-        var rtMethod = new Option<FileInfo?>("--method", "-m");
-        var rtSelection = new Option<FileInfo?>("--selection");
-        var rtIonMode = new Option<IonMode>("--ionmode") { DefaultValueFactory = _ => IonMode.Positive };
-        var rtAcquisitionType = new Option<AcquisitionType>("--acquisitiontype") { DefaultValueFactory = _ => AcquisitionType.DDA };
+        rtInputs.Description = "Raw data files, vendor data directories, or a directory containing raw data";
+        var rtLibrary = new Option<FileInfo>("--library") {
+            Description = "MS-DIAL text library containing the retention-time correction anchors",
+            Required = true,
+        };
+        var rtOutput = new Option<FileInfo>("--output", "-o") {
+            Description = "Output CSV containing anchor EICs and corrected retention times",
+            Required = true,
+        };
+        var rtMethod = new Option<FileInfo?>("--method", "-m") {
+            Description = "Optional MS-DIAL LC-MS parameter file",
+        };
+        var rtSelection = new Option<FileInfo?>("--selection") {
+            Description = "Optional reviewed anchor-peak selection TSV",
+        };
+        var rtIonMode = new Option<IonMode>("--ionmode") {
+            Description = "Ion mode used to extract the anchor EICs",
+            DefaultValueFactory = _ => IonMode.Positive,
+        };
+        var rtAcquisitionType = new Option<AcquisitionType>("--acquisitiontype") {
+            Description = "Acquisition type of the input data",
+            DefaultValueFactory = _ => AcquisitionType.DDA,
+        };
         rtCorrection.Options.Add(rtInputs);
         rtCorrection.Options.Add(rtLibrary);
         rtCorrection.Options.Add(rtOutput);
@@ -502,7 +575,7 @@ public static class MainProcess
         rtCorrection.Options.Add(rtSelection);
         rtCorrection.Options.Add(rtIonMode);
         rtCorrection.Options.Add(rtAcquisitionType);
-        rtCorrection.SetAction(parseResult => new EicProcess().RunRtCorrection(
+        rtCorrection.SetAction(parseResult => new RtCorrectionProcess().Run(
             parseResult.GetRequiredValue(rtInputs),
             parseResult.GetRequiredValue(rtLibrary),
             parseResult.GetRequiredValue(rtOutput),
@@ -511,10 +584,7 @@ public static class MainProcess
             parseResult.GetValue(rtIonMode),
             parseResult.GetValue(rtAcquisitionType)));
 
-        eic.Subcommands.Add(raw);
-        eic.Subcommands.Add(project);
-        eic.Subcommands.Add(rtCorrection);
-        root.Subcommands.Add(eic);
+        return rtCorrection;
     }
 
     public static void SetImageGenerationCommand(Command root) {
