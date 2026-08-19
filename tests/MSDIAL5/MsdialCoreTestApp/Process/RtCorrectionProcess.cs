@@ -60,7 +60,7 @@ public sealed class RtCorrectionProcess
         parameter.IonMode = ionMode;
         parameter.CompoundListForRtCorrectionPath = libraryFile.FullName;
         parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = true;
-        parameter.RtCorrectionPeakSelectionFilePath = selectionFile?.FullName ?? string.Empty;
+        parameter.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = selectionFile?.FullName ?? string.Empty;
         var analysisFiles = CreateAnalysisFiles(rawFiles, acquisitionType, outputFile.FullName);
         RetentionTimeCorrectionProcess.Prepare(
             analysisFiles,

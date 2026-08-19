@@ -107,8 +107,6 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public string CompoundListForRtCorrectionPath { get => ReferenceFileParam.CompoundListForRtCorrectionPath; set => ReferenceFileParam.CompoundListForRtCorrectionPath = value; }
         [IgnoreMember]
-        public string RtCorrectionPeakSelectionFilePath { get => ReferenceFileParam.RtCorrectionPeakSelectionFilePath; set => ReferenceFileParam.RtCorrectionPeakSelectionFilePath = value; }
-        [IgnoreMember]
         public List<AdductIon> SearchedAdductIons { get => ReferenceFileParam.SearchedAdductIons; set => ReferenceFileParam.SearchedAdductIons = value; }
 
         // Export
@@ -538,7 +536,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for RT correction", CompoundListForRtCorrectionPath.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection file path", RtCorrectionPeakSelectionFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection file path", ReferenceFileParam.RtCorrectionPeakSelectionFilePath?.ToString() ?? string.Empty }));
             pStrings.Add(String.Join(": ", new string[] { "Searched adduct ions", String.Join(",", SearchedAdductIons.Select(n => n.AdductIonName).ToArray()) }));
 
             pStrings.Add("\r\n");

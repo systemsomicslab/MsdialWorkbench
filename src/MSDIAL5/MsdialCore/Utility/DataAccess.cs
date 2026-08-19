@@ -237,22 +237,11 @@ namespace CompMs.MsdialCore.Utility {
 
         // index access
         public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
-
             var targetRt = focusedRt - rtTol;
-            int startIndex = 0, endIndex = spectrumList.Count - 1;
-
-            int counter = 0;
-            int limit = spectrumList.Count > 50000 ? 20 : 10;
-            while (counter < limit) {
-                if (spectrumList[startIndex].ScanStartTime <= targetRt && targetRt < spectrumList[(startIndex + endIndex) / 2].ScanStartTime) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (spectrumList[(startIndex + endIndex) / 2].ScanStartTime <= targetRt && targetRt < spectrumList[endIndex].ScanStartTime) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
+            return SearchCollection.LowerBound(
+                spectrumList,
+                targetRt,
+                (spectrum, rt) => spectrum.ScanStartTime.CompareTo(rt));
         }
 
         public static int GetTargetCEIndexForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {

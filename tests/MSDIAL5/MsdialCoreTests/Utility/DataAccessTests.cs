@@ -57,6 +57,21 @@ public class DataAccessTests
     }
 
     [TestMethod()]
+    public void GetScanStartIndexByRtReturnsLowerBound() {
+        var spectra = new[]
+        {
+            new RawSpectrum { ScanStartTime = 1f },
+            new RawSpectrum { ScanStartTime = 2f },
+            new RawSpectrum { ScanStartTime = 3f },
+            new RawSpectrum { ScanStartTime = 4f },
+        };
+
+        Assert.AreEqual(2, DataAccess.GetScanStartIndexByRt(3.5f, .5f, spectra));
+        Assert.AreEqual(0, DataAccess.GetScanStartIndexByRt(.5f, .5f, spectra));
+        Assert.AreEqual(spectra.Length, DataAccess.GetScanStartIndexByRt(5f, .5f, spectra));
+    }
+
+    [TestMethod()]
     public void GetAverageSpectrumPassIndexTest() {
         var spectra = new[]
         {
