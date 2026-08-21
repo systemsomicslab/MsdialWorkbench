@@ -353,6 +353,15 @@ public static class MainProcess
         {
             Description = "Option",
         };
+        var dclFileOpt = new Option<FileInfo>("--dcl", "-dcl")
+        {
+            Description = "Associated dcl file for pai2 or arf2 input",
+        };
+        var alignmentOpt = new Option<bool>("--alignment", "-alignment")
+        {
+            Description = "Treat binary input as alignment result data",
+            DefaultValueFactory = _ => false,
+        };
         var ionmodeOpt = new Option<string>("--ionmode", "-ionmode")
         {
             Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'",
@@ -384,6 +393,8 @@ public static class MainProcess
         cmd.Options.Add(outputOpt);
         cmd.Options.Add(methodOpt);
         cmd.Options.Add(targetFileOpt);
+        cmd.Options.Add(dclFileOpt);
+        cmd.Options.Add(alignmentOpt);
         cmd.Options.Add(ionmodeOpt);
         cmd.Options.Add(overwriteOpt);
         cmd.Options.Add(allEdgeExportOpt);
@@ -413,6 +424,8 @@ public static class MainProcess
                 var output = Path.GetFullPath(parseResult.GetRequiredValue(outputOpt));
                 var methodFile = parseResult.GetRequiredValue(methodOpt);
                 var targetFile = parseResult.GetValue(targetFileOpt);
+                var dclFile = parseResult.GetValue(dclFileOpt);
+                var alignment = parseResult.GetValue(alignmentOpt);
                 var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
                 var overwrite = parseResult.GetValue(overwriteOpt);
                 var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
@@ -425,6 +438,12 @@ public static class MainProcess
                         return new MoleculerNetworkProcess().Run(input, output, methodFile.FullName, ionmode, overwrite);
                 }
                 else {
+                    if (Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase)) {
+                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment);
+                    }
+                    if (dclFile != null && dclFile.Exists) {
+                        return new MoleculerNetworkProcess().Run4Binary(input, dclFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                    }
                     if (targetFile != null && targetFile.Exists) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
                     }

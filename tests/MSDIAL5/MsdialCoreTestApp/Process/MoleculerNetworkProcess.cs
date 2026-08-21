@@ -130,6 +130,52 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
+        public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode, bool alignment) {
+            var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
+            if (alignment) {
+                var input = MolecularNetworkingInputLoader.LoadAlignment(inputFile, dclFile);
+                return RunInput(input, outputFile, parameter, ionMode);
+            }
+
+            public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment) {
+                var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
+                if (alignment) {
+                    var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
+                    if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
+                    return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode, true);
+                }
+                var analysisFile = storage.AnalysisFiles.FirstOrDefault(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath));
+                if (analysisFile is null) throw new FileNotFoundException("No included analysis peak list was found in the project.", projectFile);
+                return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode, false);
+            }
+            else {
+                var input = MolecularNetworkingInputLoader.LoadAnalysis(inputFile, dclFile);
+                return RunInput(input, outputFile, parameter, ionMode);
+            }
+        }
+
+        private static int RunInput<T>(MolecularNetworkingInput<T> input, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {
+            var selected = input.Spots.Select((spot, index) => (spot, scan: input.Scans[index]))
+                .Where(item => item.scan.IonMode.ToString() == ionMode && item.scan.Spectrum.Count > 0).ToList();
+            var spots = selected.Select(item => item.spot).ToList();
+            var scans = selected.Select(item => item.scan).ToList();
+            for (var i = 0; i < scans.Count; i++) {
+                scans[i].Spectrum = MsScanMatching.GetProcessedSpectrum(scans[i].Spectrum, scans[i].PrecursorMz,
+                    absoluteAbundanceCutOff: parameter.MnAbsoluteAbundanceCutOff,
+                    relativeAbundanceCutOff: parameter.MnRelativeAbundanceCutOff);
+            }
+            var edges = MoleculerNetworkingBase.GenerateEdges(spots, scans, spots, scans,
+                parameter.MnMassTolerance, parameter.MinimumPeakMatch, parameter.MnSpectrumSimilarityCutOff,
+                parameter.MaxEdgeNumberPerNode + 1, parameter.MaxPrecursorDifference,
+                parameter.MaxPrecursorDifferenceAsPercent, parameter.MsmsSimilarityCalc, null);
+            using var writer = new StreamWriter(outputFile, false);
+            writer.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
+            foreach (var edge in edges.Where(edge => edge.source != edge.target && edge.source < edge.target)) {
+                writer.WriteLine($"{edge.source}\t{edge.target}\t{String.Join("\t", edge.scores)}");
+            }
+            return 1;
+        }
+
         public int Run4AllEdgeGeneration(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
             var files = ReadInput(inputDir);
             var dt = DateTime.Now;
