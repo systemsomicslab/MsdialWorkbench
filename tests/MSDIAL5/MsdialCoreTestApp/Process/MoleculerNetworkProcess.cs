@@ -136,22 +136,22 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 var input = MolecularNetworkingInputLoader.LoadAlignment(inputFile, dclFile);
                 return RunInput(input, outputFile, parameter, ionMode);
             }
-
-            public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment) {
-                var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
-                if (alignment) {
-                    var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
-                    if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
-                    return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode, true);
-                }
-                var analysisFile = storage.AnalysisFiles.FirstOrDefault(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath));
-                if (analysisFile is null) throw new FileNotFoundException("No included analysis peak list was found in the project.", projectFile);
-                return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode, false);
-            }
             else {
                 var input = MolecularNetworkingInputLoader.LoadAnalysis(inputFile, dclFile);
                 return RunInput(input, outputFile, parameter, ionMode);
             }
+        }
+
+        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment) {
+            var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
+            if (alignment) {
+                var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
+                if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
+                return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode, true);
+            }
+            var analysisFile = storage.AnalysisFiles.FirstOrDefault(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath));
+            if (analysisFile is null) throw new FileNotFoundException("No included analysis peak list was found in the project.", projectFile);
+            return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode, false);
         }
 
         private static int RunInput<T>(MolecularNetworkingInput<T> input, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {
