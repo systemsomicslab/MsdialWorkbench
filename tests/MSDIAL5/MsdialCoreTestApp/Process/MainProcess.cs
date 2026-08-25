@@ -378,8 +378,8 @@ public static class MainProcess
             DefaultValueFactory = _ => false,
         };
         inputOpt.Validators.Add(result => {
-            var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (input is null || !input.Exists) {
+            var input = result.GetValueOrDefault<string>();
+            if (string.IsNullOrEmpty(input) || (!File.Exists(input) && !Directory.Exists(input))) {
                 result.AddError("Input path does not exist.");
             }
         });

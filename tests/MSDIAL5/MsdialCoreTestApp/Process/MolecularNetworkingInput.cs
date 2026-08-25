@@ -41,7 +41,10 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 throw new InvalidDataException($"Could not load alignment result: {alignmentPath}");
             }
             var spots = container.AlignmentSpotProperties.ToList();
-            return new MolecularNetworkingInput<AlignmentSpotProperty>(spots, LoadScans(dclPath, spots.Select(p => p.GetMSDecResultID())), alignmentPath);
+            // Alignment dcl records are indexed by the global master alignment ID.
+            // AlignmentID is only sequential within a dimension and can point past
+            // the dcl record range for a filtered alignment result.
+            return new MolecularNetworkingInput<AlignmentSpotProperty>(spots, LoadScans(dclPath, spots.Select(p => p.MasterAlignmentID)), alignmentPath);
         }
 
         public static MsdialDataStorage LoadProject(string projectPath) {
