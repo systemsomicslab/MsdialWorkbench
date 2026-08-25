@@ -46,11 +46,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         public static MsdialDataStorage LoadProject(string projectPath) {
             if (!File.Exists(projectPath)) throw new FileNotFoundException("Project file was not found.", projectPath);
-            return MessagePackDefaultHandler.LoadFromFile<MsdialDataStorage>(projectPath);
+            var storage = MessagePackDefaultHandler.LoadFromFile<MsdialDataStorage>(projectPath);
+            storage.FixDatasetFolder(Path.GetDirectoryName(Path.GetFullPath(projectPath)) ?? ".");
+            return storage;
         }
 
         public static string NormalizeV2Path(string path) {
-            if (path.EndsWith("2", StringComparison.OrdinalIgnoreCase)) {
+            if (path.EndsWith(".pai2", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".arf2", StringComparison.OrdinalIgnoreCase)) {
                 var legacyPath = path.Substring(0, path.Length - 1);
                 if (File.Exists(legacyPath)) return legacyPath;
             }
@@ -60,10 +62,11 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private static IReadOnlyList<MSDecResult> LoadScans(string dclPath, IEnumerable<int> ids) {
             if (!File.Exists(dclPath)) throw new FileNotFoundException("Deconvolution spectrum file was not found.", dclPath);
+            MsdecResultsReader.GetSeekPointers(dclPath, out _, out var seekPoints, out _);
             using var loader = new MSDecLoader(dclPath, new List<string>());
             var scans = new List<MSDecResult>();
             foreach (var id in ids) {
-                if (id < 0) {
+                if (id < 0 || id >= seekPoints.Count) {
                     throw new InvalidDataException($"MSDec result ID {id} is invalid for dcl file: {dclPath}");
                 }
                 var scan = loader.LoadMSDecResult(id);
