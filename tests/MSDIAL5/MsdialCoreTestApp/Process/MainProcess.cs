@@ -441,6 +441,16 @@ public static class MainProcess
                     if (Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase)) {
                         return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment);
                     }
+                    var binaryInput = Path.GetExtension(input).Equals(".pai", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".pai2", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".arf", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".arf2", StringComparison.OrdinalIgnoreCase);
+                    if (binaryInput) {
+                        if (dclFile is null || !dclFile.Exists) {
+                            throw new FileNotFoundException("A --dcl file is required for binary peak-list input.", dclFile?.FullName);
+                        }
+                        return new MoleculerNetworkProcess().Run4Binary(input, dclFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                    }
                     if (dclFile != null && dclFile.Exists) {
                         return new MoleculerNetworkProcess().Run4Binary(input, dclFile.FullName, output, methodFile.FullName, ionmode, alignment);
                     }
