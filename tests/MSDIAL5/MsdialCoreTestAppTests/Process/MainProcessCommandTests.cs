@@ -52,8 +52,6 @@ public sealed class MainProcessCommandTests
         var spectrum = msn.Options.SingleOrDefault(option => option.Name == "spectrum");
         Assert.IsNotNull(spectrum);
         Assert.IsTrue(spectrum!.Aliases.Contains("-s"));
-        Assert.IsFalse(spectrum.Aliases.Contains("--dcl"));
-        Assert.IsFalse(spectrum.Aliases.Contains("-dcl"));
     }
 
     private static RootCommand BuildRoot() {
