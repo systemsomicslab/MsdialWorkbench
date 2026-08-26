@@ -44,6 +44,15 @@ public sealed class MainProcessCommandTests
         Assert.AreEqual(0, parseResult.Errors.Count);
     }
 
+    [TestMethod]
+    public void Msn_ExposesSpectrumOptionInsteadOfDclOption() {
+        var root = BuildRoot();
+        var msn = root.Subcommands.Single(command => command.Name == "msn");
+
+        Assert.IsNotNull(msn.Options.SingleOrDefault(option => option.Name == "spectrum"));
+        Assert.IsNull(msn.Options.SingleOrDefault(option => option.Name == "dcl"));
+    }
+
     private static RootCommand BuildRoot() {
         var root = new RootCommand("test");
         MainProcess.SetEicCommand(root);

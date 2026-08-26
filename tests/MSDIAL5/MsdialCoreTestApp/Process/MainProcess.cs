@@ -353,9 +353,9 @@ public static class MainProcess
         {
             Description = "Option",
         };
-        var dclFileOpt = new Option<FileInfo>("--dcl", "-dcl")
+        var spectrumFileOpt = new Option<FileInfo>("--spectrum", "-spectrum")
         {
-            Description = "Associated dcl file for pai2 or arf2 input",
+            Description = "Associated MS/MS spectrum file for binary peak-list input",
         };
         var alignmentOpt = new Option<bool>("--alignment", "-alignment")
         {
@@ -393,7 +393,7 @@ public static class MainProcess
         cmd.Options.Add(outputOpt);
         cmd.Options.Add(methodOpt);
         cmd.Options.Add(targetFileOpt);
-        cmd.Options.Add(dclFileOpt);
+        cmd.Options.Add(spectrumFileOpt);
         cmd.Options.Add(alignmentOpt);
         cmd.Options.Add(ionmodeOpt);
         cmd.Options.Add(overwriteOpt);
@@ -424,7 +424,7 @@ public static class MainProcess
                 var output = Path.GetFullPath(parseResult.GetRequiredValue(outputOpt));
                 var methodFile = parseResult.GetRequiredValue(methodOpt);
                 var targetFile = parseResult.GetValue(targetFileOpt);
-                var dclFile = parseResult.GetValue(dclFileOpt);
+                var spectrumFile = parseResult.GetValue(spectrumFileOpt);
                 var alignment = parseResult.GetValue(alignmentOpt);
                 var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
                 var overwrite = parseResult.GetValue(overwriteOpt);
@@ -446,13 +446,13 @@ public static class MainProcess
                         || Path.GetExtension(input).Equals(".arf", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(input).Equals(".arf2", StringComparison.OrdinalIgnoreCase);
                     if (binaryInput) {
-                        if (dclFile is null || !dclFile.Exists) {
-                            throw new FileNotFoundException("A --dcl file is required for binary peak-list input.", dclFile?.FullName);
+                        if (spectrumFile is null || !spectrumFile.Exists) {
+                            throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
                         }
-                        return new MoleculerNetworkProcess().Run4Binary(input, dclFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode, alignment);
                     }
-                    if (dclFile != null && dclFile.Exists) {
-                        return new MoleculerNetworkProcess().Run4Binary(input, dclFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                    if (spectrumFile != null && spectrumFile.Exists) {
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode, alignment);
                     }
                     if (targetFile != null && targetFile.Exists) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);

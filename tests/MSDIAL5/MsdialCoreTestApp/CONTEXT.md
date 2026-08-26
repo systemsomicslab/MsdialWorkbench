@@ -4,15 +4,15 @@ This context covers the MS-DIAL console test application used to exercise core L
 
 ## Molecular networking inputs
 
-The `msn` command accepts MSP libraries as before. It also accepts MS-DIAL binary peak lists when the corresponding deconvolution spectra are supplied with `--dcl`:
+The `msn` command accepts MSP libraries as before. It also accepts MS-DIAL binary peak lists when the corresponding MS/MS spectra are supplied with `--spectrum`:
 
 ```text
-MSDIALCUI msn -i <analysis.pai2> -dcl <analysis.dcl> -o <output.pairs> -m <mn-parameter.txt>
-MSDIALCUI msn -i <alignment.arf2> -dcl <alignment.dcl> --alignment -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <analysis.pai2> --spectrum <analysis.dcl> -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <alignment.arf2> --spectrum <alignment.dcl> --alignment -o <output.pairs> -m <mn-parameter.txt>
 MSDIALCUI msn -i <project.mddata> -o <output.pairs> -m <mn-parameter.txt>
 ```
 
-Analysis peak lists use their MS-DIAL peak identifiers to locate spectra in the dcl file. Alignment results use `MasterAlignmentID`, which is the index of the alignment dcl record. A binary peak-list input without `--dcl` is rejected rather than being interpreted as an MSP file.
+Analysis peak lists use their MS-DIAL peak identifiers to locate spectra in the supplied spectrum file. Alignment results use `MasterAlignmentID`, which is the index of the alignment spectrum record. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
 
 ## Language
 
