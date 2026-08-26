@@ -357,7 +357,7 @@ public static class MainProcess
         {
             Description = "Associated MS/MS spectrum file for binary peak-list input",
         };
-        var alignmentOpt = new Option<bool>("--alignment", "-alignment")
+        var alignmentOpt = new Option<bool>("--alignment")
         {
             Description = "Treat binary input as alignment result data",
             DefaultValueFactory = _ => false,
