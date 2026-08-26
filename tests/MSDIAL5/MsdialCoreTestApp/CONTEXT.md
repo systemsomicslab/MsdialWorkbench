@@ -2,6 +2,18 @@
 
 This context covers the MS-DIAL console test application used to exercise core LC/MS workflows, especially EIC handling in the console test app.
 
+## Molecular networking inputs
+
+The `msn` command accepts MSP libraries as before. It also accepts MS-DIAL binary peak lists when the corresponding deconvolution spectra are supplied with `--dcl`:
+
+```text
+MSDIALCUI msn -i <analysis.pai2> -dcl <analysis.dcl> -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <alignment.arf2> -dcl <alignment.dcl> --alignment -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <project.mddata> -o <output.pairs> -m <mn-parameter.txt>
+```
+
+Analysis peak lists use their MS-DIAL peak identifiers to locate spectra in the dcl file. Alignment results use `MasterAlignmentID`, which is the index of the alignment dcl record. A binary peak-list input without `--dcl` is rejected rather than being interpreted as an MSP file.
+
 ## Language
 
 **Peak**:

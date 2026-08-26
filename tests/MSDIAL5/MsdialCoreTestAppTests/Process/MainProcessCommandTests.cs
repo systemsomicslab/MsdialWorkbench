@@ -29,10 +29,26 @@ public sealed class MainProcessCommandTests
         Assert.IsTrue(root.Parse(["info"]).Errors.Count > 0);
     }
 
+    [TestMethod]
+    public void Msn_AcceptsStringInputPathWithoutValidatorCastError() {
+        var root = BuildRoot();
+        var existingPath = typeof(MainProcessCommandTests).Assembly.Location;
+
+        var parseResult = root.Parse([
+            "msn",
+            "-i", existingPath,
+            "-o", existingPath,
+            "-m", existingPath,
+        ]);
+
+        Assert.AreEqual(0, parseResult.Errors.Count);
+    }
+
     private static RootCommand BuildRoot() {
         var root = new RootCommand("test");
         MainProcess.SetEicCommand(root);
         MainProcess.SetRtCorrectionCommand(root);
+        MainProcess.SetMsnCommand(root);
         return root;
     }
 }
