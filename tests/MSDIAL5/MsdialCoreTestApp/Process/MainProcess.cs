@@ -353,7 +353,7 @@ public static class MainProcess
         {
             Description = "Option",
         };
-        var spectrumFileOpt = new Option<FileInfo>("--spectrum", "-spectrum")
+        var spectrumFileOpt = new Option<FileInfo>("--spectrum", "-s")
         {
             Description = "Associated MS/MS spectrum file for binary peak-list input",
         };

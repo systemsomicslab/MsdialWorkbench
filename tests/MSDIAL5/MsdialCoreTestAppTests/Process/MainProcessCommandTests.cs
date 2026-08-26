@@ -45,12 +45,15 @@ public sealed class MainProcessCommandTests
     }
 
     [TestMethod]
-    public void Msn_ExposesSpectrumOptionInsteadOfDclOption() {
+    public void Msn_ExposesSpectrumOptionWithShortAlias() {
         var root = BuildRoot();
         var msn = root.Subcommands.Single(command => command.Name == "msn");
 
-        Assert.IsNotNull(msn.Options.SingleOrDefault(option => option.Name == "spectrum"));
-        Assert.IsNull(msn.Options.SingleOrDefault(option => option.Name == "dcl"));
+        var spectrum = msn.Options.SingleOrDefault(option => option.Name == "spectrum");
+        Assert.IsNotNull(spectrum);
+        Assert.IsTrue(spectrum!.Aliases.Contains("-s"));
+        Assert.IsFalse(spectrum.Aliases.Contains("--dcl"));
+        Assert.IsFalse(spectrum.Aliases.Contains("-dcl"));
     }
 
     private static RootCommand BuildRoot() {
