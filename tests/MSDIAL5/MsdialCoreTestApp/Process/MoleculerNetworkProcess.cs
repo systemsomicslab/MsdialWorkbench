@@ -130,9 +130,10 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 1;
         }
 
-        public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode, bool alignment) {
+        public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode) {
             var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
-            if (alignment) {
+            if (Path.GetExtension(inputFile).Equals(".arf", StringComparison.OrdinalIgnoreCase)
+                || Path.GetExtension(inputFile).Equals(".arf2", StringComparison.OrdinalIgnoreCase)) {
                 var input = MolecularNetworkingInputLoader.LoadAlignment(inputFile, dclFile);
                 return RunInput(input, outputFile, parameter, ionMode);
             }
@@ -147,11 +148,11 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             if (alignment) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
                 if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
-                return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode, true);
+                return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode);
             }
             var analysisFile = storage.AnalysisFiles.FirstOrDefault(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath));
             if (analysisFile is null) throw new FileNotFoundException("No included analysis peak list was found in the project.", projectFile);
-            return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode, false);
+            return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode);
         }
 
         private static int RunInput<T>(MolecularNetworkingInput<T> input, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {

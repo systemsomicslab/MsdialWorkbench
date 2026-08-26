@@ -8,11 +8,11 @@ The `msn` command accepts MSP libraries as before. It also accepts MS-DIAL binar
 
 ```text
 MSDIALCUI msn -i <analysis.pai2> --spectrum <analysis.dcl> -o <output.pairs> -m <mn-parameter.txt>
-MSDIALCUI msn -i <alignment.arf2> -s <alignment.dcl> --alignment -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <alignment.arf2> -s <alignment.dcl> -o <output.pairs> -m <mn-parameter.txt>
 MSDIALCUI msn -i <project.mddata> -o <output.pairs> -m <mn-parameter.txt>
 ```
 
-Analysis peak lists use their MS-DIAL peak identifiers to locate spectra in the supplied spectrum file. Alignment results use `MasterAlignmentID`, which is the index of the alignment spectrum record. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file. The short form is `-s`. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
+Analysis peak lists use their MS-DIAL peak identifiers to locate spectra in the supplied spectrum file. Alignment results use `MasterAlignmentID`, which is the index of the alignment spectrum record. Binary input type is detected from the `.pai/.pai2` or `.arf/.arf2` extension; `--alignment` is only used with `.mddata` to select the project's alignment result instead of its analysis peak list. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file. The short form is `-s`. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
 
 ## Language
 

@@ -449,10 +449,10 @@ public static class MainProcess
                         if (spectrumFile is null || !spectrumFile.Exists) {
                             throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
                         }
-                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
                     }
                     if (spectrumFile != null && spectrumFile.Exists) {
-                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode, alignment);
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
                     }
                     if (targetFile != null && targetFile.Exists) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
