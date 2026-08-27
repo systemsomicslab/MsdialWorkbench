@@ -49,7 +49,7 @@ public sealed class MainProcessCommandTests
         var root = BuildRoot();
         var msn = root.Subcommands.Single(command => command.Name == "msn");
 
-        var spectrum = msn.Options.SingleOrDefault(option => option.Name == "spectrum");
+        var spectrum = msn.Options.SingleOrDefault(option => option.Name.Contains("spectrum") || option.Aliases.Contains("--spectrum"));
         Assert.IsNotNull(spectrum);
         Assert.IsTrue(spectrum!.Aliases.Contains("-s"));
     }

@@ -13,7 +13,7 @@ MSDIALCUI msn -i <project.mddata> -o <output.pairs> -m <mn-parameter.txt>
 MSDIALCUI msn -i <project.mddata> --analysis-file <analysis-name> -o <output.pairs> -m <mn-parameter.txt>
 ```
 
-Alignment results are the default for `.mddata` input. Use `--analysis-file` to select an analysis file by its project name or peak-list filename; this also switches project processing from alignment to that analysis file. When multiple analysis files are available, the option is required to select one. Binary input type is detected from the `.pai/.pai2` or `.arf/.arf2` extension. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file. The short form is `-s`. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
+Alignment results are the default for `.mddata` input. Use `--analysis-file` to select an analysis file by its `AnalysisFileName` stored in the project or the peak-list filename; this also switches project processing from alignment to that analysis file. When multiple analysis files are available, the option is required to select one. Binary input type is detected from the `.pai/.pai2` or `.arf/.arf2` extension. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file. The short form is `-s`. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
 
 ## Language
 
