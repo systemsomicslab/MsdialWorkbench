@@ -145,7 +145,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
-            if (alignment) {
+            if (alignment && string.IsNullOrWhiteSpace(analysisFileName)) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
                 if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
                 return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode);

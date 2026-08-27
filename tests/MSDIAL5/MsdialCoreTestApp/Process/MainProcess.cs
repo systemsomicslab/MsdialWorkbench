@@ -363,8 +363,8 @@ public static class MainProcess
         };
         var alignmentOpt = new Option<bool>("--alignment")
         {
-            Description = "Treat binary input as alignment result data",
-            DefaultValueFactory = _ => false,
+            Description = "Use the project's alignment result for .mddata input",
+            DefaultValueFactory = _ => true,
         };
         var ionmodeOpt = new Option<string>("--ionmode", "-ionmode")
         {
