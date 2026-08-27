@@ -143,15 +143,32 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             }
         }
 
-        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment) {
+        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
             if (alignment) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
                 if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
                 return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode);
             }
-            var analysisFile = storage.AnalysisFiles.FirstOrDefault(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath));
-            if (analysisFile is null) throw new FileNotFoundException("No included analysis peak list was found in the project.", projectFile);
+            var analysisFiles = storage.AnalysisFiles
+                .Where(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath))
+                .ToList();
+            if (!string.IsNullOrWhiteSpace(analysisFileName)) {
+                analysisFiles = analysisFiles.Where(file =>
+                    string.Equals(file.AnalysisFileName, analysisFileName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Path.GetFileNameWithoutExtension(file.PeakAreaBeanInformationFilePath), analysisFileName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+            if (analysisFiles.Count == 0) {
+                throw new FileNotFoundException(string.IsNullOrWhiteSpace(analysisFileName)
+                    ? "No included analysis peak list was found in the project."
+                    : $"No included analysis peak list matched '{analysisFileName}'.", projectFile);
+            }
+            if (analysisFiles.Count > 1) {
+                var candidates = string.Join(", ", analysisFiles.Select(file => file.AnalysisFileName));
+                throw new InvalidOperationException($"Multiple analysis peak lists are available. Specify --analysis-file with one of: {candidates}");
+            }
+            var analysisFile = analysisFiles[0];
             return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode);
         }
 

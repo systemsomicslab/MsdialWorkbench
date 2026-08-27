@@ -357,6 +357,10 @@ public static class MainProcess
         {
             Description = "Associated MS/MS spectrum file for binary peak-list input",
         };
+        var analysisFileOpt = new Option<string>("--analysis-file")
+        {
+            Description = "Analysis file name to use when input is an .mddata project",
+        };
         var alignmentOpt = new Option<bool>("--alignment")
         {
             Description = "Treat binary input as alignment result data",
@@ -394,6 +398,7 @@ public static class MainProcess
         cmd.Options.Add(methodOpt);
         cmd.Options.Add(targetFileOpt);
         cmd.Options.Add(spectrumFileOpt);
+        cmd.Options.Add(analysisFileOpt);
         cmd.Options.Add(alignmentOpt);
         cmd.Options.Add(ionmodeOpt);
         cmd.Options.Add(overwriteOpt);
@@ -425,6 +430,7 @@ public static class MainProcess
                 var methodFile = parseResult.GetRequiredValue(methodOpt);
                 var targetFile = parseResult.GetValue(targetFileOpt);
                 var spectrumFile = parseResult.GetValue(spectrumFileOpt);
+                var analysisFileName = parseResult.GetValue(analysisFileOpt);
                 var alignment = parseResult.GetValue(alignmentOpt);
                 var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
                 var overwrite = parseResult.GetValue(overwriteOpt);
@@ -439,7 +445,7 @@ public static class MainProcess
                 }
                 else {
                     if (Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase)) {
-                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment);
+                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName);
                     }
                     var binaryInput = Path.GetExtension(input).Equals(".pai", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(input).Equals(".pai2", StringComparison.OrdinalIgnoreCase)
