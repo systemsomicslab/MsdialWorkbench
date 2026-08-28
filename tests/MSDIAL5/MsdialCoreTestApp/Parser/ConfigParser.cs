@@ -28,7 +28,7 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MsdialGcmsParameter ReadForGcms(string filepath)
         {
             var param = new MsdialGcmsParameter();
-            using (var sr = new StreamReader(filepath, Encoding.ASCII))
+            using (var sr = new StreamReader(filepath, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 while (sr.Peek() > -1)
                 {
@@ -44,6 +44,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 param.MassSliceWidth = 0.5F;
                 param.CentroidMs1Tolerance = 0.5F;
             }
+            ResolveGcmsFilePaths(param, filepath);
             
             return param;
         }
@@ -416,38 +417,83 @@ namespace CompMs.App.MsdialConsole.Parser
             method = string.Empty; value = string.Empty; isReadable = false;
             if (string.IsNullOrEmpty(line)) return;
             if (line!.Length < 2) return;
-            if (line[0] == '#') return;
+            if (line.TrimStart().StartsWith("#", StringComparison.Ordinal)) return;
 
-            var lineArray = line.Split(':');
-            if (lineArray.Length < 2) return;
-            method = lineArray[0].Trim();
-            value = line.Substring(line.Split(':')[0].Length + 1).Trim();
+            var colonIndex = line.IndexOf(':');
+            var equalsIndex = line.IndexOf('=');
+            var separatorIndex = colonIndex < 0
+                ? equalsIndex
+                : equalsIndex < 0
+                    ? colonIndex
+                    : Math.Min(colonIndex, equalsIndex);
+            if (separatorIndex < 0) return;
+
+            method = line.Substring(0, separatorIndex).Trim();
+            value = line.Substring(separatorIndex + 1).Trim();
+            if (value.Length >= 2
+                && ((value[0] == '"' && value[value.Length - 1] == '"')
+                    || (value[0] == '\'' && value[value.Length - 1] == '\''))) {
+                value = value.Substring(1, value.Length - 2).Trim();
+            }
             isReadable = true;
+        }
+
+        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
+            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath);
+            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath);
+            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath);
+            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath);
+            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath);
+            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath);
+            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath);
+            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath);
+        }
+
+        private static string ResolvePathFromMethodFile(string? path, string methodFilePath) {
+            if (path.IsEmptyOrNull()) {
+                return string.Empty;
+            }
+
+            var expanded = Environment.ExpandEnvironmentVariables(path!.Trim());
+            if (Path.IsPathRooted(expanded)) {
+                return Path.GetFullPath(expanded);
+            }
+
+            var methodDirectory = Path.GetDirectoryName(Path.GetFullPath(methodFilePath)) ?? Environment.CurrentDirectory;
+            return Path.GetFullPath(Path.Combine(methodDirectory, expanded));
         }
 
         public static bool ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
-            value = value.ToLower();
+            var valueLower = value.ToLower();
             switch (method) {
-                case "ri index file pathes": param.RiDictionaryFilePath = value; return true;
+                case "ri index file pathes":
+                case "ri index file paths":
+                case "ri dictionary file path":
+                case "ri dictionary file paths":
+                    param.RiDictionaryFilePath = value;
+                    return true;
                 case "retention type":
-                    if (value == "rt" || value == "ri")
-                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), value, true);
+                    if (valueLower == "rt" || valueLower == "ri")
+                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), valueLower, true);
                     return true;
                 case "ri compound":
                 case "ri compound type":
-                    if (value == "fames" || value == "alkanes")
-                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), value, true);
+                    if (valueLower == "fames" || valueLower == "alkanes")
+                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), valueLower, true);
                     return true;
-                case "alignment index type": if (value == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
-                case "retention index tolerance for alignment": if (float.TryParse(value, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align; return true;
+                case "alignment index type": if (valueLower == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
+                case "retention index tolerance for alignment":
+                case "retention index alignment tolerance":
+                    if (float.TryParse(valueLower, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align;
+                    return true;
                 case "replace quant mass by user defined value":
-                    if (value == "true")
+                    if (valueLower == "true")
                         param.IsReplaceQuantmassByUserDefinedValue = true; return true;
                 case "is quant mass based on base peak mz":
-                    if (value == "true")
+                    if (valueLower == "true")
                         param.IsRepresentativeQuantMassBasedOnBasePeakMz = true; return true;
                 default: return false;
             }
@@ -682,7 +728,11 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //Identification
                 case "rt tolerance for msp-based annotation": if (float.TryParse(valueLower, out float rttol_ident)) param.MspSearchParam.RtTolerance = rttol_ident; return true;
-                case "ri tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ritol_ident)) param.MspSearchParam.RiTolerance = ritol_ident; return true;
+                case "ri tolerance for msp-based annotation":
+                case "ri tolerance for identification":
+                case "retention index tolerance for identification":
+                    if (float.TryParse(valueLower, out float ritol_ident)) param.MspSearchParam.RiTolerance = ritol_ident;
+                    return true;
                 case "ccs tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ccstol_ident)) param.MspSearchParam.CcsTolerance = ccstol_ident; return true;
                 case "mass range begin for msp-based annotation": if (float.TryParse(valueLower, out float msbegin_ident)) param.MspSearchParam.MassRangeBegin = msbegin_ident; return true;
                 case "mass range end for msp-based annotation": if (float.TryParse(valueLower, out float msend_ident)) param.MspSearchParam.MassRangeEnd = msend_ident; return true;
@@ -691,11 +741,26 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqdotproduct)) param.MspSearchParam.SquaredWeightedDotProductCutOff = sqdotproduct; return true;
                 case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqsimpleproduct)) param.MspSearchParam.SquaredSimpleDotProductCutOff = sqsimpleproduct; return true;
                 case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqrevdotproduct)) param.MspSearchParam.SquaredReverseDotProductCutOff = sqrevdotproduct; return true;
-                case "square root of weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct; return true;
-                case "square root of simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct; return true;
-                case "square root of reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct; return true;
-                case "matched peaks percentage cutoff for msp-based annotation": if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent; return true;
-                case "minimum spectrum match for msp-based annotation": if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch; return true;
+                case "weighted dot product cutoff":
+                case "square root of weighted dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct;
+                    return true;
+                case "simple dot product cutoff":
+                case "square root of simple dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct;
+                    return true;
+                case "reverse dot product cutoff":
+                case "square root of reverse dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct;
+                    return true;
+                case "matched peaks percentage cutoff":
+                case "matched peaks percentage cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent;
+                    return true;
+                case "minimum spectrum match":
+                case "minimum spectrum match for msp-based annotation":
+                    if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch;
+                    return true;
                 case "total score cutoff for msp-based annotation": if (float.TryParse(valueLower, out float cutoff_ident)) param.MspSearchParam.TotalScoreCutoff = cutoff_ident; return true;
                 case "ms1 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms1tol_ident)) param.MspSearchParam.Ms1Tolerance = ms1tol_ident; return true;
                 case "ms2 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms2tol_ident)) param.MspSearchParam.Ms2Tolerance = ms2tol_ident; return true;
@@ -704,7 +769,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "use ccs for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use ccs for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "only report top hit for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInMspSearch = bool.Parse(valueLower); return true;
-                case "execute annotation process only for alignment file for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+                case "execute annotation process only for alignment file":
+                case "execute annotation process only for alignment file for msp-based annotation":
+                    if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower);
+                    return true;
 
                 //Identification
                 case "rt tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float rttol_lbm_ident)) param.LbmSearchParam.RtTolerance = rttol_lbm_ident; return true;
