@@ -360,6 +360,7 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return Math.Round(peak.Mass, 5).ToString();
             case "SN": return Math.Round(peak.SignalToNoise, 1).ToString();
             case "MSMS": return peak.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+            case "Reference matched": return peak.RepresentativeLibraryID >= 0 ? "TRUE" : "FALSE";
             default: return string.Empty;
         }
     }
@@ -378,6 +379,7 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return peak.Mass;
             case "SN": return peak.SignalToNoise;
             case "MSMS": return peak.MS2RawSpectrumID;
+            case "Reference matched": return peak.RepresentativeLibraryID >= 0 ? 1d : 0d;
             default: return -1;
         }
     }

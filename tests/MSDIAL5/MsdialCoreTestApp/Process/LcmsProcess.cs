@@ -175,14 +175,27 @@ public sealed class LcmsProcess
 
             var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
             var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
-            IQuantValueAccessor align_quantAccessor = alignmentLightPeakStore != null
-                ? new AlignmentLightQuantValueAccessor("Height", storage.Parameter, alignmentLightPeakStore)
-                : new LegacyQuantValueAccessor("Height", storage.Parameter);
+            IQuantValueAccessor CreateQuantAccessor(string exportType) => alignmentLightPeakStore != null
+                ? new AlignmentLightQuantValueAccessor(exportType, storage.Parameter, alignmentLightPeakStore)
+                : new LegacyQuantValueAccessor(exportType, storage.Parameter);
+            IQuantValueAccessor align_quantAccessor = CreateQuantAccessor("Height");
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var align_exporter = new AlignmentCSVExporter();
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
+
+            var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
+            using (var provenanceStream = File.Open(provenanceOutputFile, FileMode.Create, FileAccess.Write)) {
+                var provenanceExporter = new AlignmentProvenanceExporter();
+                if (alignmentLightPeakStore is null) {
+                    provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties);
+                }
+                else {
+                    provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties, alignmentLightPeakStore);
+                }
+            }
+            Console.WriteLine($"Alignment provenance: {provenanceOutputFile}");
 
             if (storage.Parameter.IsHeightMatrixExport) {
                 var qaOutputFolder = String.IsNullOrWhiteSpace(storage.Parameter.ExportFolderPath)
@@ -196,12 +209,12 @@ public sealed class LcmsProcess
                     result.AlignmentSpotProperties,
                     files,
                     new MulticlassFileMetaAccessor(0),
-                    ("Height", new LegacyQuantValueAccessor("Height", storage.Parameter)),
-                    ("RT", new LegacyQuantValueAccessor("RT", storage.Parameter)),
-                    ("MZ", new LegacyQuantValueAccessor("MZ", storage.Parameter)),
-                    ("SN", new LegacyQuantValueAccessor("SN", storage.Parameter)),
-                    ("MSMS", new LegacyQuantValueAccessor("MSMS", storage.Parameter)),
-                    ("Reference matched", new LegacyQuantValueAccessor("Reference matched", storage.Parameter)));
+                    ("Height", CreateQuantAccessor("Height")),
+                    ("RT", CreateQuantAccessor("RT")),
+                    ("MZ", CreateQuantAccessor("MZ")),
+                    ("SN", CreateQuantAccessor("SN")),
+                    ("MSMS", CreateQuantAccessor("MSMS")),
+                    ("Reference matched", CreateQuantAccessor("Reference matched")));
                 Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
             }
 
