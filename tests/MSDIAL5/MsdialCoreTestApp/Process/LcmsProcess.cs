@@ -34,6 +34,7 @@ public sealed class LcmsProcess
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
+        var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
@@ -96,10 +97,15 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance).Result;
     }
 
-    private async Task<int> ExecuteAsync(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved, bool isAlignmentLightMode) {
+    private async Task<int> ExecuteAsync(
+        IMsdialDataStorage<MsdialLcmsParameter> storage,
+        string outputFolder,
+        bool isProjectSaved,
+        bool isAlignmentLightMode,
+        bool exportDetailedAlignmentProvenance) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -185,17 +191,31 @@ public sealed class LcmsProcess
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
 
-            var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
-            using (var provenanceStream = File.Open(provenanceOutputFile, FileMode.Create, FileAccess.Write)) {
-                var provenanceExporter = new AlignmentProvenanceExporter();
+            var peakIdOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdpeakid.tsv");
+            using (var peakIdStream = File.Open(peakIdOutputFile, FileMode.Create, FileAccess.Write)) {
+                var peakIdExporter = new AlignmentPeakIdMatrixExporter();
                 if (alignmentLightPeakStore is null) {
-                    provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties);
+                    peakIdExporter.Export(peakIdStream, result.AlignmentSpotProperties, files);
                 }
                 else {
-                    provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties, alignmentLightPeakStore);
+                    peakIdExporter.Export(peakIdStream, result.AlignmentSpotProperties, files, alignmentLightPeakStore);
                 }
             }
-            Console.WriteLine($"Alignment provenance: {provenanceOutputFile}");
+            Console.WriteLine($"Alignment peak ID matrix: {peakIdOutputFile}");
+
+            if (exportDetailedAlignmentProvenance) {
+                var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
+                using (var provenanceStream = File.Open(provenanceOutputFile, FileMode.Create, FileAccess.Write)) {
+                    var provenanceExporter = new AlignmentProvenanceExporter();
+                    if (alignmentLightPeakStore is null) {
+                        provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties);
+                    }
+                    else {
+                        provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties, alignmentLightPeakStore);
+                    }
+                }
+                Console.WriteLine($"Detailed alignment provenance: {provenanceOutputFile}");
+            }
 
             if (storage.Parameter.IsHeightMatrixExport) {
                 var qaOutputFolder = String.IsNullOrWhiteSpace(storage.Parameter.ExportFolderPath)
