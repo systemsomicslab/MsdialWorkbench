@@ -120,7 +120,9 @@ public class DataAccessTests
 
     [TestMethod()]
     public void ReferenceMatchedExportUsesAnnotationName() {
-        foreach (var name in new[] { "", " ", "Unknown", "unknown feature", "null", "empty", "w/o MS2: compound", "RIKEN MS/MS" }) {
+        // "no MS2: " and "low score: " are the two shapes SetMoleculeMsPropertyAsSuggested
+        // writes in MS-DIAL 5; "w/o MS2: " is still written by the peptide path.
+        foreach (var name in new[] { "", " ", "Unknown", "unknown feature", "null", "empty", "no MS2: compound", "low score: compound", "w/o MS2: compound", "RIKEN MS/MS" }) {
             var peak = new AlignmentChromPeakFeature { Name = name };
             Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
             Assert.AreEqual(0d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
