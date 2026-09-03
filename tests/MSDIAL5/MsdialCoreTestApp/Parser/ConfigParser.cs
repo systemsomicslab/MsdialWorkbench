@@ -111,6 +111,26 @@ namespace CompMs.App.MsdialConsole.Parser
             return false;
         }
 
+        public static int ReadLbmAnnotatorPriority(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "lbm annotator priority":
+                        case "lbm annotation priority":
+                            if (int.TryParse(value, out var priority)) {
+                                return priority;
+                            }
+                            break;
+                    }
+                }
+            }
+            return 1;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
@@ -205,7 +225,17 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 var searchParameter = new MsRefSearchParameterBase(param.MspSearchParam);
                 ApplyMspSearchParameter(searchParameter, fields, headers);
-                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter));
+                TargetOmics? targetOmics = null;
+                var targetOmicsText = GetField(fields, headers, "targetomics", "annotationmode", "omics");
+                if (!targetOmicsText.IsEmptyOrNull()) {
+                    if (Enum.TryParse(targetOmicsText, true, out TargetOmics parsedTargetOmics)) {
+                        targetOmics = parsedTargetOmics;
+                    }
+                    else {
+                        Console.WriteLine($"Unknown target_omics '{targetOmicsText}' for MSP annotator '{annotatorId}'. The project Target omics setting will be used.");
+                    }
+                }
+                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics));
             }
             return settings;
         }
