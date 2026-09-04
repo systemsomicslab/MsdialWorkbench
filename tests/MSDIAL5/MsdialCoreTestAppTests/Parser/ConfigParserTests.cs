@@ -1,5 +1,6 @@
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Enum;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -10,6 +11,18 @@ namespace MsdialCoreTestAppTests.Parser;
 [TestClass]
 public sealed class ConfigParserTests
 {
+    [TestMethod]
+    public void ReadCommonParameter_UpdatesActiveBlankFilteringFoldChange()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "sample max / blank average", "7");
+
+        Assert.IsTrue(result);
+        Assert.AreEqual(7f, parameter.SampleMaxOverBlankAverage);
+        Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
+    }
+ 
     [TestMethod]
     public void ReadForGcms_AcceptsEqualsSyntaxQuotesAndGuiFieldNames()
     {
