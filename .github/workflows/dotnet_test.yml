@@ -39,6 +39,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
 
   publish-msdial5:
+    if: github.event_name == 'push'
     needs: test
     runs-on: windows-latest
     steps:
@@ -67,6 +68,7 @@ jobs:
           path: artifact
 
   publish-msdial5-console:
+    if: github.event_name == 'push'
     needs: test
     runs-on: ${{ matrix.triple.os }}
     strategy:
@@ -105,6 +107,7 @@ jobs:
           path: artifact
 
   publish-msdial4:
+    if: github.event_name == 'push'
     needs: test
     runs-on: windows-latest
     steps:
@@ -133,6 +136,7 @@ jobs:
           path: artifact
 
   publish-msdial4-console:
+    if: github.event_name == 'push'
     needs: test
     runs-on: ${{ matrix.pair.os }}
     strategy:
@@ -165,4 +169,3 @@ jobs:
         with:
           name: MSDIAL4-Console-${{ matrix.pair.os }}
           path: artifact
-
