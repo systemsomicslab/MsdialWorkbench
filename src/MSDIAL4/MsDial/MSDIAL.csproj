@@ -269,11 +269,12 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
       <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/Msp20221205132019_conventional_converted.lbm2</Lbm2Url>
+      <DownloadLibraries Condition="'$(DownloadLibraries)' == ''">false</DownloadLibraries>
     </PropertyGroup>
     <ItemGroup>
       <_DeployToItem Include="$(TargetDir)\*.lbm*" />
     </ItemGroup>
-    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)')" ContinueOnError="true"/>
+    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)') AND '$(DownloadLibraries)' == 'true'" ContinueOnError="true"/>
     <Exec Command="xcopy &quot;$(ProjectDir)CytoscapeLocalBrowser&quot; &quot;$(TargetDir)CytoscapeLocalBrowser&quot; /D/E/C/I/H/Y" />
   </Target>
 </Project>

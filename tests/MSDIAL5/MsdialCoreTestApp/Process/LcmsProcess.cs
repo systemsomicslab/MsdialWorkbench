@@ -147,7 +147,10 @@ public sealed class LcmsProcess
                 Console.WriteLine("Alignment light mode: streaming peak matrix, file-backed alignment deconvolution access, GUI chromatogram serialization, GUI alignment object serialization, and ion-abundance correlation links are disabled; text exports remain enabled.");
                 Console.WriteLine("Alignment started.");
                 var lightRunner = new LcmsAlignmentLightRunner(storage, evaluator, providerFactory, CreateConsoleProgressReporter("Alignment"));
-                var lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
+                LcmsAlignmentLightResult lightResult;
+                using (ConsoleLineFilter.SuppressExact("Reading data...")) {
+                    lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
+                }
                 result = lightResult.Container;
                 align_decResults = lightResult.MsdecResults;
                 alignmentLightMsdecResults = lightResult.MsdecResults as IDisposable;
@@ -159,7 +162,9 @@ public sealed class LcmsProcess
                 factory.Progress = CreateConsoleProgressReporter("Alignment");
                 var aligner = factory.CreatePeakAligner();
                 Console.WriteLine("Alignment started.");
-                result = aligner.Alignment(files, alignmentFile, serializer);
+                using (ConsoleLineFilter.SuppressExact("Reading data...")) {
+                    result = aligner.Alignment(files, alignmentFile, serializer);
+                }
                 Console.WriteLine("Alignment finished.");
                 result.Save(alignmentFile);
                 align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();

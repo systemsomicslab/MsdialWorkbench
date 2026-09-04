@@ -15,6 +15,7 @@
 		<MsdUrl>https://zenodo.org/records/12618137/files/MINEs-StructureDB-vs1.msd</MsdUrl>
 		<EsdUrl>https://zenodo.org/records/12618137/files/MsfinderStructureDB-VS15.esd</EsdUrl>
 		<EtmUrl>https://zenodo.org/records/12618137/files/MSMS-DBs-vs1.etm</EtmUrl>
+		<DownloadLibraries Condition="'$(DownloadLibraries)' == ''">false</DownloadLibraries>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
@@ -25,11 +26,11 @@
 			<_DeployToItemEsd Include="$(OutputPath)\Resources\msfinderLibrary\*.esd" />
 			<_DeployToItemEtm Include="$(OutputPath)\Resources\msfinderLibrary\*.etm" />
 		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
-		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
-		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
-		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
-		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)') AND '$(SkipLibraryDownload)' == ''" />
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -230,28 +231,28 @@
     </ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd" Condition="'$(SkipLibraryDownload)' == ''">
+		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
