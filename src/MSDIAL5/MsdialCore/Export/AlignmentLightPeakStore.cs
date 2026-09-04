@@ -1,4 +1,4 @@
-using CompMs.Common.Mathematics.Basic;
+﻿using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -27,7 +27,8 @@ public readonly struct AlignmentLightPeakRow {
         int ms1RawSpectrumIdTop,
         int ms2RawSpectrumID,
         int representativeLibraryID,
-        bool isMsmsAssigned) {
+        bool isMsmsAssigned,
+        bool isReferenceMatched) {
         FileID = fileID;
         FileName = fileName;
         MasterPeakID = masterPeakID;
@@ -46,6 +47,7 @@ public readonly struct AlignmentLightPeakRow {
         MS2RawSpectrumID = ms2RawSpectrumID;
         RepresentativeLibraryID = representativeLibraryID;
         IsMsmsAssigned = isMsmsAssigned;
+        IsReferenceMatched = isReferenceMatched;
     }
 
     public int FileID { get; }
@@ -66,10 +68,20 @@ public readonly struct AlignmentLightPeakRow {
     public int MS2RawSpectrumID { get; }
     public int RepresentativeLibraryID { get; }
     public bool IsMsmsAssigned { get; }
+
+    /// <summary>
+    /// The representative match result's own reference-matched verdict, carried so light mode does
+    /// not have to infer it from a library id. A suggested annotation holds a library id too, so
+    /// deriving it would count a precursor-only or low-score suggestion as a reference match.
+    /// </summary>
+    public bool IsReferenceMatched { get; }
 }
 
 public sealed class AlignmentLightPeakStore : IDisposable {
-    private const int RecordSize = 102;
+    // 18 fields plus the reference-matched flag. The file is a per-run temporary spill
+    // (CreateTemp uses Path.GetTempFileName and Dispose closes it), so the layout carries no
+    // compatibility obligation across versions.
+    private const int RecordSize = 103;
 
     private readonly string _filePath;
     private readonly FileStream _stream;
@@ -186,6 +198,7 @@ public sealed class AlignmentLightPeakStore : IDisposable {
         _writer.Write(peak.MS2RawSpectrumID);
         _writer.Write(peak.MatchResults?.Representative?.LibraryID ?? -1);
         _writer.Write(peak.IsMsmsAssigned);
+        _writer.Write(peak.MatchResults?.Representative?.IsReferenceMatched ?? false);
     }
 
     private static AlignmentLightPeakRow ReadPeak(BinaryReader reader, AnalysisFileBean file) {
@@ -212,6 +225,7 @@ public sealed class AlignmentLightPeakStore : IDisposable {
             reader.ReadInt32(),
             reader.ReadInt32(),
             reader.ReadInt32(),
+            reader.ReadBoolean(),
             reader.ReadBoolean());
     }
 
@@ -234,6 +248,7 @@ public sealed class AlignmentLightPeakStore : IDisposable {
             -1,
             -1,
             -1,
+            false,
             false);
     }
 
@@ -360,7 +375,7 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return Math.Round(peak.Mass, 5).ToString();
             case "SN": return Math.Round(peak.SignalToNoise, 1).ToString();
             case "MSMS": return peak.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
-            case "Reference matched": return peak.RepresentativeLibraryID >= 0 ? "TRUE" : "FALSE";
+            case "Reference matched": return peak.IsReferenceMatched ? "TRUE" : "FALSE";
             default: return string.Empty;
         }
     }
@@ -379,7 +394,7 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return peak.Mass;
             case "SN": return peak.SignalToNoise;
             case "MSMS": return peak.MS2RawSpectrumID;
-            case "Reference matched": return peak.RepresentativeLibraryID >= 0 ? 1d : 0d;
+            case "Reference matched": return peak.IsReferenceMatched ? 1d : 0d;
             default: return -1;
         }
     }
