@@ -49,6 +49,7 @@ public sealed class LcmsProcess
 
         var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
         var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
+        var lbmAnnotatorPriority = ConfigParser.ReadLbmAnnotatorPriority(methodFile);
         CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, textAnnotatorSettings, out IupacDatabase iupacDB,
             out var mspDBs, out var textDBs,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
@@ -66,7 +67,8 @@ public sealed class LcmsProcess
         foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
             var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
             foreach (var setting in mspDB.AnnotatorSettings) {
-                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, param.TargetOmics, setting.AnnotatorId, setting.Priority);
+                var targetOmics = setting.TargetOmics ?? param.TargetOmics;
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority);
                 annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
             }
             if (annotatorPairs.Count > 0) {
@@ -74,7 +76,7 @@ public sealed class LcmsProcess
             }
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, param.LbmFilePath, lbmAnnotatorPriority);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
