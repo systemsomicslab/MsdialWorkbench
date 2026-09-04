@@ -32,6 +32,23 @@ namespace CompMs.MsdialCore.Export.Tests
     [TestClass]
     public class AnnotationScoreRepresentationTests
     {
+        private System.Globalization.CultureInfo? _originalCulture;
+        private System.Globalization.CultureInfo? _originalUICulture;
+
+        [TestInitialize]
+        public void SetInvariantCulture() {
+            _originalCulture = Thread.CurrentThread.CurrentCulture;
+            _originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+        }
+
+        [TestCleanup]
+        public void RestoreCulture() {
+            if (_originalCulture is not null) Thread.CurrentThread.CurrentCulture = _originalCulture;
+            if (_originalUICulture is not null) Thread.CurrentThread.CurrentUICulture = _originalUICulture;
+        }
+
         private static readonly string[] SharedScoreColumns = new[] {
             "Simple dot product",
             "Weighted dot product",
