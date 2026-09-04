@@ -14,7 +14,7 @@ namespace CompMs.Common.PugRestApiStandard
 
             try
             {
-                using (var response = HttpClient.GetAsync(uri).GetAwaiter().GetResult())
+                using (var response = HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult())
                 {
                     response.EnsureSuccessStatusCode();
                     using (var input = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())

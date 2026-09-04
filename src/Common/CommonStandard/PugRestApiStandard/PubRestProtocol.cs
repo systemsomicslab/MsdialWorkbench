@@ -229,21 +229,20 @@ namespace CompMs.Common.PugRestApiStandard
 
             try
             {
-                res = HttpClient.GetAsync(url).GetAwaiter().GetResult();
+                res = HttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
                 res.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine("Formula: {0}, Message: {1}", this.formula, ex.Message);
+                res?.Dispose();
                 res = null;
             }
             catch (System.OperationCanceledException ex)
             {
                 Console.WriteLine("Formula: {0}, Status: {1}, Message: {2}", this.formula, ex.HResult, ex.Message);
+                res?.Dispose();
                 res = null;
-            }
-            finally
-            {
             }
             return res;
         }

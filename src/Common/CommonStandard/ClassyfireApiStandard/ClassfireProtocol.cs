@@ -95,7 +95,7 @@ namespace CompMs.Common.ClassyfireApiStandard
 
             try
             {
-                using (var response = HttpClient.GetAsync(uri).GetAwaiter().GetResult())
+                using (var response = HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult())
                 {
                     response.EnsureSuccessStatusCode();
                     using (var input = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
@@ -375,16 +375,14 @@ namespace CompMs.Common.ClassyfireApiStandard
 
             try
             {
-                res = HttpClient.GetAsync(url).GetAwaiter().GetResult();
+                res = HttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
                 res.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
+                res?.Dispose();
                 res = null;
-            }
-            finally
-            {
             }
             return res;
         }
