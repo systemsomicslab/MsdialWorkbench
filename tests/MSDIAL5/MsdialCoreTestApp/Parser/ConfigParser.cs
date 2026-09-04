@@ -118,7 +118,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
+                    switch (method.ToLowerInvariant()) {
                         case "lbm annotator priority":
                         case "lbm annotation priority":
                             if (int.TryParse(value, out var priority)) {
