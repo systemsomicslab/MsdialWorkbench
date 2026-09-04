@@ -1,18 +1,28 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 namespace CompMs.Common.PugRestApiStandard
 {
     public sealed class DownloadClient
     {
+        private static readonly HttpClient HttpClient = new HttpClient();
+
         public static void DownloadSdf(string url, string path)
         {
             var uri = new Uri(url);
 
             try
             {
-                new WebClient().DownloadFile(uri, path);
+                using (var response = HttpClient.GetAsync(uri).GetAwaiter().GetResult())
+                {
+                    response.EnsureSuccessStatusCode();
+                    using (var input = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+                    using (var output = File.Create(path))
+                    {
+                        input.CopyTo(output);
+                    }
+                }
             }
             catch (IOException e)
             {
@@ -22,29 +32,6 @@ namespace CompMs.Common.PugRestApiStandard
             {
                 Console.WriteLine("failed: {0}, {1}", url, e.Message);
             }
-
-            //var client = new WebClient();
-            //var uri = new Uri(url);
-
-            //client.DownloadProgressChanged += client_DownloadProgressChanged;
-            //client.DownloadFileCompleted += client_DownloadFileCompleted;
-
-            //client.DownloadFileAsync(uri, path);
-        }
-
-        private static void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-                Console.WriteLine("Canceled");
-            else if (e.Error != null)
-                Console.WriteLine("Error:{0}", e.Error.Message);
-            else
-                Console.WriteLine("Download complete");
-        }
-
-        private static void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            Console.WriteLine("{0}% ({1}byte/{2}byte) downloaded", e.ProgressPercentage, e.TotalBytesToReceive, e.BytesReceived);
         }
     }
 }

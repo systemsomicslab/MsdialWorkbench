@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -86,6 +86,7 @@ namespace CompMs.Common.ClassyfireApiStandard
     public class ClassfireApi
     {
         private static string prolog = @"http://classyfire.wishartlab.com";
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         public void DownloadClassyfireJson(string entryID, string path)
         {
@@ -94,7 +95,15 @@ namespace CompMs.Common.ClassyfireApiStandard
 
             try
             {
-                new WebClient().DownloadFile(uri, path);
+                using (var response = HttpClient.GetAsync(uri).GetAwaiter().GetResult())
+                {
+                    response.EnsureSuccessStatusCode();
+                    using (var input = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+                    using (var output = File.Create(path))
+                    {
+                        input.CopyTo(output);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -109,36 +118,34 @@ namespace CompMs.Common.ClassyfireApiStandard
             var url = prolog + "/queries/";
             var entryID = -1;
 
-            using (var client = new WebClient())
+            using (var content = new StringContent(JsonConvert.SerializeObject(new ClassyfireRequest()
             {
-                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                client.Headers[HttpRequestHeader.Accept] = "application/json";
-                client.Encoding = Encoding.UTF8;
-                //create json client
-                var request = new ClassyfireRequest()
-                {
-                    label = label,
-                    query_input = smiles,
-                    query_type = "STRUCTURE"
-                };
-                var json = JsonConvert.SerializeObject(request, Formatting.Indented);
+                label = label,
+                query_input = smiles,
+                query_type = "STRUCTURE"
+            }, Formatting.Indented), Encoding.UTF8, "application/json"))
+            {
                 try
                 {
-                    var res = client.UploadString(url, "POST", json);
-                    var response = JsonConvert.DeserializeObject<ClassyfireResponse>(res);
-                    if (response.id == null)
-                        return -1;
-                    else
+                    using (var response = HttpClient.PostAsync(url, content).GetAwaiter().GetResult())
                     {
-                        if (int.TryParse(response.id, out entryID))
-                            return entryID;
-                        else
+                        response.EnsureSuccessStatusCode();
+                        var res = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        var classyfireResponse = JsonConvert.DeserializeObject<ClassyfireResponse>(res);
+                        if (classyfireResponse.id == null)
                             return -1;
+                        else
+                        {
+                            if (int.TryParse(classyfireResponse.id, out entryID))
+                                return entryID;
+                            else
+                                return -1;
+                        }
                     }
                 }
-                catch (WebException ex)
+                catch (HttpRequestException ex)
                 {
-                    Debug.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                    Debug.WriteLine(ex.Message);
                 }
                 catch (System.IO.IOException ex)
                 {
@@ -163,26 +170,21 @@ namespace CompMs.Common.ClassyfireApiStandard
         public ClassyfireEntity ReadClassyfireEntityByInChIKey(string inchikey)
         {
             var url = prolog + "/entities/" + inchikey + ".json";
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            req.KeepAlive = false;
-            req.Timeout = System.Threading.Timeout.Infinite;
-            req.ProtocolVersion = HttpVersion.Version10;
-
             ClassyfireEntity result = null;
             try
             {
-                using (var res = req.GetResponse())
+                using (var res = getWebResponse(url))
                 {
-                    using (var sr = new StreamReader(res.GetResponseStream()))
+                    using (var sr = new StreamReader(res.Content.ReadAsStreamAsync().GetAwaiter().GetResult()))
                     {
                         var resString = sr.ReadToEnd();
                         result = JsonConvert.DeserializeObject<ClassyfireEntity>(resString);
                     }
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
                 return null;
             }
             catch (System.IO.IOException ex)
@@ -207,26 +209,21 @@ namespace CompMs.Common.ClassyfireApiStandard
         public ClassyfireEntity ReadClassyfireEntityByEntryID(string entryID)
         {
             var url = prolog + "/queries/" + entryID + ".json";
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            req.KeepAlive = false;
-            req.Timeout = System.Threading.Timeout.Infinite;
-            req.ProtocolVersion = HttpVersion.Version10;
-
             ClassyfireEntity result = null;
             try
             {
-                using (var res = req.GetResponse())
+                using (var res = getWebResponse(url))
                 {
-                    using (var sr = new StreamReader(res.GetResponseStream()))
+                    using (var sr = new StreamReader(res.Content.ReadAsStreamAsync().GetAwaiter().GetResult()))
                     {
                         var resString = sr.ReadToEnd();
                         result = JsonConvert.DeserializeObject<ClassyfireEntity>(resString);
                     }
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
                 return null;
             }
             catch (System.IO.IOException ex)
@@ -251,26 +248,21 @@ namespace CompMs.Common.ClassyfireApiStandard
         public ClassyfireEntity ReadClassyfireEntityAsSdfByEntryID(string entryID)
         {
             var url = prolog + "/queries/" + entryID + ".sdf";
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            req.KeepAlive = false;
-            req.Timeout = System.Threading.Timeout.Infinite;
-            req.ProtocolVersion = HttpVersion.Version10;
-
             ClassyfireEntity result = null;
             try
             {
-                using (var res = req.GetResponse())
+                using (var res = getWebResponse(url))
                 {
-                    using (var sr = new StreamReader(res.GetResponseStream()))
+                    using (var sr = new StreamReader(res.Content.ReadAsStreamAsync().GetAwaiter().GetResult()))
                     {
                         var resString = sr.ReadToEnd();
                         result = readSdfClassyfireEntity(resString);
                     }
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
                 return null;
             }
             catch (System.IO.IOException ex)
@@ -341,26 +333,21 @@ namespace CompMs.Common.ClassyfireApiStandard
         public ClassyfireResult ReadClassyfireResultByEntryID(string entryID)
         {
             var url = prolog + "/queries/" + entryID + ".json";
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            req.KeepAlive = false;
-            req.Timeout = System.Threading.Timeout.Infinite;
-            req.ProtocolVersion = HttpVersion.Version10;
-
             ClassyfireResult result = null;
             try
             {
-                using (var res = req.GetResponse())
+                using (var res = getWebResponse(url))
                 {
-                    using (var sr = new StreamReader(res.GetResponseStream()))
+                    using (var sr = new StreamReader(res.Content.ReadAsStreamAsync().GetAwaiter().GetResult()))
                     {
                         var resString = sr.ReadToEnd();
                         result = JsonConvert.DeserializeObject<ClassyfireResult>(resString);
                     }
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
                 return null;
             }
             catch (System.IO.IOException ex)
@@ -382,17 +369,18 @@ namespace CompMs.Common.ClassyfireApiStandard
             return result;
         }
 
-        private WebResponse getWebResponse(WebRequest req)
+        private HttpResponseMessage getWebResponse(string url)
         {
-            WebResponse res = null;
+            HttpResponseMessage res = null;
 
             try
             {
-                res = req.GetResponse();
+                res = HttpClient.GetAsync(url).GetAwaiter().GetResult();
+                res.EnsureSuccessStatusCode();
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("{0}: {1}", ex.Status, ex.Message);
+                Console.WriteLine("{0}: {1}", ex.HResult, ex.Message);
                 res = null;
             }
             finally
