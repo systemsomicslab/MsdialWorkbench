@@ -332,8 +332,10 @@ namespace CompMs.MsdialCore.Utility {
             int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
 
-            var valuePeakLists = pMzValues.Select(_ => new List<ValuePeak>()).ToArray();
-
+var valuePeakLists = new List<ValuePeak>[pMzValues.Count];
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    valuePeakLists[j] = new List<ValuePeak>();
+}
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
@@ -350,7 +352,11 @@ namespace CompMs.MsdialCore.Utility {
                     }
                 }
             }
-            return valuePeakLists.Select(peaks => peaks.ToArray()).ToList();
+var results = new List<ValuePeak[]>(valuePeakLists.Length);
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    results.Add(valuePeakLists[j].ToArray());
+}
+return results;
         }
 
         public static double[] RetrieveIntensitiesFromMzValues(
