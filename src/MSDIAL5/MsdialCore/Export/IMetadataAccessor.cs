@@ -91,6 +91,7 @@ namespace CompMs.MsdialCore.Export
                 comments = comments.Append($"Tag: {spot.TagCollection}");
             }
             var comment = string.Join("; ", comments);
+            var hadProductIonSpectrum = spot.IsMsmsAssigned;
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
@@ -111,11 +112,11 @@ namespace CompMs.MsdialCore.Export
                 { "Isotope tracking parent ID", spot.PeakCharacter.IsotopeParentPeakID.ToString() },
                 { "Isotope tracking weight number", spot.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "m/z similarity", ValueOrNull(matchResult.AcurateMassSimilarity, "F2") },
-                { "Simple dot product", ValueOrNull(matchResult.SimpleDotProduct, "F3") },
-                { "Weighted dot product", ValueOrNull(matchResult.WeightedDotProduct, "F3") },
-                { "Reverse dot product", ValueOrNull(matchResult.ReverseDotProduct, "F3") },
-                { "Matched peaks count", ValueOrNull(matchResult.MatchedPeaksCount, "F2") },
-                { "Matched peaks percentage", ValueOrNull(matchResult.MatchedPeaksPercentage, "F2") },
+                { "Simple dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.SimpleDotProduct, "F3") },
+                { "Weighted dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.WeightedDotProduct, "F3") },
+                { "Reverse dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.ReverseDotProduct, "F3") },
+                { "Matched peaks count", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksCount, "F2") },
+                { "Matched peaks percentage", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult.TotalScore, "F3") },
                 { "S/N average", spot.SignalToNoiseAve.ToString("0.00") },
                 { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },

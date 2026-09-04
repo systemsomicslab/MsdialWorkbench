@@ -107,6 +107,36 @@ namespace CompMs.Common.DataObj.Result {
         [IgnoreMember]
         public bool AnyMatched => (Source & SourceType.DataBases) != SourceType.None;
 
+        /// <summary>
+        /// True when a product-ion spectrum was actually compared against a reference spectrum, so the
+        /// spectral score fields below hold measurements rather than unset defaults.
+        /// </summary>
+        /// <remarks>
+        /// The scoring functions in MsScanMatching return -1 when there is nothing to compare, which is
+        /// the same condition that gives a suggested annotation the "no MS2: " prefix. That -1 survives
+        /// in <see cref="SquaredSimpleDotProduct"/> and its siblings, but the <see cref="SimpleDotProduct"/>,
+        /// <see cref="WeightedDotProduct"/> and <see cref="ReverseDotProduct"/> getters clamp it to 0, so a
+        /// score that was never computed is otherwise indistinguishable from one that was computed as 0.
+        /// A text database holds no reference spectrum, so no comparison is attempted for a TextDB result
+        /// either and its annotator leaves every spectral field at the default 0.
+        /// </remarks>
+        [IgnoreMember]
+        public bool IsSpectrumComparisonPerformed {
+            get {
+                if (IsUnknown) {
+                    return false;
+                }
+                if ((Source & SourceType.DataBases) == SourceType.TextDB) {
+                    return false;
+                }
+                return SquaredSimpleDotProduct >= 0f
+                    && SquaredWeightedDotProduct >= 0f
+                    && SquaredReverseDotProduct >= 0f
+                    && MatchedPeaksCount >= 0f
+                    && MatchedPeaksPercentage >= 0f;
+            }
+        }
+
         // Support for multiple annotation method
         [IgnoreMember]
         public bool IsManuallyModified => (Source & SourceType.Manual) != 0;
