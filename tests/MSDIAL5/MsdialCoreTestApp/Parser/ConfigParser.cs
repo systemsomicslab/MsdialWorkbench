@@ -131,6 +131,27 @@ namespace CompMs.App.MsdialConsole.Parser
             return 1;
         }
 
+        public static bool ReadDetailedAlignmentProvenance(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "detailed alignment provenance":
+                        case "export detailed alignment provenance":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
