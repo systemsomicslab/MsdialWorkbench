@@ -30,6 +30,16 @@ namespace CompMs.MsdialCore.Export
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
         public ParameterBase Parameter => _parameter;
+
+        /// <summary>
+        /// The reference lookup this accessor resolves the representative match result through.
+        /// </summary>
+        /// <remarks>
+        /// Exposed for exports that describe candidates other than the representative one, which need the
+        /// same lookup applied to a different match result. <see cref="Parameter"/> is already read the
+        /// same way by the mzTab-M exporter.
+        /// </remarks>
+        public IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? Refer => _refer;
         public string[] GetHeaders() => GetHeadersCore();
 
         IReadOnlyDictionary<string, string> IMetadataAccessor.GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {

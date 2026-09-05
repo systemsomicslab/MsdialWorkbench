@@ -35,6 +35,7 @@ public sealed class LcmsProcess
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
+        var exportAnnotationCandidates = ConfigParser.ReadAnnotationCandidateExport(methodFile);
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
@@ -97,7 +98,7 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates).Result;
     }
 
     private async Task<int> ExecuteAsync(
@@ -105,7 +106,8 @@ public sealed class LcmsProcess
         string outputFolder,
         bool isProjectSaved,
         bool isAlignmentLightMode,
-        bool exportDetailedAlignmentProvenance) {
+        bool exportDetailedAlignmentProvenance,
+        bool exportAnnotationCandidates) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -202,6 +204,15 @@ public sealed class LcmsProcess
                 }
             }
             Console.WriteLine($"Alignment peak ID matrix: {peakIdOutputFile}");
+
+            if (exportAnnotationCandidates) {
+                var candidateOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdcandidate.tsv");
+                using (var candidateStream = File.Open(candidateOutputFile, FileMode.Create, FileAccess.Write)) {
+                    new AlignmentCandidateExporter(storage.DataBaseMapper, storage.DataBases, storage.Parameter.MachineCategory)
+                        .Export(candidateStream, result.AlignmentSpotProperties);
+                }
+                Console.WriteLine($"Annotation candidates: {candidateOutputFile}");
+            }
 
             if (exportDetailedAlignmentProvenance) {
                 var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
