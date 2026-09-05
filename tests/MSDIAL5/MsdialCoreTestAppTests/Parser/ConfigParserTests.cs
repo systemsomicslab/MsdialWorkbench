@@ -1,4 +1,4 @@
-using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Enum;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +11,18 @@ namespace MsdialCoreTestAppTests.Parser;
 [TestClass]
 public sealed class ConfigParserTests
 {
+    [TestMethod]
+    public void ReadCommonParameter_UpdatesActiveBlankFilteringFoldChange()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "sample max / blank average", "7");
+
+        Assert.IsTrue(result);
+        Assert.AreEqual(7f, parameter.SampleMaxOverBlankAverage);
+        Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
+    }
+ 
     [TestMethod]
     public void ReadForGcms_AcceptsEqualsSyntaxQuotesAndGuiFieldNames()
     {
@@ -103,6 +115,42 @@ public sealed class ConfigParserTests
 
         Assert.AreEqual(1, ConfigParser.ReadLbmAnnotatorPriority(defaultMethod));
         Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(configuredMethod));
+    }
+
+    [TestMethod]
+    public void ReadDetailedAlignmentProvenance_DefaultsToFalseAndAcceptsBothAliases()
+    {
+        using var directory = new TemporaryDirectory();
+        var defaultMethod = directory.CreateFile("default.txt", "Ion mode: Negative\n");
+        var shortAlias = directory.CreateFile("short.txt", "Detailed alignment provenance: True\n");
+        var longAlias = directory.CreateFile("long.txt", "Export detailed alignment provenance: true\n");
+        var explicitlyOff = directory.CreateFile("off.txt", "Detailed alignment provenance: FALSE\n");
+        // A value that is neither true nor false must leave the default alone rather than throw: the
+        // audit sidecar is optional, so an unparseable setting means "not requested", not "fail the run".
+        var nonBoolean = directory.CreateFile("bad.txt", "Detailed alignment provenance: yes please\n");
+
+        Assert.IsFalse(ConfigParser.ReadDetailedAlignmentProvenance(defaultMethod));
+        Assert.IsTrue(ConfigParser.ReadDetailedAlignmentProvenance(shortAlias));
+        Assert.IsTrue(ConfigParser.ReadDetailedAlignmentProvenance(longAlias));
+        Assert.IsFalse(ConfigParser.ReadDetailedAlignmentProvenance(explicitlyOff));
+        Assert.IsFalse(ConfigParser.ReadDetailedAlignmentProvenance(nonBoolean));
+    }
+
+    [TestMethod]
+    public void ReadAnnotationCandidateExport_DefaultsToFalseAndAcceptsBothAliases()
+    {
+        using var directory = new TemporaryDirectory();
+        var defaultMethod = directory.CreateFile("default.txt", "Ion mode: Negative\n");
+        var shortAlias = directory.CreateFile("short.txt", "Annotation candidates: True\n");
+        var longAlias = directory.CreateFile("long.txt", "Export annotation candidates: true\n");
+        var explicitlyOff = directory.CreateFile("off.txt", "Annotation candidates: FALSE\n");
+        var nonBoolean = directory.CreateFile("bad.txt", "Annotation candidates: all of them\n");
+
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(defaultMethod));
+        Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(shortAlias));
+        Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(longAlias));
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(explicitlyOff));
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(nonBoolean));
     }
 
     private sealed class TemporaryDirectory : IDisposable

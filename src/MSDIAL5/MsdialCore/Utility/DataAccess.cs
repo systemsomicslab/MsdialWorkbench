@@ -1197,7 +1197,7 @@ namespace CompMs.MsdialCore.Utility {
             var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
-            feature.Name = "w/o MS2: " + result.Name;
+            feature.Name = AnnotationName.AsWithoutMs2(result.Name);
         }
 
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
@@ -1218,10 +1218,10 @@ namespace CompMs.MsdialCore.Utility {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
             if (feature.MS2RawSpectrumID < 0) {
-                feature.Name = "no MS2: " + result.Name;
+                feature.Name = AnnotationName.AsNoMs2(result.Name);
             }
             else {
-                feature.Name = "low score: " + result.Name;
+                feature.Name = AnnotationName.AsLowScore(result.Name);
             }
         }
 
@@ -1428,15 +1428,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static bool IsReferenceMatchedName(string name) {
-            if (string.IsNullOrWhiteSpace(name)) {
-                return false;
-            }
-            var value = name.TrimStart();
-            return !value.StartsWith("Unknown", StringComparison.OrdinalIgnoreCase)
-                && !value.StartsWith("null", StringComparison.OrdinalIgnoreCase)
-                && !value.StartsWith("empty", StringComparison.OrdinalIgnoreCase)
-                && !value.StartsWith("w/o", StringComparison.OrdinalIgnoreCase)
-                && !value.StartsWith("RIKEN", StringComparison.OrdinalIgnoreCase);
+            return AnnotationName.IsReferenceMatched(name);
         }
 
         public static List<ChromatogramPeakFeature> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {

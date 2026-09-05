@@ -118,7 +118,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
+                    switch (method.ToLowerInvariant()) {
                         case "lbm annotator priority":
                         case "lbm annotation priority":
                             if (int.TryParse(value, out var priority)) {
@@ -129,6 +129,48 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             return 1;
+        }
+
+        public static bool ReadDetailedAlignmentProvenance(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "detailed alignment provenance":
+                        case "export detailed alignment provenance":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool ReadAnnotationCandidateExport(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "annotation candidates":
+                        case "export annotation candidates":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
         }
 
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
@@ -861,7 +903,12 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
                     return true;
-                case "sample max / blank average": if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage; return true;
+                case "sample max / blank average":
+                    if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) {
+                        param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage;
+                        param.FoldChangeForBlankFiltering = sampleMaxOverBlankAverage;
+                    }
+                    return true;
                 case "sample average / blank average": if (float.TryParse(valueLower, out float sampleAverageOverBlankAverage)) param.SampleAverageOverBlankAverage = sampleAverageOverBlankAverage; return true;
                 case "keep reference matched metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepRefMatchedMetaboliteFeatures = bool.Parse(valueLower); return true;
                 case "keep suggested metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepSuggestedMetaboliteFeatures = bool.Parse(valueLower); return true;

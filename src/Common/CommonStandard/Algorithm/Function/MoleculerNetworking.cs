@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -83,7 +84,7 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         private static string GetOntologyColor<T>(T spot) where T : IMoleculeProperty, IChromatogramPeak {
-            var isCharacterized = !spot.Name.IsEmptyOrNull() && !spot.Name.Contains("Unknown") && !spot.Name.Contains("w/o MS2") && !spot.Name.Contains("RIKEN");
+            var isCharacterized = AnnotationName.IsReferenceMatched(spot.Name);
             if (isCharacterized && MetaboliteColorCode.metabolite_colorcode.TryGetValue(spot.Ontology, out var backgroundcolor)) {
                 return backgroundcolor;
             }
