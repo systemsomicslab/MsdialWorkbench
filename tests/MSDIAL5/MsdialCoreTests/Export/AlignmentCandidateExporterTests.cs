@@ -40,11 +40,14 @@ public class AlignmentCandidateExporterTests
         Assert.AreEqual(3, lines.Length);
         Assert.AreEqual(
             "12\t10\t-1\t1\t2\ttrue\tmsp\t\tMspDB\t1\t7\tQuercetin\tC15H10O7\tflavonoid\tQUERCETIN-KEY\tc1cc(O)ccc1\t" +
-            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.75\t0.5\t0\t0\t0\t0\t0.5\t0.25\t0.75\t12\t0.5",
+            // rt, ri and ccs are empty: this run never enabled those terms, so the 0 sitting in the field
+            // is the unset default rather than a measurement. The isotope 0 is written, because only
+            // exactly -1 is that term's sentinel and 0 there is a real ratio agreement.
+            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.75\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5",
             lines[1]);
         Assert.AreEqual(
             "12\t10\t-1\t2\t2\tfalse\tmsp\t\tMspDB\t1\t8\tMorin\tC15H10O7\tflavonoid\tMORIN-KEY\tc1cc(O)ccc1\t" +
-            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.5\t0.5\t0\t0\t0\t0\t0.5\t0.25\t0.75\t12\t0.5",
+            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.5\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5",
             lines[2]);
     }
 
@@ -96,6 +99,57 @@ public class AlignmentCandidateExporterTests
             new[] { "", "", "", "", "" },
             new[] { fields[31], fields[32], fields[33], fields[34], fields[35] });
         Assert.AreEqual("0.5", fields[25], "the aggregate total score is still a measurement");
+    }
+
+    /// <summary>
+    /// The isotope term has its own sentinel and its own rule. -1 means the comparison was never
+    /// attempted; every other negative value is a measurement saying the patterns disagree.
+    /// </summary>
+    [TestMethod]
+    public void AnUnattemptedIsotopeComparisonPublishesNoIsotopeSimilarity()
+    {
+        // GetIsotopeRatioSimilarity returns -1 when either side carries no isotopic peaks. Unlike the
+        // dot products there is no clamping getter, so the -1 reaches the export unchanged. On one real
+        // reference library 495 of 4972 candidate rows carried it, all of them in-house records with no
+        // isotopic pattern deposited.
+        var candidate = ReferenceMatch("Quercetin", libraryId: 7, totalScore: 0.5f);
+        candidate.IsotopeSimilarity = -1f;
+
+        var fields = ExportLines(SpotWith(candidate), Refer())[1].Split('\t');
+
+        Assert.AreEqual("", fields[30], "isotope_similarity");
+    }
+
+    [TestMethod]
+    public void AnIsotopePatternThatDisagreesIsAMeasurement()
+    {
+        // 1 minus an accumulated ratio difference, so this is genuinely signed. Discarding it would
+        // throw away the strongest negative evidence the term produces.
+        var candidate = ReferenceMatch("Quercetin", libraryId: 7, totalScore: 0.5f);
+        candidate.IsotopeSimilarity = -0.75f;
+
+        var fields = ExportLines(SpotWith(candidate), Refer())[1].Split('\t');
+
+        Assert.AreEqual("-0.75", fields[30], "isotope_similarity");
+    }
+
+    /// <summary>
+    /// The four Gaussian terms follow the opposite rule, because a different function produces them.
+    /// </summary>
+    [TestMethod]
+    public void AGaussianTermPublishesNothingUnlessItWasMeasured()
+    {
+        var candidate = ReferenceMatch("Quercetin", libraryId: 7, totalScore: 0.5f);
+        candidate.AcurateMassSimilarity = 0.5f;   // measured
+        candidate.RtSimilarity = 0f;              // the run never enabled retention-time scoring
+        candidate.RiSimilarity = -1f;             // attempted, nothing to compare
+        candidate.CcsSimilarity = 0.25f;          // measured
+
+        var fields = ExportLines(SpotWith(candidate), Refer())[1].Split('\t');
+
+        CollectionAssert.AreEqual(
+            new[] { "0.5", "", "", "0.25" },
+            new[] { fields[26], fields[27], fields[28], fields[29] });
     }
 
     [TestMethod]
