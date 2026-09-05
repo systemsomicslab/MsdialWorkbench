@@ -136,6 +136,23 @@ public sealed class ConfigParserTests
         Assert.IsFalse(ConfigParser.ReadDetailedAlignmentProvenance(nonBoolean));
     }
 
+    [TestMethod]
+    public void ReadAnnotationCandidateExport_DefaultsToFalseAndAcceptsBothAliases()
+    {
+        using var directory = new TemporaryDirectory();
+        var defaultMethod = directory.CreateFile("default.txt", "Ion mode: Negative\n");
+        var shortAlias = directory.CreateFile("short.txt", "Annotation candidates: True\n");
+        var longAlias = directory.CreateFile("long.txt", "Export annotation candidates: true\n");
+        var explicitlyOff = directory.CreateFile("off.txt", "Annotation candidates: FALSE\n");
+        var nonBoolean = directory.CreateFile("bad.txt", "Annotation candidates: all of them\n");
+
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(defaultMethod));
+        Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(shortAlias));
+        Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(longAlias));
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(explicitlyOff));
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(nonBoolean));
+    }
+
     private sealed class TemporaryDirectory : IDisposable
     {
         public TemporaryDirectory()

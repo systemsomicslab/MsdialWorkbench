@@ -52,13 +52,25 @@ namespace CompMs.MsdialCore.Export
         /// </param>
         /// <param name="format">A numeric format string, for example "F3".</param>
         public static string Score(MsScanMatchResult? result, bool hadProductIonSpectrum, Func<MsScanMatchResult, double> value, string format) {
-            if (result is null || !result.IsSpectrumComparisonPerformed) {
-                return NotComputed;
-            }
-            if (!hadProductIonSpectrum && IsScoreBlockUnset(result)) {
+            if (!IsComputed(result, hadProductIonSpectrum)) {
                 return NotComputed;
             }
             return value(result).ToString(format);
+        }
+
+        /// <summary>
+        /// Whether the spectral score fields of <paramref name="result"/> hold measurements.
+        /// </summary>
+        /// <remarks>
+        /// Exposed separately because the audit sidecars render an absent value as an empty cell rather
+        /// than as the text "null" that the .mdpeak and .mdalign columns use. The decision of whether a
+        /// score exists must not fork with the rendering, so both go through this.
+        /// </remarks>
+        public static bool IsComputed(MsScanMatchResult? result, bool hadProductIonSpectrum) {
+            if (result is null || !result.IsSpectrumComparisonPerformed) {
+                return false;
+            }
+            return hadProductIonSpectrum || !IsScoreBlockUnset(result);
         }
 
         /// <summary>
