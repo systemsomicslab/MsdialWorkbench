@@ -1,4 +1,4 @@
-using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -278,6 +278,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
                 settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics));
+                ReportEffectiveAnnotatorSettings("MSP", annotatorId, mspFilePath, priority, searchParameter);
             }
             return settings;
         }
@@ -340,8 +341,27 @@ namespace CompMs.App.MsdialConsole.Parser
                 var searchParameter = new MsRefSearchParameterBase(param.TextDbSearchParam);
                 ApplyMspSearchParameter(searchParameter, fields, headers);
                 settings.Add(new TextAnnotatorSetting(annotatorId, textDbFilePath, priority, searchParameter));
+                ReportEffectiveAnnotatorSettings("Text", annotatorId, textDbFilePath, priority, searchParameter);
             }
             return settings;
+        }
+
+        /// <summary>
+        /// States the settings an annotator will actually use.
+        /// </summary>
+        /// <remarks>
+        /// A settings row starts from the method file's annotation block and overrides,
+        /// column by column, whatever the table supplies. So the same setting is written
+        /// down in two places with two different values and neither file says which one
+        /// governs. Printing the resolved value settles it in the run log, where a reader
+        /// of the artifacts can see it.
+        /// </remarks>
+        private static void ReportEffectiveAnnotatorSettings(
+            string kind, string annotatorId, string filePath, int priority, MsRefSearchParameterBase parameter) {
+            Console.WriteLine(
+                $"{kind} annotator {annotatorId} ({Path.GetFileName(filePath)}), priority {priority}: "
+                + $"RT tolerance {parameter.RtTolerance}, MS1 tolerance {parameter.Ms1Tolerance}, "
+                + $"MS2 tolerance {parameter.Ms2Tolerance}, total score cutoff {parameter.TotalScoreCutoff}");
         }
 
         private static void ApplyMspSearchParameter(MsRefSearchParameterBase parameter, string[] fields, string[] headers) {
