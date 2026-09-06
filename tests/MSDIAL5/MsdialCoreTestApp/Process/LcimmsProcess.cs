@@ -58,7 +58,7 @@ public sealed class LcimmsProcess {
             ]);
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), 1);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
