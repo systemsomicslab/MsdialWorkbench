@@ -1,4 +1,4 @@
-﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
+using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -441,6 +441,44 @@ public static class MainProcess
         });
 
         root.Add(cmd);
+    }
+
+    public static void SetNormalizeCommand(Command root) {
+        var cmd = new Command(
+            "normalize",
+            "Normalize an aligned result against internal standards and export the matrix");
+        var input = new Option<FileInfo>("--input", "-i") { Required = true };
+        input.Description = "MS-DIAL project file holding the alignment to normalize";
+        var standards = new Option<FileInfo>("--standards", "-s") { Required = true };
+        standards.Description = "Table of internal standards: StandardName, TargetClass, Concentration, optional PeakID, DilutionRate, MolecularWeight";
+        var output = new Option<FileInfo>("--output", "-o") { Required = true };
+        output.Description = "Normalized alignment matrix to write";
+        var unit = new Option<IonAbundanceUnit>("--unit", "-u") {
+            DefaultValueFactory = _ => IonAbundanceUnit.NormalizedByInternalStandardPeakHeight,
+        };
+        unit.Description = "Unit of the normalized abundance, e.g. pmol_per_microL_plasma";
+        var alignment = new Option<int>("--alignment") { DefaultValueFactory = _ => 0 };
+        alignment.Description = "Index of the alignment result within the project";
+        var dilution = new Option<bool>("--apply-dilution-factor", "-d");
+        dilution.Description = "Divide by each file's dilution factor after normalizing";
+        var allowUnresolved = new Option<bool>("--allow-unresolved-standards");
+        allowUnresolved.Description = "Continue when a standard is not found in the alignment, leaving its classes unnormalized";
+        cmd.Options.Add(input);
+        cmd.Options.Add(standards);
+        cmd.Options.Add(output);
+        cmd.Options.Add(unit);
+        cmd.Options.Add(alignment);
+        cmd.Options.Add(dilution);
+        cmd.Options.Add(allowUnresolved);
+        cmd.SetAction(parseResult => new NormalizationProcess().Run(
+            parseResult.GetRequiredValue(input),
+            parseResult.GetRequiredValue(standards),
+            parseResult.GetRequiredValue(output),
+            parseResult.GetValue(unit),
+            parseResult.GetValue(alignment),
+            parseResult.GetValue(dilution),
+            parseResult.GetValue(allowUnresolved)));
+        root.Subcommands.Add(cmd);
     }
 
     public static void SetEicCommand(Command root) {
