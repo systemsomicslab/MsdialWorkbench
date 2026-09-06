@@ -91,6 +91,26 @@ namespace CompMs.App.MsdialConsole.Process
             return true;
         }
 
+        /// <summary>
+        /// Names the LBM annotator for the exported Comment column.
+        /// </summary>
+        /// <remarks>
+        /// The annotator identifier is written into every exported row as
+        /// "Annotation method: ...". Passing the library's file path there put an
+        /// absolute local directory into an artifact meant for sharing, and told the
+        /// reader nothing a directory-free name does not. The file stem is kept because
+        /// a laboratory library is usually date-stamped and the reader needs to know
+        /// which one annotated the row; the checksum that pins it exactly belongs in the
+        /// run manifest, not in every cell.
+        /// </remarks>
+        public static string LbmAnnotatorId(string lbmFilePath) {
+            var stem = string.IsNullOrWhiteSpace(lbmFilePath)
+                ? string.Empty
+                : System.IO.Path.GetFileNameWithoutExtension(lbmFilePath);
+            return string.IsNullOrWhiteSpace(stem) ? "LbmDB" : "LbmDB: " + stem;
+        }
+
+
         public static void ParseLibraries(ParameterBase param, float targetMz,
             out IupacDatabase iupacDB, out MoleculeDataBase? mspDB, out MoleculeDataBase? txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
