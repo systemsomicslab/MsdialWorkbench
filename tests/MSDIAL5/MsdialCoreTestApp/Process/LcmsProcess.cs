@@ -228,10 +228,39 @@ public sealed class LcmsProcess
                 Console.WriteLine($"Detailed alignment provenance: {provenanceOutputFile}");
             }
 
+            // The parameter file offers a family of matrix-export flags and is portable
+            // into the GUI, where each means what it says. The Console read exactly one
+            // of them, and used it to gate an unrelated artifact: a run that asked for a
+            // height matrix got a long-format quality-assurance table and no matrix, with
+            // nothing said about either. The flags are honoured here.
+            var matrixFolder = String.IsNullOrWhiteSpace(storage.Parameter.ExportFolderPath)
+                ? outputFolder
+                : storage.Parameter.ExportFolderPath;
+            var requestedMatrices = new List<(bool Requested, string ExportType, string Suffix)> {
+                (storage.Parameter.IsHeightMatrixExport, "Height", "_Height.txt"),
+                (storage.Parameter.IsNormalizedMatrixExport, "Normalized height", "_NormalizedHeight.txt"),
+                (storage.Parameter.IsPeakAreaMatrixExport, "Area", "_Area.txt"),
+                (storage.Parameter.IsRetentionTimeMatrixExport, "RT", "_RT.txt"),
+                (storage.Parameter.IsMassMatrixExport, "MZ", "_MZ.txt"),
+                (storage.Parameter.IsSnMatrixExport, "SN", "_SN.txt"),
+            };
+            if (requestedMatrices.Any(item => item.Requested)) {
+                Directory.CreateDirectory(matrixFolder);
+                var matrixStats = new[] { StatsValue.Average, StatsValue.Stdev };
+                foreach (var (_, exportType, suffix) in requestedMatrices.Where(item => item.Requested)) {
+                    var matrixFile = Path.Combine(matrixFolder, alignmentFile.FileName + suffix);
+                    using (var matrixStream = File.Open(matrixFile, FileMode.Create, FileAccess.Write)) {
+                        new AlignmentCSVExporter().Export(
+                            matrixStream, result.AlignmentSpotProperties, align_decResults, files,
+                            new MulticlassFileMetaAccessor(0), align_accessor,
+                            new LegacyQuantValueAccessor(exportType, storage.Parameter), matrixStats);
+                    }
+                    Console.WriteLine($"{exportType} matrix: {matrixFile}");
+                }
+            }
+
             if (storage.Parameter.IsHeightMatrixExport) {
-                var qaOutputFolder = String.IsNullOrWhiteSpace(storage.Parameter.ExportFolderPath)
-                    ? outputFolder
-                    : storage.Parameter.ExportFolderPath;
+                var qaOutputFolder = matrixFolder;
                 Directory.CreateDirectory(qaOutputFolder);
                 var qaOutputFile = Path.Combine(qaOutputFolder, alignmentFile.FileName + ".qa.tsv");
                 using var qaStream = File.Open(qaOutputFile, FileMode.Create, FileAccess.Write);
@@ -246,6 +275,9 @@ public sealed class LcmsProcess
                     ("SN", CreateQuantAccessor("SN")),
                     ("MSMS", CreateQuantAccessor("MSMS")),
                     ("Reference matched", CreateQuantAccessor("Reference matched")));
+                // Written beside the height matrix rather than instead of it: it is the
+                // same peak heights in long form, with the per-file columns the QA step
+                // reads. It follows the height request because no parameter names it.
                 Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
             }
 
