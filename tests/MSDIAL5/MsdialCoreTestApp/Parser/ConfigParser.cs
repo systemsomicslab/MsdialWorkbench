@@ -1,4 +1,4 @@
-﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -950,6 +950,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "set fully labeled reference file": if (valueLower == "true" || valueLower == "false") param.SetFullyLabeledReferenceFile = bool.Parse(valueLower); return true;
                 case "non labeled reference id": if (int.TryParse(valueLower, out int nonlabeledrefid)) param.NonLabeledReferenceID = nonlabeledrefid; return true;
                 case "fully labeled reference id": if (int.TryParse(valueLower, out int fulllabeledrefid)) param.FullyLabeledReferenceID = fulllabeledrefid; return true;
+                // ParameterBase writes "Number of threads" into every exported method file,
+                // but nothing read it back, so a method file could describe a thread count
+                // it could never request and every Console run stayed on the default of 2.
+                case "number of threads": if (int.TryParse(valueLower, out int numthreads) && numthreads > 0) param.NumThreads = numthreads; return true;
                 case "isotope tracking dictionary id": if (int.TryParse(valueLower, out int isotopetrackdictionaryid)) param.IsotopeTrackingDictionary.SelectedID = isotopetrackdictionaryid; return true;
 
                 //CorrDec settings

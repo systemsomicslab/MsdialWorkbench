@@ -8,6 +8,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Normalize;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcMsApi.Export;
 using System;
 using System.Collections.Generic;
@@ -51,8 +52,10 @@ public sealed class NormalizationProcess {
             return -1;
         }
 
-        IMsdialDataStorage<ParameterBase> storage =
-            Common.MessagePack.MessagePackDefaultHandler.LoadFromFile<MsdialDataStorage>(projectFile.FullName);
+        // The data storage is only half a project: the annotation databases live beside it
+        // and the raw MessagePack load leaves them null, which surfaces much later as a
+        // null reference inside the evaluator. Load it the way the application does.
+        var storage = LoadProject(projectFile.FullName);
         var files = storage.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
         if (files.Count == 0) {
             Console.Error.WriteLine("The project contains no included analysis files.");
@@ -123,7 +126,10 @@ public sealed class NormalizationProcess {
 
         var decResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
         var accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
-        var quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
+        // "Height" reads the raw peak height, which normalizing does not touch: the result
+        // is written to a separate field, so exporting the wrong one silently produces a
+        // file identical to the input.
+        var quantAccessor = new LegacyQuantValueAccessor("Normalized height", storage.Parameter);
         var stats = new[] { StatsValue.Average, StatsValue.Stdev };
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile.FullName)) ?? ".");
         using (var stream = File.Open(outputFile.FullName, FileMode.Create, FileAccess.Write)) {
@@ -135,6 +141,20 @@ public sealed class NormalizationProcess {
         Console.WriteLine($"Dilution factor applied: {applyDilutionFactor}");
         Console.WriteLine(outputFile.FullName);
         return 0;
+    }
+
+    private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFilePath) {
+        var projectFolder = Path.GetDirectoryName(Path.GetFullPath(projectFilePath)) ?? ".";
+        var projectFileName = Path.GetFileName(projectFilePath);
+        var serializer = new MsdialIntegrateSerializer();
+        using (IStreamManager streamManager = new DirectoryTreeStreamManager(projectFolder)) {
+            var storage = serializer
+                .LoadAsync(streamManager, projectFileName, projectFolder, string.Empty)
+                .GetAwaiter().GetResult();
+            streamManager.Complete();
+            storage.FixDatasetFolder(projectFolder);
+            return storage;
+        }
     }
 
     private sealed class StandardRecord {
