@@ -1,3 +1,4 @@
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -35,14 +36,18 @@ namespace CompMs.App.MsdialConsole.Process;
 /// than quietly normalizing its whole lipid class against nothing.
 /// </remarks>
 public sealed class NormalizationProcess {
+    /// <summary>Label rows plus the column-name row that precede the data.</summary>
+    private const int HeaderRowCount = 5;
+
     public int Run(
         FileInfo projectFile,
         FileInfo standardsFile,
-        FileInfo outputFile,
+        DirectoryInfo outputDirectory,
         IonAbundanceUnit unit,
         int alignmentIndex,
         bool applyDilutionFactor,
-        bool allowUnresolvedStandards) {
+        bool allowUnresolvedStandards,
+        bool allowMismatchedPeakIds) {
         if (!projectFile.Exists) {
             Console.Error.WriteLine($"Project file was not found: {projectFile.FullName}");
             return -1;
@@ -55,7 +60,24 @@ public sealed class NormalizationProcess {
         // The data storage is only half a project: the annotation databases live beside it
         // and the raw MessagePack load leaves them null, which surfaces much later as a
         // null reference inside the evaluator. Load it the way the application does.
-        var storage = LoadProject(projectFile.FullName);
+        IMsdialDataStorage<ParameterBase> storage;
+        try {
+            storage = LoadProject(projectFile.FullName);
+        }
+        catch (Exception error) {
+            // The run writes both a .mdproject and a .mddata, and only the second holds
+            // the data storage. Passing the one that looks more like a project produced
+            // fifteen frames of MessagePack internals and no statement of what to do.
+            var extension = Path.GetExtension(projectFile.FullName);
+            var sibling = Path.ChangeExtension(projectFile.FullName, ".mddata");
+            var advice = File.Exists(sibling) && !extension.Equals(".mddata", StringComparison.OrdinalIgnoreCase)
+                ? $" Pass the data file beside it instead: {sibling}"
+                : " Pass the .mddata file written by the analysis run.";
+            Console.Error.WriteLine(
+                $"{projectFile.FullName} could not be read as an MS-DIAL data file "
+                + $"({error.GetType().Name})." + advice);
+            return -1;
+        }
         var files = storage.AnalysisFiles.Where(file => file.AnalysisFileIncluded).ToList();
         if (files.Count == 0) {
             Console.Error.WriteLine("The project contains no included analysis files.");
@@ -96,17 +118,36 @@ public sealed class NormalizationProcess {
         foreach (var line in resolution.Report) {
             Console.WriteLine(line);
         }
+        if (resolution.Mismatched.Count > 0 && !allowMismatchedPeakIds) {
+            // A standard that cannot be found already stops the run. One found and
+            // demonstrably pointing at a different compound is the worse case of the two,
+            // and it used to warn and carry on -- quantifying a lipid class against
+            // whatever happened to occupy that alignment ID.
+            Console.Error.WriteLine(
+                $"{resolution.Mismatched.Count} standard(s) name an alignment ID that holds a different "
+                + $"compound: {string.Join("; ", resolution.Mismatched)}. An alignment ID belongs to the run it "
+                + "was written for. Remove the PeakID column so the standards resolve by name, or pass "
+                + "--allow-mismatched-peak-ids if the annotations are wrong rather than the table.");
+            return 2;
+        }
+        if (resolution.Mismatched.Count > 0) {
+            Console.WriteLine(
+                $"WARNING: {resolution.Mismatched.Count} standard(s) were taken from an alignment ID that holds "
+                + $"a different compound: {string.Join("; ", resolution.Mismatched)}.");
+        }
         if (resolution.Unresolved.Count > 0) {
             var summary = string.Join(", ", resolution.Unresolved);
             if (!allowUnresolvedStandards) {
                 Console.Error.WriteLine(
                     $"{resolution.Unresolved.Count} internal standard(s) were not found in the alignment: {summary}. "
-                    + "Every lipid class they cover would be left unnormalized. "
-                    + "Confirm the annotation, or pass --allow-unresolved-standards to continue without them.");
+                    + "Every lipid class they cover would be left without a concentration. "
+                    + "Confirm the annotation, or pass --allow-unresolved-standards to continue, which "
+                    + "empties those rows rather than quantifying them against another class.");
                 return 2;
             }
             Console.WriteLine(
-                $"WARNING: continuing without {resolution.Unresolved.Count} internal standard(s): {summary}.");
+                $"WARNING: {resolution.Unresolved.Count} internal standard(s) did not resolve: {summary}. "
+                + "Rows in the lipid classes they cover carry no concentration and say so.");
         }
         if (resolution.Compounds.Count == 0) {
             Console.Error.WriteLine("No internal standard could be resolved, so nothing can be normalized.");
@@ -126,21 +167,88 @@ public sealed class NormalizationProcess {
 
         var decResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
         var accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
-        // "Height" reads the raw peak height, which normalizing does not touch: the result
-        // is written to a separate field, so exporting the wrong one silently produces a
-        // file identical to the input.
-        var quantAccessor = new LegacyQuantValueAccessor("Normalized height", storage.Parameter);
         var stats = new[] { StatsValue.Average, StatsValue.Stdev };
-        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile.FullName)) ?? ".");
-        using (var stream = File.Open(outputFile.FullName, FileMode.Create, FileAccess.Write)) {
-            new AlignmentCSVExporter().Export(
-                stream, spots, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+        Directory.CreateDirectory(outputDirectory.FullName);
+
+        // Both matrices, always. The normalized one is derived from the raw one by a
+        // division nobody can check without seeing both, and a concentration published
+        // without the measurement behind it asks to be taken on trust.
+        // "Height" is the raw peak height and normalizing does not touch it: it writes to
+        // a separate field, so exporting the wrong one produces a file identical to the
+        // input while every log line reports success.
+        var written = new List<string>();
+        foreach (var (exportType, suffix) in new[] {
+            ("Height", "_Height.txt"),
+            ("Normalized height", "_NormalizedHeight.txt"),
+        }) {
+            var path = Path.Combine(outputDirectory.FullName, alignmentFile.FileName + suffix);
+            using (var stream = File.Open(path, FileMode.Create, FileAccess.Write)) {
+                new AlignmentCSVExporter().Export(
+                    stream, spots, decResults, files, new MulticlassFileMetaAccessor(0), accessor,
+                    new LegacyQuantValueAccessor(exportType, storage.Parameter), stats);
+            }
+            written.Add(path);
+            if (exportType == "Normalized height") {
+                var redacted = RedactSubstitutedClasses(path, resolution);
+                if (redacted > 0) {
+                    Console.WriteLine(
+                        $"{redacted} row(s) had no standard of their own class and carry no concentration.");
+                }
+            }
         }
 
         Console.WriteLine($"Normalized unit: {unit}");
         Console.WriteLine($"Dilution factor applied: {applyDilutionFactor}");
-        Console.WriteLine(outputFile.FullName);
+        foreach (var path in written) {
+            Console.WriteLine(path);
+        }
         return 0;
+    }
+
+    /// <summary>
+    /// Removes the numbers that were produced by dividing by the wrong standard.
+    /// </summary>
+    /// <remarks>
+    /// When a class's own standard does not resolve, the normalizer does not leave that
+    /// class alone: it falls through to the "Any others" standard and quantifies the class
+    /// against a compound of an entirely different one. A cardiolipin divided by a
+    /// lysophosphatidylcholine is not a concentration, and it was written into the matrix
+    /// in the same unit, with the same comment, as a properly quantified row -- nothing in
+    /// the file told them apart.
+    ///
+    /// Refusing outright is the default. Where the run is allowed to continue anyway, the
+    /// affected rows keep their identity and lose their numbers, and say why in place of
+    /// them. An annotated wrong number is still read by the next script; an empty cell is
+    /// not.
+    /// </remarks>
+    private static int RedactSubstitutedClasses(string matrixPath, StandardResolution resolution) {
+        if (resolution.UnresolvedClasses.Count == 0) return 0;
+        var lines = File.ReadAllLines(matrixPath);
+        if (lines.Length <= HeaderRowCount) return 0;
+        var header = lines[HeaderRowCount - 1].Split('	');
+        var ontologyColumn = Array.IndexOf(header, "Ontology");
+        var commentColumn = Array.IndexOf(header, "Comment");
+        var firstSample = Array.IndexOf(lines[0].Split('	'), "Class") + 1;
+        if (ontologyColumn < 0 || commentColumn < 0 || firstSample <= 0) return 0;
+
+        var redacted = 0;
+        for (var index = HeaderRowCount; index < lines.Length; index++) {
+            var cells = lines[index].Split('	');
+            if (cells.Length <= ontologyColumn) continue;
+            var ontology = cells[ontologyColumn].Trim();
+            if (!resolution.UnresolvedClasses.TryGetValue(ontology, out var designated)) continue;
+            for (var column = firstSample; column < cells.Length; column++) {
+                cells[column] = string.Empty;
+            }
+            cells[commentColumn] =
+                $"NOT QUANTIFIED: the {ontology} standard {designated} did not resolve in this alignment";
+            lines[index] = string.Join("	", cells);
+            redacted++;
+        }
+        if (redacted > 0) {
+            File.WriteAllLines(matrixPath, lines);
+        }
+        return redacted;
     }
 
     private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFilePath) {
@@ -171,6 +279,19 @@ public sealed class NormalizationProcess {
         public List<StandardCompound> Compounds = new List<StandardCompound>();
         public List<string> Unresolved = new List<string>();
         public List<string> Report = new List<string>();
+
+        /// <summary>Lipid class -> the standard named for it that could not be found.</summary>
+        /// <summary>Standards whose given alignment ID names a different compound.</summary>
+        public List<string> Mismatched = new List<string>();
+
+        /// <summary>Standards matching more than one aligned peak.</summary>
+        public List<string> Ambiguous = new List<string>();
+
+        public Dictionary<string, string> UnresolvedClasses =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>The "Any others" standard those classes now fall through to.</summary>
+        public string FallbackName = string.Empty;
     }
 
     /// <summary>
@@ -250,37 +371,56 @@ public sealed class NormalizationProcess {
             }
         }
 
+        // One line per standard, not per class it covers: a standard covering forty
+        // classes repeated its own resolution forty times, and the handful of lines that
+        // needed a decision were interleaved somewhere in the middle of the rest.
+        var resolvedOnce = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var classesOf = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        var unresolvedOnce = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var record in records) {
             AlignmentSpotProperty? spot = null;
             var how = string.Empty;
             if (record.PeakID >= 0 && byId.TryGetValue(record.PeakID, out var byIdSpot)) {
                 spot = byIdSpot;
                 how = $"alignment ID {record.PeakID}";
-                // An ID that names a different compound is a table written for another
-                // run. Saying so is the whole point of carrying the name as well.
+                // An ID naming a different compound is a table written for another run.
+                // Quantifying a class against whatever landed on that ID is a worse
+                // outcome than not quantifying it, so it stops rather than warns.
                 if (!NameAliases(byIdSpot.Name).Contains(record.StandardName, StringComparer.OrdinalIgnoreCase)) {
-                    result.Report.Add(
-                        $"  WARNING {record.StandardName}: alignment ID {record.PeakID} is annotated "
-                        + $"'{byIdSpot.Name}'. The table may belong to a different alignment.");
+                    result.Mismatched.Add(
+                        $"{record.StandardName} (alignment ID {record.PeakID} is annotated '{byIdSpot.Name}')");
                 }
             }
             else if (byName.TryGetValue(record.StandardName, out var candidates)) {
                 spot = candidates.OrderByDescending(item => item.HeightAverage).First();
                 how = $"annotation, alignment ID {spot.MasterAlignmentID}";
-                if (candidates.Count > 1) {
-                    result.Report.Add(
-                        $"  NOTE {record.StandardName}: {candidates.Count} aligned peaks carry this annotation; "
-                        + $"the most abundant (ID {spot.MasterAlignmentID}) was used.");
+                if (candidates.Count > 1 && !resolvedOnce.ContainsKey(record.StandardName)) {
+                    result.Ambiguous.Add(
+                        $"{record.StandardName}: {candidates.Count} aligned peaks carry this annotation; "
+                        + $"the most abundant (ID {spot.MasterAlignmentID}) was used");
                 }
             }
 
             if (spot is null) {
                 result.Unresolved.Add($"{record.StandardName} (for {record.TargetClass})");
-                result.Report.Add($"  UNRESOLVED {record.StandardName} -> {record.TargetClass}");
+                if (!unresolvedOnce.TryGetValue(record.StandardName, out var missingFor)) {
+                    unresolvedOnce[record.StandardName] = missingFor = new List<string>();
+                }
+                missingFor.Add(record.TargetClass);
+                if (!record.TargetClass.Equals(StandardCompound.AnyOthers, StringComparison.OrdinalIgnoreCase)) {
+                    result.UnresolvedClasses[record.TargetClass] = record.StandardName;
+                }
                 continue;
             }
-            result.Report.Add(
-                $"  {record.StandardName} -> {record.TargetClass} via {how}, concentration {record.Concentration}");
+            if (record.TargetClass.Equals(StandardCompound.AnyOthers, StringComparison.OrdinalIgnoreCase)) {
+                result.FallbackName = record.StandardName;
+            }
+            resolvedOnce[record.StandardName] = $"{how}, concentration {record.Concentration}";
+            if (!classesOf.TryGetValue(record.StandardName, out var covered)) {
+                classesOf[record.StandardName] = covered = new List<string>();
+            }
+            covered.Add(record.TargetClass);
             result.Compounds.Add(new StandardCompound {
                 StandardName = record.StandardName,
                 TargetClass = record.TargetClass,
@@ -289,6 +429,20 @@ public sealed class NormalizationProcess {
                 MolecularWeight = record.MolecularWeight,
                 PeakID = spot.MasterAlignmentID,
             });
+        }
+        foreach (var pair in resolvedOnce.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase)) {
+            var covered = classesOf.TryGetValue(pair.Key, out var list) ? list : new List<string>();
+            result.Report.Add($"  {pair.Key} via {pair.Value}");
+            result.Report.Add($"      covers {covered.Count} class(es): {string.Join(", ", covered)}");
+        }
+        foreach (var line in result.Ambiguous) {
+            result.Report.Add($"  AMBIGUOUS {line}");
+        }
+        // Last, so the lines that need a decision are the ones still on screen.
+        foreach (var pair in unresolvedOnce.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase)) {
+            result.Report.Add(
+                $"  UNRESOLVED {pair.Key} -- named for {pair.Value.Count} class(es): "
+                + string.Join(", ", pair.Value));
         }
         return result;
     }
