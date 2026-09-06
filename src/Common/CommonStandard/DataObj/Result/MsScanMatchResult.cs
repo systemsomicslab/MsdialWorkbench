@@ -75,6 +75,48 @@ namespace CompMs.Common.DataObj.Result {
         [Key(13)]
         public float AcurateMassSimilarity { get; set; }
 
+        /// <summary>The value the scoring functions return when there was nothing to compare.</summary>
+        private const float NotCompared = -1f;
+
+        /// <summary>
+        /// True when the isotope-ratio comparison was attempted, so <see cref="IsotopeSimilarity"/> holds
+        /// a measurement.
+        /// </summary>
+        /// <remarks>
+        /// MsScanMatching.GetIsotopeRatioSimilarity returns -1 when there is nothing to compare: either
+        /// side carries no isotopic peaks, or a monoisotopic abundance is not positive. Unlike the dot
+        /// products there is no clamping getter, so that -1 reaches every consumer unchanged.
+        ///
+        /// The test is equality with the sentinel rather than a sign test, because this score is 1 minus
+        /// an accumulated ratio difference and is genuinely signed: a negative value ordinarily means the
+        /// isotope patterns disagree, which is a measurement and a strong one. Only exactly -1 is the
+        /// sentinel, and a computed value of exactly -1 is indistinguishable from an unattempted
+        /// comparison. That ambiguity is resolved in favour of "not computed", because publishing a
+        /// sentinel as a measurement is the worse of the two errors, and it is narrow: reaching it needs
+        /// the accumulated difference to land on exactly 2.
+        /// </remarks>
+        [IgnoreMember]
+        public bool IsIsotopeComparisonPerformed => IsotopeSimilarity != NotCompared;
+
+        /// <summary>
+        /// True when <paramref name="similarity"/> holds a measurement from one of the Gaussian
+        /// similarity terms: retention time, retention index, collision cross-section or accurate mass.
+        /// </summary>
+        /// <remarks>
+        /// A different rule applies to these than to <see cref="IsIsotopeComparisonPerformed"/>, because a
+        /// different function produces them. MsScanMatching.GetGaussianSimilarity returns
+        /// exp(-0.5 * ((actual - reference) / tolerance)^2), which is strictly positive for any finite
+        /// argument until it underflows past roughly 38 tolerance widths, and returns -1 when either
+        /// value is missing or not positive.
+        ///
+        /// So a measured term is positive, a term with nothing to compare is -1, and a term the run never
+        /// enabled is left at the field's default 0. Exactly 0 is therefore either that unset default or a
+        /// difference so large the score underflowed, and neither is a measurement worth publishing. This
+        /// is the same test GetTotalScore already applies before adding a term to the total, so the export
+        /// convention and the scoring convention agree.
+        /// </remarks>
+        public static bool IsGaussianTermMeasured(float similarity) => similarity > 0f;
+
         // Link to database
         [Key(14)]
         public int LibraryID { get; set; } = -1;

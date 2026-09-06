@@ -155,15 +155,18 @@ public sealed class AlignmentCandidateExporter
             BooleanText(candidate.IsSpectrumMatch),
             BooleanText(spectrumScored),
             Format(candidate.TotalScore),
-            // The five similarity terms below have no equivalent of the -1 sentinel that marks an
-            // unattempted spectral comparison, so an unused term is stored as 0 and cannot be told apart
-            // from a term that was evaluated and scored 0. They are written as stored; a consumer that
-            // needs the distinction has to read which terms the run's parameter file enabled.
-            Format(candidate.AcurateMassSimilarity),
-            Format(candidate.RtSimilarity),
-            Format(candidate.RiSimilarity),
-            Format(candidate.CcsSimilarity),
-            Format(candidate.IsotopeSimilarity),
+            // These five do carry sentinels, and two different ones, because two different functions
+            // produce them. The four Gaussian terms are positive when measured, -1 when there was nothing
+            // to compare, and left at the field's default 0 when the run never enabled the term, so only
+            // a positive value is a measurement. The isotope term is 1 minus an accumulated ratio
+            // difference and is genuinely signed, so a negative value there IS a measurement -- it says
+            // the patterns disagree -- and only exactly -1 is the sentinel. Both rules live on
+            // MsScanMatchResult so the scoring side and the export side cannot drift apart.
+            GaussianTerm(candidate.AcurateMassSimilarity),
+            GaussianTerm(candidate.RtSimilarity),
+            GaussianTerm(candidate.RiSimilarity),
+            GaussianTerm(candidate.CcsSimilarity),
+            candidate.IsIsotopeComparisonPerformed ? Format(candidate.IsotopeSimilarity) : NotApplicable,
             Score(spectrumScored, candidate.SimpleDotProduct),
             Score(spectrumScored, candidate.WeightedDotProduct),
             Score(spectrumScored, candidate.ReverseDotProduct),
@@ -189,6 +192,9 @@ public sealed class AlignmentCandidateExporter
 
     private static string Score(bool computed, float value)
         => computed ? Format(value) : NotApplicable;
+
+    private static string GaussianTerm(float similarity)
+        => MsScanMatchResult.IsGaussianTermMeasured(similarity) ? Format(similarity) : NotApplicable;
 
     /// <summary>
     /// The stored score fields are Single, and G9 round-trips a Single exactly. The widening to double is
