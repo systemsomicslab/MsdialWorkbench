@@ -7,14 +7,37 @@ on:
     branches: [ "master" ]
 
 jobs:
-  publish-msdial5:
+  test:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
             dotnet-version: 8.0.x
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Add package source
+        run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore /property:Configuration="Debug vendor unsupported"
+      - name: Build
+        run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore /property:SkipLibraryDownload=true
+      - name: Test
+        run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
+
+  publish-msdial5:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+            dotnet-version: 8.0.x
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -29,12 +52,13 @@ jobs:
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MSDIAL5
           path: artifact
 
   publish-msdial5-console:
+    needs: test
     runs-on: ${{ matrix.triple.os }}
     strategy:
       matrix:
@@ -44,11 +68,11 @@ jobs:
             { os: macos-latest, framework: net8, runtime: osx-x64 }
         ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
             dotnet-version: 8.0.x
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -66,19 +90,20 @@ jobs:
             cp THIRD-PARTY-LICENSE-README.md artifact
             cp README.md artifact 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MSDIAL5-Console-${{ matrix.triple.os }}-${{ matrix.triple.framework }}
           path: artifact
 
   publish-msdial4:
+    needs: test
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
             dotnet-version: 8.0.x
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -93,22 +118,23 @@ jobs:
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MSDIAL4
           path: artifact
 
   publish-msdial4-console:
+    needs: test
     runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
         pair: [ { os: windows-latest, runtime: win-x64 }, { os: ubuntu-latest, runtime: linux-x64 }, { os: macos-latest, runtime: osx-x64 } ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
             dotnet-version: 8.0.x
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -126,7 +152,7 @@ jobs:
             cp THIRD-PARTY-LICENSE-README.md artifact
             cp README.md artifact 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MSDIAL4-Console-${{ matrix.pair.os }}
           path: artifact
