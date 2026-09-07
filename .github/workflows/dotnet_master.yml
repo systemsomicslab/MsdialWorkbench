@@ -1,6 +1,6 @@
-# Publish .NET applications after changes are merged into master.
+# Build, test and publish .NET applications when changes land on master.
 
-name: Publish
+name: Master Build
 
 on:
   push:
