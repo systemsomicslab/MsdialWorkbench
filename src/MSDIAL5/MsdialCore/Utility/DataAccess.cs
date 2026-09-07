@@ -1044,14 +1044,14 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
@@ -1072,15 +1072,15 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         // [accurate mass, intensity, max intensity]
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
