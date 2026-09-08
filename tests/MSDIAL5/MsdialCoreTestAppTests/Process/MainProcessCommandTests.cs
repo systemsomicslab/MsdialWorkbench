@@ -45,6 +45,15 @@ public sealed class MainProcessCommandTests
     }
 
     [TestMethod]
+    public void Msn_HelpDoesNotRequireExecutionOptions() {
+        var root = BuildRoot();
+
+        var parseResult = root.Parse(["msn", "--help"]);
+
+        Assert.AreEqual(0, parseResult.Errors.Count);
+    }
+
+    [TestMethod]
     public void Msn_ExposesSpectrumOptionWithShortAlias() {
         var root = BuildRoot();
         var msn = root.Subcommands.Single(command => command.Name == "msn");

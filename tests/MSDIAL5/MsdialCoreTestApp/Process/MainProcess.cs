@@ -5,6 +5,7 @@ using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Help;
 using System.IO;
 using System.Linq;
 
@@ -381,6 +382,7 @@ public static class MainProcess
             Description = "Option to export all edges in the molecular network. Default is false.",
             DefaultValueFactory = _ => false,
         };
+        var helpOpt = root.Options.OfType<HelpOption>().Single();
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<string>();
             if (string.IsNullOrEmpty(input) || (!File.Exists(input) && !Directory.Exists(input))) {
@@ -404,8 +406,12 @@ public static class MainProcess
         cmd.Options.Add(overwriteOpt);
         cmd.Options.Add(allEdgeExportOpt);
         cmd.Validators.Add(result => {
-            string input = result.GetRequiredValue(inputOpt);
-            string output = result.GetRequiredValue(outputOpt);
+            if (result.GetResult(helpOpt) is not null) {
+                return;
+            }
+
+            var input = result.GetRequiredValue(inputOpt);
+            var output = result.GetRequiredValue(outputOpt);
 
             if (!Directory.Exists(input) && !File.Exists(input)) {
                 result.AddError("Input path does not exist.");
