@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "EnterpriseLibrary.Common": {
+        "type": "Direct",
+        "requested": "[5.0.505, )",
+        "resolved": "5.0.505",
+        "contentHash": "56ohaIm5TXzb6oR6QkUI3VtzI2fFVdAfhQaAanTZ9j/RrTAL1JvvN1d4qmAPc3mb9e+6zJUp1F+n4yA3ILHhpw==",
+        "dependencies": {
+          "Unity.Interception": "2.1.0"
+        }
+      },
+      "EnterpriseLibrary.Validation": {
+        "type": "Direct",
+        "requested": "[5.0.505, )",
+        "resolved": "5.0.505",
+        "contentHash": "yIPC6D0Li/AXHr8ODGODa9GW+jYqZBnJvSXZZHBBSYpAOe3qCBJGts5UpfoQgxVw1oZilfBEVa7KXekWp5xnsg==",
+        "dependencies": {
+          "EnterpriseLibrary.Common": "5.0.0"
+        }
+      },
+      "Microsoft.Net.Http": {
+        "type": "Direct",
+        "requested": "[2.2.29, )",
+        "resolved": "2.2.29",
+        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.10",
+          "Microsoft.Bcl.Build": "1.0.14"
+        }
+      },
+      "Newtonsoft.Json": {
+        "type": "Direct",
+        "requested": "[13.0.3, )",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "Unity": {
+        "type": "Direct",
+        "requested": "[2.1.505.2, )",
+        "resolved": "2.1.505.2",
+        "contentHash": "d26PDRpmJbymqjN2D/MIoKDuyg7SHM648hDcYm+ZKWyubglsfbmy7rfhNe5SIrmNOQjVzksmH9fGzk1wlrEDpw==",
+        "dependencies": {
+          "CommonServiceLocator": "1.0.0"
+        }
+      },
+      "Unity.Interception": {
+        "type": "Direct",
+        "requested": "[2.1.505.2, )",
+        "resolved": "2.1.505.2",
+        "contentHash": "a1wRsSvRQ/COV7wrgbjsSWAjGqTjwlHROF6ZyWLvSwWeo6tkpFi3+/d8LtuVaHfTg7iQQcdHT3QI+g5j7hjh5Q==",
+        "dependencies": {
+          "Unity": "2.1.0"
+        }
+      },
+      "CommonServiceLocator": {
+        "type": "Transitive",
+        "resolved": "1.0.0",
+        "contentHash": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ=="
+      },
+      "Microsoft.Bcl": {
+        "type": "Transitive",
+        "resolved": "1.1.10",
+        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        }
+      },
+      "Microsoft.Bcl.Build": {
+        "type": "Transitive",
+        "resolved": "1.0.14",
+        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
+      }
+    }
+  }
+}

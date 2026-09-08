@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "CommonServiceLocator": {
+        "type": "Direct",
+        "requested": "[2.0.5, )",
+        "resolved": "2.0.5",
+        "contentHash": "Md2q9f6hAuUAm6IWTybQbYvxhDAs2dqmsudVDghpg0Q+C0M2KkmiTDjeGx1PsYhnZPvp+hy1Cx99v0VPW9W6/g=="
+      },
+      "Prism.Wpf": {
+        "type": "Direct",
+        "requested": "[7.2.0.1422, )",
+        "resolved": "7.2.0.1422",
+        "contentHash": "njl3uLjqDXeWCbAItgDkZsWIqVnRyhknoMMXZSQdO9jKoIgb+qB/X47YT5KchCNLxLtDq3saQMf5mSZ/LQLqiQ==",
+        "dependencies": {
+          "CommonServiceLocator": "2.0.4",
+          "Prism.Core": "7.2.0.1422"
+        }
+      },
+      "MathNet.Numerics.Signed": {
+        "type": "Transitive",
+        "resolved": "4.9.0",
+        "contentHash": "pvT1RwgoZdaKQmxVNowTjg7/57J7Ioua8xJ96G629xfwrFgsncML7NlAn41KxhTIA8u8Qoj6Fp47KxUn0Cna2Q=="
+      },
+      "Prism.Core": {
+        "type": "Transitive",
+        "resolved": "7.2.0.1422",
+        "contentHash": "U6tZ4Iq+ELyK5PedRC6E20caZXXTmTYiw5evpv0M3WcfKgih9H5G5LDBlDl+65eC5Vb4lnOaUCAtckdEl2MRxA==",
+        "dependencies": {
+          "System.ValueTuple": "4.5.0"
+        }
+      },
+      "System.ValueTuple": {
+        "type": "Transitive",
+        "resolved": "4.5.0",
+        "contentHash": "okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ=="
+      },
+      "ncdk": {
+        "type": "Project",
+        "dependencies": {
+          "MathNet.Numerics.Signed": "[4.9.0, )"
+        }
+      },
+      "ncdk.display": {
+        "type": "Project",
+        "dependencies": {
+          "NCDK": "[1.5.6, )"
+        }
+      }
+    }
+  }
+}
