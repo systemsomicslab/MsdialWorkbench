@@ -6,6 +6,9 @@ on:
   push:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: windows-latest
@@ -56,6 +59,7 @@ jobs:
         with:
           name: MSDIAL5
           path: artifact
+          retention-days: 14
 
   publish-msdial5-console:
     needs: test
@@ -94,6 +98,7 @@ jobs:
         with:
           name: MSDIAL5-Console-${{ matrix.triple.os }}-${{ matrix.triple.framework }}
           path: artifact
+          retention-days: 14
 
   publish-msdial4:
     needs: test
@@ -122,6 +127,7 @@ jobs:
         with:
           name: MSDIAL4
           path: artifact
+          retention-days: 14
 
   publish-msdial4-console:
     needs: test
@@ -156,3 +162,4 @@ jobs:
         with:
           name: MSDIAL4-Console-${{ matrix.pair.os }}
           path: artifact
+          retention-days: 14
