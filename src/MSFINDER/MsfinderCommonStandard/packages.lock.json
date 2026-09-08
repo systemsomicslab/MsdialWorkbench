@@ -72,10 +72,9 @@
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
-        "resolved": "1.3.9699.471",
-        "contentHash": "eiLk9/i9oKF2G26JvSuae+KJckx2HiVk2iJ5TMmrrv7WTafTA+OSxodKXOZu0nyk/B/BGy7TsAGpUNWsnSjzIg==",
+        "resolved": "1.0.8739.525",
+        "contentHash": "x1exfWDljPq9GzhEmLOuT3OifiY9dXXZG4+w1nRlaYbf9QlJne4mgKFm2OeWo5bN+AqXTAD7wAuYEteIttUHjg==",
         "dependencies": {
-          "System.Buffers": "4.5.1",
           "zlib.net": "1.0.3"
         }
       },
@@ -777,7 +776,7 @@
           "IsotopeRatioCalculator": "[1.0.0, )",
           "Mathematics": "[1.0.0, )",
           "MolecularFormulaFinder": "[1.0.0, )",
-          "RawDataHandler-Vendor-UnSupported": "[1.0.*-*, )"
+          "RawDataHandler-Vendor-UnSupported": "[1.0.*, )"
         }
       },
       "ncdk": {
