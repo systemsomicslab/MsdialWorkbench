@@ -1,8 +1,16 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.Common.DataObj.Property;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Utility.Tests;
 
@@ -116,6 +124,72 @@ public class DataAccessTests
             Assert.AreEqual(expected[i].Mass, actual[i].Mass);
             Assert.AreEqual(expected[i].Intensity, actual[i].Intensity);
         }
+    }
+
+    [TestMethod()]
+    public void GetMs2ValuePeaksReturnsMatchingPeaksInScanOrder() {
+        var provider = new StubDataProvider([
+            new RawSpectrum { MsLevel = 1 },
+            CreateMs2Spectrum(10, 500, 0, 3, 7),
+            CreateMs2Spectrum(11, 500, 2, 100, 200),
+            CreateMs2Spectrum(12, 500, 0, 5, 11),
+            new RawSpectrum { MsLevel = 2 },
+        ]);
+        var parameter = new ParameterBase {
+            CentroidMs1Tolerance = 0.1f,
+            CentroidMs2Tolerance = 0.05f,
+        };
+
+        var actual = DataAccess.GetMs2ValuePeaks(
+            provider, 500, 0, 4, [100, 200], parameter, AcquisitionType.DDA, targetCE: 0);
+
+        Assert.AreEqual(2, actual.Count);
+        Assert.AreEqual(2, actual[0].Length);
+        Assert.AreEqual(2, actual[1].Length);
+        CollectionAssert.AreEqual(new[] { 10, 12 }, actual[0].Select(peak => peak.Id).ToArray());
+        CollectionAssert.AreEqual(new[] { 10, 12 }, actual[1].Select(peak => peak.Id).ToArray());
+        Assert.AreEqual(3d, actual[0][0].Intensity);
+        Assert.AreEqual(5d, actual[0][1].Intensity);
+        Assert.AreEqual(7d, actual[1][0].Intensity);
+        Assert.AreEqual(11d, actual[1][1].Intensity);
+    }
+
+    private static RawSpectrum CreateMs2Spectrum(int index, double precursorMz, double collisionEnergy, double firstIntensity, double secondIntensity) {
+        return new RawSpectrum {
+            Index = index,
+            MsLevel = 2,
+            CollisionEnergy = collisionEnergy,
+            ScanStartTime = index,
+            Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz },
+            Spectrum = [
+                new RawPeakElement { Mz = 100, Intensity = firstIntensity },
+                new RawPeakElement { Mz = 150, Intensity = 0 },
+                new RawPeakElement { Mz = 200, Intensity = secondIntensity },
+                new RawPeakElement { Mz = 250, Intensity = 0 },
+            ],
+        };
+    }
+
+    private sealed class StubDataProvider : IDataProvider {
+        private readonly ReadOnlyCollection<RawSpectrum> _spectra;
+
+        public StubDataProvider(IList<RawSpectrum> spectra) {
+            _spectra = new ReadOnlyCollection<RawSpectrum>(spectra);
+        }
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+            return _spectra;
+        }
+
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => throw new System.NotImplementedException();
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => throw new System.NotImplementedException();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => throw new System.NotImplementedException();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => throw new System.NotImplementedException();
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => throw new System.NotImplementedException();
     }
 
     [TestMethod()]
