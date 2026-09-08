@@ -19,6 +19,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             using (var stream = new MemoryStream()) {
                 Common.MessagePack.MessagePackDefaultHandler.SaveToStream<MoleculeDataBase>(db, stream);
+                stream.Seek(0, SeekOrigin.Begin);
                 actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<MoleculeDataBase>(stream);
             }
 

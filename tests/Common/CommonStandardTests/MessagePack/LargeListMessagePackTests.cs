@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 
 namespace CompMs.Common.MessagePack.Tests
 {
@@ -46,6 +47,98 @@ namespace CompMs.Common.MessagePack.Tests
         }
 
         [TestMethod()]
+        public void SerializeAndDeserializeSmallSampleBytesTest() {
+            var datas = new SmallSample[] {
+                new SmallSample(),
+                new SmallSample(),
+            };
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, datas);
+            var bytes = memory.ToArray();
+
+            memory.Position = 0;
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(memory);
+            var roundTrip = new MemoryStream();
+            LargeListMessagePack.Serialize(roundTrip, actual);
+
+            CollectionAssert.AreEqual(bytes, roundTrip.ToArray());
+            Assert.AreEqual(datas.Length, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedLargeSampleLegacyBytesTest() {
+            var bytes = HexToBytes("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314");
+            var actual = LargeListMessagePack.Deserialize<LargeSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+            CollectionAssert.AreEqual(new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, actual[0].Xs);
+            CollectionAssert.AreEqual(new long[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }, actual[1].Xs);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedFixedSampleBytesTest() {
+            var bytes = HexToBytes("C90000002663D20000001FF010920000000092C40401020304C4040506070892C404090A0B0CC4040D0E0F10");
+            var actual = LargeListMessagePack.Deserialize<FixedSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+            CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4 }, actual[0].Xs);
+            CollectionAssert.AreEqual(new byte[] { 5, 6, 7, 8 }, actual[0].Ys);
+            CollectionAssert.AreEqual(new byte[] { 9, 10, 11, 12 }, actual[1].Xs);
+            CollectionAssert.AreEqual(new byte[] { 13, 14, 15, 16 }, actual[1].Ys);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedSmallSampleBytesTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedSmallSampleBytesRoundTripTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(bytes));
+            var roundTrip = new MemoryStream();
+            LargeListMessagePack.Serialize(roundTrip, actual);
+
+            Assert.AreEqual(actual.Count, LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(roundTrip.ToArray())).Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedFixedSampleLegacyBytesTest() {
+            var bytes = HexToBytes("C90000000D63D2000000077092000000009090");
+            var actual = LargeListMessagePack.Deserialize<FixedSample>(new MemoryStream(bytes));
+
+            Assert.AreEqual(2, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeAtSerializedFixedSampleBytesTest() {
+            var bytes = HexToBytes("C90000002663D20000001FF010920000000092C40401020304C4040506070892C404090A0B0CC4040D0E0F10");
+            var actual = LargeListMessagePack.DeserializeAt<FixedSample>(new MemoryStream(bytes), 1);
+
+            CollectionAssert.AreEqual(new byte[] { 9, 10, 11, 12 }, actual.Xs);
+            CollectionAssert.AreEqual(new byte[] { 13, 14, 15, 16 }, actual.Ys);
+        }
+
+        [TestMethod()]
+        public void DeserializeAtSerializedLargeSampleBytesTest() {
+            var bytes = HexToBytes("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314");
+            var actual = LargeListMessagePack.DeserializeAt<LargeSample>(new MemoryStream(bytes), 0);
+
+            CollectionAssert.AreEqual(new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, actual.Xs);
+        }
+
+        private static byte[] HexToBytes(string hex) {
+            var bytes = new byte[hex.Length / 2];
+            for (var i = 0; i < bytes.Length; i++) {
+                bytes[i] = byte.Parse(hex.Substring(i * 2, 2), NumberStyles.HexNumber);
+            }
+            return bytes;
+        }
+
+        [TestMethod()]
         [DataRow(100, 100)]
         [DataRow(1000000, 100)]
         //[DataRow(10000000, 100)]
@@ -76,6 +169,23 @@ namespace CompMs.Common.MessagePack.Tests
             memory.Seek(0, SeekOrigin.Begin);
             var actual = LargeListMessagePack.Deserialize<FixedSample>(memory);
             Assert.AreEqual(datas.Length, actual.Count);
+        }
+
+        [TestMethod()]
+        public void DeserializeSerializedLargeSampleBytesTest() {
+            byte[] bytes = {
+                0xC9, 0x00, 0x00, 0x00, 
+                0x18, 0x63, 0xD2, 0x00, 
+                0x00, 0x00, 0x11, 0xF0, 
+                0x02, 0x91, 0x00, 0x00, 
+                0x00, 0x00, 0x91, 0x9A, 
+                0x00, 0x01, 0x02, 0x03, 0x04,
+                0x05, 0x06, 0x07, 0x08, 0x09
+            };
+            using var memory = new MemoryStream(bytes);
+            var actual = LargeListMessagePack.Deserialize<LargeSample>(memory);
+            Assert.AreEqual(1, actual.Count);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, actual[0].Xs);
         }
 
         [DataTestMethod()]

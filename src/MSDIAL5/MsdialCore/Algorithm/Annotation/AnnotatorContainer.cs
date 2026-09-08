@@ -81,7 +81,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             AnnotatorKey = annotatorKey;
             Parameter = parameter;
             Database = database;
-            AnnotatorID = AnnotatorKey.Key;
+            AnnotatorID = annotatorKey.Key;
+        }
+
+        public DatabaseAnnotatorContainer(
+            IReferRestorationKey annotatorKey,
+            MoleculeDataBase database,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            Parameter = parameter;
+            Database = database;
+            AnnotatorID = annotatorKey.Key;
         }
 
         [IgnoreMember]
@@ -90,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> AnnotatorKey { get; set; }
+        public IReferRestorationKey AnnotatorKey { get; set; }
 
         [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
@@ -109,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             Database.Load(stream, null);
-            Annotator = AnnotatorKey.Accept(visitor, Database);
+            Annotator = AnnotatorKey.Accept<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>(visitor, Database);
         }
     }
 
@@ -152,13 +162,38 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             AnnotatorID = AnnotatorKey.Key;
         }
 
+        public ShotgunProteomicsDBAnnotatorContainer(
+            IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotatorKey,
+            ShotgunProteomicsDB database,
+            MsRefSearchParameterBase msRefSearchParameter,
+            ProteomicsParameter proteomicsParameter) {
+            AnnotatorKey = annotatorKey;
+            MsRefSearchParameter = msRefSearchParameter;
+            ProteomicsParameter = proteomicsParameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
+        [SerializationConstructor]
+        public ShotgunProteomicsDBAnnotatorContainer(
+            IReferRestorationKey annotatorKey,
+            ShotgunProteomicsDB database,
+            MsRefSearchParameterBase msRefSearchParameter,
+            ProteomicsParameter proteomicsParameter) {
+            AnnotatorKey = annotatorKey;
+            MsRefSearchParameter = msRefSearchParameter;
+            ProteomicsParameter = proteomicsParameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
         [IgnoreMember]
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> AnnotatorKey { get; set; }
+        public IReferRestorationKey AnnotatorKey { get; set; }
 
         [Key("MsRefSearchParameter")]
         public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
@@ -181,7 +216,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             Database.Load(null, null);
-            Annotator = AnnotatorKey.Accept(visitor, Database);
+            Annotator = AnnotatorKey.Accept<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>(visitor, Database);
         }
     }
 
@@ -221,18 +256,29 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             AnnotatorID = AnnotatorKey.Key;
         }
 
+        [SerializationConstructor]
+        public EadLipidDatabaseAnnotatorContainer(
+            IReferRestorationKey annotatorKey,
+            EadLipidDatabase database,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            Parameter = parameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
         [IgnoreMember]
         public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
-        [Key(nameof(AnnotatorKey))]
-        public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> AnnotatorKey { get; set; }
+        [Key("AnnotatorKey")]
+        public IReferRestorationKey AnnotatorKey { get; set; }
 
-        [Key(nameof(Parameter))]
+        [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
 
-        [Key(nameof(Database))]
+        [Key("Database")]
         public EadLipidDatabase Database { get; set; }
 
         [IgnoreMember]
@@ -247,7 +293,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             Database.Load(stream, null);
-            Annotator = AnnotatorKey.Accept(visitor, Database);
+            Annotator = AnnotatorKey.Accept<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>(visitor, Database);
         }
     }
 }

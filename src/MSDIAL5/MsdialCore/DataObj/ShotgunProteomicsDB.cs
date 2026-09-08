@@ -1,28 +1,23 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
-using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
-        [Key(19)]
+        [IgnoreMember]
         private bool disposedValue;
 
         [Key(1)]
