@@ -39,6 +39,6 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Build
-        run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore /property:SkipLibraryDownload=true
+        run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore /property:DownloadLibrary=false
       - name: Test
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
