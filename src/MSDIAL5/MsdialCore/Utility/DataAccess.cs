@@ -332,11 +332,10 @@ namespace CompMs.MsdialCore.Utility {
             int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
 
-            var counter = 0;
-            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param, acquisitionType);
-            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
-            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
-
+var valuePeakLists = new List<ValuePeak>[pMzValues.Count];
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    valuePeakLists[j] = new List<ValuePeak>();
+}
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
@@ -348,27 +347,16 @@ namespace CompMs.MsdialCore.Utility {
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
 
                         for (int j = 0; j < pMzValues.Count; j++) { 
-                            valuePeakArrayList[j][counter] = new ValuePeak(id, chromX, pMzValues[j], intensities[j]);
+                            valuePeakLists[j].Add(new ValuePeak(id, chromX, pMzValues[j], intensities[j]));
                         }
-                        counter++;
                     }
                 }
             }
-            return valuePeakArrayList;
-        }
-
-        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param, AcquisitionType type) {
-            var counter = 0;
-            for (int i = startScanID; i <= endScanID; i++) {
-                var spec = provider.LoadMsSpectrumFromIndex(i);
-                if (spec.MsLevel == 2 && spec.Precursor != null) {
-                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, type)) {
-                        counter++;
-                    }
-                }
-            }
-            return counter;
+var results = new List<ValuePeak[]>(valuePeakLists.Length);
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    results.Add(valuePeakLists[j].ToArray());
+}
+return results;
         }
 
         public static double[] RetrieveIntensitiesFromMzValues(
