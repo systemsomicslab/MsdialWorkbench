@@ -63,7 +63,7 @@ SMF	0	null	null	[M+H]1+	null	300.1852722167969	1	115.687	115.687	115.687	1017	17
 SMF	1	1	null	[M+H]1+	null	301.0346374511719	1	119.6405	118.444	120.83699999999999	12642	20826
 SMF	2	null	null	[M+H]1+	null	302.0978088378906	1	118.857	118.857	118.857	5881	15691
 SMF	3	null	null	[M+H]1+	null	302.1385192871094	1	118.804	118.804	118.804	1285	2241
-SMF	4	4	null	[M+H]1+	null	303.0500183105469	1	118.8305	118.62400000000001	119.037	536230	1837469
+SMF	4	2	null	[M+H]1+	null	303.0500183105469	1	118.8305	118.62400000000001	119.037	536230	1837469
 SMF	5	null	null	[M+H]1+	null	303.12347412109375	1	119.397	119.397	119.397	314	5489
 SMF	6	null	null	[M+H]1+	null	303.3472595214844	1	118.677	118.677	118.677	479	1459
 SMF	7	null	null	[M+H]1+	null	303.7848205566406	1	118.4705	118.084	118.857	1451	10300
@@ -73,6 +73,6 @@ SMF	10	null	null	[M+H]1+	null	304.62640380859375	1	118.857	118.857	118.857	268	1
 SMF	11	null	null	[M+H]1+	null	304.8061828613281	1	119.037	119.037	119.037	384	1553
 
 SEH	SME_ID	evidence_input_id	database_identifier	chemical_formula	smiles	inchi	chemical_name	uri	derivatized_form	adduct_ion	exp_mass_to_charge	charge	theoretical_mass_to_charge	spectra_ref	identification_method	ms_level	id_confidence_measure[1]	id_confidence_measure[2]	id_confidence_measure[3]	id_confidence_measure[4]	id_confidence_measure[5]	id_confidence_measure[6]	id_confidence_measure[7]	id_confidence_measure[8]	rank
-SME	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	null	[M+H]1+	301.0346374511719	1	0	ms_run[2]:ms1scanID=3490 ms2scanID=3488	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.5242083	0	0.8979989	0.646961	0.69420624	0.88054246	4	0.6666667	1	
-SME	4	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	null	[M+H]1+	303.0500183105469	1	0	ms_run[1]:ms1scanID=3510 ms2scanID=3468| ms_run[2]:ms1scanID=3440 ms2scanID=3418	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.6437206	0	0.9999581	0.6832075	0.7282375	0.8728807	15	0.88235295	1	
+SME	1	1	small_test_msp:Isodemethylwedelolactone	C15H8O7	O=C1OC=2C(O)=CC(O)=CC2C=3OC=4C=C(O)C(O)=CC4C13	null	Isodemethylwedelolactone	null	null	[M+H]1+	301.0346374511719	1	301.03000	ms_run[2]:ms1scanID=3490 ms2scanID=3488	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.5242083	0	0.8979989	0.646961	0.69420624	0.88054246	4	0.6666667	1
+SME	2	4	small_test_msp:Quercetin	C15H10O7	C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O	null	Quercetin	null	null	[M+H]1+	303.0500183105469	1	303.04993	ms_run[1]:ms1scanID=3510 ms2scanID=3468| ms_run[2]:ms1scanID=3440 ms2scanID=3418	[,, MS-DIAL algorithm matching score, ]	[MS, MS:1000511, ms level, 2]	1.6437206	0	0.9999581	0.6832075	0.7282375	0.8728807	15	0.88235295	1
 

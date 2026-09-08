@@ -1,4 +1,4 @@
-﻿using CompMs.App.MsdialConsole.Process;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.Properties;
 using System.CommandLine;
 using System.CommandLine.Invocation;
@@ -182,6 +182,7 @@ class Program {
         MainProcess.SetDimsCommand(root);
         MainProcess.SetImmsCommand(root);
         MainProcess.SetMsnCommand(root);
+        MainProcess.SetNormalizeCommand(root);
         MainProcess.SetEicCommand(root);
         MainProcess.SetRtCorrectionCommand(root);
         MainProcess.SetImageGenerationCommand(root);
