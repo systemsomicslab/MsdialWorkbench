@@ -337,7 +337,7 @@ public static class MainProcess
         var cmd = new Command("msn", "Run molecular networking data processing");
         var inputOpt = new Option<string>("--input", "-i")
         {
-            Description = "Input folder containing the files to be processed or a single file",
+            Description = "Input folder or file. Supported files: .msp, .mddata, .pai, .pai2, .arf, and .arf2.",
             Required = true,
         };
         var outputOpt = new Option<string>("--output", "-o")
@@ -352,24 +352,24 @@ public static class MainProcess
         };
         var targetFileOpt = new Option<FileInfo>("--targetFile", "-t")
         {
-            Description = "Option",
+            Description = "Optional target MSP library file for mapping input compounds.",
         };
         var spectrumFileOpt = new Option<FileInfo>("--spectrum", "-s")
         {
-            Description = "Associated MS/MS spectrum file for binary peak-list input",
+            Description = "Associated MS/MS spectrum file for binary peak-list input. Supported files: .dcl.",
         };
         var analysisFileOpt = new Option<string>("--analysis-file")
         {
-            Description = "Analysis file name to use when input is an .mddata project",
+            Description = "Analysis file name for .mddata input. Takes precedence over --alignment when both are specified.",
         };
         var alignmentOpt = new Option<bool>("--alignment")
         {
-            Description = "Use the project's alignment result for .mddata input",
+            Description = "Use the project's alignment result for .mddata input. Ignored when --analysis-file is specified.",
             DefaultValueFactory = _ => true,
         };
         var ionmodeOpt = new Option<string>("--ionmode", "-ionmode")
         {
-            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'",
+            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'.",
             DefaultValueFactory = _ => "Positive",
         };
         var overwriteOpt = new Option<bool>("--overwrite", "-overwrite")
@@ -379,7 +379,7 @@ public static class MainProcess
         };
         var allEdgeExportOpt = new Option<bool>("--all-edge-export", "-a")
         {
-            Description = "Option to export all edges in the molecular network. Default is false.",
+            Description = "Export all edges in the molecular network. [default: false]",
             DefaultValueFactory = _ => false,
         };
         var helpOpt = root.Options.OfType<HelpOption>().Single();
