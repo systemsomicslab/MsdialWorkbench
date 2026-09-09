@@ -1,4 +1,4 @@
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -247,6 +247,108 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.AreEqual(
                 MeasuredTerms.AccurateMass | MeasuredTerms.Spectrum | MeasuredTerms.Isotope,
                 recorded.MeasuredTerms);
+        }
+
+        [TestMethod()]
+        public void MsReferenceScorerRecordsAReferenceSpectrumForMetabolomics() {
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+
+            var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
+
+            Assert.AreEqual(AnnotationEvidenceSource.ReferenceSpectrum, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void MsReferenceScorerRecordsRuleBasedForLipidomics() {
+            // The lipid pipeline. A spectral comparison does run, but ValidateBase combines the dot
+            // products with OR here where metabolomics uses AND, and ValidateOnLipidomics then
+            // requires a characteristic-ion rule to have fired, so the rules establish the match.
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+
+            var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
+
+            Assert.AreEqual(AnnotationEvidenceSource.RuleBased, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void MsReferenceScorerRecordsRuleBasedForAGeneratedLipidLibrary() {
+            // The EAD/OAD/EID in-silico path. No test anywhere reached a GeneratedLipid scorer
+            // before, so this branch was uncovered; it must agree with the .lbm2 path rather than
+            // diverge from it, because both are settled by a rule evaluation.
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
+            var scorer = new MsReferenceScorer("EieioLipid", -1, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true);
+
+            var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
+
+            Assert.AreEqual(AnnotationEvidenceSource.RuleBased, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void AnMspCandidateWithNoSpectrumToCompareIsPrecursorOnly() {
+            // The load-bearing case for how the enum is read. The reference material is a spectrum
+            // library, but nothing was compared, so the evidence is the precursor mass. Recording
+            // ReferenceSpectrum here would let a row be labelled "a reference spectrum was
+            // compared" while its own name carried the "no MS2: " prefix.
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
+            var reference = Reference();
+            reference.Spectrum = new List<SpectrumPeak>();
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+
+            var result = scorer.CalculateScore(Target(), Target(), null, reference, null, parameter);
+
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, result.EvidenceSource);
+            Assert.IsFalse(result.MeasuredTerms.HasFlag(MeasuredTerms.Spectrum),
+                "and the two records agree, because one is derived from the other");
+        }
+
+        [TestMethod()]
+        public void MassAnnotatorRecordsAReferenceSpectrum() {
+            var reference = Reference();
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, TotalScoreCutoff = 0, };
+            var db = new MoleculeDataBase(new List<MoleculeMsReference> { reference, }, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath");
+            var annotator = new MassAnnotator(db, parameter, TargetOmics.Metabolomics, SourceType.MspDB, "MspDB", -1);
+            var target = Target();
+            var query = new AnnotationQuery(target, target, null, null, parameter, annotator, ignoreIsotopicPeak: false);
+
+            var result = annotator.CalculateScore(query, reference);
+
+            Assert.AreEqual(AnnotationEvidenceSource.ReferenceSpectrum, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void MassAnnotatorOnATextDatabaseIsPrecursorOnly() {
+            // This is the annotator a reopened project gets through StandardLoadAnnotatorVisitor,
+            // so it covers modes whose own annotators are not exercised here.
+            var reference = Reference();
+            reference.Spectrum = new List<SpectrumPeak>();
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, TotalScoreCutoff = 0, };
+            var db = new MoleculeDataBase(new List<MoleculeMsReference> { reference, }, "TextDB", DataBaseSource.Text, SourceType.TextDB, "TextPath");
+            var annotator = new MassAnnotator(db, parameter, TargetOmics.Metabolomics, SourceType.TextDB, "TextDB", -1);
+            var target = Target();
+            var query = new AnnotationQuery(target, target, null, null, parameter, annotator, ignoreIsotopicPeak: false);
+
+            var result = annotator.CalculateScore(query, reference);
+
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void ACalculatorDoesNotClaimAnEvidenceKind() {
+            // Pins the ownership rule from the other side. A calculator sees a query and a
+            // reference and cannot know what kind of database the reference came from, so it
+            // records terms without recording an evidence source. That is why the DIMS annotators
+            // needed their own assignment even though their terms arrive through Assign.
+            var recorded = new MsScanMatchResult();
+            var target = Target();
+
+            new MassMatchCalculator().Calculate(new MassMatchQuery(target.PrecursorMz, 0.01), Reference()).Assign(recorded);
+            new Ms2MatchCalculator().Calculate(new MSScanMatchQuery(target, SpectrumParameter()), Reference()).Assign(recorded);
+
+            Assert.AreEqual(AnnotationEvidenceSource.Unspecified, recorded.EvidenceSource);
+            Assert.IsTrue(recorded.MeasuredTerms.HasFlag(MeasuredTerms.Spectrum),
+                "the terms are recorded there; only the evidence kind is not");
         }
 
         private static MsRefSearchParameterBase SpectrumParameter() {

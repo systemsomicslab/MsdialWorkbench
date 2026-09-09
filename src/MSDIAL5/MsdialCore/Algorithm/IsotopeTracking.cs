@@ -603,6 +603,11 @@ namespace CompMs.MsdialCore.Algorithm
                 MeasuredTerms = MeasuredTerms.None
                     .With(MeasuredTerms.AccurateMass, massSimilarity)
                     .With(MeasuredTerms.RetentionTime, rtSimilarity),
+                // A target formula list is matched on mass and time alone. setToAlignmentProperty
+                // then stamps SourceType.TextDB on this and files it under AddTextDbResult, so
+                // without this the record is indistinguishable from a text-database annotation --
+                // which, in evidence terms, is exactly what it is.
+                EvidenceSource = AnnotationEvidenceSource.PrecursorOnly,
             };
         }
 

@@ -86,6 +86,19 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI);
                     result.LibraryIDWhenOrdered = i;
                     result.AnnotatorID = _annotatorID;
+                    // Recorded here and not inside CompareEIMSScanProperties: that function is also
+                    // how GcmsPeakJoiner compares two SAMPLE spectra to each other during alignment,
+                    // where there is no reference at all and "a reference spectrum was compared"
+                    // would be false. This is the caller that knows -- an EI entry from an acquired
+                    // MSP library -- and it is the single funnel for the whole GC-MS mode.
+                    //
+                    // Known limitation, deliberately not worked around: the GC-MS file process
+                    // saves and reloads annotations through the .dcl block, whose 25 fields are
+                    // read back at hard-coded byte offsets, so this value does not survive that
+                    // round trip. Extending the .dcl layout would make every existing file
+                    // unreadable. Pinned by ADclRoundTripDiscardsTheEvidenceSource.
+                    result.EvidenceSource = AnnotationEvidence.WhenSpectrumCompared(
+                        result.MeasuredTerms, AnnotationEvidenceSource.ReferenceSpectrum);
                     yield return result;
                 }
             }

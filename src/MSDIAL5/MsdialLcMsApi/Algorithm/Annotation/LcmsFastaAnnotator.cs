@@ -151,6 +151,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             result.Source = type;
             result.AnnotatorID = annotatorID;
             result.Priority = Priority;
+            // PredictedSpectrum, established from the type rather than the naming: a FASTA holds no
+            // spectra, and PeptideMsReference.Spectrum always goes through
+            // SequenceToSpec.Convert2SpecPeaks -- a computed b/y fragment ladder. The overload that
+            // would read an acquired spectrum from a file is commented out. So every dot product and
+            // every matched peak in this frame was scored against a generated spectrum.
+            result.EvidenceSource = AnnotationEvidence.WhenSpectrumCompared(
+                result.MeasuredTerms, AnnotationEvidenceSource.PredictedSpectrum);
 
             return result;
         }

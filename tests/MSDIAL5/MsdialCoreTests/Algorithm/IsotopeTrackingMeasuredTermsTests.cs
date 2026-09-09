@@ -1,4 +1,4 @@
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
@@ -48,6 +48,21 @@ namespace CompMs.MsdialCore.Algorithm.Tests
 
             Assert.IsNotNull(spot.TextDbBasedMatchResult, "the spot was expected to match the target formula");
             Assert.AreEqual(MeasuredTerms.AccurateMass, spot.TextDbBasedMatchResult.MeasuredTerms);
+        }
+
+        [TestMethod()]
+        public void ATargetFormulaMatchRecordsPrecursorOnlyEvidence() {
+            // setToAlignmentProperty stamps SourceType.TextDB on this result and files it under
+            // AddTextDbResult, so in evidence terms it is a text-database annotation, which is
+            // exactly what it is: mass and time, no spectrum.
+            var spot = Spot(massCenter: 100.0, retentionTime: 2.0);
+            var container = Container(spot);
+            var formula = Formula(precursorMz: 100.0, retentionTime: 2.0);
+
+            IsotopeTracking.SetTargetFormulaInformation(container, new List<MoleculeMsReference> { formula, }, Parameter());
+
+            Assert.IsNotNull(spot.TextDbBasedMatchResult);
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, spot.TextDbBasedMatchResult.EvidenceSource);
         }
 
         private static ParameterBase Parameter() {

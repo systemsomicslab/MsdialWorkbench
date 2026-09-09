@@ -467,6 +467,20 @@ namespace CompMs.App.Msdial.Model.Search
                     RtSimilarity = ((float)SelectedStructure.FragmenterResult.RtSimilarityScore),
                     RiSimilarity = ((float)SelectedStructure.FragmenterResult.RiSimilarityScore),
                     LibraryID = moleculeMsReference.ScanID,
+                    // The scores above come from MS-FINDER's in-silico fragmentation of a candidate
+                    // structure, scored against the measured peaks -- so the evidence is a predicted
+                    // spectrum, and this field is the only place that fact can be recorded. Source
+                    // ends up bare Manual here (the MS-FINDER holder database has SourceType.None),
+                    // so the human step is already recorded twice; the in-silico step was recorded
+                    // nowhere. Set unconditionally rather than through WhenSpectrumCompared: the
+                    // comparison happened inside MS-FINDER, so MsScanMatching's spectral terms were
+                    // never computed and MeasuredTerms.Spectrum must stay clear.
+                    EvidenceSource = AnnotationEvidenceSource.PredictedSpectrum,
+                    // These two fields do hold measurements, from the fragmenter. Recorded here
+                    // because the previous commit's sweep reached this site and left them unset.
+                    MeasuredTerms = MeasuredTerms.None
+                        .WithComparedValues(MeasuredTerms.RetentionTime, SelectedStructure.FragmenterResult.RtSimilarityScore, 1d)
+                        .WithComparedValues(MeasuredTerms.RetentionIndex, SelectedStructure.FragmenterResult.RiSimilarityScore, 1d),
                 };
                 _setAnnotationUsecase.SetConfidence(moleculeMsReference, matchResult);
             } else {

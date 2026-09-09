@@ -125,6 +125,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
 
+            // Recorded from the completed MeasuredTerms and the omics this scorer was built for.
+            // This one assignment covers LcmsMspAnnotator's two constructors and EadLipidAnnotator's
+            // three collision-type arms, because `omics` and `source` are readonly fields set there:
+            // three near-identical switch arms with no default is exactly where one gets missed and
+            // a whole collision-type mode silently blanks.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
+
             var scores = new List<double> { };
             var dotProductFactor = 3.0;
             var revesrseDotProdFactor = 2.0;

@@ -18,6 +18,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
     /// from near-identical code that differs only in which terms the mode has. An omission in one
     /// leaves that mode's evidence blank while every other mode's tests still pass, and there is
     /// nothing in a match result afterwards that says which annotator produced it.
+    ///
+    /// The same file witnesses the evidence source, because it is recorded at the same
+    /// sites and derived from the same terms: key 40 cannot be checked apart from key 39.
     /// </remarks>
     [TestClass()]
     public class MeasuredTermsAreRecordedTests
@@ -91,6 +94,50 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.AreEqual(
                 MeasuredTerms.AccurateMass | MeasuredTerms.RetentionTime | MeasuredTerms.Ccs,
                 result.MeasuredTerms);
+        }
+
+        [TestMethod()]
+        public void TheMspAnnotatorRecordsAReferenceSpectrum() {
+            var parameter = Parameter();
+            var annotator = new LcimmsMspAnnotator(Database(SourceType.MspDB), parameter, TargetOmics.Metabolomics, "MspDB", -1);
+
+            var result = annotator.CalculateScore(Query(annotator, parameter), Reference());
+
+            Assert.AreEqual(AnnotationEvidenceSource.ReferenceSpectrum, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void TheMspAnnotatorRecordsRuleBasedOnALipidomicsRun() {
+            var parameter = Parameter();
+            var annotator = new LcimmsMspAnnotator(Database(SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
+
+            var result = annotator.CalculateScore(Query(annotator, parameter), Reference());
+
+            Assert.AreEqual(AnnotationEvidenceSource.RuleBased, result.EvidenceSource,
+                "in a lipidomics run the characteristic-ion rules establish the annotation");
+        }
+
+        [TestMethod()]
+        public void TheMspAnnotatorFallsBackToPrecursorOnlyWithNoSpectrum() {
+            var parameter = Parameter();
+            var annotator = new LcimmsMspAnnotator(Database(SourceType.MspDB), parameter, TargetOmics.Metabolomics, "MspDB", -1);
+            var reference = Reference();
+            reference.Spectrum = new List<SpectrumPeak>();
+
+            var result = annotator.CalculateScore(Query(annotator, parameter), reference);
+
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, result.EvidenceSource);
+        }
+
+        [TestMethod()]
+        public void TheTextDbAnnotatorRecordsPrecursorOnly() {
+            var parameter = Parameter();
+            var annotator = new LcimmsTextDBAnnotator(Database(SourceType.TextDB), parameter, "TextDB", -1);
+
+            var result = annotator.CalculateScore(Query(annotator, parameter), Reference());
+
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, result.EvidenceSource,
+                "these names must stay separable in an export from MS/MS reference matches");
         }
 
         private static MsRefSearchParameterBase Parameter() {

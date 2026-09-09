@@ -110,6 +110,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
                     MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+            // RuleBased when this is a lipidomics run: the spectral comparison above is a
+            // permissive pre-filter there, and the characteristic-ion rules decide the match.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 
             return result;

@@ -88,6 +88,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             result.TotalScore = (float)results.SelectMany(res => res.Scores).Average();
             results.ForEach(res => res.Assign(result));
 
+            // After the Assign loop, not in the initializer: this annotator's MeasuredTerms arrive
+            // through the calculators, so before this point the record says nothing was measured.
+            // The evidence cannot be recorded inside the calculators either -- a calculator sees
+            // only a query and a reference and cannot know what kind of database the reference came
+            // from -- which is why this site needs its own assignment even though the previous
+            // commit's term recording reached it for free.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
+
             result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
             return result;

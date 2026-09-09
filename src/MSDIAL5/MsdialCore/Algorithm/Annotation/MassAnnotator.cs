@@ -109,6 +109,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
                     .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
+            // A TextDB reference carries no spectrum, so the dot products hold the not-computed
+            // sentinel, MeasuredTerms leaves Spectrum clear and this resolves to PrecursorOnly
+            // without needing to test `source`. This is also the annotator a reopened project gets
+            // through StandardLoadAnnotatorVisitor, and the GC-EI annotator, so it covers modes
+            // whose own annotators are not in this list.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 
             return result;

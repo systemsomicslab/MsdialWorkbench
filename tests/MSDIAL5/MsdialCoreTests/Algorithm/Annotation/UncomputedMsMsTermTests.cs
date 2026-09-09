@@ -83,6 +83,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         [TestMethod]
+        public void PrecursorOnlyCandidateRecordsPrecursorOnlyEvidence() {
+            // The scorer here is a lipidomics one, which is the point: no spectrum was opened, so
+            // the characteristic-ion rules never ran and the evidence is the precursor mass and
+            // retention time alone. "No spectrum" outranks "lipidomics" in the recording rule, and
+            // the value agrees with the word this codebase already uses for this state -- the same
+            // condition that gives such a name its "no MS2: " prefix.
+            var target = PrecursorOnlyTarget();
+
+            var result = Scorer().CalculateScore(target, target, null, Reference(), null, Parameter());
+
+            Assert.AreEqual(AnnotationEvidenceSource.PrecursorOnly, result.EvidenceSource);
+        }
+
+        [TestMethod]
         public void PrecursorOnlyCandidateIsScoredFromRetentionAndMassAlone() {
             var target = PrecursorOnlyTarget();
 

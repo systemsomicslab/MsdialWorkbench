@@ -91,6 +91,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
                     MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
+            // A text database holds no reference spectrum, so nothing here opened one and the
+            // evidence is the precursor mass (with whatever time or CCS terms the mode adds).
+            // ValidateBase then sets IsReferenceMatched from those alone, which is what makes this
+            // record necessary: without it an export cannot separate these names from MS/MS
+            // reference matches.
+            result.EvidenceSource = AnnotationEvidenceSource.PrecursorOnly;
             result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
             return result;

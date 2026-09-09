@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using CompMs.Common.Enum;
+using MessagePack;
 using System;
 
 namespace CompMs.Common.DataObj.Result {
@@ -37,19 +38,93 @@ namespace CompMs.Common.DataObj.Result {
     /// <see cref="Unspecified"/> must stay 0: every result deserialized from a project written
     /// before this member existed reads back as 0, and that has to mean "not recorded" rather than
     /// any particular kind of evidence.
+    ///
+    /// These values describe WHAT WAS COMPARED, not what the database happens to hold. So an MSP
+    /// candidate for a feature with no product-ion spectrum is <see cref="PrecursorOnly"/>, not
+    /// <see cref="ReferenceSpectrum"/>. Two readings were possible and this one is chosen because
+    /// it is the one the repository already speaks: AnnotationName.NoMs2Prefix calls exactly this
+    /// case a "precursor-only suggestion" and applies it to MSP and LBM names, and the programme's
+    /// annotation policy is written the same way -- "a lower-priority MS/MS reference match
+    /// outranks a higher-priority precursor-only suggestion". Under the other reading a record
+    /// could be labelled <see cref="ReferenceSpectrum"/> while its own name carried the "no MS2: "
+    /// prefix. Which database the name came from is a separate question, and
+    /// <see cref="MsScanMatchResult.Source"/> already answers it.
     /// </remarks>
     public enum AnnotationEvidenceSource : byte {
         Unspecified = 0,
-        /// <summary>Precursor mass, optionally with retention time. No spectrum was opened.</summary>
+        /// <summary>
+        /// Precursor mass, optionally with retention time or collision cross-section. No spectrum
+        /// was opened -- either the database holds none, or the feature had no product-ion spectrum.
+        /// </summary>
         PrecursorOnly,
         /// <summary>An experimentally acquired reference spectrum was compared.</summary>
         ReferenceSpectrum,
         /// <summary>A computationally generated spectrum was compared.</summary>
         PredictedSpectrum,
-        /// <summary>A lipid rule evaluation, rather than a spectrum comparison.</summary>
+        /// <summary>
+        /// Diagnostic fragment ions were evaluated against a rule set, and that evaluation is what
+        /// established the annotation.
+        /// </summary>
+        /// <remarks>
+        /// This is the lipid pipeline. A spectral comparison does run first, but as a permissive
+        /// pre-filter rather than as the evidence: for <c>TargetOmics.Lipidomics</c>
+        /// MsReferenceScorer.ValidateBase combines the three dot products with OR where
+        /// metabolomics uses AND, the default cut-offs are low, and ValidateOnLipidomics then does
+        /// <c>IsSpectrumMatch &amp;= isLipidChainsMatch | isLipidClassMatch | ...</c> -- so the
+        /// characteristic-ion rules in MsmsCharacterization decide both whether the match stands
+        /// and at what structural level it is reported. Recording ReferenceSpectrum here would
+        /// credit the evidence to the pre-filter, and would additionally assert "experimentally
+        /// acquired" about a library whose spectra are generated in silico.
+        /// </remarks>
         RuleBased,
-        /// <summary>A person accepted this candidate.</summary>
+        /// <summary>
+        /// A person made this record, and no comparison of any kind stands behind it.
+        /// </summary>
+        /// <remarks>
+        /// Reserved for a human assertion with nothing to describe -- today only marking a peak
+        /// unknown. A person ACCEPTING a candidate does not relabel it: that would overwrite the
+        /// only record of what the annotator compared, in exchange for a fact
+        /// <see cref="SourceType.Manual"/> and <see cref="MsScanMatchResult.IsManuallyModified"/>
+        /// already carry. The producer of an annotation owns its evidence source; acceptance does
+        /// not.
+        /// </remarks>
         Manual,
+    }
+
+    /// <summary>
+    /// Decides an <see cref="AnnotationEvidenceSource"/> from the facts an annotation site has in
+    /// hand at the moment it produces a result.
+    /// </summary>
+    /// <remarks>
+    /// Here rather than at each site for the same reason as <see cref="MeasuredTermsExtension"/>:
+    /// the mode-specific annotators are near-identical and an omission or a divergence in one of
+    /// them silently mislabels a whole acquisition mode.
+    ///
+    /// Both methods take <see cref="MeasuredTerms"/> rather than re-deriving whether a spectrum was
+    /// compared, so key 40 cannot contradict key 39 on the same record.
+    /// </remarks>
+    public static class AnnotationEvidence {
+        /// <summary>
+        /// The evidence for a search against a reference database, given what the search measured
+        /// and which omics rule set governed it.
+        /// </summary>
+        public static AnnotationEvidenceSource ForDatabaseMatch(MeasuredTerms measured, TargetOmics omics) {
+            if (!measured.HasFlag(MeasuredTerms.Spectrum)) {
+                return AnnotationEvidenceSource.PrecursorOnly;
+            }
+            return omics == TargetOmics.Lipidomics
+                ? AnnotationEvidenceSource.RuleBased
+                : AnnotationEvidenceSource.ReferenceSpectrum;
+        }
+
+        /// <summary>
+        /// <paramref name="evidence"/> when a spectrum was actually compared, and
+        /// <see cref="AnnotationEvidenceSource.PrecursorOnly"/> when none was, for the sites that
+        /// know their reference material by type rather than from a parameter.
+        /// </summary>
+        public static AnnotationEvidenceSource WhenSpectrumCompared(MeasuredTerms measured, AnnotationEvidenceSource evidence) {
+            return measured.HasFlag(MeasuredTerms.Spectrum) ? evidence : AnnotationEvidenceSource.PrecursorOnly;
+        }
     }
 
     /// <summary>
