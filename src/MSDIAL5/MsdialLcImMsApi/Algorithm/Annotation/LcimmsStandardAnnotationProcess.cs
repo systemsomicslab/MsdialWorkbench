@@ -64,10 +64,16 @@ public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
             var query = factory.Create(chromatogramPeakFeature, msdecResult, spectrum, chromatogramPeakFeature.PeakCharacter, factory.PrepareParameter());
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
+            // One stamp covers both containers below: they receive the SAME instances, so each
+            // stored object keeps the numbers for the drift peak whose candidates were counted.
+            // A reader summing over the parent LC peak is therefore summing across its drift peaks,
+            // which is the right answer for that question and the wrong one for "how many
+            // candidates did this peak have".
+            var population = CandidatePopulation.Of(candidates, results, _evaluator.IsReferenceMatched);
             var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).Select(r => {
                 r.SpectrumID = msdecResult.RawSpectrumID;
                 r.CollisionEnergy = collisionEnergy;
-                return r;
+                return population.RecordOn(r);
             }).ToArray();
             chromatogramPeakFeature.MatchResults.AddResults(topResults);
             parentChromatogramPeakFeature.MatchResults.AddResults(topResults);

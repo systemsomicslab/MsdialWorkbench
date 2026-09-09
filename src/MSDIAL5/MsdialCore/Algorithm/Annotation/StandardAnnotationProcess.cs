@@ -117,10 +117,14 @@ public sealed class StandardAnnotationProcess : IAnnotationProcess
     private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, MSDecResult msdecResult, double collisionEnergy) {
         var candidates = query.FindCandidates();
         var results = _evaluator.FilterByThreshold(candidates);
+        // Counted before SelectTopN discards the rest. NUMBER_OF_ANNOTATION_RESULTS is 3, so
+        // without this the population size is gone before any file exists and a reader cannot
+        // tell "could not discriminate between forty isomers" from "reports at most three".
+        var population = CandidatePopulation.Of(candidates, results, _evaluator.IsReferenceMatched);
         var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).Select(r => {
             r.CollisionEnergy = collisionEnergy;
             r.SpectrumID = msdecResult.RawSpectrumID;
-            return r;
+            return population.RecordOn(r);
         });
         chromPeakFeature.MatchResults.AddResults(topResults);
     }

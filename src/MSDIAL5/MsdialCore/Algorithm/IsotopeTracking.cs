@@ -608,6 +608,12 @@ namespace CompMs.MsdialCore.Algorithm
                 // without this the record is indistinguishable from a text-database annotation --
                 // which, in evidence terms, is exactly what it is.
                 EvidenceSource = AnnotationEvidenceSource.PrecursorOnly,
+                // The candidate counts stay null here because this search runs the other way
+                // round: the caller windows ALIGNMENT SPOTS around one target-formula query and
+                // keeps the argmax, so a population size here would answer "how many spots could
+                // this formula have been", which is a different question in the opposite
+                // direction. There is no threshold line either -- the only gate is a score cut-off
+                // on the single winner.
             };
         }
 

@@ -52,6 +52,7 @@ namespace CompMs.Common.DataObj.Result.Tests
             Assert.AreEqual(expected.EvidenceSource, actual.EvidenceSource);
             Assert.AreEqual(expected.CandidatesFound, actual.CandidatesFound);
             Assert.AreEqual(expected.CandidatesAboveThreshold, actual.CandidatesAboveThreshold);
+            Assert.AreEqual(expected.CandidatesReferenceMatched, actual.CandidatesReferenceMatched);
         }
     }
 }

@@ -458,23 +458,68 @@ namespace CompMs.Common.DataObj.Result {
         /// Null means not recorded.
         /// </summary>
         /// <remarks>
-        /// Per (peak, annotator), never per peak. This is the number that cannot be recovered
-        /// afterwards: the annotation processes keep only the best few candidates, so without it
-        /// "the run could not discriminate between candidates" is indistinguishable from "the run
-        /// never reported more than a handful". Whether the list was truncated is left to the
-        /// reader to derive from this and <see cref="CandidatesAboveThreshold"/>, because the cap
-        /// differs between the annotation processes and a single flag would be wrong for most of
-        /// them.
+        /// This is the number that cannot be recovered afterwards: the annotation processes keep
+        /// only the best few candidates, so without it "the run could not discriminate between
+        /// candidates" is indistinguishable from "the run never reported more than a handful".
+        /// Whether the list was truncated is left to the reader to derive from this and
+        /// <see cref="CandidatesAboveThreshold"/>, because the cap differs between the annotation
+        /// processes and a single flag would be wrong for most of them.
+        ///
+        /// SCOPE: one population is one (peak, annotator, product-ion spectrum) triple -- NOT one
+        /// (peak, annotator) pair. Two configurations in scope break the pairwise reading. Under
+        /// AIF / all-ion acquisition one MSDecResultCollection is built per collision energy and
+        /// the same annotator runs once per collection, and in LC-IM-MS the same annotator runs
+        /// once per drift peak with the survivors added to the parent LC peak as well. In both, one
+        /// container legitimately holds several populations from one annotator. The discriminators
+        /// are already on this object and are set immediately before these counts:
+        /// <see cref="SpectrumID"/> and <see cref="CollisionEnergy"/>. A consumer must therefore
+        /// group by (AnnotatorID, SpectrumID) and take a DISTINCT value per group -- never a sum,
+        /// since every survivor of one selection carries the same figures.
+        ///
+        /// LIMIT, and it is the sharpest one on this record: the only carriers of these counts are
+        /// the candidates that survived selection. An annotator that scored candidates and named
+        /// none of them stores nothing at all, so its population size has no carrier and is not
+        /// merely unrecorded but unrecordable here. A reader summing or averaging over visible rows
+        /// is therefore looking at a lower bound with no way to know how far off it is. Closing
+        /// that would need a carrier that is not a survivor -- a per-(peak, annotator) record that
+        /// does not exist today -- which is a larger change than adding these fields was.
         /// </remarks>
         [Key(41)]
         public int? CandidatesFound { get; set; }
 
         /// <summary>
-        /// How many of <see cref="CandidatesFound"/> passed this annotator's thresholds. Null means
-        /// not recorded.
+        /// How many of <see cref="CandidatesFound"/> the annotator judged to be either a reference
+        /// match or a precursor-only suggestion. Null means not recorded.
         /// </summary>
+        /// <remarks>
+        /// Named for the evaluator method that produces it, but note what that method actually
+        /// does: MsScanMatchResultEvaluator.FilterByThreshold is
+        /// <c>IsAnnotationSuggested || IsReferenceMatched</c>, and its constructor ignores the
+        /// search parameter entirely. No cut-off is applied here -- the thresholds were applied
+        /// inside the annotator when it set those two booleans. So this is "candidates the
+        /// annotator was willing to name", not "candidates above a score".
+        /// </remarks>
         [Key(42)]
         public int? CandidatesAboveThreshold { get; set; }
+
+        /// <summary>
+        /// How many of <see cref="CandidatesAboveThreshold"/> were reference matches rather than
+        /// precursor-only suggestions. Null means not recorded.
+        /// </summary>
+        /// <remarks>
+        /// The three numbers together give the tiers the programme's annotation policy
+        /// distinguishes, none of which survives truncation on its own:
+        /// <see cref="CandidatesFound"/> minus <see cref="CandidatesAboveThreshold"/> is what the
+        /// annotator rejected outright; <see cref="CandidatesAboveThreshold"/> minus this is the
+        /// precursor-only suggestions; and this is the MS/MS reference matches. That last number
+        /// is the one an ambiguity claim rests on -- "the run could not choose between six equally
+        /// good reference matches" is a different statement from "the run found six candidates".
+        ///
+        /// Equal to <c>FilterByThreshold(candidates).Count(r =&gt; r.IsReferenceMatched)</c>, which
+        /// is what SelectReferenceMatchResults computes.
+        /// </remarks>
+        [Key(43)]
+        public int? CandidatesReferenceMatched { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

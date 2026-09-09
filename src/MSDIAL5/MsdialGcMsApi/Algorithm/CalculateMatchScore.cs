@@ -92,11 +92,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     // would be false. This is the caller that knows -- an EI entry from an acquired
                     // MSP library -- and it is the single funnel for the whole GC-MS mode.
                     //
-                    // Known limitation, deliberately not worked around: the GC-MS file process
-                    // saves and reloads annotations through the .dcl block, whose 25 fields are
-                    // read back at hard-coded byte offsets, so this value does not survive that
-                    // round trip. Extending the .dcl layout would make every existing file
-                    // unreadable. Pinned by ADclRoundTripDiscardsTheEvidenceSource.
+                    // This value does survive a GC-MS session. The primary store is MessagePack:
+                    // the container reaches SpectrumFeatureCollection through AnnotatedMSDecResult,
+                    // whose hand-written formatter serialises MsScanMatchResultContainer with the
+                    // standard resolver, so every [Key] member is kept. That is the copy the
+                    // exporter reads (AnnotatedMSDecResult.MatchResults.Representative, in
+                    // GcmsAnalysisMetadataAccessor) and the copy alignment merges in
+                    // DataObjConverter.
+                    //
+                    // The .dcl block is a second, lossy copy of the same annotation: it carries
+                    // only numeric scores, IDs and booleans, so MSDecResult.MspBasedMatchResult and
+                    // the legacy MSRawID2MspBasedMatchResult dictionary built from it come back
+                    // with no evidence. Pinned by ADclRoundTripDiscardsTheEvidenceSource. Do not
+                    // try to extend that layout: its record size comes from a hand-written member
+                    // list with no version gate, so one more field makes every existing .dcl
+                    // unreadable.
                     result.EvidenceSource = AnnotationEvidence.WhenSpectrumCompared(
                         result.MeasuredTerms, AnnotationEvidenceSource.ReferenceSpectrum);
                     yield return result;

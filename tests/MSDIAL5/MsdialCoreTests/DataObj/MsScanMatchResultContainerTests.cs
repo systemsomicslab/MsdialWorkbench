@@ -353,6 +353,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum,
                 CandidatesFound = 41,
                 CandidatesAboveThreshold = 42,
+                CandidatesReferenceMatched = 43,
             };
 
             // A fixture is only a witness while every field it carries differs from the default,

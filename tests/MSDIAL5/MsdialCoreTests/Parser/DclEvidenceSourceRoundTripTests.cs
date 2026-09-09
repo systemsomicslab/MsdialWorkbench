@@ -19,13 +19,19 @@ namespace CompMs.MsdialCore.Parser.Tests
     /// layout, so adding a member to the written list would desynchronise the stream and make every
     /// existing .dcl unreadable. That puts extending it out of scope here.
     ///
-    /// This matters most for GC-MS, which is the mode that uses the store live: MsdialGcMsApi's
-    /// file process saves annotations with SaveMsdecResultWithAnnotationInfo and reloads them with
-    /// LoadMsdecResultWithAnnotationInfo, so the value CalculateMatchScore records does not survive
-    /// into a later session. The value is still recorded there, because it is truthful and reaches
-    /// the in-session consumers, and this test exists so that the loss is a stated fact with a
-    /// name rather than a surprise -- and so that whoever version-gates the .dcl layout later finds
-    /// a failing test telling them what to fix.
+    /// What this does NOT mean is that GC-MS loses the evidence record. A GC-MS annotation is
+    /// stored twice. The primary store is MessagePack: the container travels in
+    /// AnnotatedMSDecResult, whose hand-written formatter serialises MsScanMatchResultContainer
+    /// through the standard resolver and so keeps every [Key] member, and that is the copy the
+    /// exporter reads (GcmsAnalysisMetadataAccessor takes
+    /// AnnotatedMSDecResult.MatchResults.Representative) and the copy alignment merges
+    /// (DataObjConverter). The .dcl block is the second, lossy copy, reached through
+    /// MSDecResult.MspBasedMatchResult and the legacy MSRawID2MspBasedMatchResult dictionary.
+    ///
+    /// So the loss is real but bounded, and worth having a name for: a reader who takes a GC-MS
+    /// annotation from the .dcl-derived dictionary rather than from the container gets scores and
+    /// verdicts with no provenance. Whoever version-gates the .dcl layout later will find this
+    /// test telling them what it cannot currently carry.
     /// </remarks>
     [TestClass()]
     public class DclEvidenceSourceRoundTripTests

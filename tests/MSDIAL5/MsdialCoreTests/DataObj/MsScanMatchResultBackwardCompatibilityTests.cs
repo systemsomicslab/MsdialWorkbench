@@ -56,6 +56,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 "an old project must not claim zero candidates were scored");
             Assert.IsNull(actual.CandidatesAboveThreshold,
                 "an old project must not claim zero candidates passed");
+            Assert.IsNull(actual.CandidatesReferenceMatched,
+                "an old project must not claim zero candidates were reference matches");
         }
 
         [TestMethod()]
