@@ -349,6 +349,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 CollisionEnergy = 35d,
                 EnhancedDotProduct = 0.36f,
                 SpectralEntropy = 0.37f,
+                MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass | MeasuredTerms.Ccs,
+                EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum,
+                CandidatesFound = 41,
+                CandidatesAboveThreshold = 42,
             };
 
             // A fixture is only a witness while every field it carries differs from the default,

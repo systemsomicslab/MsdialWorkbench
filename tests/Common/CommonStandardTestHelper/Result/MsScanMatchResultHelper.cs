@@ -47,6 +47,11 @@ namespace CompMs.Common.DataObj.Result.Tests
             Assert.AreEqual(expected.CollisionEnergy, actual.CollisionEnergy);
             Assert.AreEqual(expected.EnhancedDotProduct, actual.EnhancedDotProduct);
             Assert.AreEqual(expected.SpectralEntropy, actual.SpectralEntropy);
+            // Keys 39-42, the evidence record.
+            Assert.AreEqual(expected.MeasuredTerms, actual.MeasuredTerms);
+            Assert.AreEqual(expected.EvidenceSource, actual.EvidenceSource);
+            Assert.AreEqual(expected.CandidatesFound, actual.CandidatesFound);
+            Assert.AreEqual(expected.CandidatesAboveThreshold, actual.CandidatesAboveThreshold);
         }
     }
 }

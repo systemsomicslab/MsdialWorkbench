@@ -18,6 +18,67 @@ namespace CompMs.Common.DataObj.Result {
         None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid, MsFinder,
     }
 
+    /// <summary>
+    /// What kind of evidence an annotation rests on.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately not a new <see cref="SourceType"/> bit. <see cref="SourceType"/> is a [Flags]
+    /// byte with two free bits for five evidence kinds, and it already carries several unrelated
+    /// meanings -- which database, whether a person intervened, whether anything matched at all --
+    /// consulted by the ranking key, the exporters and the deserialization strip. Adding evidence
+    /// to it would make one value answer two different questions.
+    ///
+    /// Also not <see cref="MsScanMatchResult.IsReferenceMatched"/>, which reads as "a spectrum
+    /// matched" and is not: the text-database annotators set it on precursor m/z agreement alone,
+    /// and a manual acceptance sets it on anything a person accepted, an in-silico structure
+    /// included. That boolean keeps its present meaning and its present value; this records what
+    /// the evidence actually was, beside it.
+    ///
+    /// <see cref="Unspecified"/> must stay 0: every result deserialized from a project written
+    /// before this member existed reads back as 0, and that has to mean "not recorded" rather than
+    /// any particular kind of evidence.
+    /// </remarks>
+    public enum AnnotationEvidenceSource : byte {
+        Unspecified = 0,
+        /// <summary>Precursor mass, optionally with retention time. No spectrum was opened.</summary>
+        PrecursorOnly,
+        /// <summary>An experimentally acquired reference spectrum was compared.</summary>
+        ReferenceSpectrum,
+        /// <summary>A computationally generated spectrum was compared.</summary>
+        PredictedSpectrum,
+        /// <summary>A lipid rule evaluation, rather than a spectrum comparison.</summary>
+        RuleBased,
+        /// <summary>A person accepted this candidate.</summary>
+        Manual,
+    }
+
+    /// <summary>
+    /// Which similarity terms were actually computed for a result.
+    /// </summary>
+    /// <remarks>
+    /// Recorded where a term is computed, so that no consumer has to infer it from the value
+    /// afterwards. The three existing predicates on <see cref="MsScanMatchResult"/> do infer it --
+    /// <see cref="MsScanMatchResult.IsIsotopeComparisonPerformed"/> from a -1 sentinel,
+    /// <see cref="MsScanMatchResult.IsGaussianTermMeasured"/> from the sign, and
+    /// <see cref="MsScanMatchResult.IsSpectrumComparisonPerformed"/> from the whole block -- and
+    /// they stay untouched, because a project written before this member exists reads
+    /// <see cref="None"/> while those predicates still answer correctly for it.
+    ///
+    /// <see cref="MsScanMatchResult.IsSpectrumMatch"/> and its siblings are not this: they say a
+    /// term passed its threshold, and a term that was never computed also reports false there.
+    /// Conflating the two is what these flags exist to end.
+    /// </remarks>
+    [Flags]
+    public enum MeasuredTerms : byte {
+        None = 0,
+        Spectrum = 1 << 0,
+        AccurateMass = 1 << 1,
+        RetentionTime = 1 << 2,
+        RetentionIndex = 1 << 3,
+        Ccs = 1 << 4,
+        Isotope = 1 << 5,
+    }
+
     [MessagePackObject]
     public class MsScanMatchResult {
         // basic annotated information
@@ -202,6 +263,49 @@ namespace CompMs.Common.DataObj.Result {
         public float EnhancedDotProduct { get; set; }
         [Key(38)]
         public float SpectralEntropy { get; set; }
+
+        // Evidence record. Keys 39 onward; key 25 is a hole that predates this repository and is
+        // left alone. Nothing reads these yet.
+        //
+        // Every "not recorded" state below is the CLR default for its type, and that is a
+        // requirement rather than a convenience. MessagePack's generated deserializer assigns
+        // default(T) to every key absent from a short array -- it does not fall back to the C#
+        // property initializer -- so a member whose "not recorded" state is anything other than
+        // the default comes back from an older project asserting a fact nobody established. That
+        // is why the two counts are int? and not int with a -1 initializer: -1 does not survive,
+        // 0 does, and "zero candidates were scored" is a claim.
+        // See MsScanMatchResultBackwardCompatibilityTests.
+
+        /// <summary>Which similarity terms were computed. <see cref="MeasuredTerms.None"/> means not recorded.</summary>
+        [Key(39)]
+        public MeasuredTerms MeasuredTerms { get; set; } = MeasuredTerms.None;
+
+        /// <summary>What kind of evidence this rests on. <see cref="AnnotationEvidenceSource.Unspecified"/> means not recorded.</summary>
+        [Key(40)]
+        public AnnotationEvidenceSource EvidenceSource { get; set; } = AnnotationEvidenceSource.Unspecified;
+
+        /// <summary>
+        /// How many candidates this annotator scored for this peak, before any were discarded.
+        /// Null means not recorded.
+        /// </summary>
+        /// <remarks>
+        /// Per (peak, annotator), never per peak. This is the number that cannot be recovered
+        /// afterwards: the annotation processes keep only the best few candidates, so without it
+        /// "the run could not discriminate between candidates" is indistinguishable from "the run
+        /// never reported more than a handful". Whether the list was truncated is left to the
+        /// reader to derive from this and <see cref="CandidatesAboveThreshold"/>, because the cap
+        /// differs between the annotation processes and a single flag would be wrong for most of
+        /// them.
+        /// </remarks>
+        [Key(41)]
+        public int? CandidatesFound { get; set; }
+
+        /// <summary>
+        /// How many of <see cref="CandidatesFound"/> passed this annotator's thresholds. Null means
+        /// not recorded.
+        /// </summary>
+        [Key(42)]
+        public int? CandidatesAboveThreshold { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();
