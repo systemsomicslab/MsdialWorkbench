@@ -40,6 +40,13 @@ namespace CompMs.Common.DataObj.Result.Tests
             Assert.AreEqual(expected.Priority, actual.Priority);
             Assert.AreEqual(expected.IsReferenceMatched, actual.IsReferenceMatched);
             Assert.AreEqual(expected.IsAnnotationSuggested, actual.IsAnnotationSuggested);
+            // Keys 36-38. This helper is the only field-by-field round-trip assertion for
+            // MsScanMatchResult, so a serialized member it omits is a member whose [Key]
+            // attribute nothing checks. These three were added after the helper was written
+            // and had drifted out of it.
+            Assert.AreEqual(expected.CollisionEnergy, actual.CollisionEnergy);
+            Assert.AreEqual(expected.EnhancedDotProduct, actual.EnhancedDotProduct);
+            Assert.AreEqual(expected.SpectralEntropy, actual.SpectralEntropy);
         }
     }
 }
