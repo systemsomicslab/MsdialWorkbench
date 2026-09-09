@@ -104,6 +104,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = source, AnnotatorID = sourceKey, Priority = Priority,
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 

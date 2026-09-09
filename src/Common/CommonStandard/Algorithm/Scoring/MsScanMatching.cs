@@ -382,13 +382,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
             } 
 
-            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
-            
+            var isotopeSimilarity = GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            result.IsotopeSimilarity = (float)isotopeSimilarity;
+
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+            result.MeasuredTerms = result.MeasuredTerms
+                .With(MeasuredTerms.Isotope, isotopeSimilarity)
+                .With(MeasuredTerms.Ccs, ccsSimilarity);
             result.TotalScore = (float)GetTotalScore(result, param);
             return result;
         }
@@ -403,13 +407,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result = CompareMS2ProteomicsScanProperties(scanProp, chargestate, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
             }
 
-            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            var isotopeSimilarity = GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            result.IsotopeSimilarity = (float)isotopeSimilarity;
 
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+            result.MeasuredTerms = result.MeasuredTerms
+                .With(MeasuredTerms.Isotope, isotopeSimilarity)
+                .With(MeasuredTerms.Ccs, ccsSimilarity);
             result.TotalScore = (float)GetTotalScore(result, param);
             return result;
         }
@@ -657,7 +665,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 SquaredWeightedDotProduct = (float)sqweightedDotProduct,
                 SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch,
+                // Every basic and EI comparison funnels through here, so recording the terms here
+                // covers all of them. The callers that go on to add the matched-peaks terms need add
+                // nothing: those share the dot products' availability gate. The isotope and CCS terms
+                // are computed by callers above this one and recorded there.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct)
+                    .With(MeasuredTerms.AccurateMass, ms1Similarity)
+                    .With(MeasuredTerms.RetentionTime, rtSimilarity)
+                    .With(MeasuredTerms.RetentionIndex, riSimilarity),
             };
 
             return result;

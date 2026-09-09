@@ -79,6 +79,100 @@ namespace CompMs.Common.DataObj.Result {
         Isotope = 1 << 5,
     }
 
+    /// <summary>
+    /// Records <see cref="MeasuredTerms"/> from the values the scoring functions return, at the
+    /// point they return them.
+    /// </summary>
+    /// <remarks>
+    /// This exists so the rule is written once. Nine places build a <see cref="MsScanMatchResult"/>
+    /// from freshly computed similarity terms, and they differ only in which terms the acquisition
+    /// mode has. An omission in one of them leaves a whole mode's evidence blank, which is the
+    /// failure this record was added to prevent, so the composition does not get copied nine times.
+    ///
+    /// The test is "did the scoring function return its not-compared sentinel", not "is the value
+    /// positive". Those differ, and the difference is the reason for recording at the measurement
+    /// site: <see cref="MsScanMatchResult.IsGaussianTermMeasured"/> has to approximate with
+    /// <c>&gt; 0</c> because by the time it runs it cannot separate an unset field from a computed
+    /// one, so it reports a term whose Gaussian underflowed -- a difference beyond roughly 38
+    /// tolerance widths -- as not measured. Here the sentinel is still present and the question is
+    /// answerable exactly. Where the flag and the sign test disagree, the flag is the true one.
+    /// Nothing reads the flag yet, so recording it changes no score and no decision.
+    /// </remarks>
+    public static class MeasuredTermsExtension {
+        /// <summary>What the scoring functions in MsScanMatching return when there was nothing to compare.</summary>
+        private const double NotCompared = -1d;
+
+        /// <summary>
+        /// Adds <paramref name="term"/> when <paramref name="similarity"/> is a measurement rather
+        /// than the not-compared sentinel.
+        /// </summary>
+        public static MeasuredTerms With(this MeasuredTerms terms, MeasuredTerms term, double similarity) {
+            return similarity == NotCompared ? terms : terms | term;
+        }
+
+        /// <summary>
+        /// Adds <paramref name="term"/> when both sides of a Gaussian similarity term were present,
+        /// for the callers that have no sentinel to test.
+        /// </summary>
+        /// <remarks>
+        /// MsScanMatching has two GetGaussianSimilarity overloads. The four-argument one guards --
+        /// either side not positive and it returns the sentinel -- and callers of that one use
+        /// <see cref="With(MeasuredTerms, MeasuredTerms, double)"/>. The three-argument one does
+        /// not guard: it evaluates exp(-0.5 * ((actual - reference) / tolerance)^2) on whatever it
+        /// is given, so a reference with no retention time contributes a similarity computed
+        /// against 0, and the returned value carries no trace of the absence. Most of the
+        /// annotators call that one, so for them the presence test has to be made on the inputs.
+        ///
+        /// This deliberately records "not measured" for a term whose value is nevertheless
+        /// non-zero at those sites. The flag is the true statement and the value is the wrong one;
+        /// correcting the value is a separate change, because it moves scores.
+        /// </remarks>
+        public static MeasuredTerms WithComparedValues(this MeasuredTerms terms, MeasuredTerms term, double actual, double reference) {
+            return actual > 0d && reference > 0d ? terms | term : terms;
+        }
+
+        /// <summary>
+        /// Adds <see cref="MeasuredTerms.Spectrum"/> when a product-ion spectrum was actually
+        /// compared against a reference spectrum.
+        /// </summary>
+        /// <remarks>
+        /// The three dot products, the matched-peaks ratio and the matched-peaks count share one
+        /// availability gate -- both spectra non-null and non-empty -- so any one of them holding
+        /// the sentinel means none of them was computed. All five are tested anyway, to match
+        /// <see cref="MsScanMatchResult.IsSpectrumComparisonPerformed"/> term for term.
+        /// </remarks>
+        public static MeasuredTerms WithSpectrum(
+            this MeasuredTerms terms,
+            double sqWeightedDotProduct, double sqSimpleDotProduct, double sqReverseDotProduct,
+            double matchedPeaksPercentage, double matchedPeaksCount) {
+
+            if (matchedPeaksPercentage == NotCompared || matchedPeaksCount == NotCompared) {
+                return terms;
+            }
+            return terms.WithSpectrum(sqWeightedDotProduct, sqSimpleDotProduct, sqReverseDotProduct);
+        }
+
+        /// <summary>
+        /// Adds <see cref="MeasuredTerms.Spectrum"/> from the dot products alone, for the callers
+        /// that record before the matched-peaks terms are in hand.
+        /// </summary>
+        /// <remarks>
+        /// Reaches the same answer as the five-term overload, because the two matched-peaks values
+        /// share the dot products' availability gate.
+        /// </remarks>
+        public static MeasuredTerms WithSpectrum(
+            this MeasuredTerms terms,
+            double sqWeightedDotProduct, double sqSimpleDotProduct, double sqReverseDotProduct) {
+
+            if (sqWeightedDotProduct == NotCompared
+                || sqSimpleDotProduct == NotCompared
+                || sqReverseDotProduct == NotCompared) {
+                return terms;
+            }
+            return terms | MeasuredTerms.Spectrum;
+        }
+    }
+
     [MessagePackObject]
     public class MsScanMatchResult {
         // basic annotated information

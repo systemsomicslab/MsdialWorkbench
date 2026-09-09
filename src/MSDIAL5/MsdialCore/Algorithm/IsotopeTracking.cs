@@ -596,6 +596,13 @@ namespace CompMs.MsdialCore.Algorithm
                 Name = query.Name, LibraryID = query.ScanID, InChIKey = query.InChIKey,
                 AcurateMassSimilarity = (float)massSimilarity, RtSimilarity = (float)rtSimilarity, TotalScore = (float)similarity,
                 IsPrecursorMzMatch = isMassMatch, IsRtMatch = isRtMatch,
+                // Both terms come from the guarded GetGaussianSimilarity overload, and rtSimilarity
+                // additionally keeps its -1 initializer when the target formula carries no time, so
+                // the sentinel is a faithful test at this site. No spectrum is opened here: a target
+                // formula list is matched on mass and time alone.
+                MeasuredTerms = MeasuredTerms.None
+                    .With(MeasuredTerms.AccurateMass, massSimilarity)
+                    .With(MeasuredTerms.RetentionTime, rtSimilarity),
             };
         }
 

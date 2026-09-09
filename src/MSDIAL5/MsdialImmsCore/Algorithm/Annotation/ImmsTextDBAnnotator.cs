@@ -78,11 +78,18 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
+                // No Spectrum bit: a text database holds no reference spectrum, so nothing here
+                // opens one. That is the fact this record is meant to make visible.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
             result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 

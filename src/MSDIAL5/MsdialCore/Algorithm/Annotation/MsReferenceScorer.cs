@@ -102,15 +102,27 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 Source = source,
                 AnnotatorID = id,
                 Priority = priority,
+                // Recorded from the locals, not from the fields just assigned: the dot-product
+                // getters clamp the not-computed -1 to 0, and a term that was never computed would
+                // then be indistinguishable from one computed as 0. The Gaussian terms here go
+                // through the unguarded overload, so their presence is tested on the inputs.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
                 var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
                 result.RtSimilarity = (float)rtSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var CcsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)CcsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
 
             var scores = new List<double> { };
