@@ -113,7 +113,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
                 result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
                     MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
@@ -202,12 +207,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     ValidateOnLipidomics(result, scan, reference, parameter);
                 }
             }
+            // Exempt, not failed. Both verdicts share this clause and FilterByThreshold is
+            // their disjunction, so a reference with no retention time that failed here
+            // would be dropped from the stored results altogether rather than demoted.
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(
+                parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
             result.IsReferenceMatched = result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && rtRequirementMet
                 && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
                 && (!useMs2 || result.IsSpectrumMatch);
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && rtRequirementMet
                 && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
                 && !result.IsReferenceMatched;
         }
@@ -234,7 +244,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+                // Recomputed from the values rather than taken from the Gaussian's out
+                // parameter, because Validate is reachable without Score having run. Same
+                // guard either way: no comparison, no match.
+                result.IsRtMatch = RetentionMatchPolicy.CanCompare(property.ChromXs.RT.Value, reference.ChromXs.RT.Value)
+                    && Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
             }
 
             if (parameter.IsUseCcsForAnnotationScoring) {

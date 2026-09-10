@@ -99,7 +99,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
                 result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
                     MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
@@ -233,8 +238,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 ValidateOnLipidomics(result, property, scan, reference, parameter);
             else
                 ValidateBase(result, property, reference, parameter);
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(
+                parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -248,7 +255,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var rtDiff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = rtDiff <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.CanCompare(property.ChromXs.RT.Value, reference.ChromXs.RT.Value)
+                && rtDiff <= parameter.RtTolerance;
 
             var ccsDiff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
             result.IsCcsMatch = ccsDiff <= parameter.CcsTolerance;

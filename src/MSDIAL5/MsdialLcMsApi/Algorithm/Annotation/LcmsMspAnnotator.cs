@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
@@ -50,8 +51,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var result = scorer.Score(query, reference);
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && !result.IsReferenceMatched;
+            // The peak and the reference are no longer in scope here, so the requirement is
+            // read from the record the scorer just wrote from those same two values.
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(query.Parameter.IsUseTimeForAnnotationScoring, result);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && rtRequirementMet && !result.IsReferenceMatched;
             return result;
         }
 

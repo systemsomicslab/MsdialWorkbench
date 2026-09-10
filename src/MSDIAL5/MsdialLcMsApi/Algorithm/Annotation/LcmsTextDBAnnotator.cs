@@ -86,7 +86,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                     .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
                 result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
                     MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
@@ -171,9 +176,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = diff <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.CanCompare(property.ChromXs.RT.Value, reference.ChromXs.RT.Value)
+                && diff <= parameter.RtTolerance;
 
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch);
+            // A retention-time-anchored text database is exactly where mixed entries occur,
+            // and this annotator never sets IsAnnotationSuggested: failing the requirement
+            // here would erase the row rather than lower it.
+            result.IsReferenceMatched = result.IsPrecursorMzMatch
+                && RetentionMatchPolicy.RetentionTimeRequirementMet(
+                    parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

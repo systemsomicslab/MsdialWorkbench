@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -62,8 +63,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsScanMatchResult CalculateScore((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query, MoleculeMsReference reference) {
             var result = _scorer.Score(query.Item1, reference);
             var parameter = query.Item1.Parameter;
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(parameter.IsUseTimeForAnnotationScoring, result);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
             return result;
         }
 
