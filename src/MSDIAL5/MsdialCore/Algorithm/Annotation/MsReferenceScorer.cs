@@ -247,8 +247,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 // Recomputed from the values rather than taken from the Gaussian's out
                 // parameter, because Validate is reachable without Score having run. Same
                 // guard either way: no comparison, no match.
-                result.IsRtMatch = RetentionMatchPolicy.CanCompare(property.ChromXs.RT.Value, reference.ChromXs.RT.Value)
-                    && Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+                result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
             }
 
             if (parameter.IsUseCcsForAnnotationScoring) {

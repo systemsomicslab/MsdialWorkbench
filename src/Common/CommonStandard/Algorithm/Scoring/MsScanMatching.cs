@@ -500,9 +500,26 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
 
+        /// <param name="retentionMatchTolerance">
+        /// The widest retention difference that may be called a match, on whichever axis this run
+        /// uses. Separate from the search tolerance, which stays the Gaussian's width: see
+        /// RetentionMatchPolicy. Left at MaxValue by callers that are not annotating -- notably
+        /// the peak joiners, which compare two acquired spectra to each other.
+        /// </param>
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
-            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false, double retentionMatchTolerance = double.MaxValue) {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            // Narrowed here, before IsReferenceMatched is derived from it below. The cap can only
+            // take a verdict away, never grant one: the inner comparison has already refused the
+            // pair if either side carries no value.
+            if (isUseRetentionIndex) {
+                result.IsRiMatch = result.IsRiMatch
+                    && Math.Abs(scanProp.ChromXs.RI.Value - refSpec.ChromXs.RI.Value) <= retentionMatchTolerance;
+            }
+            else {
+                result.IsRtMatch = result.IsRtMatch
+                    && Math.Abs(scanProp.ChromXs.RT.Value - refSpec.ChromXs.RT.Value) <= retentionMatchTolerance;
+            }
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
             if (isUseRetentionIndex) {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);

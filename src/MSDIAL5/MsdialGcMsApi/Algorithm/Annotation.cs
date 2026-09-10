@@ -24,7 +24,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter)
-            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType), parameter) {
+            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType, parameter.RiCompoundType), parameter) {
 
         }
 

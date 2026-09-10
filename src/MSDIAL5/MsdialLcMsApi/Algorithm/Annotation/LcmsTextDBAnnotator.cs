@@ -175,9 +175,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = RetentionMatchPolicy.CanCompare(property.ChromXs.RT.Value, reference.ChromXs.RT.Value)
-                && diff <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
 
             // A retention-time-anchored text database is exactly where mixed entries occur,
             // and this annotator never sets IsAnnotationSuggested: failing the requirement

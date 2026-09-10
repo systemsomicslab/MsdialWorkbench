@@ -18,10 +18,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly MoleculeMsReference[] _mspDB;
         private readonly string _annotatorID;
+        // Required rather than defaulted: the two retention-index scales differ by a factor of
+        // about 390, so a match cap chosen for one is meaningless on the other, and a new call
+        // site should have to say which it is.
+        private readonly RiCompoundType _riCompoundType;
 
-        public CalculateMatchScore(DataBaseItem<MoleculeDataBase> mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType) {
+        public CalculateMatchScore(DataBaseItem<MoleculeDataBase> mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, RiCompoundType riCompoundType) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
+            _riCompoundType = riCompoundType;
             ChromXType type;
             switch (retentionType) {
                 case RetentionType.RI:
@@ -37,11 +42,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
         }
 
-        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID) {
+        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID, RiCompoundType riCompoundType) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
             _mspDB = mspDB;
             _annotatorID = annotatorID;
+            _riCompoundType = riCompoundType;
         }
 
         public MsRefSearchParameterBase CopySearchParameter() => new MsRefSearchParameterBase(_searchParameter);
@@ -68,6 +74,24 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
         }
 
+        /// <summary>
+        /// The widest retention difference that may be called a match on the axis this run uses.
+        /// Deliberately not the same number as <see cref="Tolerance"/>: that one is the search
+        /// window, and it is doubled when retention filtering is off.
+        /// </summary>
+        private double RetentionMatchTolerance {
+            get {
+                switch (RetentionType) {
+                    case RetentionType.RI:
+                        return RetentionMatchPolicy.EffectiveRetentionIndexTolerance(_searchParameter.RiTolerance, _riCompoundType);
+                    case RetentionType.RT:
+                        return RetentionMatchPolicy.EffectiveRetentionTimeTolerance(_searchParameter.RtTolerance);
+                    default:
+                        throw new Exception($"Unknown {nameof(RetentionType)}: {RetentionType}");
+                }
+            }
+        }
+
         public MoleculeMsReference Reference(MsScanMatchResult result) {
             return _mspDB[result.LibraryIDWhenOrdered];
         }
@@ -83,7 +107,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var refRetention = RetentionType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < tolerance);
                 if (!_searchParameter.IsUseTimeForAnnotationFiltering || Math.Abs(rValue - refRetention) < tolerance) {
-                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI);
+                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI, RetentionMatchTolerance);
                     result.LibraryIDWhenOrdered = i;
                     result.AnnotatorID = _annotatorID;
                     // Recorded here and not inside CompareEIMSScanProperties: that function is also
@@ -132,7 +156,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public CalculateMatchScore With(MsRefSearchParameterBase searchParameter) {
-            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID);
+            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID, _riCompoundType);
         }
     }
 }
