@@ -1,4 +1,4 @@
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -32,12 +32,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
     /// fabricated agreement published a claim of retention-time confirmation for references that had
     /// no retention time to confirm. The total-score movement was a side effect by comparison.
     ///
-    /// WHY THE REQUIREMENT IS AN EXEMPTION. See RetentionMatchPolicy: IsReferenceMatched and
-    /// IsAnnotationSuggested share the retention clause and FilterByThreshold is their disjunction,
-    /// so simply forcing IsRtMatch false would delete such a candidate from the stored results
-    /// instead of demoting it. <see cref="ItSurvivesTheThresholdFilterThatDecidesWhatIsStored"/>
-    /// holds that line, and <see cref="AReferenceWhoseRetentionTimeDisagreesIsStillRejected"/> keeps
-    /// the exemption from swallowing genuine disagreement.
+    /// WHY THE REQUIREMENT IS AN EXEMPTION. A reference with no retention time keeps its reference
+    /// match on the mass and the spectrum, rather than being demoted for failing a comparison that
+    /// was never possible. <see cref="ItSurvivesTheThresholdFilterThatDecidesWhatIsStored"/> holds
+    /// the storage line, and
+    /// <see cref="AReferenceWhoseRetentionTimeDisagreesLosesTheMatchButKeepsTheSuggestion"/> keeps
+    /// the exemption from swallowing genuine disagreement -- a reference that HAS a retention time
+    /// and misses loses the match, but stays a suggestion, because a scoring setting must not
+    /// decide whether a candidate exists.
     ///
     /// Confirmed as unintended by the author of MS-DIAL, 2026-09-10.
     /// </remarks>
@@ -125,18 +127,35 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
-        public void AReferenceWhoseRetentionTimeDisagreesIsStillRejected() {
+        public void AReferenceWhoseRetentionTimeDisagreesLosesTheMatchButKeepsTheSuggestion() {
             // The exemption must not swallow real disagreement. Here both sides carry a retention
             // time, they are 19.6 minutes apart against a 5 minute tolerance, and the evidence record
-            // says the comparison happened -- so the verdict stands and the candidate is rejected,
-            // exactly as before this change.
+            // says the comparison happened -- so the verdict stands and the reference match is
+            // refused.
+            //
+            // It stays a suggestion, though. "Use retention time for SCORING" must not reject a
+            // candidate; that is what "use retention time for FILTERING" is for. The two verdicts
+            // used to share the retention clause, so a disagreement deleted the candidate outright
+            // rather than lowering it -- with nothing left in the file for a reader to judge.
             var result = Score(peakRetentionTime: 0.4d, referenceRetentionTime: 20d);
 
             Assert.IsTrue(result.MeasuredTerms.HasFlag(MeasuredTerms.RetentionTime),
                 "this comparison was possible, so it is on the record");
             Assert.IsFalse(result.IsRtMatch);
-            Assert.IsFalse(result.IsReferenceMatched);
-            Assert.IsFalse(result.IsAnnotationSuggested, "and it does not survive as a suggestion either");
+            Assert.IsFalse(result.IsReferenceMatched, "the retention times disagree, so it is not a reference match");
+            Assert.IsTrue(result.IsAnnotationSuggested, "but the precursor mass still agreed, and that is a suggestion");
+        }
+
+        [TestMethod()]
+        public void AndThatSuggestionSurvivesTheFilterThatDecidesWhatIsStored() {
+            // The point of the previous test, stated where it bites. Scoring settings decide how
+            // well a candidate ranks; they must not decide whether it exists.
+            var result = Score(peakRetentionTime: 0.4d, referenceRetentionTime: 20d);
+            var evaluator = new MsScanMatchResultEvaluator(Parameter(useRetentionTime: true));
+
+            var kept = evaluator.FilterByThreshold(new List<MsScanMatchResult> { result, });
+
+            Assert.AreEqual(1, kept.Count, "a retention-time disagreement lowers a candidate, it does not erase it");
         }
 
         [TestMethod()]

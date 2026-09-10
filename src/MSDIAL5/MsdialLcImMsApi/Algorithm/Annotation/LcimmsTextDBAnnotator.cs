@@ -209,6 +209,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 && RetentionMatchPolicy.RetentionTimeRequirementMet(
                     parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch)
                 && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch);
+            // As above. The collision-cross-section clause stays, matching ImmsMspAnnotator: only
+            // the retention-time behaviour was asked to change here.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && !result.IsReferenceMatched;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

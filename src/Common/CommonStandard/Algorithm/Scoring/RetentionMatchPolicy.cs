@@ -1,4 +1,4 @@
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using System;
 
@@ -23,14 +23,21 @@ namespace CompMs.Common.Algorithm.Scoring
     /// 340 on the GC-MS branch, so the fabricated agreement published a claim of retention-time
     /// confirmation in the "Annotation tag (VS1.0)" column of every export.
     ///
-    /// The rule is an EXEMPTION, not a rejection. IsReferenceMatched and IsAnnotationSuggested share
-    /// the retention clause, MsScanMatchResultEvaluator.FilterByThreshold is their disjunction, and
-    /// StandardAnnotationProcess stores only what that returns -- so failing such a candidate would
-    /// delete it from the output rather than demote it, taking its m/z and MS/MS evidence with it.
-    /// A boolean cannot say "not applicable", so the verdict is read together with the evidence
-    /// record: MeasuredTerms.RetentionTime set with IsRtMatch true means the values agreed, set with
-    /// false means they disagreed, and clear means no comparison was possible. Only the middle case
-    /// may withhold a verdict.
+    /// The rule is an EXEMPTION, not a rejection: a reference with no retention time keeps its
+    /// reference match on the strength of the mass and the spectrum, rather than being demoted for
+    /// failing a comparison that was never possible. A boolean cannot say "not applicable", so the
+    /// verdict is read together with the evidence record: MeasuredTerms.RetentionTime set with
+    /// IsRtMatch true means the values agreed, set with false means they disagreed, and clear means
+    /// no comparison was possible. Only the middle case may withhold a verdict.
+    ///
+    /// (1b) And a retention-time DISAGREEMENT costs the reference match, not the candidate. Both
+    /// verdicts used to share the retention clause, and MsScanMatchResultEvaluator.FilterByThreshold
+    /// is their disjunction while StandardAnnotationProcess stores only what that returns -- so a
+    /// disagreement deleted the candidate from the output rather than lowering it, taking its m/z
+    /// and MS/MS evidence with it and leaving a reader nothing to judge. IsAnnotationSuggested no
+    /// longer carries the clause, which is the shape MassAnnotator and DimsMspAnnotator always had.
+    /// This is what makes "use retention time for SCORING" mean what its name says: scoring ranks
+    /// candidates, and IsUseTimeForAnnotationFiltering is the setting that rejects them.
     ///
     /// (2) A search tolerance is not a match criterion. The tolerance says which references are worth
     /// scoring; the verdict says whether the retention times actually agree. Searching a

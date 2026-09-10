@@ -1,4 +1,4 @@
-using CompMs.Common.Algorithm.Scoring;
+﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -28,12 +28,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
     /// is the test that holds that line, and it is the reason existing projects are not silently
     /// re-ranked: the total score is computed from RtSimilarity, which is untouched.
     ///
-    /// A CONSEQUENCE WORTH KNOWING. Unlike a reference that carries no retention time -- which is
-    /// exempt, see MissingReferenceRetentionTimeTests -- a reference that carries one and disagrees
-    /// is rejected, and IsReferenceMatched and IsAnnotationSuggested share that clause, so it is
-    /// rejected outright rather than demoted to a suggestion. That is not new behaviour; it is what
-    /// already happened to anyone who set a realistic tolerance. What is new is that the default no
-    /// longer exempts everyone from it.
+    /// WHAT THE CAP COSTS A CANDIDATE. The reference match, and nothing more. A reference that
+    /// carries a retention time and misses by more than the cap stays a suggestion, because a
+    /// SCORING setting must not decide whether a candidate is reportable -- see
+    /// <see cref="ACandidateRefusedByTheCapIsStillASuggestion"/>. Without that, capping the
+    /// 100-minute default to 2 minutes would have emptied the output of every project that had
+    /// ticked the box. A reference with no retention time at all is exempt from the requirement
+    /// entirely; see MissingReferenceRetentionTimeTests.
     ///
     /// Cap values confirmed with the author of MS-DIAL, 2026-09-10.
     /// </remarks>
@@ -75,6 +76,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.IsTrue(result.IsSpectrumMatch, "precondition: the spectrum did match");
             Assert.AreEqual(430, DataAccess.GetAnnotationCode(result, MachineCategory.LCMS),
                 "m/z + MS/MS matched, which is what happened; this used to be 330");
+        }
+
+        [TestMethod()]
+        public void ACandidateRefusedByTheCapIsStillASuggestion() {
+            // The cap decides how good a candidate is, not whether it is reportable. Without this,
+            // capping the default 100-minute tolerance to 2 minutes would have silently emptied the
+            // annotation output of every project that ticked "use retention time for scoring".
+            var result = Score(peakRetentionTime: 2d, referenceRetentionTime: 12d, rtTolerance: 100f);
+
+            Assert.IsFalse(result.IsReferenceMatched);
+            Assert.IsTrue(result.IsAnnotationSuggested);
         }
 
         [TestMethod()]

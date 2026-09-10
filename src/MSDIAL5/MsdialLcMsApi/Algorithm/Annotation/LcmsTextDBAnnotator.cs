@@ -183,6 +183,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             result.IsReferenceMatched = result.IsPrecursorMzMatch
                 && RetentionMatchPolicy.RetentionTimeRequirementMet(
                     parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
+            // This annotator had no suggestion path at all, so a retention-time disagreement left
+            // both verdicts false and the candidate vanished -- on exactly the path a
+            // retention-time-anchored text database is used for. A text database row is
+            // precursor-only evidence by construction, which is what a suggestion means.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

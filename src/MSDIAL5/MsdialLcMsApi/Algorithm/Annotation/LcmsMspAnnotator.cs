@@ -55,7 +55,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             // read from the record the scorer just wrote from those same two values.
             var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(query.Parameter.IsUseTimeForAnnotationScoring, result);
             result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && rtRequirementMet && !result.IsReferenceMatched;
+            // No retention clause on the suggestion. "Use retention time for SCORING" must not
+            // reject a candidate -- that is what "use retention time for FILTERING" is for, and
+            // the two settings mean different things. Because both verdicts used to share the
+            // clause and FilterByThreshold is their disjunction, a retention-time disagreement
+            // deleted the candidate from the stored results outright. It now costs the reference
+            // match and leaves the precursor-only suggestion standing, which is what the evidence
+            // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
             return result;
         }
 
