@@ -77,7 +77,12 @@ namespace CompMs.MsdialCore.Export
                 "Total score",
                 "S/N",
                 "MS1 isotopes",
-                "MSMS spectrum" };
+                "MSMS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched" };
         }
 
         protected virtual Dictionary<string, string> GetContentCore(
@@ -131,7 +136,12 @@ namespace CompMs.MsdialCore.Export
                 { "Total score", ValueOrNull(matchResult?.TotalScore, "F3") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
                 { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) }
+                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) },
+                { "Measured terms", AnnotationEvidenceFormat.Terms(matchResult) },
+                { "Evidence source", AnnotationEvidenceFormat.Source(matchResult) },
+                { "Candidates found", AnnotationEvidenceFormat.Count(matchResult?.CandidatesFound) },
+                { "Candidates above threshold", AnnotationEvidenceFormat.Count(matchResult?.CandidatesAboveThreshold) },
+                { "Candidates reference matched", AnnotationEvidenceFormat.Count(matchResult?.CandidatesReferenceMatched) }
             };
         }
 

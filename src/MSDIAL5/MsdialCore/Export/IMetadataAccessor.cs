@@ -80,6 +80,11 @@ namespace CompMs.MsdialCore.Export
                 "Spectrum reference file name",
                 "MS1 isotopic spectrum",
                 "MS/MS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 
@@ -132,6 +137,11 @@ namespace CompMs.MsdialCore.Export
                 { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },
                 { "MS/MS spectrum", GetSpectrumListContent(msdec) },
+                { "Measured terms", AnnotationEvidenceFormat.Terms(matchResult) },
+                { "Evidence source", AnnotationEvidenceFormat.Source(matchResult) },
+                { "Candidates found", AnnotationEvidenceFormat.Count(matchResult?.CandidatesFound) },
+                { "Candidates above threshold", AnnotationEvidenceFormat.Count(matchResult?.CandidatesAboveThreshold) },
+                { "Candidates reference matched", AnnotationEvidenceFormat.Count(matchResult?.CandidatesReferenceMatched) },
             };
         }
 

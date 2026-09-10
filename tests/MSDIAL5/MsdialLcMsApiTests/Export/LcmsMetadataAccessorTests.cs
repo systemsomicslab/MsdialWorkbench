@@ -7,6 +7,7 @@ using CompMs.MsdialCore.Export;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
+using System.Linq;
 namespace CompMs.MsdialLcMsApi.Export.Tests
 {
     [TestClass()]
@@ -23,7 +24,12 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
             "Isotope tracking parent ID",  "Isotope tracking weight number", "RT similarity", "m/z similarity", 
             "Simple dot product", "Weighted dot product", "Reverse dot product",
             "Matched peaks count", "Matched peaks percentage", "Total score", "S/N average",
-            "Spectrum reference file name", "MS1 isotopic spectrum", "MS/MS spectrum" };
+            "Spectrum reference file name", "MS1 isotopic spectrum", "MS/MS spectrum",
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched" };
 
         [TestMethod()]
         public void GetHeadersTest() {
@@ -67,6 +73,27 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
                     }
                 });
             var dict = accessor.GetContent(spot, null);
+            // HEADER/CONTENT PARITY. Every header must have a content key, or an exporter throws
+            // KeyNotFoundException the moment it indexes the content by header name; and every content
+            // key must have a header, or its value is computed and then silently dropped on the floor.
+            // Nothing checked either direction before, which is how "Enhanced dot product" and
+            // "Spectrum entropy" came to be computed on every analysis row and written to no file in
+            // any mode, for as long as they have existed.
+            //
+            // A drop has to be declared here, with a reason. That is the whole mechanism: it does not
+            // forbid dropping a key, it forbids dropping one by accident.
+            var declaredDrops = new HashSet<string>
+            {
+            };
+            foreach (var header in accessor.GetHeaders()) {
+                Assert.IsTrue(dict.ContainsKey(header),
+                    $"header \"{header}\" has no content key, so exporting would throw");
+            }
+            foreach (var key in dict.Keys) {
+                Assert.IsTrue(declaredDrops.Contains(key) || accessor.GetHeaders().Contains(key),
+                    $"content key \"{key}\" has no header, so its value never reaches the file");
+            }
+
 
             Assert.AreEqual("3.000", dict["Average Rt(min)"]);
             Assert.AreEqual("700.00000", dict["Average Mz"]);

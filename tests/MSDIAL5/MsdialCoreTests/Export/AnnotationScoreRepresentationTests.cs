@@ -57,6 +57,52 @@ namespace CompMs.MsdialCore.Export.Tests
             "Matched peaks percentage",
         };
 
+        /// <summary>
+        /// The evidence-record columns, which must read identically in the two formats for the same
+        /// result -- the property the score columns above did not have until AnnotationScoreFormat
+        /// centralised them, and whose absence is what the PinnedDefect case at the bottom of this
+        /// file records.
+        /// </summary>
+        private static readonly string[] SharedEvidenceColumns = new[] {
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched",
+        };
+
+        [TestMethod]
+        public void TheEvidenceColumnsAgreeBetweenTheTwoFormats() {
+            var result = MsmsMatched();
+            result.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+            result.EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum;
+            result.CandidatesFound = 12;
+            result.CandidatesAboveThreshold = 3;
+            result.CandidatesReferenceMatched = 0;
+
+            var peak = ExportAnalysisRow(result, hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(result, hadProductIonSpectrum: true);
+
+            foreach (var column in SharedEvidenceColumns) {
+                Assert.AreEqual(peak[column], spot[column], column);
+            }
+            Assert.AreEqual("Spectrum|AccurateMass", peak["Measured terms"]);
+            Assert.AreEqual("0", peak["Candidates reference matched"],
+                "a genuine zero, in both formats. The alignment accessor reaches ValueOrNull(float, "
+                + "string) for its score columns, which would have turned this into \"null\"");
+        }
+
+        [TestMethod]
+        public void AnUnrecordedEvidenceRecordReadsNullInBothFormats() {
+            var peak = ExportAnalysisRow(MsmsMatched(), hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(MsmsMatched(), hadProductIonSpectrum: true);
+
+            foreach (var column in SharedEvidenceColumns) {
+                Assert.AreEqual(AnnotationEvidenceFormat.NotRecorded, peak[column], column);
+                Assert.AreEqual(AnnotationEvidenceFormat.NotRecorded, spot[column], column);
+            }
+        }
+
         [TestMethod]
         public void MsmsMatchedReportsEveryScoreInBothFormats() {
             var peak = ExportAnalysisRow(MsmsMatched(), hadProductIonSpectrum: true);

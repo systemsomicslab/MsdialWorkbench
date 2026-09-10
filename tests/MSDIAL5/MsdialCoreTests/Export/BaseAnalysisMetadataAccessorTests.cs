@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
+using System.Linq;
 namespace CompMs.MsdialCore.Export.Tests
 {
     [TestClass()]
@@ -46,12 +47,51 @@ namespace CompMs.MsdialCore.Export.Tests
             "Total score",
             "S/N",
             "MS1 isotopes",
-            "MSMS spectrum" };
+            "MSMS spectrum",
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched" };
 
         [TestMethod()]
         public void GetHeadersTest() {
             var accessor = new TestAnalysisMetadataAccessor(null, null, default);
             CollectionAssert.AreEqual(headers, accessor.GetHeaders());
+        }
+
+        /// <summary>
+        /// The evidence-record columns, named once. They exist so a reader can tell a weak match
+        /// from an unexamined one; see AnnotationEvidenceFormat.
+        /// </summary>
+        private static readonly string[] EvidenceColumns = new[]
+        {
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched",
+        };
+
+        [TestMethod()]
+        public void TheEvidenceColumnsReadNotRecordedWhenTheRunRecordedNothing() {
+            // As on the alignment side, but here the representative can be null outright
+            // (NullIfUnknown), which is the other way the columns must not invent a value.
+            var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
+            var stubFile = new AnalysisFileBean { AcquisitionType = AcquisitionType.DDA, };
+            var accessor = new TestAnalysisMetadataAccessor(new MockRefer(), parameter, ExportspectraType.deconvoluted);
+            var feature = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 700d, })
+            {
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
+                MatchResults = new MsScanMatchResultContainer(),
+            };
+            var msdec = new MSDecResult { RawSpectrumID = 1, Spectrum = new List<SpectrumPeak>(), };
+
+            var content = accessor.GetContent(feature, msdec, new MockDataProvider(), stubFile, new());
+
+            foreach (var column in EvidenceColumns) {
+                Assert.AreEqual("null", content[column], column);
+            }
         }
 
         [TestMethod()]
@@ -86,6 +126,11 @@ namespace CompMs.MsdialCore.Export.Tests
                 MatchedPeaksPercentage = 0.901f,
                 TotalScore = 0.638f,
                 AnnotatorID = "Annotation method",
+                MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass,
+                EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum,
+                CandidatesFound = 12,
+                CandidatesAboveThreshold = 3,
+                CandidatesReferenceMatched = 0,
             };
             feature.MatchResults.AddResults(new List<MsScanMatchResult> { matchResult, });
             feature.PeakCharacter.IsotopeWeightNumber = 1;
@@ -102,6 +147,36 @@ namespace CompMs.MsdialCore.Export.Tests
             };
             var provider = new MockDataProvider();
             var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
+            // HEADER/CONTENT PARITY. Every header must have a content key, or an exporter throws
+            // KeyNotFoundException the moment it indexes the content by header name; and every content
+            // key must have a header, or its value is computed and then silently dropped on the floor.
+            // Nothing checked either direction before, which is how "Enhanced dot product" and
+            // "Spectrum entropy" came to be computed on every analysis row and written to no file in
+            // any mode, for as long as they have existed.
+            //
+            // A drop has to be declared here, with a reason. That is the whole mechanism: it does not
+            // forbid dropping a key, it forbids dropping one by accident.
+            var declaredDrops = new HashSet<string>
+            {
+            };
+            foreach (var header in accessor.GetHeaders()) {
+                Assert.IsTrue(content.ContainsKey(header),
+                    $"header \"{header}\" has no content key, so exporting would throw");
+            }
+            foreach (var key in content.Keys) {
+                Assert.IsTrue(declaredDrops.Contains(key) || accessor.GetHeaders().Contains(key),
+                    $"content key \"{key}\" has no header, so its value never reaches the file");
+            }
+
+            // The evidence record reaches the file, and a count of zero survives as a measurement.
+            Assert.AreEqual("Spectrum|AccurateMass", content["Measured terms"]);
+            Assert.AreEqual("ReferenceSpectrum", content["Evidence source"]);
+            Assert.AreEqual("12", content["Candidates found"]);
+            Assert.AreEqual("3", content["Candidates above threshold"]);
+            Assert.AreEqual("0", content["Candidates reference matched"],
+                "zero reference matches is a fact about the run; routing this through the alignment "
+                + "side's ValueOrNull(float, string) would have written \"null\" instead");
+
 
             Assert.AreEqual("100", content["Peak ID"]);
             Assert.AreEqual("Metabolite", content["Name"]);
