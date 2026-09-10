@@ -98,6 +98,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
             result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
+            // No ValidateCore in this annotator: Ms2MatchResult.Assign has already set
+            // IsSpectrumMatch by the time this runs, so the verdict is final here.
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
             return result;
         }
 

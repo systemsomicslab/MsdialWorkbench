@@ -39,16 +39,24 @@ namespace CompMs.Common.DataObj.Result {
     /// before this member existed reads back as 0, and that has to mean "not recorded" rather than
     /// any particular kind of evidence.
     ///
-    /// These values describe WHAT WAS COMPARED, not what the database happens to hold. So an MSP
-    /// candidate for a feature with no product-ion spectrum is <see cref="PrecursorOnly"/>, not
-    /// <see cref="ReferenceSpectrum"/>. Two readings were possible and this one is chosen because
-    /// it is the one the repository already speaks: AnnotationName.NoMs2Prefix calls exactly this
-    /// case a "precursor-only suggestion" and applies it to MSP and LBM names, and the programme's
-    /// annotation policy is written the same way -- "a lower-priority MS/MS reference match
-    /// outranks a higher-priority precursor-only suggestion". Under the other reading a record
-    /// could be labelled <see cref="ReferenceSpectrum"/> while its own name carried the "no MS2: "
-    /// prefix. Which database the name came from is a separate question, and
-    /// <see cref="MsScanMatchResult.Source"/> already answers it.
+    /// These values describe WHAT WAS COMPARED AND WHAT IT SUPPORTS. So an MSP candidate for a
+    /// feature with no product-ion spectrum is <see cref="PrecursorOnly"/>, not
+    /// <see cref="ReferenceSpectrum"/>: the repository already speaks that way --
+    /// AnnotationName.NoMs2Prefix calls exactly this case a "precursor-only suggestion", and the
+    /// programme's annotation policy is written the same way, "a lower-priority MS/MS reference
+    /// match outranks a higher-priority precursor-only suggestion". Which database the name came
+    /// from is a separate question, and <see cref="MsScanMatchResult.Source"/> already answers it.
+    ///
+    /// The "and what it supports" half is carried by <see cref="WeakSpectrumMatch"/> and
+    /// <see cref="UnmatchedSpectrum"/>, and nothing is lost by it, because the narrower question
+    /// "was a spectrum compared at all" is answered exactly by
+    /// <see cref="MeasuredTerms.Spectrum"/> on the same record. Read as a pair, the two keys say
+    /// what was measured and what the measurement was worth. That is the distinction the author of
+    /// MS-DIAL asked for on 2026-09-10: a precursor-mass match with NO spectrum acquired can
+    /// legitimately be reported at class level for a lipid, while a precursor-mass match WITH a
+    /// spectrum acquired that failed is, by his criteria, unknown unless retention time supports
+    /// it. Those two are opposite verdicts and the suggestion machinery had been treating them as
+    /// one bucket.
     /// </remarks>
     public enum AnnotationEvidenceSource : byte {
         Unspecified = 0,
@@ -89,6 +97,32 @@ namespace CompMs.Common.DataObj.Result {
         /// not.
         /// </remarks>
         Manual,
+        /// <summary>
+        /// A reference spectrum was compared, some of the acceptance criteria were met, and the
+        /// conjunction of them was not. The name is reportable but the spectrum did not settle it.
+        /// </summary>
+        /// <remarks>
+        /// This is the tier that a single cut-off cannot express. With a 70% threshold, a candidate
+        /// at 69% and a candidate that matched two fragments out of forty are both "below
+        /// threshold", and treating them alike is what makes the cut-off feel arbitrary. The line
+        /// between this and <see cref="UnmatchedSpectrum"/> uses no new number: it reuses the
+        /// analyst's own <c>MinimumSpectrumMatch</c> for metabolomics, and for lipidomics it asks
+        /// the diagnostic-fragment rules instead, because there a single characteristic ion can
+        /// settle a class outright -- cholesteryl ester is the standard example -- so a peak count
+        /// says nothing.
+        /// </remarks>
+        WeakSpectrumMatch,
+        /// <summary>
+        /// A reference spectrum was compared and explained essentially nothing. The precursor mass
+        /// may still agree; on its own that is not an identification.
+        /// </summary>
+        /// <remarks>
+        /// Distinct from <see cref="PrecursorOnly"/>, and the distinction is the point. There, no
+        /// product-ion spectrum existed to compare, so the mass is all the evidence there could
+        /// have been; here a spectrum was acquired, compared, and disagreed, which is a positive
+        /// finding against the candidate rather than an absence of one.
+        /// </remarks>
+        UnmatchedSpectrum,
     }
 
     /// <summary>
@@ -124,6 +158,59 @@ namespace CompMs.Common.DataObj.Result {
         /// </summary>
         public static AnnotationEvidenceSource WhenSpectrumCompared(MeasuredTerms measured, AnnotationEvidenceSource evidence) {
             return measured.HasFlag(MeasuredTerms.Spectrum) ? evidence : AnnotationEvidenceSource.PrecursorOnly;
+        }
+
+        /// <summary>
+        /// Downgrades the evidence of a candidate whose reference spectrum was compared and did not
+        /// carry the match, from "a spectrum decided this" to how far it actually got.
+        /// </summary>
+        /// <remarks>
+        /// A SEPARATE, LATER STEP ON PURPOSE. The verdict this reads -- IsSpectrumMatch and the
+        /// lipid rule flags -- is not set until validation, which in several annotators runs in the
+        /// caller of the method that produces the result, so grading at the production site would
+        /// read flags that are not there yet. Rather than move six assignments and hope none was
+        /// missed, this only ever DOWNGRADES an already-recorded value. A site that never calls it
+        /// keeps the value it had before this change: wrong in the old way, never blank. Missing a
+        /// site therefore costs precision, not the record itself, and the per-mode tests say which
+        /// sites are covered.
+        ///
+        /// Callers that are not database searches -- a manual assertion, an in-silico structure,
+        /// a candidate for which no spectrum was compared -- fall out of the first guard untouched.
+        /// </remarks>
+        public static void RecordSpectrumVerdict(MsScanMatchResult result, TargetOmics omics, float minimumSpectrumMatch) {
+            if (result.EvidenceSource != AnnotationEvidenceSource.ReferenceSpectrum
+                && result.EvidenceSource != AnnotationEvidenceSource.RuleBased) {
+                return;
+            }
+            if (result.IsSpectrumMatch) {
+                return;
+            }
+            result.EvidenceSource = ExplainedNothing(result, omics, minimumSpectrumMatch)
+                ? AnnotationEvidenceSource.UnmatchedSpectrum
+                : AnnotationEvidenceSource.WeakSpectrumMatch;
+        }
+
+        /// <summary>
+        /// Whether the comparison explained essentially nothing, as opposed to falling short.
+        /// </summary>
+        /// <remarks>
+        /// No new threshold is introduced. For metabolomics the line is the analyst's own
+        /// <c>MinimumSpectrumMatch</c>, the same number their acceptance criteria already use, with
+        /// a floor of one fragment for the case where they have switched it off -- a comparison
+        /// that matched no fragment at all explained nothing by any reading.
+        ///
+        /// For lipidomics the peak count is deliberately NOT consulted. One diagnostic fragment can
+        /// settle a lipid class on its own -- cholesteryl ester is the example the author gave --
+        /// so a count near zero is compatible with a correct class assignment. The rules in
+        /// MsmsCharacterization are the evidence there, so they are what is asked.
+        /// </remarks>
+        private static bool ExplainedNothing(MsScanMatchResult result, TargetOmics omics, float minimumSpectrumMatch) {
+            if (omics == TargetOmics.Lipidomics) {
+                return !(result.IsLipidChainsMatch || result.IsLipidClassMatch
+                    || result.IsLipidPositionMatch || result.IsOtherLipidMatch);
+            }
+            var atLeastOneFragment = System.Math.Max(minimumSpectrumMatch, 1f);
+            return result.MatchedPeaksCount < atLeastOneFragment;
         }
     }
 

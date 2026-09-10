@@ -198,6 +198,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {

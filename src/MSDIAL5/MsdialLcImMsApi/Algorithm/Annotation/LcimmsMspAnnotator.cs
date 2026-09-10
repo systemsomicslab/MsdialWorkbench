@@ -249,6 +249,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             // match and leaves the precursor-only suggestion standing, which is what the evidence
             // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {

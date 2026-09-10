@@ -200,6 +200,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateBase(result, property, reference, parameter);
             result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         //private static readonly double MsdialCcsMatchThreshold = 10d;
