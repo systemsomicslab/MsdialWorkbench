@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -278,6 +279,160 @@ namespace CompMs.MsdialCore.Export.Tests
         public string Separator { get; }
 
         private readonly Dictionary<string, string> _annotatorID2DataBaseID;
+
+        /// <summary>
+        /// The name column holds a compound name, and the processing status is a column of its own.
+        /// </summary>
+        /// <remarks>
+        /// These exercise what the checked-in fixture cannot: it contains no prefixed name, no
+        /// dual lipid name and no evidence record, so reverting the normalisation leaves the
+        /// byte-compared golden entirely green. The golden pins that nothing ELSE moved; these pin
+        /// the change itself.
+        /// </remarks>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task APrefixedNameIsPublishedAsACompoundNameAndAnEvidenceColumn() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var spot = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            spot.Name = AnnotationName.AsNoMs2("Quercetin");
+            spot.MatchResults.Representative.EvidenceSource = AnnotationEvidenceSource.PrecursorOnly;
+
+            var fields = SmallMoleculeRow(ExportToLines(storage, container, msdecs), spot);
+
+            Assert.AreEqual("Quercetin", fields.Value("chemical_name"),
+                "the status no longer travels inside the name");
+            Assert.AreEqual("PrecursorOnly", fields.Value("opt_global_evidence_source"),
+                "it travels here instead, where it says more than the prefix did");
+        }
+
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ALipidWhoseChainsWereNotResolvedIsPublishedAtClassLevel() {
+            // The author's rule of 2026-09-10: precursor mass alone does not support an sn-chain
+            // composition, so the class-level form is what may be published.
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var spot = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            spot.Name = "PC 34:1|PC 16:0_18:1";
+            spot.MatchResults.Representative.IsLipidChainsMatch = false;
+
+            var fields = SmallMoleculeRow(ExportToLines(storage, container, msdecs), spot);
+
+            Assert.AreEqual("PC 34:1", fields.Value("chemical_name"));
+        }
+
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ALipidWhoseChainsWereResolvedKeepsThem() {
+            // The control, and the reason the level cannot be decided from the text: the identical
+            // string means "chains resolved" when GetRefinedLipidAnnotationLevel wrote it.
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var spot = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            spot.Name = "PC 34:1|PC 16:0_18:1";
+            spot.MatchResults.Representative.IsLipidChainsMatch = true;
+
+            var fields = SmallMoleculeRow(ExportToLines(storage, container, msdecs), spot);
+
+            Assert.AreEqual("PC 16:0_18:1", fields.Value("chemical_name"));
+        }
+
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task TheEvidenceColumnsCarryTheRecordAndItsAbsence() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var recorded = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            recorded.MatchResults.Representative.EvidenceSource = AnnotationEvidenceSource.WeakSpectrumMatch;
+            recorded.MatchResults.Representative.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+            var unrecorded = container.AlignmentSpotProperties.First(s => s.Name == "Isodemethylwedelolactone");
+
+            var lines = ExportToLines(storage, container, msdecs);
+
+            Assert.AreEqual("WeakSpectrumMatch", SmallMoleculeRow(lines, recorded).Value("opt_global_evidence_source"));
+            Assert.AreEqual("Spectrum|AccurateMass", SmallMoleculeRow(lines, recorded).Value("opt_global_measured_terms"));
+            // A project written before the evidence record existed says so, rather than claiming
+            // that nothing was compared.
+            Assert.AreEqual("null", SmallMoleculeRow(lines, unrecorded).Value("opt_global_evidence_source"));
+        }
+
+        /// <summary>
+        /// The evidence section cites comparisons that happened, and only those.
+        /// </summary>
+        /// <remarks>
+        /// The gate used to test the substring "no MS2" on the name, so a "low score" spot -- a
+        /// spectrum acquired, compared and found wanting -- received a full rank-1 evidence row
+        /// with nothing in it saying so. A weak match still earns its row, because a comparison
+        /// that partly agreed is exactly what the evidence section is for; a comparison that
+        /// explained nothing has nothing to cite.
+        /// </remarks>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task AWeakMatchKeepsItsEvidenceRowAndAnUnmatchedSpectrumDoesNot() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var weak = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            weak.MatchResults.Representative.EvidenceSource = AnnotationEvidenceSource.WeakSpectrumMatch;
+            var unmatched = container.AlignmentSpotProperties.First(s => s.Name == "Isodemethylwedelolactone");
+            unmatched.MatchResults.Representative.EvidenceSource = AnnotationEvidenceSource.UnmatchedSpectrum;
+
+            var lines = ExportToLines(storage, container, msdecs);
+            var evidence = lines.Where(line => line.StartsWith("SME\t")).Select(line => line.Split('\t')).ToArray();
+
+            Assert.IsTrue(evidence.Any(f => f[2] == weak.MasterAlignmentID.ToString()),
+                "a spectrum was compared and partly agreed: that is citable evidence");
+            Assert.IsFalse(evidence.Any(f => f[2] == unmatched.MasterAlignmentID.ToString()),
+                "a comparison that explained nothing supports no identification");
+        }
+
+        /// <summary>
+        /// Reads one SML row by column NAME, from the SMH line, so that adding a column does not
+        /// silently shift what a test asserts.
+        /// </summary>
+        private static SmallMoleculeFields SmallMoleculeRow(string[] lines, AlignmentSpotProperty spot) {
+            var header = lines.Single(line => line.StartsWith("SMH\t")).Split('\t');
+            var row = lines.Select(line => line.Split('\t'))
+                .Single(f => f[0] == "SML" && f[1] == spot.MasterAlignmentID.ToString());
+            return new SmallMoleculeFields(header, row);
+        }
+
+        private sealed class SmallMoleculeFields
+        {
+            private readonly string[] _header;
+            private readonly string[] _row;
+
+            public SmallMoleculeFields(string[] header, string[] row) {
+                _header = header;
+                _row = row;
+            }
+
+            public string Value(string column) {
+                var index = System.Array.IndexOf(_header, column);
+                Assert.AreNotEqual(-1, index, $"no column named \"{column}\"");
+                return _row[index];
+            }
+        }
     }
 
     class StubMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false)

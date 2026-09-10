@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -286,7 +287,45 @@ namespace CompMs.MsdialCore.Export
             if (spot.IsBlankFilteredByPostCurator) { return false; }
             if (meta.IsNormalizeSplash && spot.InternalStandardAlignmentID == -1) { return false; }
             if (meta.IsNormalizeIS && spot.InternalStandardAlignmentID == -1) { return false; }
-            return !spot.Name.Contains("no MS2");
+            return HasCitableSpectralEvidence(spot);
+        }
+
+        /// <summary>
+        /// Whether there is a spectral comparison worth citing as evidence for this identification.
+        /// </summary>
+        /// <remarks>
+        /// This gate used to read <c>!spot.Name.Contains("no MS2")</c>, which re-implemented one
+        /// third of AnnotationName's vocabulary as a raw substring. It caught "no MS2" and nothing
+        /// else, so a "low score" spot -- spectrum acquired, compared, below the acceptance
+        /// criteria -- passed every gate and received a full rank-1 evidence row with ms_level 2
+        /// and a complete score set, with nothing in that row saying it had failed. The peptide
+        /// path's "w/o MS2" passed too, and it means exactly what "no MS2" means.
+        ///
+        /// The evidence record answers this directly. A weak match IS citable: a spectrum was
+        /// compared and partly agreed, and the rank and scores of the row say how far it got --
+        /// that is what the evidence section is for. A comparison that explained nothing, and a
+        /// candidate for which no spectrum was compared at all, have nothing to cite.
+        ///
+        /// The Unspecified arm is for projects saved before the evidence record existed. Their
+        /// results deserialize to Unspecified and no grading can be recovered, so they keep the old
+        /// answer -- with one correction that costs no information: the test is now a prefix rather
+        /// than a substring, and it covers "w/o MS2" as well, because that spelling says the same
+        /// thing. "low score" still passes there, as it always has, because for those projects
+        /// there is no record that could tell a weak comparison from a failed one.
+        /// </remarks>
+        private static bool HasCitableSpectralEvidence(AlignmentSpotProperty spot) {
+            var result = spot.MatchResults.Representative;
+            if (result is null) { return false; }
+            switch (result.EvidenceSource) {
+                case AnnotationEvidenceSource.ReferenceSpectrum:
+                case AnnotationEvidenceSource.RuleBased:
+                case AnnotationEvidenceSource.WeakSpectrumMatch:
+                    return true;
+                case AnnotationEvidenceSource.Unspecified:
+                    return !AnnotationName.IsPrecursorOnlySuggestion(spot.Name);
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
@@ -393,8 +432,15 @@ namespace CompMs.MsdialCore.Export
             var inchi = "null";
             var smlID = metadata["Alignment ID"];
             var smfIDrefs = metadata["Alignment ID"];
-            var chemicalName = metadata["Metabolite name"];
-            chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
+            // A compound name and nothing else. Any suggestion prefix -- "no MS2: ", "low score: "
+            // -- moves to opt_global_evidence_source below, where a reader can act on it instead of
+            // parsing it back out of a name, and where it says more than the prefix could: the
+            // prefix collapsed "compared and fell short" and "compared and explained nothing" into
+            // one word. The structural level comes from the record, never from the punctuation;
+            // AnnotationName.AtSupportedLevel documents why the pipe cannot be read as text.
+            var chemicalName = AnnotationName.AtSupportedLevel(
+                AnnotationName.WithoutPrefix(metadata["Metabolite name"]),
+                matchResult?.IsLipidChainsMatch ?? false);
             var databaseIdentifier = "null";
             var LibraryID = spot?.MatchResults?.Representative.LibraryID;
             var rep = spot?.MatchResults?.Representative;
@@ -404,13 +450,16 @@ namespace CompMs.MsdialCore.Export
             {
                 if(_annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID))
                 {
-                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                    // No WithoutPrefix here: MsScanMatchResult.Name is never prefixed -- the
+                    // prefixes are written onto the FEATURE name by DataAccess, not onto the match
+                    // result -- so the only normalisation this needs is the structural level.
+                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + AnnotationName.AtSupportedLevel(rep.Name, rep.IsLipidChainsMatch);
                 }
                 else
                 {
                     if (rep.AnnotatorID == "MS-FINDER")
                     {
-                        databaseIdentifier = "MS-FINDER:" + rep.Name.Split('|').Last();
+                        databaseIdentifier = "MS-FINDER:" + AnnotationName.AtSupportedLevel(rep.Name, rep.IsLipidChainsMatch);
                     }
                 }
             }
@@ -478,6 +527,11 @@ namespace CompMs.MsdialCore.Export
                 LineData.AddRange(SetMsmsPresence(spot));  // add 20251208
             }
             LineData.AddRange(SetSpectrumMatch(matchResult));  // add 20251208
+            // Positional: these two must stay in the order their headers were added above. The
+            // '|' that AnnotationEvidenceFormat joins the terms with is mzTab-M's own in-field list
+            // separator, so a multi-term value reads as a list to a conformant parser.
+            LineData.Add(AnnotationEvidenceFormat.Source(matchResult));
+            LineData.Add(AnnotationEvidenceFormat.Terms(matchResult));
             if (hasComment)
             {
                 LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
@@ -626,7 +680,7 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + spot.AdductType.ChargeNumber.ToString();
             }
 
-            var repName = (candidate.Name ?? string.Empty).Split('|').Last();
+            var repName = AnnotationName.AtSupportedLevel(candidate.Name ?? string.Empty, candidate.IsLipidChainsMatch);
             var repLibraryID = candidate.LibraryID;
             var chemicalFormula = ValueOrNull(reference?.Formula?.FormulaString);
             var smiles = ValueOrNull(reference?.SMILES);
@@ -672,7 +726,7 @@ namespace CompMs.MsdialCore.Export
                 _annotatorID2DataBaseID.TryGetValue(candidate.AnnotatorID, out var databaseID) &&
                 !string.IsNullOrEmpty(candidate.Name))
             {
-                databaseIdentifier = databaseID + ":" + candidate.Name.Split('|').Last();
+                databaseIdentifier = databaseID + ":" + AnnotationName.AtSupportedLevel(candidate.Name, candidate.IsLipidChainsMatch);
             }
 
             var SmeLine = new List<string>() {
@@ -1040,6 +1094,12 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_ms2_presence");
             }
             SmlDataHeader.Add("opt_global_spectrum_matched");
+            // The reliability the name no longer carries. Two columns, not five: the candidate
+            // counts in the evidence record describe how many alternatives there were, and mzTab-M
+            // already says that in the ranked SME rows, so repeating it here would be a second
+            // spelling of the same fact.
+            SmlDataHeader.Add("opt_global_evidence_source");
+            SmlDataHeader.Add("opt_global_measured_terms");
             if (hasComment)
             {
                 SmlDataHeader.Add("opt_global_user_comment");
