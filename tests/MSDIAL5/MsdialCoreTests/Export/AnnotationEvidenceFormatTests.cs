@@ -1,4 +1,4 @@
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CompMs.MsdialCore.Export.Tests
@@ -81,6 +81,27 @@ namespace CompMs.MsdialCore.Export.Tests
 
             Assert.AreEqual("Spectrum|AccurateMass", AnnotationEvidenceFormat.Terms(result));
             Assert.AreEqual("ReferenceSpectrum", AnnotationEvidenceFormat.Source(result));
+        }
+
+        /// <summary>
+        /// Both in-silico directions publish as one tag, because the evidence inventory records
+        /// in-silico assignment as one category. Which tool it was is on the record beside this, in
+        /// AnnotatorID.
+        /// </summary>
+        [TestMethod()]
+        public void BothInSilicoDirectionsArePublishedAsOneTag() {
+            var structurePredicted = new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.ByStructurePredictionTool, };
+            var spectrumPredicted = new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool, };
+
+            Assert.AreEqual("InSilico", AnnotationEvidenceFormat.Source(structurePredicted));
+            Assert.AreEqual("InSilico", AnnotationEvidenceFormat.Source(spectrumPredicted));
+            Assert.AreEqual(AnnotationEvidenceFormat.InSilico, AnnotationEvidenceFormat.Source(structurePredicted));
+        }
+
+        [TestMethod()]
+        public void EveryOtherMemberStillPublishesItsOwnName() {
+            var ruleBased = new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.RuleBased, };
+            Assert.AreEqual("RuleBased", AnnotationEvidenceFormat.Source(ruleBased));
         }
 
         [TestMethod()]

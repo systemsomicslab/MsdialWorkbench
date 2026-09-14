@@ -1,4 +1,4 @@
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using System.Globalization;
 using System.Linq;
 
@@ -52,6 +52,18 @@ namespace CompMs.MsdialCore.Export
         /// </summary>
         public const string NotRecorded = "null";
 
+        /// <summary>
+        /// The single tag both in-silico members are published under.
+        /// </summary>
+        /// <remarks>
+        /// MS-DIAL keeps two members because the two directions of in-silico work fail differently:
+        /// a spectrum predictor can be wrong about how a real compound fragments, a structure
+        /// predictor can propose a compound that was never there. The evidence inventory this
+        /// programme publishes against records in-silico assignment as one category, so the file
+        /// says "InSilico" and the tool is identified beside it by AnnotatorID.
+        /// </remarks>
+        public const string InSilico = "InSilico";
+
         private const string TermSeparator = "|";
 
         /// <summary>
@@ -93,7 +105,16 @@ namespace CompMs.MsdialCore.Export
         }
 
         public static string Source(MsScanMatchResult? result) {
-            return IsSourceRecorded(result) ? result!.EvidenceSource.ToString() : NotRecorded;
+            if (!IsSourceRecorded(result)) {
+                return NotRecorded;
+            }
+            switch (result!.EvidenceSource) {
+                case AnnotationEvidenceSource.ByStructurePredictionTool:
+                case AnnotationEvidenceSource.BySpectrumPredictionTool:
+                    return InSilico;
+                default:
+                    return result.EvidenceSource.ToString();
+            }
         }
 
         /// <summary>

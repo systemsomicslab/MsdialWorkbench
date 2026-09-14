@@ -67,8 +67,21 @@ namespace CompMs.Common.DataObj.Result {
         PrecursorOnly,
         /// <summary>An experimentally acquired reference spectrum was compared.</summary>
         ReferenceSpectrum,
-        /// <summary>A computationally generated spectrum was compared.</summary>
-        PredictedSpectrum,
+        /// <summary>
+        /// A tool that predicts a STRUCTURE from a spectrum established this: the measured peaks
+        /// went in, a candidate structure came out. MS-FINDER and SIRIUS work this way.
+        /// </summary>
+        /// <remarks>
+        /// Keeps the serialized value that <c>PredictedSpectrum</c> held, because MS-FINDER
+        /// acceptance was its only producer of consequence and the name was the wrong way round:
+        /// it described the other direction of in-silico work.
+        ///
+        /// EXPORTED AS "InSilico", not under this name. The evidence inventory this programme
+        /// publishes against records in-silico assignment as one category, so the two directions
+        /// are one tag outside MS-DIAL and two members inside it. Which tool it was is already on
+        /// the record beside this, in <see cref="MsScanMatchResult.AnnotatorID"/>.
+        /// </remarks>
+        ByStructurePredictionTool,
         /// <summary>
         /// Diagnostic fragment ions were evaluated against a rule set, and that evaluation is what
         /// established the annotation.
@@ -123,6 +136,21 @@ namespace CompMs.Common.DataObj.Result {
         /// finding against the candidate rather than an absence of one.
         /// </remarks>
         UnmatchedSpectrum,
+        /// <summary>
+        /// A tool that predicts a SPECTRUM from a structure established this: a candidate structure
+        /// or sequence went in, an expected fragment spectrum came out, and the measured peaks were
+        /// scored against it. CFM-ID and FIORA work this way, as does the peptide b/y ladder that
+        /// SequenceToSpec computes from a FASTA entry.
+        /// </summary>
+        /// <remarks>
+        /// Distinguished from <see cref="ByStructurePredictionTool"/> inside MS-DIAL and merged
+        /// with it on the way out; see that member. The distinction is kept because the two carry
+        /// different failure modes -- a spectrum predictor can be wrong about the fragmentation of
+        /// a structure that is nonetheless present, while a structure predictor can propose a
+        /// structure that was never there -- and because the author of MS-DIAL asked for the
+        /// separation to survive internally.
+        /// </remarks>
+        BySpectrumPredictionTool,
     }
 
     /// <summary>

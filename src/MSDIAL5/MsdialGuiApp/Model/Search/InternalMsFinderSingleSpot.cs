@@ -475,7 +475,7 @@ namespace CompMs.App.Msdial.Model.Search
                     // nowhere. Set unconditionally rather than through WhenSpectrumCompared: the
                     // comparison happened inside MS-FINDER, so MsScanMatching's spectral terms were
                     // never computed and MeasuredTerms.Spectrum must stay clear.
-                    EvidenceSource = AnnotationEvidenceSource.PredictedSpectrum,
+                    EvidenceSource = AnnotationEvidenceSource.ByStructurePredictionTool,
                     // These two fields do hold measurements, from the fragmenter. Recorded here
                     // because the previous commit's sweep reached this site and left them unset.
                     MeasuredTerms = MeasuredTerms.None

@@ -1,4 +1,4 @@
-using CompMs.Common.Enum;
+﻿using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CompMs.Common.DataObj.Result.Tests
@@ -144,7 +144,8 @@ namespace CompMs.Common.DataObj.Result.Tests
         public void AManualOrPredictedRecordIsLeftAlone() {
             foreach (var untouched in new[] {
                 AnnotationEvidenceSource.Manual,
-                AnnotationEvidenceSource.PredictedSpectrum,
+                AnnotationEvidenceSource.ByStructurePredictionTool,
+                AnnotationEvidenceSource.BySpectrumPredictionTool,
                 AnnotationEvidenceSource.Unspecified,
             }) {
                 var result = Compared(untouched, isSpectrumMatch: false, matchedPeaks: 0f);
@@ -163,11 +164,31 @@ namespace CompMs.Common.DataObj.Result.Tests
             Assert.AreEqual(0, (int)AnnotationEvidenceSource.Unspecified);
             Assert.AreEqual(1, (int)AnnotationEvidenceSource.PrecursorOnly);
             Assert.AreEqual(2, (int)AnnotationEvidenceSource.ReferenceSpectrum);
-            Assert.AreEqual(3, (int)AnnotationEvidenceSource.PredictedSpectrum);
+            // Renamed, not renumbered: PredictedSpectrum held 3 and described the wrong
+            // direction of in-silico work. MS-FINDER, its only producer of consequence, predicts a
+            // STRUCTURE from a spectrum.
+            Assert.AreEqual(3, (int)AnnotationEvidenceSource.ByStructurePredictionTool);
             Assert.AreEqual(4, (int)AnnotationEvidenceSource.RuleBased);
             Assert.AreEqual(5, (int)AnnotationEvidenceSource.Manual);
             Assert.AreEqual(6, (int)AnnotationEvidenceSource.WeakSpectrumMatch);
             Assert.AreEqual(7, (int)AnnotationEvidenceSource.UnmatchedSpectrum);
+            Assert.AreEqual(8, (int)AnnotationEvidenceSource.BySpectrumPredictionTool);
+        }
+
+        /// <summary>
+        /// The two directions of in-silico work are separate inside MS-DIAL and one tag outside it.
+        /// </summary>
+        /// <remarks>
+        /// CFM-ID and FIORA go structure to spectrum; MS-FINDER and SIRIUS go spectrum to structure.
+        /// They fail differently, so MS-DIAL keeps them apart. The evidence inventory this programme
+        /// publishes against records in-silico assignment as a single category, so the exported tag
+        /// merges them and AnnotatorID names the tool.
+        /// </remarks>
+        [TestMethod()]
+        public void TheTwoInSilicoDirectionsAreDistinctMembers() {
+            Assert.AreNotEqual(
+                AnnotationEvidenceSource.ByStructurePredictionTool,
+                AnnotationEvidenceSource.BySpectrumPredictionTool);
         }
 
         private static MsScanMatchResult Compared(AnnotationEvidenceSource evidence, bool isSpectrumMatch, float matchedPeaks) {
