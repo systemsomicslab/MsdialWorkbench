@@ -73,19 +73,38 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             var massResult = MassCalculator.Calculate(new MassMatchQuery(property.PrecursorMz, ms1Tol), reference);
             results.Add(massResult);
 
+            Ms2MatchResult ms2Result;
             if (omics == TargetOmics.Lipidomics) {
-                var ms2Result = LipidMs2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
-                results.Add(ms2Result);
-                if (!ms2Result.IsOtherLipidMatch) {
-                    result.Name = string.IsNullOrEmpty(ms2Result.Name) ? reference.Name : ms2Result.Name;
+                var lipidResult = LipidMs2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
+                ms2Result = lipidResult;
+                if (!lipidResult.IsOtherLipidMatch) {
+                    result.Name = string.IsNullOrEmpty(lipidResult.Name) ? reference.Name : lipidResult.Name;
                 }
             }
             else {
-                var ms2Result = Ms2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
-                results.Add(ms2Result);
+                ms2Result = Ms2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
             }
+            results.Add(ms2Result);
 
-            result.TotalScore = (float)results.SelectMany(res => res.Scores).Average();
+            // AVERAGED OVER THE TERMS THAT WERE ACTUALLY COMPARED. When a feature carries no
+            // product-ion spectrum -- the ordinary case in direct infusion, where an MS1 survey may
+            // be all there is -- both calculators return their Empty, which holds 0 in every
+            // spectral field rather than the -1 the scoring functions returned. Averaging that in
+            // divided a candidate's score by three: a precursor mass agreeing to within tolerance,
+            // worth 1.0 on its own, was published as 0.33.
+            //
+            // The zeros are fabricated rather than measured, and this is the only annotator that
+            // ever counted them. MassAnnotator, MsReferenceScorer and CalculateAnnotatedScoreCore
+            // twenty lines below all build a list of the terms they actually computed and average
+            // that; this one alone averaged a fixed three. So the fix is not a new convention, it is
+            // this site joining the existing one.
+            //
+            // SpectrumCompared rather than IsSpectrumComparisonPerformed: that predicate is inert
+            // here. It infers "a comparison happened" from the fields being non-negative, and
+            // Empty's zeros are non-negative, so for an MspDB result it answers true for exactly the
+            // candidates this has to exclude. The calculator knows, and says so.
+            var measured = results.Where(res => !(res is Ms2MatchResult ms2) || ms2.SpectrumCompared);
+            result.TotalScore = (float)measured.SelectMany(res => res.Scores).DefaultIfEmpty().Average();
             results.ForEach(res => res.Assign(result));
 
             // After the Assign loop, not in the initializer: this annotator's MeasuredTerms arrive
