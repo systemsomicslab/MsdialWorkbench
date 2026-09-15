@@ -19,6 +19,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.Utility;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -111,7 +112,7 @@ namespace CompMs.MsdialCore.Export
             where T : IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
         {
             var builder = new NistRecordBuilder();
-            builder.SetNameProperty(chromPeakFeature.Name);
+            builder.SetNameProperty(chromPeakFeature, chromPeakFeature.Name);
             builder.SetChromatogramPeakProperties(chromPeakFeature);
             switch (chromPeakFeature)
             {
@@ -150,7 +151,7 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter)
         {
             var builder = new NistRecordBuilder();
-            builder.SetNameProperty(chromPeakFeature.Name);
+            builder.SetNameProperty(chromPeakFeature, chromPeakFeature.Name);
             builder.SetChromatogramPeakFeatureProperties(chromPeakFeature, chromPeakFeature.MasterPeakID);
             builder.SetChromatogramPeakProperties(chromPeakFeature);
             builder.SetComment(chromPeakFeature);
@@ -183,7 +184,7 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter)
         {
             var builder = new NistRecordBuilder();
-            builder.SetNameProperty(spotProperty.Name);
+            builder.SetNameProperty(spotProperty, spotProperty.Name);
             builder.SetChromatogramPeakProperties(spotProperty);
             builder.SetComment(spotProperty);
             builder.SetMoleculeProperties(spotProperty.Refer(mapper));
@@ -438,7 +439,7 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter
             )
         {
-            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
+            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.CanonicalName(spotProperty.Name));
             WriteSdfDataItem(sb, "ALIGNMENT ID", spotProperty.MasterAlignmentID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.MassCenter, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
@@ -476,7 +477,7 @@ namespace CompMs.MsdialCore.Export
             IEnumerable<ISpectrumPeak> spectrum,
             ParameterBase parameter)
         {
-            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.Name);
+            WriteSdfDataItem(sb, "NAME", string.IsNullOrWhiteSpace(spotProperty.Name) ? "Unknown" : spotProperty.CanonicalName(spotProperty.Name));
             WriteSdfDataItem(sb, "PEAK ID", spotProperty.PeakID.ToString());
             WriteSdfDataItem(sb, "PRECURSOR M/Z", Math.Round(spotProperty.PrecursorMz, 5).ToString());
             WriteSdfDataItem(sb, "ION MODE", spotProperty.IonMode.ToString());
@@ -785,7 +786,7 @@ namespace CompMs.MsdialCore.Export
             var height = "|PEAKHEIGHT=" + Math.Round(feature.PeakFeature.PeakHeightTop, 0).ToString();
             var area = "|PEAKAREA=" + Math.Round(feature.PeakFeature.PeakAreaAboveZero, 0).ToString();
             var isotope = "|ISOTOPE=" + "M+" + feature.PeakCharacter.IsotopeWeightNumber.ToString();
-            return comment + id + ms1 + ms2 + height + area + isotope;
+            return comment + id + ms1 + ms2 + height + area + isotope + GetEvidenceField(feature);
         }
 
         private static string GetCommentField(AlignmentSpotProperty feature)
@@ -793,8 +794,28 @@ namespace CompMs.MsdialCore.Export
             var comment = feature.Comment;
             var id = "|PEAKID=" + feature.MasterAlignmentID.ToString();
             var isotope = "|ISOTOPE=" + "M+" + feature.PeakCharacter.IsotopeWeightNumber.ToString();
-            return comment + id + isotope;
+            return comment + id + isotope + GetEvidenceField(feature);
         }
+        /// <summary>
+        /// The evidence record, as the fields an exported spectrum carries it in.
+        /// </summary>
+        /// <remarks>
+        /// In COMMENT, beside PEAKID, because that is where this format already keeps the fields a
+        /// reader has to parse: PEAKID is the join back to the tables, and the evidence is what that
+        /// join was for. A tool that does not know these keys skips them as it already skips PEAKID.
+        ///
+        /// The point is the handoff. A spectrum leaves MS-DIAL for MS-FINDER, ICEBERG, SIRIUS or
+        /// whatever comes next, and comes back as a new annotation. Without this, what MS-DIAL had
+        /// already established about that spectrum stayed behind in the table, and the tool -- and
+        /// the person reading its output -- could not see whether the spectrum arrived already
+        /// identified by a reference match or entirely unexplained.
+        /// </remarks>
+        private static string GetEvidenceField(IAnnotatedObject? annotated) {
+            var result = annotated?.MatchResults?.Representative;
+            return "|EVIDENCE=" + AnnotationEvidenceFormat.Source(result)
+                + "|TERMS=" + AnnotationEvidenceFormat.EmbeddedTerms(result);
+        }
+
 
         private static string GetCommentField(IChromatogramPeak feature)
         {
@@ -822,7 +843,7 @@ namespace CompMs.MsdialCore.Export
             }
             else
             {
-                return feature.Name;
+                return feature.CanonicalName(feature.Name);
             }
         }
 
@@ -839,10 +860,19 @@ namespace CompMs.MsdialCore.Export
             }
             else
             {
-                return feature.Name;
+                return feature.CanonicalName(feature.Name);
             }
         }
 
+        /// <summary>
+        /// The generic overload covers the peptide and reference paths, whose features carry no
+        /// match container, so the name is canonicalised without a chain verdict.
+        /// </summary>
+        /// <remarks>
+        /// AnnotationName.Canonical with chainsResolved false reduces a dual lipid name to its class
+        /// level, which is the safe reading when nothing on hand can say the chains were resolved.
+        /// These paths do not produce dual names, so it is the prefix removal that matters here.
+        /// </remarks>
         private static string GetNameField<T>(T feature) where T : IMoleculeProperty, IChromatogramPeak
         {
             if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown")
@@ -856,7 +886,9 @@ namespace CompMs.MsdialCore.Export
             }
             else
             {
-                return feature.Name;
+                return feature is IAnnotatedObject annotated
+                    ? annotated.CanonicalName(feature.Name)
+                    : AnnotationName.Canonical(feature.Name, chainsResolved: false);
             }
         }
 

@@ -159,6 +159,30 @@ namespace CompMs.Common.Utility
         }
 
         /// <summary>
+        /// THE COMPOUND NAME EVERY EXPORT SHOWS: the processing status removed, and the structural
+        /// level reduced to what the evidence supports.
+        /// </summary>
+        /// <remarks>
+        /// One function because the four outputs of a run have to agree. The peak table, the
+        /// alignment table, mzTab-M and the exported spectra are joined by peak ID -- that is the
+        /// contract -- but the field a reader looks at first is the name, and a name that reads
+        /// "low score: Quercetin" in one file and "Quercetin" in another invites the conclusion that
+        /// they are different rows.
+        ///
+        /// What the prefix used to carry now travels as its own field, where it says more than the
+        /// prefix could: "Evidence source" and "Measured terms" in the tables,
+        /// opt_global_evidence_source in mzTab-M, EVIDENCE= in an exported spectrum's COMMENT. The
+        /// prefix collapsed "a spectrum was compared and fell short" and "a spectrum was compared
+        /// and explained nothing" into one word, and could not say which library was searched at all.
+        ///
+        /// Idempotent, so a caller that receives an already-canonical name may apply it again --
+        /// which mzTab-M does, reading a name the metadata accessor has already cleaned.
+        /// </remarks>
+        public static string Canonical(string name, bool chainsResolved) {
+            return AtSupportedLevel(WithoutPrefix(name), chainsResolved);
+        }
+
+        /// <summary>
         /// True when the name says no product-ion spectrum was acquired for the feature, under
         /// either the MS-DIAL 5 or the MS-DIAL 4 spelling.
         /// </summary>

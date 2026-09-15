@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 using System.Linq;
+using CompMs.Common.Utility;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -108,7 +109,9 @@ namespace CompMs.MsdialCore.Export
             var hadProductIonSpectrum = feature.IsMsmsContained;
             return new Dictionary<string, string> {
                 { "Peak ID", feature.MasterPeakID.ToString() },
-                { "Name", UnknownIfEmpty(feature.Name) },
+                // The same name the alignment table, mzTab-M and the exported spectra show. What the
+                // prefix used to say is two columns along, in "Evidence source", where it says more.
+                { "Name", UnknownIfEmpty(AnnotationName.Canonical(feature.Name, matchResult?.IsLipidChainsMatch ?? false)) },
                 { "Scan", feature.MS1RawSpectrumIdTop.ToString() },
                 // "m/z left", "m/z", "m/z right",
                 { "Height", string.Format("{0:0}", feature.PeakFeature.PeakHeightTop) },

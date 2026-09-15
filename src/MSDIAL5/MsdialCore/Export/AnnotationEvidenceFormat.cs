@@ -97,7 +97,34 @@ namespace CompMs.MsdialCore.Export
         /// reuse this decision without reimplementing the rendering.
         /// </summary>
         public static string TermList(MeasuredTerms terms) {
-            return string.Join(TermSeparator, TermsInDeclarationOrder.Where(term => (terms & term) == term).Select(term => term.ToString()));
+            return TermList(terms, TermSeparator);
+        }
+
+        /// <summary>
+        /// The compared terms joined with <paramref name="separator"/>, for a format in which '|'
+        /// already means something else.
+        /// </summary>
+        /// <remarks>
+        /// An exported spectrum's COMMENT is a '|'-delimited list of key=value fields -- PEAKID,
+        /// ISOTOPE and the rest -- so a term list joined with '|' there would read as several
+        /// fields rather than one value, and a reader splitting on '|' would silently lose the
+        /// second term onwards. The tab-delimited tables and mzTab-M have no such collision and
+        /// keep the '|' form.
+        /// </remarks>
+        public static string TermList(MeasuredTerms terms, string separator) {
+            return string.Join(separator, TermsInDeclarationOrder.Where(term => (terms & term) == term).Select(term => term.ToString()));
+        }
+
+        /// <summary>
+        /// The separator for a term list embedded in a '|'-delimited field.
+        /// </summary>
+        public const string EmbeddedTermSeparator = ",";
+
+        /// <summary>
+        /// The measured terms for an exported spectrum's COMMENT, where '|' is taken.
+        /// </summary>
+        public static string EmbeddedTerms(MsScanMatchResult? result) {
+            return IsTermsRecorded(result) ? TermList(result!.MeasuredTerms, EmbeddedTermSeparator) : NotRecorded;
         }
 
         public static string Terms(MsScanMatchResult? result) {
