@@ -86,6 +86,38 @@ namespace CompMs.Common.Tests
         }
 
         /// <summary>
+        /// THE DISPLAYED VERSION STAYS PARSEABLE BY WHAT ALREADY PARSES IT.
+        /// </summary>
+        /// <remarks>
+        /// MS-DIAL Interactive learns which build it ran by executing the Console's --version and
+        /// matching /(?:^|\s)(\d+\.\d+(?:\.\d+)+)(?:\s|$)/ against the output. That is how
+        /// "5.5.241113" reached its publication report, and why that report said 5.5.241113 for two
+        /// years: it has no knowledge of its own, only what MS-DIAL prints.
+        ///
+        /// So the displayed version has to remain a plain dotted number. FullIdentity does NOT match
+        /// that pattern -- the '+' before the commit is neither whitespace nor end of input -- which
+        /// is why --version prints the version on one line and the commit on the next, rather than
+        /// the joined form. This test is what fails if the shape of DisplayVersion drifts.
+        ///
+        /// A laboratory build carrying a suffix does not match, and does not need to: that path
+        /// falls back to the help banner, and a laboratory build is not the reanalysis path.
+        /// </remarks>
+        [TestMethod()]
+        public void APublicBuildsDisplayedVersionIsAPlainDottedNumber() {
+            if (MsdialBuildIdentity.VersionSuffix != string.Empty) {
+                Assert.Inconclusive($"this build carries the laboratory suffix '{MsdialBuildIdentity.VersionSuffix}'");
+            }
+
+            var downstream = new System.Text.RegularExpressions.Regex(@"(?:^|\s)(\d+\.\d+(?:\.\d+)+)(?:\s|$)");
+            var match = downstream.Match(MsdialBuildIdentity.DisplayVersion + "\n");
+
+            Assert.IsTrue(match.Success, MsdialBuildIdentity.DisplayVersion);
+            Assert.AreEqual(MsdialBuildIdentity.DisplayVersion, match.Groups[1].Value);
+            Assert.IsFalse(downstream.IsMatch(MsdialBuildIdentity.FullIdentity + "\n"),
+                "and the joined form does not, which is why --version prints two lines");
+        }
+
+        /// <summary>
         /// A LOCAL BUILD NEWER THAN THE RELEASE IS NOT OFFERED AN UPDATE TO IT.
         /// </summary>
         /// <remarks>
