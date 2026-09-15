@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Enum;
+using CompMs.Common.Enum;
 using MessagePack;
 using System;
 
@@ -255,7 +255,7 @@ namespace CompMs.Common.DataObj.Result {
                 // compared no spectrum at all: the author's 69%-against-a-70%-threshold case, which
                 // is a real partial agreement rather than an absence of evidence.
                 case AnnotationEvidenceSource.WeakSpectrumMatch:
-                    return 4;
+                    return 5;
 
                 // NEUTRAL, and both for the same reason: neither says anything this key can weigh.
                 //
@@ -272,19 +272,26 @@ namespace CompMs.Common.DataObj.Result {
                 // so a human's decision has already settled both orderings before this is consulted.
                 case AnnotationEvidenceSource.Unspecified:
                 case AnnotationEvidenceSource.Manual:
-                    return 3;
+                    return 4;
 
-                // Nothing measured was compared against a spectrum.
+                // BELOW a compared spectrum, ABOVE a bare precursor mass.
                 //
-                // The two in-silico directions sit here, below WeakSpectrumMatch, which the author
-                // confirmed on 2026-09-14: a computed spectrum or a computed structure is a
-                // hypothesis about a compound, and a real spectrum that partly agreed is an
-                // observation of one. PrecursorOnly ties with them rather than being placed above or
-                // below, because whether a calculation outranks a bare mass has not been decided and
-                // this key does not invent an answer: they tie and TotalScore decides, as it does
-                // today.
+                // Below, confirmed by the author on 2026-09-14: a computed spectrum or a computed
+                // structure is a hypothesis about a compound, and a real spectrum that partly agreed
+                // is an observation of one.
+                //
+                // Above, on his reasoning of 2026-09-15, and the reasoning matters more than the
+                // placement. These tools do take the product-ion spectrum into account -- MS-FINDER
+                // and SIRIUS read the measured peaks to get where they get, and a spectrum predictor
+                // is scored against them -- so a bare mass is the one term they have in common and
+                // everything else is extra. And a precursor-only candidate carries a claim it cannot
+                // support: it arrives as a STRUCTURE, a named compound, when m/z alone justifies at
+                // most a formula. Retention time plus m/z would be a different matter. So the
+                // overreaching claim ranks under the calculated one.
                 case AnnotationEvidenceSource.ByStructurePredictionTool:
                 case AnnotationEvidenceSource.BySpectrumPredictionTool:
+                    return 3;
+
                 case AnnotationEvidenceSource.PrecursorOnly:
                     return 2;
 
@@ -298,7 +305,7 @@ namespace CompMs.Common.DataObj.Result {
                 // costs precision in the ordering instead of failing an annotation run mid-way;
                 // AnnotationEvidenceRankTests enumerates the enum so the omission fails a test.
                 default:
-                    return 3;
+                    return 4;
             }
         }
 

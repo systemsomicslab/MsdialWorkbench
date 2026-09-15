@@ -36,11 +36,11 @@ namespace CompMs.Common.DataObj.Result.Tests
             {
                 [AnnotationEvidenceSource.ReferenceSpectrum] = 6,
                 [AnnotationEvidenceSource.RuleBased] = 6,
-                [AnnotationEvidenceSource.WeakSpectrumMatch] = 4,
-                [AnnotationEvidenceSource.Unspecified] = 3,
-                [AnnotationEvidenceSource.Manual] = 3,
-                [AnnotationEvidenceSource.ByStructurePredictionTool] = 2,
-                [AnnotationEvidenceSource.BySpectrumPredictionTool] = 2,
+                [AnnotationEvidenceSource.WeakSpectrumMatch] = 5,
+                [AnnotationEvidenceSource.Unspecified] = 4,
+                [AnnotationEvidenceSource.Manual] = 4,
+                [AnnotationEvidenceSource.ByStructurePredictionTool] = 3,
+                [AnnotationEvidenceSource.BySpectrumPredictionTool] = 3,
                 [AnnotationEvidenceSource.PrecursorOnly] = 2,
                 [AnnotationEvidenceSource.UnmatchedSpectrum] = 1,
             };
@@ -127,18 +127,30 @@ namespace CompMs.Common.DataObj.Result.Tests
         }
 
         /// <summary>
-        /// An in-silico candidate and a bare precursor match are left tied on purpose.
+        /// A CALCULATION OUTRANKS A BARE MASS.
         /// </summary>
         /// <remarks>
-        /// Whether a calculation outranks a bare mass has not been decided, and an ordering should
-        /// not invent an answer: tied, TotalScore decides between them exactly as it does today. If
-        /// the question is settled later, this test is where the answer gets written down.
+        /// The author's reasoning of 2026-09-15, which is worth more than the placement. Two parts.
+        ///
+        /// These tools take the product-ion spectrum into account: MS-FINDER and SIRIUS read the
+        /// measured peaks to get where they get, and a spectrum predictor is scored against them. So
+        /// the precursor mass is the one term an in-silico candidate has in common with a
+        /// precursor-only one, and everything else it has is extra.
+        ///
+        /// And a precursor-only candidate carries a claim it cannot support. It arrives as a
+        /// STRUCTURE -- a named compound -- when m/z alone justifies at most a formula. Retention
+        /// time plus m/z would be a different matter. What is ranked below here is therefore not an
+        /// absence of evidence but a claim that overreaches its evidence.
         /// </remarks>
         [TestMethod()]
-        public void InSilicoAndPrecursorOnlyAreDeliberatelyTied() {
-            Assert.AreEqual(
-                AnnotationEvidence.Rank(AnnotationEvidenceSource.PrecursorOnly),
-                AnnotationEvidence.Rank(AnnotationEvidenceSource.ByStructurePredictionTool));
+        public void AnInSilicoCandidateOutranksABarePrecursorMass() {
+            foreach (var inSilico in new[] {
+                AnnotationEvidenceSource.ByStructurePredictionTool,
+                AnnotationEvidenceSource.BySpectrumPredictionTool,
+            }) {
+                Assert.IsTrue(AnnotationEvidence.Rank(inSilico)
+                    > AnnotationEvidence.Rank(AnnotationEvidenceSource.PrecursorOnly), $"{inSilico}");
+            }
         }
 
         /// <summary>
@@ -167,6 +179,7 @@ namespace CompMs.Common.DataObj.Result.Tests
             var unspecified = AnnotationEvidence.Rank(AnnotationEvidenceSource.Unspecified);
 
             Assert.IsTrue(unspecified < AnnotationEvidence.Rank(AnnotationEvidenceSource.WeakSpectrumMatch));
+            Assert.IsTrue(unspecified > AnnotationEvidence.Rank(AnnotationEvidenceSource.ByStructurePredictionTool));
             Assert.IsTrue(unspecified > AnnotationEvidence.Rank(AnnotationEvidenceSource.PrecursorOnly));
         }
 

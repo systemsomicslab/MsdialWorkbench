@@ -121,6 +121,43 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         /// <summary>
+        /// A calculated candidate beats a better-scoring one that rests on mass alone.
+        /// </summary>
+        /// <remarks>
+        /// The author's reasoning of 2026-09-15. An in-silico tool takes the product-ion spectrum
+        /// into account -- MS-FINDER and SIRIUS read the measured peaks, a spectrum predictor is
+        /// scored against them -- so the precursor mass is the one term the two candidates have in
+        /// common and everything else the calculation used is extra. And the precursor-only
+        /// candidate is making the larger claim: it names a STRUCTURE on evidence that justifies at
+        /// most a formula. What loses here is not an absence of evidence, it is a claim that
+        /// overreaches its evidence.
+        /// </remarks>
+        [TestMethod()]
+        public void ACalculatedCandidateOutranksABetterScoringBarePrecursorMass() {
+            var evaluator = new MsScanMatchResultEvaluator(new MsRefSearchParameterBase());
+            var candidates = new[] {
+                Candidate("mass only", 0.95f, AnnotationEvidenceSource.PrecursorOnly),
+                Candidate("from MS-FINDER", 0.55f, AnnotationEvidenceSource.ByStructurePredictionTool),
+            };
+
+            Assert.AreEqual("from MS-FINDER", evaluator.SelectTopHit(candidates).Name);
+        }
+
+        /// <summary>
+        /// And still loses to a spectrum that was actually compared.
+        /// </summary>
+        [TestMethod()]
+        public void ACalculatedCandidateStillLosesToAComparedSpectrum() {
+            var evaluator = new MsScanMatchResultEvaluator(new MsRefSearchParameterBase());
+            var candidates = new[] {
+                Candidate("from MS-FINDER", 0.95f, AnnotationEvidenceSource.ByStructurePredictionTool),
+                Candidate("fell short", 0.40f, AnnotationEvidenceSource.WeakSpectrumMatch),
+            };
+
+            Assert.AreEqual("fell short", evaluator.SelectTopHit(candidates).Name);
+        }
+
+        /// <summary>
         /// A spectrum that explained nothing loses to a candidate with no spectrum at all.
         /// </summary>
         [TestMethod()]
