@@ -1,4 +1,19 @@
 <Project>
+  <!--
+    THE ONE PLACE THE MS-DIAL 5 MAIN VERSION IS WRITTEN.
+
+    The rest of a build's identity is derived, not typed: the date comes from the build below, and
+    the commit id is already compiled in by SourceLink, which the .NET SDK enables for every
+    SDK-style project in this tree. See CompMs.Common.MsdialBuildIdentity.
+
+    Raising the main version is a deliberate act and this is the line to change. Everything that
+    used to be a hand-maintained "5.5.241113" string in a .resx becomes MainVersion plus the date
+    of the build that produced the binary.
+  -->
+  <PropertyGroup>
+    <MsdialMainVersion>5.5</MsdialMainVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug vendor unsupported'">
     <DefineConstants>DEBUG;TRACE;VENDOR_UNSUPPORTED</DefineConstants>
     <Optimize>false</Optimize>
