@@ -1397,6 +1397,21 @@ namespace CompMs.MsdialCore.Export
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
                         break;
+                    // Declared separately from Msp, not folded into it, because the whole point of
+                    // the kind is that a reader can tell a generated library from an acquired one.
+                    // Omitting the case entirely -- which is what happened when PredictedMsp was
+                    // added -- left the mzTab citing a database[n] prefix in its annotation rows that
+                    // the MTD section never declared.
+                    case DataBaseSource.PredictedMsp:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, User-defined in-silico MSP library file, ]",
+                            Type = "null",
+                            Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
+                            Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                        });
+                        break;
                     case DataBaseSource.Text:
                         database.Add(new Database
                         {
