@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         private static MsReferenceScorer Scorer() {
-            return new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            return new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
         }
 
         [TestMethod]

@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), ScanIsotopes(), Reference(), ReferenceIsotopes(), parameter);
 
@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
 
@@ -71,7 +71,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
             var reference = Reference();
             reference.Spectrum = new List<SpectrumPeak>();
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, reference, null, parameter);
 
@@ -98,7 +98,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             };
             var reference = Reference();
             reference.ChromXs = new ChromXs(0, ChromXType.RT, ChromXUnit.Min);
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, reference, null, parameter);
 
@@ -252,7 +252,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void MsReferenceScorerRecordsAReferenceSpectrumForMetabolomics() {
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
 
@@ -265,7 +265,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             // products with OR here where metabolomics uses AND, and ValidateOnLipidomics then
             // requires a characteristic-ion rule to have fired, so the rules establish the match.
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
 
@@ -278,7 +278,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             // before, so this branch was uncovered; it must agree with the .lbm2 path rather than
             // diverge from it, because both are settled by a rule evaluation.
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
-            var scorer = new MsReferenceScorer("EieioLipid", -1, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true);
+            var scorer = new MsReferenceScorer("EieioLipid", -1, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true, DataBaseSource.EieioLipid);
 
             var result = scorer.CalculateScore(Target(), Target(), null, Reference(), null, parameter);
 
@@ -294,7 +294,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, Ms2Tolerance = 0.05f, };
             var reference = Reference();
             reference.Spectrum = new List<SpectrumPeak>();
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
 
             var result = scorer.CalculateScore(Target(), Target(), null, reference, null, parameter);
 

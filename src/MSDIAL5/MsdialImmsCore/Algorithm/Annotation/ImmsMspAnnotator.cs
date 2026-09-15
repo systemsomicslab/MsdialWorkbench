@@ -26,12 +26,16 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.db.Sort(comparer);
             this.omics = omics;
             this.ReferObject = mspDB;
+            _dataBaseSource = mspDB.DataBaseSource;
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
 
         private readonly TargetOmics omics;
+        // Read off the database rather than passed in: the annotator already holds the library it
+        // is searching, so the fact travels with the thing it is a fact about.
+        private readonly DataBaseSource _dataBaseSource;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
@@ -106,7 +110,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             }
             // RuleBased when this is a lipidomics run: the spectral comparison above is a
             // permissive pre-filter there, and the characteristic-ion rules decide the match.
-            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
             return result;
         }

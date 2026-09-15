@@ -205,7 +205,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             // library entry with no RETENTIONTIME field arrives, and also how one written back out
             // as "RETENTIONTIME: -1" arrives when it is read again.
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
             return scorer.CalculateScore(target, target, null, reference, null, parameter);
         }
 

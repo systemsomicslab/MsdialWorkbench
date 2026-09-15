@@ -1,4 +1,4 @@
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -116,7 +116,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Spectrum = referenceSpectrum,
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
             return scorer.CalculateScore(target, target, null, reference, null, parameter);
         }
 

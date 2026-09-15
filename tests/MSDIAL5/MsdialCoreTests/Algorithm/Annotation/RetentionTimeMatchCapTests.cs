@@ -145,7 +145,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Spectrum = Spectrum(),
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Metabolomics, SourceType.MspDB, CollisionType.CID, useMs2: true, DataBaseSource.Msp);
             return scorer.CalculateScore(target, target, null, reference, null, parameter);
         }
 

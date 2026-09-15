@@ -17,6 +17,25 @@ namespace CompMs.Common.DataObj.Result {
     }
     public enum DataBaseSource {
         None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid, MsFinder,
+        /// <summary>
+        /// An MSP library whose spectra were GENERATED rather than acquired -- NEIMS for EI, CFM-ID
+        /// and its kin for MS/MS.
+        /// </summary>
+        /// <remarks>
+        /// Read exactly like <see cref="Msp"/> everywhere: same parser, same annotators, same
+        /// scoring. The difference is the claim the evidence record is allowed to make about a match
+        /// against it. <see cref="AnnotationEvidence.SpectraArePredicted(DataBaseSource)"/> is the
+        /// only place the distinction is consulted.
+        ///
+        /// Appended rather than inserted. The value is serialized -- MoleculeDataBase key 2, and the
+        /// restoration keys -- so the existing members keep the numbers projects on disk already
+        /// hold.
+        ///
+        /// The author raised this on 2026-09-15 for GC-MS, where the libraries in practice are
+        /// Wiley, NIST and MassBank on one side and in-silico EI generators on the other, and asked
+        /// for the two to be tagged apart. Nothing about it is specific to GC-MS.
+        /// </remarks>
+        PredictedMsp,
     }
 
     /// <summary>
@@ -167,16 +186,57 @@ namespace CompMs.Common.DataObj.Result {
     /// </remarks>
     public static class AnnotationEvidence {
         /// <summary>
-        /// The evidence for a search against a reference database, given what the search measured
-        /// and which omics rule set governed it.
+        /// The evidence for a search against a reference database, given what the search measured,
+        /// which omics rule set governed it, and what kind of library it was.
         /// </summary>
-        public static AnnotationEvidenceSource ForDatabaseMatch(MeasuredTerms measured, TargetOmics omics) {
+        /// <remarks>
+        /// <paramref name="database"/> is required rather than defaulted. Every annotator holds the
+        /// database it is searching and can answer; making it a parameter means a new one has to
+        /// answer too, instead of inheriting "experimentally acquired" by saying nothing. That
+        /// assertion was previously made unconditionally here and, separately, in the GC-MS funnel.
+        /// </remarks>
+        public static AnnotationEvidenceSource ForDatabaseMatch(MeasuredTerms measured, TargetOmics omics, DataBaseSource database) {
             if (!measured.HasFlag(MeasuredTerms.Spectrum)) {
                 return AnnotationEvidenceSource.PrecursorOnly;
             }
-            return omics == TargetOmics.Lipidomics
-                ? AnnotationEvidenceSource.RuleBased
+            if (omics == TargetOmics.Lipidomics) {
+                return AnnotationEvidenceSource.RuleBased;
+            }
+            return SpectraArePredicted(database)
+                ? AnnotationEvidenceSource.BySpectrumPredictionTool
                 : AnnotationEvidenceSource.ReferenceSpectrum;
+        }
+
+        /// <summary>
+        /// Whether the spectra in a library were generated rather than acquired.
+        /// </summary>
+        /// <remarks>
+        /// ONLY WHERE MS-DIAL ACTUALLY KNOWS. <see cref="DataBaseSource.PredictedMsp"/> is the
+        /// analyst saying so, and the EAD lipid databases are built in memory by MS-DIAL itself from
+        /// a lipid generator, so neither is a guess.
+        ///
+        /// <see cref="DataBaseSource.Lbm"/> is deliberately NOT here even though .lbm2 spectra are
+        /// in silico, and the reason is a defect rather than a principle: MassAnnotationSettingModel
+        /// stores a plain MSP library under DataBaseSource.Lbm -- it passes the constant, not the
+        /// DBSource it just switched on -- so an experimental library can arrive wearing that label.
+        /// Treating Lbm as predicted would mislabel those. Fix that assignment and this can follow.
+        ///
+        /// The lipid sources do not reach this today in any case: ForDatabaseMatch answers
+        /// RuleBased for TargetOmics.Lipidomics before it asks, which is the more specific truth --
+        /// there the diagnostic-fragment rules are the evidence and the spectra are a pre-filter.
+        /// They are listed so that a metabolomics run against one is not told the spectra were
+        /// acquired.
+        /// </remarks>
+        public static bool SpectraArePredicted(DataBaseSource database) {
+            switch (database) {
+                case DataBaseSource.PredictedMsp:
+                case DataBaseSource.EieioLipid:
+                case DataBaseSource.OadLipid:
+                case DataBaseSource.EidLipid:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

@@ -40,15 +40,22 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
             _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToArray();
             _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
+            _dataBaseSource = mspDB?.DataBase.DataBaseSource ?? DataBaseSource.None;
         }
 
-        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID, RiCompoundType riCompoundType) {
+        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID, RiCompoundType riCompoundType, DataBaseSource dataBaseSource) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
             _mspDB = mspDB;
             _annotatorID = annotatorID;
             _riCompoundType = riCompoundType;
+            _dataBaseSource = dataBaseSource;
         }
+
+        // What kind of EI library this is. Wiley, NIST and MassBank are acquired; NEIMS and its kin
+        // generate their spectra from structures. MS-DIAL searches them identically and the evidence
+        // record is the only place the difference is stated.
+        private readonly DataBaseSource _dataBaseSource;
 
         public MsRefSearchParameterBase CopySearchParameter() => new MsRefSearchParameterBase(_searchParameter);
 
@@ -131,8 +138,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     // try to extend that layout: its record size comes from a hand-written member
                     // list with no version gate, so one more field makes every existing .dcl
                     // unreadable.
-                    result.EvidenceSource = AnnotationEvidence.WhenSpectrumCompared(
-                        result.MeasuredTerms, AnnotationEvidenceSource.ReferenceSpectrum);
+                    //
+                    // Through ForDatabaseMatch rather than asserting ReferenceSpectrum here, so that
+                    // "the spectra in this library were acquired" is decided in one place for every
+                    // mode instead of twice. GC-MS is always metabolomics, so the omics branch is
+                    // not in play; what this buys is the library-quality question.
+                    result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(
+                        result.MeasuredTerms, TargetOmics.Metabolomics, _dataBaseSource);
                     yield return result;
                 }
             }
@@ -156,7 +168,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public CalculateMatchScore With(MsRefSearchParameterBase searchParameter) {
-            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID, _riCompoundType);
+            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID, _riCompoundType, _dataBaseSource);
         }
     }
 }

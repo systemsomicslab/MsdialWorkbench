@@ -37,13 +37,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 case DataBaseSource.OadLipid:
                     _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainNoOxiVariationGenerator(), minLength: 12)));
                     _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.DoubleBondPosition;
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true, db.Source);
                     break;
                 case DataBaseSource.EidLipid:
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, useMs2: true, db.Source);
                     break;
                 case DataBaseSource.EieioLipid:
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true, db.Source);
                     break;
             }
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));

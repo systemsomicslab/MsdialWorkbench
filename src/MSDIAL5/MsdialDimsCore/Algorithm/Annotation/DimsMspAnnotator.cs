@@ -22,12 +22,16 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             this.omics = omics;
             Id = sourceKey;
             ReferObject = mspDB;
+            _dataBaseSource = mspDB.DataBaseSource;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
 
+        // Read off the database rather than passed in: the annotator already holds the library it
+        // is searching, so the fact travels with the thing it is a fact about.
+        private readonly DataBaseSource _dataBaseSource;
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
@@ -113,7 +117,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             // only a query and a reference and cannot know what kind of database the reference came
             // from -- which is why this site needs its own assignment even though the previous
             // commit's term recording reached it for free.
-            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
 
             result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;

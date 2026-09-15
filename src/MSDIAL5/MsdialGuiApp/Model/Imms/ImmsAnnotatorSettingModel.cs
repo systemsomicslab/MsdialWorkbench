@@ -23,7 +23,10 @@ namespace CompMs.App.Msdial.Model.Imms
             AnnotatorID = annotatorID;
             _annotatorVisitor = annotatorVisitor;
             _createFuctory = createFuctory;
-            if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
+            // A predicted MSP is searched exactly like an acquired one, so it gets the same
+            // default cut-offs; only the evidence record distinguishes them.
+            if (dataBaseSettingModel.DBSource == DataBaseSource.Msp
+                || dataBaseSettingModel.DBSource == DataBaseSource.PredictedMsp) {
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                     SimpleDotProductCutOff = 0.6F,
                     WeightedDotProductCutOff = 0.6F,
@@ -156,6 +159,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {
                 case DataBaseSource.Msp:
+                case DataBaseSource.PredictedMsp:
                 case DataBaseSource.Lbm:
                     return new ImmsMspAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.Text:

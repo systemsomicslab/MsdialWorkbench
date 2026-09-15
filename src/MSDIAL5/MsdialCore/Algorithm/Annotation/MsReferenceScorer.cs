@@ -16,13 +16,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>
     {
-        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2) {
+        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2, DataBaseSource dataBaseSource) {
             this.id = id;
             this.priority = priority;
             this.omics = omics;
             this.source = source;
             this.collisionType = collisionType;
             this.useMs2 = useMs2;
+            _dataBaseSource = dataBaseSource;
         }
 
         private readonly string id;
@@ -31,6 +32,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly SourceType source;
         private readonly CollisionType collisionType;
         private readonly bool useMs2;
+        // Passed in rather than read from a database, because this scorer holds none: its two
+        // owners, LcmsMspAnnotator and EadLipidAnnotator, each read it off the database they hold.
+        private readonly DataBaseSource _dataBaseSource;
 
         public MsScanMatchResult Score(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             return CalculateScore(query.Property, query.NormalizedScan, query.Isotopes, reference, reference.IsotopicPeaks, query.Parameter);
@@ -135,7 +139,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             // three collision-type arms, because `omics` and `source` are readonly fields set there:
             // three near-identical switch arms with no default is exactly where one gets missed and
             // a whole collision-type mode silently blanks.
-            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics);
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
 
             var scores = new List<double> { };
             var dotProductFactor = 3.0;
