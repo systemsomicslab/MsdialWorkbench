@@ -185,6 +185,98 @@ public sealed class ConfigParserTests
         Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
     }
 
+    /// <summary>
+    /// A METHOD-FILE KEY THAT HAD NO EFFECT SAYS SO.
+    /// </summary>
+    /// <remarks>
+    /// Every dispatcher used to discard the boolean saying whether a reader had claimed the line,
+    /// under a comment reading "// write something if needed". So a misspelt key, a key from a newer
+    /// MS-DIAL, or a key copied from another mode's template was read, matched nothing, and
+    /// vanished; the run used the built-in default and the analyst had every reason to believe their
+    /// value had been applied. For a reanalysis campaign that is a silently wrong result with a
+    /// method file that appears to document it correctly.
+    ///
+    /// Reported rather than fatal, and that was measured: run against MS-DIAL's own shipped
+    /// lipidomics template this finds twenty-seven such keys, so failing would reject every method
+    /// file in existence.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_ReportsAKeyThatHadNoEffect()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Mass slice width: 0.05" + "\n" +
+            "Mass slize width: 0.5" + "\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(0.05f, parameter.MassSliceWidth, 0.0001f, "the correctly spelled key applies");
+        StringAssert.Contains(report, "Mass slize width");
+        StringAssert.Contains(report, "NO EFFECT");
+        Assert.IsFalse(report.Contains("'Mass slice width'"), "a key that worked is not reported");
+    }
+
+    /// <summary>
+    /// A blank value is reported separately, because it is how a method file says "none".
+    /// </summary>
+    /// <remarks>
+    /// "Msp file path:" with nothing after it is how the templates say there is no MSP library, so
+    /// it is not an error. It is still named, because from the analyst's side it looks identical to
+    /// a value that failed to apply.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_SeparatesABlankValueFromAnUnrecognisedKey()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Msp file path:" + "\n" +
+            "Not a real setting: 3" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        StringAssert.Contains(report, "left blank");
+        StringAssert.Contains(report, "Msp file path");
+        StringAssert.Contains(report, "1 parameter(s) had no effect");
+    }
+
+    /// <summary>
+    /// A method file whose keys are all understood says nothing.
+    /// </summary>
+    /// <remarks>
+    /// The silence matters as much as the warning: a report that fires on every run is one nobody
+    /// reads, and the point of this is that the twenty-seven in the template become visible.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_IsSilentWhenEveryKeyApplies()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Mass slice width: 0.05" + "\n" +
+            "# a comment is not a key" + "\n" +
+            "Number of threads: 4" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    private static (MsdialLcmsParameter, string) ReadLcmsWithReport(string methodFile)
+    {
+        var original = Console.Out;
+        var captured = new StringWriter();
+        try {
+            Console.SetOut(captured);
+            var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+            return (parameter, captured.ToString());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+    }
+
     [TestMethod]
     public void ReadLbmAnnotatorPriority_DefaultsToOneAndReadsConfiguredValue()
     {

@@ -26,21 +26,90 @@ namespace CompMs.App.MsdialConsole.Parser
         private ConfigParser() { }
 
         #region // to get analysisparamOfMsdialGcms
+
+        /// <summary>
+        /// Collects the method-file keys a run did not understand, and says so before the run
+        /// starts.
+        /// </summary>
+        /// <remarks>
+        /// WHAT THIS ENDS. Every dispatcher below used to read a line, hand it to the parameter
+        /// readers, and DISCARD the boolean saying whether anything had matched -- under a comment
+        /// reading "// write something if needed". GC-MS, IMMS and LC-IM-MS discarded it twice, once
+        /// for the common reader and once for their own.
+        ///
+        /// So a misspelt key, a key from a newer MS-DIAL, a key copied from another mode's template:
+        /// all were read, matched nothing, and vanished. The run then used the built-in default and
+        /// said nothing, and the analyst had every reason to believe their value had been applied.
+        /// For a reanalysis campaign that is a silently wrong scientific result with a method file
+        /// that appears to document it correctly -- the author called it critical on 2026-09-16.
+        ///
+        /// REPORTED, NOT FATAL, and that is measured rather than assumed. Run against the shipped
+        /// lipidomics template on 2026-09-16, this found TWENTY-SEVEN keys with no effect --
+        /// including "Only report top hit for LBM-based annotation", "Sigma window value",
+        /// "Process option" and "Replace true zero values with 1/2 of minimum peak height over all
+        /// samples", every one of which an analyst would reasonably believe they had set. Failing
+        /// the run would therefore reject every method file in existence, including MS-DIAL's own
+        /// templates. Saying so on every run is what can be done today; making those keys work is a
+        /// separate decision, because settings that have been ignored for years would start taking
+        /// effect and change results.
+        ///
+        /// A BLANK VALUE IS NOT AN ERROR and is reported separately. "Msp file path:" with nothing
+        /// after it is how a method file says there is no MSP library, and it is how the templates
+        /// are written. But it is the same experience from the analyst's side when it was not
+        /// deliberate, so it is named rather than passed over in silence.
+        /// </remarks>
+        private sealed class MethodFileKeys
+        {
+            private readonly List<string> _unrecognised = new List<string>();
+            private readonly List<string> _blank = new List<string>();
+
+            public void Read(string method, string value, Func<bool> apply) {
+                if (value.IsEmptyOrNull()) {
+                    _blank.Add(method);
+                    return;
+                }
+                if (!apply()) {
+                    _unrecognised.Add(method);
+                }
+            }
+
+            /// <summary>
+            /// True when the method file contained a key no reader claimed.
+            /// </summary>
+            public bool HasUnrecognised => _unrecognised.Count > 0;
+
+            public IReadOnlyList<string> Unrecognised => _unrecognised;
+
+            public void Report(string filepath) {
+                var name = Path.GetFileName(filepath);
+                foreach (var key in _unrecognised) {
+                    Console.WriteLine($"Method file '{name}': the parameter '{key}' was not recognised and had NO EFFECT. The built-in default was used instead.");
+                }
+                if (_unrecognised.Count > 0) {
+                    Console.WriteLine($"Method file '{name}': {_unrecognised.Count} parameter(s) had no effect. Check the spelling against the template for this mode.");
+                }
+                if (_blank.Count > 0) {
+                    Console.WriteLine($"Method file '{name}': left blank, so the default applies: {string.Join(", ", _blank)}");
+                }
+            }
+        }
+
         public static MsdialGcmsParameter ReadForGcms(string filepath)
         {
             var param = new MsdialGcmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 while (sr.Peek() > -1)
                 {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadGcmsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value)
+                            || ReadGcmsSpecificParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             if (param.AccuracyType == AccuracyType.IsNominal) {
                 param.MassSliceWidth = 0.5F;
                 param.CentroidMs1Tolerance = 0.5F;
@@ -53,16 +122,16 @@ namespace CompMs.App.MsdialConsole.Parser
      
         public static MsdialLcmsParameter ReadForLcmsParameter(string filepath) {
             var param = new MsdialLcmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
@@ -487,13 +556,14 @@ namespace CompMs.App.MsdialConsole.Parser
 
         public static MolecularSpectrumNetworkingBaseParameter ReadForMoleculerNetworkingParameter(string filepath) {
             var param = new MolecularSpectrumNetworkingBaseParameter();
+            // Not reported: this reader is given the SAME method file as the mode reader above and
+            // claims only the networking subset, so every other key in the file would be listed as
+            // unrecognised. The mode reader is where a key gets its verdict.
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadMoleculerNetworkingParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        ReadMoleculerNetworkingParameter(param, method, value);
                     }
                 }
             }
@@ -504,46 +574,48 @@ namespace CompMs.App.MsdialConsole.Parser
 
         public static MsdialDimsParameter ReadForDimsParameter(string filepath) {
             var param = new MsdialDimsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
         public static MsdialLcImMsParameter ReadForLcImMsParameter(string filepath) {
             var param = new MsdialLcImMsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadLcImMsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value)
+                            || ReadLcImMsSpecificParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
         public static MsdialImmsParameter ReadForImmsParameter(string filepath) {
             var param = new MsdialImmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadImmsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value)
+                            || ReadImmsSpecificParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
