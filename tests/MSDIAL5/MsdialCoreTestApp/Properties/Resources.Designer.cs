@@ -59,14 +59,5 @@ namespace CompMs.App.MsdialConsole.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5.5.241113.
-        /// </summary>
-        internal static string VERSION {
-            get {
-                return ResourceManager.GetString("VERSION", resourceCulture);
-            }
-        }
     }
 }

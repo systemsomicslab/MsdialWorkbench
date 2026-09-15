@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -812,7 +813,21 @@ namespace CompMs.MsdialCore.Parameter
         [Key(1)]
         public DateTime FinalSavedDate { get; set; } = DateTime.Now;
         [Key(2)]
-        public string MsdialVersionNumber { get; set; } = Resources.VERSION;
+        /// <summary>
+        /// Which build of MS-DIAL produced this project.
+        /// </summary>
+        /// <remarks>
+        /// The default used to be MsdialCore's own Resources.VERSION, which was the literal "4.24" --
+        /// a leftover nobody had looked at in years. Any path that created a parameter and never
+        /// assigned this published "4.24" as the MS-DIAL version, including into mzTab-M's software
+        /// entry. The GUI and the Console both assign it, so the literal was not reaching a normal
+        /// run, but a default that is quietly wrong is a trap waiting for the next caller.
+        ///
+        /// Now the running build, which is the true answer for a parameter this build just created.
+        /// A parameter DESERIALIZED from a project keeps the stored value, as it must: that says
+        /// which build made the project, not which one is reading it.
+        /// </remarks>
+        public string MsdialVersionNumber { get; set; } = MsdialBuildIdentity.FullIdentity;
 
 
         // Project container

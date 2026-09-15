@@ -58,11 +58,12 @@ namespace CompMs.Common
             var assembly = typeof(MsdialBuildIdentity).GetTypeInfo().Assembly;
             MainVersion = Metadata(assembly, "MsdialMainVersion") ?? Unknown;
             BuildDate = Metadata(assembly, "MsdialBuildDate") ?? Unknown;
+            VersionSuffix = Metadata(assembly, "MsdialVersionSuffix") ?? string.Empty;
             FullCommitId = Commit(assembly) ?? Unknown;
             CommitId = FullCommitId.Length > ShortCommitLength
                 ? FullCommitId.Substring(0, ShortCommitLength)
                 : FullCommitId;
-            DisplayVersion = ComposeDisplayVersion(MainVersion, BuildDate);
+            DisplayVersion = ComposeDisplayVersion(MainVersion, BuildDate) + VersionSuffix;
             FullIdentity = CommitId == Unknown
                 ? DisplayVersion
                 : DisplayVersion + "+" + CommitId;
@@ -70,6 +71,19 @@ namespace CompMs.Common
 
         /// <summary>The main version, as set in Directory.Build.props. For example "5.5".</summary>
         public static string MainVersion { get; }
+
+        /// <summary>
+        /// What a laboratory build appends to mark itself: "-dev", "-tada", or empty.
+        /// </summary>
+        /// <remarks>
+        /// GlobalResources.IsLabPrivate tests the displayed version for these suffixes and gates
+        /// several GUI behaviours on the answer, including whether the update check runs at all. The
+        /// mechanism predates this class and is kept rather than replaced: the suffix simply moved
+        /// from a hand-edited .resx literal to a build property, so marking a build no longer means
+        /// editing a checked-in resource and remembering to change it back. Empty for a public
+        /// build, which is what a repository-reanalysis run wants.
+        /// </remarks>
+        public static string VersionSuffix { get; }
 
         /// <summary>The date this binary was built, as yyyy-MM-dd.</summary>
         /// <remarks>

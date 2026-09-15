@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -32,7 +33,7 @@ namespace CompMs.App.Msdial
             try
             {
                 System.Reflection.AssemblyName assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
-                message = string.Format("Unhandled exception in {0} v{1}", assemblyName.Name, Msdial.Properties.Resources.VERSION);
+                message = string.Format("Unhandled exception in {0} v{1}", assemblyName.Name, MsdialBuildIdentity.FullIdentity);
             }
             catch (Exception ex)
             {

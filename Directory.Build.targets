@@ -21,6 +21,7 @@
     <ItemGroup>
       <AssemblyMetadata Include="MsdialMainVersion" Value="$(MsdialMainVersion)" />
       <AssemblyMetadata Include="MsdialBuildDate" Value="$([System.DateTime]::Now.ToString('yyyy-MM-dd'))" />
+      <AssemblyMetadata Include="MsdialVersionSuffix" Value="$(MsdialVersionSuffix)" Condition="'$(MsdialVersionSuffix)' != ''" />
     </ItemGroup>
   </Target>
 

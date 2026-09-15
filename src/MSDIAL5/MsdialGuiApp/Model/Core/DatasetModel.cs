@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.Common;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -93,7 +94,9 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task SaveAsync() {
             // TODO: implement process when project save failed.
-            Storage.Parameter.ProjectParam.MsdialVersionNumber = Properties.Resources.VERSION;
+            // The full identity, not the displayed version: this is provenance, and a project has
+            // to be able to say which build made it after two builds on one day.
+            Storage.Parameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
             Storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
                 await Task.WhenAll(new[]

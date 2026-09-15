@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.Common;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
@@ -126,7 +127,10 @@ public sealed class DimsProcess {
         }
         await Task.WhenAll(tasks);
 
-        storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
+        // The identity of the build, without the host application's name: this field is the
+        // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
+        // 5.5.241113" said the application twice and the version once, staleness included.
+        storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
         if (storage.MsdialDimsParameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();

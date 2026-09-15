@@ -1,3 +1,4 @@
+﻿using CompMs.Common;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.Properties;
 using System.CommandLine;
@@ -171,7 +172,7 @@ class Program {
         //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_filtered.edge",
         //     @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_for_model.msp");
 
-        var root = new RootCommand($"MSDIAL Console Application {Resources.VERSION}");
+        var root = new RootCommand($"MSDIAL Console Application {MsdialBuildIdentity.DisplayVersion}");
         if (root.Options.OfType<VersionOption>().SingleOrDefault() is { } versionOption) {
             versionOption.Action = new VersionAction();
         }
@@ -193,7 +194,9 @@ class Program {
     internal class VersionAction : SynchronousCommandLineAction
     {
         public override int Invoke(ParseResult parseResult) {
-            System.Console.WriteLine(Resources.VERSION);
+            // The full identity here, deliberately: --version is what someone runs to record
+            // which build they used, and the commit is the half that answers it exactly.
+            System.Console.WriteLine(MsdialBuildIdentity.FullIdentity);
             return 0;
         }
     }
