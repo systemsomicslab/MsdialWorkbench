@@ -31,6 +31,7 @@ MTD	database[1]	[,, User-defined MSP library file, ]
 MTD	database[1]-prefix	small_test_msp
 MTD	database[1]-version	small_test_msp.msp
 MTD	database[1]-uri	file://D:/msdial_test/Msdial/out/wine/small_test_msp.msp
+MTD	custom[1]	[,, MS-DIAL library statistics database[1], 3 records; 3 compounds; sha256:91144a524bc07672]
 MTD	small_molecule-quantification_unit	[,,precursor intensity (peak height), ]
 MTD	small_molecule_feature-quantification_unit	[,,precursor intensity (peak height), ]
 MTD	small_molecule-identification_reliability	[MS, MS:1003032, compound identification confidence code in MS-DIAL, ]

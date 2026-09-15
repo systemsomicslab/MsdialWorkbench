@@ -854,12 +854,31 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "cv[" + (i + 1) + "]-uri", cvList[i][3] }));
             }
 
+            var libraryStatistics = new List<string>();
             for (int i = 0; i < database.Count; i++)
             {
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]", database[i].Metadata }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-prefix", database[i].AnnotatorID }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-version", database[i].Filename }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-uri", database[i].Uri }));
+                if (database[i].Statistics != null) {
+                    libraryStatistics.Add("[,, MS-DIAL library statistics database[" + (i + 1) + "], " + database[i].Statistics + "]");
+                }
+            }
+
+            // WHAT A PRIVATE LIBRARY CAN SAY ABOUT ITSELF. database[n]-uri names a file on one disk:
+            // exact for its owner, useless to a reader, and carrying a directory layout that should
+            // not always travel. A public library has a DOI beside it; a laboratory's own MSP has
+            // nothing. These three numbers are what it can honestly publish -- how many records, how
+            // many compounds, and a digest of the records the run actually searched -- and they are
+            // enough for a reader to check that two runs used the same library, and for the
+            // laboratory to recognise its own. The author asked for exactly this on 2026-09-15.
+            //
+            // In custom[n] rather than a database[n]-fingerprint of our own invention, because that
+            // is the slot mzTab-M defines for information it does not itself model, and the file has
+            // to stay readable by a validator.
+            for (int i = 0; i < libraryStatistics.Count; i++) {
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "custom[" + (i + 1) + "]", libraryStatistics[i] }));
             }
 
             var normalizedCommentList = new List<string>();
@@ -1368,6 +1387,21 @@ namespace CompMs.MsdialCore.Export
             return idConfidenceMeasure;
         }
 
+        /// <summary>
+        /// The three numbers a library can publish about itself, or null when it has no records.
+        /// </summary>
+        /// <remarks>
+        /// A text database of retention times and masses carries no spectra and an EAD lipid database
+        /// is generated in memory, so neither has a record set worth fingerprinting; those declare
+        /// themselves by kind alone. See <see cref="LibraryFingerprint"/>.
+        /// </remarks>
+        private static string LibraryStatistics(MoleculeDataBase database) {
+            if (database?.RecordCount is null or 0) {
+                return null;
+            }
+            return $"{database.RecordCount} records; {database.CompoundCount} compounds; {database.ContentDigest}";
+        }
+
         private IReadOnlyList<Database> SetDatabaseList(ParameterBase meta, IReadOnlyList<AlignmentSpotProperty> spots)
         {
             var database = new List<Database>();
@@ -1382,6 +1416,7 @@ namespace CompMs.MsdialCore.Export
                             AnnotatorID = db.DataBase.Id,
                             Metadata = "[,, User-defined MSP library file, ]",
                             Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
                             Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
@@ -1393,6 +1428,7 @@ namespace CompMs.MsdialCore.Export
                             AnnotatorID = db.DataBase.Id,
                             Metadata = "[,, MS-DIAL LipidsMsMs database, ]",
                             Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
                             Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
@@ -1408,6 +1444,7 @@ namespace CompMs.MsdialCore.Export
                             AnnotatorID = db.DataBase.Id,
                             Metadata = "[,, User-defined in-silico MSP library file, ]",
                             Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
                             Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
@@ -1629,6 +1666,13 @@ namespace CompMs.MsdialCore.Export
             public DataBaseSource Source { get; set; }
             public string Filename { get; set; }
             public string Uri { get; set; }
+
+            /// <summary>
+            /// Record count, compound count and content digest, or null for a library that holds no
+            /// records to describe -- an EAD lipid database generated in memory, or a text database
+            /// of retention times.
+            /// </summary>
+            public string Statistics { get; set; }
         }
 
         public class RawFileMetadata
