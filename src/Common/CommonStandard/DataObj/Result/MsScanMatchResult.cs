@@ -218,6 +218,103 @@ namespace CompMs.Common.DataObj.Result {
                 : AnnotationEvidenceSource.WeakSpectrumMatch;
         }
 
+
+        /// <summary>
+        /// How strongly a kind of evidence supports an identification, as an order and nothing more.
+        /// Larger is stronger; only the comparisons between two values mean anything.
+        /// </summary>
+        /// <remarks>
+        /// A RANK RATHER THAN A WEIGHT, at the author's direction of 2026-09-15: a qualitative
+        /// judgement -- a name that a spectrum decided outranks a name that only a mass suggested --
+        /// belongs in the ordering of the candidates, not folded into their scores. A weight would
+        /// make that judgement tradeable, so a large enough similarity could buy a precursor-only
+        /// candidate past a spectral match; as a separate key it cannot be bought at any score.
+        /// It is also the programme's written annotation policy, in as many words: "a lower-priority
+        /// MS/MS reference match outranks a higher-priority precursor-only suggestion".
+        ///
+        /// NEVER <c>(int)source</c>. The serialized values are a compatibility record -- 3 is where
+        /// <c>PredictedSpectrum</c> sat, 8 is the member that was appended after it -- and they run
+        /// in the order the members happened to be written. Casting would make every future
+        /// insertion silently reorder candidates in projects already on disk. The switch says the
+        /// order once, out loud, where changing it is a decision rather than an accident.
+        ///
+        /// The numbers are ordinals with no unit. Equal ranks are deliberate and mean "this ordering
+        /// declines to separate these two"; the next key down then decides, exactly as it does today.
+        /// </remarks>
+        public static int Rank(AnnotationEvidenceSource source) {
+            switch (source) {
+                // A spectrum was compared and carried the match. The lipid rule set and a reference
+                // spectrum are equal here because for lipidomics the rules ARE the evidence -- see
+                // RuleBased -- so ranking one under the other would penalise the pipeline that is
+                // doing the more specific work.
+                case AnnotationEvidenceSource.ReferenceSpectrum:
+                case AnnotationEvidenceSource.RuleBased:
+                    return 6;
+
+                // A spectrum was compared and got part of the way. Still above everything that
+                // compared no spectrum at all: the author's 69%-against-a-70%-threshold case, which
+                // is a real partial agreement rather than an absence of evidence.
+                case AnnotationEvidenceSource.WeakSpectrumMatch:
+                    return 4;
+
+                // NEUTRAL, and both for the same reason: neither says anything this key can weigh.
+                //
+                // Unspecified is "not recorded" -- every candidate in a project written before the
+                // evidence record existed. Ranking it last would make opening such a project reorder
+                // its candidates against whatever a fresh annotation added; ranking it first would
+                // let an unrecorded candidate outrank a measured one. In a project where nothing is
+                // recorded every candidate sits here, they tie, and the order is exactly today's.
+                //
+                // Manual is a person asserting something with no comparison behind it. A person
+                // ACCEPTING a candidate is a different fact and is not this: it wins higher up, on
+                // the Manual bit of SourceType -- read directly as the facade's first key, and read
+                // through IsManuallyModified as ResultOrder's. It is the top bit of the flags byte,
+                // so a human's decision has already settled both orderings before this is consulted.
+                case AnnotationEvidenceSource.Unspecified:
+                case AnnotationEvidenceSource.Manual:
+                    return 3;
+
+                // Nothing measured was compared against a spectrum.
+                //
+                // The two in-silico directions sit here, below WeakSpectrumMatch, which the author
+                // confirmed on 2026-09-14: a computed spectrum or a computed structure is a
+                // hypothesis about a compound, and a real spectrum that partly agreed is an
+                // observation of one. PrecursorOnly ties with them rather than being placed above or
+                // below, because whether a calculation outranks a bare mass has not been decided and
+                // this key does not invent an answer: they tie and TotalScore decides, as it does
+                // today.
+                case AnnotationEvidenceSource.ByStructurePredictionTool:
+                case AnnotationEvidenceSource.BySpectrumPredictionTool:
+                case AnnotationEvidenceSource.PrecursorOnly:
+                    return 2;
+
+                // Last, and below PrecursorOnly on purpose. A spectrum was acquired, compared, and
+                // explained nothing -- evidence AGAINST the candidate, where PrecursorOnly is merely
+                // the absence of evidence either way.
+                case AnnotationEvidenceSource.UnmatchedSpectrum:
+                    return 1;
+
+                // A member added without being ranked. Neutral rather than fatal, so an omission
+                // costs precision in the ordering instead of failing an annotation run mid-way;
+                // AnnotationEvidenceRankTests enumerates the enum so the omission fails a test.
+                default:
+                    return 3;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="Rank(AnnotationEvidenceSource)"/> for a candidate, with a floor for the null
+        /// that <c>DefaultIfEmpty</c> introduces in the ordering keys.
+        /// </summary>
+        /// <remarks>
+        /// Not <c>Rank(result?.EvidenceSource ?? Unspecified)</c>: that would hand the placeholder
+        /// the neutral rank and let it beat a real candidate whose spectrum was compared and failed.
+        /// A placeholder is not a candidate and must lose every key it appears in.
+        /// </remarks>
+        public static int RankOf(MsScanMatchResult? result) {
+            return result is null ? int.MinValue : Rank(result.EvidenceSource);
+        }
+
         /// <summary>
         /// Whether the comparison explained essentially nothing, as opposed to falling short.
         /// </summary>
