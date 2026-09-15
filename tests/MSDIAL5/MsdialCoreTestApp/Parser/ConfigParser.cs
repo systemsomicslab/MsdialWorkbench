@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -277,8 +278,10 @@ namespace CompMs.App.MsdialConsole.Parser
                         Console.WriteLine($"Unknown target_omics '{targetOmicsText}' for MSP annotator '{annotatorId}'. The project Target omics setting will be used.");
                     }
                 }
-                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics));
+                var dataBaseSource = ReadLibraryKind(GetField(fields, headers, "librarykind", "librarytype", "spectrasource", "mspkind"), annotatorId);
+                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics, dataBaseSource));
                 ReportEffectiveAnnotatorSettings("MSP", annotatorId, mspFilePath, priority, searchParameter);
+                Console.WriteLine($"MSP annotator {annotatorId}: library kind {dataBaseSource}");
             }
             return settings;
         }
@@ -384,6 +387,45 @@ namespace CompMs.App.MsdialConsole.Parser
             SetBool(fields, headers, value => parameter.IsUseTimeForAnnotationFiltering = value, "useretentioninformationforfiltering", "useretentiontimeforfiltering", "usertfiltering", "usetimefiltering");
             SetBool(fields, headers, value => parameter.IsUseCcsForAnnotationScoring = value, "useccsforscoring", "useccsscoring");
             SetBool(fields, headers, value => parameter.IsUseCcsForAnnotationFiltering = value, "useccsforfiltering", "useccsfiltering");
+        }
+
+        /// <summary>
+        /// Whether a library's spectra were acquired or computed, as the settings file states it.
+        /// </summary>
+        /// <remarks>
+        /// The distinction MS-DIAL cannot make by looking: a generated spectrum parses and scores
+        /// exactly like an acquired one, and an MSP carries no field that says which. NEIMS for EI,
+        /// CFM-ID and ICEBERG for MS/MS all produce libraries that arrive looking experimental.
+        /// The answer reaches AnnotationEvidence.ForDatabaseMatch and decides whether a match
+        /// against this library is published as a reference-spectrum match or as in silico.
+        ///
+        /// Silence means acquired, which is what every library was assumed to be before the question
+        /// could be asked -- so an existing settings file runs unchanged. An unrecognised value is
+        /// reported and treated as silence rather than failing the run: a typo here should not lose
+        /// a whole reanalysis, and the run log says what was actually used.
+        /// </remarks>
+        private static DataBaseSource ReadLibraryKind(string text, string annotatorId) {
+            if (text.IsEmptyOrNull()) {
+                return DataBaseSource.Msp;
+            }
+            switch (NormalizeHeader(text)) {
+                case "predicted":
+                case "insilico":
+                case "computed":
+                case "generated":
+                case "predictedmsp":
+                    return DataBaseSource.PredictedMsp;
+                case "acquired":
+                case "experimental":
+                case "measured":
+                case "msp":
+                    return DataBaseSource.Msp;
+                default:
+                    Console.WriteLine(
+                        $"Unknown library_kind '{text}' for MSP annotator '{annotatorId}'. "
+                        + "Expected 'acquired' or 'predicted'; the library will be treated as acquired.");
+                    return DataBaseSource.Msp;
+            }
         }
 
         private static string NormalizeHeader(string text) {

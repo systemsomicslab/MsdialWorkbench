@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -104,6 +105,84 @@ public sealed class ConfigParserTests
         Assert.IsNull(parsed[1].TargetOmics);
         Assert.AreEqual(0.05F, parsed[0].SearchParameter.Ms2Tolerance, 0.0001F);
         Assert.AreEqual(0.25F, parsed[1].SearchParameter.Ms2Tolerance, 0.0001F);
+    }
+
+    /// <summary>
+    /// A run with no GUI can still say whether a library's spectra were acquired or computed.
+    /// </summary>
+    /// <remarks>
+    /// The GUI asks this through the database-kind dropdown. The reanalysis pipeline never opens
+    /// one, so without this the Console could only ever build DataBaseSource.Msp and an in-silico
+    /// library -- NEIMS, CFM-ID, ICEBERG -- would be published as a reference-spectrum match.
+    /// </remarks>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_ReadsTheLibraryKind()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\n" +
+            $"acquired\t{msp}\tacquired\n" +
+            $"computed\t{msp}\tpredicted\n" +
+            $"silent\t{msp}\t\n");
+        var method = directory.CreateFile(
+            "method.txt",
+            $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(3, parsed.Count);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[1].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[2].DataBaseSource,
+            "silence means acquired, so an existing settings file runs unchanged");
+    }
+
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_AcceptsTheSpellingsPeopleWillActuallyType()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tspectra_source\n" +
+            $"a\t{msp}\tin silico\n" +
+            $"b\t{msp}\tIn-Silico\n" +
+            $"c\t{msp}\tGenerated\n" +
+            $"d\t{msp}\tExperimental\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[0].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[1].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[2].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[3].DataBaseSource);
+    }
+
+    /// <summary>
+    /// A typo does not lose the run; it is reported and the library is treated as acquired.
+    /// </summary>
+    /// <remarks>
+    /// The alternative -- failing the run -- costs a whole reanalysis for a misspelt word, and the
+    /// alternative to THAT -- guessing "predicted" -- would publish an in-silico claim nobody made.
+    /// </remarks>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_TreatsAnUnknownLibraryKindAsAcquired()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\n" +
+            $"typo\t{msp}\tpredicated\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(1, parsed.Count);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
     }
 
     [TestMethod]

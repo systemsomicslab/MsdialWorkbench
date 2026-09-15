@@ -198,7 +198,16 @@ namespace CompMs.App.MsdialConsole.Process
                 var dbId = mspFileGroups.Count == 1 && effectiveMspSettings.Count == 1 && effectiveMspSettings[0].AnnotatorId == param.MspFilePath
                     ? "MspDB"
                     : GetSafeDataBaseId("MspDB", mspFilePath, i + 1);
-                var mspDB = new MoleculeDataBase(mspList, dbId, DataBaseSource.Msp, SourceType.MspDB, mspFilePath);
+                // One file is one library, so the kind belongs to the group rather than to each
+                // annotator in it. Two annotators over the same file that disagree is a mistake in
+                // the settings file, and it is named rather than silently resolved.
+                var declaredKinds = group.Select(setting => setting.DataBaseSource).Distinct().ToList();
+                if (declaredKinds.Count > 1) {
+                    Console.WriteLine(
+                        $"Annotators over {Path.GetFileName(mspFilePath)} disagree about library_kind "
+                        + $"({string.Join(", ", declaredKinds)}); using {declaredKinds[0]}.");
+                }
+                var mspDB = new MoleculeDataBase(mspList, dbId, declaredKinds[0], SourceType.MspDB, mspFilePath);
                 if (mspError != string.Empty) {
                     Console.WriteLine(mspError);
                 }
