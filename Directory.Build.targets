@@ -1,0 +1,11 @@
+<Project>
+  <Target Name="EvaluateConfiguration">
+    <Message Text="Project: $(MSBuildProjectName), Configuration: $(Configuration)" Importance="High"/>
+    <MSBuild Projects="@(ProjectReference)" Targets="EvaluateConfiguration" />
+  </Target>
+
+  <Target Name="ShowProperties">
+    <Message Text="Project: $(MSBuildProjectName), OutputPath: $(OutputPath)" Importance="High"/>
+    <MSBuild Projects="@(ProjectReference)" Targets="ShowProperties" />
+  </Target>
+</Project>

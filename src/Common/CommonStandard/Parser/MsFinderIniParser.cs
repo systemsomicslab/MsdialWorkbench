@@ -461,8 +461,8 @@ namespace CompMs.Common.Parser
                     {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
                         if (ans.Contains("CH3COONH4")) param.SolventType = SolventType.CH3COONH4;
-                        else param.SolventType = SolventType.HCOONH4;
-
+                        else if (ans.Contains("HCOONH4")) param.SolventType = SolventType.HCOONH4;
+                        else param.SolventType = SolventType.NH4HCO3;
                     }
                     else if (Regex.IsMatch(line, "MassRangeMin=", RegexOptions.IgnoreCase))
                     {
@@ -719,7 +719,7 @@ namespace CompMs.Common.Parser
             var AdductList = new List<AdductIon>();
             foreach (var adductName in value.Split(',').ToList())
             {
-                var adduct = AdductIonParser.GetAdductIonBean(adductName);
+                var adduct = AdductIon.GetAdductIon(adductName);
                 if (adduct.FormatCheck)
                     AdductList.Add(adduct);
             }

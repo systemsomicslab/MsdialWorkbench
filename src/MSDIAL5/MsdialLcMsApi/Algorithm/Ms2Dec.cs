@@ -76,13 +76,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType,
-                param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+            RawSpectrum spectrum = provider.LoadMsSpectrumFromIndex(targetSpecID);
+            var intensityTop = spectrum.Spectrum.DefaultIfEmpty().Max(p => p.Intensity);
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrum, param.MS2DataType,
+                Math.Max((float)intensityTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff, param.ChromDecBaseParam.AmplitudeCutoff),
+                param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
             var curatedSpectra = new List<SpectrumPeak>(); // used for normalization of MS/MS intensities
-            var precursorMz = chromPeakFeature.Mass;
-            var threshold = Math.Max(param.AmplitudeCutoff, 0.1);
+            var precursorMz = chromPeakFeature.PeakFeature.Mass;
+            var amplitudeTop = cSpectrum.DefaultIfEmpty().Max(p => p?.Intensity) ?? 0d;
+            var threshold = Math.Max(Math.Max(amplitudeTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff, param.ChromDecBaseParam.AmplitudeCutoff), 0.1);
 
             foreach (var peak in cSpectrum.Where(n => n.Intensity > threshold)) { //preparing MS/MS chromatograms -> peaklistList
                 if (param.RemoveAfterPrecursor && precursorMz + param.KeptIsotopeRange < peak.Mass) continue;
@@ -126,7 +130,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             List<double> productMzs = curatedSpectra.Select(x => (double)x.Mass).ToList();
             var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, productMzs, param, file.AcquisitionType, targetCE);
             var sMs2Chromatograms = new List<ExtractedIonChromatogram>();
-            foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.Zip(productMzs)) {
+            foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.ZipInternal(productMzs)) {
                 ExtractedIonChromatogram chromatogram = new ExtractedIonChromatogram(ms2Peaks, ChromXType.RT, ChromXUnit.Min, productMz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 sMs2Chromatograms.Add(chromatogram);
             }

@@ -13,17 +13,25 @@ namespace CompMs.MsdialCore.Parser {
 
         #region Writer
         public static void Write(string file, IReadOnlyList<MSDecResult> results, bool isAnnotationInfoIncluded = false) {
+            Write(file, results, results.Count, isAnnotationInfoIncluded);
+        }
+
+        public static void Write(string file, IEnumerable<MSDecResult> results, int totalPeakNumber, bool isAnnotationInfoIncluded = false) {
             using (var fs = File.Open(file, FileMode.Create, FileAccess.ReadWrite)) {
-                var totalPeakNumber = results.Count;
                 var seekPointer = new List<long>();
 
                 WriteHeaders(fs, seekPointer, totalPeakNumber, isAnnotationInfoIncluded);
-                for (int i = 0; i < results.Count; i++) {
+                var count = 0;
+                foreach (var result in results) {
                     var seekpoint = fs.Position;
                     seekPointer.Add(seekpoint);
 
-                    results[i].SeekPoint = seekpoint;
-                    MSDecWriterVer1(fs, results[i], isAnnotationInfoIncluded);
+                    result.SeekPoint = seekpoint;
+                    MSDecWriterVer1(fs, result, isAnnotationInfoIncluded);
+                    count++;
+                }
+                if (count != totalPeakNumber) {
+                    throw new InvalidOperationException($"The number of MSDec results ({count}) did not match the expected count ({totalPeakNumber}).");
                 }
                 WriteSeekpointer(fs, seekPointer);
             }
@@ -177,9 +185,9 @@ namespace CompMs.MsdialCore.Parser {
             var result = msdecResult.MspBasedMatchResult;
 
             fs.Write(BitConverter.GetBytes(result.TotalScore), 0, ByteConvertion.ToByteCount(result.TotalScore));
-            fs.Write(BitConverter.GetBytes(result.WeightedDotProduct), 0, ByteConvertion.ToByteCount(result.WeightedDotProduct));
-            fs.Write(BitConverter.GetBytes(result.SimpleDotProduct), 0, ByteConvertion.ToByteCount(result.SimpleDotProduct));
-            fs.Write(BitConverter.GetBytes(result.ReverseDotProduct), 0, ByteConvertion.ToByteCount(result.ReverseDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredWeightedDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredWeightedDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredSimpleDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredSimpleDotProduct));
+            fs.Write(BitConverter.GetBytes(result.SquaredReverseDotProduct), 0, ByteConvertion.ToByteCount(result.SquaredReverseDotProduct));
             fs.Write(BitConverter.GetBytes(result.MatchedPeaksCount), 0, ByteConvertion.ToByteCount(result.MatchedPeaksCount));
             fs.Write(BitConverter.GetBytes(result.MatchedPeaksPercentage), 0, ByteConvertion.ToByteCount(result.MatchedPeaksPercentage));
             fs.Write(BitConverter.GetBytes(result.EssentialFragmentMatchedScore), 0, ByteConvertion.ToByteCount(result.EssentialFragmentMatchedScore));
@@ -213,9 +221,9 @@ namespace CompMs.MsdialCore.Parser {
             var byteCount = ByteConvertion.ToByteCount(obj.MspID)
                 + ByteConvertion.ToByteCount(obj.MspIDWhenOrdered)
                 + ByteConvertion.ToByteCount(mObj.TotalScore)
-                + ByteConvertion.ToByteCount(mObj.WeightedDotProduct)
-                + ByteConvertion.ToByteCount(mObj.SimpleDotProduct)
-                + ByteConvertion.ToByteCount(mObj.ReverseDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredWeightedDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredSimpleDotProduct)
+                + ByteConvertion.ToByteCount(mObj.SquaredReverseDotProduct)
                 + ByteConvertion.ToByteCount(mObj.MatchedPeaksCount)
                 + ByteConvertion.ToByteCount(mObj.MatchedPeaksPercentage)
                 + ByteConvertion.ToByteCount(mObj.EssentialFragmentMatchedScore)

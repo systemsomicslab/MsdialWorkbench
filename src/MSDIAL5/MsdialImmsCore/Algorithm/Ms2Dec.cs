@@ -119,15 +119,17 @@ public sealed class Ms2Dec
     }
 
     private static List<SpectrumPeak> GetCuratedSpectrum(RawSpectrum ms2Spectrum, double precursorMz, MsdialImmsParameter parameter) {
-
         //first, the MS/MS spectrum at the scan point of peak top is stored.
+        var amplitudeTop = ms2Spectrum.Spectrum.DefaultIfEmpty().Max(p => p.Intensity);
+        var amplitudeThreshold = Math.Max((float)amplitudeTop * parameter.ChromDecBaseParam.RelativeAmplitudeCutoff, parameter.ChromDecBaseParam.AmplitudeCutoff);
         var cSpectrum = DataAccess.GetCentroidMassSpectra(
-            ms2Spectrum, parameter.MS2DataType, parameter.AmplitudeCutoff,
+            ms2Spectrum, parameter.MS2DataType, amplitudeThreshold,
             parameter.Ms2MassRangeBegin, parameter.Ms2MassRangeEnd);
         if (cSpectrum.IsEmptyOrNull())
-            return new List<SpectrumPeak>();
+            return [];
 
-        var threshold = Math.Max(parameter.AmplitudeCutoff, 0.1);
+        amplitudeTop = cSpectrum.DefaultIfEmpty().Max(p => p?.Intensity) ?? 0d;
+        var threshold = Math.Max(Math.Max(amplitudeTop * parameter.ChromDecBaseParam.RelativeAmplitudeCutoff, parameter.ChromDecBaseParam.AmplitudeCutoff), 0.1);
         var curatedSpectra = cSpectrum.Where(n => n.Intensity > threshold);
 
         if (parameter.RemoveAfterPrecursor)
@@ -181,7 +183,7 @@ public sealed class Ms2Dec
         var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, peaks.First().ID, peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
 
         var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>(ms2ChromPeaksList.Count);
-        foreach (var (chromPeaks, mz) in ms2ChromPeaksList.Zip(productMz)) {
+        foreach (var (chromPeaks, mz) in ms2ChromPeaksList.ZipInternal(productMz)) {
             var sChromPeaks = new ExtractedIonChromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec, mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
             smoothedMs2ChromPeaksList.Add(sChromPeaks);
         }

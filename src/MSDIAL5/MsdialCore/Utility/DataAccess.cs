@@ -237,22 +237,11 @@ namespace CompMs.MsdialCore.Utility {
 
         // index access
         public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
-
             var targetRt = focusedRt - rtTol;
-            int startIndex = 0, endIndex = spectrumList.Count - 1;
-
-            int counter = 0;
-            int limit = spectrumList.Count > 50000 ? 20 : 10;
-            while (counter < limit) {
-                if (spectrumList[startIndex].ScanStartTime <= targetRt && targetRt < spectrumList[(startIndex + endIndex) / 2].ScanStartTime) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (spectrumList[(startIndex + endIndex) / 2].ScanStartTime <= targetRt && targetRt < spectrumList[endIndex].ScanStartTime) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
+            return SearchCollection.LowerBound(
+                spectrumList,
+                targetRt,
+                (spectrum, rt) => spectrum.ScanStartTime.CompareTo(rt));
         }
 
         public static int GetTargetCEIndexForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
@@ -343,11 +332,10 @@ namespace CompMs.MsdialCore.Utility {
             int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
 
-            var counter = 0;
-            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param, acquisitionType);
-            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
-            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
-
+var valuePeakLists = new List<ValuePeak>[pMzValues.Count];
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    valuePeakLists[j] = new List<ValuePeak>();
+}
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
@@ -359,27 +347,16 @@ namespace CompMs.MsdialCore.Utility {
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
 
                         for (int j = 0; j < pMzValues.Count; j++) { 
-                            valuePeakArrayList[j][counter] = new ValuePeak(id, chromX, pMzValues[j], intensities[j]);
+                            valuePeakLists[j].Add(new ValuePeak(id, chromX, pMzValues[j], intensities[j]));
                         }
-                        counter++;
                     }
                 }
             }
-            return valuePeakArrayList;
-        }
-
-        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param, AcquisitionType type) {
-            var counter = 0;
-            for (int i = startScanID; i <= endScanID; i++) {
-                var spec = provider.LoadMsSpectrumFromIndex(i);
-                if (spec.MsLevel == 2 && spec.Precursor != null) {
-                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, type)) {
-                        counter++;
-                    }
-                }
-            }
-            return counter;
+var results = new List<ValuePeak[]>(valuePeakLists.Length);
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    results.Add(valuePeakLists[j].ToArray());
+}
+return results;
         }
 
         public static double[] RetrieveIntensitiesFromMzValues(
@@ -749,9 +726,9 @@ namespace CompMs.MsdialCore.Utility {
             var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
-            var rt = rtChromPeakFeature.ChromXsTop.Value;
-            var rtLeft = rtChromPeakFeature.ChromXsLeft.Value;
-            var rtRight = rtChromPeakFeature.ChromXsRight.Value;
+            var rt = rtChromPeakFeature.PeakFeature.ChromXsTop.Value;
+            var rtLeft = rtChromPeakFeature.PeakFeature.ChromXsLeft.Value;
+            var rtRight = rtChromPeakFeature.PeakFeature.ChromXsRight.Value;
 
             var binMultiplyFactor = 1000;
             var accumulatedRtRange = 1f;
@@ -764,7 +741,7 @@ namespace CompMs.MsdialCore.Utility {
                 rtLeft = rt - accumulatedRtRange;
             }
 
-            var mz = rtChromPeakFeature.Mass;
+            var mz = rtChromPeakFeature.PeakFeature.Mass;
             var scanID = rtChromPeakFeature.MS1RawSpectrumIdTop;
 
             // <mzBin, <driftTimeIndex, [driftTimeBin, accumulatedIntensity]>>
@@ -780,8 +757,11 @@ namespace CompMs.MsdialCore.Utility {
             //set initial mz
             foreach (var peak in curatedSpectrum) {
                 var massBin = (int)(peak.Mass * binMultiplyFactor + 0.5);
-                var index = 0;
-                driftTimeCounter.Add(massBin, index + 1);
+                if (!driftTimeCounter.ContainsKey(massBin))
+                {
+                    var index = 0;
+                    driftTimeCounter.Add(massBin, index + 1);
+                }
             }
 
             //accumulating peaks from peak top to peak left
@@ -867,7 +847,6 @@ namespace CompMs.MsdialCore.Utility {
                 var targetMz = Math.Round((double)mzBin / binMultiplyFactor, 3);
                 // <driftTimeIndex, [driftBin, accumulatedIntensity]>
                 var targetChromato = chromatogramBin[mzBin];
-                var counter = 0;
                 var tmpDriftTimeBinSet = new HashSet<int>();
                 foreach (var values in targetChromato.Values) {
                     tmpDriftTimeBinSet.Add((int)(values[0] + 0.5));
@@ -914,7 +893,9 @@ namespace CompMs.MsdialCore.Utility {
                 spectra.Add(new SpectrumPeak() { Mass = massSpectra[i].Mz, Intensity = massSpectra[i].Intensity });
             }
 
-            if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
+            var amplitudeTop = spectra.DefaultIfEmpty().Max(p => p?.Intensity ?? 0d);
+            var cutoff = Math.Max(amplitudeTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff, param.ChromDecBaseParam.AmplitudeCutoff);
+            if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > cutoff).ToList();
             if (spectra.Count == 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.profile) return spectra;
 
@@ -1016,9 +997,9 @@ namespace CompMs.MsdialCore.Utility {
 
         public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IDataProvider provider,
             ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
-            var rt = rtChromFeature.ChromXsTop.Value;
-            var rtLeft = rtChromFeature.ChromXsLeft.Value;
-            var rtRight = rtChromFeature.ChromXsRight.Value;
+            var rt = rtChromFeature.PeakFeature.ChromXsTop.Value;
+            var rtLeft = rtChromFeature.PeakFeature.ChromXsLeft.Value;
+            var rtRight = rtChromFeature.PeakFeature.ChromXsRight.Value;
 
             var rtRange = 1f;
 
@@ -1031,9 +1012,9 @@ namespace CompMs.MsdialCore.Utility {
                 rtLeft = rt - rtRange;
             }
 
-            var mz = rtChromFeature.Mass;
+            var mz = rtChromFeature.PeakFeature.Mass;
             var scanID = dtChromFeature.MS1RawSpectrumIdTop;
-            var dataPointDriftBin = (int)(dtChromFeature.ChromXsTop.Value * 1000);
+            var dataPointDriftBin = (int)(dtChromFeature.PeakFeature.ChromXsTop.Value * 1000);
 
             var spectrumBin = new Dictionary<int, double[]>();
             //accumulating peaks from peak top to peak left
@@ -1051,14 +1032,14 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
@@ -1079,15 +1060,15 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         // [accurate mass, intensity, max intensity]
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
@@ -1204,7 +1185,7 @@ namespace CompMs.MsdialCore.Utility {
             var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
-            feature.Name = "w/o MS2: " + result.Name;
+            feature.Name = AnnotationName.AsWithoutMs2(result.Name);
         }
 
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
@@ -1225,10 +1206,10 @@ namespace CompMs.MsdialCore.Utility {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
             if (feature.MS2RawSpectrumID < 0) {
-                feature.Name = "no MS2: " + result.Name;
+                feature.Name = AnnotationName.AsNoMs2(result.Name);
             }
             else {
-                feature.Name = "low score: " + result.Name;
+                feature.Name = AnnotationName.AsLowScore(result.Name);
             }
         }
 
@@ -1410,6 +1391,7 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
                 case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
                 case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? "TRUE" : "FALSE";
                 default: return string.Empty;
             }
         }
@@ -1428,8 +1410,13 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return spotProperty.Mass;
                 case "SN": return spotProperty.PeakShape.SignalToNoise;
                 case "MSMS": return spotProperty.MS2RawSpectrumID;
+                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? 1d : 0d;
                 default: return -1;
             }
+        }
+
+        public static bool IsReferenceMatchedName(string name) {
+            return AnnotationName.IsReferenceMatched(name);
         }
 
         public static List<ChromatogramPeakFeature> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {

@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Setting
         protected static MoleculeDataBase LoadDataBase(string id, string path, DataBaseSource dbsource) {
             switch (dbsource) {
                 case DataBaseSource.Msp:
-                    return new MoleculeDataBase(LoadMspDataBase(path), id, DataBaseSource.Msp, SourceType.MspDB);
+                    return new MoleculeDataBase(LoadMspDataBase(path), id, DataBaseSource.Msp, SourceType.MspDB, path);
                 default:
                     throw new NotSupportedException(dbsource.ToString());
             }

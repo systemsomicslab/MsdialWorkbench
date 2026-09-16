@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 using CompMs.Graphics.Base;
 
@@ -31,11 +32,15 @@ namespace CompMs.Graphics.Design
         }
 
         public void Update(IBrushMapper mapper, double thickness) {
+            Update(mapper, thickness, null);
+        }
+
+        public void Update(IBrushMapper mapper, double thickness, DoubleCollection strokeDashArray) {
             if (mapper is null) {
                 Reset();
             }
             else {
-                strategy = new BrushMapStrategy(mapper, thickness);
+                strategy = new BrushMapStrategy(mapper, thickness, strokeDashArray);
             }
         }
 
@@ -62,13 +67,15 @@ namespace CompMs.Graphics.Design
 
         class BrushMapStrategy : ISelectStrategy
         {
-            public BrushMapStrategy(IBrushMapper mapper, double thickness) {
+            public BrushMapStrategy(IBrushMapper mapper, double thickness, DoubleCollection strokeDashArray) {
                 Mapper = mapper;
                 Thickness = thickness;
+                StrokeDashArray = strokeDashArray?.ToArray();
             }
 
             private readonly IBrushMapper Mapper;
             private readonly double Thickness;
+            private readonly double[] StrokeDashArray;
             private readonly Dictionary<object, Pen> cache = new Dictionary<object, Pen>();
 
             public Pen Get(object o) {
@@ -77,6 +84,9 @@ namespace CompMs.Graphics.Design
                 }
                 var brush = Mapper.Map(o);
                 var pen = new Pen(brush, Thickness);
+                if (StrokeDashArray is { Length: > 0 }) {
+                    pen.DashStyle = new DashStyle(new DoubleCollection(StrokeDashArray), 0d);
+                }
                 pen.Freeze();
                 if (cache.Count > 1_000_000) {
                     cache.Clear();

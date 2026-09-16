@@ -14,9 +14,11 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -103,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -158,9 +160,12 @@ namespace CompMs.App.Msdial.Model.Imms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = alignmentFileModel.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileModel, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
-                Target, eicLoader, files, parameter,
+                Target, eicLoader,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
@@ -202,9 +207,16 @@ namespace CompMs.App.Msdial.Model.Imms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            }
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
 
@@ -278,7 +290,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private BrushMapData<AlignmentSpotPropertyModel>? _selectedBrush;
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public void SaveSpectra(string filename) {

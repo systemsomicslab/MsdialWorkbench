@@ -200,9 +200,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, IonFeatureCharacter character, PeptideMsReference reference,
             MsRefSearchParameterBase parameter, ProteomicsParameter proteomicsParam) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+            result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch
                 && result.AndromedaScore >= parameter.AndromedaScoreCutOff;

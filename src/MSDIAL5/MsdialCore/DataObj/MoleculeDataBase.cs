@@ -14,27 +14,30 @@ namespace CompMs.MsdialCore.DataObj
     {
         private bool _needSerialize;
 
-        public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type, string dataBaseSourceFilePath) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;
         }
 
-        public MoleculeDataBase(IList<MoleculeMsReference> list, string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(IList<MoleculeMsReference> list, string id, DataBaseSource dbsource, SourceType type, string dataBaseSourceFilePath) {
             Database = new MoleculeMsReferenceCollection(list);
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;
         }
 
         [SerializationConstructor]
-        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource) {
+        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource, string dataBaseSourceFilePath) {
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            DataBaseSourceFilePath = dataBaseSourceFilePath;
             _needSerialize = true;// false;
         }
 
@@ -47,6 +50,16 @@ namespace CompMs.MsdialCore.DataObj
         public SourceType SourceType { get; }
         [Key(2)]
         public DataBaseSource DataBaseSource { get; }
+
+        /// <summary>
+        /// The original path of the database file is required for output purposes, such as mzTab-M.
+        /// Once the file is loaded, it is saved again separately.
+        /// </summary>
+        /// <remarks>
+        /// No additional information beyond the original file location is retained.
+        /// </remarks>
+        [Key(3)]
+        public string DataBaseSourceFilePath { get; } = string.Empty;
 
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 

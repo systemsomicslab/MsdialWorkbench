@@ -133,6 +133,30 @@ namespace CompMs.Graphics.Chart
             set => SetValue(DegreePropertyNameProperty, value);
         }
 
+        public static readonly DependencyProperty DegreeMinProperty =
+            DependencyProperty.Register(
+                nameof(DegreeMin), typeof(double?), typeof(HeatmapControl),
+                new FrameworkPropertyMetadata(
+                    default(double?),
+                    FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public double? DegreeMin {
+            get => (double?)GetValue(DegreeMinProperty);
+            set => SetValue(DegreeMinProperty, value);
+        }
+
+        public static readonly DependencyProperty DegreeMaxProperty =
+            DependencyProperty.Register(
+                nameof(DegreeMax), typeof(double?), typeof(HeatmapControl),
+                new FrameworkPropertyMetadata(
+                    default(double?),
+                    FrameworkPropertyMetadataOptions.AffectsRender));
+        
+        public double? DegreeMax {
+            get => (double?)GetValue(DegreeMaxProperty);
+            set => SetValue(DegreeMaxProperty, value);
+        }
+
         static void OnDegreePropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HeatmapControl chart) {
                 if (chart.GetDataType() is Type type) {
@@ -246,10 +270,25 @@ namespace CompMs.Graphics.Chart
             double zmax = double.MinValue, zmin = double.MaxValue;
             double xwidth = HorizontalAxis.TranslateToRenderPoint(PatchWidth, FlippedX, ActualWidth) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, ActualWidth);
             double ywidth = Math.Abs(VerticalAxis.TranslateToRenderPoint(PatchHeight, FlippedY, ActualHeight) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY, ActualHeight));
-            foreach (var o in _cv) {
-                var z = _zGetter?.Invoke(o);
-                zmax = Math.Max(zmax, Convert.ToDouble(z));
-                zmin = Math.Min(zmin, Convert.ToDouble(z));
+
+            if (DegreeMax.HasValue) {
+                zmax = DegreeMax.Value;
+            }
+            else {
+                foreach (var o in _cv) {
+                    var z = _zGetter?.Invoke(o);
+                    zmax = Math.Max(zmax, Convert.ToDouble(z));
+                }
+            }
+
+            if (DegreeMin.HasValue) {
+                zmin = DegreeMin.Value;
+            }
+            else {
+                foreach (var o in _cv) {
+                    var z = _zGetter?.Invoke(o);
+                    zmin = Math.Min(zmin, Convert.ToDouble(z));
+                }
             }
 
             foreach (var o in _cv) {
@@ -293,6 +332,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private static Color GetGradientColor(GradientStopCollection gsc, double offset) {
+            offset = Math.Max(0, Math.Min(1, offset));
             var lowers = gsc.Where(gs => gs.Offset <= offset).ToArray();
             var highers = gsc.Where(gs => gs.Offset > offset).ToArray();
             if (lowers.Length == 0) return highers.Min(gs => (gs.Offset, gs.Color)).Color;

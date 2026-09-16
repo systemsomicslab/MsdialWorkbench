@@ -28,13 +28,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         protected override ChromXs GetCenterFirst(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return new ChromXs(peaks.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
+            return new ChromXs(peaks.DefaultIfEmpty().Average(peak => peak?.ChromXsTop.RT.Value ?? 0d), ChromXType.RT, ChromXUnit.Min)
             {
                 Mz = new MzValue(peaks.Argmax(peak => peak.PeakHeightTop).Mass),
             };
         }
         protected override ChromXs GetCenterSecond(IEnumerable<AlignmentChromPeakFeature> peaks, AlignmentSpotProperty parent) {
-            return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Drift.Value), ChromXType.Drift, ChromXUnit.Msec)
+            return new ChromXs(peaks.DefaultIfEmpty().Average(peak => peak?.ChromXsTop.Drift.Value ?? 0d), ChromXType.Drift, ChromXUnit.Msec)
             {
                 RT = new RetentionTime(parent.TimesCenter.Value),
                 Mz = new MzValue(parent.MassCenter),
@@ -42,10 +42,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         protected override double GetAveragePeakWidthFirst(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
+            return peaks.DefaultIfEmpty().Max(peak => peak?.PeakWidth(ChromXType.RT) ?? 0d);
         }
         protected override double GetAveragePeakWidthSecond(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return peaks.Max(peak => peak.PeakWidth(ChromXType.Drift));
+            return peaks.DefaultIfEmpty().Max(peak => peak?.PeakWidth(ChromXType.Drift) ?? 0d);
         }
 
         protected override List<ChromatogramPeak> GetPeaksFirst(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {

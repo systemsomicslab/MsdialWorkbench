@@ -171,13 +171,13 @@ namespace CompMs.Common.Extension.Tests
             var actuals = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Chunk(3);
             var expects = new List<int[]> { new[] { 1, 2, 3, }, new[] { 4, 5, 6, }, new[] { 7, 8, 9 } };
 
-            foreach (var (actual, expect) in actuals.Zip(expects)) {
+            foreach (var (actual, expect) in actuals.ZipInternal(expects)) {
                 CollectionAssert.AreEqual(expect, actual);
             }
 
             actuals = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }.Chunk(4);
             expects = new List<int[]> { new[] { 1, 2, 3, 4, }, new[] { 5, 6, 7, 8, }, new[] { 9, 10, } };
-            foreach (var (actual, expect) in actuals.Zip(expects)) {
+            foreach (var (actual, expect) in actuals.ZipInternal(expects)) {
                 CollectionAssert.AreEqual(expect, actual);
             }
         }
@@ -187,7 +187,7 @@ namespace CompMs.Common.Extension.Tests
             var actuals = new List<int> { 1, 2, 3 }.Zip(new List<int> { 4, 5, 6 }, new List<int> { 7, 8, 9 });
             var expects = new List<(int, int, int)> { (1, 4, 7), (2, 5, 8), (3, 6, 9) };
 
-            foreach ((var expect, var actual) in expects.Zip(actuals)) {
+            foreach ((var expect, var actual) in expects.ZipInternal(actuals)) {
                 (var e1, var e2, var e3) = expect;
                 (var a1, var a2, var a3) = actual;
                 Assert.AreEqual(e1, a1);
@@ -212,7 +212,7 @@ namespace CompMs.Common.Extension.Tests
                 new List<int> {  5, 10, 15, 20},
             };
 
-            foreach ((var expect, var actual) in expects.Zip(actuals)) {
+            foreach ((var expect, var actual) in expects.ZipInternal(actuals)) {
                 CollectionAssert.AreEqual(expect, actual);
             }
         }

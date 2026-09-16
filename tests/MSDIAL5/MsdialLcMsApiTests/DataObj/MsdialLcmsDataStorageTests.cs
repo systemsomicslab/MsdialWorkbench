@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 DataBaseMapper = new DataBaseMapper { }, // No serialization in the future.
                 DataBases = DataBaseStorage.CreateEmpty(),
             };
-            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
+            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB, "TestDBPath");
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
             LcmsMspAnnotator annotator = new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);

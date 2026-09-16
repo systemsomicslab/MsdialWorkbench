@@ -232,6 +232,18 @@ namespace CompMs.Common.Lipidomics {
                 case "Cer_ABP":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
+                case "Cer_AH":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "Cer_NH":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "Cer_AH_d9":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "Cer_NH_d9":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
                 case "GlcCer_AP":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
@@ -596,6 +608,10 @@ namespace CompMs.Common.Lipidomics {
                 case "Cer_NS": return "Cer-NS";
                 case "Cer_NP": return "Cer-NP";
                 case "Cer_AP": return "Cer-AP";
+                case "Cer_NH": return "Cer-NH";
+                case "Cer_AH": return "Cer-AH";
+                case "Cer_NH_d9": return "Cer-NH_d9";
+                case "Cer_AH_d9": return "Cer-AH_d9";
                 case "Cer_ABP": return "Cer-ABP";
                 case "Cer_EODS": return "Cer-EODS";
                 case "Cer_EOS": return "Cer-EOS";
@@ -701,6 +717,10 @@ namespace CompMs.Common.Lipidomics {
                 case "Cer_NS": return "Ceramide";
                 case "Cer_NP": return "Ceramide";
                 case "Cer_AP": return "Ceramide";
+                case "Cer_NH": return "Ceramide";
+                case "Cer_AH": return "Ceramide";
+                case "Cer_NH_d9": return "Ceramide";
+                case "Cer_AH_d9": return "Ceramide";
                 case "Cer_ABP": return "Ceramide";
 
                 case "Cer_EODS": return "Acyl ceramide";

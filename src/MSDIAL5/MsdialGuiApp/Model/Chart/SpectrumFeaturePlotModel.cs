@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class SpectrumFeaturePlotModel : DisposableModelBase
     {
-        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector, ReadOnlyReactivePropertySlim<string> label) {
+        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector, ReadOnlyReactivePropertySlim<string?> label) {
             Spectra = spectra.Items;
             SelectedSpectrum = spectra.SelectedSpectrum;
 
@@ -59,6 +59,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<string> VerticalLabel { get; }
         public ReadOnlyReactivePropertySlim<string> Title { get; }
         public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector { get; }
-        public ReadOnlyReactivePropertySlim<string> Label { get; }
+        public ReadOnlyReactivePropertySlim<string?> Label { get; }
     }
 }

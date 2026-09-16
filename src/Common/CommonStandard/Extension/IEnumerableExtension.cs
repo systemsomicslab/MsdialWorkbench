@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Parser;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,34 @@ namespace CompMs.Common.Extension {
             return collection == null || !collection.Any();
         }
 
+        public static bool AreAllEqual<T>(this IEnumerable<T> collection) {
+            using var enumerator = collection.GetEnumerator();
+            if (!enumerator.MoveNext()) {
+                return true;
+            }
+
+            var first = enumerator.Current;
+            var comparer = EqualityComparer<T>.Default;
+            while (enumerator.MoveNext()) {
+                if (!comparer.Equals(first, enumerator.Current)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static IEnumerable<T> Return<T>(T value) {
             yield return value;
         }
 
-#if NETSTANDARD || NETFRAMEWORK
-        public static IEnumerable<(T1, T2)> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
+#if !NET6_0_OR_GREATER
+        public static IEnumerable<(T1, T2)> ZipInternal<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
             return xs.Zip(ys, (x, y) => (x, y));
+        }
+#else
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<(T1, T2)> ZipInternal<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
+            return xs.Zip(ys);
         }
 #endif
 

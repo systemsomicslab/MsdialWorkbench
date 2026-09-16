@@ -37,6 +37,7 @@ namespace CompMs.Common.StructureFinder.Result
         private double totalBeLikelihood; //0 <= score <= 1
 
         private double substructureAssignmentScore; //0 <= score <= 1
+        private double fragmenterScore;
         private double databaseScore; //0 <= score <= 1
 
         private double rtSimilarityScore;
@@ -157,6 +158,7 @@ namespace CompMs.Common.StructureFinder.Result
             this.totalFlLikelihood = 0;
             this.totalBeLikelihood = 0;
             this.substructureAssignmentScore = 0;
+            this.fragmenterScore = 0;
             this.databaseScore = 0;
             this.rtSimilarityScore = 0;
             this.riSimilarityScore = 0;
@@ -335,6 +337,18 @@ namespace CompMs.Common.StructureFinder.Result
             }
         }
 
+        public double FragmenterScore
+        {
+            get
+            {
+                return fragmenterScore;
+            }
+
+            set
+            {
+                fragmenterScore = value;
+            }
+        }
         public double DatabaseScore
         {
             get

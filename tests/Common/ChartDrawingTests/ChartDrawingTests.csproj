@@ -11,20 +11,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
-    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj">
-      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
-      <Name>CommonMVVM</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj">
-      <Project>{6131640B-30E6-4606-A394-BE953590F3E9}</Project>
-      <Name>ChartDrawing</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

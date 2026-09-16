@@ -141,6 +141,7 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
         var results = new List<ValuePeak>();
         for (int i = startIndex; i < endIndex; i++) {
             if (_spectra[i].MsLevel != 2 ||
+                _spectra[i].Precursor is null ||
                 !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
                 _spectra[i].ScanPolarity != _polarity) {
                 continue;

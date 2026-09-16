@@ -1,13 +1,12 @@
-﻿using System;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.Enum;
+using CompMs.Common.Mathematics.Basic;
+using CompMs.Common.Mathematics.Matrix;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using CompMs.Common.DataStructure;
-using CompMs.Common.Enum;
-using CompMs.Common.Mathematics.Basic;
-using CompMs.Common.Mathematics.Matrix;
 
 namespace CompMs.Common.Mathematics.Statistics {
     public sealed class StatisticsMathematics
@@ -891,7 +890,7 @@ namespace CompMs.Common.Mathematics.Statistics {
                 // po: loading vector calculation
                 // wo: weight (X) factor calculation
 
-                double[] u, t, p, w, to, po, wo;
+                double[] u, t, p, to, po, wo;
                 double c;
 
                 OplsVectorsCalculations(yArray, dataArray, wfirst, out u, out t, out c, out p,
@@ -911,7 +910,7 @@ namespace CompMs.Common.Mathematics.Statistics {
             ssPredList.Add(currentSS);
 
             // finally, pls modeling is performed to the filtered matrix by othrogonal components
-            double[] uf, tf, pf, wf, tof, pof, wof;
+            double[] uf, tf, pf, tof, pof, wof;
             double cf;
             OplsVectorsCalculations(yArray, dataArray, wfirst, out uf, out tf, out cf, out pf,
                 out wof, out tof, out pof);
@@ -1757,10 +1756,7 @@ namespace CompMs.Common.Mathematics.Statistics {
             return tree;
         }
 
-        public static DirectedTree ClusteringWard2Distance(
-            double[,] dataMatrix,
-            Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc
-            )
+        public static DirectedTree ClusteringWard2Distance(double[,] dataMatrix, Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc)
         {
             var n = dataMatrix.GetLength(0);
             var m = dataMatrix.GetLength(1);
@@ -1774,27 +1770,32 @@ namespace CompMs.Common.Mathematics.Statistics {
                 jagData.Add(l);
             }
 
-            var q = new PriorityQueue<(double, int, int)>((a, b) => a.CompareTo(b));
-            var memo = new Dictionary<(int, int), double>();
-            var nodes = new HashSet<int>(Enumerable.Range(0, n));
-            var ws = new List<int>(n * 2 - 1);
-            var heights = new List<double>(n * 2 - 1);
-            var result = new DirectedTree(n * 2 - 1);
-            var next = n;
+            return ClusteringWard2Distance(jagData, distanceFunc);
+        }
 
-            for(int i = 0; i < n; ++i)
+        public static DirectedTree ClusteringWard2Distance<T>(IReadOnlyList<T> dataCollection, Func<T, T, double> distanceFunc)
+        {
+            var q = PriorityQueue.CreateEmpty<(double, int, int)>();
+            var memo = new Dictionary<(int, int), double>();
+            var ws = new List<int>(dataCollection.Count * 2 - 1);
+            var heights = new List<double>(dataCollection.Count * 2 - 1);
+
+            for(int i = 0; i < dataCollection.Count; ++i)
             {
                 ws.Add(1);
                 heights.Add(0);
-                for(int j = i+1; j < n; ++j)
+                for(int j = i+1; j < dataCollection.Count; ++j)
                 {
-                    var d = distanceFunc(jagData[i], jagData[j]);
+                    var d = distanceFunc(dataCollection[i], dataCollection[j]);
                     memo[(i, j)] = d * d;
                     memo[(j, i)] = d * d;
                     q.Push((d, i, j));
                 }
             }
             
+            var nodes = new HashSet<int>(Enumerable.Range(0, dataCollection.Count));
+            var result = new DirectedTree(dataCollection.Count * 2 - 1);
+            var next = dataCollection.Count;
             while (q.Length > 0)
             {
                 (double d, int i, int j) = q.Pop();

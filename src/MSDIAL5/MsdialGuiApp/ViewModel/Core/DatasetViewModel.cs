@@ -1,12 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Gcms;
+using CompMs.App.Msdial.Model.ImagingDims;
 using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Dims;
 using CompMs.App.Msdial.ViewModel.Gcms;
+using CompMs.App.Msdial.ViewModel.ImagingDims;
 using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
@@ -66,12 +68,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private void FilePropertyResetting() {
             var model = Model.AnalysisFilePropertyResetModel;
-            using (var analysisFilePropertyResetWindowVM = new AnalysisFilePropertyResetViewModel(model)) {
-                _messageBroker.Publish(analysisFilePropertyResetWindowVM);
-                var afpsw_result = analysisFilePropertyResetWindowVM.Result;// analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
-                if (afpsw_result == true) {
-                    model.Update();
-                }
+            using var analysisFilePropertyResetWindowVM = new AnalysisFilePropertyResetViewModel(model);
+            _messageBroker.Publish(analysisFilePropertyResetWindowVM);
+            var afpsw_result = analysisFilePropertyResetWindowVM.Result;// analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
+            if (afpsw_result == true) {
+                model.Update();
             }
         }
 
@@ -80,22 +81,17 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand SaveParameterAsCommand { get; }
 
         private MethodViewModel? ConvertToViewModel(IMethodModel? model) {
-            switch (model) {
-                case LcmsMethodModel lc:
-                    return LcmsMethodViewModel.Create(lc, _messageBroker);
-                case ImmsMethodModel im:
-                    return ImmsMethodViewModel.Create(im, peakSpotTableService, _messageBroker);
-                case DimsMethodModel di:
-                    return DimsMethodViewModel.Create(di, peakSpotTableService, _messageBroker);
-                case LcimmsMethodModel lcim:
-                    return LcimmsMethodViewModel.Create(lcim, peakSpotTableService, _messageBroker);
-                case GcmsMethodModel gc:
-                    return GcmsMethodViewModel.Create(gc, peakSpotTableService, _messageBroker);
-                case ImagingImmsMethodModel iim:
-                    return new ImagingImmsMainViewModel(iim, _messageBroker, peakSpotTableService);
-                default:
-                    return null;
-            }
+            return model switch
+            {
+                LcmsMethodModel lc => LcmsMethodViewModel.Create(lc, _messageBroker),
+                ImmsMethodModel im => ImmsMethodViewModel.Create(im, peakSpotTableService, _messageBroker),
+                DimsMethodModel di => DimsMethodViewModel.Create(di, peakSpotTableService, _messageBroker),
+                LcimmsMethodModel lcim => LcimmsMethodViewModel.Create(lcim, peakSpotTableService, _messageBroker),
+                GcmsMethodModel gc => GcmsMethodViewModel.Create(gc, peakSpotTableService, _messageBroker),
+                ImagingImmsMethodModel iim => new ImagingImmsMainViewModel(iim, _messageBroker, peakSpotTableService),
+                ImagingDimsMethodModel idi => new ImagingDimsMainViewModel(idi, _messageBroker, peakSpotTableService),
+                _ => null,
+            };
         }
     }
 }

@@ -28,7 +28,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
         _parameter = parameter;
 
         var db = dataBases.MetabolomicsDataBases.Select(db => db.DataBase).FirstOrDefault(db => db.Id == dataBaseId);
-        _molecules = db ?? new MoleculeDataBase([], dataBaseId, DataBaseSource.MsFinder, SourceType.None);
+        _molecules = db ?? new MoleculeDataBase([], dataBaseId, DataBaseSource.MsFinder, SourceType.None, "MsfinderHits");
         if (db is null)
         {
             dataBases.AddMoleculeDataBase(_molecules, []);

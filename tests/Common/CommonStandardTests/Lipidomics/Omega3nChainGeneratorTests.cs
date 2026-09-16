@@ -57,7 +57,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine("source: {0}", chain);
             actual.ToList().ForEach(a => Console.WriteLine(a));
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.That.AreChainsEqual(e, a);
             }
@@ -127,7 +127,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine("source: {0}", chain);
             actual.ToList().ForEach(a => Console.WriteLine(a));
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.That.AreChainsEqual(e, a);
             }
@@ -206,7 +206,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var generator = new Omega3nChainGenerator();
             var actual = generator.Generate(chain).ToArray();
             Assert.AreEqual(expected.Length, actual.Length);
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.That.AreChainsEqual(e, a);
             }

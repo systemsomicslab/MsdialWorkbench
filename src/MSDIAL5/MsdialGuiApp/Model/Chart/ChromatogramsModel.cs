@@ -65,7 +65,7 @@ public sealed class ChromatogramsModel : DisposableModelBase {
     public string VerticalProperty { get; }
 
     public ChromatogramsModel Merge(ChromatogramsModel other) {
-        return new ChromatogramsModel($"{Name} and {other.Name}", new ObservableCollection<DisplayChromatogram>(DisplayChromatograms.Concat(other.DisplayChromatograms)), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem.GraphLabel, AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel);
+        return new ChromatogramsModel($"{Name} and {other.Name}", new ObservableCollection<DisplayChromatogram>(DisplayChromatograms.Concat(other.DisplayChromatograms)), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem?.GraphLabel ?? string.Empty, AbundanceAxisItemSelector.SelectedAxisItem?.GraphLabel ?? string.Empty);
     }
 
     public async Task ExportAsync(Stream stream, string separator) {

@@ -31,5 +31,9 @@ namespace CompMs.MsdialCore.DataObj {
         public double MobilityMin { get; set; }
         [Key(10)]
         public double MobilityMax { get; set; }
+        [Key(11)]
+        public int Charge { get; set; } // optional charge filter
+        [Key(12)]
+        public string ConditionType { get; set; }
     }
 }

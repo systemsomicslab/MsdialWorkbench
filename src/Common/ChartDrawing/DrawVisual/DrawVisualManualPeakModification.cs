@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CompMs.Common.Utility;
+using CompMs.Graphics.Core.Base;
+using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using System.Diagnostics;
-
-using CompMs.Graphics.Core.Base;
 
 
 namespace CompMs.Graphics.Chromatogram.ManualPeakModification
@@ -464,58 +464,40 @@ namespace CompMs.Graphics.Chromatogram.ManualPeakModification
                 SignalToNoise = chromAccessory.SignalToNoise
             };
 
-            var chromBegin = false;
-            var chromTop = false;
             var leftMinIntensity = double.MaxValue;
             var rightMinIntensity = double.MaxValue;
 
             // finding left, top, right scan IDs
-            for (int i = 1; i < chromPoints.Count - 1; i++) {
+            var left = chromPoints.LowerBound(property.RtLeft, (p, l) => p.X.CompareTo(l));
+            var right = chromPoints.UpperBound(property.RtRight, left, chromPoints.Count, (p, r) => p.X.CompareTo(r));
+            var top = chromPoints.LowerBound(property.RtTop, left, chromPoints.Count, (p, t) => p.X.CompareTo(t));
+            for (int i = left; i <= top; i++) {
                 var point = chromPoints[i];
+                if (leftMinIntensity >= point.Y) {
+                    leftMinIntensity = point.Y;
 
-                if (point.X < property.RtLeft) continue;
-                if (point.X > property.RtRight) {
-
-                    property.HeightRightFromZero = chromPoints[i - 1].Y;
-                    property.ScanRight = i - 1;
-
-                    break;
-                }
-
-                if (point.X >= property.RtLeft && !chromBegin) {
-                    chromBegin = true;
-
-                    property.HeightLeftFromZero = point.Y;
-                    property.ScanLeft = i;
-                }
-
-                if (point.X >= property.RtTop && !chromTop) {
-                    chromTop = true;
-
-                    property.HeightFromZero = point.Y;
-                    property.ScanTop = i;
-                }
-
-                if (point.X >= property.RtLeft && point.X <= property.RtTop) {
-                    if (leftMinIntensity >= point.Y) {
-                        leftMinIntensity = point.Y;
-
-                        property.ScanMinLeft = i;
-                        property.RtMinLeft = point.X;
-                        property.HeightMinLeftFromZero = point.Y;
-                    }
-                }
-
-                if (point.X >= property.RtTop && point.X <= property.RtRight) {
-                    if (rightMinIntensity >= point.Y) {
-                        rightMinIntensity = point.Y;
-
-                        property.ScanMinRight = i;
-                        property.RtMinRight = point.X;
-                        property.HeightMinRightFromZero = point.Y;
-                    }
+                    property.ScanMinLeft = i;
+                    property.RtMinLeft = point.X;
+                    property.HeightMinLeftFromZero = point.Y;
                 }
             }
+
+            for (int i = top; i < right; i++) {
+                var point = chromPoints[i];
+                if (rightMinIntensity >= point.Y) {
+                    rightMinIntensity = point.Y;
+
+                    property.ScanMinRight = i;
+                    property.RtMinRight = point.X;
+                    property.HeightMinRightFromZero = point.Y;
+                }
+            }
+            property.ScanLeft = left;
+            property.ScanRight = right - 1;
+            property.ScanTop = top;
+            property.HeightLeftFromZero = chromPoints[left].Y;
+            property.HeightRightFromZero = chromPoints[right - 1].Y;
+            property.HeightFromZero = chromPoints[top].Y;
 
             var areaFromZero = 0.0;
             var areaFromBaseline = 0.0;

@@ -70,6 +70,8 @@ namespace CompMs.MsdialCore.Export
                 "Simple dot product",
                 "Weighted dot product",
                 "Reverse dot product",
+                "Enhanced dot product",
+                "Spectrum entropy",
                 "Matched peaks count",
                 "Matched peaks percentage",
                 "Total score",
@@ -98,13 +100,14 @@ namespace CompMs.MsdialCore.Export
                 comments = comments.Append($"Tag: {feature.TagCollection}");
             }
             var comment = string.Join("; ", comments);
+            var hadProductIonSpectrum = feature.IsMsmsContained;
             return new Dictionary<string, string> {
                 { "Peak ID", feature.MasterPeakID.ToString() },
                 { "Name", UnknownIfEmpty(feature.Name) },
                 { "Scan", feature.MS1RawSpectrumIdTop.ToString() },
                 // "m/z left", "m/z", "m/z right",
-                { "Height", string.Format("{0:0}", feature.PeakHeightTop) },
-                { "Area", string.Format("{0:0}", feature.PeakAreaAboveZero) },
+                { "Height", string.Format("{0:0}", feature.PeakFeature.PeakHeightTop) },
+                { "Area", string.Format("{0:0}", feature.PeakFeature.PeakAreaAboveZero) },
                 { "Model masses", string.Join(" ", msdec.ModelMasses) },
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
@@ -118,12 +121,14 @@ namespace CompMs.MsdialCore.Export
                 // "m/z matched",
                 { "MS/MS matched", (matchResult?.IsSpectrumMatch ?? false).ToString() },
                 // { "m/z similarity", mzSimilarity },
-                { "Simple dot product", ValueOrNull(matchResult?.SimpleDotProduct, "F2") },
-                { "Weighted dot product", ValueOrNull(matchResult?.WeightedDotProduct, "F2") },
-                { "Reverse dot product", ValueOrNull(matchResult?.ReverseDotProduct, "F2") },
-                { "Matched peaks count", ValueOrNull(matchResult?.MatchedPeaksCount, "F2") },
-                { "Matched peaks percentage", ValueOrNull(matchResult?.MatchedPeaksPercentage, "F2") },
-                { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
+                { "Simple dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.SimpleDotProduct, "F3") },
+                { "Weighted dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.WeightedDotProduct, "F3") },
+                { "Reverse dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.ReverseDotProduct, "F3") },
+                { "Enhanced dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.EnhancedDotProduct, "F3") },
+                { "Spectrum entropy", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.SpectralEntropy, "F3") },
+                { "Matched peaks count", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksCount, "F2") },
+                { "Matched peaks percentage", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksPercentage, "F2") },
+                { "Total score", ValueOrNull(matchResult?.TotalScore, "F3") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
                 { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
                 { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList, analysisFile, exportStyle) }

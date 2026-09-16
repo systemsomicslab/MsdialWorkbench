@@ -1,6 +1,7 @@
 ﻿using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -18,9 +19,9 @@ namespace CompMs.App.MsdialConsole.Parser
             var alignmentFile = new AlignmentFileBean() {
                 FileID = 0,
                 FileName = alignFileString,
-                FilePath = inputFolder + "\\" + alignFileString + ".arf",
-                SpectraFilePath = inputFolder + "\\" + alignFileString + ".dcl",
-                EicFilePath = inputFolder + "\\" + alignFileString + ".EIC.aef"
+                FilePath = Path.Combine(inputFolder, alignFileString + ".arf"),
+                SpectraFilePath = Path.Combine(inputFolder, alignFileString + ".dcl"),
+                EicFilePath = Path.Combine(inputFolder, alignFileString + ".EIC.aef")
             };
 
             return alignmentFile;

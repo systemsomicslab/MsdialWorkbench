@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,17 +23,21 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly ImagingImmsMethodModel _model;
         private readonly IMessageBroker _broker;
+        private readonly ReactiveProperty<IResultViewModel?> _selectedImageResultViewModel;
 
         public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model,
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
-                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
-                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
+                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>()),
+                  new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>())) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
+            _selectedImageResultViewModel = new ReactiveProperty<IResultViewModel?>().AddTo(Disposables);
+            SelectedViewModel = _selectedImageResultViewModel;
             var focusManager = new FocusControlManager().AddTo(Disposables);
             ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, peakSpotTableService)).AddTo(Disposables);
-            RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
+            SelectedImageViewModel = ImageViewModels.FirstOrDefault();
+            RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>([]);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExporModel.ExportAsync).AddTo(Disposables);
         }
 
@@ -40,7 +45,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
         public ImagingImmsImageViewModel? SelectedImageViewModel {
             get => _selectedImageViewModel;
-            set => SetProperty(ref _selectedImageViewModel, value);
+            set {
+                if (SetProperty(ref _selectedImageViewModel, value)) {
+                    _selectedImageResultViewModel.Value = value?.ImageResultViewModel;
+                }
+            }
         }
         private ImagingImmsImageViewModel? _selectedImageViewModel;
 
@@ -65,9 +74,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
 
         private void ExportAnalysis() {
             var m = _model.CreateExportAnalysisModel();
-            using (var vm = new AnalysisResultExportViewModel(m)) {
-                _broker.Publish(vm);
-            }
+            using var vm = new AnalysisResultExportViewModel(m);
+            _broker.Publish(vm);
         }
     }
 }

@@ -26,6 +26,16 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
         public double Mass => MassCenter; // Alias of MassCenter used in PeakSpotNavigatorView
+        public double QuantMass {
+            get => innerModel.QuantMass;
+            set {
+                if (innerModel.QuantMass != value) {
+                    innerModel.QuantMass = value;
+                    OnPropertyChanged(nameof(QuantMass));
+                }
+            }
+        }
+
         public double HeightAverage => innerModel.HeightAverage;
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
@@ -141,7 +151,15 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double SignalToNoiseAve => innerModel.SignalToNoiseAve;
-        public double FillPercentage => innerModel.FillParcentage;
+        public double FillPercentage {
+            get => innerModel.FillParcentage;
+            set {
+                if (innerModel.FillParcentage != value) {
+                    innerModel.FillParcentage = (float)value;
+                    OnPropertyChanged(nameof(FillPercentage));
+                }
+            }
+        }
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => innerModel.MatchResults;

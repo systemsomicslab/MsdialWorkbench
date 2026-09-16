@@ -16,12 +16,12 @@ namespace CompMs.MsdialCore.Algorithm {
                 var chromXs = chromPeak.ChromXs;
                 if (chromXs.Drift.Value > 0) {
                     chromPeak.CollisionCrossSection = IonMobilityUtility.MobilityToCrossSection(type, chromXs.Drift.Value, 
-                        Math.Abs(chromPeak.PeakCharacter.Charge), chromPeak.Mass, calinfo, isAllCalibrantDataImported);
+                    Math.Abs(chromPeak.PeakCharacter.Charge), chromPeak.PeakFeature.Mass, calinfo, isAllCalibrantDataImported);
                 }
                 foreach (var driftPeak in chromPeak.DriftChromFeatures.OrEmptyIfNull()) { // for LC-IM-MS
                     if (driftPeak.ChromXs.Drift.Value > 0) {
                         driftPeak.CollisionCrossSection = IonMobilityUtility.MobilityToCrossSection(type, driftPeak.ChromXs.Drift.Value,
-                            Math.Abs(chromPeak.PeakCharacter.Charge), chromPeak.Mass, calinfo, isAllCalibrantDataImported);
+                            Math.Abs(chromPeak.PeakCharacter.Charge), chromPeak.PeakFeature.Mass, calinfo, isAllCalibrantDataImported);
                     }
                 }
             }

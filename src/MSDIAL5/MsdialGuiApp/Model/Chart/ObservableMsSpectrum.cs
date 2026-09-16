@@ -20,13 +20,14 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class ObservableMsSpectrum : DisposableModelBase {
         private readonly Subject<Stream> _saveAsObservable;
-        private readonly IObservable<ISpectraExporter?> _exporter;
+        private readonly IObservable<ISpectraExporter?>? _exporter;
 
-        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?> exporter) {
-            MsSpectrum = msSpectrum ?? throw new ArgumentNullException(nameof(msSpectrum));
+        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool>? loaded, IObservable<ISpectraExporter?>? exporter) {
+            var msSpectrumHot = msSpectrum?.Replay(1);
+            MsSpectrum = msSpectrumHot ?? throw new ArgumentNullException(nameof(msSpectrum));
             Loaded = loaded ?? Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _exporter = exporter;
-            var spectrum = msSpectrum.Select(s => s?.Spectrum ?? new List<SpectrumPeak>(0)).Publish();
+            var spectrum = msSpectrumHot.Select(s => s?.Spectrum ?? new List<SpectrumPeak>(0)).Publish();
             var save = new Subject<Stream>().AddTo(Disposables);
             if (exporter != null) {
                 save.Where(s => s != null && s.CanWrite)
@@ -41,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim(false)
                 .AddTo(Disposables)
                 ?? Observable.Return(false);
+            Disposables.Add(msSpectrumHot.Connect());
             Disposables.Add(spectrum.Connect());
         }
 
@@ -81,11 +83,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public AxisPropertySelectors<double> CreateAxisPropertySelectors2(PropertySelector<SpectrumPeak, double> propertySelector, string graphLabel) {
             var rangeProperty = GetRange(propertySelector.Selector).Publish();
+            var absoluteAxis = rangeProperty.ToReactiveContinuousAxisManager(new ConstantMargin(0, 30), 0d, 0d, LabelType.Standard).AddTo(Disposables);
             var continuousAxis = rangeProperty.ToReactiveContinuousAxisManager(new ConstantMargin(0, 30), 0d, 0d, LabelType.Percent).AddTo(Disposables);
             var logAxis = rangeProperty.ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d, labelType: LabelType.Percent).AddTo(Disposables);
             var sqrtAxis = rangeProperty.ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0, labelType: LabelType.Percent).AddTo(Disposables);
             var axisSelector = new AxisItemSelector<double>(
                     new AxisItemModel<double>("Relative", continuousAxis, $"Relative {graphLabel}"),
+                    new AxisItemModel<double>("Absolute", absoluteAxis, $"Absolute {graphLabel}"),
                     new AxisItemModel<double>("Log10", logAxis, $"Relative {graphLabel} (log10)"),
                     new AxisItemModel<double>("Sqrt", sqrtAxis, $"Relative {graphLabel} (^1/2)")).AddTo(Disposables);
             Disposables.Add(rangeProperty.Connect());

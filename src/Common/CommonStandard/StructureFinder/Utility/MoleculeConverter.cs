@@ -1,24 +1,22 @@
-﻿using AtomProperty = CompMs.Common.StructureFinder.Property.AtomProperty;
+﻿using CompMs.Common.ClassyfireApiStandard;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
+using CompMs.Common.Parameter;
+using CompMs.Common.StructureFinder.DataObj;
 using CompMs.Common.StructureFinder.Property;
 using CompMs.Common.Utility;
 using NCDK;
-using NCDK.Smiles;
-using NCDK.Graphs;
 using NCDK.Default;
-using NCDK.Tools.Manipulator;
+using NCDK.Graphs;
 using NCDK.IO.Iterator;
+using NCDK.Smiles;
+using NCDK.Tools.Manipulator;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using CompMs.Common.StructureFinder.DataObj;
-using CompMs.Common.Parameter;
-using NCDK.Aromaticities;
-using CompMs.Common.ClassyfireApiStandard;
-using System.Diagnostics;
+using AtomProperty = CompMs.Common.StructureFinder.Property.AtomProperty;
 
 namespace CompMs.Common.StructureFinder.Utility
 {
@@ -27,8 +25,8 @@ namespace CompMs.Common.StructureFinder.Utility
         private MoleculeConverter() { }
 
         private static readonly IChemObjectBuilder builder = CDK.Builder;
-        private static SmilesParser parser = new SmilesParser(builder);
-        private static SmilesGenerator smilesGenerator = new SmilesGenerator(SmiFlavors.Canonical);
+        private static readonly SmilesParser parser = new(builder);
+        private static readonly SmilesGenerator smilesGenerator = new(SmiFlavors.Canonical);
 
 
         //public static List<IAtomContainer> SdfToIAtomContainers(string sdfFile)
@@ -101,7 +99,7 @@ namespace CompMs.Common.StructureFinder.Utility
                 {
                     if (!dict.ContainsKey(atom))
                     {
-                        dict[atom] = new List<IBond>();
+                        dict[atom] = [];
                     }
                     dict[atom].Add(bond);
                 }
@@ -113,7 +111,7 @@ namespace CompMs.Common.StructureFinder.Utility
         {
             error = "Error\r\n";
 
-            IAtomContainer container = null;
+            IAtomContainer container;
             try
             {
                 //var smilesParser = new SmilesParser();
@@ -150,20 +148,19 @@ namespace CompMs.Common.StructureFinder.Utility
             }
 
             var iContainer = new AtomContainer();
-            iContainer.SetAtoms(atoms.ToArray());
-            iContainer.SetBonds(bonds.ToArray());
+            iContainer.SetAtoms([.. atoms]);
+            iContainer.SetBonds([.. bonds]);
 
             return iContainer;
         }
 
         public static string AtomContainerToSmiles(IAtomContainer container)
         {
-            IAtomContainer implicitHydrizedContainer = null;
             var smiles = string.Empty;
 
             try
             {
-                implicitHydrizedContainer = AtomContainerManipulator.RemoveHydrogens(container);
+                IAtomContainer implicitHydrizedContainer = AtomContainerManipulator.RemoveHydrogens(container);
                 //ExtAtomContainerManipulator.convertExplicitToImplicitHydrogens(container);
                 smiles = smilesGenerator.Create(implicitHydrizedContainer);
             }
@@ -217,16 +214,16 @@ namespace CompMs.Common.StructureFinder.Utility
             int tmsCount = 0, int meoxCount = 0)
         {
             var structures = new List<Structure>();
-            var dbQueryStrings = getDabaseQueries(param.DatabaseQuery);
+            var dbQueryStrings = GetDabaseQueries(param.DatabaseQuery);
 
             var counter = 0;
-            while (ErrorHandler.IsFileLocked(sdfFile, out string error))
+            while (ErrorHandler.IsFileLocked(sdfFile, out _))
             {
                 System.Threading.Thread.Sleep(2000);
                 counter++;
                 if (counter > 3)
                 {
-                    error = "Cannot open this file: " + sdfFile;
+                    string error = "Cannot open this file: " + sdfFile;
                     Console.WriteLine(error);
                     return structures;
                 }
@@ -239,15 +236,10 @@ namespace CompMs.Common.StructureFinder.Utility
                 {
                     if (container == null)
                         continue;
-
-                    var title = string.Empty;
-                    var id = string.Empty;
-                    var inchikey = string.Empty;
-
-                    readPubChemMetadata(container, out title, out id, out inchikey);
+                    ReadPubChemMetadata(container, out string title, out string id, out string inchikey);
 
                     Kekulization.Kekulize(container);
-                    Structure structure = null;
+                    Structure structure;
                     if (tmsCount > 0 || meoxCount > 0)
                     {
                         var derivativeContainer = Derivatization.TmsMeoxDerivatization(container, tmsCount, meoxCount);
@@ -270,13 +262,8 @@ namespace CompMs.Common.StructureFinder.Utility
                         structure.Title = title;
                         structure.Id = id;
                         structure.DatabaseQueries = dbQueryStrings;
-
-                        var resourceNames = string.Empty;
-                        var resourceNumber = 0;
-                        var ontology = string.Empty;
-                        var ontologyID = string.Empty;
-                        findStructureQueries(structure.Formula, inchikey, existStructureDB, param.DatabaseQuery,
-                            out resourceNames, out resourceNumber, out ontology, out ontologyID);
+                        FindStructureQueries(structure.Formula, inchikey, existStructureDB, param.DatabaseQuery,
+                            out string resourceNames, out int resourceNumber, out string ontology, out string ontologyID);
 
                         structure.Inchikey = inchikey;
                         structure.ResourceNames = resourceNames;
@@ -341,7 +328,7 @@ namespace CompMs.Common.StructureFinder.Utility
             return structures;
         }
 
-        private static string getDabaseQueries(DatabaseQuery databaseQuery)
+        private static string GetDabaseQueries(DatabaseQuery databaseQuery)
         {
             var queryStrings = string.Empty;
             var infoArray = databaseQuery.GetType().GetProperties();
@@ -355,7 +342,7 @@ namespace CompMs.Common.StructureFinder.Utility
             return queryStrings;
         }
 
-        private static void findStructureQueries(Formula formula, string inchikey, List<ExistStructureQuery> existStructureDB, DatabaseQuery dbQueries,
+        private static void FindStructureQueries(Formula formula, string inchikey, List<ExistStructureQuery> existStructureDB, DatabaseQuery dbQueries,
             out string resourceNames, out int resourceNumber, out string ontology, out string ontologyID)
         {
 
@@ -396,10 +383,9 @@ namespace CompMs.Common.StructureFinder.Utility
             }
         }
 
-        private static void readPubChemMetadata(IAtomContainer originalCompound, out string title, out string id, out string inchikey)
+        private static void ReadPubChemMetadata(IAtomContainer originalCompound, out string title, out string id, out string inchikey)
         {
             var titleCandidate = string.Empty;
-            title = string.Empty;
             id = string.Empty;
             inchikey = string.Empty;
 
@@ -479,48 +465,48 @@ namespace CompMs.Common.StructureFinder.Utility
         public static int GetAtomPriorityValue(string atomString)
         {
             //priority C > N > O > S > P > Si >F > Cl > Br > I >  H > Others
-            switch (atomString)
+            return atomString switch
             {
-                case "C": return 11;
-                case "N": return 10;
-                case "O": return 9;
-                case "S": return 8;
-                case "P": return 7;
-                case "Si": return 6;
-                case "F": return 5;
-                case "Cl": return 4;
-                case "Br": return 3;
-                case "I": return 2;
-                case "H": return 1;
-                default: return 0;
-            }
+                "C" => 11,
+                "N" => 10,
+                "O" => 9,
+                "S" => 8,
+                "P" => 7,
+                "Si" => 6,
+                "F" => 5,
+                "Cl" => 4,
+                "Br" => 3,
+                "I" => 2,
+                "H" => 1,
+                _ => 0,
+            };
         }
 
         public static int GetAtomBondPairPriorityValue(AtomProperty atom, BondProperty bond)
         {
             var atomBondPair = atom.AtomString + StructureEnumConverter.BondTypeToString(bond.BondType);
 
-            switch (atomBondPair)
+            return atomBondPair switch
             {
-                case "C#": return 17;
-                case "C=": return 16;
-                case "C-": return 15;
-                case "N#": return 14;
-                case "N=": return 13;
-                case "N-": return 12;
-                case "O=": return 11;
-                case "O-": return 10;
-                case "P=": return 9;
-                case "P-": return 8;
-                case "S=": return 7;
-                case "S-": return 6;
-                case "F-": return 5;
-                case "Cl-": return 4;
-                case "Br-": return 3;
-                case "I-": return 2;
-                case "Si-": return 1;
-                default: return 0;
-            }
+                "C#" => 17,
+                "C=" => 16,
+                "C-" => 15,
+                "N#" => 14,
+                "N=" => 13,
+                "N-" => 12,
+                "O=" => 11,
+                "O-" => 10,
+                "P=" => 9,
+                "P-" => 8,
+                "S=" => 7,
+                "S-" => 6,
+                "F-" => 5,
+                "Cl-" => 4,
+                "Br-" => 3,
+                "I-" => 2,
+                "Si-" => 1,
+                _ => 0,
+            };
         }
 
         public static List<Structure> QueriesToStructures(List<ExistStructureQuery> queries, string databaseQueries, int tmsCount = 0, int meoxCount = 0)
@@ -540,9 +526,8 @@ namespace CompMs.Common.StructureFinder.Utility
             //});
             foreach (var query in queries)
             {
-                var error = string.Empty;
                 //Console.WriteLine(query.Smiles);
-                var structure = ExistStructureQueryToStructure(query, databaseQueries, out error, tmsCount, meoxCount);
+                var structure = ExistStructureQueryToStructure(query, databaseQueries, out string error, tmsCount, meoxCount);
                 if (error != string.Empty) Debug.WriteLine(error);
                 if (structure != null)
                 {
@@ -587,7 +572,7 @@ namespace CompMs.Common.StructureFinder.Utility
         {
             error = string.Empty;
 
-            IAtomContainer container = null;
+            IAtomContainer container;
             try
             {
                 // var smilesParser = new SmilesParser();

@@ -124,6 +124,12 @@
                                 <Setter Property="FontSize" Value="18"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                             <Style TargetType="TextBlock" x:Key="AxisTitle">
                                 <Setter Property="FontFamily" Value="Calibri"/>
@@ -135,7 +141,7 @@
                         </Grid.Resources>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition />
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="15"/>
@@ -150,6 +156,7 @@
                                    Text="{TemplateBinding GraphTitle}"
                                    Style="{StaticResource GraphTitle}"
                                    IsHitTestVisible="False"
+                                   Height="30"
                                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
 
                         <Border BorderBrush="{TemplateBinding BorderBrush}"

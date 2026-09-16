@@ -25,7 +25,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 return;
             }
 
-            foreach ((var e, var a) in expected.Zip(actual)) {
+            foreach ((var e, var a) in expected.ZipInternal(actual)) {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
                 //Assert.AreEqual(e.Intensity, a.Intensity, 0.1);
             }
@@ -185,7 +185,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 return;
             }
 
-            foreach ((var e, var a) in expected.Zip(actual)) {
+            foreach ((var e, var a) in expected.ZipInternal(actual)) {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
                 //Assert.AreEqual(e.Intensity, a.Intensity, 0.1);
             }

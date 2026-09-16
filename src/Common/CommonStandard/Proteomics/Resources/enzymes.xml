@@ -450,4 +450,9 @@
          <string>YV</string>
       </specificity>
    </enzyme>
+   <enzyme title="No enzyme" description="No cleavage performed" create_date="2025-07-08" last_modified_date="2025-07-08" user="htsugawa">
+    <specificity>
+      <string>-</string>
+    </specificity>
+  </enzyme>
 </enzymes>

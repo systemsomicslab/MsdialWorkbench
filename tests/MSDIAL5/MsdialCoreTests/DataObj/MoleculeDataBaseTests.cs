@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void MoleculeDataBaseTest() {
-            var db = new MoleculeDataBase(Array.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB);
+            var db = new MoleculeDataBase(Array.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath");
             var expected = db;
             MoleculeDataBase actual;
 
@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MoleculeMsReference { ScanID = 3, Name = "D", Comment = "d", },
                 new MoleculeMsReference { ScanID = 4, Name = "E", Comment = "e", },
             };
-            var db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB);
+            var db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath");
             var expected = references;
 
             using (var stream = new MemoryStream()) {
@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MoleculeMsReference { ScanID = 2, Name = "C", Comment = "c", },
                 new MoleculeMsReference { ScanID = 4, Name = "E", Comment = "e", },
             };
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB);
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB, "DBPath");
 
             var actual = db.Refer(new MsScanMatchResult { LibraryID = 2, });
             var expected = references[2];

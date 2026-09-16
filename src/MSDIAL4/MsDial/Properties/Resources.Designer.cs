@@ -19,10 +19,10 @@ namespace Rfx.Riken.OsakaUniv.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Rfx.Riken.OsakaUniv.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,18 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to msdial-jp@googlegroups.com.
+        /// </summary>
+        public static string CONTACT_EMAIL {
+            get {
+                return ResourceManager.GetString("CONTACT_EMAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dec. 18st, 2022.
         /// </summary>
-        internal static string DATE {
+        public static string DATE {
             get {
                 return ResourceManager.GetString("DATE", resourceCulture);
             }
@@ -72,16 +81,16 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string String1 {
+        public static string String1 {
             get {
                 return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vdd.json.
+        ///   Looks up a localized string similar to https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100.
         /// </summary>
-        internal static string VDD_URI {
+        public static string VDD_URI {
             get {
                 return ResourceManager.GetString("VDD_URI", resourceCulture);
             }
@@ -90,7 +99,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         /// <summary>
         ///   Looks up a localized string similar to MS-DIAL ver. 4.9.221218.
         /// </summary>
-        internal static string VERSION {
+        public static string VERSION {
             get {
                 return ResourceManager.GetString("VERSION", resourceCulture);
             }

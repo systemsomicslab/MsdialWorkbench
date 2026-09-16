@@ -363,6 +363,22 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    case LbmClass.Cer_AH:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideAh(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.Cer_NH:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideNh(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.Cer_AH_d9:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideAhD9(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.Cer_NH_d9:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideNhD9(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
                     case LbmClass.HexCer_AP:
                         result = LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
@@ -798,8 +814,6 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
                             msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
-
-
                     case LbmClass.CSPHex:
                     case LbmClass.BRSPHex:
                     case LbmClass.CASPHex:
@@ -893,10 +907,6 @@ namespace CompMs.Common.Lipidomics
                         return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                     //20230612
-                    case LbmClass.NATryA:
-                        result = LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
-                        break;
                     case LbmClass.NA5HT:
                         result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -926,9 +936,37 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
+                    case LbmClass.NAAnt:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                     case LbmClass.BisMeLPA:
                         result = LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    //20230630
+                    case LbmClass.NATryA:
+                        if (totalCarbon < 29)
+                        {
+                            return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        }
+                        else
+                        {
+                            return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        }
+                    case LbmClass.NAGABA:
+                        return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    //20260203
+                    case LbmClass.SPEHex:
+                        result = LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                            totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.SPGHex:
+                        result = LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
+                            totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
                     default:
                         return null;
@@ -939,7 +977,7 @@ namespace CompMs.Common.Lipidomics
                     molecules.Add(result);
                 }
 
-                if (result != null && result.AnnotationLevel == 2)
+                if (result != null && result.AnnotationLevel >= 2)
                 {
                     //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
                 }

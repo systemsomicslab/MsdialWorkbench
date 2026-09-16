@@ -32,6 +32,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AmplitudeCutoff).AddTo(Disposables);
 
+            RelativeAmplitudeCutoff = model.ToReactivePropertyAsSynchronized(
+                m => m.RelativeAmplitudeCutoff,
+                m => Math.Min(m * 100f, 100f).ToString(),
+                vm => float.Parse(vm) / 100f,
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => RelativeAmplitudeCutoff).AddTo(Disposables);
+
             RemoveAfterPrecursor = model.ToReactivePropertySlimAsSynchronized(m => m.RemoveAfterPrecursor).AddTo(Disposables);
 
             KeptIsotopeRange = model.ToReactivePropertyAsSynchronized(
@@ -43,12 +50,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             KeepOriginalPrecurosrIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.KeepOriginalPrecurosrIsotopes).AddTo(Disposables);
 
+            ExecuteChromDeconvolution = model.ToReactivePropertySlimAsSynchronized(m => m.ExecuteChromDeconvolution).AddTo(Disposables);
+
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
                 SigmaWindowValue.ObserveHasErrors,
                 AmplitudeCutoff.ObserveHasErrors,
+                RelativeAmplitudeCutoff.ObserveHasErrors,
                 KeptIsotopeRange.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
@@ -58,9 +68,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 SigmaWindowValue.ToUnit(),
                 AmplitudeCutoff.ToUnit(),
+                RelativeAmplitudeCutoff.ToUnit(),
                 RemoveAfterPrecursor.ToUnit(),
                 KeptIsotopeRange.ToUnit(),
                 KeepOriginalPrecurosrIsotopes.ToUnit(),
+                ExecuteChromDeconvolution.ToUnit(),
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -87,6 +99,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
         public ReactiveProperty<string> AmplitudeCutoff { get; }
 
+        [Required(ErrorMessage = "Relative amplitude cut off value is required.")]
+        [RegularExpression(@"100(\.0+)?|([1-9]?\d)?(\.\d+)?", ErrorMessage = "Invalid value entered.")]
+        public ReactiveProperty<string> RelativeAmplitudeCutoff { get; }
+
         public ReactivePropertySlim<bool> RemoveAfterPrecursor { get; }
 
         [Required(ErrorMessage = "Kept isotope range is required.")]
@@ -95,6 +111,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> KeptIsotopeRange { get; }
 
         public ReactivePropertySlim<bool> KeepOriginalPrecurosrIsotopes { get; }
+
+        public ReactivePropertySlim<bool> ExecuteChromDeconvolution { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

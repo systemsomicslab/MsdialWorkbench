@@ -103,15 +103,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public ISettingViewModel GetDataCollectionSetting() {
-            return SettingViewModels.OfType<DataCollectionSettingViewModel>().FirstOrDefault();
+            var collection = SettingViewModels.OfType<DataCollectionSettingViewModel>().FirstOrDefault();
+            if (collection != null) return collection;
+            return SettingViewModels.OfType<GcmsDataCollectionSettingViewModel>().FirstOrDefault();
         }
 
         public ISettingViewModel GetIdentificationSetting() {
-            return SettingViewModels.OfType<IdentifySettingViewModel>().FirstOrDefault();
+            var identification = SettingViewModels.OfType<IdentifySettingViewModel>().FirstOrDefault();
+            if (identification != null) return identification;
+            // fallback for GCMS project variant
+            return SettingViewModels.OfType<GcmsIdentificationSettingViewModel>().FirstOrDefault();
         }
 
         public ISettingViewModel GetAlignmentSetting() {
-            return SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
+            // Return AlignmentParameterSettingViewModel if present; otherwise try GcmsAlignmentParameterSettingViewModel.
+            var alignment = SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
+            if (alignment != null) return alignment;
+            // fallback for GCMS project variant
+            return SettingViewModels.OfType<GcmsAlignmentParameterSettingViewModel>().FirstOrDefault();
         }
 
         private static IAnnotatorSettingViewModelFactory CreateAnnotatorViewModelFactory(IMsdialDataStorage<ParameterBase> storage) {

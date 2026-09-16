@@ -280,6 +280,15 @@
                               VerticalContentAlignment="Center"
                               Height="24"/>
                 </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Do alignment for ref.matched peaks only:">
+                    <CheckBox IsChecked="{Binding Path=UseRefMatchedPeaksOnly.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              HorizontalAlignment="Left"
+                              ToolTip="Alignment is performed for peaks annotated. "
+                              VerticalContentAlignment="Center"
+                              Height="24"/>
+                </ui:LabeledContent>
             </StackPanel>
         </Expander>
     </Grid>

@@ -48,13 +48,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private void Deduplicate(IList<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)
             if (_param.OnlyReportTopHitInMspSearch) { //to remove duplicate identifications
-                var mspDeduplicator = new MspAnnotationDeduplicator();
-                mspDeduplicator.Process(alignments);
-            }
-
-            if (_param.OnlyReportTopHitInTextDBSearch) {
-                var textDbDedupicator = new TextAnnotationDeduplicator();
-                textDbDedupicator.Process(alignments);
+                var deduplicator = new MatchResultAnnotationDeduplicator(evaluator);
+                deduplicator.Process(alignments);
             }
         }
 

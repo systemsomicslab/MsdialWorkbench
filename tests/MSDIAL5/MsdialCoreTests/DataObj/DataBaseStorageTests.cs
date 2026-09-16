@@ -17,7 +17,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         [TestMethod()]
         public void DataBaseStorageTest() {
             var dbs = DataBaseStorage.CreateEmpty();
-            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 0, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
+            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 0, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB, "TestDBPath");
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Metabolomics, };
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             MassAnnotator annotator = new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 1);

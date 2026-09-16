@@ -76,21 +76,9 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
-                            <GroupBox.Header>
-                                <Label Content="Precursor ion option" FontStyle="Italic"/>
-                            </GroupBox.Header>
-                            <StackPanel Margin="8,0">
-                                <ui:LabeledContent PrependLabel="Precursor oriented spectral search:"
-                                               Style="{StaticResource AlignedContent}">
-                                    <CheckBox IsChecked="{Binding IsPrecursorOrientedSearch.Value}"/>
-                                </ui:LabeledContent>
-                            </StackPanel>
-                        </GroupBox>
-                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,10,0,0">
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,10,0,0">
                             <GroupBox.Header>
                                 <Label Content="Mass tolerance setting" FontStyle="Italic"/>
                             </GroupBox.Header>
@@ -123,7 +111,7 @@
                                 </ui:LabeledContent>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,10,0,0">
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,10,0,0">
                             <GroupBox.Header>
                                 <Label Content="Abundance setting" FontStyle="Italic"/>
                             </GroupBox.Header>
@@ -136,7 +124,7 @@
                                 </ui:LabeledContent>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Grid.Row="3" BorderThickness="0" Margin="0,10,0,0">
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,10,0,0">
                             <GroupBox.Header>
                                 <Label Content="Mass range setting" FontStyle="Italic"/>
                             </GroupBox.Header>

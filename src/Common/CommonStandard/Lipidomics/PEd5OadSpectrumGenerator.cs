@@ -128,12 +128,7 @@ namespace CompMs.Common.Lipidomics {
                 );
                 if (lipid.Chains is SeparatedChains) {
                     foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {
-                        spectrum.AddRange(
-                            new[] {
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass), 50d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
-                                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chain.Mass + MassDiffDictionary.HydrogenMass-H2O), 40d, $"-{chain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
-                            }
-                        );
+                        spectrum.Add(new SpectrumPeak(chain.Mass, 50d, $"{chain}") { SpectrumComment = SpectrumComment.acylchain });
                     }
                 }
             }

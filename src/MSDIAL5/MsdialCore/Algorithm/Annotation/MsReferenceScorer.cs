@@ -37,9 +37,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes, MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes, MsRefSearchParameterBase parameter) {
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqenhancedDotProduct = MsScanMatching.GetEnhancedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd, .6d);
+            var spectrumEntropy = MsScanMatching.GetSpectralEntropySimilarity(scan.Spectrum, reference.Spectrum, parameter.Ms2Tolerance);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
@@ -65,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                         matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                     }
                     else if (this.collisionType == CollisionType.OAD) {
-                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForOAD(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                     }
                     else {
                         matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
@@ -86,13 +88,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 Name = reference.Name,
                 LibraryID = reference.ScanID,
                 InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct,
-                ReverseDotProduct = (float)reverseDotProduct,
+                SquaredWeightedDotProduct = (float)sqweightedDotProduct,
+                SquaredSimpleDotProduct = (float)sqsimpleDotProduct,
+                SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0],
                 MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity,
                 IsotopeSimilarity = (float)isotopeSimilarity,
+                // GetEnhancedDotProduct returns the not-computed -1 like its siblings, and Math.Sqrt(-1)
+                // is NaN. Keep the sentinel so a negative still means "never computed" in this field.
+                EnhancedDotProduct = sqenhancedDotProduct < 0d ? -1f : (float)Math.Sqrt(sqenhancedDotProduct),
+                SpectralEntropy = (float)spectrumEntropy,
                 Source = source,
                 AnnotatorID = id,
                 Priority = priority,
@@ -142,7 +148,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
                 scores.Add(result.AcurateMassSimilarity * massFactor);
-            if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
+            // The dot-product getters clamp the not-computed -1 to 0, so testing them cannot detect a
+            // candidate that was never compared against a reference spectrum. Ask the match result.
+            if (result.IsSpectrumComparisonPerformed)
                 scores.Add(msmsScore * msmsFactor);
             if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0 && rtFactor > 0)
                 scores.Add(result.RtSimilarity * rtFactor);
@@ -188,17 +196,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
            
             if (omics == TargetOmics.Lipidomics) {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff;
-                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SimpleDotProductCutOff) {
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                || result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                || result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff;
+                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SquaredSimpleDotProduct < parameter.SquaredSimpleDotProductCutOff) {
                     result.IsSpectrumMatch = false;
                 }
             }
             else {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+                result.IsSpectrumMatch = result.SquaredWeightedDotProduct >= parameter.SquaredWeightedDotProductCutOff
+                && result.SquaredSimpleDotProduct >= parameter.SquaredSimpleDotProductCutOff
+                && result.SquaredReverseDotProduct >= parameter.SquaredReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
             }
@@ -228,7 +236,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 name = MsScanMatching.GetRefinedLipidAnnotationLevelForEIEIO(scan, reference, parameter.Ms2Tolerance,
                     out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             }
-            else {
+            else if (collisionType == CollisionType.OAD) {
+                name = MsScanMatching.GetRefinedLipidAnnotationLevelForOAD(scan, reference, parameter.Ms2Tolerance,
+                    out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            } else {
                 name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance,
                     out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             }

@@ -146,7 +146,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
         var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
         Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
-        if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
+        if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem?.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
         AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, File, _broker);

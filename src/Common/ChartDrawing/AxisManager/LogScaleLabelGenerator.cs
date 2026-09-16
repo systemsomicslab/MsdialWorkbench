@@ -24,7 +24,7 @@ namespace CompMs.Graphics.AxisManager
                 GetIntTicks((decimal)limLow, (decimal)limHigh, 1,
                     (i, interval) => new LabelTickData
                     {
-                        Label = Pow10((double)(i * interval)).ToString("e1"),
+                        Label = Pow10((double)(i * interval)).ToString("0.0e+00"),
                         TickType = TickType.LongTick,
                         Center = (double)(i * interval),
                         Width = (double)(interval),
@@ -35,7 +35,7 @@ namespace CompMs.Graphics.AxisManager
                 GetRealTicks((decimal)(limLow + Math.Log10(5)), (decimal)(limHigh + Math.Log10(5)), 1,
                     (i, interval) => new LabelTickData
                     {
-                        Label = Pow10((double)(i * interval)).ToString("e1"),
+                        Label = Pow10((double)(i * interval)).ToString("0.0e+00"),
                         TickType = TickType.LongTick,
                         Center = (double)(i * interval),
                         Width = (double)(interval),
@@ -47,7 +47,7 @@ namespace CompMs.Graphics.AxisManager
                     GetRealTicks((decimal)(limLow + Math.Log10(v)), (decimal)(limHigh + Math.Log10(v)), 1,
                         (i, interval) => new LabelTickData
                         {
-                            Label = Pow10((double)(i * interval)).ToString("e1"),
+                            Label = Pow10((double)(i * interval)).ToString("0.0e+00"),
                             TickType = TickType.ShortTick,
                             Center = (double)(i * interval),
                             Width = 0d,

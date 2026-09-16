@@ -24,6 +24,9 @@ namespace CompMs.App.Msdial
         }
 
         private void LogUnhandledException(Exception exception, string source) {
+            if (exception is AggregateException agg) {
+                exception = agg.Flatten().InnerException;
+            }
             // Log the exception
             string message = $"Unhandled exception ({source})";
             try
@@ -38,7 +41,7 @@ namespace CompMs.App.Msdial
             finally
             {
                 System.Diagnostics.Debug.Write($"{message}\n\n{exception.Message}");
-                MessageBox.Show($"{message}\n\n{exception.Message}", "Unexpected exception occured");
+                MessageBox.Show($"{message}\n\n{exception.Message}\n\nStack trace below:\n\n{exception.StackTrace}", $"Unexpected exception occured.");
             }
         }
     }

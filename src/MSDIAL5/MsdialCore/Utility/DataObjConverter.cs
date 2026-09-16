@@ -99,14 +99,22 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.PeakShape = peak.PeakShape;
         }
 
-        public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
+        public static void SetRepresentativeFileID(AlignmentSpotProperty spot) {
             var alignment = spot.AlignedPeakProperties;
             var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
 
             var repId = GetRepresentativeFileID(alignedPeaks);
             var representative = repId >= 0 ? alignment[repId] : alignedPeaks.First();
-            var chromXType = representative.ChromXsTop.MainType;
             spot.RepresentativeFileID = representative.FileID;
+        }
+
+        public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
+            var alignment = spot.AlignedPeakProperties;
+            var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
+
+            var repId = spot.RepresentativeFileID;
+            var representative = alignment[repId];
+            var chromXType = representative.ChromXsTop.MainType;
 
             spot.IonMode = representative.IonMode;
             spot.Name = representative.Name;
@@ -162,10 +170,14 @@ namespace CompMs.MsdialCore.Utility
             spot.TimesCenter = new ChromXs() {
                 MainType = chromXType,
                 RT = new RetentionTime(alignedPeaks.Average(peak => peak.ChromXsTop.RT.Value), representative.ChromXsTop.RT.Unit),
-                RI = new RetentionIndex(alignedPeaks.Average(peak => peak.ChromXsTop.RI.Value), representative.ChromXsTop.RI.Unit),
+                RI = new RetentionIndex(alignedPeaks.Select(peak => peak.ChromXsTop.RI.Value).Where(v => v >= 0).DefaultIfEmpty().Average(), representative.ChromXsTop.RI.Unit),
                 Mz = new MzValue(spot.MassCenter, representative.ChromXsTop.Mz.Unit),
                 Drift = new DriftTime(alignedPeaks.Average(peak => peak.ChromXsTop.Drift.Value), representative.ChromXsTop.Drift.Unit),
             };
+
+            if (spot.QuantMass > 0) {
+                spot.MassCenter = spot.QuantMass;
+            }
         }
 
         public static AlignmentChromPeakFeature? GetRepresentativePeak(IReadOnlyList<AlignmentChromPeakFeature> alignment) {

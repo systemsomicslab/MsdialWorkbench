@@ -42,6 +42,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -223,7 +224,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             CompoundSearcher = new LcimmsCompoundSearchUsecase(compoundSearchers.Items);
             var rawLoader = new MultiMsmsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -294,9 +295,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            }
 
             CompoundSearchModel = target
                 .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r))
@@ -311,7 +319,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode, analysisFileModel.AcquisitionType);
 
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
@@ -332,7 +340,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
 

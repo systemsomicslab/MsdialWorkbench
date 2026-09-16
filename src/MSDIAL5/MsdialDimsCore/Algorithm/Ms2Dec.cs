@@ -37,12 +37,16 @@ public sealed class Ms2Dec
         var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
 
         if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
-        var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+        var spectrum = provider.LoadMsSpectrumFromIndex(targetSpecID);
+        var amplitudeTop = spectrum.Spectrum.DefaultIfEmpty().Max(p => p.Intensity);
+        var amplitudeThreshold = Math.Max((float)amplitudeTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff, param.ChromDecBaseParam.AmplitudeCutoff);
+        var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrum, param.MS2DataType, amplitudeThreshold, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
         if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
         var curatedSpectra = new List<SpectrumPeak>();
-        var precursorMz = chromPeakFeature.Mass;
-        var threshold = Math.Max(param.AmplitudeCutoff, 0.1); // TODO: remove magic number
+        var precursorMz = chromPeakFeature.PeakFeature.Mass;
+        amplitudeTop = cSpectrum.DefaultIfEmpty().Max(p => p?.Intensity) ?? 0;
+        var threshold = Math.Max(Math.Max(param.ChromDecBaseParam.AmplitudeCutoff, amplitudeTop * param.ChromDecBaseParam.RelativeAmplitudeCutoff), 0.1); // TODO: remove magic number
 
         foreach (var peak in cSpectrum.Where(n => n.Intensity > threshold)) { //preparing MS/MS chromatograms -> peaklistList
             if (param.RemoveAfterPrecursor && precursorMz + param.KeptIsotopeRange < peak.Mass) continue;

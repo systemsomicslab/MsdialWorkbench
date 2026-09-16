@@ -13,6 +13,7 @@ using CompMs.MsdialCore.Properties;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -535,6 +536,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for RT correction", CompoundListForRtCorrectionPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection file path", ReferenceFileParam.RtCorrectionPeakSelectionFilePath?.ToString() ?? string.Empty }));
             pStrings.Add(String.Join(": ", new string[] { "Searched adduct ions", String.Join(",", SearchedAdductIons.Select(n => n.AdductIonName).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -605,7 +607,8 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add("\r\n");
             pStrings.Add("# Deconvolution");
             pStrings.Add(String.Join(": ", new string[] { "Sigma window value", SigmaWindowValue.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", AmplitudeCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", ChromDecBaseParam.AmplitudeCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cut off", ChromDecBaseParam.RelativeAmplitudeCutoff.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
@@ -693,6 +696,8 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Interpolation method", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.InterpolationMethod.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (begin)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodBegin.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (end)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection mode", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection RT weight", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Internal standards for RT alignment", String.Join(",", RetentionTimeCorrectionCommon.StandardLibrary.Where(n => n.IsTargetMolecule).Select(n => n.Name).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -1006,6 +1011,8 @@ namespace CompMs.MsdialCore.Parameter
         public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
         [Key(6)]
         public string LbmFilePath { get; set; } = string.Empty;
+        [Key(7)]
+        public string RtCorrectionPeakSelectionFilePath { get; set; } = string.Empty;
     }
 
     [MessagePackObject]
@@ -1156,6 +1163,8 @@ namespace CompMs.MsdialCore.Parameter
         public float AlignmentScoreCutOff { get; set; } = 50;
         [Key(8)]
         public bool TogetherWithAlignment { get; set; } = true;
+        [Key(9)]
+        public bool UseRefMatchedPeaksOnly { get; set; } = false;
     }
 
     [MessagePackObject]
@@ -1221,6 +1230,10 @@ namespace CompMs.MsdialCore.Parameter
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
         [Key(8)]
         public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
+        [Key(9)]
+        public float RelativeAmplitudeCutoff { get; set; } = 0;
+        [Key(10)]
+        public bool ExecuteChromDeconvolution { get; set; } = true;
     }
 
     [MessagePackObject]
@@ -1250,7 +1263,6 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsKeepSuggestedMetaboliteFeatures { get; set; } = false;
         [Key(11)]
         public float FoldChangeForBlankFiltering { get; set; } = 5;
-
     }
 
     [MessagePackObject]

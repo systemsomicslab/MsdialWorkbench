@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
   </ItemGroup>
 
   <ItemGroup>

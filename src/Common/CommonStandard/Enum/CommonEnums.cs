@@ -22,7 +22,7 @@ namespace CompMs.Common.Enum
     public enum MachineCategory { GCMS, LCMS, IMMS, LCIMMS, IFMS, IIMMS, IDIMS, }
     public enum MassToleranceType { Da, Ppm }
     public enum CollisionType { CID, HCD, EIEIO, ECD, HotECD, EID, OAD }
-    public enum SolventType { CH3COONH4, HCOONH4 }
+    public enum SolventType { CH3COONH4, HCOONH4, NH4HCO3 }
     [Flags]
     public enum SeparationType {
         None = 0x0,
@@ -39,7 +39,7 @@ namespace CompMs.Common.Enum
     public enum AlignmentIndexType { RT, RI }
     public enum TargetOmics { Metabolomics, Lipidomics, Proteomics }
     public enum Ionization { ESI, EI }
-    public enum ExportSpectraFileFormat { mgf, msp, txt, mat, ms }
+    public enum ExportSpectraFileFormat { mgf, msp, txt, mat, ms, sdf }
     public enum ExportspectraType { profile, centroid, deconvoluted }
     public enum IonAbundanceUnit {
         Intensity, Height, Area, pmol, fmol, ng, pg,

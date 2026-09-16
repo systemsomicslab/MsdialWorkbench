@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.StructureFinder.Mapper
 {
@@ -378,7 +377,7 @@ namespace CompMs.Common.StructureFinder.Mapper
                         replaceAtomMass(iAtom, labeledAtoms);
                     }
                 }
-                catch (CDKException ex)
+                catch (CDKException)
                 {
                     // This means it failed to get the mass for this element, so its an unknown element like "R" for example
                     return false;

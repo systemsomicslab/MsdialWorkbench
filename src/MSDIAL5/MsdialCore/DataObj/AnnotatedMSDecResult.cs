@@ -39,8 +39,14 @@ namespace CompMs.MsdialCore.DataObj
         public MSDecResult MSDecResult { get; }
         [IgnoreMember]
         public MsScanMatchResultContainer MatchResults { get; }
+
+        /// <summary>
+        /// Represents the molecular property of the annotated MSDec result.
+        /// If no annotation is provided, this property will be <c>null</c>.
+        /// </summary>
         [IgnoreMember]
-        public IMoleculeProperty Molecule { get; }
+        public IMoleculeProperty? Molecule { get; }
+
         [IgnoreMember]
         public double QuantMass { get; }
 

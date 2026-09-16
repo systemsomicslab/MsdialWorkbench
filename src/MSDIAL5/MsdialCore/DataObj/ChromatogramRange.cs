@@ -55,8 +55,20 @@ namespace CompMs.MsdialCore.DataObj
             return new ChromatogramRange(Math.Max(limitLow, Begin), Math.Min(limitHigh, End), Type, Unit);
         }
 
+        public static ChromatogramRange FromTimes<T>(T center, double width) where T: IChromX {
+            return new ChromatogramRange(center.Value - width / 2d, center.Value + width / 2d, center.Type, center.Unit);
+        }
+
         public static ChromatogramRange FromTimes<T>(T begin, T end) where T: IChromX {
             return new ChromatogramRange(begin.Value, end.Value, begin.Type, begin.Unit);
+        }
+
+        public static ChromatogramRange FromPeakFeature(IChromatogramPeakFeature peak) {
+            if (peak is null) {
+                throw new ArgumentNullException(nameof(peak));
+            }
+            var ax = peak.ChromXsTop.GetRepresentativeXAxis();
+            return new ChromatogramRange(peak, ax.Type, ax.Unit);
         }
     }
 }

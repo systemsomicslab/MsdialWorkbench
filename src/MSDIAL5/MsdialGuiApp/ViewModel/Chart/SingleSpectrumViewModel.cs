@@ -8,9 +8,11 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -25,7 +27,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             VerticalAxis = model.VerticalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Brush = Observable.Return(model.Brush).ToReadOnlyReactivePropertySlim<IBrushMapper>().AddTo(Disposables);
             LineThickness = model.LineThickness;
+            StrokeDashArray = model.StrokeDashArray;
             IsVisible = model.IsVisible;
+            IsAnnotationVisible = model.IsAnnotationVisible;
             SelectedVerticalAxisItem = model.VerticalAxisItemSelector.GetAxisItemAsObservable().SkipNull().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             if (broker is not null) {
                 SaveCommand = model.CanSave.ToReactiveCommand().WithSubscribe(SaveSpectrum(model.Save, filter:  "NIST format(*.msp)|*.msp", broker)).AddTo(Disposables);
@@ -37,13 +41,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public GraphLabels Labels => _model.Labels;
         public string HorizontalProperty => _model.HorizontalProperty;
         public ReadOnlyReactivePropertySlim<IAxisManager?> VerticalAxis { get; }
+        public AxisItemSelector<double> VerticalAxisItemSelector => _model.VerticalPropertySelectors.AxisItemSelector;
+        public ObservableCollection<AxisItemModel<double>> VerticalAxisItems => _model.VerticalAxisItemSelector.AxisItems;
         public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> SelectedVerticalAxisItem { get; }
         public string VerticalProperty => _model.VerticalProperty;
         public ReadOnlyReactivePropertySlim<IBrushMapper> Brush { get; }
         public string HueProperty => _model.HueProperty;
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded => _model.SpectrumLoaded;
         public ReactivePropertySlim<double> LineThickness { get; }
+        public ReactivePropertySlim<DoubleCollection?> StrokeDashArray { get; }
         public ReactivePropertySlim<bool> IsVisible { get; }
+        public ReactivePropertySlim<bool> IsAnnotationVisible { get; }
         public ReactiveCommand? SaveCommand { get; }
 
         private Action SaveSpectrum(Action<Stream> handler, string filter, IMessageBroker broker) {

@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
-    public abstract class GapFiller
+    public abstract class GapFiller : IGapFiller
     {
         protected abstract double AxTol { get; }
         protected SmoothingMethod smoothingMethod;

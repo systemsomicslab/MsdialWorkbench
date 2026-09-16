@@ -1,10 +1,13 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment;
 
 public class LcmsPeakJoiner : IPeakJoiner
 {
-    private static readonly IComparer<IMSScanProperty> Comparer;
+    private static readonly IComparer<IMSScanProperty> Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
     private readonly double _mztol;
     private readonly double _rttol;
@@ -24,28 +27,26 @@ public class LcmsPeakJoiner : IPeakJoiner
     private readonly double _rtbucket;
     private readonly int _mzwidth;
     private readonly int _rtwidth;
-    private IProgress<int>? _progress;
+    private readonly AlignmentBaseParameter _parameter;
+    private readonly IFeatureAccessor<ChromatogramPeakFeature> _accessor;
+    private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+    private readonly IProgress<int>? _progress;
 
-    static LcmsPeakJoiner() {
-        Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
-    }
+    public LcmsPeakJoiner(AlignmentBaseParameter parameter, IFeatureAccessor<ChromatogramPeakFeature> accessor, IMatchResultEvaluator<MsScanMatchResult> evaluator, IProgress<int>? progress = null) {
+        _parameter = parameter;
+        _accessor = accessor;
+        _evaluator = evaluator;
+        _progress = progress;
 
-    public LcmsPeakJoiner(double rttol, double rtfactor, double rtbucket, double mztol, double mzfactor, double mzbucket) {
-        _rttol = rttol;
-        _rtfactor = rtfactor;
-        _rtbucket = rtbucket;
+        _rttol = parameter.RetentionTimeAlignmentTolerance;
+        _rtfactor = parameter.RetentionTimeAlignmentFactor;
+        _rtbucket = _rttol * 2;
         _rtwidth = (int)Math.Ceiling(_rttol / _rtbucket);
-        _mztol = mztol;
-        _mzfactor = mzfactor;
-        _mzbucket = mzbucket;
+        _mztol = parameter.Ms1AlignmentTolerance;
+        _mzfactor = parameter.Ms1AlignmentFactor;
+        _mzbucket = _mztol * 2;
         _mzwidth = (int)Math.Ceiling(_mztol / _mzbucket);
     }
-
-    public LcmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor, IProgress<int>? progress = null) : this(rttol, rtfactor, rttol * 2, mztol, mzfactor, mztol * 2) {
-        _progress = progress;
-    }
-
-    public LcmsPeakJoiner(double rttol, double mztol) : this(rttol, 1, mztol, 1) { }
 
     private bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y) {
         return Math.Abs(x.PrecursorMz - y.PrecursorMz) <= _mztol && Math.Abs(x.ChromXs.RT.Value - y.ChromXs.RT.Value) <= _rttol;
@@ -56,47 +57,53 @@ public class LcmsPeakJoiner : IPeakJoiner
              + _rtfactor * Math.Exp(-0.5 * Math.Pow((x.ChromXs.RT.Value - y.ChromXs.RT.Value) / _rttol, 2));
     }
 
-    public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
-
+    public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor _) {
         // test process from 0 to 20
-        var master = GetMasterList(analysisFiles, referenceId, accessor);
+        var master = GetMasterList(analysisFiles, referenceId, _accessor);
 
         // test process from 20 to 40
-        var spots = JoinAll(master, analysisFiles, accessor);
+        var spots = JoinAll(master, analysisFiles, _accessor);
         return spots;
     }
 
-    public List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
+    public List<ChromatogramPeakFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, IFeatureAccessor<ChromatogramPeakFeature> accessor) {
 
         var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
-        if (referenceFile == null) return new List<IMSScanProperty>();
+        if (referenceFile is null) return [];
 
-        var master = accessor.GetMSScanProperties(referenceFile)
-                             .GroupBy(prop => ((int)Math.Ceiling(prop.ChromXs.RT.Value / _rtbucket), (int)Math.Ceiling(prop.PrecursorMz / _mzbucket)))
-                             .ToDictionary(group => group.Key, group => group.ToList());
+        IEnumerable<ChromatogramPeakFeature> scans = accessor.GetMSScanProperties(referenceFile);
+        if (_parameter.UseRefMatchedPeaksOnly) {
+            scans = scans.Where(prop => prop.IsReferenceMatched(_evaluator));
+        }
+        var master = scans
+            .GroupBy(prop => ((int)Math.Ceiling(prop.ChromXs.RT.Value / _rtbucket), (int)Math.Ceiling(prop.PrecursorMz / _mzbucket)))
+            .ToDictionary(group => group.Key, group => group.ToList());
 
         var counter = 0;
         ReportProgress reporter = ReportProgress.FromLength(_progress, 0.0, 20.0);
         foreach (var analysisFile in analysisFiles) {
             reporter.Report(++counter, analysisFiles.Count - 1);
-
             if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId) {
                 continue;
             }
-            var target = accessor.GetMSScanProperties(analysisFile);
+
+            IEnumerable<ChromatogramPeakFeature> target = accessor.GetMSScanProperties(analysisFile);
+            if (_parameter.UseRefMatchedPeaksOnly) {
+                target = target.Where(prop => prop.IsReferenceMatched(_evaluator));
+            }
             MergeChromatogramPeaks(master, target);
         }
 
         return master.Values.SelectMany(props => props).ToList();
     }
 
-    public void MergeChromatogramPeaks(IDictionary<(int, int), List<IMSScanProperty>> master, IEnumerable<IMSScanProperty> targets) {
+    private void MergeChromatogramPeaks(IDictionary<(int, int), List<ChromatogramPeakFeature>> master, IEnumerable<ChromatogramPeakFeature> targets) {
         foreach (var target in targets) {
             SetToMaster(master, target);
         }
     }
 
-    private bool SetToMaster(IDictionary<(int, int), List<IMSScanProperty>> master, IMSScanProperty target) {
+    private bool SetToMaster(IDictionary<(int, int), List<ChromatogramPeakFeature>> master, ChromatogramPeakFeature target) {
         var mzTarget = (int)Math.Ceiling(target.PrecursorMz / _mzbucket);
         var rtTarget = (int)Math.Ceiling(target.ChromXs.RT.Value / _rtbucket);
         for(int rtIdc = rtTarget - _rtwidth; rtIdc <= rtTarget + _rtwidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
@@ -111,12 +118,12 @@ public class LcmsPeakJoiner : IPeakJoiner
             }
         }
         if (!master.ContainsKey((rtTarget, mzTarget)))
-            master[(rtTarget, mzTarget)] = new List<IMSScanProperty>();
+            master[(rtTarget, mzTarget)] = [];
         master[(rtTarget, mzTarget)].Add(target);
         return true;
     }
 
-    public List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor) {
+    public List<AlignmentSpotProperty> JoinAll(List<ChromatogramPeakFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles, IFeatureAccessor<ChromatogramPeakFeature> accessor) {
         master = master.OrderBy(prop => (prop.PrecursorMz, prop.ChromXs.RT.Value)).ToList();
         var result = GetSpots(master, analysisFiles);
         var counter = 0;
@@ -126,11 +133,11 @@ public class LcmsPeakJoiner : IPeakJoiner
             var chromatogram = accessor.GetMSScanProperties(analysisFile);
             AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
         }
-        
+
         return result;
     }
 
-    public void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
+    public void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<ChromatogramPeakFeature> masters, List<ChromatogramPeakFeature> targets, int fileId) {
         var n = masters.Count;
         var maxMatchs = new double[n];
         var dummy = new ChromatogramPeakFeature(); // dummy instance for binary search.
@@ -140,7 +147,7 @@ public class LcmsPeakJoiner : IPeakJoiner
             double matchFactor = double.MinValue;
             dummy.ChromXs = new ChromXs(target.ChromXs.RT.Value - _rttol, ChromXType.RT);
             dummy.PrecursorMz = target.PrecursorMz - _mztol;
-            var lo = SearchCollection.LowerBound(masters, dummy, Comparer);
+            var lo = masters.LowerBound(dummy, Comparer);
             dummy.ChromXs.RT = new RetentionTime(target.ChromXs.RT.Value + _rttol, dummy.ChromXs.RT.Unit);
             dummy.PrecursorMz = target.PrecursorMz + _mztol;
             for (var i = lo; i < n; i++) {
@@ -154,8 +161,9 @@ public class LcmsPeakJoiner : IPeakJoiner
                     maxMatchs[i] = matchFactor = factor;
                 }
             }
-            if (matchIdx.HasValue)
-                DataObjConverter.SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target as ChromatogramPeakFeature);
+            if (matchIdx.HasValue) {
+                DataObjConverter.SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target);
+            }
         }
     }
 
@@ -167,7 +175,7 @@ public class LcmsPeakJoiner : IPeakJoiner
     private static List<AlignmentSpotProperty> InitSpots(IEnumerable<IMSScanProperty> scanProps,
         IEnumerable<AnalysisFileBean> analysisFiles, ref int masterId, int parentId = -1) {
 
-        if (scanProps == null) return new List<AlignmentSpotProperty>();
+        if (scanProps is null) return [];
 
         var spots = new List<AlignmentSpotProperty>();
         foreach ((var scanProp, var localId) in scanProps.WithIndex()) {
@@ -179,8 +187,8 @@ public class LcmsPeakJoiner : IPeakJoiner
                 TimesCenter = scanProp.ChromXs, // temporary, after alignment, set true center.
                 MassCenter = scanProp.PrecursorMz, // temporary, after alignment, set true center.
                 IonMode = scanProp.IonMode,
+                InternalStandardAlignmentID = -1
             };
-            spot.InternalStandardAlignmentID = -1;
 
             var peaks = new List<AlignmentChromPeakFeature>();
             foreach (var file in analysisFiles) {
@@ -195,8 +203,9 @@ public class LcmsPeakJoiner : IPeakJoiner
             }
             spot.AlignedPeakProperties = peaks;
 
-            if (scanProp is ChromatogramPeakFeature chrom)
+            if (scanProp is ChromatogramPeakFeature chrom) {
                 spot.AlignmentDriftSpotFeatures = InitSpots(chrom.DriftChromFeatures, analysisFiles, ref masterId, spot.AlignmentID);
+            }
 
             spots.Add(spot);
         }

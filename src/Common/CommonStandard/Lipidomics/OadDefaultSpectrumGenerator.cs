@@ -32,7 +32,8 @@ namespace CompMs.Common.Lipidomics
                 adduct.AdductIonName == "[M-H2O+H]+"||
                 adduct.AdductIonName == "[M-H]-" ||
                 adduct.AdductIonName == "[M+HCOO]-"||
-                adduct.AdductIonName == "[M+CH3COO]-")
+                adduct.AdductIonName == "[M+CH3COO]-"||
+                adduct.AdductIonName == "[M+HCO3]-")
             {
                 return true;
             }

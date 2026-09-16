@@ -61,7 +61,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actualList))
+            foreach ((var e, var a) in expected.ZipInternal(actualList))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -97,7 +97,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -155,7 +155,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -191,7 +191,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actual))
+            foreach ((var e, var a) in expected.ZipInternal(actual))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -234,7 +234,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actualList))
+            foreach ((var e, var a) in expected.ZipInternal(actualList))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -281,7 +281,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected.Zip(actualList))
+            foreach ((var e, var a) in expected.ZipInternal(actualList))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }
@@ -321,7 +321,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 Console.WriteLine($"Mass {item.Mass}, Intensity {item.Intensity}, Comment {item.Comment}");
             }
 
-            foreach ((var e, var a) in expected02.Zip(actual02))
+            foreach ((var e, var a) in expected02.ZipInternal(actual02))
             {
                 Assert.AreEqual(e.Mass, a.Mass, 0.001);
             }

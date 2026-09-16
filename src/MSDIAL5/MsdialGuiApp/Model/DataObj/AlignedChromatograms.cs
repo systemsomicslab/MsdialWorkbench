@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CompMs.App.Msdial.Model.DataObj
-{
-    internal sealed class AlignedChromatograms
-    {
-        public AlignedChromatograms(AlignmentSpotPropertyModel spot, IObservable<List<PeakChromatogram>> chromatograms) {
-            Spot = spot;
-            Chromatograms = chromatograms;
-        }
+namespace CompMs.App.Msdial.Model.DataObj;
 
-        public AlignmentSpotPropertyModel Spot { get; }
-        public IObservable<List<PeakChromatogram>> Chromatograms { get; }
+internal sealed class AlignedChromatograms
+{
+    public AlignedChromatograms(AlignmentSpotPropertyModel spot, IObservable<List<PeakChromatogram>> chromatograms) {
+        Spot = spot;
+        Chromatograms = chromatograms;
     }
+
+    public AlignmentSpotPropertyModel Spot { get; }
+    public IObservable<List<PeakChromatogram>> Chromatograms { get; }
 }

@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Information.LipidmapsLinkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Information"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Information"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LipidmapsLinkViewModel}}"
+             d:DesignHeight="240" d:DesignWidth="360">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <ScrollViewer>
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Retrieving.Value}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            <Grid>
+                <ItemsControl ItemsSource="{Binding Path=CurrentItems.Value}" Margin="4,0" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type m:LipidmapsLinkItem}">
+                            <TextBlock TextWrapping="WrapWithOverflow">
+                                <Run Text="{Binding Path=Name, Mode=OneWay}"/>
+                                <Run Text="(" FontSize="10"/>
+                                <Hyperlink NavigateUri="{Binding Path=Uri}"
+                                           RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="LIPID MAPS" FontSize="10"/>
+                                </Hyperlink>
+                                <Run Text="," FontSize="10"/>
+                                <Hyperlink NavigateUri="{Binding Path=PubChemCID}"
+                                           RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Run Text="PubChem" FontSize="10"/>
+                                </Hyperlink>
+                                <Run Text=")" FontSize="10"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <TextBlock Text="No available links." FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=HasItems.Value}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </ScrollViewer>
+                   
+        <Control Visibility="{Binding Path=Retrieving.Value, Converter={StaticResource BooleanToVisibility}}"
+                 Style="{StaticResource ResourceKey=LoadingControlStyle}"/>
+    </Grid>
+</UserControl>

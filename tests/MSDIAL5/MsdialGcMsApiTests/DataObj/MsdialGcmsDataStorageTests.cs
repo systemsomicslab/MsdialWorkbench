@@ -32,7 +32,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
             };
-            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
+            var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB, "TextDBPath");
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
             MassAnnotator annotator = new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8);

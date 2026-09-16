@@ -70,15 +70,14 @@
                          Style="{StaticResource IconRadioButton}"/>
         </StackPanel>
 
-        <chart:MultiChart DataContext="{Binding ChromatogramsViewModel.Value}"
-                          GraphTitle="{Binding GraphTitle}"
-                          HorizontalTitle="{Binding HorizontalSelector.SelectedAxisItem.GraphLabel}"
-                          HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
-                          VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
-                          ItemsSource="{Binding DisplayChromatograms}"
-                          Grid.Row="1">
-            <chart:MultiChart.Style>
-                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+        <chart:SimpleChartControl DataContext="{Binding ChromatogramsViewModel.Value}"
+                                  GraphTitle="{Binding GraphTitle}"
+                                  HorizontalTitle="{Binding HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                                  HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
+                                  VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
+                                  Grid.Row="1">
+            <chart:SimpleChartControl.Style>
+                <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource BasicChart}">
                     <Setter Property="VerticalTitle">
                         <Setter.Value>
                             <MultiBinding StringFormat="{}{0}({1})">
@@ -95,8 +94,8 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </chart:MultiChart.Style>
-            <chart:MultiChart.ContextMenu>
+            </chart:SimpleChartControl.Style>
+            <chart:SimpleChartControl.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save chromatograms as table"
                               Command="{Binding Data, Source={StaticResource SaveAsTableCommandProxy}}"/>
@@ -125,34 +124,112 @@
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                 </ContextMenu>
-            </chart:MultiChart.ContextMenu>
-            <chart:MultiChart.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                LinePen="{Binding LinePen}"
-                                                HorizontalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                VerticalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                            <chart:LineChartControl.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                         Content="{Binding Path=(chart:LineChartControl.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
-                                         ContentStringFormat="m/z: {0:N5}"/>
-                            </chart:LineChartControl.ToolTip>
-                        </chart:LineChartControl>
-                        <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
-                                                  DataType="{x:Type do:PeakItem}"
-                                                  HorizontalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                  VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                  Radius="1.5">
-                            <chart:ScatterControlSlim.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                         Content="{Binding Path=(chart:ScatterControlSlim.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
-                                         ContentStringFormat="m/z: {0:N5}"/>
-                            </chart:ScatterControlSlim.ToolTip>
-                        </chart:ScatterControlSlim>
-                    </Grid>
-                </DataTemplate>
-            </chart:MultiChart.ItemTemplate>
-        </chart:MultiChart>
+            </chart:SimpleChartControl.ContextMenu>
+
+            <Grid>
+                <ItemsControl ItemsSource="{Binding DisplayChromatograms}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                        LinePen="{Binding LinePen}"
+                                                        HorizontalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                        VerticalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                                    <chart:LineChartControl.ToolTip>
+                                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                                 Content="{Binding Path=(chart:LineChartControl.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
+                                                 ContentStringFormat="m/z: {0:F5}"/>
+                                    </chart:LineChartControl.ToolTip>
+                                </chart:LineChartControl>
+                                <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
+                                                          DataType="{x:Type do:PeakItem}"
+                                                          HorizontalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                          VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                          Radius="1.5">
+                                    <chart:ScatterControlSlim.ToolTip>
+                                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                                 Content="{Binding Path=(chart:ScatterControlSlim.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
+                                                 ContentStringFormat="m/z: {0:F5}"/>
+                                    </chart:ScatterControlSlim.ToolTip>
+                                </chart:ScatterControlSlim>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding DisplayChromatograms}">
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <StackPanel HorizontalAlignment="Right">
+                                <TextBlock Text="Dec chrom."/>
+                                <StackPanel HorizontalAlignment="Left" IsItemsHost="True"/>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LinePen.DashStyle.Offset}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Height="18">
+                                <Line X1="0" Y1="0" X2="24" Y2="0"
+                                      StrokeThickness="2"
+                                      StrokeDashArray="{Binding LinePen.DashStyle.Dashes}"
+                                      Stroke="{Binding LineBrush}"
+                                      VerticalAlignment="Center"
+                                      Margin="4"/>
+                                <TextBlock Text="{Binding Name, StringFormat={}{0}}"
+                                           FontSize="12"
+                                           Foreground="{Binding LineBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding DisplayChromatograms}">
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <StackPanel HorizontalAlignment="Left">
+                                <TextBlock Text="Raw chrom."/>
+                                <StackPanel HorizontalAlignment="Left" IsItemsHost="True"/>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LinePen.DashStyle.Offset}" Value="1">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Height="18">
+                                <Line X1="0" Y1="0" X2="24" Y2="0"
+                                      StrokeThickness="2"
+                                      StrokeDashArray="{Binding LinePen.DashStyle.Dashes}"
+                                      Stroke="{Binding LineBrush}"
+                                      VerticalAlignment="Center"
+                                      Margin="4"/>
+                                <TextBlock Text="{Binding Name, StringFormat={}{0}}"
+                                           FontSize="12"
+                                           Foreground="{Binding LineBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </chart:SimpleChartControl>
     </Grid>
 </UserControl>

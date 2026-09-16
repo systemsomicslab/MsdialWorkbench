@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                             SimpleDotProductCutOff = 0.15F,
                             WeightedDotProductCutOff = 0.15F,
-                            ReverseDotProductCutOff = 0.5F,
+                            ReverseDotProductCutOff = 0.3F,
                             MatchedPeaksPercentageCutOff = 0.0F,
                             MinimumSpectrumMatch = 1
                         };
@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                 SimpleDotProductCutOff = 0.15F,
                 WeightedDotProductCutOff = 0.15F,
-                ReverseDotProductCutOff = 0.5F,
+                ReverseDotProductCutOff = 0.3F,
                 MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 1
             };

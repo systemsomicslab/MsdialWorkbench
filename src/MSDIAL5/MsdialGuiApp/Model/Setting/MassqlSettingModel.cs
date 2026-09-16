@@ -32,21 +32,38 @@ namespace CompMs.App.Msdial.Model.Setting {
         private string _massql = string.Empty;
 
         public void SendMassql() {
-            var massql = "https://msql.ucsd.edu/parse?query=" + Massql;
+            var massql = "https://massql.gnps2.org/parse?query=" + Massql;
             var req = WebRequest.Create(massql);
 
             try {
                 var res = req.GetResponse();
                 var resStream = res.GetResponseStream();
-                //var isAlignmentResultTargeted = true;
-                MassQL? result = null;
+                List<MassQL>? results = null;
                 using (var sr = new StreamReader(resStream)) {
-                    result = JsonConvert.DeserializeObject<MassQL>(sr.ReadToEnd());
-                }
-                if (result is null) {
-                    return;
+                    var json = sr.ReadToEnd();
+                    try {
+                        if (json.TrimStart().StartsWith("[")) {
+                            results = JsonConvert.DeserializeObject<List<MassQL>>(json);
+                        }
+                        else {
+                            MassQL? result_t = JsonConvert.DeserializeObject<MassQL>(json);
+                            results = result_t is not null ? new List<MassQL> { result_t } : null;
+                        }
+                    }
+                    catch (JsonReaderException ex) {
+                        System.Diagnostics.Debug.WriteLine("MassQL JSON parse error: " + ex.Message);
+                        results = null;
+                    }
+                    catch (JsonSerializationException ex) {
+                        System.Diagnostics.Debug.WriteLine("MassQL JSON parse error: " + ex.Message);
+                        results = null;
+                    }
                 }
 
+                if (results is null || results.Count == 0) {
+                    return;
+                }
+                var result = results[0];
                 var massQLParams = new List<PeakFeatureSearchValue>();
                 if (result?.querytype?.function == "functionscaninfo") {
                     var searchLevel = PeakFeatureQueryLevel.MS2;
@@ -55,24 +72,48 @@ namespace CompMs.App.Msdial.Model.Setting {
                     }
                     foreach (var condition in result.conditions.OrEmptyIfNull()) {
                         foreach (var mass in condition.value.OrEmptyIfNull()) {
-                            var searchValue = new PeakFeatureSearchValue() { PeakFeatureQueryLevel = searchLevel };
-                            searchValue.Mass = mass;
+                            var searchValue = new PeakFeatureSearchValue() {
+                                PeakFeatureQueryLevel = searchLevel,
+                                Mass = mass,
+                                MassTolerance = 0.05,
+                                PeakFeatureSearchType = condition.type?.ToLowerInvariant().Contains("neutralloss") == true ? PeakFeatureSearchType.NeutralLoss : PeakFeatureSearchType.ProductIon,
+                                ConditionType = condition.conditiontype ?? string.Empty
+                            };
+
                             if (condition.qualifiers != null) {
                                 if (condition.qualifiers.qualifierppmtolerance != null) {
-                                    searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(condition.value![0], condition.qualifiers.qualifierppmtolerance.value);
+                                    searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, condition.qualifiers.qualifierppmtolerance.value);
                                 }
                                 if (condition.qualifiers.qualifiermztolerance != null) {
                                     searchValue.MassTolerance = condition.qualifiers.qualifiermztolerance.value;
                                 }
+                                if (condition.qualifiers.qualifierintensity != null) {
+                                    searchValue.AbsoluteIntensityCutoff = condition.qualifiers.qualifierintensity.value;
+                                }
+                                if (condition.qualifiers.qualifierintensitypercent != null) {
+                                    searchValue.RelativeIntensityCutoff = condition.qualifiers.qualifierintensitypercent.value;
+                                }
+                                if (condition.qualifiers.qualifiertimemin != null) {
+                                    searchValue.TimeMin = condition.qualifiers.qualifiertimemin.value;
+                                }
+                                if (condition.qualifiers.qualifiertimemax != null) {
+                                    searchValue.TimeMax = condition.qualifiers.qualifiertimemax.value;
+                                }
+                                if (condition.qualifiers.qualifierdrifttime != null) {
+                                    var center = condition.qualifiers.qualifierdrifttime.value;
+                                    var window = condition.qualifiers.qualifierdrifttime.window;
+                                    searchValue.MobilityMin = center - window;
+                                    searchValue.MobilityMax = center + window;
+                                }
+                                if (condition.qualifiers.qualifiercharge != null) {
+                                    searchValue.Charge = (int)condition.qualifiers.qualifiercharge.value;
+                                }
                             }
-                            if (condition.type == "ms2neutrallosscondition") {
-                                searchValue.PeakFeatureSearchType = PeakFeatureSearchType.NeutralLoss;
-                            }
+
                             massQLParams.Add(searchValue);
                         }
                     }
                 }
-                //return massQLParams;
 
                 _parameter.FragmentSearchSettingValues = massQLParams;
                 if (_parameter.FragmentSearchSettingValues.Count > 1) {
@@ -81,14 +122,12 @@ namespace CompMs.App.Msdial.Model.Setting {
                 _model.SearchFragment();
             }
             catch (WebException) {
-                var request = new ErrorMessageBoxRequest
-                {
+                var request = new ErrorMessageBoxRequest {
                     Caption = "MassQL query error",
                     Content = "Your MassQL query was not processed well. The query itself was invalid or we could not connect to the MassQL query parser API. MS-DIAL's MASSQL searcher requires a network connection to connect to MassQL's parser Web API.",
                     ButtonType = System.Windows.MessageBoxButton.OK,
                 };
                 MessageBroker.Default.Publish(request);
-                //throw;
             }
         }
     }
@@ -128,13 +167,25 @@ namespace CompMs.App.Msdial.Model.Setting {
         [DataMember(Name = "type")]
         public string? type { get; set; }
         [DataMember(Name = "qualifierppmtolerance")]
-        public QualifierPpmTolerance? qualifierppmtolerance { get; set; }
+        public QualifierValue? qualifierppmtolerance { get; set; }
         [DataMember(Name = "qualifiermztolerance")]
-        public QualifierMzTolerance? qualifiermztolerance { get; set; }
+        public QualifierValue? qualifiermztolerance { get; set; }
+        [DataMember(Name = "qualifierintensity")]
+        public QualifierValue? qualifierintensity { get; set; }
+        [DataMember(Name = "qualifierintensitypercent")]
+        public QualifierValue? qualifierintensitypercent { get; set; }
+        [DataMember(Name = "qualifiertimemin")]
+        public QualifierValue? qualifiertimemin { get; set; }
+        [DataMember(Name = "qualifiertimemax")]
+        public QualifierValue? qualifiertimemax { get; set; }
+        [DataMember(Name = "qualifierdrifttime")]
+        public QualifierDriftTime? qualifierdrifttime { get; set; }
+        [DataMember(Name = "qualifiercharge")]
+        public QualifierValue? qualifiercharge { get; set; }
     }
 
     [DataContract]
-    public class QualifierPpmTolerance {
+    public class QualifierValue {
         [DataMember(Name = "name")]
         public string? name { get; set; }
         [DataMember(Name = "unit")]
@@ -144,13 +195,10 @@ namespace CompMs.App.Msdial.Model.Setting {
     }
 
     [DataContract]
-    public class QualifierMzTolerance {
-        [DataMember(Name = "name")]
-        public string? name { get; set; }
-        [DataMember(Name = "unit")]
-        public string? unit { get; set; }
+    public class QualifierDriftTime {
         [DataMember(Name = "value")]
         public double value { get; set; }
+        [DataMember(Name = "window")]
+        public double window { get; set; }
     }
-
 }

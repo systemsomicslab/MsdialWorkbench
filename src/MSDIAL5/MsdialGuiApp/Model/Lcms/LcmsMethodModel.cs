@@ -82,49 +82,45 @@ namespace CompMs.App.Msdial.Model.Lcms
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
+            List<ExportType> quantTypes =
+            [
+                new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
+                new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
+                new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
+                new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
+            ];
+            var peakMeta = new AccessPeakMetaModel(new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter));
+            var fileMeta = new AccessFileMetaModel(fileProperties).AddTo(Disposables);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
-                new ExportMethod(
-                    analysisFiles,
-                    ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
-                new[]
-                {
-                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
-                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
-                    new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                    new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                    new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
-                    new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                    new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
-                    new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
-                },
-                new AccessPeakMetaModel(new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter)),
-                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                new ExportMethod(analysisFiles, ExportFormat.Tsv, ExportFormat.Csv),
+                quantTypes,
+                peakMeta,
+                fileMeta,
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new[]
-                {
-                    ExportspectraType.deconvoluted,
-                },
+                [ ExportspectraType.deconvoluted, ],
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
+                new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
+            var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, spectraAndReference, };
+            var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, quantTypes.GetRange(0, 4), peakMeta);
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, mztabm, gnps, productions, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
-
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
             var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -255,20 +251,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            IAnnotationProcess annotationProcess;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
-                (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess();
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess();
-            }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                IAnnotationProcess annotationProcess;
+                if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                    annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
+                }
+                else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
+                    (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
+                    annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                }
+                else {
+                    annotationProcess = BuildAnnotationProcess();
+                }
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
                 if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
@@ -416,6 +412,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FilePrefix = "Mgf",
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };

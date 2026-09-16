@@ -26,7 +26,7 @@
     <PackageProjectUrl>https://github.com/kazuyaujihara/NCDK</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/kazuyaujihara/NCDK/blob/master/LICENSE</PackageLicenseUrl>
     <Platforms>AnyCPU</Platforms>
-    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

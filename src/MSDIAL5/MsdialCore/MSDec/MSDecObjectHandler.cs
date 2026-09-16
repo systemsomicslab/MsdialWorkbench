@@ -36,9 +36,9 @@ namespace CompMs.MsdialCore.MSDec {
 
             result.ChromXs = chromPeakFeature.ChromXs;
             result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
-            result.PrecursorMz = chromPeakFeature.Mass;
-            result.ModelPeakMz = (float)chromPeakFeature.Mass;
-            result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
+            result.PrecursorMz = chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakMz = (float)chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakHeight = (float)chromPeakFeature.PeakFeature.PeakHeightTop;
             result.IonMode = chromPeakFeature.IonMode;
             return result;
         }
@@ -48,9 +48,9 @@ namespace CompMs.MsdialCore.MSDec {
             var result = new MSDecResult();
             result.ChromXs = chromPeakFeature.ChromXs;
             result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
-            result.PrecursorMz = chromPeakFeature.Mass;
-            result.ModelPeakMz = (float)chromPeakFeature.Mass;
-            result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
+            result.PrecursorMz = chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakMz = (float)chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakHeight = (float)chromPeakFeature.PeakFeature.PeakHeightTop;
             result.Spectrum = spectra;
             result.IonMode = chromPeakFeature.IonMode;
             return result;
@@ -62,9 +62,9 @@ namespace CompMs.MsdialCore.MSDec {
             var result = new MSDecResult();
             result.ChromXs = chromPeakFeature.ChromXs;
             result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
-            result.PrecursorMz = chromPeakFeature.Mass;
-            result.ModelPeakMz = (float)chromPeakFeature.Mass;
-            result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
+            result.PrecursorMz = chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakMz = (float)chromPeakFeature.PeakFeature.Mass;
+            result.ModelPeakHeight = (float)chromPeakFeature.PeakFeature.PeakHeightTop;
             result.IonMode = chromPeakFeature.IonMode;
             result.Spectrum = DataAccess.GetAndromedaMS2Spectrum(spectra, param, iupac, precursorCharge);
             return result;

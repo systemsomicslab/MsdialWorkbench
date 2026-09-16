@@ -12,6 +12,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -100,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Abundance"
             }.AddTo(Disposables);
 
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
 
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
@@ -156,9 +157,16 @@ namespace CompMs.App.Msdial.Model.Dims
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            }
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -175,7 +183,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public EicLoader EicLoader { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }

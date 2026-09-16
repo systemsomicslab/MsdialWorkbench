@@ -15,12 +15,14 @@ namespace CompMs.App.Msdial.Model.MsResult
         private readonly IDataProvider _provider;
         private readonly PeakPickBaseParameter _parameter;
         private readonly IonMode _ionMode;
+        private readonly AcquisitionType _acquisitionType;
 
-        public AccumulateSpectraUsecase(IDataProvider provider, PeakPickBaseParameter parameter, IonMode ionMode)
+        public AccumulateSpectraUsecase(IDataProvider provider, PeakPickBaseParameter parameter, IonMode ionMode, AcquisitionType acquisitionType)
         {
             _provider = provider;
             _parameter = parameter;
             _ionMode = ionMode;
+            _acquisitionType = acquisitionType;
         }
 
         public async Task<MSScanProperty> AccumulateMs1Async((double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
@@ -65,7 +67,7 @@ namespace CompMs.App.Msdial.Model.MsResult
         }
 
         public async Task<MSScanProperty> AccumulateMs2Async(double mz, double mzTolerance, (double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
-            var provider = _provider.FilterByMz(mz, mzTolerance).Cache();
+            var provider = _provider.FilterByMz(mz, mzTolerance, _acquisitionType).Cache();
             var (rtStart, rtEnd) = rtRange;
             var spectra = await provider.LoadMs2SpectraWithRtRangeAsync(rtStart, rtEnd, token).ConfigureAwait(false);
             var peaks = DataAccess.GetAverageSpectrum(spectra, _parameter.CentroidMs2Tolerance);

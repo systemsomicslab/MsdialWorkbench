@@ -1,10 +1,14 @@
-﻿using CompMs.Common.Algorithm.Scoring;
+﻿using CompMs.App.Msdial.Utility;
+using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -53,6 +57,15 @@ namespace CompMs.App.Msdial.Model.Chart
 
             _upperSpectrum = upperSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _lowerSpectrum = lowerSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            VerticalTitles = new[] {
+                upperSpectrumModel.VerticalAxisItemSelector.ObserveProperty(m => m.SelectedAxisItem)
+                    .Select(m => m?.GraphLabel).SkipNull().Prepend(string.Empty),
+                lowerSpectrumModel.VerticalAxisItemSelector.ObserveProperty(m => m.SelectedAxisItem)
+                    .Select(m => m?.GraphLabel).SkipNull().Prepend(string.Empty),
+            }.CombineLatest(labels => new AxisTitles() { Titles = labels.Any() && labels.AreAllEqual() ? [labels[0]] : [..labels] })
+            .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
             var canSaveMatchedSpectrum = new[]{
                 ms2ScanMatching?.Select(s => s != null) ?? Observable.Return(false),
                 _upperSpectrum.Select(s => s != null),
@@ -70,11 +83,10 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
 
-        public IObservable<IAxisManager<double>> LowerVerticalAxis => LowerSpectrumModel.VerticalAxis;
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem { get; }
+        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem { get; }
         public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => LowerSpectrumModel.VerticalAxisItemSelector.AxisItems;
 
-        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
+        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem { get; }
 
         public string? GraphTitle {
             get => _graphTitle;
@@ -86,6 +98,9 @@ namespace CompMs.App.Msdial.Model.Chart
             set => SetProperty(ref _horizontalTitle, value);
         }
         private string? _horizontalTitle;
+
+        public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles { get; }
+        [Obsolete("Use VerticalTitles instead.")]
         public string? VerticalTitle {
             get => _verticalTitle;
             set => SetProperty(ref _verticalTitle, value);

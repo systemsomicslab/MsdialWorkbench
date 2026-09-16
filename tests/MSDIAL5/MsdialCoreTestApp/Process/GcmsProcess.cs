@@ -41,6 +41,13 @@ public sealed class GcmsProcess
             return -1;
         }
 
+        if (!param.MspFilePath.IsEmptyOrNull() && !File.Exists(param.MspFilePath)) {
+            throw new FileNotFoundException(
+                $"The GC-MS MSP reference library was not found. Parsed path: '{param.MspFilePath}'. "
+                + "Check the 'Msp file path' entry in the method file.",
+                param.MspFilePath);
+        }
+
         if (param.RiDictionaryFilePath != string.Empty)
         {
             if (!File.Exists(param.RiDictionaryFilePath)) {
@@ -48,7 +55,7 @@ public sealed class GcmsProcess
             }
 
             if (!CheckRiDicionaryFiles(analysisFiles, param.RiDictionaryFilePath, out var errorMessage)) {
-                throw new FileNotFoundException(string.Format(errorMessage, param.RiDictionaryFilePath));
+                throw new FileNotFoundException(errorMessage, param.RiDictionaryFilePath);
             }
 
             //probably, at least in fiehn lab, this has to be automatically set from GCMS raw data.
@@ -79,42 +86,57 @@ public sealed class GcmsProcess
             }
         }
 
+        Console.WriteLine(
+            $"GC-MS retention matching: {param.RetentionType}; RI compound type: {param.RiCompoundType}; "
+            + $"RI dictionaries: {param.FileIdRiInfoDictionary?.Count ?? 0}");
+
         CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB,
-            out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
+            out var mspDB, out var txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
-            out List<MoleculeMsReference> lbmDB);
+            out var lbmDB);
+
+        if (!param.MspFilePath.IsEmptyOrNull() && (mspDB is null || mspDB.Database.Count == 0)) {
+            throw new InvalidDataException(
+                $"The GC-MS MSP reference library contained no readable records: '{param.MspFilePath}'. "
+                + "Check that the file is a valid MSP library.");
+        }
+        if (mspDB is { Database.Count: > 0 }) {
+            Console.WriteLine($"GC-MS MSP reference library: {param.MspFilePath} ({mspDB.Database.Count} records)");
+        }
+        else {
+            Console.WriteLine("GC-MS reference matching is disabled because 'Msp file path' is empty.");
+        }
 
         
         var container = new MsdialGcmsDataStorage()
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB,
-            TextDB = txtDB,
+            MspDB = mspDB is null ? [] : [.. mspDB.Database],
+            TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
             MsdialGcmsParameter = param
         };
 
         var dbStorage = DataBaseStorage.CreateEmpty();
-        if (mspDB.Count > 0)
+        if (mspDB is { Database.Count: > 0 })
         {
-            var database = new MoleculeDataBase(mspDB, param.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
-            var annotator = new MassAnnotator(database, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
-            dbStorage.AddMoleculeDataBase(database, [
+            var annotator = new MassAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, SourceType.MspDB, "MspDB", 1);
+            dbStorage.AddMoleculeDataBase(mspDB, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.MspSearchParam, ignoreIsotopicPeak: true)),
             ]);
         }
-        if (txtDB.Count > 0)
+        if (txtDB is { Database.Count: > 0 })
         {
-            var textdatabase = new MoleculeDataBase(txtDB, param.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
-            var textannotator = new MassAnnotator(textdatabase, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB", 2);
-            dbStorage.AddMoleculeDataBase(textdatabase, [
+            var textannotator = new MassAnnotator(txtDB, param.TextDbSearchParam, param.TargetOmics, SourceType.TextDB, "TextDB", 2);
+            dbStorage.AddMoleculeDataBase(txtDB, [
                 new MetabolomicsAnnotatorParameterPair(textannotator.Save(), new AnnotationQueryFactory(textannotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false)),
             ]);
         }
+        container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = dbStorage;
-        container.DataBaseMapper = dbStorage.CreateDataBaseMapper();
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
         return ExecuteAsync(container, outputFolder, isProjectStore).Result;
@@ -146,18 +168,19 @@ public sealed class GcmsProcess
     private bool CheckRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
     {
         errorMessage = string.Empty;
-        using (var sr = new StreamReader(riDictionaryFile, Encoding.ASCII)) {
+        var mappingDirectory = Path.GetDirectoryName(Path.GetFullPath(riDictionaryFile)) ?? Environment.CurrentDirectory;
+        using (var sr = new StreamReader(riDictionaryFile, Encoding.UTF8, detectEncodingFromByteOrderMarks: true)) {
             while (sr.Peek() > -1) {
                 var line = sr.ReadLine();
                 if (string.IsNullOrEmpty(line)) continue;
                 var lineArray = line.Split('\t');
                 if (lineArray.Length < 2) continue;
 
-                var analysisFilePath = lineArray[0];
-                var riFilePath = lineArray[1];
+                var analysisFilePath = ResolveMappingPath(lineArray[0], mappingDirectory);
+                var riFilePath = ResolveMappingPath(lineArray[1], mappingDirectory);
 
                 foreach (var file in analysisFiles) {
-                    if (file.AnalysisFilePath == analysisFilePath) {
+                    if (IsSamePath(file.AnalysisFilePath, analysisFilePath)) {
                         file.RiDictionaryFilePath = riFilePath;
                         break;
                     }
@@ -178,6 +201,22 @@ public sealed class GcmsProcess
         else {
             return true;
         }
+    }
+
+    private static string ResolveMappingPath(string path, string mappingDirectory)
+    {
+        var normalized = path.Trim().Trim('"', '\'');
+        return Path.GetFullPath(Path.IsPathRooted(normalized)
+            ? normalized
+            : Path.Combine(mappingDirectory, normalized));
+    }
+
+    private static bool IsSamePath(string first, string second)
+    {
+        var comparison = Path.DirectorySeparatorChar == '\\'
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        return string.Equals(Path.GetFullPath(first), Path.GetFullPath(second), comparison);
     }
 
     private async Task<int> ExecuteAsync(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
@@ -204,6 +243,8 @@ public sealed class GcmsProcess
             });
         }
         await Task.WhenAll(tasks);
+        
+        storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
 
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
@@ -221,7 +262,7 @@ public sealed class GcmsProcess
                     break;
             }
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, storage);
+            var factory = new GcmsAlignmentProcessFactory(storage);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
@@ -235,11 +276,28 @@ public sealed class GcmsProcess
             var spotExporter = new AlignmentCSVExporter("\t");
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
+            var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
+            var spots = result.AlignmentSpotProperties; // TODO: cancellation
+            var msdecs = decResults;
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
+
+            using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            mztabM_exporter.MztabFormatExporterCore(
+                tabmstream,
+                spots,
+                msdecs,
+                files,
+                accessor,
+                quantAccessor,
+                stats,
+                mztabm_filename
+            );
         }
 
         if (isProjectSaved)
         {
-            storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

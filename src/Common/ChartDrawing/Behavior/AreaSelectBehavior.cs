@@ -253,7 +253,7 @@ namespace CompMs.Graphics.Behavior
                     }
                     adorners.RemoveAdornerAll(adorner_ => !adorner_.IsSelected);
                     adorners.AddAdorner(adorner);
-                    foreach ((var adorner_, var color) in adorners.Adorners.Zip(GetAreaColors(fe))) {
+                    foreach ((var adorner_, var color) in adorners.Adorners.ZipInternal(GetAreaColors(fe))) {
                         adorner_.ChangeColor(color);
                     }
                 }
@@ -341,7 +341,7 @@ namespace CompMs.Graphics.Behavior
             }
 
             private void RefreshColors() {
-                foreach ((var adorner, var color) in Adorners.Zip(colors)) {
+                foreach ((var adorner, var color) in Adorners.ZipInternal(colors)) {
                     adorner.ChangeColor(color);
                 }
             }

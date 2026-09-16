@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Core
                 MaxDegreeOfParallelism = param.NumThreads
             };
             System.Threading.Tasks.Parallel.ForEach(files, parallelOptions, f => {
-                StandardDataProviderFactory factory = new StandardDataProviderFactory();
+                StandardDataProviderFactory factory = new StandardDataProviderFactory() { IgnoreRtCorrection = true, };
                 var provider = factory.Create(f);
                 RetentionTimeCorrection.Execute(f, param, provider);
                 _bgWorker!.ReportProgress(1);

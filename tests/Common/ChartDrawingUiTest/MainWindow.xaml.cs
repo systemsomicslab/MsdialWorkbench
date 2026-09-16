@@ -36,6 +36,8 @@ namespace ChartDrawingUiTest
                 typeof(Scatter3),
                 typeof(Scatter4),
                 typeof(ScatterControlSlimTest1),
+                typeof(ScatterControlSlimTest2),
+                typeof(ScatterControlSlimNotifyTest),
                 typeof(LineSpectrum1),
                 typeof(LineSpectrum2),
                 typeof(LineSpectrum3),
@@ -45,6 +47,7 @@ namespace ChartDrawingUiTest
                 typeof(Bar1),
                 typeof(Bar2),
                 typeof(Bar3),
+                typeof(AnnotatorNotifyTest),
                 typeof(SpotLinedAnnotatorTest1),
                 // typeof(Chromatogram1),
                 typeof(FileOpenControl1),
@@ -73,6 +76,7 @@ namespace ChartDrawingUiTest
                 typeof(DockItemsControl),
                 typeof(ReorderableItemsControlBehaviorTest),
                 typeof(MovableItemsControlBehaviorTest),
+                typeof(ItemSelectBehaviorTest),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();

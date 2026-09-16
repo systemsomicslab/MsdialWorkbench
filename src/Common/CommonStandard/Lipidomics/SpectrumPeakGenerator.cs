@@ -1,10 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -234,9 +232,7 @@ namespace CompMs.Common.Lipidomics
                 var factor = 1.0;
                 var factorHLoss = 0.5;
                 var factorHGain = 0.2;
-                var speccomment_hloss = SpectrumComment.doublebond;
                 var speccomment_radical = SpectrumComment.doublebond;
-                var speccomment_hgain = SpectrumComment.doublebond;
 
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next

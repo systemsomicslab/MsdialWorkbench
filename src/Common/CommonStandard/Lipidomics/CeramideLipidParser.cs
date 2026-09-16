@@ -75,7 +75,14 @@ namespace CompMs.Common.Lipidomics
                                 classString = classString + "S";
                                 break;
                             case "4":
-                                classString = classString + "P";
+                                if (classGroup["d"].Value == "0")
+                                {
+                                    classString = classString + "P";
+                                }
+                                else if (classGroup["d"].Value == "1")
+                                {
+                                    classString = classString + "H";
+                                }
                                 break;
                         }
                     }
@@ -87,7 +94,14 @@ namespace CompMs.Common.Lipidomics
                                 classString = classString + "S";
                                 break;
                             case "3":
-                                classString = classString + "P";
+                                if (classGroup["d"].Value == "0")
+                                {
+                                    classString = classString + "P";
+                                }
+                                else if (classGroup["d"].Value == "1")
+                                {
+                                    classString = classString + "H";
+                                }
                                 break;
                         }
                     }
@@ -131,7 +145,12 @@ namespace CompMs.Common.Lipidomics
                     case "HS":
                         lipidClass = LbmClass.Cer_HS;
                         break;
-
+                    case "AH":
+                        lipidClass = LbmClass.Cer_AH;
+                        break;
+                    case "NH":
+                        lipidClass = LbmClass.Cer_NH;
+                        break;
                 }
                 return new Lipid(lipidClass, chains.Mass, chains);
             }

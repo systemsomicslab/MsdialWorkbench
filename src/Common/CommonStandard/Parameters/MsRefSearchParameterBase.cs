@@ -21,14 +21,29 @@ namespace CompMs.Common.Parameter {
         public float RelativeAmpCutoff { get; set; } = 0F;
         [Key(8)]
         public float AbsoluteAmpCutoff { get; set; } = 0;
-        
+
         // by [0-1]
         [Key(9)]
-        public float WeightedDotProductCutOff { get; set; } = 0.6F;
+        public float SquaredWeightedDotProductCutOff { get; set; } = .6F * .6F;
         [Key(10)]
-        public float SimpleDotProductCutOff { get; set; } = 0.6F;
+        public float SquaredSimpleDotProductCutOff { get; set; } = .6F * .6F;
         [Key(11)]
-        public float ReverseDotProductCutOff { get; set; } = 0.8F;
+        public float SquaredReverseDotProductCutOff { get; set; } = .8F * .8F;
+        [IgnoreMember]
+        public float WeightedDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredWeightedDotProductCutOff);
+            set => SquaredWeightedDotProductCutOff = value * value;
+        }
+        [IgnoreMember]
+        public float SimpleDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredSimpleDotProductCutOff);
+            set => SquaredSimpleDotProductCutOff = value * value;
+        }
+        [IgnoreMember]
+        public float ReverseDotProductCutOff {
+            get => (float)System.Math.Sqrt(SquaredReverseDotProductCutOff);
+            set => SquaredReverseDotProductCutOff = value * value;
+        }
         [Key(12)]
         public float MatchedPeaksPercentageCutOff { get; set; } = 0.25F;
         [Key(19)]
@@ -62,9 +77,9 @@ namespace CompMs.Common.Parameter {
             Ms2Tolerance = parameter.Ms2Tolerance;
             RelativeAmpCutoff = parameter.RelativeAmpCutoff;
             AbsoluteAmpCutoff = parameter.AbsoluteAmpCutoff;
-            WeightedDotProductCutOff = parameter.WeightedDotProductCutOff;
-            SimpleDotProductCutOff = parameter.SimpleDotProductCutOff;
-            ReverseDotProductCutOff = parameter.ReverseDotProductCutOff;
+            SquaredWeightedDotProductCutOff = parameter.SquaredWeightedDotProductCutOff;
+            SquaredSimpleDotProductCutOff = parameter.SquaredSimpleDotProductCutOff;
+            SquaredReverseDotProductCutOff = parameter.SquaredReverseDotProductCutOff;
             MatchedPeaksPercentageCutOff = parameter.MatchedPeaksPercentageCutOff;
             TotalScoreCutoff = parameter.TotalScoreCutoff;
             MinimumSpectrumMatch = parameter.MinimumSpectrumMatch;

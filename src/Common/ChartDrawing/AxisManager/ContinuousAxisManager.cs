@@ -7,33 +7,6 @@ namespace CompMs.Graphics.AxisManager
 {
     public class ContinuousAxisManager : FreezableAxisManager
     {
-        static ContinuousAxisManager() {
-            InitialRangeProperty.OverrideMetadata(typeof(ContinuousAxisManager), new PropertyMetadata(new AxisRange(minimum: 0, maximum: 1), OnInitialRangeChanged, CoerceInitialRange));
-        }
-
-        private static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var axis = (ContinuousAxisManager)d;
-            axis.SetValue(RangeProperty, e.NewValue);
-        }
-
-        private static object CoerceInitialRange(DependencyObject d, object value) {
-            var axis = (ContinuousAxisManager)d;
-
-            var min = Convert.ToDouble(axis.MinValue);
-            var max = Convert.ToDouble(axis.MaxValue);
-
-            if (min == max) {
-                min -= 0.5;
-                max += 0.5;
-            }
-
-            var r = axis.ChartMargin;
-            return new AxisRange(
-                minimum: min - ((max - min) * r?.Left ?? 0d),
-                maximum: max + ((max - min) * r?.Right ?? 0d)
-            );
-        }
-
         public static readonly DependencyProperty MinValueProperty =
             DependencyProperty.Register(
                 nameof(MinValue), typeof(IConvertible), typeof(ContinuousAxisManager),
@@ -50,7 +23,9 @@ namespace CompMs.Graphics.AxisManager
         static void OnMinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var axis = (ContinuousAxisManager)d;
-            axis.CoerceValue(InitialRangeProperty);
+            axis.CoreRange = new AxisRange(
+                minimum: Convert.ToDouble(axis.MinValue),
+                maximum: axis.CoreRange.Maximum);
         }
 
         public static readonly DependencyProperty MaxValueProperty =
@@ -69,26 +44,9 @@ namespace CompMs.Graphics.AxisManager
         static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var axis = (ContinuousAxisManager)d;
-            axis.CoerceValue(InitialRangeProperty);
-        }
-
-        public static readonly DependencyProperty ChartMarginProperty =
-            DependencyProperty.Register(
-                nameof(ChartMargin), typeof(ChartMargin), typeof(ContinuousAxisManager),
-                new PropertyMetadata(
-                    new ChartMargin { Left = 0d, Right = 0d },
-                    OnChartMarginChanged));
-
-        public ChartMargin ChartMargin
-        {
-            get => (ChartMargin)GetValue(ChartMarginProperty);
-            set => SetValue(ChartMarginProperty, value);
-        }
-
-        static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var axis = (ContinuousAxisManager)d;
-            axis.CoerceValue(InitialRangeProperty);
+            axis.CoreRange = new AxisRange(
+                minimum: axis.CoreRange.Minimum,
+                maximum: Convert.ToDouble(axis.MaxValue));
         }
 
         public override List<LabelTickData> GetLabelTicks()

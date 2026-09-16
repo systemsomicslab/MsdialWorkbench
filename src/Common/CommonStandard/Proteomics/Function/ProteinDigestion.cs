@@ -17,12 +17,22 @@ namespace CompMs.Common.Proteomics.Function {
             return GetDigestedPeptideSequences(proteinSeqObj, cleavagesites, database, databaseID);
         }
 
-
         public static List<Peptide> GetDigestedPeptideSequences(List<AminoAcid> proteinSeqObj, List<string> cleavagesites, string database = "", int databaseID = -1) {
             var peptides = new List<Peptide>();
             var twoletterAAs = string.Empty;
             var start = 0;
             var end = 0;
+
+            if (cleavagesites.IsEmptyOrNull()) {
+                return peptides;
+            }
+            if (cleavagesites.Count == 1 && cleavagesites[0] == "-") {
+                var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj, Position = new CompMs.Common.DataObj.Range(0, proteinSeqObj.Count - 1) };
+                peptide.IsProteinNterminal = true;
+                peptide.IsProteinCterminal = true;
+                peptides.Add(peptide);
+                return peptides;
+            }
 
             for (int i = 0; i < proteinSeqObj.Count - 1; i++) {
                 twoletterAAs = proteinSeqObj[i].OneLetter.ToString() + proteinSeqObj[i + 1].OneLetter.ToString();

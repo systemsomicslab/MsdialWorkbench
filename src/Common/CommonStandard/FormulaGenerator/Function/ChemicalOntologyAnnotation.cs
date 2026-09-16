@@ -94,7 +94,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
 
             var revSpectrum = GetReversedMsmsSpectrum(result.ProductIonResult);
             var revNeutralLosses = GetReversedNeutralLosses(revSpectrum);
-            var revProductIons = FragmentAssigner.FastFragmnetAssigner(revSpectrum, productIonDB, result.Formula, param.Mass2Tolerance, param.MassTolType, adduct);
+            var revProductIons = FragmentAssigner.FastFragmentAssigner(revSpectrum, productIonDB, result.Formula, param.Mass2Tolerance, param.MassTolType, adduct);
             var revAssignedNeutrallosses = FragmentAssigner.FastNeutralLossAssigner(revNeutralLosses, neutralLossDB, result.Formula, param.Mass2Tolerance, param.MassTolType, adduct);
 
             var revFormulaResult = new FormulaResult() {

@@ -329,6 +329,36 @@ public class ObservableExtensionsTests
     }
 
     [TestMethod]
+    public void DefaultIfNull_WithSingleValueChange_ShouldEmitOnce() {
+        var scheduler = new TestScheduler();
+        var rp = new ReactivePropertySlim<string?>();
+        var source = scheduler.CreateHotObservable(
+            new Recorded<Notification<string?>>(50, Notification.CreateOnNext<string?>("Initial")),
+            new Recorded<Notification<string?>>(250, Notification.CreateOnNext<string?>("Changed1")),
+            new Recorded<Notification<string?>>(300, Notification.CreateOnNext<string?>(null)),
+            new Recorded<Notification<string?>>(400, Notification.CreateOnNext<string?>("Changed2")),
+            new Recorded<Notification<string?>>(500, Notification.CreateOnCompleted<string?>())
+        );
+        source.Subscribe(v => rp.Value = v);
+
+        var result = scheduler.Start(() =>
+            rp.DefaultIfNull<string?, string?>(s => s?.ToUpper()),
+            ReactiveTest.Created, ReactiveTest.Subscribed, ReactiveTest.Disposed
+        );
+
+        // Expect the initial value to be transformed and emitted, and then the changed value
+        var expectedMessages = new[]
+        {
+            new Recorded<Notification<string?>>(200, Notification.CreateOnNext<string?>("INITIAL")),
+            new Recorded<Notification<string?>>(250, Notification.CreateOnNext<string?>("CHANGED1")),
+            new Recorded<Notification<string?>>(300, Notification.CreateOnNext<string?>(null)),
+            new Recorded<Notification<string?>>(400, Notification.CreateOnNext<string?>("CHANGED2")),
+        };
+
+        ReactiveAssert.AreElementsEqual(expectedMessages, result.Messages);
+    }
+
+    [TestMethod]
     public void ObserveProperty() {
         var value = new TestValue();
         value.Value = 100;

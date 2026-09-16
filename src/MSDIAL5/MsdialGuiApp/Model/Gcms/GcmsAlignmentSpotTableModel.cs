@@ -17,8 +17,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAlignmentSpotTableModel(IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel?> target, IObservable<IBrushMapper<BarItem>> classBrush, FileClassPropertiesModel classProperties, IObservable<IBarItemsLoader> barItemsLoader, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter, AlignmentSpotSpectraLoader spectraLoader, UndoManager undoManager)
             : base(spots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader, undoManager) {
 
-            MassMin = spots.Select(s => s.Mass).DefaultIfEmpty().Min();
-            MassMax = spots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            MassMin = spots.Select(s => s.QuantMass).DefaultIfEmpty().Min();
+            MassMax = spots.Select(s => s.QuantMass).DefaultIfEmpty().Max();
             RtMin = spots.Select(s => s.RT).DefaultIfEmpty().Min();
             RtMax = spots.Select(s => s.RT).DefaultIfEmpty().Max();
             RiMin = spots.Select(s => s.RI).DefaultIfEmpty().Min();

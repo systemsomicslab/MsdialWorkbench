@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.PugRestApiStandard
@@ -16,9 +14,9 @@ namespace CompMs.Common.PugRestApiStandard
         private static string inputFormula = @"/compound/formula/";
         private static string inputListKey = @"/compound/listkey/";
         private static string inputCid = @"/compound/cid/";
+        private static readonly HttpClient HttpClient = new HttpClient();
         private string formula;
 
-        private Timer timer;
         private PubResponse result;
         private Dictionary<string, string> restUrl_filepath_Dcit;
 
@@ -30,8 +28,7 @@ namespace CompMs.Common.PugRestApiStandard
             if (maxRecords < 0) return false;
 
             var url = prolog + inputFormula + formula + "/JSON";
-            var req = WebRequest.Create(url);
-            var res = getWebResponse(req);
+            var res = getWebResponse(url);
 
             if (res == null) return false;
 
@@ -71,8 +68,7 @@ namespace CompMs.Common.PugRestApiStandard
                 if (counter == 100 || i == this.result.IdentifierList.CID.Count - 1)
                 {
                     var url = prolog + inputCid + cids + "/property/InChIKey/JSON";
-                    var req = WebRequest.Create(url);
-                    var res = getWebResponse(req);
+                    var res = getWebResponse(url);
 
                     if (res == null) return;
 
@@ -94,7 +90,7 @@ namespace CompMs.Common.PugRestApiStandard
             }
         }
 
-        private List<Properties> getPubRestInChIKeys(WebResponse res)
+        private List<Properties> getPubRestInChIKeys(HttpResponseMessage res)
         {
             var result = getPugRestSeviceResult(res);
             if (result == null) return null;
@@ -114,8 +110,7 @@ namespace CompMs.Common.PugRestApiStandard
 
         private bool listKeySearch(string url, PubResponse result)
         {
-            var req = WebRequest.Create(url);
-            var res = getWebResponse(req);
+            var res = getWebResponse(url);
 
             if (res == null)
             {
@@ -128,7 +123,7 @@ namespace CompMs.Common.PugRestApiStandard
             return true;
         }
 
-        private void setPubRestCids(WebResponse res)
+        private void setPubRestCids(HttpResponseMessage res)
         {
             this.result = getPugRestSeviceResult(res);
             if (this.result == null) return;
@@ -151,7 +146,7 @@ namespace CompMs.Common.PugRestApiStandard
             }
         }
 
-        private PubResponse getPubRestSynonyms(WebResponse res)
+        private PubResponse getPubRestSynonyms(HttpResponseMessage res)
         {
             if (res == null) return null;
             var pubResult = getPugRestSeviceResult(res);
@@ -177,8 +172,7 @@ namespace CompMs.Common.PugRestApiStandard
 
         private bool listKeySearch(string url, out PubResponse pubResponse)
         {
-            var req = WebRequest.Create(url);
-            var res = getWebResponse(req);
+            var res = getWebResponse(url);
 
             if (res == null)
             {
@@ -193,8 +187,7 @@ namespace CompMs.Common.PugRestApiStandard
 
         private bool listKeySearch(string url)
         {
-            var req = WebRequest.Create(url);
-            var res = getWebResponse(req);
+            var res = getWebResponse(url);
 
             if (res == null)
             {
@@ -206,7 +199,7 @@ namespace CompMs.Common.PugRestApiStandard
             return true;
         }
 
-        private PubResponse getPugRestSeviceResult(WebResponse res)
+        private PubResponse getPugRestSeviceResult(HttpResponseMessage res)
         {
             PubResponse result = null;
 
@@ -214,7 +207,7 @@ namespace CompMs.Common.PugRestApiStandard
             {
                 using (res)
                 {
-                    using (var resStream = res.GetResponseStream())
+                    using (var resStream = res.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                     {
                         var serializer = new DataContractJsonSerializer(typeof(PubResponse));
                         result = (PubResponse)serializer.ReadObject(resStream);
@@ -230,26 +223,26 @@ namespace CompMs.Common.PugRestApiStandard
             return result;
         }
 
-        private WebResponse getWebResponse(WebRequest req)
+        private HttpResponseMessage getWebResponse(string url)
         {
-            WebResponse res = null;
+            HttpResponseMessage res = null;
 
             try
             {
-                res = req.GetResponse();
+                res = HttpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
+                res.EnsureSuccessStatusCode();
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Console.WriteLine("Formula: {0}, Status: {1}, Message: {2}", this.formula, ex.Status, ex.Message);
+                Console.WriteLine("Formula: {0}, Message: {1}", this.formula, ex.Message);
+                res?.Dispose();
                 res = null;
             }
             catch (System.OperationCanceledException ex)
             {
                 Console.WriteLine("Formula: {0}, Status: {1}, Message: {2}", this.formula, ex.HResult, ex.Message);
+                res?.Dispose();
                 res = null;
-            }
-            finally
-            {
             }
             return res;
         }
@@ -312,8 +305,7 @@ namespace CompMs.Common.PugRestApiStandard
                     url = url.Substring(0, url.Length - 1) + "/synonyms/JSON";
                     endID = i;
 
-                    var req = WebRequest.Create(url);
-                    var res = getWebResponse(req);
+                    var res = getWebResponse(url);
                     var pubResult = getPubRestSynonyms(res);
 
                     setPubRestSynonyms(properties, pubResult, startID, endID);
@@ -329,8 +321,7 @@ namespace CompMs.Common.PugRestApiStandard
                 url = url.Substring(0, url.Length - 1) + "/synonyms/JSON";
                 endID = properties.Count - 1;
 
-                var req = WebRequest.Create(url);
-                var res = getWebResponse(req);
+                var res = getWebResponse(url);
                 var pubResult = getPubRestSynonyms(res);
 
                 setPubRestSynonyms(properties, pubResult, startID, endID);

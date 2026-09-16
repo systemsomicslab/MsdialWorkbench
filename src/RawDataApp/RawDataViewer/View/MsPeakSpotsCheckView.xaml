@@ -71,7 +71,7 @@
                     </chart:BarControl>
                 </chart:MultiChart>
             </TabItem>
-            <TabItem Header="Heght vs. S/N">
+            <TabItem Header="Height vs. S/N">
                 <chart:MultiChart HorizontalAxis="{Binding Distribution.Value.HorizontalAxis}"
                                   VerticalAxis="{Binding Distribution.Value.VerticalAxis}"
                                   HorizontalTitle="S/N"
@@ -110,7 +110,7 @@
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                 <TextBlock>
                                     <TextBlock.Text>
-                                        <MultiBinding StringFormat="Spectrum ID: {0}, m/z: {1}, RT: {2}">
+                                        <MultiBinding StringFormat="Spectrum ID: {0}, m/z: {1:F5}, RT: {2:F3}">
                                             <Binding  Path="FocusedItem.MS1RawSpectrumIdTop"/>
                                             <Binding  Path="FocusedItem.PeakFeature.Mass"/>
                                             <Binding  Path="FocusedItem.PeakFeature.ChromXsTop.RT.Value"/>

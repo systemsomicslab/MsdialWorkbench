@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -61,6 +61,15 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to msdial-jp@googlegroups.com.
+        /// </summary>
+        public static string CONTACT_EMAIL {
+            get {
+                return ResourceManager.GetString("CONTACT_EMAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         public static string EXPORT_DIR {
@@ -88,7 +97,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.5.241113.
+        ///   Looks up a localized string similar to 5.5.250403-beta.
         /// </summary>
         public static string VERSION {
             get {

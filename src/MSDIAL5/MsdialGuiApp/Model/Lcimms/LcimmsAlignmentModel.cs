@@ -37,6 +37,8 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using CompMs.MsdialCore.Parameter;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -109,15 +111,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
             var accumulatedTarget = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
-            var target = accumulatedTarget.SkipNull()
-                .Delay(TimeSpan.FromSeconds(.05d))
-                .Select(t =>
-                {
-                    var idx = orderedProps.IndexOf(t);
-                    return propTree.Query(idx, idx + 1).FirstOrDefault();
-                })
-                .ToReactiveProperty()
-                .AddTo(Disposables);
+            var target = new ReactiveProperty<AlignmentSpotPropertyModel?>().AddTo(Disposables);
+                //accumulatedTarget.SkipNull()
+                //.Delay(TimeSpan.FromSeconds(.05d))
+                //.Select(t =>
+                //{
+                //    var idx = orderedProps.IndexOf(t);
+                //    return propTree.Query(idx, idx + 1).FirstOrDefault();
+                //})
+                //.ToReactiveProperty()
+                //.AddTo(Disposables);
             Target = target;
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -135,6 +138,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         propModels.ClearOnScheduler();
                         propModels.AddRangeOnScheduler(props_);
                     }
+                    target.Value = propModels.FirstOrDefault();
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
             AlignmentSpotSource = new AlignmentSpotSource(alignmentFileBean, Container, DRIFT_CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
@@ -173,9 +177,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = alignmentFileBean.CreateEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
-                accumulatedTarget, eicLoader, files, parameter,
+                accumulatedTarget,
+                eicLoader,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             RtAlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
@@ -199,9 +207,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var dtEicLoader = alignmentFileBean.CreateEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
-                target, dtEicLoader, files, parameter,
+                target,
+                dtEicLoader,
+                files,
+                parameter,
+                projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             DtAlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
@@ -211,7 +223,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel), mapper).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference?>(mapper);
@@ -305,9 +317,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
+                var handler = new LipidmapsRestAPIHandler();
+                LipidmapsLinksModel = new LipidmapsLinksModel(handler, Target.Select(t => t?.MatchResultsModel.Representative)).AddTo(Disposables);
+            }
+
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            }
 
             CompoundSearchModel = target
                 .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompoundSearchModel(t, r, searcherCollection) : null)
@@ -348,7 +367,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
+        public LipidmapsLinksModel? LipidmapsLinksModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
 

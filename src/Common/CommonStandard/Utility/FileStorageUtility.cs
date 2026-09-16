@@ -247,7 +247,7 @@ namespace CompMs.Common.Utility
                     var inchikey = lineArray[0];
                     var shortinchikey = inchikey.Split('-')[0].Trim();
                     var adductString = lineArray[1];
-                    var adductObj = AdductIonParser.GetAdductIonBean(adductString);
+                    var adductObj = AdductIon.GetAdductIon(adductString);
                     if (!adductObj.FormatCheck) continue;
                     var ccsString = lineArray[2];
                     float ccs = 0.0F;

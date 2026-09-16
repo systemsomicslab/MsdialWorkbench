@@ -181,7 +181,11 @@ namespace Rfx.Riken.OsakaUniv
                 rawData.InchiKey = rawDataVM.InchiKey;
                 rawData.Comment = rawDataVM.Comment;
                 rawData.IsMarked = rawDataVM.IsMarked;
-                RawDataParcer.RawDataFileWriter(filePath, rawData);
+                if (filePath.EndsWith(".txt")) {
+                    RawDataParcer.MassBankRecordWriter(filePath, rawData);
+                } else {
+                    RawDataParcer.RawDataFileWriter(filePath, rawData);
+                }
             }
         }
 

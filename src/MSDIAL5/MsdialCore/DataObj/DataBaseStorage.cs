@@ -124,12 +124,6 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public DataBaseMapper CreateDataBaseMapper() {
-            var mapper = new DataBaseMapper();
-            SetDataBaseMapper(mapper);
-            return mapper;
-        }
-
         public AnnotationQueryFactoryStorage CreateQueryFactories() {
             return new AnnotationQueryFactoryStorage(
                 MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories()),

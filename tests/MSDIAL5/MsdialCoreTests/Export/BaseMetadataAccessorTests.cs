@@ -122,12 +122,12 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
             Assert.AreEqual("200", dict["Isotope tracking parent ID"]);
             Assert.AreEqual("1", dict["Isotope tracking weight number"]);
-            Assert.AreEqual("0.81", dict["Simple dot product"]);
-            Assert.AreEqual("0.82", dict["Weighted dot product"]);
-            Assert.AreEqual("0.83", dict["Reverse dot product"]);
+            Assert.AreEqual("0.810", dict["Simple dot product"]);
+            Assert.AreEqual("0.820", dict["Weighted dot product"]);
+            Assert.AreEqual("0.830", dict["Reverse dot product"]);
             Assert.AreEqual("10.00", dict["Matched peaks count"]);
             Assert.AreEqual("0.84", dict["Matched peaks percentage"]);
-            Assert.AreEqual("0.83", dict["Total score"]);
+            Assert.AreEqual("0.830", dict["Total score"]);
             Assert.AreEqual("12.34", dict["S/N average"]);
             Assert.AreEqual("GGG", dict["Spectrum reference file name"]);
             Assert.AreEqual("701.12345:345 702.12345:12", dict["MS1 isotopic spectrum"]);

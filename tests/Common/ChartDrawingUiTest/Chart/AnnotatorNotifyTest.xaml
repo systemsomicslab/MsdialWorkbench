@@ -1,0 +1,108 @@
+﻿<Page x:Class="ChartDrawingUiTest.Chart.AnnotatorNotifyTest"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+      xmlns:chartCore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AnnotatorNotifyTest">
+    <Page.DataContext>
+        <local:ScatterControlSlimNotifyTestViewModel/>
+    </Page.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Grid.Row="0" Grid.Column="0">
+            <Grid>
+                <chart:ScatterControlSlim ItemsSource="{Binding DataAs}"
+                                          HorizontalProperty="X"
+                                          VerticalProperty="Y"
+                                          DataType="{x:Type chartCore:DataPoint}"
+                                          SelectedItem="{Binding SelectedA}"/>
+                <chart:Annotator x:Name="DirectAnnotator"
+                                 ItemsSource="{Binding DataAs}"
+                                 HorizontalPropertyName="X"
+                                 VerticalPropertyName="Y"/>
+            </Grid>
+        </chart:SimpleChartControl>
+
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Grid.Row="0" Grid.Column="1">
+            <Grid>
+                <chart:ScatterControlSlim ItemsSource="{Binding DataBs}"
+                                          HorizontalProperty="Dp.X"
+                                          VerticalProperty="Dp.Y"
+                                          DataType="{x:Type local:DataPointWrapper}"
+                                          SelectedItem="{Binding SelectedB}"/>
+                <chart:Annotator x:Name="NestedAnnotator"
+                                 ItemsSource="{Binding DataBs}"
+                                 HorizontalPropertyName="Dp.X"
+                                 VerticalPropertyName="Dp.Y"/>
+            </Grid>
+        </chart:SimpleChartControl>
+
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Update"
+                    Command="{Binding UpdateCommand, Mode=OneTime}"
+                    Grid.Column="0"/>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="1">
+                <Label Content="X:"/>
+                <TextBox Text="{Binding SelectedA.X}" Width="64"/>
+                <Label Content="Y:"/>
+                <TextBox Text="{Binding SelectedA.Y}" Width="64"/>
+                <ComboBox SelectedValuePath="DataContext"
+                          SelectedValue="{Binding Path=LabelPropertyName, Mode=OneWayToSource, ElementName=DirectAnnotator}"
+                          SelectedIndex="0"
+                          Margin="16,0">
+                    <ComboBoxItem Content="Type" DataContext="Type"/>
+                    <ComboBoxItem Content="X" DataContext="X"/>
+                    <ComboBoxItem Content="Y" DataContext="Y"/>
+                    <ComboBoxItem Content="ID" DataContext="ID"/>
+                    <ComboBoxItem Content="Self" DataContext=""/>
+                    <ComboBoxItem Content="None" DataContext="{x:Null}"/>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2">
+                <Label Content="Dp.X:"/>
+                <TextBox Text="{Binding SelectedB.Dp.X}" Width="64"/>
+                <Label Content="Dp.Y:"/>
+                <TextBox Text="{Binding SelectedB.Dp.Y}" Width="64"/>
+                <ComboBox SelectedValuePath="DataContext"
+                          SelectedValue="{Binding Path=LabelPropertyName, Mode=OneWayToSource, ElementName=NestedAnnotator}"
+                          SelectedIndex="0"
+                          Margin="16,0">
+                    <ComboBoxItem Content="Dp.Type" DataContext="Dp.Type"/>
+                    <ComboBoxItem Content="Dp.X" DataContext="Dp.X"/>
+                    <ComboBoxItem Content="Dp.Y" DataContext="Dp.Y"/>
+                    <ComboBoxItem Content="Dp.ID" DataContext="Dp.ID"/>
+                    <ComboBoxItem Content="Dp" DataContext="Dp"/>
+                    <ComboBoxItem Content="Self" DataContext=""/>
+                    <ComboBoxItem Content="None" DataContext="{x:Null}"/>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

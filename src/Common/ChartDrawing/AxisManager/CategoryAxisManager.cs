@@ -110,7 +110,7 @@ namespace CompMs.Graphics.AxisManager
             foreach (var item in items)
                 converter[item] = 0.5 + cnt++;
 
-            InitialRange = new AxisRange(minimum: 0d, maximum: cnt);
+            CoreRange = new AxisRange(minimum: 0d, maximum: cnt);
         }
 
         #region Event handler

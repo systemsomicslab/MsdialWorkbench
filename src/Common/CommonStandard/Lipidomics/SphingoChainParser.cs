@@ -75,7 +75,7 @@ namespace CompMs.Common.Lipidomics
                     case 2:
                         return new Oxidized(ox, 1, 3);
                     case 3:
-                        return new Oxidized(ox, 1, 3, 4);
+                        return new Oxidized(ox, 1, 3);
                 }
                 return new Oxidized(int.Parse(groups["oxnum"].Value), 1, 3);
             }

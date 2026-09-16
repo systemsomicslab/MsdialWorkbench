@@ -63,7 +63,11 @@ namespace Rfx.Riken.OsakaUniv
             }
 
             var filePath = Path.Combine(this.folderPath, this.fileName + "." + SaveFileFormat.mat);
-            RawDataParcer.RawDataFileWriter(filePath, this.rawData);
+            if (filePath.EndsWith(".txt")) {
+                RawDataParcer.MassBankRecordWriter(filePath, rawData);
+            } else {
+                RawDataParcer.RawDataFileWriter(filePath, rawData);
+            }
 
             this.mainWindowVM.Refresh_ImportFolder(this.folderPath);
         }

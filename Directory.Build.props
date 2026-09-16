@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug vendor unsupported'">
+    <DefineConstants>DEBUG;TRACE;VENDOR_UNSUPPORTED</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release vendor unsupported'">
+    <DefineConstants>TRACE;VENDOR_UNSUPPORTED</DefineConstants>
+    <Optimize>true</Optimize>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode>true</RestoreLockedMode>
+    <NuGetLockFilePath>$(MSBuildProjectDirectory)\packages.lock.ReleaseVendorUnsupported.json</NuGetLockFilePath>
+  </PropertyGroup>
+</Project>

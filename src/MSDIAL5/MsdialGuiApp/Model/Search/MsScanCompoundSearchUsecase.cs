@@ -61,7 +61,7 @@ internal sealed class MsScanCompoundSearchUsecase : BindableBase, ICompoundSearc
     public void AddDataBase(string path) {
         var references = LibraryHandler.ReadMspLibrary(path);
         var filename = Path.GetFileName(path);
-        var db = new MoleculeDataBase(references, filename, DataBaseSource.Msp, SourceType.MspDB);
+        var db = new MoleculeDataBase(references, filename, DataBaseSource.Msp, SourceType.MspDB, path);
         _dataBases.Add(db);
     }
 

@@ -140,7 +140,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -276,7 +276,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -408,7 +408,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -540,7 +540,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -671,7 +671,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -795,7 +795,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -886,7 +886,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -973,7 +973,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1054,7 +1054,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1158,7 +1158,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1259,7 +1259,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1353,7 +1353,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 520.3632664521699,//Precursor  
             };
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1445,7 +1445,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 520.3632664521699,//Precursor  
             };
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1517,7 +1517,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1586,7 +1586,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }
@@ -1666,7 +1666,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
-            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            foreach ((var expect, var actual) in expects.ZipInternal(scan.Spectrum.Select(spec => spec.Mass)))
             {
                 Assert.AreEqual(expect, actual, 0.01d);
             }

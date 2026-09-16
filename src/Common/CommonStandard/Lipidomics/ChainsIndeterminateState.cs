@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.DataStructure;
-using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -9,7 +8,6 @@ namespace CompMs.Common.Lipidomics
         public static ChainsIndeterminateState MolecularSpeciesLevel { get; } = new ChainsIndeterminateState(State.MolecularSpeciesLevel);
         public static ChainsIndeterminateState PositionLevel { get; } = new ChainsIndeterminateState(State.PositionLevel);
 
-        private readonly State _state;
         private readonly IIndeterminate _impl;
 
         private ChainsIndeterminateState(State state) {

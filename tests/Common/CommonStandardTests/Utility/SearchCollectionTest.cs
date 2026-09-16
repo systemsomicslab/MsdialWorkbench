@@ -367,7 +367,7 @@ namespace CompMs.Common.Utility.Tests
             };
             var actuals = SearchCollection.CartesianProduct(collection);
 
-            foreach ((var exp, var act) in expects.Zip(actuals)) {
+            foreach ((var exp, var act) in expects.ZipInternal(actuals)) {
                 CollectionAssert.AreEqual(exp, act);
             }
         }
@@ -388,7 +388,7 @@ namespace CompMs.Common.Utility.Tests
             ];
             var actuals = SearchCollection.CartesianProduct(collection);
 
-            foreach ((var exp, var act) in expects.Zip(actuals))
+            foreach ((var exp, var act) in expects.ZipInternal(actuals))
             {
                 CollectionAssert.AreEqual(exp, act);
             }

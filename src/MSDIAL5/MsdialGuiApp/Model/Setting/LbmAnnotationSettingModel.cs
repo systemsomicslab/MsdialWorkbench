@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private static MoleculeDataBase LoadDataBase(string id, string path, DataBaseSource dbsource, ParameterBase parameter) {
             switch (dbsource) {
                 case DataBaseSource.Lbm:
-                    return new MoleculeDataBase(LoadMspDataBase(path, parameter), id, DataBaseSource.Lbm, SourceType.MspDB);
+                    return new MoleculeDataBase(LoadMspDataBase(path, parameter), id, DataBaseSource.Lbm, SourceType.MspDB, path);
                 default:
                     throw new NotSupportedException(dbsource.ToString());
             }

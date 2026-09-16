@@ -95,6 +95,10 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
         var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
         var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        if (_ms1Counts[endIndex] - _ms1Counts[startIndex] == 0) {
+            yield break;
+        }
+
         var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
         var indexs = new int[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
         var times = new double[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
@@ -160,6 +164,7 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
         var results = new List<ValuePeak>();
         for (int i = startIndex; i < endIndex; i++) {
             if (_spectra[i].MsLevel != 2 ||
+                _spectra[i].Precursor is null ||
                 !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
                 _spectra[i].ScanPolarity != _polarity) {
                 continue;

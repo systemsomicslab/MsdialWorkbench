@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
              xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
@@ -32,6 +33,43 @@
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Change axis type of upper spectrum into.."
+                              ItemsSource="{Binding Path=UpperVerticalAxisItemCollection}"
+                              DisplayMemberPath="Label"
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding UpperVerticalAxisItem.Value}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
+                                            <Binding Path="."/>
+                                            <Binding Path="DataContext.UpperVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <MenuItem Header="Change axis type of lower spectrum into.."
+                              ItemsSource="{Binding Path=LowerVerticalAxisItemCollection}"
+                              DisplayMemberPath="Label"
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding LowerVerticalAxisItem.Value}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
+                                            <Binding Path="."/>
+                                            <Binding Path="DataContext.LowerVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <Separator/>
                     <MenuItem Header="Show all spectrum peak"
                               Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Show matched spectrum peak"
