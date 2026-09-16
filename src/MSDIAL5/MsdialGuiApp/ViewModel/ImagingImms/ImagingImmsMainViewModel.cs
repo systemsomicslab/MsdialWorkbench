@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly ImagingImmsMethodModel _model;
         private readonly IMessageBroker _broker;
+        private readonly ReactiveProperty<IResultViewModel?> _selectedImageResultViewModel;
 
         public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model,
@@ -30,8 +32,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>())) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
+            _selectedImageResultViewModel = new ReactiveProperty<IResultViewModel?>().AddTo(Disposables);
+            SelectedViewModel = _selectedImageResultViewModel;
             var focusManager = new FocusControlManager().AddTo(Disposables);
             ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, peakSpotTableService)).AddTo(Disposables);
+            SelectedImageViewModel = ImageViewModels.FirstOrDefault();
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>([]);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExporModel.ExportAsync).AddTo(Disposables);
         }
@@ -40,7 +45,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
         public ImagingImmsImageViewModel? SelectedImageViewModel {
             get => _selectedImageViewModel;
-            set => SetProperty(ref _selectedImageViewModel, value);
+            set {
+                if (SetProperty(ref _selectedImageViewModel, value)) {
+                    _selectedImageResultViewModel.Value = value?.ImageResultViewModel;
+                }
+            }
         }
         private ImagingImmsImageViewModel? _selectedImageViewModel;
 

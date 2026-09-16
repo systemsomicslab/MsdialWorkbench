@@ -20,8 +20,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
         private IProgress<int>? _progress;
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator, IProgress<int>? progress) : base(param, iupac, evaluator) {
+        private readonly bool _skipIonAbundanceCorrelationLinks;
+
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator, IProgress<int>? progress, bool skipIonAbundanceCorrelationLinks = false) : base(param, iupac, evaluator) {
             _progress = progress;
+            _skipIonAbundanceCorrelationLinks = skipIonAbundanceCorrelationLinks;
         }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
@@ -69,7 +72,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) {
             //checking alignment spot variable correlations
             var rtMargin = 0.06F;
-            AssignLinksByIonAbundanceCorrelations(alignments, rtMargin);
+            if (!_skipIonAbundanceCorrelationLinks) {
+                AssignLinksByIonAbundanceCorrelations(alignments, rtMargin);
+            }
 
             // assigning peak characters from the identified spots
             AssignLinksByIdentifiedIonFeatures(alignments);

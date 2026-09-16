@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Window;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -74,19 +75,36 @@ internal sealed class ImagingDimsImageModel : DisposableModelBase
     }
 
     public void RemoveRoi(ImagingRoiModel model) {
-        ImagingRoiModels.Remove(model);
+        if (model != ImageResult.ImagingRoiModel && ImagingRoiModels.Remove(model)) {
+            model.Dispose();
+            Disposables.Remove(model);
+        }
     }
 
-    public async Task SaveRoisAsync(CancellationToken token = default) {
+    public async Task<bool> SaveRoisAsync(CancellationToken token = default) {
+        var dialog = new SelectFolderDialog
+        {
+            Title = "Select folder to save ROI positions",
+        };
+        if (dialog.ShowDialog() != DialogResult.OK) {
+            return false;
+        }
+        var folderPath = dialog.SelectedPath!;
+
         var tasks = new List<Task>();
         foreach (var roi in ImagingRoiModels) {
-            tasks.Add(roi.SavePositionsAsync(token));
+            tasks.Add(roi.SavePositionsAsync(folderPath, token));
         }
         await Task.WhenAll(tasks).ConfigureAwait(false);
+        return true;
     }
 
     public async Task SaveIntensitiesAsync(CancellationToken token = default) {
         await Task.WhenAll([SaveRoisAsync(token), ImageResult.SaveIntensitiesAsync(token)]).ConfigureAwait(false);
+    }
+
+    public async Task ExportIntensitiesAsync(CancellationToken token = default) {
+        await ImageResult.SaveIntensitiesAsync(token).ConfigureAwait(false);
     }
 
     public void LoadRoi() {

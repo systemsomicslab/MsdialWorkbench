@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         private static async Task<ProjectModel> LoadMddatasetAsync(string  mddata, IMessageBroker broker) {
             var folder = Path.GetDirectoryName(mddata);
-            var title = Path.GetFileNameWithoutExtension(mddata);
+            var title = Path.GetFileName(mddata);
             var storage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, folder, title + ".mdproject"));
             var deserializer = new MsdialIntegrateSerializer();
 

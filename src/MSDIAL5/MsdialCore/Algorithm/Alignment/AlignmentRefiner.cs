@@ -48,14 +48,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         protected virtual void Deduplicate(List<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)
-            if (_param.OnlyReportTopHitInMspSearch) { //to remove duplicate identifications
-                var mspDeduplicator = new MspAnnotationDeduplicator();
-                mspDeduplicator.Process(alignments);
-            }
-
-            if (_param.OnlyReportTopHitInTextDBSearch) {
-                var textDbDedupicator = new TextAnnotationDeduplicator();
-                textDbDedupicator.Process(alignments);
+            if (_param.OnlyReportTopHitInMspSearch) {
+                var nameDeduplicator = new MatchResultAnnotationDeduplicator(evaluator);
+                nameDeduplicator.Process(alignments);
             }
         }
 

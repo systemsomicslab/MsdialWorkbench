@@ -15,6 +15,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -70,7 +71,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     var model = new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
                     ImageModels.Add(model);
                     if (option.HasFlag(ProcessOption.PeakSpotting)) {
-                        model.ImageResult.ResetRawSpectraOnPixels();
+                        await model.ImageResult.ResetRawSpectraOnPixelsAsync(token);
                     }
                 }
             }
@@ -108,7 +109,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 return Task.CompletedTask;
             }
 
-            return Image.ImageResult.SaveAsync();
+            return Task.WhenAll(ImageModels.Select(image => image.ImageResult.SaveAsync()));
         }
 
         public AnalysisResultExportModel CreateExportAnalysisModel() {
@@ -149,6 +150,15 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     FilePrefix = "Mgf",
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(file.LoadRawMeasurement(true, true, 5, 5000)), _storage.Parameter.MS2DataType),_storage.Parameter),
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };

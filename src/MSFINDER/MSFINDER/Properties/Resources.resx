@@ -139,4 +139,7 @@
   <data name="VDD_URI" xml:space="preserve">
     <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100</value>
   </data>
+  <data name="CONTACT_EMAIL" xml:space="preserve">
+    <value>msdial-jp@googlegroups.com</value>
+  </data>
 </root>

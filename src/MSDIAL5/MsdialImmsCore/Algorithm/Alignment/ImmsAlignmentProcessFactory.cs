@@ -32,7 +32,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                 ImmsParameter.DriftTimeAlignmentTolerance, ImmsParameter.DriftTimeAlignmentFactor);
         }
 
-        public override GapFiller CreateGapFiller() {
+        public override IGapFiller CreateGapFiller() {
             return new ImmsGapFiller(
                 ImmsParameter.DriftTimeAlignmentTolerance, ImmsParameter.Ms1AlignmentTolerance, ImmsParameter.IonMode,
                 ImmsParameter.SmoothingMethod, ImmsParameter.SmoothingLevel, ImmsParameter.IsForceInsertForGapFilling);

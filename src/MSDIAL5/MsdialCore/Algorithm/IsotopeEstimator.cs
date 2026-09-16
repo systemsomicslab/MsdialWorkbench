@@ -52,15 +52,15 @@ namespace CompMs.MsdialCore.Algorithm
 
                 // var focusedScan = peak.ScanNumberAtPeakTop;
                 var focusedMass = peak.PrecursorMz;
-                var focusedXValue = isDriftAxis ? peak.ChromXsTop.Drift.Value : peak.ChromXsTop.RT.Value;
+                var focusedXValue = isDriftAxis ? peak.PeakFeature.ChromXsTop.Drift.Value : peak.PeakFeature.ChromXsTop.RT.Value;
 
-                var startScanIndex = SearchCollection.LowerBound(peaks, focusedMass - param.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
+                var startScanIndex = SearchCollection.LowerBound(peaks, focusedMass - param.CentroidMs1Tolerance, (a, b) => a.PeakFeature.Mass.CompareTo(b));
                 //DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
                 var isotopeCandidates = new List<ChromatogramPeakFeature>() { peak };
 
                 for (int j = startScanIndex; j < peaks.Count; j++) {
 
-                    var xValue = isDriftAxis ? peaks[j].ChromXsTop.Drift.Value : peaks[j].ChromXsTop.RT.Value;
+                    var xValue = isDriftAxis ? peaks[j].PeakFeature.ChromXsTop.Drift.Value : peaks[j].PeakFeature.ChromXsTop.RT.Value;
                     if (peaks[j].PrecursorMz <= focusedMass) continue;
                     if (peaks[j].PrecursorMz > focusedMass + isotopeMax) break;
                     if (peaks[j].PeakID == peak.PeakID) continue;
@@ -97,14 +97,14 @@ namespace CompMs.MsdialCore.Algorithm
             //if (Math.Abs(monoIsoPeak.AccurateMass - 762.5087) < 0.001) {
             //    Console.WriteLine();
             //}
-            var xMonoisotope = isDriftAxis ? monoIsoPeak.ChromXsTop.Drift.Value : monoIsoPeak.ChromXsTop.RT.Value;
-            var xFocused = isDriftAxis ? monoIsoPeak.ChromXsTop.Drift.Value : monoIsoPeak.ChromXsTop.RT.Value;
+            var xMonoisotope = isDriftAxis ? monoIsoPeak.PeakFeature.ChromXsTop.Drift.Value : monoIsoPeak.PeakFeature.ChromXsTop.RT.Value;
+            var xFocused = isDriftAxis ? monoIsoPeak.PeakFeature.ChromXsTop.Drift.Value : monoIsoPeak.PeakFeature.ChromXsTop.RT.Value;
             //charge number check at M + 1
             var predChargeNumber = 1;
             for (int j = 1; j < peakFeatures.Count; j++) {
                 var isotopePeak = peakFeatures[j];
                 if (isotopePeak.PrecursorMz > monoIsoPeak.PrecursorMz + c13_c12Diff + tolerance) break;
-                var isotopeXValue = isDriftAxis ? isotopePeak.ChromXsTop.Drift.Value : isotopePeak.ChromXsTop.RT.Value;
+                var isotopeXValue = isDriftAxis ? isotopePeak.PeakFeature.ChromXsTop.Drift.Value : isotopePeak.PeakFeature.ChromXsTop.RT.Value;
 
                 for (int k = param.MaxChargeNumber; k >= 1; k--) {
                     var predIsotopeMass = (double)monoIsoPeak.PrecursorMz + (double)c13_c12Diff / (double)k;
@@ -148,7 +148,7 @@ namespace CompMs.MsdialCore.Algorithm
             isotopeTemps[0] = new IsotopeTemp() {
                 WeightNumber = 0, Mz = monoIsoPeak.PrecursorMz,
                 MzClBr = monoIsoPeak.PrecursorMz,
-                Intensity = monoIsoPeak.PeakHeightTop, PeakID = monoIsoPeak.PeakID
+                Intensity = monoIsoPeak.PeakFeature.PeakHeightTop, PeakID = monoIsoPeak.PeakID
             };
             //isotopeTemps[0] = new IsotopeTemp() {
             //    WeightNumber = 0, Mz = monoIsoPeak.PrecursorMz,
@@ -173,7 +173,7 @@ namespace CompMs.MsdialCore.Algorithm
                 for (int j = reminderIndex; j < peakFeatures.Count; j++) {
 
                     var isotopePeak = peakFeatures[j];
-                    var isotopeXValue = isDriftAxis ? isotopePeak.ChromXsTop.Drift.Value : isotopePeak.ChromXsTop.RT.Value;
+                    var isotopeXValue = isDriftAxis ? isotopePeak.PeakFeature.ChromXsTop.Drift.Value : isotopePeak.PeakFeature.ChromXsTop.RT.Value;
                     var isotopeMz = isotopePeak.PrecursorMz;
                     var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
                     var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
@@ -184,7 +184,7 @@ namespace CompMs.MsdialCore.Algorithm
                         if (isotopeTemps[i].PeakID == -1) {
                             isotopeTemps[i] = new IsotopeTemp() {
                                 WeightNumber = i, Mz = isotopeMz,
-                                Intensity = isotopePeak.PeakHeightTop, PeakID = j
+                                Intensity = isotopePeak.PeakFeature.PeakHeightTop, PeakID = j
                             };
                             xFocused = isotopeXValue;
                             mzFocused = isotopeMz;
@@ -192,7 +192,7 @@ namespace CompMs.MsdialCore.Algorithm
                         else {
                             if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
                                 isotopeTemps[i].Mz = isotopeMz;
-                                isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
+                                isotopeTemps[i].Intensity = isotopePeak.PeakFeature.PeakHeightTop;
                                 isotopeTemps[i].PeakID = j;
 
                                 xFocused = isotopeXValue;
@@ -204,7 +204,7 @@ namespace CompMs.MsdialCore.Algorithm
                         if (isotopeTemps[i].PeakID == -1) {
                             isotopeTemps[i] = new IsotopeTemp() {
                                 WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
-                                Intensity = isotopePeak.PeakHeightTop, PeakID = j
+                                Intensity = isotopePeak.PeakFeature.PeakHeightTop, PeakID = j
                             };
                             xFocused = isotopeXValue;
                             mzFocused = isotopeMz;
@@ -213,7 +213,7 @@ namespace CompMs.MsdialCore.Algorithm
                             if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
                                 isotopeTemps[i].Mz = isotopeMz;
                                 isotopeTemps[i].MzClBr = isotopeMz;
-                                isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
+                                isotopeTemps[i].Intensity = isotopePeak.PeakFeature.PeakHeightTop;
                                 isotopeTemps[i].PeakID = j;
 
                                 xFocused = isotopeXValue;

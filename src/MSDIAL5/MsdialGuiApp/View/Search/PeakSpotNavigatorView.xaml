@@ -35,16 +35,16 @@
                       HorizontalAlignment="Right" 
                       VerticalAlignment="Center" 
                       SelectedIndex="0"
-                      SelectedValuePath="Tag"
+                      SelectedValuePath="DataContext"
                       SelectedValue="{Binding SelectedAnnotationLabel.Value, Mode=TwoWay}"
                       Width="140"
                       Margin="0">
-                <TextBlock Text="None" Tag="{x:Null}"/>
-                <TextBlock Text="Retention time" Tag="ChromXValue"/>
-                <TextBlock Text="Mass" Tag="Mass"/>
-                <TextBlock Text="Metabolite" Tag="Name"/>
-                <TextBlock Text="Isotope" Tag="Isotope"/>
-                <TextBlock Text="Adduct" Tag="AdductType"/>
+                <ComboBoxItem Content="None" DataContext="{x:Null}"/>
+                <ComboBoxItem Content="Retention time" DataContext="ChromXValue"/>
+                <ComboBoxItem Content="Mass" DataContext="Mass"/>
+                <ComboBoxItem Content="Metabolite" DataContext="Name"/>
+                <ComboBoxItem Content="Isotope" DataContext="Isotope"/>
+                <ComboBoxItem Content="Adduct" DataContext="AdductType"/>
             </ComboBox>
         </StackPanel>
 

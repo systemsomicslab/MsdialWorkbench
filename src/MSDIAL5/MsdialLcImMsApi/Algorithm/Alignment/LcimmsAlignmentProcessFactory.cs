@@ -30,7 +30,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return new LcimmsDataAccessor();
         }
 
-        public override GapFiller CreateGapFiller() {
+        public override IGapFiller CreateGapFiller() {
             return new LcimmsGapFiller(LcimmsParameter);
         }
 

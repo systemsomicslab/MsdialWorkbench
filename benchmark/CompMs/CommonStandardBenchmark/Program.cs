@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using CommonStandardBenchmark.Algorithm.Scoring;
 
 namespace CommonStandardBenchmark
 {
@@ -7,7 +6,8 @@ namespace CommonStandardBenchmark
     {
         static void Main() {
             // BenchmarkRunner.Run<IEnumerableExtensionSequenceBenchmark>();
-            BenchmarkRunner.Run<MsScanMatchingBenchmark>();
+            //BenchmarkRunner.Run<Algorithm.Scoring.MsScanMatchingBenchmark>();
+            BenchmarkRunner.Run<DataStructure.PriorityQueueBenchmark>();
         }
     }
 }

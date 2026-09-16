@@ -58,7 +58,7 @@ public sealed class LcimmsProcess {
             ]);
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), 1);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
@@ -116,7 +116,7 @@ public sealed class LcimmsProcess {
             });
         }
         await Task.WhenAll(tasks);
-
+        storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -141,7 +141,7 @@ public sealed class LcimmsProcess {
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
 
-            var mztabm_filename = alignmentFile.FileName + ".mzTabM";
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
             var msdecs = align_decResults;
@@ -162,7 +162,6 @@ public sealed class LcimmsProcess {
         }
 
         if (isProjectSaved) {
-            storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

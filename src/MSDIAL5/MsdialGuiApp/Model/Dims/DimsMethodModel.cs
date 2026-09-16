@@ -99,6 +99,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
+                new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
@@ -183,17 +184,17 @@ namespace CompMs.App.Msdial.Model.Dims
 
 
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            IAnnotationProcess annotationProcess;
-            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
-                (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess();
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess();
-            }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                IAnnotationProcess annotationProcess;
+                if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
+                    (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
+                    annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                }
+                else {
+                    annotationProcess = BuildAnnotationProcess();
+                }
                 var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 var processor = new ProcessFile(ProviderFactory, Storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor, usable);

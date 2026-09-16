@@ -13,6 +13,7 @@ using CompMs.MsdialCore.Properties;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -535,6 +536,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for RT correction", CompoundListForRtCorrectionPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection file path", ReferenceFileParam.RtCorrectionPeakSelectionFilePath?.ToString() ?? string.Empty }));
             pStrings.Add(String.Join(": ", new string[] { "Searched adduct ions", String.Join(",", SearchedAdductIons.Select(n => n.AdductIonName).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -694,6 +696,8 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Interpolation method", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.InterpolationMethod.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (begin)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodBegin.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (end)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection mode", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection RT weight", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Internal standards for RT alignment", String.Join(",", RetentionTimeCorrectionCommon.StandardLibrary.Where(n => n.IsTargetMolecule).Select(n => n.Name).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -1007,6 +1011,8 @@ namespace CompMs.MsdialCore.Parameter
         public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
         [Key(6)]
         public string LbmFilePath { get; set; } = string.Empty;
+        [Key(7)]
+        public string RtCorrectionPeakSelectionFilePath { get; set; } = string.Empty;
     }
 
     [MessagePackObject]

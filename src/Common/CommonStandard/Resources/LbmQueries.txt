@@ -34,6 +34,7 @@ NAE	[M+H]+	Positive	TRUE
 GPNAE	[M+H]+	Positive	TRUE
 MGDG	[M+NH4]+	Positive	TRUE
 DGDG	[M+NH4]+	Positive	TRUE
+DGDG	[M+Na]+	Positive	FALSE
 MGMG	[M+NH4]+	Positive	TRUE
 DGMG	[M+NH4]+	Positive	TRUE
 EtherMGDG	[M+NH4]+	Positive	TRUE
@@ -288,6 +289,8 @@ Cer_BDS	[M+CH3COO]-	Negative	TRUE
 Cer_NP	[M-H]-	Negative	TRUE
 Cer_NP	[M+HCOO]-	Negative	TRUE
 Cer_NP	[M+CH3COO]-	Negative	TRUE
+Cer_NP	[M+H]+	Positive	True
+Cer_NP	[M+H-H2O]+	Positive	True
 Cer_EOS	[M+H]+	Positive	TRUE
 Cer_EOS	[M+H-H2O]+	Positive	TRUE
 Cer_EOS	[M-H]-	Negative	TRUE

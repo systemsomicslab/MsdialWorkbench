@@ -40,7 +40,7 @@
             <RibbonButton.ToolTip>The adduct type can be evaluated by using different ion mode peak list.</RibbonButton.ToolTip>
         </RibbonButton>
         <RibbonButton Label="Quant mass manager" LargeImageSource="{StaticResource Quant_mass_manager_is}"
-                      IsEnabled="False"
+                      Command="{Binding Path=MethodViewModel.Value.AlignmentViewModel.Value.ShowQuantmassBrowserCommand, FallbackValue={x:Static commonmmvvm:NeverCommand.Instance}}"
                       KeyTip="Q">
             <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
         </RibbonButton>

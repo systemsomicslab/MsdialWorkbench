@@ -187,7 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var request = new SaveFileNameRequest(_model.SaveSpectra)
             {
                 Title = "Save spectra",
-                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
+                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MDF SDfile(*.sdf)|*.sdf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
                 RestoreDirectory = true,
                 AddExtension = true,
             };

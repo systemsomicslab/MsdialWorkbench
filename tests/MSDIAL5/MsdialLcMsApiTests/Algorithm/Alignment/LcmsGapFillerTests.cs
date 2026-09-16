@@ -17,9 +17,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
             var filler = new LcmsGapFiller(
                 rtTol, mzTol,
-                Common.Enum.IonMode.Positive,
-                Common.Enum.SmoothingMethod.LinearWeightedMovingAverage, 0,
-                true);
+                Common.Enum.SmoothingMethod.LinearWeightedMovingAverage,
+                0, true);
 
             var spectra = new List<RawSpectrum>
             {

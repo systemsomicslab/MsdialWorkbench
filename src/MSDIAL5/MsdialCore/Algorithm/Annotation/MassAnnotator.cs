@@ -121,7 +121,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
-            if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
+            // The dot-product getters clamp the not-computed -1 to 0, so testing them cannot detect a
+            // candidate that was never compared against a reference spectrum. Ask the match result.
+            if (result.IsSpectrumComparisonPerformed)
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);

@@ -15,6 +15,7 @@
 		<MsdUrl>https://zenodo.org/records/12618137/files/MINEs-StructureDB-vs1.msd</MsdUrl>
 		<EsdUrl>https://zenodo.org/records/12618137/files/MsfinderStructureDB-VS15.esd</EsdUrl>
 		<EtmUrl>https://zenodo.org/records/12618137/files/MSMS-DBs-vs1.etm</EtmUrl>
+		<DownloadLibraries Condition="'$(DownloadLibraries)' == ''">false</DownloadLibraries>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
@@ -25,11 +26,11 @@
 			<_DeployToItemEsd Include="$(OutputPath)\Resources\msfinderLibrary\*.esd" />
 			<_DeployToItemEtm Include="$(OutputPath)\Resources\msfinderLibrary\*.etm" />
 		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
-		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)')" />
-		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)')" />
-		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)')" />
-		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)')" />
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
+		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)') AND '$(DownloadLibraries)' == 'true'" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -172,41 +173,12 @@
         <Content Include="CytoscapeLocalBrowser\data\elements.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\*.png" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" CopyToOutputDirectory="PreserveNewest" />
@@ -259,28 +231,28 @@
     </ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho">
+		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif">
+		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm">
+		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd">
+		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2">
+		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb">
+		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid">
+		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd">
+		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd" Condition="'$(DownloadLibraries)' == 'true'">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

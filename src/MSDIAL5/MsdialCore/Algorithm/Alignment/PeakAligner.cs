@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment;
 public class PeakAligner {
     protected DataAccessor Accessor { get; }
     protected IPeakJoiner Joiner { get; }
-    protected GapFiller Filler { get; }
+    protected IGapFiller Filler { get; }
     protected IAlignmentRefiner Refiner { get; }
     protected ParameterBase Param { get; }
     protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();
@@ -99,6 +99,9 @@ public class PeakAligner {
         // from 40 to 80
         var counter = 0;
         ReportProgress reporter = ReportProgress.FromLength(Progress, 40.0, 40.0);
+        foreach (var spot in spots) {
+            SetRepresentativeFileIDs(spot);
+        }
         foreach (var (analysisFile, file_) in analysisFiles.ZipInternal(tempFiles)) {
             var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
             foreach (var spot in spots) {
@@ -142,7 +145,7 @@ public class PeakAligner {
                 if (Filler.NeedsGapFill(spot, analysisFile)) {
                     Filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, analysisFile.AnalysisFileId);
                 }
-                if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
+                if (spot.RepresentativeFileID == analysisFile.AnalysisFileId) {
                     var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
                     if (index < 0 || spectra == null || index >= spectra.Count) {
                         spot.IsotopicPeaks = new List<IsotopicPeak>(0);
@@ -153,7 +156,7 @@ public class PeakAligner {
                 }
 
                 // UNDONE: retrieve spectrum data
-                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.PeakPickBaseParam.CentroidMs1Tolerance);
+                return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, Param.PeakPickBaseParam.CentroidMs1Tolerance);
             }).ToList();
 
         serializer?.SerializeAllToFile(tempFile, peakInfos);
@@ -195,6 +198,12 @@ public class PeakAligner {
         foreach (var child in spot.AlignmentDriftSpotFeatures)
             SetRepresentativeProperties(child);
         DataObjConverter.SetRepresentativeProperty(spot);
+    }
+
+    private void SetRepresentativeFileIDs(AlignmentSpotProperty spot) {
+        foreach (var child in spot.AlignmentDriftSpotFeatures)
+            SetRepresentativeFileIDs(child);
+        DataObjConverter.SetRepresentativeFileID(spot);
     }
 
     private void SerializeSpotInfo(

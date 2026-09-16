@@ -40,6 +40,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var sqweightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqsimpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var sqreverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var sqenhancedDotProduct = MsScanMatching.GetEnhancedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd, .6d);
+            var spectrumEntropy = MsScanMatching.GetSpectralEntropySimilarity(scan.Spectrum, reference.Spectrum, parameter.Ms2Tolerance);
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
@@ -93,6 +95,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity,
                 IsotopeSimilarity = (float)isotopeSimilarity,
+                // GetEnhancedDotProduct returns the not-computed -1 like its siblings, and Math.Sqrt(-1)
+                // is NaN. Keep the sentinel so a negative still means "never computed" in this field.
+                EnhancedDotProduct = sqenhancedDotProduct < 0d ? -1f : (float)Math.Sqrt(sqenhancedDotProduct),
+                SpectralEntropy = (float)spectrumEntropy,
                 Source = source,
                 AnnotatorID = id,
                 Priority = priority,
@@ -142,7 +148,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
                 scores.Add(result.AcurateMassSimilarity * massFactor);
-            if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
+            // The dot-product getters clamp the not-computed -1 to 0, so testing them cannot detect a
+            // candidate that was never compared against a reference spectrum. Ask the match result.
+            if (result.IsSpectrumComparisonPerformed)
                 scores.Add(msmsScore * msmsFactor);
             if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0 && rtFactor > 0)
                 scores.Add(result.RtSimilarity * rtFactor);

@@ -41,6 +41,13 @@ public sealed class GcmsProcess
             return -1;
         }
 
+        if (!param.MspFilePath.IsEmptyOrNull() && !File.Exists(param.MspFilePath)) {
+            throw new FileNotFoundException(
+                $"The GC-MS MSP reference library was not found. Parsed path: '{param.MspFilePath}'. "
+                + "Check the 'Msp file path' entry in the method file.",
+                param.MspFilePath);
+        }
+
         if (param.RiDictionaryFilePath != string.Empty)
         {
             if (!File.Exists(param.RiDictionaryFilePath)) {
@@ -48,7 +55,7 @@ public sealed class GcmsProcess
             }
 
             if (!CheckRiDicionaryFiles(analysisFiles, param.RiDictionaryFilePath, out var errorMessage)) {
-                throw new FileNotFoundException(string.Format(errorMessage, param.RiDictionaryFilePath));
+                throw new FileNotFoundException(errorMessage, param.RiDictionaryFilePath);
             }
 
             //probably, at least in fiehn lab, this has to be automatically set from GCMS raw data.
@@ -79,10 +86,26 @@ public sealed class GcmsProcess
             }
         }
 
+        Console.WriteLine(
+            $"GC-MS retention matching: {param.RetentionType}; RI compound type: {param.RiCompoundType}; "
+            + $"RI dictionaries: {param.FileIdRiInfoDictionary?.Count ?? 0}");
+
         CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB,
             out var mspDB, out var txtDB,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out var lbmDB);
+
+        if (!param.MspFilePath.IsEmptyOrNull() && (mspDB is null || mspDB.Database.Count == 0)) {
+            throw new InvalidDataException(
+                $"The GC-MS MSP reference library contained no readable records: '{param.MspFilePath}'. "
+                + "Check that the file is a valid MSP library.");
+        }
+        if (mspDB is { Database.Count: > 0 }) {
+            Console.WriteLine($"GC-MS MSP reference library: {param.MspFilePath} ({mspDB.Database.Count} records)");
+        }
+        else {
+            Console.WriteLine("GC-MS reference matching is disabled because 'Msp file path' is empty.");
+        }
 
         
         var container = new MsdialGcmsDataStorage()
@@ -145,18 +168,19 @@ public sealed class GcmsProcess
     private bool CheckRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
     {
         errorMessage = string.Empty;
-        using (var sr = new StreamReader(riDictionaryFile, Encoding.ASCII)) {
+        var mappingDirectory = Path.GetDirectoryName(Path.GetFullPath(riDictionaryFile)) ?? Environment.CurrentDirectory;
+        using (var sr = new StreamReader(riDictionaryFile, Encoding.UTF8, detectEncodingFromByteOrderMarks: true)) {
             while (sr.Peek() > -1) {
                 var line = sr.ReadLine();
                 if (string.IsNullOrEmpty(line)) continue;
                 var lineArray = line.Split('\t');
                 if (lineArray.Length < 2) continue;
 
-                var analysisFilePath = lineArray[0];
-                var riFilePath = lineArray[1];
+                var analysisFilePath = ResolveMappingPath(lineArray[0], mappingDirectory);
+                var riFilePath = ResolveMappingPath(lineArray[1], mappingDirectory);
 
                 foreach (var file in analysisFiles) {
-                    if (file.AnalysisFilePath == analysisFilePath) {
+                    if (IsSamePath(file.AnalysisFilePath, analysisFilePath)) {
                         file.RiDictionaryFilePath = riFilePath;
                         break;
                     }
@@ -177,6 +201,22 @@ public sealed class GcmsProcess
         else {
             return true;
         }
+    }
+
+    private static string ResolveMappingPath(string path, string mappingDirectory)
+    {
+        var normalized = path.Trim().Trim('"', '\'');
+        return Path.GetFullPath(Path.IsPathRooted(normalized)
+            ? normalized
+            : Path.Combine(mappingDirectory, normalized));
+    }
+
+    private static bool IsSamePath(string first, string second)
+    {
+        var comparison = Path.DirectorySeparatorChar == '\\'
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        return string.Equals(Path.GetFullPath(first), Path.GetFullPath(second), comparison);
     }
 
     private async Task<int> ExecuteAsync(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
@@ -203,6 +243,8 @@ public sealed class GcmsProcess
             });
         }
         await Task.WhenAll(tasks);
+        
+        storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
 
         if (storage.MsdialGcmsParameter.TogetherWithAlignment)
         {
@@ -220,7 +262,7 @@ public sealed class GcmsProcess
                     break;
             }
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, storage);
+            var factory = new GcmsAlignmentProcessFactory(storage);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
@@ -235,7 +277,7 @@ public sealed class GcmsProcess
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
 
-            var mztabm_filename = alignmentFile.FileName + ".mzTabM";
+            var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
             var msdecs = decResults;
@@ -256,7 +298,6 @@ public sealed class GcmsProcess
 
         if (isProjectSaved)
         {
-            storage.MsdialGcmsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);

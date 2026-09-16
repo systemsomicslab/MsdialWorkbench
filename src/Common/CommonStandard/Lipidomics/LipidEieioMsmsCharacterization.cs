@@ -617,7 +617,7 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz = theoreticalMz - C3H9O6P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // PG diagnostic
-                    var threshold2 = 5.0;
+                    //var threshold2 = 5.0;
                     //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
                     //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
                     //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
@@ -804,7 +804,7 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // PS diagnostic
-                    var threshold2 = 5.0;
+                    //var threshold2 = 5.0;
                     //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
                     //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
                     //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;

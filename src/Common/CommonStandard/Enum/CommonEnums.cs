@@ -39,7 +39,7 @@ namespace CompMs.Common.Enum
     public enum AlignmentIndexType { RT, RI }
     public enum TargetOmics { Metabolomics, Lipidomics, Proteomics }
     public enum Ionization { ESI, EI }
-    public enum ExportSpectraFileFormat { mgf, msp, txt, mat, ms }
+    public enum ExportSpectraFileFormat { mgf, msp, txt, mat, ms, sdf }
     public enum ExportspectraType { profile, centroid, deconvoluted }
     public enum IonAbundanceUnit {
         Intensity, Height, Area, pmol, fmol, ng, pg,

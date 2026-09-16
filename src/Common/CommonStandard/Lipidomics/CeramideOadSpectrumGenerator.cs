@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
@@ -13,7 +12,6 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
         }.Sum();
-        private static readonly double Electron = 0.00054858026;
 
         private static readonly double CH3COO = new[] {
             MassDiffDictionary.CarbonMass * 2,

@@ -1,0 +1,27 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.ImagingDims.ImagingTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.ImagingDims"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingDims"
+             mc:Ignorable="d" 
+             Header="Image"
+             KeyTip="I"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingDimsMainViewModel}}">
+    <RibbonTab.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonTab.Resources>
+    <RibbonGroup Header="ROI">
+        <RibbonCheckBox Label="Selector enable" IsChecked="{Binding Path=SelectedImageViewModel.RoiEditViewModel.IsEditable}"/>
+        <RibbonButton Label="Calculate intensities" Command="{Binding Path=SelectedImageViewModel.AddRoiCommand, Mode=OneTime}"/>
+
+        <RibbonButton Label="Save ROIs" Command="{Binding Path=SelectedImageViewModel.SaveRoiCommand, Mode=OneWay}"/>
+        <RibbonButton Label="Load ROIs" Command="{Binding Path=SelectedImageViewModel.LoadRoiCommand, Mode=OneWay}"/>
+    </RibbonGroup>
+    <RibbonGroup Header="Export">
+        <RibbonButton Label="Export images" Command="{Binding Path=SelectedImageViewModel.SaveImagesViewModel.SaveCommand, Mode=OneWay}"/>
+        <RibbonButton Label="Export intensities" Command="{Binding Path=SelectedImageViewModel.ExportIntensitiesCommand, Mode=OneWay}"/>
+    </RibbonGroup>
+</RibbonTab>

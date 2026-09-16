@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
@@ -23,7 +22,7 @@ internal sealed class GcmsDataAccessor(MsdialGcmsParameter parameter) : DataAcce
     };
 
     public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
-        return new List<IMSScanProperty>(_accessorImpl.GetMSScanProperties(analysisFile));
+        return [.. _accessorImpl.GetMSScanProperties(analysisFile)];
     }
 
     List<MSDecResult> IFeatureAccessor<MSDecResult>.GetMSScanProperties(AnalysisFileBean analysisFile) {
@@ -32,16 +31,16 @@ internal sealed class GcmsDataAccessor(MsdialGcmsParameter parameter) : DataAcce
 
     List<SpectrumFeature> IFeatureAccessor<SpectrumFeature>.GetMSScanProperties(AnalysisFileBean analysisFile) {
         var collection = analysisFile.LoadSpectrumFeatures();
-        return new List<SpectrumFeature>(collection.Items);
+        return [.. collection.Items];
     }
 
-    public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
-        return _accessorImpl.AccumulateChromatogram(peak, spot, ms1Spectra, spectrum, ms1MassTolerance);
+    public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
+        return _accessorImpl.AccumulateChromatogram(peak, spot, ms1Spectra, ms1MassTolerance);
     }
 
     interface IGcmsDataAccessor {
         List<MSDecResult> GetMSScanProperties(AnalysisFileBean analysisFile);
-        ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance);
+        ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance);
     }
 
     class RtGcmsDataAccessorImpl(MsdialGcmsParameter parameter) : IGcmsDataAccessor {
@@ -54,7 +53,7 @@ internal sealed class GcmsDataAccessor(MsdialGcmsParameter parameter) : DataAcce
             return msdecResults;
         }
 
-        public ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0).ToArray();
             var rtMin = detected.Min(x => x.ChromXsTop.RT.Value);
             var rtMax = detected.Max(x => x.ChromXsTop.RT.Value);
@@ -84,7 +83,7 @@ internal sealed class GcmsDataAccessor(MsdialGcmsParameter parameter) : DataAcce
             return msdecResults;
         }
 
-        public ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0).ToArray();
             var riMin = detected.Min(x => x.ChromXsTop.RI);
             var riMax = detected.Max(x => x.ChromXsTop.RI);

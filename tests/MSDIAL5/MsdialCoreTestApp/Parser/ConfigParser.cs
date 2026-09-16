@@ -11,9 +11,11 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.IO;
 using CompMs.Common.Query;
+using CompMs.Common.Parameter;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Parser
@@ -26,7 +28,7 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MsdialGcmsParameter ReadForGcms(string filepath)
         {
             var param = new MsdialGcmsParameter();
-            using (var sr = new StreamReader(filepath, Encoding.ASCII))
+            using (var sr = new StreamReader(filepath, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 while (sr.Peek() > -1)
                 {
@@ -42,6 +44,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 param.MassSliceWidth = 0.5F;
                 param.CentroidMs1Tolerance = 0.5F;
             }
+            ResolveGcmsFilePaths(param, filepath);
             
             return param;
         }
@@ -60,6 +63,384 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             return param;
+        }
+
+        public static List<MspAnnotatorSetting> ReadMspAnnotatorSettings(string filepath, ParameterBase param) {
+            var settingsFilePath = ReadMspAnnotatorSettingsFilePath(filepath);
+            if (settingsFilePath.IsEmptyOrNull()) {
+                return new List<MspAnnotatorSetting>();
+            }
+            if (!Path.IsPathRooted(settingsFilePath)) {
+                var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+                settingsFilePath = Path.Combine(baseDirectory, settingsFilePath);
+            }
+            return ReadMspAnnotatorSettingsTable(settingsFilePath, param);
+        }
+
+        public static List<TextAnnotatorSetting> ReadTextAnnotatorSettings(string filepath, ParameterBase param) {
+            var settingsFilePath = ReadTextAnnotatorSettingsFilePath(filepath);
+            if (settingsFilePath.IsEmptyOrNull()) {
+                return new List<TextAnnotatorSetting>();
+            }
+            if (!Path.IsPathRooted(settingsFilePath)) {
+                var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+                settingsFilePath = Path.Combine(baseDirectory, settingsFilePath);
+            }
+            return ReadTextAnnotatorSettingsTable(settingsFilePath, param);
+        }
+
+        public static bool ReadAlignmentLightMode(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "alignment light mode":
+                        case "alignment light":
+                        case "console alignment light mode":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static int ReadLbmAnnotatorPriority(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLowerInvariant()) {
+                        case "lbm annotator priority":
+                        case "lbm annotation priority":
+                            if (int.TryParse(value, out var priority)) {
+                                return priority;
+                            }
+                            break;
+                    }
+                }
+            }
+            return 1;
+        }
+
+        public static bool ReadDetailedAlignmentProvenance(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "detailed alignment provenance":
+                        case "export detailed alignment provenance":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool ReadAnnotationCandidateExport(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "annotation candidates":
+                        case "export annotation candidates":
+                            var valueLower = value.ToLower();
+                            if (valueLower == "true" || valueLower == "false") {
+                                return bool.Parse(valueLower);
+                            }
+                            break;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "msp annotator settings file path":
+                        case "msp annotation settings file path":
+                        case "msp search settings file path":
+                            return value;
+                    }
+                }
+            }
+            return string.Empty;
+        }
+
+        private static string ReadTextAnnotatorSettingsFilePath(string filepath) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    switch (method.ToLower()) {
+                        case "text annotator settings file path":
+                        case "text library annotator settings file path":
+                        case "text db annotator settings file path":
+                        case "text annotation settings file path":
+                            return value;
+                    }
+                }
+            }
+            return string.Empty;
+        }
+
+        private static List<MspAnnotatorSetting> ReadMspAnnotatorSettingsTable(string filepath, ParameterBase param) {
+            if (!File.Exists(filepath)) {
+                Console.WriteLine($"MSP annotator settings file was not found: {filepath}");
+                return new List<MspAnnotatorSetting>();
+            }
+
+            var rows = new List<string>();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine()?.TrimEnd('\r', '\n');
+                    if (!line.IsEmptyOrNull() && !line.TrimStart().StartsWith("#")) {
+                        rows.Add(line);
+                    }
+                }
+            }
+            if (rows.Count == 0) {
+                return new List<MspAnnotatorSetting>();
+            }
+
+            var headers = rows[0].Split('\t').Select(NormalizeHeader).ToArray();
+            var pathIndex = FindColumn(headers, "mspfilepath", "mspfile", "filepath", "path");
+            if (pathIndex < 0) {
+                Console.WriteLine("MSP annotator settings TSV requires a 'msp_file_path' column.");
+                return new List<MspAnnotatorSetting>();
+            }
+
+            var settings = new List<MspAnnotatorSetting>();
+            var usedAnnotatorIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+            for (var i = 1; i < rows.Count; i++) {
+                var fields = rows[i].Split('\t');
+                var mspFilePath = GetField(fields, pathIndex);
+                if (mspFilePath.IsEmptyOrNull()) {
+                    continue;
+                }
+                if (!Path.IsPathRooted(mspFilePath)) {
+                    mspFilePath = Path.Combine(baseDirectory, mspFilePath);
+                }
+
+                var settingIndex = settings.Count + 1;
+                var annotatorId = GetField(fields, headers, "annotatorid", "id", "name");
+                if (annotatorId.IsEmptyOrNull()) {
+                    annotatorId = $"MspDB_{settingIndex}";
+                }
+                if (!usedAnnotatorIds.Add(annotatorId)) {
+                    Console.WriteLine($"Duplicated MSP annotator_id was skipped: {annotatorId}");
+                    continue;
+                }
+
+                var priority = settingIndex;
+                var priorityText = GetField(fields, headers, "priority");
+                if (!priorityText.IsEmptyOrNull() && int.TryParse(priorityText, out var parsedPriority)) {
+                    priority = parsedPriority;
+                }
+
+                var searchParameter = new MsRefSearchParameterBase(param.MspSearchParam);
+                ApplyMspSearchParameter(searchParameter, fields, headers);
+                TargetOmics? targetOmics = null;
+                var targetOmicsText = GetField(fields, headers, "targetomics", "annotationmode", "omics");
+                if (!targetOmicsText.IsEmptyOrNull()) {
+                    if (Enum.TryParse(targetOmicsText, true, out TargetOmics parsedTargetOmics)) {
+                        targetOmics = parsedTargetOmics;
+                    }
+                    else {
+                        Console.WriteLine($"Unknown target_omics '{targetOmicsText}' for MSP annotator '{annotatorId}'. The project Target omics setting will be used.");
+                    }
+                }
+                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics));
+                ReportEffectiveAnnotatorSettings("MSP", annotatorId, mspFilePath, priority, searchParameter);
+            }
+            return settings;
+        }
+
+        private static List<TextAnnotatorSetting> ReadTextAnnotatorSettingsTable(string filepath, ParameterBase param) {
+            if (!File.Exists(filepath)) {
+                Console.WriteLine($"Text annotator settings file was not found: {filepath}");
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var rows = new List<string>();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine()?.TrimEnd('\r', '\n');
+                    if (!line.IsEmptyOrNull() && !line.TrimStart().StartsWith("#")) {
+                        rows.Add(line);
+                    }
+                }
+            }
+            if (rows.Count == 0) {
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var headers = rows[0].Split('\t').Select(NormalizeHeader).ToArray();
+            var pathIndex = FindColumn(headers, "textdbfilepath", "textlibraryfilepath", "textfilepath", "filepath", "path");
+            if (pathIndex < 0) {
+                Console.WriteLine("Text annotator settings TSV requires a 'text_db_file_path' column.");
+                return new List<TextAnnotatorSetting>();
+            }
+
+            var settings = new List<TextAnnotatorSetting>();
+            var usedAnnotatorIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var baseDirectory = Path.GetDirectoryName(filepath) ?? string.Empty;
+            for (var i = 1; i < rows.Count; i++) {
+                var fields = rows[i].Split('\t');
+                var textDbFilePath = GetField(fields, pathIndex);
+                if (textDbFilePath.IsEmptyOrNull()) {
+                    continue;
+                }
+                if (!Path.IsPathRooted(textDbFilePath)) {
+                    textDbFilePath = Path.Combine(baseDirectory, textDbFilePath);
+                }
+
+                var settingIndex = settings.Count + 1;
+                var annotatorId = GetField(fields, headers, "annotatorid", "id", "name");
+                if (annotatorId.IsEmptyOrNull()) {
+                    annotatorId = $"TextDB_{settingIndex}";
+                }
+                if (!usedAnnotatorIds.Add(annotatorId)) {
+                    Console.WriteLine($"Duplicated Text annotator_id was skipped: {annotatorId}");
+                    continue;
+                }
+
+                var priority = settingIndex;
+                var priorityText = GetField(fields, headers, "priority");
+                if (!priorityText.IsEmptyOrNull() && int.TryParse(priorityText, out var parsedPriority)) {
+                    priority = parsedPriority;
+                }
+
+                var searchParameter = new MsRefSearchParameterBase(param.TextDbSearchParam);
+                ApplyMspSearchParameter(searchParameter, fields, headers);
+                settings.Add(new TextAnnotatorSetting(annotatorId, textDbFilePath, priority, searchParameter));
+                ReportEffectiveAnnotatorSettings("Text", annotatorId, textDbFilePath, priority, searchParameter);
+            }
+            return settings;
+        }
+
+        /// <summary>
+        /// States the settings an annotator will actually use.
+        /// </summary>
+        /// <remarks>
+        /// A settings row starts from the method file's annotation block and overrides,
+        /// column by column, whatever the table supplies. So the same setting is written
+        /// down in two places with two different values and neither file says which one
+        /// governs. Printing the resolved value settles it in the run log, where a reader
+        /// of the artifacts can see it.
+        /// </remarks>
+        private static void ReportEffectiveAnnotatorSettings(
+            string kind, string annotatorId, string filePath, int priority, MsRefSearchParameterBase parameter) {
+            Console.WriteLine(
+                $"{kind} annotator {annotatorId} ({Path.GetFileName(filePath)}), priority {priority}: "
+                + $"RT tolerance {parameter.RtTolerance}, MS1 tolerance {parameter.Ms1Tolerance}, "
+                + $"MS2 tolerance {parameter.Ms2Tolerance}, total score cutoff {parameter.TotalScoreCutoff}");
+        }
+
+        private static void ApplyMspSearchParameter(MsRefSearchParameterBase parameter, string[] fields, string[] headers) {
+            SetFloat(fields, headers, value => parameter.MassRangeBegin = value, "massrangebegin", "massbegin");
+            SetFloat(fields, headers, value => parameter.MassRangeEnd = value, "massrangeend", "massend");
+            SetFloat(fields, headers, value => parameter.RtTolerance = value, "rttolerance", "retentiontimetolerance");
+            SetFloat(fields, headers, value => parameter.RiTolerance = value, "ritolerance", "retentionindextolerance");
+            SetFloat(fields, headers, value => parameter.CcsTolerance = value, "ccstolerance");
+            SetFloat(fields, headers, value => parameter.Ms1Tolerance = value, "ms1tolerance", "accuratems1tolerance");
+            SetFloat(fields, headers, value => parameter.Ms2Tolerance = value, "ms2tolerance");
+            SetFloat(fields, headers, value => parameter.RelativeAmpCutoff = value, "relativeamplitudecutoff", "relativeampcutoff");
+            SetFloat(fields, headers, value => parameter.AbsoluteAmpCutoff = value, "absoluteamplitudecutoff", "absoluteampcutoff");
+            SetFloat(fields, headers, value => parameter.WeightedDotProductCutOff = value, "weighteddotproductcutoff");
+            SetFloat(fields, headers, value => parameter.SimpleDotProductCutOff = value, "simpledotproductcutoff");
+            SetFloat(fields, headers, value => parameter.ReverseDotProductCutOff = value, "reversedotproductcutoff");
+            SetFloat(fields, headers, value => parameter.MatchedPeaksPercentageCutOff = value, "matchedpeakspercentagecutoff", "matchedpeakpercentagecutoff");
+            SetFloat(fields, headers, value => parameter.MinimumSpectrumMatch = value, "minimumspectrummatch", "minimumpeakmatch");
+            SetFloat(fields, headers, value => parameter.TotalScoreCutoff = value, "totalscorecutoff");
+            SetBool(fields, headers, value => parameter.IsUseTimeForAnnotationScoring = value, "useretentioninformationforscoring", "useretentiontimeforscoring", "usertscoring", "usertimescoring");
+            SetBool(fields, headers, value => parameter.IsUseTimeForAnnotationFiltering = value, "useretentioninformationforfiltering", "useretentiontimeforfiltering", "usertfiltering", "usetimefiltering");
+            SetBool(fields, headers, value => parameter.IsUseCcsForAnnotationScoring = value, "useccsforscoring", "useccsscoring");
+            SetBool(fields, headers, value => parameter.IsUseCcsForAnnotationFiltering = value, "useccsforfiltering", "useccsfiltering");
+        }
+
+        private static string NormalizeHeader(string text) {
+            return new string((text ?? string.Empty)
+                .Trim()
+                .Trim('"')
+                .ToLowerInvariant()
+                .Where(char.IsLetterOrDigit)
+                .ToArray());
+        }
+
+        private static int FindColumn(string[] headers, params string[] aliases) {
+            foreach (var alias in aliases.Select(NormalizeHeader)) {
+                for (var i = 0; i < headers.Length; i++) {
+                    if (headers[i] == alias) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private static string GetField(string[] fields, int index) {
+            return index >= 0 && index < fields.Length
+                ? fields[index].Trim().Trim('"')
+                : string.Empty;
+        }
+
+        private static string GetField(string[] fields, string[] headers, params string[] aliases) {
+            return GetField(fields, FindColumn(headers, aliases));
+        }
+
+        private static void SetFloat(string[] fields, string[] headers, Action<float> setter, params string[] aliases) {
+            var value = GetField(fields, headers, aliases);
+            if (value.IsEmptyOrNull()) {
+                return;
+            }
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                || float.TryParse(value, out parsed)) {
+                setter(parsed);
+            }
+        }
+
+        private static void SetBool(string[] fields, string[] headers, Action<bool> setter, params string[] aliases) {
+            var value = GetField(fields, headers, aliases);
+            if (value.IsEmptyOrNull()) {
+                return;
+            }
+            if (bool.TryParse(value, out var parsed)) {
+                setter(parsed);
+            }
+            else if (value == "1") {
+                setter(true);
+            }
+            else if (value == "0") {
+                setter(false);
+            }
         }
 
         public static MolecularSpectrumNetworkingBaseParameter ReadForMoleculerNetworkingParameter(string filepath) {
@@ -128,37 +509,83 @@ namespace CompMs.App.MsdialConsole.Parser
             method = string.Empty; value = string.Empty; isReadable = false;
             if (string.IsNullOrEmpty(line)) return;
             if (line!.Length < 2) return;
-            if (line[0] == '#') return;
+            if (line.TrimStart().StartsWith("#", StringComparison.Ordinal)) return;
 
-            var lineArray = line.Split(':');
-            if (lineArray.Length < 2) return;
-            method = lineArray[0].Trim();
-            value = line.Substring(line.Split(':')[0].Length + 1).Trim();
+            var colonIndex = line.IndexOf(':');
+            var equalsIndex = line.IndexOf('=');
+            var separatorIndex = colonIndex < 0
+                ? equalsIndex
+                : equalsIndex < 0
+                    ? colonIndex
+                    : Math.Min(colonIndex, equalsIndex);
+            if (separatorIndex < 0) return;
+
+            method = line.Substring(0, separatorIndex).Trim();
+            value = line.Substring(separatorIndex + 1).Trim();
+            if (value.Length >= 2
+                && ((value[0] == '"' && value[value.Length - 1] == '"')
+                    || (value[0] == '\'' && value[value.Length - 1] == '\''))) {
+                value = value.Substring(1, value.Length - 2).Trim();
+            }
             isReadable = true;
+        }
+
+        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
+            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath);
+            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath);
+            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath);
+            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath);
+            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath);
+            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath);
+            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath);
+            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath);
+        }
+
+        private static string ResolvePathFromMethodFile(string? path, string methodFilePath) {
+            if (path.IsEmptyOrNull()) {
+                return string.Empty;
+            }
+
+            var expanded = Environment.ExpandEnvironmentVariables(path!.Trim());
+            if (Path.IsPathRooted(expanded)) {
+                return Path.GetFullPath(expanded);
+            }
+
+            var methodDirectory = Path.GetDirectoryName(Path.GetFullPath(methodFilePath)) ?? Environment.CurrentDirectory;
+            return Path.GetFullPath(Path.Combine(methodDirectory, expanded));
         }
 
         public static bool ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
-            value = value.ToLower();
+            var valueLower = value.ToLower();
             switch (method) {
-                case "ri index file pathes": param.RiDictionaryFilePath = value; return true;
+                case "ri index file pathes":
+                case "ri index file paths":
+                case "ri dictionary file path":
+                case "ri dictionary file paths":
+                    param.RiDictionaryFilePath = value;
+                    return true;
                 case "retention type":
-                    if (value == "rt" || value == "ri")
-                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), value, true);
+                    if (valueLower == "rt" || valueLower == "ri")
+                        param.RetentionType = (RetentionType)Enum.Parse(typeof(RetentionType), valueLower, true);
                     return true;
                 case "ri compound":
-                    if (value == "fames" || value == "alkanes")
-                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), value, true);
+                case "ri compound type":
+                    if (valueLower == "fames" || valueLower == "alkanes")
+                        param.RiCompoundType = (RiCompoundType)Enum.Parse(typeof(RiCompoundType), valueLower, true);
                     return true;
-                case "alignment index type": if (value == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
-                case "retention index tolerance for alignment": if (float.TryParse(value, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align; return true;
+                case "alignment index type": if (valueLower == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
+                case "retention index tolerance for alignment":
+                case "retention index alignment tolerance":
+                    if (float.TryParse(valueLower, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align;
+                    return true;
                 case "replace quant mass by user defined value":
-                    if (value == "true")
+                    if (valueLower == "true")
                         param.IsReplaceQuantmassByUserDefinedValue = true; return true;
                 case "is quant mass based on base peak mz":
-                    if (value == "true")
+                    if (valueLower == "true")
                         param.IsRepresentativeQuantMassBasedOnBasePeakMz = true; return true;
                 default: return false;
             }
@@ -322,12 +749,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     param.CompoundListForRtCorrectionPath = value;
                     if (System.IO.File.Exists(value)) {
                         var error = string.Empty;
-                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParser.CompoundListInTargetModeReader(valueLower, out error);
+                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParser.StandardTextLibraryReader(value, out error);
                         if (error != string.Empty) {
                             Console.WriteLine(error);
                         }
                     }
                     return true;
+                case "rt correction peak selection file path": param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = value; return true;
 
                 // Private version
                 case "is private version of tada":
@@ -357,8 +785,8 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //Peak detection param
                 case "smoothing method":
-                    if (valueLower == "simplemovingaverage" || valueLower == "linearweightedmovingaverage" || valueLower == "savitzkygolayfilter" || valueLower == "binomialfilter")
-                        param.SmoothingMethod = (SmoothingMethod)Enum.Parse(typeof(SmoothingMethod), valueLower, true);
+                    if (Enum.TryParse(value, true, out SmoothingMethod smoothingMethod))
+                        param.SmoothingMethod = smoothingMethod;
                     return true;
                 case "smoothing level": if (int.TryParse(valueLower, out int smoothlevel)) param.SmoothingLevel = smoothlevel; return true;
                 case "average peak width": if (int.TryParse(valueLower, out int avepeakwidth)) param.AveragePeakWidth = avepeakwidth; return true;
@@ -392,7 +820,11 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //Identification
                 case "rt tolerance for msp-based annotation": if (float.TryParse(valueLower, out float rttol_ident)) param.MspSearchParam.RtTolerance = rttol_ident; return true;
-                case "ri tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ritol_ident)) param.MspSearchParam.RiTolerance = ritol_ident; return true;
+                case "ri tolerance for msp-based annotation":
+                case "ri tolerance for identification":
+                case "retention index tolerance for identification":
+                    if (float.TryParse(valueLower, out float ritol_ident)) param.MspSearchParam.RiTolerance = ritol_ident;
+                    return true;
                 case "ccs tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ccstol_ident)) param.MspSearchParam.CcsTolerance = ccstol_ident; return true;
                 case "mass range begin for msp-based annotation": if (float.TryParse(valueLower, out float msbegin_ident)) param.MspSearchParam.MassRangeBegin = msbegin_ident; return true;
                 case "mass range end for msp-based annotation": if (float.TryParse(valueLower, out float msend_ident)) param.MspSearchParam.MassRangeEnd = msend_ident; return true;
@@ -401,11 +833,26 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqdotproduct)) param.MspSearchParam.SquaredWeightedDotProductCutOff = sqdotproduct; return true;
                 case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqsimpleproduct)) param.MspSearchParam.SquaredSimpleDotProductCutOff = sqsimpleproduct; return true;
                 case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqrevdotproduct)) param.MspSearchParam.SquaredReverseDotProductCutOff = sqrevdotproduct; return true;
-                case "square root of weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct; return true;
-                case "square root of simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct; return true;
-                case "square root of reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct; return true;
-                case "matched peaks percentage cutoff for msp-based annotation": if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent; return true;
-                case "minimum spectrum match for msp-based annotation": if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch; return true;
+                case "weighted dot product cutoff":
+                case "square root of weighted dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct;
+                    return true;
+                case "simple dot product cutoff":
+                case "square root of simple dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct;
+                    return true;
+                case "reverse dot product cutoff":
+                case "square root of reverse dot product cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct;
+                    return true;
+                case "matched peaks percentage cutoff":
+                case "matched peaks percentage cutoff for msp-based annotation":
+                    if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent;
+                    return true;
+                case "minimum spectrum match":
+                case "minimum spectrum match for msp-based annotation":
+                    if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch;
+                    return true;
                 case "total score cutoff for msp-based annotation": if (float.TryParse(valueLower, out float cutoff_ident)) param.MspSearchParam.TotalScoreCutoff = cutoff_ident; return true;
                 case "ms1 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms1tol_ident)) param.MspSearchParam.Ms1Tolerance = ms1tol_ident; return true;
                 case "ms2 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms2tol_ident)) param.MspSearchParam.Ms2Tolerance = ms2tol_ident; return true;
@@ -414,7 +861,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "use ccs for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use ccs for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "only report top hit for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInMspSearch = bool.Parse(valueLower); return true;
-                case "execute annotation process only for alignment file for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+                case "execute annotation process only for alignment file":
+                case "execute annotation process only for alignment file for msp-based annotation":
+                    if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower);
+                    return true;
 
                 //Identification
                 case "rt tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float rttol_lbm_ident)) param.LbmSearchParam.RtTolerance = rttol_lbm_ident; return true;
@@ -473,7 +923,12 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
                     return true;
-                case "sample max / blank average": if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage; return true;
+                case "sample max / blank average":
+                    if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) {
+                        param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage;
+                        param.FoldChangeForBlankFiltering = sampleMaxOverBlankAverage;
+                    }
+                    return true;
                 case "sample average / blank average": if (float.TryParse(valueLower, out float sampleAverageOverBlankAverage)) param.SampleAverageOverBlankAverage = sampleAverageOverBlankAverage; return true;
                 case "keep reference matched metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepRefMatchedMetaboliteFeatures = bool.Parse(valueLower); return true;
                 case "keep suggested metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepSuggestedMetaboliteFeatures = bool.Parse(valueLower); return true;
@@ -500,12 +955,25 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (valueLower == "lastpoint" || valueLower == "linearextrapolation")
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd = (ExtrapolationMethodEnd)Enum.Parse(typeof(ExtrapolationMethodEnd), valueLower, true);
                     return true;
+                case "rt correction peak selection mode":
+                    if (Enum.TryParse(valueLower, true, out RetentionTimeCorrectionPeakSelectionMode peakSelectionMode))
+                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode = peakSelectionMode;
+                    return true;
+                case "rt correction peak selection rt weight":
+                    if (double.TryParse(valueLower, NumberStyles.Float, CultureInfo.InvariantCulture, out var rtWeight)
+                        && rtWeight >= 0d && rtWeight <= 1d)
+                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight = rtWeight;
+                    return true;
 
                 //Isotope tracking setting
                 case "tracking isotope label": if (valueLower == "true" || valueLower == "false") param.TrackingIsotopeLabels = bool.Parse(valueLower); return true;
                 case "set fully labeled reference file": if (valueLower == "true" || valueLower == "false") param.SetFullyLabeledReferenceFile = bool.Parse(valueLower); return true;
                 case "non labeled reference id": if (int.TryParse(valueLower, out int nonlabeledrefid)) param.NonLabeledReferenceID = nonlabeledrefid; return true;
                 case "fully labeled reference id": if (int.TryParse(valueLower, out int fulllabeledrefid)) param.FullyLabeledReferenceID = fulllabeledrefid; return true;
+                // ParameterBase writes "Number of threads" into every exported method file,
+                // but nothing read it back, so a method file could describe a thread count
+                // it could never request and every Console run stayed on the default of 2.
+                case "number of threads": if (int.TryParse(valueLower, out int numthreads) && numthreads > 0) param.NumThreads = numthreads; return true;
                 case "isotope tracking dictionary id": if (int.TryParse(valueLower, out int isotopetrackdictionaryid)) param.IsotopeTrackingDictionary.SelectedID = isotopetrackdictionaryid; return true;
 
                 //CorrDec settings

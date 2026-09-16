@@ -5,12 +5,9 @@ using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart {
@@ -183,6 +180,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         #region Retention time difference, private function to show label
         private static void SetLabel_RtDiff_V1(AnalysisFileBean analysisFile, SeriesList slist, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList, 
             RtDiffLabel label, SolidColorBrush brush) {
+            var commonStdLookup = CreateCommonStdLookup(commonStdList);
             var labelList = new List<string>();
             var point = new Series() {
                 ChartType = ChartType.Point,
@@ -213,18 +211,24 @@ namespace CompMs.App.Msdial.Model.Chart {
             else {
                 if (label == RtDiffLabel.id)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.ScanID.ToString());
                     }
                 else if (label == RtDiffLabel.name)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.Name);
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.Name);
                     }
                 else if (label == RtDiffLabel.rt)
                     for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
+                        var standard = analysisFile.RetentionTimeCorrectionBean.StandardList[i];
+                        if (standard.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        if (!commonStdLookup.ContainsKey(standard.Reference.ScanID)) continue;
+                        point.AddPoint((float)standard.SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(standard, commonStdLookup), standard.Reference.ChromXs.RT.Value.ToString());
                     }
 
             }
@@ -233,8 +237,32 @@ namespace CompMs.App.Msdial.Model.Chart {
 
         }
 
-        private static float CalcRtDiff_SampleMinusAverage(AnalysisFileBean file, List<CommonStdData> list, int i) {
-            return (float)(file.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value - (float)list[i].AverageRetentionTime) * 60f;
+        /// <summary>
+        /// Calculates the RT difference for the provided standard using ScanID-based lookup.
+        /// </summary>
+        /// <param name="standard">The standard pair that contains the sample RT.</param>
+        /// <param name="commonStdLookup">The per-standard average RT lookup.</param>
+        /// <returns>The RT difference in seconds.</returns>
+        internal static float CalcRtDiff_SampleMinusAverage(StandardPair standard, IReadOnlyDictionary<int, CommonStdData> commonStdLookup) {
+            if (!commonStdLookup.TryGetValue(standard.Reference.ScanID, out var commonStd)) {
+                return 0f;
+            }
+            return (float)(standard.SamplePeakAreaBean.ChromXs.RT.Value - commonStd.AverageRetentionTime) * 60f;
+        }
+
+        /// <summary>
+        /// Builds a ScanID lookup for RT correction summary rows.
+        /// </summary>
+        /// <param name="commonStdList">The summary rows to index.</param>
+        /// <returns>A dictionary keyed by ScanID.</returns>
+        private static IReadOnlyDictionary<int, CommonStdData> CreateCommonStdLookup(IEnumerable<CommonStdData> commonStdList) {
+            var lookup = new Dictionary<int, CommonStdData>();
+            foreach (var commonStd in commonStdList ?? Enumerable.Empty<CommonStdData>()) {
+                if (!lookup.ContainsKey(commonStd.Reference.ScanID)) {
+                    lookup.Add(commonStd.Reference.ScanID, commonStd);
+                }
+            }
+            return lookup;
         }
         #endregion
 
@@ -270,32 +298,30 @@ namespace CompMs.App.Msdial.Model.Chart {
             area.Margin.Top = 25;
             var title = GetTitleV1(13, "Original EIC");
             var slist = new SeriesList();
-            var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
-            var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
-            var minRT = Math.Min(commonStd.Reference.ChromXs.RT.Value, minRTtmp);
-            var maxRT = Math.Max(commonStd.Reference.ChromXs.RT.Value, commonStd.RetentionTimeList.Max());
-            var widhtList = commonStd.PeakWidthList.Where(x => x > 0);
-            var rtTol = widhtList.Count() > 0 ? widhtList.Average() : 2;
-            var minRTrange = Math.Max(0, (minRT - rtTol));
+            var (minRT, maxRT) = GetEicDisplayRange(commonStd);
             for (var i = 0; i < commonStd.PeakAreaList.Count; i++) {
                 if (commonStd.Chromatograms[i] == null || commonStd.Chromatograms[i].Count == 0) continue;
                 var brush = brushDict[analysisFiles[i].AnalysisFileClass];
                 var point = new Series() {
-                    ChartType = ChartType.Line,
+                    ChartType = ChartType.Chromatogram,
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
+                    Accessory = new Accessory(),
                 };
-                var smoothedChromatogram = new Chromatogram(commonStd.Chromatograms[i], ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
-                foreach (var peak in smoothedChromatogram) {
-                    if (peak.ChromXs.RT.Value < minRTrange) continue;
-                    if (peak.ChromXs.RT.Value > maxRT + rtTol) break;
+                using var smoothedChromatogram = new Chromatogram(commonStd.Chromatograms[i], ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var peaks = smoothedChromatogram.AsPeakArray();
+                foreach (var peak in peaks) {
+                    if (peak.ChromXs.RT.Value < minRT) continue;
+                    if (peak.ChromXs.RT.Value > maxRT) break;
                     point.AddPoint((float)peak.ChromXs.RT.Value, (float)peak.Intensity);
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
+                var referenceRt = (float)commonStd.RetentionTimeList[i];
+                AddReferenceRtMarker(slist, referenceRt, GetChromatogramIntensityAtRt(commonStd.Chromatograms[i], referenceRt));
             }
             var drawing = new DrawVisual(area, title, slist);
-            SetDrawingMinAndMaxXY_constValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
             SetDrawingMaxY_ratio(drawing, 0.05f);
 
             drawing.Initialize();
@@ -310,33 +336,30 @@ namespace CompMs.App.Msdial.Model.Chart {
             area.Margin.Top = 25;
             var title = GetTitleV1(13, "Corrected EIC");
             var slist = new SeriesList();
-            var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
-            var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
-            var minRT = Math.Min(commonStd.Reference.ChromXs.RT.Value, minRTtmp);
-            var maxRT = Math.Max(commonStd.Reference.ChromXs.RT.Value, commonStd.RetentionTimeList.Max());
-            var widhtList = commonStd.PeakWidthList.Where(x => x > 0);
-            var rtTol = widhtList.Count() > 0 ? widhtList.Average() : 2;
-            var minRTrange = Math.Max(0, (minRT - rtTol));
+            var (minRT, maxRT) = GetEicDisplayRange(commonStd);
             for (var i = 0; i < commonStd.PeakAreaList.Count; i++) {
                 if (commonStd.Chromatograms[i] == null || commonStd.Chromatograms[i].Count == 0) continue;
                 var brush = brushDict[analysisFiles[i].AnalysisFileClass];
                 var point = new Series() {
-                    ChartType = ChartType.Line,
+                    ChartType = ChartType.Chromatogram,
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
+                    Accessory = new Accessory(),
                 };
                 var rtList = GetSmoothedRetentionTime(analysisFiles[i].RetentionTimeCorrectionBean, param, commonStd.Chromatograms[i]);
                 for (var j = 0; j < rtList.Count; j++) {
                     var peak = rtList[j];
-                    if (peak.ChromXs.RT.Value < minRTrange) continue;
-                    if (peak.ChromXs.RT.Value > maxRT + rtTol) break;
+                    if (peak.ChromXs.RT.Value < minRT) continue;
+                    if (peak.ChromXs.RT.Value > maxRT) break;
                     point.AddPoint((float)peak.ChromXs.RT.Value, (float)peak.Intensity);
                 }
                 if (point.Points.Count > 0)
                     slist.Series.Add(point);
+                var referenceRt = GetCorrectedRt(analysisFiles[i], commonStd.RetentionTimeList[i]);
+                AddReferenceRtMarker(slist, referenceRt, GetChromatogramIntensityAtRt(commonStd.Chromatograms[i], (float)commonStd.RetentionTimeList[i]));
             }
             var drawing = new DrawVisual(area, title, slist);
-            SetDrawingMinAndMaxXY_constValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            SetDrawingMinAndMaxXY_constValue(drawing, minRT, maxRT, 0);
             SetDrawingMaxY_ratio(drawing, 0.05f);
 
             drawing.Initialize();
@@ -352,7 +375,86 @@ namespace CompMs.App.Msdial.Model.Chart {
             for (var i = 0; i < peaks.Count; i++) {
                 correctedPeakList.Add(ChromatogramPeak.Create(peaks[i].ID, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[peaks[i].ID])));
             }
-            return new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+            using var smoothed = new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            return smoothed.AsPeakArray();
+        }
+
+        private static void AddReferenceRtMarker(SeriesList slist, float referenceRt, float topIntensity) {
+            var markerTop = topIntensity > 0f ? topIntensity : 1f;
+            var marker = new Series() {
+                ChartType = ChartType.Line,
+                MarkerType = MarkerType.None,
+                Brush = Brushes.Red,
+                Pen = new Pen(Brushes.Red, 1.0)
+                {
+                    DashStyle = DashStyles.DashDot,
+                },
+            };
+            marker.AddPoint(referenceRt, 0f);
+            marker.AddPoint(referenceRt, markerTop);
+            slist.Series.Add(marker);
+        }
+
+        private static float GetCorrectedRt(AnalysisFileBean analysisFile, double baseRt) {
+            var originalRt = baseRt;
+            var bean = analysisFile.RetentionTimeCorrectionBean;
+            if (bean?.OriginalRt is null || bean.OriginalRt.Count == 0 || bean.PredictedRt is null || bean.PredictedRt.Count == 0) {
+                return (float)originalRt;
+            }
+
+            var originalIndex = bean.OriginalRt.BinarySearch(originalRt);
+            if (originalIndex < 0) {
+                originalIndex = ~originalIndex - 1;
+            }
+            if (originalIndex < 0) {
+                return (float)originalRt;
+            }
+
+            if (originalIndex >= bean.PredictedRt.Count) {
+                return (float)originalRt;
+            }
+
+            return (float)bean.PredictedRt[originalIndex];
+        }
+
+        private static float GetChromatogramIntensityAtRt(IReadOnlyList<IChromatogramPeak> chromatogram, float rt) {
+            if (chromatogram is null || chromatogram.Count == 0) {
+                return 1f;
+            }
+            var intensity = (float)chromatogram.OrderBy(peak => Math.Abs((float)peak.ChromXs.RT.Value - rt)).First().Intensity;
+            return intensity > 0f ? intensity : 1f;
+        }
+
+        /// <summary>
+        /// Computes the RT display window by expanding the reference RT window to include detected peak windows.
+        /// </summary>
+        /// <param name="commonStd">The standard row that contains the reference RT and per-sample detection results.</param>
+        /// <returns>The lower and upper RT bounds for the chart.</returns>
+        internal static (float minX, float maxX) GetEicDisplayRange(CommonStdData commonStd) {
+            var referenceRt = (float)commonStd.Reference.ChromXs.RT.Value;
+            var referenceTolerance = commonStd.Reference.RetentionTimeTolerance > 0
+                ? commonStd.Reference.RetentionTimeTolerance
+                : 2f;
+            var referenceMin = Math.Max(0f, referenceRt - referenceTolerance);
+            var referenceMax = referenceRt + referenceTolerance;
+
+            var minX = referenceMin;
+            var maxX = referenceMax;
+            var peakWidth = commonStd.PeakWidthList.Where(x => x > 0).DefaultIfEmpty(2f).Average();
+            for (var i = 0; i < commonStd.RetentionTimeList.Count; i++) {
+                var peakRt = commonStd.RetentionTimeList[i];
+                if (peakRt <= 0) {
+                    continue;
+                }
+
+                minX = Math.Min(minX, (float)(peakRt - peakWidth));
+                maxX = Math.Max(maxX, (float)(peakRt + peakWidth));
+            }
+
+            if (minX >= maxX) {
+                maxX = minX + 0.01f;
+            }
+            return (minX, maxX);
         }
         #endregion
 

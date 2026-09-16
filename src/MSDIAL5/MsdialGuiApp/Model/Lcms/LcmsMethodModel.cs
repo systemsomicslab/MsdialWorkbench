@@ -110,6 +110,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
+                new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
             var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
@@ -250,20 +251,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
-            IAnnotationProcess annotationProcess;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
-                (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess();
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess();
-            }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                IAnnotationProcess annotationProcess;
+                if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                    annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
+                }
+                else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
+                    (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
+                    annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                }
+                else {
+                    annotationProcess = BuildAnnotationProcess();
+                }
                 var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
                 if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
@@ -411,6 +412,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FilePrefix = "Mgf",
                     FileSuffix = "mgf",
                     Label = "MASCOT format (*.mgf)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                })
+                {
+                    FilePrefix = "Sdf",
+                    FileSuffix = "sdf",
+                    Label = "MDL SDfile (*.sdf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };

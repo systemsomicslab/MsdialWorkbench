@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -13,14 +12,14 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
     {
         static readonly IComparer<IMSScanProperty> Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer, ChromXsComparer.DriftComparer);
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, float ms1MassTolerance) {
             throw new NotImplementedException();
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
             var chromatogram = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             chromatogram.Sort(Comparer);
-            return new List<IMSScanProperty>(chromatogram);
+            return [.. chromatogram];
         }
     }
 }

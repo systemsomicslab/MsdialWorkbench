@@ -1,10 +1,9 @@
-﻿using System;
+﻿using MessagePack;
+using MessagePack.LZ4;
+using MessagePack.Resolvers;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using MessagePack;
-using MessagePack.Resolvers;
-using MessagePack.LZ4;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.MessagePack {
     public static class LargeListMessagePack
@@ -13,11 +12,6 @@ namespace CompMs.Common.MessagePack {
         public const sbyte ExtensionTypeCode = 99;
         public const int NotCompressionSize = 64;
         public const int HeaderSize = 11;
-
-        static IFormatterResolver defaultResolver;
-
-        static byte[] buffer = null;
-        static byte[] bufferLz = null;
 
         private static byte[] GetBuffer()
         {
@@ -41,11 +35,7 @@ namespace CompMs.Common.MessagePack {
 
         public static IFormatterResolver DefaultResolver {
             get {
-                if (defaultResolver == null)
-                {
-                    return StandardResolver.Instance;
-                }
-                return defaultResolver;
+                return StandardResolver.Instance;
             }
         }
 

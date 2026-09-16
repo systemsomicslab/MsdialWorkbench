@@ -59,7 +59,7 @@ public class PeakCharacterEstimator {
         ResetAdductAndLink(chromPeakFeatures, evaluator);
 
         RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
-        chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
+        chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakFeature.Mass).ToList();
         ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
 
         var featurelimit = 
@@ -72,8 +72,8 @@ public class PeakCharacterEstimator {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var feature = chromPeakFeatures[i];
                 var peakRt = isDriftAxis ? feature.ChromXs.Drift.Value : feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
-                var peakMz = feature.Mass;
-                var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, peakMz - parameter.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
+                var peakMz = feature.PeakFeature.Mass;
+                var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, peakMz - parameter.CentroidMs1Tolerance, (a, b) => a.PeakFeature.Mass.CompareTo(b));
                 var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
 
                 for (int j = startScanIndex; j < chromPeakFeatures.Count; j++) {
@@ -337,7 +337,7 @@ public class PeakCharacterEstimator {
                     : null;
             if (spectrum.IsEmptyOrNull()) continue;
 
-            var precursorMz = peak.Mass;
+            var precursorMz = peak.PeakFeature.Mass;
             var precursorIntensity = 1.0;
             
             var maxIntensity = spectrum.Max(n => n.Intensity);
@@ -374,7 +374,7 @@ public class PeakCharacterEstimator {
         IReadOnlyList<MSDecResult> msdecResults,
         ParameterBase param) {
 
-        chromPeakFeatures = chromPeakFeatures.OrderBy(chromPeakFeature => chromPeakFeature.Mass).ToList();
+        chromPeakFeatures = chromPeakFeatures.OrderBy(chromPeakFeature => chromPeakFeature.PeakFeature.Mass).ToList();
         for (int i = chromPeakFeatures.Count - 1; i >= 0; i--) {
             var peak = chromPeakFeatures[i];
             if (peak.MS2RawSpectrumID < 0) continue;
@@ -398,10 +398,10 @@ public class PeakCharacterEstimator {
                 var cPeak = chromPeakFeatures[j];
                 if (cPeak.PeakCharacter.IsotopeWeightNumber != 0)
                     continue;
-                while (k < spectrum.Count && spectrum[k].Mass < cPeak.Mass - param.CentroidMs2Tolerance) {
+                while (k < spectrum.Count && spectrum[k].Mass < cPeak.PeakFeature.Mass - param.CentroidMs2Tolerance) {
                     k++;
                 }
-                if (k < spectrum.Count && Math.Abs(spectrum[k].Mass - cPeak.Mass) < param.CentroidMs2Tolerance) {
+                if (k < spectrum.Count && Math.Abs(spectrum[k].Mass - cPeak.PeakFeature.Mass) < param.CentroidMs2Tolerance) {
                     cPeak.PeakCharacter.IsLinked = true;
                     peak.PeakCharacter.IsLinked = true;
 
@@ -417,10 +417,10 @@ public class PeakCharacterEstimator {
         var pureFeatures = chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9).ToList();
         var tempFeatures = new List<ChromFeatureTemp>();
         foreach (var feature in pureFeatures) {
-            var leftRt = feature.ChromXsLeft.RT.Value;
-            var rightRt = feature.ChromXsRight.RT.Value;
+            var leftRt = feature.PeakFeature.ChromXsLeft.RT.Value;
+            var rightRt = feature.PeakFeature.ChromXsRight.RT.Value;
             var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-            using var peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(feature.Mass, param.CentroidMs1Tolerance), chromatogramRange);
+            using var peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(feature.PeakFeature.Mass, param.CentroidMs1Tolerance), chromatogramRange);
             using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
         }
@@ -501,7 +501,7 @@ public class PeakCharacterEstimator {
             foreach (var centralAdduct in SearchedAdducts) {
 
                 var rCentralAdduct = AdductIonParser.ConvertDifferentChargedAdduct(centralAdduct, peak.PeakCharacter.Charge);
-                var centralExactMass = rCentralAdduct.ConvertToExactMass(peak.Mass);
+                var centralExactMass = rCentralAdduct.ConvertToExactMass(peak.PeakFeature.Mass);
 
                 var searchedPrecursors = new List<SearchedPrecursor>();
                 foreach (var searchedAdduct in SearchedAdducts) {
@@ -513,9 +513,9 @@ public class PeakCharacterEstimator {
                 foreach (var searchedPeak in chromPeakFeatures.Where(n => !n.PeakCharacter.IsLinked && peak.PeakID != n.PeakID && !n.IsAdductTypeFormatted)) {
                     foreach (var searchedPrecursor in searchedPrecursors) {
 
-                        var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
+                        var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.PeakFeature.Mass, ppm);
 
-                        if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
+                        if (Math.Abs(searchedPeak.PeakFeature.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
 
                             var searchedAdduct = searchedPrecursor.AdductIon;
 
@@ -545,7 +545,7 @@ public class PeakCharacterEstimator {
     private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
         foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted)) {
             var centralAdduct = peak.AdductType;
-            var centralExactMass = centralAdduct.ConvertToExactMass(peak.Mass);
+            var centralExactMass = centralAdduct.ConvertToExactMass(peak.PeakFeature.Mass);
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
 
             var searchedPrecursors = new List<SearchedPrecursor>();
@@ -557,12 +557,12 @@ public class PeakCharacterEstimator {
 
             foreach (var searchedPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID)) {
                 foreach (var searchedPrecursor in searchedPrecursors) {
-                    var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
+                    var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.PeakFeature.Mass, ppm);
                     if (searchedPeak.IsReferenceMatched(evaluator)) {
                         continue;
                     }
 
-                    if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
+                    if (Math.Abs(searchedPeak.PeakFeature.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
                         var searchedAdduct = searchedPrecursor.AdductIon;
                         searchedPeak.SetAdductType(searchedAdduct);
                         searchedPeak.PeakCharacter.AdductParent = peak.PeakID;
@@ -586,7 +586,7 @@ public class PeakCharacterEstimator {
             if (peak.AdductType == null) continue;
             var inchikey = peak.InChIKey;
             var centralAdduct = peak.AdductType;
-            var centralExactMass = centralAdduct.ConvertToExactMass(peak.Mass);
+            var centralExactMass = centralAdduct.ConvertToExactMass(peak.PeakFeature.Mass);
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
 
             var searchedPrecursors = new List<SearchedPrecursor>();
@@ -600,9 +600,9 @@ public class PeakCharacterEstimator {
                 if (peak.PeakID == searchedPeak.PeakID) continue;
                 foreach (var searchedPrecursor in searchedPrecursors) {
 
-                    var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
+                    var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.PeakFeature.Mass, ppm);
 
-                    if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
+                    if (Math.Abs(searchedPeak.PeakFeature.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
 
                         if (searchedPeak.IsReferenceMatched(evaluator)) {
                             if (searchedPeak.AdductType.AdductIonName != searchedPrecursor.AdductIon.AdductIonName)

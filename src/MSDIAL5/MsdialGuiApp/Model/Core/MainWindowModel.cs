@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
-using CompMs.Common.Enum;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -35,13 +34,9 @@ namespace CompMs.App.Msdial.Model.Core
                 _settings.PreviousProjects = new List<ProjectCrumb>();
                 _settings.Save();
             }
-            _previousProjects = _settings.PreviousProjects;
-            PreviousProjects = _previousProjects.AsReadOnly();
-
-            //InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Negative);
+            _previousProjects = new ObservableCollection<ProjectCrumb>(_settings.PreviousProjects);
+            PreviousProjects = new ReadOnlyObservableCollection<ProjectCrumb>(_previousProjects);
         }
-
-        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
 
         public IObservable<bool> NowSaving => nowSaving;
         private readonly BusyNotifier nowSaving;
@@ -61,21 +56,17 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private ProjectSettingModel projectSetting;
 
-        public ReadOnlyCollection<ProjectCrumb> PreviousProjects { get; }
-        private readonly List<ProjectCrumb> _previousProjects;
+        public ReadOnlyObservableCollection<ProjectCrumb> PreviousProjects { get; }
+        private readonly ObservableCollection<ProjectCrumb> _previousProjects;
 
-        private Task SetNewProject(IProjectModel project) {
+        private async Task SetNewProject(IProjectModel project) {
             CurrentProject = project;
             ProjectSetting = new ProjectSettingModel(SetNewProject, _broker);
             var currentCrumb = new ProjectCrumb(project.Storage.ProjectParameter);
-            if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                _previousProjects.RemoveAll(currentCrumb.MaybeSame);
-            }
-            _previousProjects.Insert(0, currentCrumb);
-            if (_previousProjects.Count > 50) {
-                _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
-            }
-            return Task.CompletedTask;
+            await Application.Current.Dispatcher.InvokeAsync(() => {
+                DeleteSimilarProjectHistories(currentCrumb);
+                InsertTopProjectHistory(currentCrumb);
+            });
         }
 
         public async Task SaveAsync() {
@@ -84,6 +75,12 @@ namespace CompMs.App.Msdial.Model.Core
             }
             using (nowSaving.ProcessStart()) {
                 await CurrentProject.SaveAsync().ConfigureAwait(false);
+                var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                await Application.Current.Dispatcher.InvokeAsync(() => {
+                    DeleteSimilarProjectHistories(currentCrumb);
+                    InsertTopProjectHistory(currentCrumb);
+                });
+                _settings.PreviousProjects = PreviousProjects.ToList();
                 _settings.Save();
             }
         }
@@ -122,13 +119,10 @@ namespace CompMs.App.Msdial.Model.Core
                     }
                     CurrentProject = loadedProject;
                     var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
-                    if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                        _previousProjects.RemoveAll(currentCrumb.MaybeSame);
-                    }
-                    _previousProjects.Insert(0, currentCrumb);
-                    if (_previousProjects.Count > 50) {
-                        _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
-                    }
+                    await Application.Current.Dispatcher.InvokeAsync(() => {
+                        DeleteSimilarProjectHistories(currentCrumb);
+                        InsertTopProjectHistory(currentCrumb);
+                    });
                 }
                 catch {
                     await Application.Current.Dispatcher.InvokeAsync(() => {
@@ -145,26 +139,60 @@ namespace CompMs.App.Msdial.Model.Core
                     if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
                         return;
                     }
-                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(true);
+                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(false);
                     if (loadedProject is null) {
                         _broker.Publish(new ShortMessageRequest("Project loading has failed."));
                         return;
                     }
                     CurrentProject = loadedProject;
                     var currentCrumb = new ProjectCrumb(loadedProject.Storage.ProjectParameter);
-                    if (_previousProjects.Any(currentCrumb.MaybeSame)) {
-                        _previousProjects.RemoveAll(currentCrumb.MaybeSame);
-                    }
-                    _previousProjects.Insert(0, currentCrumb);
-                    if (_previousProjects.Count > 50) {
-                        _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
-                    }
+                    await Application.Current.Dispatcher.InvokeAsync(() => {
+                        DeleteSimilarProjectHistories(currentCrumb);
+                        InsertTopProjectHistory(currentCrumb);
+                    });
                 }
                 catch {
                     await Application.Current.Dispatcher.InvokeAsync(() => {
                         MessageBox.Show("Failed to load project.\nPlease check your project.");
                         return Task.CompletedTask;
                     });
+                }
+            }
+        }
+
+        public async Task DeleteProjectAsync(ProjectCrumb projectCrumb){
+            using (nowLoading.ProcessStart()){
+                try
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() => {
+                        DeleteSimilarProjectHistories(projectCrumb);
+                    });
+                    _settings.PreviousProjects = PreviousProjects.ToList();
+                    _settings.Save();
+                }
+                catch
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() => {
+                        MessageBox.Show("Failed to delete project.\nPlease check your project.");
+                        return Task.CompletedTask;
+                    });
+                }
+            }
+        }
+
+        private void DeleteSimilarProjectHistories(ProjectCrumb currentProject) {
+            var resembleProjects = _previousProjects.Where(currentProject.MaybeSame).ToList();
+            foreach (var resembleProject in resembleProjects)
+            {
+                _previousProjects.Remove(resembleProject);
+            }
+        }
+
+        private void InsertTopProjectHistory(ProjectCrumb currentProject) {
+            _previousProjects.Insert(0, currentProject);
+            if (_previousProjects.Count > 50) {
+                while (_previousProjects.Count > 50) {
+                    _previousProjects.RemoveAt(_previousProjects.Count - 1);
                 }
             }
         }

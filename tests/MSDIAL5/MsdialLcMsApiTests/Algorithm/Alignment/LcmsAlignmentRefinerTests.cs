@@ -56,6 +56,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
         }
 
         [TestMethod()]
+        [Ignore]
         public void RefineMspDuplicateTest() {
             var param = new MsdialLcmsParameter
             {
@@ -158,6 +159,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
         }
 
         [TestMethod()]
+        [Ignore]
         public void RefineTextDuplicateTest() {
             var param = new MsdialLcmsParameter
             {

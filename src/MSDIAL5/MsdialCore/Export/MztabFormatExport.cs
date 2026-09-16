@@ -1,5 +1,7 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -13,9 +15,12 @@ namespace CompMs.MsdialCore.Export
 {
     public sealed class MztabFormatExporter
     {
-        public MztabFormatExporter(DataBaseStorage dataBaseStorage)
+        private readonly AlignmentLightPeakStore? _lightPeakStore;
+
+        public MztabFormatExporter(DataBaseStorage dataBaseStorage, AlignmentLightPeakStore? lightPeakStore = null)
         {
             _dataBaseStorage = dataBaseStorage;
+            _lightPeakStore = lightPeakStore;
 
             _annotatorID2DataBaseID = new Dictionary<string, string>();
             foreach (var db in dataBaseStorage.MetabolomicsDataBases) {
@@ -64,9 +69,19 @@ namespace CompMs.MsdialCore.Export
             string outfile
         )
         {
+            if (_lightPeakStore is not null) {
+                MztabFormatExporterCoreWithTemporarySectionSpooling(stream, spots, msdecResults, files, metaAccessor, quantAccessor, stats, outfile);
+                return;
+            }
+
             var exportFileName = Path.GetFileNameWithoutExtension(outfile);
             var mztabId = exportFileName; // as filename
-            var meta = (metaAccessor as BaseMetadataAccessor).Parameter;
+            var baseAccessor = metaAccessor as BaseMetadataAccessor;
+            var meta = baseAccessor.Parameter;
+            // The accessor resolves a reference only for the representative match result. A row for
+            // any other candidate needs the same lookup applied to that candidate, so the refer
+            // itself is borrowed rather than the already-resolved metadata.
+            var refer = baseAccessor.Refer;
             using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true);
 
             //set common parameter
@@ -87,13 +102,14 @@ namespace CompMs.MsdialCore.Export
 
             var internalStandardDic = SetStandardDic(spots);
             //MTD section
-            WriteMtdSection(sw, mztabId, meta, [.. spots], RawFileMetadataDic, AnalysisFileClassDic, idConfidenceMeasure, database);
+            WriteMtdSection(sw, mztabId, meta, spots, RawFileMetadataDic, AnalysisFileClassDic, idConfidenceMeasure, database);
             sw.WriteLine();
 
             //SML section
             //SML Header
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment);
+            var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
             //SML data
 
             foreach (var spot in spots)
@@ -101,18 +117,25 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic, hasComment
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic, hasComment
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
                         );
                 }
             }
 
             sw.WriteLine();
+
+            // The SMF section is written before the SME section but has to reference it, so the evidence
+            // rows are laid out first. Sourcing the references from this table rather than re-deriving
+            // them in the SMF writer also means a reference cannot survive a row that was never written:
+            // the two conditions used to be written out separately and did not agree, the SMF side
+            // omitting the MS/MS-assigned, blank-filtered and internal-standard tests.
+            var smeGroups = AssignSmeGroups(spots, meta);
 
             //SMF section
             var SmfDataHeader = WriteSmfHeader(sw, meta, RawFileMetadataDic);
@@ -122,13 +145,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmfDataLine(
                     sw, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    SmfDataHeader, internalStandardDic, metadata
+                    SmfDataHeader, internalStandardDic, metadata, GroupOf(smeGroups, spot)
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmfDataLine(
                         sw, driftSpot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        SmfDataHeader, internalStandardDic, metadata
+                        SmfDataHeader, internalStandardDic, metadata, GroupOf(smeGroups, driftSpot)
                         );
                 }
             }
@@ -142,41 +165,211 @@ namespace CompMs.MsdialCore.Export
             ////SME data
             foreach (var spot in spots)
             {
-                if (spot.IsMsmsAssigned != true) { continue; }
-                if (spot.MatchResults.IsTextDbBasedRepresentative == true) { continue; }
-
-                if (spot.Name == "") { continue; }
-                if (spot.IsBlankFilteredByPostCurator) { continue; }
-                if (meta.IsNormalizeSplash && spot.InternalStandardAlignmentID == -1)
-                {
-                    continue;
-                }
-                if (meta.IsNormalizeIS && spot.InternalStandardAlignmentID == -1)
-                {
-                    continue;
-                }
-                //if (analysisParamForLC.IsNormalizeSplash && splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1) { return; }
-                //else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) { return; }
-
-                var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
-                if(metadata["Metabolite name"].Contains("no MS2")){ continue; }
-
-                WriteSmeDataLine(
-                    sw, spot, meta, msdecResults[spot.MasterAlignmentID],
-                    database, RawFileMetadataDic, idConfidenceMeasure, files, metadata
-                        );
+                WriteSmeDataLines(sw, spot, meta, refer, RawFileMetadataDic, idConfidenceMeasure, GroupOf(smeGroups, spot));
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
-                    if (!driftSpot.IsMsmsAssigned) { continue; }
-
-                    WriteSmeDataLine(
-                        sw, driftSpot, meta, msdecResults[spot.MasterAlignmentID],
-                        database, RawFileMetadataDic, idConfidenceMeasure, files, metadata
-                            );
+                    WriteSmeDataLines(sw, driftSpot, meta, refer, RawFileMetadataDic, idConfidenceMeasure, GroupOf(smeGroups, driftSpot));
                 }
-                sw.WriteLine("");
             }
             sw.WriteLine("");
+        }
+
+        private void MztabFormatExporterCoreWithTemporarySectionSpooling(
+            Stream stream,
+            IReadOnlyList<AlignmentSpotProperty> spots,
+            IReadOnlyList<MSDecResult> msdecResults,
+            IReadOnlyList<AnalysisFileBean> files,
+            IMetadataAccessor metaAccessor,
+            IQuantValueAccessor quantAccessor,
+            IReadOnlyList<StatsValue> stats,
+            string outfile
+        )
+        {
+            var exportFileName = Path.GetFileNameWithoutExtension(outfile);
+            var mztabId = exportFileName; // as filename
+            var baseAccessor = metaAccessor as BaseMetadataAccessor;
+            var meta = baseAccessor.Parameter;
+            // The accessor resolves a reference only for the representative match result. A row for
+            // any other candidate needs the same lookup applied to that candidate, so the refer
+            // itself is borrowed rather than the already-resolved metadata.
+            var refer = baseAccessor.Refer;
+            using var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true);
+
+            var idConfidenceMeasure = SetIdConfidenceMeasure(meta.MachineCategory, idConfidenceDefault);
+            var manualAssigned = new List<bool>(spots.Select(n => n.IsManuallyModifiedForAnnotation));
+            if (manualAssigned.Contains(true))
+            {
+                idConfidenceMeasure.Add(idConfidenceMeasure.Count + 1, idConfidenceManual);
+            }
+            var database = SetDatabaseList(meta, spots);
+            var RawFileMetadataDic = SetRawFileMetadataDic(files, meta.IonMode);
+            var AnalysisFileClassDic = files
+                    .Select(file => file.AnalysisFileClass)
+                    .Distinct()
+                    .Select((cls, idx) => new { Key = idx + 1, Value = cls })
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+            var internalStandardDic = SetStandardDic(spots);
+            var smeGroups = AssignSmeGroups(spots, meta);
+            WriteMtdSection(sw, mztabId, meta, spots, RawFileMetadataDic, AnalysisFileClassDic, idConfidenceMeasure, database);
+            sw.WriteLine();
+
+            var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
+            var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2);
+
+            var smfTemp = Path.GetTempFileName();
+            var smeTemp = Path.GetTempFileName();
+            try {
+                using (var smfWriter = new StreamWriter(File.Open(smfTemp, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.ASCII))
+                using (var smeWriter = new StreamWriter(File.Open(smeTemp, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.ASCII)) {
+                    var SmfDataHeader = WriteSmfHeader(smfWriter, meta, RawFileMetadataDic);
+                    if (hasMs2) {
+                        WriteSmeHeader(smeWriter, idConfidenceMeasure);
+                    }
+
+                    foreach (var spot in spots)
+                    {
+                        var msdec = msdecResults[spot.MasterAlignmentID];
+                        var metadata = metaAccessor.GetContent(spot, msdec);
+                        WriteSmlDataLine(
+                            sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                            );
+                        WriteSmfDataLine(
+                            smfWriter, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                            SmfDataHeader, internalStandardDic, metadata, GroupOf(smeGroups, spot)
+                            );
+                        WriteSmeDataLines(smeWriter, spot, meta, refer, RawFileMetadataDic, idConfidenceMeasure, GroupOf(smeGroups, spot));
+                        foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
+                        {
+                            WriteSmlDataLine(
+                                sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                                );
+                            WriteSmfDataLine(
+                                smfWriter, driftSpot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
+                                SmfDataHeader, internalStandardDic, metadata, GroupOf(smeGroups, driftSpot)
+                                );
+                            WriteSmeDataLines(smeWriter, driftSpot, meta, refer, RawFileMetadataDic, idConfidenceMeasure, GroupOf(smeGroups, driftSpot));
+                        }
+                    }
+                }
+
+                sw.WriteLine();
+                ReplayTemporarySection(sw, smfTemp);
+                sw.WriteLine();
+                if (!hasMs2) { return; }
+                ReplayTemporarySection(sw, smeTemp);
+                sw.WriteLine("");
+            }
+            finally {
+                TryDeleteTemporaryFile(smfTemp);
+                TryDeleteTemporaryFile(smeTemp);
+            }
+        }
+
+        /// <summary>
+        /// Whether a spot contributes evidence rows at all.
+        /// </summary>
+        /// <remarks>
+        /// The "no MS2" test used to read the metadata dictionary, whose "Metabolite name" entry is the
+        /// spot name with an empty one replaced by "Unknown". Reading the spot directly is the same test
+        /// once the empty name is excluded above, and it lets the assignment pass run without building a
+        /// metadata dictionary per spot.
+        /// </remarks>
+        private static bool ShouldWriteSmeLine(AlignmentSpotProperty spot, ParameterBase meta) {
+            if (spot.IsMsmsAssigned != true) { return false; }
+            if (spot.IsManuallyModifiedForAnnotation == true) { return false; }
+            if (spot.MatchResults.IsTextDbBasedRepresentative == true) { return false; }
+            if (string.IsNullOrEmpty(spot.Name)) { return false; }
+            if (spot.IsBlankFilteredByPostCurator) { return false; }
+            if (meta.IsNormalizeSplash && spot.InternalStandardAlignmentID == -1) { return false; }
+            if (meta.IsNormalizeIS && spot.InternalStandardAlignmentID == -1) { return false; }
+            return !spot.Name.Contains("no MS2");
+        }
+
+        /// <summary>
+        /// The evidence rows one spot contributes: its annotation candidates, best first, paired with the
+        /// file-unique SME identifiers they will be written under.
+        /// </summary>
+        private sealed class SmeGroup
+        {
+            public SmeGroup(IReadOnlyList<MsScanMatchResult> candidates, int firstSmeId) {
+                Candidates = candidates;
+                FirstSmeId = firstSmeId;
+            }
+
+            public IReadOnlyList<MsScanMatchResult> Candidates { get; }
+
+            /// <summary>The identifier of the rank 1 row; the rest follow it consecutively.</summary>
+            public int FirstSmeId { get; }
+
+            public int SmeId(int index) => FirstSmeId + index;
+
+            /// <summary>
+            /// The mzTab-M ambiguity code for the SMF row that references this group: 1 when the group
+            /// holds alternative identifications of the same feature, and null when there is nothing to
+            /// be ambiguous about. Code 2, several evidence streams for one molecule, does not apply
+            /// because every row here comes from the same input spectrum.
+            /// </summary>
+            public string AmbiguityCode => Candidates.Count > 1 ? "1" : "null";
+
+            public string SmeIdRefs => string.Join("|", Enumerable.Range(0, Candidates.Count).Select(i => SmeId(i).ToString()));
+        }
+
+        /// <summary>
+        /// Lays out the SME section ahead of writing, so the SMF rows can reference identifiers that are
+        /// guaranteed to exist and the ranks within one input spectrum are consecutive.
+        /// </summary>
+        /// <remarks>
+        /// Keyed by spot instance rather than by alignment identifier: a drift spot of an ion-mobility run
+        /// is written with its parent's metadata dictionary, so the identifier alone does not distinguish
+        /// the two.
+        /// </remarks>
+        private static Dictionary<AlignmentSpotProperty, SmeGroup> AssignSmeGroups(
+            IReadOnlyList<AlignmentSpotProperty> spots,
+            ParameterBase meta) {
+            var groups = new Dictionary<AlignmentSpotProperty, SmeGroup>();
+            var nextSmeId = 1;
+            foreach (var spot in spots) {
+                if (!ShouldWriteSmeLine(spot, meta)) { continue; }
+                nextSmeId = Assign(groups, spot, nextSmeId);
+                foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>()) {
+                    if (!driftSpot.IsMsmsAssigned) { continue; }
+                    nextSmeId = Assign(groups, driftSpot, nextSmeId);
+                }
+            }
+            return groups;
+        }
+
+        private static int Assign(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot, int nextSmeId) {
+            var candidates = AnnotationCandidates.Of(spot.MatchResults);
+            if (candidates.Count == 0) {
+                return nextSmeId;
+            }
+            groups[spot] = new SmeGroup(candidates, nextSmeId);
+            return nextSmeId + candidates.Count;
+        }
+
+        private static SmeGroup? GroupOf(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot)
+            => groups.TryGetValue(spot, out var group) ? group : null;
+
+        private static void ReplayTemporarySection(StreamWriter sw, string path) {
+            using var reader = new StreamReader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.ASCII);
+            string line;
+            while ((line = reader.ReadLine()) != null) {
+                sw.WriteLine(line);
+            }
+        }
+
+        private static void TryDeleteTemporaryFile(string path) {
+            try {
+                File.Delete(path);
+            }
+            catch {
+                // Temporary export spools are best-effort cleanup files.
+            }
         }
 
         private void WriteSmlDataLine(
@@ -191,7 +384,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<Database> database,
             IReadOnlyList<string> SmlDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic,
-            bool hasComment
+            bool hasComment,
+            bool hasMs2
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -206,12 +400,20 @@ namespace CompMs.MsdialCore.Export
             var rep = spot?.MatchResults?.Representative;
             if (rep != null &&
                 rep.AnnotatorID != null &&
-                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
                 !string.IsNullOrEmpty(rep.Name))
             {
-                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                if(_annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID))
+                {
+                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                }
+                else
+                {
+                    if (rep.AnnotatorID == "MS-FINDER")
+                    {
+                        databaseIdentifier = "MS-FINDER:" + rep.Name.Split('|').Last();
+                    }
+                }
             }
-
             var chemicalFormula = metadata["Formula"];
             var smiles = metadata["SMILES"];
 
@@ -230,7 +432,7 @@ namespace CompMs.MsdialCore.Export
             }
             else if (chemicalName != "Unknown")
             {
-                if (spot.Formula != null || spot.Formula.Mass != 0)
+                if (spot.Formula is { Mass: > 0d } formula)
                 {
                     theoreticalNeutralMass = Math.Round(spot.Formula.Mass, 4).ToString(); //// need neutral mass. null ok
                 }
@@ -271,10 +473,16 @@ namespace CompMs.MsdialCore.Export
             {
                 LineData.AddRange(SetNormalizedData(spot, internalStandardDic));
             }
+            if (hasMs2)
+            {
+                LineData.AddRange(SetMsmsPresence(spot));  // add 20251208
+            }
+            LineData.AddRange(SetSpectrumMatch(matchResult));  // add 20251208
             if (hasComment)
             {
                 LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
             }
+            LineData.AddRange(SetOntology(spot));  // add 20260127
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -290,20 +498,20 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyDictionary<int, string> AnalysisFileClassDic,
             IReadOnlyList<string> SmfDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic,
-            IReadOnlyDictionary<string, string> metadata
+            IReadOnlyDictionary<string, string> metadata,
+            SmeGroup? smeGroup
             )
         {
             var smfPrefix = "SMF";
 
             var matchResult = spot.MatchResults.Representative;
 
-            var id = -1;
             var smfID = metadata["Alignment ID"];
-            var smeIDrefs = "null";
-
-            var smeIDrefAmbiguity_code = "null";
+            // Taken from the evidence layout rather than re-derived here, so the reference set and the
+            // rows that actually get written cannot disagree.
+            var smeIDrefs = smeGroup?.SmeIdRefs ?? "null";
+            var smeIDrefAmbiguity_code = smeGroup?.AmbiguityCode ?? "null";
             var isotopomer = "null";
-            var isManuallyModified = "false";
             var expMassToCharge = spot.MassCenter.ToString();
 
             var retentionTime = "null";
@@ -311,9 +519,9 @@ namespace CompMs.MsdialCore.Export
             var retentionTimeEnd = "null";
             if (spot.TimesCenter.RT.Value > 0.0)
             {
-                retentionTime = spot.TimesCenter.RT.Value.ToString();
-                retentionTimeStart = spot.TimesMin.RT.Value.ToString();
-                retentionTimeEnd = spot.TimesMax.RT.Value.ToString();
+                retentionTime = (spot.TimesCenter.RT.Value * 60.0).ToString();
+                retentionTimeStart = (spot.TimesMin.RT.Value * 60.0).ToString();
+                retentionTimeEnd = (spot.TimesMax.RT.Value *60.0).ToString();
             }
 
             var adductIons = spot.AdductType.AdductIonName ?? "null";
@@ -326,16 +534,6 @@ namespace CompMs.MsdialCore.Export
             if (spot.IonMode == IonMode.Negative)
             {
                 charge = "-" + charge;
-            }
-
-            if (spot.Name is not null 
-                && spot.Name != "Unknown"
-                && spot.Name != "null"
-                && spot.Name != ""
-                && !metadata["Metabolite name"].Contains("no MS2")
-                && spot.MatchResults.IsTextDbBasedRepresentative != true)
-            {
-                smeIDrefs = smfID.ToString();
             }
 
             var LineMetaData = new List<string>() {
@@ -359,30 +557,63 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(string.Join(Separator, LineMetaData) + Separator + string.Join(Separator, LineData));
         }
 
-        public void WriteSmeDataLine(
+        /// <summary>
+        /// Writes one evidence row per annotation candidate of a spot.
+        /// </summary>
+        /// <remarks>
+        /// mzTab-M already has a way to say "A or B": evidence rows that share an evidence_input_id came
+        /// from the same input spectrum, rank orders them, and the feature row that references them
+        /// carries ambiguity code 1. MS-DIAL keeps up to NUMBER_OF_ANNOTATION_RESULTS threshold-passing
+        /// candidates per annotator and alignment carries them into the spot, so the alternatives existed
+        /// all along and were discarded at the file boundary, leaving every identification looking
+        /// unambiguous. Rank 1 is the representative and its columns are unchanged.
+        /// </remarks>
+        private void WriteSmeDataLines(
             StreamWriter sw,
             AlignmentSpotProperty spot,
             ParameterBase param,
-            MSDecResult msdec,
-            IReadOnlyList<Database> database,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? refer,
             IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
             IReadOnlyDictionary<int, string> idConfidenceMeasure,
-            IReadOnlyList<AnalysisFileBean> analysisFiles,
-            IReadOnlyDictionary<string, string> metadata
+            SmeGroup? smeGroup
+            )
+        {
+            if (smeGroup is null) {
+                return;
+            }
+            for (int index = 0; index < smeGroup.Candidates.Count; index++) {
+                WriteSmeDataLine(
+                    sw, spot, param, refer, RawFileMetadataDic, idConfidenceMeasure,
+                    smeGroup.Candidates[index], smeGroup.SmeId(index), index + 1);
+            }
+        }
+
+        private void WriteSmeDataLine(
+            StreamWriter sw,
+            AlignmentSpotProperty spot,
+            ParameterBase param,
+            IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? refer,
+            IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
+            IReadOnlyDictionary<int, string> idConfidenceMeasure,
+            MsScanMatchResult candidate,
+            int smeID,
+            int rank
             )
         {
             var smePrefix = "SME";
-            var smeID = metadata["Alignment ID"];
-            var evidenceInputID = metadata["Alignment ID"]; ; // need to consider
+            // The spot this row describes, not the parent whose metadata dictionary the caller reused, so
+            // an ion-mobility drift row is not grouped with its parent as an alternative for one input.
+            var evidenceInputID = spot.MasterAlignmentID;
+            var reference = refer?.Refer(candidate);
             var inchi = "null";
             var uri = "null";
-            var adductIons = SetAdductTypeString(metadata["Adduct type"]?.ToString() ?? "null");
+            var adductIons = SetAdductTypeString(spot.AdductType?.AdductIonName ?? "null");
 
             var expMassToCharge = spot.MassCenter.ToString(); // 
             var derivatizedForm = "null";
             var identificationMethod = idConfidenceDefault;
             var manualCurationScore = "null";
-            if (spot.IsManuallyModifiedForAnnotation == true)
+            if (candidate.IsManuallyModified)
             {
                 manualCurationScore = "100";
                 identificationMethod = idConfidenceManual;
@@ -395,50 +626,37 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + spot.AdductType.ChargeNumber.ToString();
             }
 
-            var properties = spot.AlignedPeakProperties;
-            var repName = spot.MatchResults.Representative.Name.Split('|').Last();
-            var repLibraryID = spot.MatchResults.Representative.LibraryID;
-            var chemicalFormula = metadata["Formula"];
-            var smiles = metadata["SMILES"];
-            var theoreticalMassToCharge = metadata.TryGetValue("Reference m/z", out var refmz) ? refmz : "0";
+            var repName = (candidate.Name ?? string.Empty).Split('|').Last();
+            var repLibraryID = candidate.LibraryID;
+            var chemicalFormula = ValueOrNull(reference?.Formula?.FormulaString);
+            var smiles = ValueOrNull(reference?.SMILES);
+            // Resolved from this candidate rather than read from the representative's metadata. A
+            // reference that does not resolve is the mzTab null token; it used to be the number 0, which
+            // is not a mass.
+            var theoreticalMassToCharge = reference is null ? "null" : reference.PrecursorMz.ToString("F5");
+            // The member spectra whose own top annotation is this candidate. A lower-ranked alternative
+            // usually has none, and reports null: no file independently chose it. That the alternatives
+            // were scored against the same query spectrum is already stated by evidence_input_id.
             var spectraRefList = new List<string>();  //  multiple files
-            for (int i = 0; i < properties.Count; i++)
-            {
-                if (properties[i].PeakID < 0) continue;
-                if (!properties[i].IsMsmsAssigned) continue;
-                if (properties[i].MatchResults.Representative.LibraryID != repLibraryID)
-                { continue; }
+            if (_lightPeakStore is null) {
+                var properties = spot.AlignedPeakProperties;
+                for (int i = 0; i < properties.Count; i++)
+                {
+                    if (properties[i].PeakID < 0) continue;
+                    if (!properties[i].IsMsmsAssigned) continue;
+                    if (properties[i].MatchResults.Representative.LibraryID != repLibraryID)
+                    { continue; }
 
-                /// to get file id, peak id in aligned spots
-
-                var ms1ScanID = properties[i].MS1RawSpectrumIdTop;
-                var ms2ScanID = properties[i].MS2RawSpectrumID;
-                /////
-
-                var ms1ScanIDString = "ms1scanID";
-                var ms2ScanIDString = "ms2scanID";
-
-                var ScanIDString = ms1ScanIDString + "=" + ms1ScanID + " " + ms2ScanIDString + "=" + ms2ScanID;
-
-                //switch (RawFileMetadataDic[i+1].Id_format_cv)
-                //{
-                //    case ("[MS, MS:1000770, WIFF nativeID format, ]"):
-                //        ScanIDString = "scanId=" + ms2ScanID;
-                //        break;
-                //    case ("[MS, MS:1001508, Agilent MassHunter nativeID format, ]"):
-                //        ScanIDString = "scanId=" + ms2ScanID;
-                //        break;
-                //    case ("[MS, MS:1000776, scan number only nativeID format, ]"):
-                //    case ("[MS, MS:1000526, Waters raw format, ]"):
-                //    case ("[MS, MS:1000768, Thermo nativeID format, ]"):
-                //    case ("[MS, MS:1000929, Shimadzu Biotech nativeID format, ]"):
-                //        ScanIDString = "scan=" + ms2ScanID;
-                //        break; 
-                //    default:
-                //        ScanIDString = ms1ScanIDString + "=" + ms1ScanID + " " + ms2ScanIDString + "=" + ms2ScanID;
-                //        break;
-                //}
-                spectraRefList.Add("ms_run[" + (i + 1) + "]:" + ScanIDString);
+                    AddSpectraRef(spectraRefList, i + 1, properties[i].MS1RawSpectrumIdTop, properties[i].MS2RawSpectrumID);
+                }
+            }
+            else {
+                foreach (var peak in _lightPeakStore.ReadSpotPeaks(spot.MasterAlignmentID)) {
+                    if (peak.PeakID < 0) continue;
+                    if (!peak.IsMsmsAssigned) continue;
+                    if (peak.RepresentativeLibraryID != repLibraryID) continue;
+                    AddSpectraRef(spectraRefList, peak.FileID + 1, peak.MS1RawSpectrumIdTop, peak.MS2RawSpectrumID);
+                }
             }
 
             var spectraRef = spectraRefList.Count > 0 ? string.Join("| ", spectraRefList) : "null";
@@ -449,17 +667,12 @@ namespace CompMs.MsdialCore.Export
                 msLevel = "[MS, MS:1000511, ms level, 2]";
             }
 
-            var rank = "1"; // need to consider
-
-
             var databaseIdentifier = "null";
-            var rep = spot?.MatchResults?.Representative;
-            if (rep != null &&
-                rep.AnnotatorID != null &&
-                _annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID) &&
-                !string.IsNullOrEmpty(rep.Name))
+            if (candidate.AnnotatorID != null &&
+                _annotatorID2DataBaseID.TryGetValue(candidate.AnnotatorID, out var databaseID) &&
+                !string.IsNullOrEmpty(candidate.Name))
             {
-                databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                databaseIdentifier = databaseID + ":" + candidate.Name.Split('|').Last();
             }
 
             var SmeLine = new List<string>() {
@@ -468,11 +681,20 @@ namespace CompMs.MsdialCore.Export
                     spectraRef, identificationMethod, msLevel
                     };
 
-            SmeLine.AddRange(SetExportScoreList(idConfidenceMeasure, spot.MatchResults.Representative, manualCurationScore));
+            SmeLine.AddRange(SetExportScoreList(idConfidenceMeasure, candidate, manualCurationScore));
 
-            SmeLine.Add(rank);
-            sw.Write(String.Join("\t", SmeLine.Select(item => string.IsNullOrEmpty(item) ? "null" : item).ToList()) + "\t");
+            SmeLine.Add(rank.ToString());
+            // One line per evidence row. The previous form wrote the row without a terminator and let the
+            // caller close it, which appended a trailing separator to every line and would have run the
+            // candidates of one spot together on a single physical line.
+            sw.WriteLine(String.Join("	", SmeLine.Select(item => string.IsNullOrEmpty(item) ? "null" : item).ToList()));
+        }
 
+        private static void AddSpectraRef(List<string> spectraRefList, int msRunID, int ms1ScanID, int ms2ScanID) {
+            var ms1ScanIDString = "ms1scanID";
+            var ms2ScanIDString = "ms2scanID";
+            var ScanIDString = ms1ScanIDString + "=" + ms1ScanID + " " + ms2ScanIDString + "=" + ms2ScanID;
+            spectraRefList.Add("ms_run[" + msRunID + "]:" + ScanIDString);
         }
 
         internal void WriteMtdSection(
@@ -552,6 +774,8 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Run + "-scan_polarity[1]", RawFileMetadataDicItem.Scan_polarity_cv }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay, RawFileMetadataDicItem.Assay_ref })); //fileName
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-ms_run_ref", RawFileMetadataDicItem.Run }));
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[1]", RawFileMetadataDicItem.AnalysisBatch }));// add 20260127 This output will no longer pass through the validator.
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, RawFileMetadataDicItem.Assay + "-custom[2]", RawFileMetadataDicItem.AnalysisFileAnalyticalOrder }));// add 20260127 This output will no longer pass through the validator.
             }
 
             foreach (var AnalysisFileClass in AnalysisFileClassDic)
@@ -775,7 +999,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic, bool hasComment)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -811,10 +1035,17 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_internalStanderdSMLID");
                 SmlDataHeader.Add("opt_global_internalStanderdMetaboliteName");
             }
+            if (hasMs2)
+            {
+                SmlDataHeader.Add("opt_global_ms2_presence");
+            }
+            SmlDataHeader.Add("opt_global_spectrum_matched");
             if (hasComment)
             {
                 SmlDataHeader.Add("opt_global_user_comment");
             }
+            SmlDataHeader.Add("opt_global_Ontology");
+
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
         }
@@ -922,6 +1153,19 @@ namespace CompMs.MsdialCore.Export
             }
             return dataValues;
         }
+        private static List<string> SetMsmsPresence(
+            AlignmentSpotProperty spot
+        )
+        {
+            return new List<string>() { spot.IsMsmsAssigned.ToString() };
+        }
+        private static List<string> SetSpectrumMatch(
+            MsScanMatchResult matchResult
+        )
+        {
+            return new List<string>() { (matchResult?.IsSpectrumMatch ?? false).ToString() };
+        }
+
         private static List<string> SetIMValues(
             AlignmentSpotProperty spot
         )
@@ -934,6 +1178,12 @@ namespace CompMs.MsdialCore.Export
         )
         {
             return new List<string>() { spot.InternalStandardAlignmentID.ToString(), internalStandardDic[spot.InternalStandardAlignmentID] };
+        }
+        private static List<string> SetOntology(
+            AlignmentSpotProperty spot
+        )
+        {
+            return new List<string>() { ValueOrNull(spot.Ontology) };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1275,7 +1525,9 @@ namespace CompMs.MsdialCore.Export
                     Scan_polarity_cv = ionMode.ToString() == "Positive" ? "[MS,MS:1000130,positive scan,]" : "[MS, MS:1000129, negative scan, ]",
                     AnalysisFileExtention = analysisFileExtention,
                     AnalysisClass = files[i].AnalysisFileClass,
-                    AnalysisFileId = files[i].AnalysisFileId
+                    AnalysisFileId = files[i].AnalysisFileId,
+                    AnalysisBatch = "[MS,MS:4000088,batch label," + files[i].AnalysisBatch.ToString() + "]",
+                    AnalysisFileAnalyticalOrder = "[MS,MS:4000089,injection sequence label," + files[i].AnalysisFileAnalyticalOrder.ToString() + "]",
                 });
             }
             return fileMetadataDic;
@@ -1291,7 +1543,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
-        static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
+        static string ValueOrNull(string? value) => string.IsNullOrEmpty(value) ? "null" : value;
 
 
         public class Database
@@ -1317,8 +1569,10 @@ namespace CompMs.MsdialCore.Export
             public string Assay_ref { get; set; }
             public string AnalysisFileExtention { get; set; }
             public string AnalysisClass { get; set; }
-
             public int AnalysisFileId { get; set; }
+            public string AnalysisFileAnalyticalOrder { get; set; }
+            public string AnalysisBatch { get; set; } 
+
         }
     }
 }

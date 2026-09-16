@@ -34,7 +34,6 @@ namespace CompMs.Common.Mathematics.Basic {
 
         public static ulong BinomialCoefficient(int n, int k)
         {
-            ulong coefficient;
             if (k == 0)
                 return 1;
             else if (n == k)
@@ -48,7 +47,6 @@ namespace CompMs.Common.Mathematics.Basic {
                 }
                 else
                     return 1;
-                //return coefficient;
             }
         }
 

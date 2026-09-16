@@ -23,6 +23,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilters.ToArray()).AddTo(Disposables);
             TagSearchBuilderViewModel = new PeakSpotTagSearchQueryBuilderViewModel(model.TagSearchQueryBuilder).AddTo(Disposables);
+            ResetFiltersCommand = new ReactiveCommand().AddTo(Disposables);
+            ResetFiltersCommand.Subscribe(_ => model.ResetFilters()).AddTo(Disposables);
 
             AmplitudeLowerValue = model.AmplitudeFilterModel
                 .ToReactivePropertyAsSynchronized(m => m.Lower)
@@ -74,6 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ICollectionView PeakSpotsView { get; }
 
         public ReactivePropertySlim<bool> IsEditting { get; }
+        public ReactiveCommand ResetFiltersCommand { get; }
 
         public ReactiveProperty<double> AmplitudeLowerValue { get; }
         public ReactiveProperty<double> AmplitudeUpperValue { get; }

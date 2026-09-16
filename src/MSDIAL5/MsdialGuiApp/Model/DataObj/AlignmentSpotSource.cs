@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             _chromatogramSerializer = chromatogramSerializer ?? throw new ArgumentNullException(nameof(chromatogramSerializer));
         }
 
-        public AlignmentSpotPropertyModelCollection? Spots => _spots;
+        public AlignmentSpotPropertyModelCollection Spots => _spots ?? throw new ObjectDisposedException(nameof(Spots));
 
         public async Task DuplicateSpotAsync(AlignmentSpotPropertyModel spot) {
             if (spot is null || _spots is null) {
