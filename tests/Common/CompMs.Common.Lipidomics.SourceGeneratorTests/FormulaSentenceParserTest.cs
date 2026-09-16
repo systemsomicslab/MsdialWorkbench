@@ -21,16 +21,16 @@ public class FormulaSentenceParserTest
     }
 
     [DataTestMethod]
-    [DataRow(new[] { 1, }, "C12H24O12")]
-    [DataRow(new[] { 2, }, "2H")]
-    [DataRow(new[] { 1, 1 }, "M+H")]
-    [DataRow(new[] { 1, -2 }, "M-2H")]
-    [DataRow(new[] { 1, 1, -1, }, "M+H-H2O")]
-    [DataRow(new[] { 1, 1, }, "M+22.98976928")]
-    [DataRow(new[] { 2, }, "2H2O")]
-    [DataRow(new[] { 1, }, "H2O/2")]
+    [DataRow(new[] { 1d, }, "C12H24O12")]
+    [DataRow(new[] { 2d, }, "2H")]
+    [DataRow(new[] { 1d, 1d }, "M+H")]
+    [DataRow(new[] { 1d, -2d }, "M-2H")]
+    [DataRow(new[] { 1d, 1d, -1d, }, "M+H-H2O")]
+    [DataRow(new[] { 1d, 1d, }, "M+22.98976928")]
+    [DataRow(new[] { 2d, }, "2H2O")]
+    [DataRow(new[] { 0.5d, }, "H2O/2")]
 
-    public void Parse_FactorIsCorrectTest(int[] expected, string sentence) {
+    public void Parse_FactorIsCorrectTest(double[] expected, string sentence) {
         var parser = new FormulaSentenceParser();
         var actual = parser.Parse(sentence);
         Assert.IsNotNull(actual);
