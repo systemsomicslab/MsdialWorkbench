@@ -4,6 +4,7 @@
                     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
                     xmlns:model="clr-namespace:CompMs.App.SpectrumViewer.Model"
+                    xmlns:xmlvm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml"
                     xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
                     xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
@@ -924,83 +925,200 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:SpectrumGeneratorEditorViewModel}">
+    <DataTemplate DataType="{x:Type xmlvm:LipidSpectrumXmlEditorViewModel}">
+        <DataTemplate.Resources>
+            <Style TargetType="DataGrid">
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="CanUserAddRows" Value="False"/>
+            </Style>
+        </DataTemplate.Resources>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="240"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="380"/>
             </Grid.ColumnDefinitions>
 
-            <ContentControl Content="{Binding SpectrumViewModel, Mode=OneTime}"
-                            Grid.Row="0" Grid.Column="0"/>
-            <StackPanel Grid.Row="0" Grid.Column="2">
-                <TextBlock Text="Preview setting" Foreground="White"/>
-                <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"
-                                Margin="8"/>
-                <ui:LabeledContent PrependLabel="Adduct:" Foreground="White" Margin="8">
-                    <ComboBox ItemsSource="{Binding Adducts, Mode=OneTime}"
-                              SelectedItem="{Binding PreviewAdduct.Value}"/>
-                </ui:LabeledContent>
-                <Button Content="Preview" Command="{Binding PreviewSpectrumCommand, Mode=OneTime}"/>
+            <!-- Toolbar -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="4">
+                <Button Content="Open lipid model XML..." Command="{Binding OpenXmlCommand, Mode=OneTime}" Margin="2"/>
+                <Button Content="Open Constants.xml..." Command="{Binding OpenConstantsCommand, Mode=OneTime}" Margin="2"/>
+                <TextBlock Text="{Binding ConstantsFilePath.Value, StringFormat=Constants: {0}}" Foreground="White" VerticalAlignment="Center" Margin="8,0"/>
+                <Button Content="Save" Command="{Binding SaveCommand, Mode=OneTime}" Margin="2"/>
+                <TextBlock Text="{Binding FilePath.Value}" Foreground="White" VerticalAlignment="Center" Margin="8,0"/>
             </StackPanel>
 
-            <Grid Grid.Row="0" Grid.Column="1">
+            <!-- Left: navigation -->
+            <Grid Grid.Row="1" Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding Filter.Value, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="4" Grid.Row="0"/>
+                <ListBox ItemsSource="{Binding FilteredEntries}"
+                         SelectedItem="{Binding SelectedEntry.Value}"
+                         DisplayMemberPath="DisplayName.Value"
+                         Grid.Row="1"/>
+            </Grid>
+
+            <GridSplitter Width="2" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+
+            <!-- Center: preview -->
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4">
+                    <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"/>
+                    <ui:LabeledContent PrependLabel="Adduct:" Foreground="White" Margin="8,0">
+                        <ComboBox ItemsSource="{Binding Adducts}"
+                                  SelectedItem="{Binding PreviewAdduct.Value}"/>
+                    </ui:LabeledContent>
+                    <Button Content="Generate" Command="{Binding GeneratePreviewCommand, Mode=OneTime}" Margin="8,0"/>
+                </StackPanel>
+                <ContentControl Content="{Binding PreviewSpectrumViewModel, Mode=OneTime}" Grid.Row="1"/>
+                <TextBox Text="{Binding PreviewMessages.Value, Mode=OneWay}"
+                         IsReadOnly="True" TextWrapping="Wrap" MaxHeight="120"
+                         VerticalScrollBarVisibility="Auto"
+                         Background="#FF202020" Foreground="Orange"
+                         Grid.Row="2"/>
+            </Grid>
+
+            <GridSplitter Width="2" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+
+            <!-- Right: selected entry editor -->
+            <Grid Grid.Row="1" Grid.Column="2"
+                  DataContext="{Binding SelectedEntry.Value}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0">
-                    <ui:LabeledContent PrependLabel="Lipid class:" Foreground="White">
-                        <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
-                                  SelectedItem="{Binding LipidClass.Value}"/>
+                <StackPanel Grid.Row="0" Margin="4">
+                    <TextBlock Text="{Binding DisplayName.Value}" Foreground="White" FontWeight="Bold"/>
+                    <ui:LabeledContent PrependLabel="LSILevel:" Foreground="White">
+                        <TextBox Text="{Binding LSILevel.Value, UpdateSourceTrigger=PropertyChanged}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Adduct:" Foreground="White">
-                        <ComboBox ItemsSource="{Binding Adducts, Mode=OneTime}"
-                                  SelectedItem="{Binding Adduct.Value}"/>
+                        <TextBox Text="{Binding Adduct.Value, UpdateSourceTrigger=PropertyChanged}"/>
                     </ui:LabeledContent>
                 </StackPanel>
-                <GridSplitter BorderThickness="2"
-                              BorderBrush="Gray"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                              Grid.Row="1"/>
-                <GroupBox BorderBrush="Gray" Grid.Row="1">
-                    <GroupBox.Header>
-                        <ui:LabeledContent PrependLabel="Variables" Foreground="White">
-                            <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddVariableCommand, Mode=OneTime}"/>
-                        </ui:LabeledContent>
-                    </GroupBox.Header>
-                    <ItemsControl ItemsSource="{Binding Variables}" AlternationCount="100">
-                        <ItemsControl.Template>
-                            <ControlTemplate TargetType="ItemsControl">
-                                <ScrollViewer>
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                    </ItemsControl>
-                </GroupBox>
-                <GroupBox BorderBrush="Gray" Grid.Row="2">
-                    <GroupBox.Header>
-                        <ui:LabeledContent PrependLabel="Rules" Foreground="White">
-                            <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddRuleCommand, Mode=OneTime}"/>
-                        </ui:LabeledContent>
-                    </GroupBox.Header>
-                    <ItemsControl ItemsSource="{Binding Rules}" AlternationCount="100">
-                        <ItemsControl.Template>
-                            <ControlTemplate TargetType="ItemsControl">
-                                <ScrollViewer>
-                                    <ItemsPresenter/>
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                    </ItemsControl>
-                </GroupBox>
+                <TabControl Grid.Row="1">
+                    <TabItem Header="Precursors">
+                        <DockPanel>
+                            <Button Content="+ row" Command="{Binding AddPrecursorCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                            <DataGrid ItemsSource="{Binding Precursors}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="MZ" Binding="{Binding Mz.Value}" Width="200"/>
+                                    <DataGridTextColumn Header="Intensity" Binding="{Binding Intensity.Value}" Width="80"/>
+                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment.Value}" Width="120"/>
+                                    <DataGridCheckBoxColumn Header="Diag" Binding="{Binding IsDiagnostic.Value}" Width="40"/>
+                                    <DataGridTemplateColumn Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="x" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="ClassIons">
+                        <DockPanel>
+                            <Button Content="+ row" Command="{Binding AddClassIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                            <DataGrid ItemsSource="{Binding ClassIons}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="MZ" Binding="{Binding Mz.Value}" Width="140"/>
+                                    <DataGridTextColumn Header="NL" Binding="{Binding Nl.Value}" Width="80"/>
+                                    <DataGridTextColumn Header="PI" Binding="{Binding Pi.Value}" Width="80"/>
+                                    <DataGridTextColumn Header="Intensity" Binding="{Binding Intensity.Value}" Width="70"/>
+                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment.Value}" Width="120"/>
+                                    <DataGridCheckBoxColumn Header="Diag" Binding="{Binding IsDiagnostic.Value}" Width="40"/>
+                                    <DataGridTextColumn Header="Group" Binding="{Binding DiagnosticIonGroup.Value}" Width="70"/>
+                                    <DataGridTextColumn Header="Count" Binding="{Binding DiagnosticIonCount.Value}" Width="50"/>
+                                    <DataGridTextColumn Header="MinInt" Binding="{Binding DiagnosticIonIntensity.Value}" Width="60"/>
+                                    <DataGridTemplateColumn Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="x" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="ChainIons">
+                        <DockPanel>
+                            <Button Content="+ row" Command="{Binding AddChainIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                            <DataGrid ItemsSource="{Binding ChainIons}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="MZ" Binding="{Binding Mz.Value}" Width="140"/>
+                                    <DataGridTextColumn Header="NL" Binding="{Binding Nl.Value}" Width="80"/>
+                                    <DataGridTextColumn Header="Intensity" Binding="{Binding Intensity.Value}" Width="70"/>
+                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment.Value}" Width="110"/>
+                                    <DataGridCheckBoxColumn Header="Diag" Binding="{Binding IsDiagnostic.Value}" Width="40"/>
+                                    <DataGridCheckBoxColumn Header="PosDiag" Binding="{Binding IsPositionDiagnostic.Value}" Width="50"/>
+                                    <DataGridTextColumn Header="Group" Binding="{Binding DiagnosticIonGroup.Value}" Width="60"/>
+                                    <DataGridTextColumn Header="Count" Binding="{Binding DiagnosticIonCount.Value}" Width="50"/>
+                                    <DataGridTextColumn Header="MinInt" Binding="{Binding DiagnosticIonIntensity.Value}" Width="60"/>
+                                    <DataGridTemplateColumn Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="x" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="InvisibleIons (unused by generator)">
+                        <DockPanel>
+                            <Button Content="+ row" Command="{Binding AddInvisibleIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                            <DataGrid ItemsSource="{Binding InvisibleIons}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="MZ" Binding="{Binding Mz.Value}" Width="200"/>
+                                    <DataGridTextColumn Header="Intensity" Binding="{Binding Intensity.Value}" Width="80"/>
+                                    <DataGridTextColumn Header="Group" Binding="{Binding DiagnosticIonGroup.Value}" Width="80"/>
+                                    <DataGridTemplateColumn Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="x" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Header="ProhibitedIons (unused by generator)">
+                        <DockPanel>
+                            <Button Content="+ row" Command="{Binding AddProhibitedIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+                            <DataGrid ItemsSource="{Binding ProhibitedIons}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="MZ" Binding="{Binding Mz.Value}" Width="200"/>
+                                    <DataGridTextColumn Header="Intensity" Binding="{Binding Intensity.Value}" Width="80"/>
+                                    <DataGridTemplateColumn Header="">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="x" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Grid>
     </DataTemplate>
@@ -1134,50 +1252,4 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:SpectrumGenerationRuleViewModel}">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="{Binding Path=(ItemsControl.AlternationIndex), StringFormat=Rule {0}, RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Foreground="White">
-                <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Variable:" Foreground="White">
-                <ComboBox ItemsSource="{Binding Variables}"
-                          SelectedItem="{Binding Variable.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Intensity:" Foreground="White">
-                <TextBox Text="{Binding Intensity.Value}"/>
-            </ui:LabeledContent>
-            <TextBlock Text="Comment:" Foreground="White"/>
-            <TextBox Text="{Binding Comment.Value}"/>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type vm:MzVariableViewModel}">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="{Binding Path=(ItemsControl.AlternationIndex), StringFormat=Variable {0}, RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Foreground="White">
-                <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Variable type:" Foreground="White">
-                <ComboBox ItemsSource="{x:Static Member=model:MzVariableModel.VariableTypes}"
-                          SelectedItem="{Binding VariableType.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Placeholder type:" Foreground="White" Visibility="{Binding IsPlaceholder.Value, Converter={StaticResource BooleanToVisibility}}">
-                <ComboBox ItemsSource="{x:Static Member=model:MzVariableModel.PlaceholderTypes}"
-                          SelectedItem="{Binding PlaceholderType.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White" Visibility="{Binding IsConstant.Value, Converter={StaticResource BooleanToVisibility}}">
-                <TextBox Text="{Binding ExactMass.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Chain position:" Foreground="White" Visibility="{Binding ShouldSelectChain.Value, Converter={StaticResource BooleanToVisibility}}">
-                <TextBox Text="{Binding ChainPosition.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Left variable:" Foreground="White" Visibility="{Binding ShouldSelectReference.Value, Converter={StaticResource BooleanToVisibility}}">
-                <ComboBox ItemsSource="{Binding Mzs}"
-                          SelectedItem="{Binding Left.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Right variable:" Foreground="White" Visibility="{Binding ShouldSelectReference.Value, Converter={StaticResource BooleanToVisibility}}">
-                <ComboBox ItemsSource="{Binding Mzs}"
-                          SelectedItem="{Binding Right.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
 </ResourceDictionary>
