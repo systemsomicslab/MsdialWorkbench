@@ -49,8 +49,36 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public ObservableCollection<ChainSelectionModel> Chains { get; } = new ObservableCollection<ChainSelectionModel>();
 
+        // The exact mass is never taken from the manually-editable Mass field: production code
+        // (e.g. PCLipidParser) always derives it from the class-specific skeleton formula plus the
+        // actual chains, so a hand-typed number here could silently drift from the real chains and
+        // throw off every neutral-loss ion (e.g. "M+Proton-SN1Acyl-H2O") computed from it. Route
+        // through the same registered parsers used by the real annotation pipeline instead, and
+        // mirror the resulting mass back into Mass so it's visible (read-only) in the UI.
         public ILipid Create() {
-            return new Lipid(LipidClass, Mass, CreateChains());
+            if (ChainsType != "SubMolecularLevel" && Chains.Count == 0) {
+                // SeparatedChains (the base of MolecularSpeciesLevelChains/PositionLevelChains) throws
+                // a bare ArgumentException("chains") for an empty array; catch it here instead so the
+                // message actually tells the user what to do.
+                throw new InvalidOperationException(
+                    $"No chains are specified for {LipidClass} ({ChainsType}). " +
+                    "Add at least one chain with the + button before generating.");
+            }
+            var chains = CreateChains();
+            var chainsText = chains?.ToString();
+            if (string.IsNullOrEmpty(chainsText)) {
+                throw new InvalidOperationException(
+                    $"No chains are specified for {LipidClass} ({ChainsType}). " +
+                    "Add at least one chain with the + button before generating.");
+            }
+            var lipidStr = $"{LipidClass} {chainsText}";
+            if (!(FacadeLipidParser.Default.Parse(lipidStr) is ILipid lipid)) {
+                throw new InvalidOperationException(
+                    $"Could not resolve the exact mass for '{lipidStr}': either {LipidClass} has no " +
+                    "registered lipid parser, or the chains above are not in a supported format.");
+            }
+            Mass = lipid.Mass;
+            return lipid;
         }
 
         public ITotalChain CreateChains() {

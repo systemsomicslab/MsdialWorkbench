@@ -978,9 +978,12 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4">
                     <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"/>
+                    <!-- Locked: mirrors the selected entry's Adduct (see SyncPreviewTargetToSelectedEntry)
+                         for the same reason the lipid class picker above is locked. -->
                     <ui:LabeledContent PrependLabel="Adduct:" Foreground="White" Margin="8,0">
                         <ComboBox ItemsSource="{Binding Adducts}"
-                                  SelectedItem="{Binding PreviewAdduct.Value}"/>
+                                  SelectedItem="{Binding PreviewAdduct.Value}"
+                                  IsEnabled="False"/>
                     </ui:LabeledContent>
                     <Button Content="Generate" Command="{Binding GeneratePreviewCommand, Mode=OneTime}" Margin="8,0"/>
                 </StackPanel>
@@ -1180,19 +1183,27 @@
 
     <DataTemplate DataType="{x:Type vm:LipidSelectionViewModel}">
         <StackPanel>
+            <!-- Locked: this always mirrors the <LipidMS> entry selected on the left, since the
+                 preview looks up its rule by class, so picking a different class here would just
+                 fail to find (or find the wrong) rule. Change it via the left-hand entry list. -->
             <ui:LabeledContent  PrependLabel="Lipid class: " Foreground="White">
                 <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
-                          SelectedItem="{Binding LipidClass.Value}"/>
+                          SelectedItem="{Binding LipidClass.Value}"
+                          IsEnabled="False"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White">
-                <TextBox Text="{Binding Mass.Value}"/>
+            <ui:LabeledContent PrependLabel="Exact mass (computed):" Foreground="White">
+                <TextBox Text="{Binding Mass.Value, Mode=OneWay}" IsReadOnly="True"/>
             </ui:LabeledContent>
             <TextBlock Text="Chains Setting" Foreground="White"/>
             <ComboBox ItemsSource="{Binding ChainsTypes, Mode=OneTime}"
                       SelectedItem="{Binding ChainsType.Value}"/>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="# of chain:" Foreground="White"/>
-                <TextBox Text="{Binding ChainCount.Value}" Width="40" Margin="4,0,0,0"/>
+                <TextBlock Text="# of chain:" Foreground="White"
+                           Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                <TextBox Text="{Binding ChainCount.Value}" Width="40" Margin="4,0,0,0"
+                         Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                <TextBlock Text="{Binding Chains.Count, StringFormat=Chains: {0}}" Foreground="White"
+                           Visibility="{Binding IsNotSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
                 <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddChainCommand, Mode=OneTime}"
                         Visibility="{Binding IsNotSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
                 <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveChainCommand, Mode=OneTime}"
