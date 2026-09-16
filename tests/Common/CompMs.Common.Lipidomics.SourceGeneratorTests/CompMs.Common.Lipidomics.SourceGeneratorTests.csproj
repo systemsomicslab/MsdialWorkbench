@@ -15,10 +15,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj">
-      <OutputItemType>Analyzer</OutputItemType>
-			<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
+    <!-- Plain reference only (no OutputItemType=Analyzer): CommonStandard already runs the generator,
+         this is just so ContextTests/FormulaSentenceParserTest/FormulaStringParserTests can see the
+         generator's internal parsing classes via InternalsVisibleTo. -->
+    <ProjectReference Include="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,17 +26,6 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.9.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.9.3" />
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
-  </ItemGroup>
-
-  <Import Project="..\..\..\src\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.props" />
-
-  <ItemGroup>
-    <AdditionalFiles Include="Constants.xml">
-      <IsConstants>true</IsConstants>
-    </AdditionalFiles>
-    <AdditionalFiles Include="MsdialLipidCidSpectrumModel.xml">
-      <Category>Cid</Category>
-    </AdditionalFiles>
   </ItemGroup>
 
   <ItemGroup>

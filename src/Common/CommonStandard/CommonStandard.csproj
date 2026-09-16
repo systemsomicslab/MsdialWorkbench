@@ -49,6 +49,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NCDK\NCDK.csproj" />
+    <ProjectReference Include="..\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj">
+      <OutputItemType>Analyzer</OutputItemType>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Import Project="..\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.props" />
+
+  <ItemGroup>
+    <AdditionalFiles Include="Lipidomics\Constants.xml">
+      <IsConstants>true</IsConstants>
+    </AdditionalFiles>
+    <AdditionalFiles Include="Lipidomics\MsdialLipidCidSpectrumModel.xml">
+      <Category>Cid</Category>
+    </AdditionalFiles>
   </ItemGroup>
 
   <ItemGroup>
