@@ -21,12 +21,26 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             ChainsStr = Model.ToReactivePropertySlimAsSynchronized(m => m.ChainsStr).AddTo(Disposables);
             IsSubMolecularLevel = ChainsType.Select(t => t == "SubMolecularLevel").ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsNotSubMolecularLevel = IsSubMolecularLevel.Inverse().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            QuickChainsText = Model.ToReactivePropertySlimAsSynchronized(m => m.QuickChainsText).AddTo(Disposables);
+            QuickChainsMessage = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            HasQuickChainsMessage = QuickChainsMessage.Select(m => !string.IsNullOrEmpty(m)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             AddChainCommand = new ReactiveCommand()
                 .WithSubscribe(Model.AddChain)
                 .AddTo(Disposables);
             RemoveChainCommand = new ReactiveCommand()
                 .WithSubscribe(Model.RemoveChain)
+                .AddTo(Disposables);
+            ApplyQuickChainsCommand = new ReactiveCommand()
+                .WithSubscribe(() => {
+                    try {
+                        Model.ApplyQuickChainsText();
+                        QuickChainsMessage.Value = string.Empty;
+                    }
+                    catch (Exception ex) {
+                        QuickChainsMessage.Value = ex.Message;
+                    }
+                })
                 .AddTo(Disposables);
         }
 
@@ -55,6 +69,14 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReactiveCommand AddChainCommand { get; }
 
         public ReactiveCommand RemoveChainCommand { get; }
+
+        public ReactivePropertySlim<string> QuickChainsText { get; }
+
+        public ReactivePropertySlim<string> QuickChainsMessage { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> HasQuickChainsMessage { get; }
+
+        public ReactiveCommand ApplyQuickChainsCommand { get; }
     }
 
     public class ChainSelectionViewModel : ViewModelBase

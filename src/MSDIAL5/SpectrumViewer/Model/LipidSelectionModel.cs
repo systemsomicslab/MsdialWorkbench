@@ -49,6 +49,52 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public ObservableCollection<ChainSelectionModel> Chains { get; } = new ObservableCollection<ChainSelectionModel>();
 
+        public string QuickChainsText {
+            get => quickChainsText;
+            set => SetProperty(ref quickChainsText, value);
+        }
+        private string quickChainsText = string.Empty;
+
+        // Lets the user type standard chain notation ("36:2", "18:0_18:2", "18:0/18:2") instead of
+        // building the same thing by hand through ChainsType + the chain rows below. Uses the same
+        // TotalChainParser the detailed SubMolecularLevel box already relies on, so it recognizes
+        // exactly the formats production lipid parsers (e.g. PCLipidParser) accept, and fills in
+        // ChainsType/Chains/ChainsStr from whichever level the text turned out to be.
+        public void ApplyQuickChainsText() {
+            var parser = TotalChainParser.BuildParser(ChainCount);
+            var chains = parser.Parse(QuickChainsText ?? string.Empty);
+            if (chains is null) {
+                throw new InvalidOperationException(
+                    $"Could not parse '{QuickChainsText}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\").");
+            }
+            switch (chains) {
+                case PositionLevelChains p:
+                    ChainsType = "PositionLevel";
+                    ReplaceChains(p.GetDeterminedChains());
+                    break;
+                case MolecularSpeciesLevelChains m:
+                    ChainsType = "MolecularSpeciesLevel";
+                    ReplaceChains(m.GetDeterminedChains());
+                    break;
+                default:
+                    ChainsType = "SubMolecularLevel";
+                    ChainsStr = chains.ToString();
+                    break;
+            }
+        }
+
+        private void ReplaceChains(IEnumerable<IChain> chains) {
+            Chains.Clear();
+            foreach (var chain in chains) {
+                Chains.Add(new ChainSelectionModel {
+                    ChainType = chain is AlkylChain ? "Alkyl" : "Acyl",
+                    CarbonCount = chain.CarbonCount,
+                    DoubleBondCount = chain.DoubleBondCount,
+                    OxidizedCount = chain.OxidizedCount,
+                });
+            }
+        }
+
         // The exact mass is never taken from the manually-editable Mass field: production code
         // (e.g. PCLipidParser) always derives it from the class-specific skeleton formula plus the
         // actual chains, so a hand-typed number here could silently drift from the real chains and

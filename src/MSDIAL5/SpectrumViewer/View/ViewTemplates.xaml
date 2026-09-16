@@ -931,6 +931,14 @@
                 <Setter Property="AutoGenerateColumns" Value="False"/>
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="MaxHeight" Value="160"/>
+            </Style>
+            <Style x:Key="RuleSectionHeader" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Background" Value="#FF303030"/>
+                <Setter Property="Padding" Value="4,2"/>
+                <Setter Property="Margin" Value="0,6,0,2"/>
             </Style>
         </DataTemplate.Resources>
         <Grid>
@@ -977,17 +985,27 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4">
-                    <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"/>
-                    <!-- Locked: mirrors the selected entry's Adduct (see SyncPreviewTargetToSelectedEntry)
-                         for the same reason the lipid class picker above is locked. -->
-                    <ui:LabeledContent PrependLabel="Adduct:" Foreground="White" Margin="8,0">
+                    <!-- Locked: mirrors the selected entry's Adduct (see SyncPreviewTargetToSelectedEntry). -->
+                    <ui:LabeledContent PrependLabel="Adduct:" Foreground="White">
                         <ComboBox ItemsSource="{Binding Adducts}"
                                   SelectedItem="{Binding PreviewAdduct.Value}"
                                   IsEnabled="False"/>
                     </ui:LabeledContent>
                     <Button Content="Generate" Command="{Binding GeneratePreviewCommand, Mode=OneTime}" Margin="8,0"/>
                 </StackPanel>
-                <ContentControl Content="{Binding PreviewSpectrumViewModel, Mode=OneTime}" Grid.Row="1"/>
+                <!-- The chart keeps the full row height; the lipid-to-preview builder sits beside it
+                     (not above it) so it doesn't eat into that height. -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="260"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Content="{Binding PreviewSpectrumViewModel, Mode=OneTime}" Grid.Column="0"/>
+                    <GridSplitter Width="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                        <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"/>
+                    </ScrollViewer>
+                </Grid>
                 <TextBox Text="{Binding PreviewMessages.Value, Mode=OneWay}"
                          IsReadOnly="True" TextWrapping="Wrap" MaxHeight="120"
                          VerticalScrollBarVisibility="Auto"
@@ -1013,8 +1031,9 @@
                         <TextBox Text="{Binding Adduct.Value, UpdateSourceTrigger=PropertyChanged}"/>
                     </ui:LabeledContent>
                 </StackPanel>
-                <TabControl Grid.Row="1">
-                    <TabItem Header="Precursors">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Precursors" Style="{StaticResource RuleSectionHeader}"/>
                         <DockPanel>
                             <Button Content="+ row" Command="{Binding AddPrecursorCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
                             <DataGrid ItemsSource="{Binding Precursors}">
@@ -1033,8 +1052,8 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>
-                    </TabItem>
-                    <TabItem Header="ClassIons">
+
+                        <TextBlock Text="ClassIons" Style="{StaticResource RuleSectionHeader}"/>
                         <DockPanel>
                             <Button Content="+ row" Command="{Binding AddClassIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
                             <DataGrid ItemsSource="{Binding ClassIons}">
@@ -1058,8 +1077,8 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>
-                    </TabItem>
-                    <TabItem Header="ChainIons">
+
+                        <TextBlock Text="ChainIons" Style="{StaticResource RuleSectionHeader}"/>
                         <DockPanel>
                             <Button Content="+ row" Command="{Binding AddChainIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
                             <DataGrid ItemsSource="{Binding ChainIons}">
@@ -1083,8 +1102,8 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>
-                    </TabItem>
-                    <TabItem Header="InvisibleIons (unused by generator)">
+
+                        <TextBlock Text="InvisibleIons (unused by generator)" Style="{StaticResource RuleSectionHeader}"/>
                         <DockPanel>
                             <Button Content="+ row" Command="{Binding AddInvisibleIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
                             <DataGrid ItemsSource="{Binding InvisibleIons}">
@@ -1102,8 +1121,8 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>
-                    </TabItem>
-                    <TabItem Header="ProhibitedIons (unused by generator)">
+
+                        <TextBlock Text="ProhibitedIons (unused by generator)" Style="{StaticResource RuleSectionHeader}"/>
                         <DockPanel>
                             <Button Content="+ row" Command="{Binding AddProhibitedIonCommand, Mode=OneTime}" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
                             <DataGrid ItemsSource="{Binding ProhibitedIons}">
@@ -1120,8 +1139,8 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>
-                    </TabItem>
-                </TabControl>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </DataTemplate>
@@ -1182,19 +1201,40 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:LipidSelectionViewModel}">
-        <StackPanel>
-            <!-- Locked: this always mirrors the <LipidMS> entry selected on the left, since the
-                 preview looks up its rule by class, so picking a different class here would just
-                 fail to find (or find the wrong) rule. Change it via the left-hand entry list. -->
-            <ui:LabeledContent  PrependLabel="Lipid class: " Foreground="White">
+        <DataTemplate.Resources>
+            <Style x:Key="SectionHeader" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#FFAAAAAA"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Margin" Value="0,10,0,3"/>
+            </Style>
+        </DataTemplate.Resources>
+        <StackPanel Margin="4">
+            <!-- Previewing: read-only, always mirrors the <LipidMS> entry selected on the left,
+                 since the preview looks up its rule by class - picking a different class here would
+                 just fail to find (or find the wrong) rule. Change it via the left-hand entry list. -->
+            <TextBlock Text="Previewing" Style="{StaticResource SectionHeader}" Margin="0,0,0,3"/>
+            <ui:LabeledContent PrependLabel="Lipid class:" Foreground="White">
                 <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
                           SelectedItem="{Binding LipidClass.Value}"
                           IsEnabled="False"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Exact mass (computed):" Foreground="White">
-                <TextBox Text="{Binding Mass.Value, Mode=OneWay}" IsReadOnly="True"/>
-            </ui:LabeledContent>
-            <TextBlock Text="Chains Setting" Foreground="White"/>
+
+            <!-- Quick input: fast path for the common case, typed as standard chain notation. -->
+            <TextBlock Text="Quick chain notation" Style="{StaticResource SectionHeader}"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding QuickChainsText.Value, UpdateSourceTrigger=PropertyChanged}" Width="120">
+                    <TextBox.InputBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding ApplyQuickChainsCommand, Mode=OneTime}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Content="Apply" Command="{Binding ApplyQuickChainsCommand, Mode=OneTime}" Margin="4,0,0,0"/>
+            </StackPanel>
+            <TextBlock Text="e.g. 36:2, 18:0_18:2, 18:0/18:2" Foreground="Gray" FontSize="10"/>
+            <TextBlock Text="{Binding QuickChainsMessage.Value}" Foreground="Orange" TextWrapping="Wrap"
+                       Visibility="{Binding HasQuickChainsMessage.Value, Converter={StaticResource BooleanToVisibility}}"/>
+
+            <!-- Detailed structure: same result as above, built by hand chain-by-chain. -->
+            <TextBlock Text="Detailed structure" Style="{StaticResource SectionHeader}"/>
             <ComboBox ItemsSource="{Binding ChainsTypes, Mode=OneTime}"
                       SelectedItem="{Binding ChainsType.Value}"/>
             <StackPanel Orientation="Horizontal">
@@ -1216,6 +1256,12 @@
             <ui:LabeledContent PrependLabel="chains string" Foreground="White"
                                Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}">
                 <TextBox Text="{Binding ChainsStr.Value}" Width="60"/>
+            </ui:LabeledContent>
+
+            <!-- Computed: never edited directly - see LipidSelectionModel.Create(). -->
+            <TextBlock Text="Computed" Style="{StaticResource SectionHeader}"/>
+            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White">
+                <TextBox Text="{Binding Mass.Value, Mode=OneWay}" IsReadOnly="True" Background="#FF303030"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
