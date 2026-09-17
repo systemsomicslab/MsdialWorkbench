@@ -152,6 +152,24 @@ namespace CompMs.Common.MessagePack.Tests
             }
         }
 
+        [TestMethod()]
+        public void LoadWithTruncatedDataTest() {
+            var datas = new RandomSample[1000];
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new RandomSample(100);
+            }
+
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, datas);
+            var serialized = memory.ToArray();
+            Array.Resize(ref serialized, serialized.Length - 1);
+
+            using (var stream = new MemoryStream(serialized)) {
+                var actual = LargeListMessagePack.Deserialize<RandomSample>(stream);
+                Assert.AreEqual(0, actual.Count);
+            }
+        }
+
         [MessagePackObject]
         public class SmallSample {
 

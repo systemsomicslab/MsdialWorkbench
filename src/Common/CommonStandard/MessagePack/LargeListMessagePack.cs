@@ -141,7 +141,7 @@ namespace CompMs.Common.MessagePack {
                 }
                 length += read;
             }
-            if (length <= 0)
+            if (length < readSize)
             {
                 return false;
             }
