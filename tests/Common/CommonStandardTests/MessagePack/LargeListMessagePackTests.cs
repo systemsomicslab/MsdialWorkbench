@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -121,6 +122,36 @@ namespace CompMs.Common.MessagePack.Tests
             CollectionAssert.AreEqual(datas[index].Ys, actual.Ys);
         }
 
+        [TestMethod()]
+        public void LoadWithShortReadsTest() {
+            var datas = new RandomSample[1000];
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new RandomSample(100);
+            }
+
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, datas);
+            var serialized = memory.ToArray();
+
+            using (var stream = new ShortReadStream(serialized, 7)) {
+                var actual = LargeListMessagePack.Deserialize<RandomSample>(stream);
+                Assert.AreEqual(datas.Length, actual.Count);
+            }
+
+            using (var stream = new ShortReadStream(serialized, 7)) {
+                var actual = new List<RandomSample>();
+                foreach (var chunk in LargeListMessagePack.DeserializeIncremental<RandomSample>(stream)) {
+                    actual.AddRange(chunk);
+                }
+                Assert.AreEqual(datas.Length, actual.Count);
+            }
+
+            using (var stream = new ShortReadStream(serialized, 7)) {
+                var actual = LargeListMessagePack.DeserializeAt<RandomSample>(stream, 777);
+                CollectionAssert.AreEqual(datas[777].Xs, actual.Xs);
+            }
+        }
+
         [MessagePackObject]
         public class SmallSample {
 
@@ -185,6 +216,18 @@ namespace CompMs.Common.MessagePack.Tests
 
             [Key(1)]
             public byte[] Ys { get; set; }
+        }
+
+        private sealed class ShortReadStream : MemoryStream {
+            private readonly int _maximumReadSize;
+
+            public ShortReadStream(byte[] buffer, int maximumReadSize) : base(buffer, writable: false) {
+                _maximumReadSize = maximumReadSize;
+            }
+
+            public override int Read(byte[] buffer, int offset, int count) {
+                return base.Read(buffer, offset, Math.Min(count, _maximumReadSize));
+            }
         }
     }
 }
