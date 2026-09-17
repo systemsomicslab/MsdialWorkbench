@@ -132,18 +132,24 @@ namespace CompMs.Common.MessagePack {
         static bool FillFromStream(Stream input, ref byte[] buffer, int offset, int readSize)
         {
             int length = 0;
-            int read;
-            if ((read = input.Read(buffer, offset, readSize)) > 0)
+            while (length < readSize)
             {
-                length += read;
-                // Console.WriteLine("read length: " + length);
-                if (length == buffer.Length)
+                var read = input.Read(buffer, offset + length, readSize - length);
+                if (read <= 0)
                 {
-                    MessagePackBinary.FastResize(ref buffer, length * 2);
+                    break;
                 }
-                return true;
+                length += read;
             }
-            return false;
+            if (length < readSize)
+            {
+                return false;
+            }
+            if (length == buffer.Length)
+            {
+                MessagePackBinary.FastResize(ref buffer, length * 2);
+            }
+            return true;
         }
 
 
