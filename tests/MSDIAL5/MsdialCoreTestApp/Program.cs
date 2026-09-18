@@ -178,6 +178,7 @@ class Program {
 
         MainProcess.SetGcmsCommand(root);
         MainProcess.SetLcmsCommand(root);
+        MainProcess.SetLcmsMsnCommand(root);
         MainProcess.SetLcimmsCommand(root);
         MainProcess.SetDimsCommand(root);
         MainProcess.SetImmsCommand(root);

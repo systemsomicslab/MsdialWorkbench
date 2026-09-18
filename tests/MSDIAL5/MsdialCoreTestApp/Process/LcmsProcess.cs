@@ -1,4 +1,4 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
@@ -31,14 +31,46 @@ namespace CompMs.App.MsdialConsole.Process;
 public sealed class LcmsProcess
 {
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
+        => RunCore(inputFolder, outputFolder, methodFile, isProjectSaved, targetMz, null);
+
+    public int RunWithMolecularNetworking(string inputFolder, string outputFolder, string methodFile, string msnMethodFile, bool isProjectSaved, float targetMz)
+        => RunCore(inputFolder, outputFolder, methodFile, isProjectSaved, targetMz, ConfigParser.ReadForMoleculerNetworkingParameter(msnMethodFile));
+
+    private int RunCore(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz, MolecularSpectrumNetworkingBaseParameter? networkingParameter)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
         var exportAnnotationCandidates = ConfigParser.ReadAnnotationCandidateExport(methodFile);
-        var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
+        var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile, confirmMixedFormats: networkingParameter is null);
         if (!isCorrectlyImported) {
             return -1;
+        }
+
+        if (networkingParameter is not null) {
+#if NET8_0_OR_GREATER
+            if (analysisFiles.Any(file => string.Equals(Path.GetExtension(file.AnalysisFilePath), ".wiff", StringComparison.OrdinalIgnoreCase))) {
+                Console.Error.WriteLine("WIFF input requires the .NET Framework build with the bundled SCIEX SDK. Run bin/Debug/net48/MSDIALCUI.exe (or the Release/net48 build).");
+                return -1;
+            }
+#endif
+            Directory.CreateDirectory(outputFolder);
+            param.TogetherWithAlignment = true;
+            param.MolecularSpectrumNetworkingBaseParam = networkingParameter;
+            param.ProjectFolderPath = outputFolder;
+            param.ExportFolderPath = outputFolder;
+            // Networking requires the full alignment peak matrix, including ion correlations.
+            if (isAlignmentLightMode) {
+                Console.WriteLine("lcms-msn uses full alignment for molecular networking; alignment light mode is disabled.");
+                isAlignmentLightMode = false;
+            }
+            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(outputFolder);
+            foreach (var file in analysisFiles) {
+                var prefix = Path.Combine(outputFolder, $"analysis-{file.AnalysisFileId}");
+                file.DeconvolutionFilePath = prefix + ".dcl";
+                file.PeakAreaBeanInformationFilePath = prefix + ".pai";
+                file.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(prefix + ".rtc");
+            }
         }
 
         try {
@@ -98,7 +130,7 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, networkingParameter).Result;
     }
 
     private async Task<int> ExecuteAsync(
@@ -107,7 +139,8 @@ public sealed class LcmsProcess
         bool isProjectSaved,
         bool isAlignmentLightMode,
         bool exportDetailedAlignmentProvenance,
-        bool exportAnnotationCandidates) {
+        bool exportAnnotationCandidates,
+        MolecularSpectrumNetworkingBaseParameter? networkingParameter) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -116,13 +149,13 @@ public sealed class LcmsProcess
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
-        var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);
+        var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
-        var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
+        var sem = new SemaphoreSlim(Math.Max(1, Environment.ProcessorCount / 2));
         var tasks = new Task[files.Count];
         for (int i = 0; i < files.Count; i++) {
             var file = files[i];
@@ -306,6 +339,10 @@ public sealed class LcmsProcess
                 mztabm_filename
             );
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
+            if (networkingParameter is not null) {
+                Console.WriteLine("Generating molecular network from alignment results.");
+                AlignmentMolecularNetworkExporter.Export(result.AlignmentSpotProperties, align_decResults, networkingParameter, files.Count, Path.Combine(outputFolder, "msn"));
+            }
             alignmentLightMsdecResults?.Dispose();
         }
 

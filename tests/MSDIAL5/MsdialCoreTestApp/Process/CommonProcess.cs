@@ -42,10 +42,10 @@ namespace CompMs.App.MsdialConsole.Process
 
     public static class CommonProcess {
 
-        public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
+        public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile, bool confirmMixedFormats = true) {
 
             Console.WriteLine("Loading analysis files..");
-            analysisFiles = AnalysisFilesParser.ReadInput(input);
+            analysisFiles = AnalysisFilesParser.ReadInput(input, confirmMixedFormats);
             if (analysisFiles.IsEmptyOrNull()) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());

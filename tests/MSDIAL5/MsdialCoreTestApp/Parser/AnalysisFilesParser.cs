@@ -12,7 +12,7 @@ namespace CompMs.App.MsdialConsole.Parser
     {
         private AnalysisFilesParser() { }
 
-        public static List<AnalysisFileBean> ReadInput(string input) {
+        public static List<AnalysisFileBean> ReadInput(string input, bool confirmMixedFormats = true) {
 
             var analysisFiles = new List<AnalysisFileBean>();
 
@@ -32,7 +32,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 analysisFiles = CreateAnalysisFileBeans(list);
             }
 
-            if (isExistMultipleFormats(analysisFiles)) {
+            if (confirmMixedFormats && isExistMultipleFormats(analysisFiles)) {
                 while (true) {
                     Console.WriteLine("Your input contains several format files to be processed (abf, cdf, mzml, ibf, wiff)." +
                         " Do you want to continue this process? Y/N");

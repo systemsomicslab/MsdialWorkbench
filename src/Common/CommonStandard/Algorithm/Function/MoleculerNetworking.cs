@@ -181,6 +181,12 @@ namespace CompMs.Common.Algorithm.Function
                 case MsmsSimilarityCalc.ModDot:
                     scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, query.MassTolerance);
                     break;
+                case MsmsSimilarityCalc.Cosine:
+                    scoreitem = MsScanMatching.GetCosineScore(prop1, prop2, query.MassTolerance);
+                    break;
+                case MsmsSimilarityCalc.All:
+                    scoreitem = MsScanMatching.GetBonanzaModifiedDotCosineScores(prop1, prop2, query.MassTolerance);
+                    break;
             }
             if (scoreitem[1] < query.MinimumPeakMatch) return null; 
             if (scoreitem[0] < query.SpectrumSimilarityCutOff * 0.01) return null;

@@ -141,6 +141,82 @@ public static class MainProcess
     }
 
 
+    public static void SetLcmsMsnCommand(Command root) {
+        var cmd = new Command("lcms-msn", "Run LC-MS, alignment, and molecular networking; save node/edge tables under output/msn");
+        var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
+            Description = "Input folder containing the files to be processed",
+            Required = true,
+        };
+        var outputOpt = new Option<DirectoryInfo>("--output", "-o")
+        {
+            Description = "Output folder to save results",
+            Required = true,
+        };
+        var methodOpt = new Option<FileInfo>("--method", "-m")
+        {
+            Description = "Method file holding processing properties",
+            Required = true,
+        };
+        var projectOpt = new Option<bool>("--project", "-p") {
+            Description = "Option to generate .mdproject file to be loaded in MSDIAL5 GUI application"
+        };
+        var targetOpt = new Option<float>("--target", "-target", "-t")
+        {
+            Description = "Option to run as target mode. please set m/z",
+        };
+        inputOpt.Validators.Add(result => {
+            var input = result.GetValueOrDefault<FileSystemInfo>();
+            if (input is null || !input.Exists) {
+                result.AddError("Input path does not exist.");
+            }
+        });
+        outputOpt.Validators.Add(result => {
+            var output = result.GetValueOrDefault<DirectoryInfo>();
+            if (output is null || File.Exists(output.FullName)) {
+                result.AddError("Output path cannot be a file.");
+            }
+        });
+        methodOpt.Validators.Add(result => {
+            var methodFile = result.GetValueOrDefault<FileInfo>();
+            if (methodFile is null || !methodFile.Exists) {
+                result.AddError("Method file does not exist.");
+            }
+        });
+        var msnMethodOpt = new Option<FileInfo>("--msn-method", "-mn") {
+            Description = "Molecular networking parameter file",
+            Required = true,
+        };
+        msnMethodOpt.Validators.Add(result => {
+            var file = result.GetValueOrDefault<FileInfo>();
+            if (file is null || !file.Exists) {
+                result.AddError("MSN parameter file does not exist.");
+            }
+        });
+        cmd.Options.Add(msnMethodOpt);
+        cmd.Options.Add(inputOpt);
+        cmd.Options.Add(outputOpt);
+        cmd.Options.Add(methodOpt);
+        cmd.Options.Add(projectOpt);
+        cmd.Options.Add(targetOpt);
+        cmd.SetAction(parseResult => {
+            try {
+                var inputFolder = parseResult.GetRequiredValue(inputOpt);
+                var outputFolder = parseResult.GetRequiredValue(outputOpt);
+                var methodFile = parseResult.GetRequiredValue(methodOpt);
+                var isProjectStore = parseResult.GetValue(projectOpt);
+                var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
+                return new LcmsProcess().RunWithMolecularNetworking(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, parseResult.GetRequiredValue(msnMethodOpt).FullName, isProjectStore, targetMz) == 0 ? 0 : 1;
+            }
+            catch (Exception ex) {
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Console.WriteLine(msg);
+                return 1;
+            }
+        });
+        root.Add(cmd);
+    }
+
+
     public static void SetLcimmsCommand(Command root) {
         var cmd = new Command("lcimms", "Run LC-IM-MS data processing");
         var inputOpt = new Option<FileSystemInfo>("--input", "-i") {
