@@ -57,25 +57,39 @@ namespace CompMs.App.SpectrumViewer.Model
         private string quickChainsText = string.Empty;
 
         // Lets the user type standard chain notation ("36:2", "18:0_18:2", "18:0/18:2", "O-18:1/16:0")
-        // instead of building the same thing by hand through ChainsType + the chain rows below. Uses
-        // BuildEtherParser so "O-"/"P-" alkyl/plasmalogen chains are recognized (its patterns are a
-        // strict superset of the plain-acyl ones, so non-ether input still parses the same as before).
+        // instead of building the same thing by hand through ChainsType + the chain rows below, and
+        // optionally prefix it with a class name ("PE 18:0_18:2", "EtherPE P-18:0/16:0") so the class
+        // doesn't need to be picked separately first - dispatched through the same FacadeLipidParser
+        // Create() below uses, keyed on the first whitespace-separated token (see
+        // FacadeLipidParser.Parse). Falls back to chain-only parsing against whatever LipidClass is
+        // already selected when there's no recognized class prefix (or none at all).
+        public void ApplyQuickChainsText() {
+            var text = (QuickChainsText ?? string.Empty).Trim();
+            if (text.IndexOf(' ') >= 0 && FacadeLipidParser.Default.Parse(text) is ILipid lipid) {
+                LipidClass = lipid.LipidClass;
+                ApplyChains(lipid.Chains);
+                return;
+            }
+            ApplyChains(ParseChainOnlyText(text));
+        }
+
         // TotalChainParser.Parse() itself is NOT anchored to the full string (each production
         // {Class}LipidParser wraps it in "^...$" - see LipidParsers.cs), so a stray leading/trailing
         // fragment (e.g. a typo, or an unsupported plasm prefix) can otherwise match a *substring* and
         // silently produce chains that don't reflect what was actually typed. Require a full match here.
-        public void ApplyQuickChainsText() {
-            var text = QuickChainsText ?? string.Empty;
+        // BuildEtherParser recognizes "O-"/"P-" alkyl/plasmalogen chains too (a strict superset of the
+        // plain-acyl patterns, so non-ether input still parses the same as before).
+        private ITotalChain ParseChainOnlyText(string text) {
             var parser = TotalChainParser.BuildEtherParser(ChainCount);
-            if (!Regex.IsMatch(text, $"^(?:{parser.Pattern})$")) {
-                throw new InvalidOperationException(
-                    $"Could not parse '{text}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
+            if (Regex.IsMatch(text, $"^(?:{parser.Pattern})$") && parser.Parse(text) is ITotalChain chains) {
+                return chains;
             }
-            var chains = parser.Parse(text);
-            if (chains is null) {
-                throw new InvalidOperationException(
-                    $"Could not parse '{text}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
-            }
+            throw new InvalidOperationException(
+                $"Could not parse '{text}' as \"<class> <chains>\" (e.g. \"PE 18:0_18:2\") or bare chain " +
+                "notation against the Lipid class above (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
+        }
+
+        private void ApplyChains(ITotalChain chains) {
             switch (chains) {
                 case PositionLevelChains p:
                     ChainsType = "PositionLevel";

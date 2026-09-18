@@ -23,10 +23,22 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
 
             Entries = Model.Entries.ToReadOnlyReactiveCollection(m => new LipidMsEntryViewModel(m)).AddTo(Disposables);
             Filter = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            MatchCurrentLipid = Model.ToReactivePropertySlimAsSynchronized(m => m.MatchCurrentLipid).AddTo(Disposables);
             FilteredEntries = new ObservableCollection<LipidMsEntryViewModel>();
+
+            PreviewLipidViewModel = new LipidSelectionViewModel(Model.PreviewLipidModel).AddTo(Disposables);
+            Adducts = Model.Adducts;
+            PreviewAdduct = Model.ToReactivePropertySlimAsSynchronized(m => m.PreviewAdduct).AddTo(Disposables);
+
+            // Two independent narrowings over the same list: free-text Filter, and (when
+            // MatchCurrentLipid is on) membership in Model.GeneratorCandidates, which the Model keeps
+            // in sync with the lipid class/adduct built on the left (see RefreshGeneratorCandidates).
             var refreshFilter = new[]
             {
                 Filter.ToUnit(),
+                MatchCurrentLipid.ToUnit(),
+                PreviewLipidViewModel.LipidClass.ToUnit(),
+                PreviewAdduct.ToUnit(),
                 Entries.ObserveAddChanged().ToUnit(),
                 Entries.ObserveRemoveChanged().ToUnit(),
                 Entries.ObserveResetChanged().ToUnit(),
@@ -34,17 +46,25 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
             refreshFilter.Subscribe(_ => {
                 FilteredEntries.Clear();
                 var keyword = Filter.Value ?? string.Empty;
-                foreach (var e in Entries.Where(e => keyword.Length == 0 || e.DisplayName.Value.IndexOf(keyword, System.StringComparison.OrdinalIgnoreCase) >= 0)) {
+                foreach (var e in Entries.Where(e =>
+                        (keyword.Length == 0 || e.DisplayName.Value.IndexOf(keyword, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        && (!MatchCurrentLipid.Value || Model.GeneratorCandidates.Contains(e.Model)))) {
                     FilteredEntries.Add(e);
                 }
             }).AddTo(Disposables);
 
             SelectedEntry = new ReactivePropertySlim<LipidMsEntryViewModel>().AddTo(Disposables);
             SelectedEntry.Subscribe(vm => Model.SelectedEntry = vm?.Model).AddTo(Disposables);
+            // Unlike before, the Model can now also set SelectedEntry itself (auto-picking a
+            // generator candidate when the built lipid/adduct changes), so this side has to mirror
+            // the Model back into the VM too, not just push VM selections down to it.
+            Model.ObserveProperty(m => m.SelectedEntry).Subscribe(m => {
+                var vm = Entries.FirstOrDefault(c => c.Model == m);
+                if (SelectedEntry.Value != vm) {
+                    SelectedEntry.Value = vm;
+                }
+            }).AddTo(Disposables);
 
-            PreviewLipidViewModel = new LipidSelectionViewModel(Model.PreviewLipidModel).AddTo(Disposables);
-            Adducts = Model.Adducts;
-            PreviewAdduct = Model.ToReactivePropertySlimAsSynchronized(m => m.PreviewAdduct).AddTo(Disposables);
             PreviewSpectrumViewModel = new SpectrumViewModel(Model.PreviewSpectrumModel).AddTo(Disposables);
             PreviewMessages = Model.ObserveProperty(m => m.LastPreviewMessages)
                 .Select(msgs => string.Join("\n", msgs))
@@ -69,6 +89,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
         public ReadOnlyReactiveCollection<LipidMsEntryViewModel> Entries { get; }
 
         public ReactivePropertySlim<string> Filter { get; }
+
+        public ReactivePropertySlim<bool> MatchCurrentLipid { get; }
 
         public ObservableCollection<LipidMsEntryViewModel> FilteredEntries { get; }
 

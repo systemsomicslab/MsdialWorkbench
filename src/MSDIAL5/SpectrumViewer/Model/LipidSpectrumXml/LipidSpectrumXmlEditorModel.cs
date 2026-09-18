@@ -23,8 +23,14 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
 
         public LipidSpectrumXmlEditorModel() {
             Entries = new ObservableCollection<LipidMsEntryModel>();
+            GeneratorCandidates = new ObservableCollection<LipidMsEntryModel>();
             PreviewSpectrumModel = new SpectrumModel("Preview");
             PreviewLipidModel = new LipidSelectionModel { ChainsType = "SubMolecularLevel" };
+            PreviewLipidModel.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(LipidSelectionModel.LipidClass)) {
+                    RefreshGeneratorCandidates();
+                }
+            };
             Adducts = new ObservableCollection<AdductIon>(DefaultAdductNames.Select(AdductIon.GetAdductIon));
             PreviewAdduct = Adducts[0];
             ConstantsFilePath = TryFindDefaultConstantsPath();
@@ -44,6 +50,10 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
 
         public ObservableCollection<LipidMsEntryModel> Entries { get; }
 
+        // The one entry currently being generated against and shown in the rule editor. Picking it
+        // by hand (text search) fills the builder in as a shortcut; conversely, building a lipid+
+        // adduct auto-picks the best-matching entry via GeneratorCandidates/RefreshGeneratorCandidates
+        // below, as long as MatchCurrentLipid is on and the current pick doesn't already match.
         public LipidMsEntryModel SelectedEntry {
             get => selectedEntry;
             set {
@@ -54,9 +64,6 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
         }
         private LipidMsEntryModel selectedEntry;
 
-        // The class/adduct to preview are already fully determined by which <LipidMS> entry is
-        // selected on the left; keep the preview lipid builder in sync so its class/adduct pickers
-        // don't become a second, independent (and easily inconsistent) source of truth.
         private void SyncPreviewTargetToSelectedEntry() {
             if (selectedEntry is null) {
                 return;
@@ -144,9 +151,75 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
 
         public AdductIon PreviewAdduct {
             get => previewAdduct;
-            set => SetProperty(ref previewAdduct, value);
+            set {
+                if (SetProperty(ref previewAdduct, value)) {
+                    RefreshGeneratorCandidates();
+                }
+            }
         }
         private AdductIon previewAdduct;
+
+        // Whether the entry list (right-hand panel) is narrowed down to entries whose class+adduct
+        // match the lipid currently being built, in addition to the free-text Filter. Turn it off to
+        // browse/search the full XML regardless of what's built above.
+        public bool MatchCurrentLipid {
+            get => matchCurrentLipid;
+            set {
+                if (SetProperty(ref matchCurrentLipid, value)) {
+                    RefreshGeneratorCandidates();
+                }
+            }
+        }
+        private bool matchCurrentLipid = true;
+
+        // Every <LipidMS> entry whose class resolves to the same LbmClass as the lipid currently
+        // built above, and whose adduct matches - i.e. every generator that could plausibly produce
+        // a spectrum for what's being previewed. Recomputed whenever the built lipid's class, the
+        // adduct, or MatchCurrentLipid changes.
+        public ObservableCollection<LipidMsEntryModel> GeneratorCandidates { get; }
+
+        private void RefreshGeneratorCandidates() {
+            GeneratorCandidates.Clear();
+            if (Document is null) {
+                return;
+            }
+            var lipidClass = PreviewLipidModel.LipidClass;
+            var adductName = PreviewAdduct?.AdductIonName;
+            foreach (var entry in Entries
+                .Where(e => TryResolveLbmClass(e.LipidClass, out var lbm) && lbm == lipidClass && e.Adduct == adductName)
+                .OrderBy(RankBySubtypeMatch)) {
+                GeneratorCandidates.Add(entry);
+            }
+            // Only steer the selection when the caller actually wants matches enforced, and only
+            // when the current pick isn't one - don't yank a deliberately-browsed selection away
+            // just because the lipid above changed while MatchCurrentLipid happens to be on.
+            if (MatchCurrentLipid && (SelectedEntry is null || !GeneratorCandidates.Contains(SelectedEntry))) {
+                SelectedEntry = GeneratorCandidates.FirstOrDefault();
+            }
+        }
+
+        // When more than one candidate shares a class+adduct (e.g. "EtherLPE"/"EtherLPE_P"/
+        // "EtherLPE_O"), default-pick the one whose "_P"/"_O" chain subtype matches a chain actually
+        // present in the built lipid, so the common case needs no manual pick; every candidate stays
+        // listed and selectable for whenever this guess is wrong.
+        private int RankBySubtypeMatch(LipidMsEntryModel entry) {
+            IChain[] chains;
+            try {
+                chains = PreviewLipidModel.CreateChains()?.GetDeterminedChains() ?? System.Array.Empty<IChain>();
+            }
+            catch {
+                chains = System.Array.Empty<IChain>();
+            }
+            var hasPlasmalogen = chains.OfType<AlkylChain>().Any(c => c.IsPlasmalogen);
+            var hasAlkylEther = chains.OfType<AlkylChain>().Any(c => !c.IsPlasmalogen);
+            if (entry.LipidClass.EndsWith("_P")) {
+                return hasPlasmalogen ? 0 : 2;
+            }
+            if (entry.LipidClass.EndsWith("_O")) {
+                return hasAlkylEther ? 0 : 2;
+            }
+            return 1;
+        }
 
         public SpectrumModel PreviewSpectrumModel { get; }
 
@@ -165,6 +238,7 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             foreach (var element in Document.Descendants("LipidMS")) {
                 Entries.Add(new LipidMsEntryModel(element));
             }
+            RefreshGeneratorCandidates();
         }
 
         public void Save() {
@@ -201,10 +275,11 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             }
             var constantsXml = File.ReadAllText(ConstantsFilePath);
             // The generated type is named after the XML's raw <LipidClass> text (see
-            // LipidSpectrumGeneratorTypeGenerator.Emit), which for entries like "EtherLPE_P" is
-            // NOT the same as lipid.LipidClass (an LbmClass, "EtherLPE") - so look it up by the
-            // selected entry's own name rather than derive it from the LbmClass enum, or every
-            // suffixed entry would resolve to the wrong (or a nonexistent) generator class.
+            // LipidSpectrumGeneratorTypeGenerator.Emit), which for entries like "EtherLPE_P" is NOT
+            // the same as lipid.LipidClass (an LbmClass, "EtherLPE") - so look it up by whichever
+            // entry is selected (RefreshGeneratorCandidates keeps it aligned with the built lipid+
+            // adduct) rather than derive it from the LbmClass enum, or every suffixed entry would
+            // resolve to the wrong (or a nonexistent) generator class.
             var generatorClassName = SelectedEntry?.LipidClass;
             var result = previewService.Generate(Document.ToString(), constantsXml, lipid, PreviewAdduct, generatorClassName);
 
