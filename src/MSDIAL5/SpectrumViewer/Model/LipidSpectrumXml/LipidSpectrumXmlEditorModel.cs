@@ -61,8 +61,20 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             if (selectedEntry is null) {
                 return;
             }
-            if (System.Enum.TryParse<LbmClass>(selectedEntry.LipidClass, out var lbmClass)) {
+            if (TryResolveLbmClass(selectedEntry.LipidClass, out var lbmClass)) {
                 PreviewLipidModel.LipidClass = lbmClass;
+            }
+            else {
+                // Don't silently leave whatever class the previous entry left behind - the
+                // generator XML's <LipidClass> key is a superset of LbmClass (e.g. "EtherLPE_P"/
+                // "EtherLPE_O" split one LbmClass's ion rules by chain subtype), so plenty of
+                // entries have no matching LbmClass at all. GeneratePreview() below no longer
+                // depends on this picker for which generator class to invoke - it uses the
+                // entry's raw name directly - but the picker still needs a real LbmClass to build
+                // an ILipid for the mass calculation, so flag it instead of guessing.
+                LastPreviewMessages = new[] {
+                    $"'{selectedEntry.LipidClass}' has no matching Lipid class (LbmClass); pick one above manually before generating."
+                };
             }
             var adduct = Adducts.FirstOrDefault(a => a.AdductIonName == selectedEntry.Adduct);
             if (adduct is null) {
@@ -79,6 +91,45 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             if (adduct != null) {
                 PreviewAdduct = adduct;
             }
+            if (TryResolveChainCount(selectedEntry.LipidClass, out var chainCount)) {
+                PreviewLipidModel.ChainCount = chainCount;
+            }
+        }
+
+        // <LipidDefinitions> records exactly how many chains each raw <LipidClass> name has (the
+        // same data LipidSpectrumGeneratorTypeGenerator.CollectDefinitions reads) - e.g. LPE/
+        // EtherLPE_P/EtherLPE_O are 1-chain, PE is 2-chain. Quick chain notation needs this to
+        // build a parser with the right capacity; left at the default (2), a 1-chain entry like
+        // "EtherLPE_P" only matches the combined SubMolecularLevel/TotalChain pattern, which can't
+        // represent a plasmalogen chain at all (TotalChain.ToString() always renders "O-", never
+        // "P-" - a separate, pre-existing CommonStandard issue).
+        private bool TryResolveChainCount(string rawClassName, out int chainCount) {
+            chainCount = 0;
+            if (Document is null || string.IsNullOrEmpty(rawClassName)) {
+                return false;
+            }
+            var def = Document.Descendants("LipidDefinition")
+                .FirstOrDefault(e => (string)e.Element("Name") == rawClassName);
+            return def != null && int.TryParse((string)def.Element("Chain"), out chainCount);
+        }
+
+        // The generator XML occasionally splits a single LbmClass's ion rules by chain subtype
+        // with a "_P" (plasmalogen)/"_O" (alkyl ether) suffix that isn't itself an LbmClass member
+        // (e.g. "EtherLPE_P"/"EtherLPE_O" both belong to LbmClass.EtherLPE). Only these two known,
+        // unambiguous suffixes are stripped here; the many other XML class names with no LbmClass
+        // equivalent (N-acyl amino acid/ganglioside conjugates, etc.) are left unresolved rather
+        // than guessed at.
+        private static bool TryResolveLbmClass(string rawClassName, out LbmClass lbmClass) {
+            if (System.Enum.TryParse(rawClassName, out lbmClass)) {
+                return true;
+            }
+            foreach (var suffix in new[] { "_P", "_O" }) {
+                if (rawClassName != null && rawClassName.EndsWith(suffix)
+                    && System.Enum.TryParse(rawClassName.Substring(0, rawClassName.Length - suffix.Length), out lbmClass)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public string ConstantsFilePath {
@@ -149,7 +200,13 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
                 return;
             }
             var constantsXml = File.ReadAllText(ConstantsFilePath);
-            var result = previewService.Generate(Document.ToString(), constantsXml, lipid, PreviewAdduct);
+            // The generated type is named after the XML's raw <LipidClass> text (see
+            // LipidSpectrumGeneratorTypeGenerator.Emit), which for entries like "EtherLPE_P" is
+            // NOT the same as lipid.LipidClass (an LbmClass, "EtherLPE") - so look it up by the
+            // selected entry's own name rather than derive it from the LbmClass enum, or every
+            // suffixed entry would resolve to the wrong (or a nonexistent) generator class.
+            var generatorClassName = SelectedEntry?.LipidClass;
+            var result = previewService.Generate(Document.ToString(), constantsXml, lipid, PreviewAdduct, generatorClassName);
 
             if (previewedReference != null) {
                 PreviewSpectrumModel.RemoveScan(previewedReference);

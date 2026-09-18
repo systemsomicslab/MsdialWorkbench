@@ -37,7 +37,13 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
     // is restarted. Re-opening or editing the XML always previews against the latest content.
     public class LipidSpectrumPreviewService
     {
-        public LipidSpectrumPreviewResult Generate(string lipidModelXml, string constantsXml, Lipid lipid, AdductIon adduct) {
+        // generatorClassName is the exact <LipidClass> text of the XML entry being previewed
+        // (e.g. "EtherLPE_P"), which is what the source generator actually names the emitted type
+        // after - it is not always the same as lipid.LipidClass (an LbmClass), so callers that
+        // know which entry they're previewing should always pass it explicitly. Falls back to
+        // lipid.LipidClass for callers with no entry context (e.g. previewing a hand-built lipid
+        // against a class whose rules aren't split by chain subtype).
+        public LipidSpectrumPreviewResult Generate(string lipidModelXml, string constantsXml, Lipid lipid, AdductIon adduct, string generatorClassName = null) {
             var messages = new List<string>();
             try {
                 var xmlText = new InMemoryAdditionalText("LipidModel.xml", lipidModelXml);
@@ -85,7 +91,8 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
                 }
 
                 var assembly = Assembly.Load(peStream.ToArray());
-                var typeName = $"CompMs.Common.Lipidomics.{lipid.LipidClass}CidLipidSpectrumGenerator";
+                var resolvedClassName = string.IsNullOrEmpty(generatorClassName) ? lipid.LipidClass.ToString() : generatorClassName;
+                var typeName = $"CompMs.Common.Lipidomics.{resolvedClassName}CidLipidSpectrumGenerator";
                 var type = assembly.GetType(typeName);
                 if (type is null) {
                     messages.Add($"Generated type not found (no rule for this class/category?): {typeName}");

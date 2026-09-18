@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CompMs.App.SpectrumViewer.Model
 {
@@ -55,17 +56,25 @@ namespace CompMs.App.SpectrumViewer.Model
         }
         private string quickChainsText = string.Empty;
 
-        // Lets the user type standard chain notation ("36:2", "18:0_18:2", "18:0/18:2") instead of
-        // building the same thing by hand through ChainsType + the chain rows below. Uses the same
-        // TotalChainParser the detailed SubMolecularLevel box already relies on, so it recognizes
-        // exactly the formats production lipid parsers (e.g. PCLipidParser) accept, and fills in
-        // ChainsType/Chains/ChainsStr from whichever level the text turned out to be.
+        // Lets the user type standard chain notation ("36:2", "18:0_18:2", "18:0/18:2", "O-18:1/16:0")
+        // instead of building the same thing by hand through ChainsType + the chain rows below. Uses
+        // BuildEtherParser so "O-"/"P-" alkyl/plasmalogen chains are recognized (its patterns are a
+        // strict superset of the plain-acyl ones, so non-ether input still parses the same as before).
+        // TotalChainParser.Parse() itself is NOT anchored to the full string (each production
+        // {Class}LipidParser wraps it in "^...$" - see LipidParsers.cs), so a stray leading/trailing
+        // fragment (e.g. a typo, or an unsupported plasm prefix) can otherwise match a *substring* and
+        // silently produce chains that don't reflect what was actually typed. Require a full match here.
         public void ApplyQuickChainsText() {
-            var parser = TotalChainParser.BuildParser(ChainCount);
-            var chains = parser.Parse(QuickChainsText ?? string.Empty);
+            var text = QuickChainsText ?? string.Empty;
+            var parser = TotalChainParser.BuildEtherParser(ChainCount);
+            if (!Regex.IsMatch(text, $"^(?:{parser.Pattern})$")) {
+                throw new InvalidOperationException(
+                    $"Could not parse '{text}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
+            }
+            var chains = parser.Parse(text);
             if (chains is null) {
                 throw new InvalidOperationException(
-                    $"Could not parse '{QuickChainsText}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\").");
+                    $"Could not parse '{text}' as chain notation (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
             }
             switch (chains) {
                 case PositionLevelChains p:
@@ -83,15 +92,33 @@ namespace CompMs.App.SpectrumViewer.Model
             }
         }
 
+        // Copies the double-bond/oxidation *positions* too, not just their counts: a plasmalogen
+        // ("P-") alkyl chain is only distinguished from a plain alkyl-ether ("O-") chain by having
+        // an explicit double bond at position 1 (see AlkylChain.IsPlasmalogen). Dropping positions
+        // here used to silently turn "P-18:0" into an undetermined "O-18:1" chain on Apply.
         private void ReplaceChains(IEnumerable<IChain> chains) {
             Chains.Clear();
             foreach (var chain in chains) {
-                Chains.Add(new ChainSelectionModel {
+                var chainModel = new ChainSelectionModel {
                     ChainType = chain is AlkylChain ? "Alkyl" : "Acyl",
                     CarbonCount = chain.CarbonCount,
                     DoubleBondCount = chain.DoubleBondCount,
                     OxidizedCount = chain.OxidizedCount,
-                });
+                };
+                foreach (var bond in chain.DoubleBond.Bonds) {
+                    chainModel.DoubleBonds.Add(new DoubleBondSetModel {
+                        Position = bond.Position,
+                        BondType = bond.State switch {
+                            DoubleBondState.E => "E",
+                            DoubleBondState.Z => "Z",
+                            _ => string.Empty,
+                        },
+                    });
+                }
+                foreach (var position in chain.Oxidized.Oxidises) {
+                    chainModel.Oxidises.Add(new OxidizedSetModel { Position = position });
+                }
+                Chains.Add(chainModel);
             }
         }
 
@@ -117,14 +144,38 @@ namespace CompMs.App.SpectrumViewer.Model
                     $"No chains are specified for {LipidClass} ({ChainsType}). " +
                     "Add at least one chain with the + button before generating.");
             }
-            var lipidStr = $"{LipidClass} {chainsText}";
-            if (!(FacadeLipidParser.Default.Parse(lipidStr) is ILipid lipid)) {
+            // Many LbmClass values (OxPC, Cer_NS, HexCer_NS, ASM, ...) are never a parser lookup key by
+            // themselves - a single parser Target ("PC", "Cer", "HexCer", "SM", ...) can emit several
+            // different LbmClass outputs depending on the chains (oxidized count, hydroxylation
+            // pattern, etc.), so "{LipidClass} ..." only resolves for classes whose name equals their
+            // own parser's Target. LipidClassDictionary's DisplayName column is exactly the base name
+            // LipidParsers.tt/the hand-written Cer/HexCer parsers key off (verified against
+            // LipidClassProperties.csv, e.g. "OxPC,PC" / "Cer_NS,Cer" / "HexCer_NS,HexCer" /
+            // "ASM,SM"), so try the class's own name first and fall back to that.
+            var lipid = TryParseLipid(LipidClass, chainsText);
+            if (lipid is null) {
+                var displayName = LipidClassDictionary.Default.LbmItems.TryGetValue(LipidClass, out var prop) ? prop.DisplayName : null;
+                if (!string.IsNullOrEmpty(displayName) && displayName != LipidClass.ToString()) {
+                    lipid = TryParseLipid(displayName, chainsText);
+                }
+            }
+            if (lipid is null) {
                 throw new InvalidOperationException(
-                    $"Could not resolve the exact mass for '{lipidStr}': either {LipidClass} has no " +
-                    "registered lipid parser, or the chains above are not in a supported format.");
+                    $"Could not resolve the exact mass for {LipidClass} {chainsText}: no registered " +
+                    "lipid parser recognizes this class, or the chains above are not in a supported format.");
+            }
+            if (lipid.LipidClass != LipidClass) {
+                throw new InvalidOperationException(
+                    $"Parsing {LipidClass} {chainsText} produced {lipid.LipidClass} instead. The chains " +
+                    "above don't carry whatever distinguishes this class (e.g. an Oxidized count for " +
+                    "Ox* classes, or a hydroxylation pattern for Cer/HexCer subclasses).");
             }
             Mass = lipid.Mass;
             return lipid;
+        }
+
+        private static ILipid TryParseLipid(object lookupClass, string chainsText) {
+            return FacadeLipidParser.Default.Parse($"{lookupClass} {chainsText}");
         }
 
         public ITotalChain CreateChains() {
