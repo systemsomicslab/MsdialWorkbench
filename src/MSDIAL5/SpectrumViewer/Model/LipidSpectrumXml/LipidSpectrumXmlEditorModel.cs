@@ -318,7 +318,8 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             // adduct) rather than derive it from the LbmClass enum, or every suffixed entry would
             // resolve to the wrong (or a nonexistent) generator class.
             var generatorClassName = SelectedEntry?.LipidClass;
-            var result = previewService.Generate(Document.ToString(), constantsXml, lipid, PreviewAdduct, generatorClassName);
+            var lipidModelXml = BuildFilteredLipidModelXml(generatorClassName ?? lipid.LipidClass.ToString());
+            var result = previewService.Generate(lipidModelXml, constantsXml, lipid, PreviewAdduct, generatorClassName);
 
             if (previewedReference != null) {
                 PreviewSpectrumModel.RemoveScan(previewedReference);
@@ -335,6 +336,29 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             }
 
             LastPreviewMessages = result.Messages;
+        }
+
+        // The full XML has 500+ <LipidMS> entries across ~230 classes; compiling the generator
+        // against all of it (as GeneratePreview() used to) means emitting and compiling C# for
+        // every one of those classes just to preview a single one, which is most of why Generate
+        // used to take several seconds. LipidSpectrumGeneratorTypeGenerator.Emit groups purely by
+        // <LipidClass> and emits one type per group, so dropping every group but the one actually
+        // being generated is equivalent to the full XML for that one type, and cuts what
+        // LipidSpectrumPreviewService has to compile down to ~1/230th.
+        private string BuildFilteredLipidModelXml(string className) {
+            if (Document is null) {
+                return null;
+            }
+            if (string.IsNullOrEmpty(className)) {
+                return Document.ToString();
+            }
+            var filtered = new XDocument(Document);
+            foreach (var lipidMS in filtered.Descendants("LipidMS")
+                    .Where(e => (string)e.Element("LipidClass") != className)
+                    .ToList()) {
+                lipidMS.Remove();
+            }
+            return filtered.ToString();
         }
 
         private static string TryFindDefaultConstantsPath() {
