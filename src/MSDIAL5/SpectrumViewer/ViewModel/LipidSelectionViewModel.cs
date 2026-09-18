@@ -24,6 +24,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             QuickChainsText = Model.ToReactivePropertySlimAsSynchronized(m => m.QuickChainsText).AddTo(Disposables);
             QuickChainsMessage = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             HasQuickChainsMessage = QuickChainsMessage.Select(m => !string.IsNullOrEmpty(m)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            QuickChainsRecognized = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            HasQuickChainsRecognized = QuickChainsRecognized.Select(m => !string.IsNullOrEmpty(m)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             AddChainCommand = new ReactiveCommand()
                 .WithSubscribe(Model.AddChain)
@@ -36,12 +38,28 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                     try {
                         Model.ApplyQuickChainsText();
                         QuickChainsMessage.Value = string.Empty;
+                        // Confirm what got recognized instead of just silently updating the class/
+                        // detailed-structure controls elsewhere - reuse CreateChains() (the same call
+                        // Create() below makes) so this always matches what Generate would actually
+                        // use, rather than reimplementing chain-to-text formatting here.
+                        var chainsText = SafeDescribeChains();
+                        QuickChainsRecognized.Value = $"Recognized: {Model.LipidClass} {chainsText} ({Model.ChainsType})";
                     }
                     catch (Exception ex) {
                         QuickChainsMessage.Value = ex.Message;
+                        QuickChainsRecognized.Value = string.Empty;
                     }
                 })
                 .AddTo(Disposables);
+        }
+
+        private string SafeDescribeChains() {
+            try {
+                return Model.CreateChains()?.ToString() ?? string.Empty;
+            }
+            catch {
+                return string.Empty;
+            }
         }
 
         public LipidSelectionModel Model { get; }
@@ -75,6 +93,10 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReactivePropertySlim<string> QuickChainsMessage { get; }
 
         public ReadOnlyReactivePropertySlim<bool> HasQuickChainsMessage { get; }
+
+        public ReactivePropertySlim<string> QuickChainsRecognized { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> HasQuickChainsRecognized { get; }
 
         public ReactiveCommand ApplyQuickChainsCommand { get; }
     }

@@ -75,6 +75,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
             SaveCommand = new ReactiveCommand().WithSubscribe(Model.Save).AddTo(Disposables);
             OpenXmlCommand = new ReactiveCommand().WithSubscribe(OpenXmlViaDialog).AddTo(Disposables);
             OpenConstantsCommand = new ReactiveCommand().WithSubscribe(OpenConstantsViaDialog).AddTo(Disposables);
+            AddEntryCommand = new ReactiveCommand().WithSubscribe(Model.AddEntry).AddTo(Disposables);
+            RemoveEntryCommand = new ReactiveCommand().WithSubscribe(() => Model.RemoveEntry(SelectedEntry.Value?.Model)).AddTo(Disposables);
             CloseCommand = new ReactiveCommand().AddTo(Disposables);
         }
 
@@ -113,6 +115,10 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
         public ReactiveCommand OpenXmlCommand { get; }
 
         public ReactiveCommand OpenConstantsCommand { get; }
+
+        public ReactiveCommand AddEntryCommand { get; }
+
+        public ReactiveCommand RemoveEntryCommand { get; }
 
         public ReactiveCommand CloseCommand { get; }
 

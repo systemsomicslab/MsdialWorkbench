@@ -1011,10 +1011,22 @@
                 <CheckBox Content="Match current lipid" Foreground="White"
                           IsChecked="{Binding MatchCurrentLipid.Value}"
                           Margin="4,0,4,4" Grid.Row="2"/>
-                <ListBox ItemsSource="{Binding FilteredEntries}"
-                         SelectedItem="{Binding SelectedEntry.Value}"
-                         DisplayMemberPath="DisplayName.Value"
-                         Grid.Row="3"/>
+                <Grid Grid.Row="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="4,0">
+                        <!-- New entries seed their class/adduct from what's built on the left - see
+                             LipidSpectrumXmlEditorModel.AddEntry - then get edited on the right. -->
+                        <Button Content="+ New" Command="{Binding AddEntryCommand, Mode=OneTime}" Margin="0,0,2,0"/>
+                        <Button Content="Delete" Command="{Binding RemoveEntryCommand, Mode=OneTime}"/>
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding FilteredEntries}"
+                             SelectedItem="{Binding SelectedEntry.Value}"
+                             DisplayMemberPath="DisplayName.Value"
+                             Grid.Row="1"/>
+                </Grid>
             </Grid>
 
             <GridSplitter Width="2" Grid.Column="2" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
@@ -1028,6 +1040,9 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Margin="4">
                     <TextBlock Text="{Binding DisplayName.Value}" Foreground="White" FontWeight="Bold"/>
+                    <ui:LabeledContent PrependLabel="LipidClass:" Foreground="White">
+                        <TextBox Text="{Binding LipidClass.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                    </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="LSILevel:" Foreground="White">
                         <TextBox Text="{Binding LSILevel.Value, UpdateSourceTrigger=PropertyChanged}"/>
                     </ui:LabeledContent>
@@ -1227,6 +1242,8 @@
             <TextBlock Text="e.g. 36:2, 18:0_18:2, 18:0/18:2, or &quot;PE 18:0_18:2&quot;" Foreground="Gray" FontSize="10"/>
             <TextBlock Text="{Binding QuickChainsMessage.Value}" Foreground="Orange" TextWrapping="Wrap"
                        Visibility="{Binding HasQuickChainsMessage.Value, Converter={StaticResource BooleanToVisibility}}"/>
+            <TextBlock Text="{Binding QuickChainsRecognized.Value}" Foreground="LightGreen" TextWrapping="Wrap"
+                       Visibility="{Binding HasQuickChainsRecognized.Value, Converter={StaticResource BooleanToVisibility}}"/>
 
             <!-- Lipid class + chain level: set less often than the quick input above, but still more
                  often than hand-building individual chains below. -->

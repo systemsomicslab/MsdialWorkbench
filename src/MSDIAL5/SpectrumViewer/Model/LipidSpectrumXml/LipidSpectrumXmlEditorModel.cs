@@ -241,6 +241,43 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             RefreshGeneratorCandidates();
         }
 
+        // Seeds the new entry's class/adduct from whatever is currently built on the left, since
+        // that's almost always why you're adding one (an existing class/adduct combo needs a rule,
+        // or a variant of one you're already looking at) - edit LipidClass/Adduct on the right
+        // afterwards for anything else (a brand new class, a typo'd default, etc.).
+        public void AddEntry() {
+            if (Document is null) {
+                LastPreviewMessages = new[] { "Load a lipid-model XML before adding a generator entry." };
+                return;
+            }
+            var container = Document.Descendants("LipidMSs").FirstOrDefault();
+            if (container is null) {
+                LastPreviewMessages = new[] { "Could not find a <LipidMSs> container in the loaded XML to add the new entry to." };
+                return;
+            }
+            var element = new XElement("LipidMS",
+                new XElement("LipidClass", PreviewLipidModel.LipidClass.ToString()),
+                new XElement("LSILevel", "MSL"),
+                new XElement("Adduct", PreviewAdduct?.AdductIonName ?? string.Empty));
+            container.Add(element);
+            var entry = new LipidMsEntryModel(element);
+            Entries.Add(entry);
+            RefreshGeneratorCandidates();
+            SelectedEntry = entry;
+        }
+
+        public void RemoveEntry(LipidMsEntryModel entry) {
+            if (entry is null) {
+                return;
+            }
+            entry.Element.Remove();
+            Entries.Remove(entry);
+            if (SelectedEntry == entry) {
+                SelectedEntry = null;
+            }
+            RefreshGeneratorCandidates();
+        }
+
         public void Save() {
             if (Document != null && !string.IsNullOrEmpty(FilePath)) {
                 Document.Save(FilePath);
