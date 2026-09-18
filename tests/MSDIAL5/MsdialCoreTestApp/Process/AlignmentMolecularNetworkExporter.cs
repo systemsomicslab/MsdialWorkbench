@@ -35,7 +35,8 @@ public static class AlignmentMolecularNetworkExporter
             PrecursorMz = spots[index].MassCenter,
             Spectrum = spectrum.Spectrum.Select(peak => new SpectrumPeak(peak.Mass, peak.Intensity)).ToList(),
         }).ToList();
-        var network = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, _ => { });
+        Directory.CreateDirectory(outputFolder);
+        var network = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, _ => { }, temporaryDirectory: outputFolder);
         // Equal or zero peak heights have no size range in the shared builder.
         foreach (var node in network.Root.nodes) {
             if (node.data.Size < 20 || node.data.Size > 120) {
@@ -46,7 +47,6 @@ public static class AlignmentMolecularNetworkExporter
         if (parameter.MnIsExportIonCorrelation && fileCount >= 6) {
             network.Root.edges.AddRange(MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode));
         }
-        Directory.CreateDirectory(outputFolder);
         network.ExportNodeTable(Path.Combine(outputFolder, "node.txt"));
         network.ExportEdgeTable(Path.Combine(outputFolder, "edge.txt"));
     }

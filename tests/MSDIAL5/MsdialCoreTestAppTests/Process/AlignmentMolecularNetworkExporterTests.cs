@@ -46,6 +46,29 @@ public class AlignmentMolecularNetworkExporterTests
     }
 
     [TestMethod]
+    public void Export_DenseNetworkSpillsCandidatesAndKeepsStableDegreeLimit() {
+        WithDirectory(folder => {
+            const int count = 365; // 66,430 candidates exceeds the external sort chunk size.
+            var spots = Enumerable.Range(0, count).Select(i => Spot(7 + i * 10)).ToArray();
+            var spectra = Enumerable.Range(0, count).Select(_ => Spectrum()).ToArray();
+            var nestedFolder = Path.Combine(folder, "msn");
+            Assert.IsFalse(Directory.Exists(nestedFolder));
+            AlignmentMolecularNetworkExporter.Export(spots, spectra, new MolecularSpectrumNetworkingBaseParameter {
+                MsmsSimilarityCalc = MsmsSimilarityCalc.Cosine,
+                MnSpectrumSimilarityCutOff = 50,
+                MinimumPeakMatch = 1,
+                MaxEdgeNumberPerNode = 1,
+            }, 2, nestedFolder);
+            var edges = File.ReadAllLines(Path.Combine(nestedFolder, "edge.txt")).Skip(1).ToArray();
+            Assert.AreEqual(0, Directory.GetDirectories(nestedFolder).Length, "Temporary sort directories must be removed.");
+            Assert.AreEqual(count / 2, edges.Length);
+            for (int i = 0; i < edges.Length; i++) {
+                StringAssert.StartsWith(edges[i], $"{spots[i * 2].MasterAlignmentID}\t{spots[i * 2 + 1].MasterAlignmentID}\t");
+            }
+        });
+    }
+
+    [TestMethod]
     public void Export_EmptyAlignmentProducesHeaders() {
         WithDirectory(folder => {
             AlignmentMolecularNetworkExporter.Export(Array.Empty<AlignmentSpotProperty>(), Array.Empty<MSDecResult>(), new MolecularSpectrumNetworkingBaseParameter(), 1, folder);

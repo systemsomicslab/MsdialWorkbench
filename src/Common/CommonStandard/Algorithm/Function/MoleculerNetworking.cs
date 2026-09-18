@@ -26,10 +26,14 @@ namespace CompMs.Common.Algorithm.Function
 
     public sealed class MoleculerNetworkingBase {
         public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            return GetMolecularNetworkInstance(spots, scans, query, report, temporaryDirectory: null);
+        }
+
+        public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report, string temporaryDirectory) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
             RefineScans(scans, query);
-            var edges = GenerateEdgesBySpectralSimilarity(peakScans, query, report);
+            var edges = GenerateEdgesBySpectralSimilarity(peakScans, query, report, temporaryDirectory);
             return new MolecularNetworkInstance(new RootObject { nodes = nodes, edges = edges });
         }
 
@@ -99,14 +103,12 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report, string temporaryDirectory) where T:IMoleculeProperty, IChromatogramPeak {
             var edges = GenerateEdges(peakScans, peakScans, query, report);
-            var counts = new Dictionary<int, int>();
-            foreach (var edge in edges) {
-                counts[edge.source] = counts[edge.target] = 0;
-            }
+            var counts = peakScans.Select(pair => pair.Peak.ID).Distinct().ToDictionary(id => id, _ => 0);
             var filteredEdges = new List<EdgeData>();
-            foreach (var edge in edges.OrderByDescending(edge => edge.score)) {
+            if (!(query.MaxEdgeNumberPerNode > 0)) return new List<Edge>(0);
+            foreach (var edge in ExternalEdgeSorter.Sort(edges, temporaryDirectory: temporaryDirectory)) {
                 if (counts[edge.source] < query.MaxEdgeNumberPerNode && counts[edge.target] < query.MaxEdgeNumberPerNode) {
                     ++counts[edge.source];
                     ++counts[edge.target];
@@ -126,47 +128,45 @@ namespace CompMs.Common.Algorithm.Function
 
         
 
-        private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var counter = 0;
-            var max = srcPeakScans.Count * dstPeakScans.Count;
-            var edges = new List<EdgeData>();
-            var checkedPeaks = new HashSet<int>[new[] { srcPeakScans, dstPeakScans }.SelectMany(pss => pss, (_, ps) => ps.Peak.ID).DefaultIfEmpty().Max() + 1];
+        private static IEnumerable<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            // Both callers compare either one target against all peaks or a list against itself.
+            // The upper triangle visits every unordered pair once without quadratic bookkeeping.
+            var samePeaks = ReferenceEquals(srcPeakScans, dstPeakScans);
+            var max = samePeaks ? (long)srcPeakScans.Count * (srcPeakScans.Count - 1) / 2
+                : (long)srcPeakScans.Count * dstPeakScans.Count;
+            long counter = 0;
+            var targetIds = samePeaks ? null : new HashSet<int>();
             for (int i = 0; i < srcPeakScans.Count; i++) {
                 var srcPeakScan = srcPeakScans[i];
-
+                var start = samePeaks ? i + 1 : 0;
                 if (srcPeakScan.Scan.Spectrum.Count <= 0) {
-                    counter += dstPeakScans.Count;
-                    report?.Invoke(counter / (double)max);
+                    counter += dstPeakScans.Count - start;
+                    if (max > 0) report?.Invoke(counter / (double)max);
                     continue;
                 }
-                var srcCheckedPeaks = checkedPeaks[srcPeakScan.Peak.ID] ?? (checkedPeaks[srcPeakScan.Peak.ID] = new HashSet<int>());
-
-                for (int j = 0; j < dstPeakScans.Count; j++) {
+                for (int j = start; j < dstPeakScans.Count; j++) {
                     PeakScanPair<T> dstPeakScan = dstPeakScans[j];
                     counter++;
                     report?.Invoke(counter / (double)max);
                     if (dstPeakScan.Scan.Spectrum.Count <= 0) continue;
 
-                    var dstCheckedPeaks = checkedPeaks[dstPeakScan.Peak.ID] ?? (checkedPeaks[dstPeakScan.Peak.ID] = new HashSet<int>());
-                    if (srcPeakScan.Peak.ID == dstPeakScan.Peak.ID || srcCheckedPeaks.Contains(dstPeakScan.Peak.ID)) {
+                    if (srcPeakScan.Peak.ID == dstPeakScan.Peak.ID || (targetIds != null && !targetIds.Add(dstPeakScan.Peak.ID))) {
                         continue;
                     }
-                    srcCheckedPeaks.Add(dstPeakScan.Peak.ID);
-                    dstCheckedPeaks.Add(srcPeakScan.Peak.ID);
 
                     double[] scoreitem = CalculateEdgeScore(srcPeakScan.Scan, dstPeakScan.Scan, query);
                     if (scoreitem is null) continue;
-                    edges.Add(new EdgeData
+                    yield return new EdgeData
                     {
                         score = Math.Round(scoreitem[0], 3),
                         matchpeakcount = scoreitem[1],
                         source = srcPeakScan.Peak.ID,
                         target = dstPeakScan.Peak.ID,
                         linecolor = "red",
-                    });
+                    };
                 }
             }
-            return edges;
+            report?.Invoke(1d);
         }
 
         private static double[] CalculateEdgeScore(IMSScanProperty prop1, IMSScanProperty prop2, MolecularNetworkingQuery query) {
