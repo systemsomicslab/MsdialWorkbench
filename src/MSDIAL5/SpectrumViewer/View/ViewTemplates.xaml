@@ -942,28 +942,15 @@
             </Style>
         </DataTemplate.Resources>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="260"/>
-                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="380" MinWidth="260"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Toolbar -->
-            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Margin="4">
-                <Button Content="Open lipid model XML..." Command="{Binding OpenXmlCommand, Mode=OneTime}" Margin="2"/>
-                <Button Content="Open Constants.xml..." Command="{Binding OpenConstantsCommand, Mode=OneTime}" Margin="2"/>
-                <TextBlock Text="{Binding ConstantsFilePath.Value, StringFormat=Constants: {0}}" Foreground="White" VerticalAlignment="Center" Margin="8,0"/>
-                <Button Content="Save" Command="{Binding SaveCommand, Mode=OneTime}" Margin="2"/>
-                <TextBlock Text="{Binding FilePath.Value}" Foreground="White" VerticalAlignment="Center" Margin="8,0"/>
-            </StackPanel>
-
             <!-- Column 1: build the lipid to preview, pick an Adduct, and Generate. -->
-            <Grid Grid.Row="1" Grid.Column="0">
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
@@ -980,10 +967,10 @@
                 </ScrollViewer>
             </Grid>
 
-            <GridSplitter Width="2" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+            <GridSplitter Width="2" Grid.Column="0" ResizeBehavior="CurrentAndNext" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
 
             <!-- Column 2: spectrum preview. -->
-            <Grid Grid.Row="1" Grid.Column="1">
+            <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
@@ -996,33 +983,44 @@
                          Grid.Row="1"/>
             </Grid>
 
-            <GridSplitter Width="2" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+            <GridSplitter Width="2" Grid.Column="1" ResizeBehavior="CurrentAndNext" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
 
-            <!-- Column 3: generator list - free-text search, and/or narrowed down to whatever matches
-                 the lipid+adduct built on the left (see LipidSpectrumXmlEditorModel.
-                 RefreshGeneratorCandidates); picking one here is also a shortcut that fills in Lipid
-                 class/Adduct on the left, in case that's more convenient than building it there. -->
-            <Grid Grid.Row="1" Grid.Column="2">
+            <!-- Column 3: which XML/Constants file is open, and the generator list - free-text
+                 search, and/or narrowed down to whatever matches the lipid+adduct built on the left
+                 (see LipidSpectrumXmlEditorModel.RefreshGeneratorCandidates); picking one here is
+                 also a shortcut that fills in Lipid class/Adduct on the left, in case that's more
+                 convenient than building it there. -->
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Margin="4">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Open XML..." Command="{Binding OpenXmlCommand, Mode=OneTime}" Margin="0,0,2,0"/>
+                        <Button Content="Open Constants..." Command="{Binding OpenConstantsCommand, Mode=OneTime}" Margin="0,0,2,0"/>
+                        <Button Content="Save" Command="{Binding SaveCommand, Mode=OneTime}"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding FilePath.Value}" Foreground="White" TextWrapping="Wrap" FontSize="10"/>
+                    <TextBlock Text="{Binding ConstantsFilePath.Value, StringFormat=Constants: {0}}" Foreground="Gray" TextWrapping="Wrap" FontSize="10"/>
+                </StackPanel>
                 <TextBox Text="{Binding Filter.Value, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="4" Grid.Row="0"/>
+                         Margin="4" Grid.Row="1"/>
                 <CheckBox Content="Match current lipid" Foreground="White"
                           IsChecked="{Binding MatchCurrentLipid.Value}"
-                          Margin="4,0,4,4" Grid.Row="1"/>
+                          Margin="4,0,4,4" Grid.Row="2"/>
                 <ListBox ItemsSource="{Binding FilteredEntries}"
                          SelectedItem="{Binding SelectedEntry.Value}"
                          DisplayMemberPath="DisplayName.Value"
-                         Grid.Row="2"/>
+                         Grid.Row="3"/>
             </Grid>
 
-            <GridSplitter Width="2" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
+            <GridSplitter Width="2" Grid.Column="2" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
 
             <!-- Column 4: the selected generator's spectrum-generation rules. -->
-            <Grid Grid.Row="1" Grid.Column="3"
+            <Grid Grid.Column="3"
                   DataContext="{Binding SelectedEntry.Value}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -1215,20 +1213,9 @@
             </Style>
         </DataTemplate.Resources>
         <StackPanel Margin="4">
-            <!-- Previewing: the lipid to generate a spectrum for. Set it directly here (or via the
-                 quick notation box below, which can set the class too), or pick an entry from the
-                 generator list as a shortcut - either way, that list narrows down to (and lets you
-                 override) which <LipidMS> rule set actually gets used. -->
-            <TextBlock Text="Previewing" Style="{StaticResource SectionHeader}" Margin="0,0,0,3"/>
-            <ui:LabeledContent PrependLabel="Lipid class:" Foreground="White">
-                <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
-                          SelectedItem="{Binding LipidClass.Value}"/>
-            </ui:LabeledContent>
-
-            <!-- Quick input: fast path for the common case. Typed as standard chain notation against
-                 the class above ("36:2"), or as "<class> <chains>" ("PE 18:0_18:2") to set the class
-                 in the same step. -->
-            <TextBlock Text="Quick chain notation" Style="{StaticResource SectionHeader}"/>
+            <!-- Quick input: fast path for the common case, and the thing typed most often - kept at
+                 the very top. Typed as standard chain notation against the class below ("36:2"), or
+                 as "<class> <chains>" ("PE 18:0_18:2") to set the class in the same step. -->
             <StackPanel Orientation="Horizontal">
                 <TextBox Text="{Binding QuickChainsText.Value, UpdateSourceTrigger=PropertyChanged}" Width="120">
                     <TextBox.InputBindings>
@@ -1241,10 +1228,29 @@
             <TextBlock Text="{Binding QuickChainsMessage.Value}" Foreground="Orange" TextWrapping="Wrap"
                        Visibility="{Binding HasQuickChainsMessage.Value, Converter={StaticResource BooleanToVisibility}}"/>
 
-            <!-- Detailed structure: same result as above, built by hand chain-by-chain. -->
+            <!-- Lipid class + chain level: set less often than the quick input above, but still more
+                 often than hand-building individual chains below. -->
+            <TextBlock Text="Lipid class" Style="{StaticResource SectionHeader}"/>
+            <ui:LabeledContent PrependLabel="Class:" Foreground="White">
+                <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
+                          SelectedItem="{Binding LipidClass.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Chain level:" Foreground="White">
+                <ComboBox ItemsSource="{Binding ChainsTypes, Mode=OneTime}"
+                          SelectedItem="{Binding ChainsType.Value}"/>
+            </ui:LabeledContent>
+
+            <!-- Computed: never edited directly - see LipidSelectionModel.Create(). A result of the
+                 above rather than an input, but glanced at often enough (right after Generate) to
+                 stay up here instead of buried under the rarely-touched detailed structure below. -->
+            <TextBlock Text="Computed" Style="{StaticResource SectionHeader}"/>
+            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White">
+                <TextBox Text="{Binding Mass.Value, Mode=OneWay}" IsReadOnly="True" Background="#FF303030"/>
+            </ui:LabeledContent>
+
+            <!-- Detailed structure: same result as the quick input above, built by hand chain-by-
+                 chain - the least frequently touched path, so it goes last. -->
             <TextBlock Text="Detailed structure" Style="{StaticResource SectionHeader}"/>
-            <ComboBox ItemsSource="{Binding ChainsTypes, Mode=OneTime}"
-                      SelectedItem="{Binding ChainsType.Value}"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="# of chain:" Foreground="White"
                            Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
@@ -1264,12 +1270,6 @@
             <ui:LabeledContent PrependLabel="chains string" Foreground="White"
                                Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}">
                 <TextBox Text="{Binding ChainsStr.Value}" Width="60"/>
-            </ui:LabeledContent>
-
-            <!-- Computed: never edited directly - see LipidSelectionModel.Create(). -->
-            <TextBlock Text="Computed" Style="{StaticResource SectionHeader}"/>
-            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White">
-                <TextBox Text="{Binding Mass.Value, Mode=OneWay}" IsReadOnly="True" Background="#FF303030"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
