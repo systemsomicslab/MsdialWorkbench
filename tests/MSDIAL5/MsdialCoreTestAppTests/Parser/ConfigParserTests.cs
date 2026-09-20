@@ -19,11 +19,119 @@ public sealed class ConfigParserTests
 
         var result = ConfigParser.ReadCommonParameter(parameter, "sample max / blank average", "7");
 
-        Assert.IsTrue(result);
+        Assert.IsTrue(result.IsApplied);
         Assert.AreEqual(7f, parameter.SampleMaxOverBlankAverage);
         Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
     }
  
+    [TestMethod]
+    public void ReadCommonParameter_AcceptsAMinimumPeakHeightWrittenAsARealNumber()
+    {
+        // THE REGRESSION. MinimumAmplitude is a double, ParameterBase:589 writes it back as one,
+        // and MS-DIAL Interactive writes it from a Python float, so every method file in the
+        // reanalysis workspace carried "Minimum peak height: 500.0". The arm parsed it with
+        // int.TryParse and returned true regardless, so the value was discarded, MinimumAmplitude
+        // kept its built-in 1000, and the run recorded 500 in its audit trail. Every threshold the
+        // contract's zero-threshold diagnostic produced was thrown away exactly this way.
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "500.0");
+
+        Assert.IsTrue(result.IsApplied);
+        Assert.AreEqual(500d, parameter.MinimumAmplitude);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_StillAcceptsAWholeNumberedThreshold()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "0").IsApplied);
+        Assert.AreEqual(0d, parameter.MinimumAmplitude, "the diagnostic run sets the threshold to zero");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAValueItCannotReadInsteadOfClaimingItApplied()
+    {
+        // The distinction the old bool could not make. An unusable value is not an unknown key:
+        // the key is spelled correctly, so nobody reading the method file would suspect it.
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "quite high");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.IsFalse(result.IsApplied);
+        Assert.IsFalse(result.IsUnknownKey);
+        Assert.AreEqual(1000d, parameter.MinimumAmplitude, "the built-in default, untouched");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_KeepsAnUnknownKeyDistinctFromAnUnusableValue()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "a parameter that does not exist", "7");
+
+        Assert.IsTrue(result.IsUnknownKey);
+        Assert.IsFalse(result.IsUnusableValue);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_RefusesACountThatNamesNoWholeNumber()
+    {
+        // "5" and "5.0" are the same count because the writers disagree about which they emit.
+        // "5.7" is not a count, and rounding it to 6 would hide that whoever wrote it believed
+        // this parameter could express something it cannot.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "smoothing level", "5.0").IsApplied);
+        Assert.AreEqual(5, parameter.SmoothingLevel);
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "smoothing level", "5.7").IsUnusableValue);
+        Assert.AreEqual(5, parameter.SmoothingLevel, "the refused value left the previous one alone");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsARealNumberTheSameWayOnEveryMachine()
+    {
+        // A method file is machine-written. It must mean the same thing where the decimal
+        // separator is a comma, so the readers parse with the invariant culture.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "mass slice width", "0.1").IsApplied);
+        Assert.AreEqual(0.1f, parameter.MassSliceWidth, 1e-7f);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsTheTwoKeysABadRenameHadMadeUnreachable()
+    {
+        // A `value` -> `valueLower` rename was applied inside the case labels themselves, so
+        // "Sigma window value" and "Replace true zero values with 1/2 of minimum peak height over
+        // all samples" could never be set from a method file however correctly they were spelled.
+        // Both are written into every exported method file by ParameterBase.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "sigma window value", "0.7").IsApplied);
+        Assert.AreEqual(0.7f, parameter.SigmaWindowValue, 1e-7f);
+
+        var replace = ConfigParser.ReadCommonParameter(
+            parameter, "replace true zero values with 1/2 of minimum peak height over all samples", "true");
+
+        Assert.IsTrue(replace.IsApplied);
+        Assert.IsTrue(parameter.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_TreatsAThreadCountOutsideTheUsableRangeAsUnusable()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var before = parameter.NumThreads;
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "number of threads", "0");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.AreEqual(before, parameter.NumThreads);
+    }
+
     [TestMethod]
     public void ReadForGcms_AcceptsEqualsSyntaxQuotesAndGuiFieldNames()
     {
