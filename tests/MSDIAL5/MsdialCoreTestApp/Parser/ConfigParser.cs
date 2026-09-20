@@ -12,6 +12,7 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using System.Globalization;
 using System.Text;
 using System.IO;
@@ -177,6 +178,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
         private sealed class MethodFileKeys
         {
+            private readonly List<string> _applied = new List<string>();
             private readonly List<string> _unrecognised = new List<string>();
             private readonly List<string> _unusable = new List<string>();
             private readonly List<string> _blank = new List<string>();
@@ -192,6 +194,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
                 else if (outcome.IsUnusableValue) {
                     _unusable.Add($"{method}: {value}");
+                }
+                else {
+                    _applied.Add(method);
                 }
             }
 
@@ -210,7 +215,68 @@ namespace CompMs.App.MsdialConsole.Parser
 
             public IReadOnlyList<string> UnusableValues => _unusable;
 
+            /// <summary>
+            /// Write what happened to every key beside the method file that was read.
+            /// </summary>
+            /// <remarks>
+            /// The Console said all of this on stdout and nowhere else. Stdout reaches a log the
+            /// caller keeps for as long as it keeps the job, and the project contract's retained
+            /// artifacts do not include it, so an audit reading a unit's workspace could see the
+            /// method file's declared settings and could not see which of them the run had used.
+            /// A parameter that had no effect is invisible in exactly the place it matters.
+            ///
+            /// It lands beside the method file because that is the directory the reader was
+            /// pointed at, which for a repository reanalysis is the unit's own output directory.
+            /// The method file's hash ties the record to the exact file that was read, so a
+            /// check comparing the two cannot be satisfied by a record left over from a different
+            /// method file.
+            ///
+            /// A failure to write it is reported and never stops the run: this describes the run,
+            /// it does not perform it.
+            /// </remarks>
+            private void WriteRecord(string filepath) {
+                try {
+                    var record = new Dictionary<string, object> {
+                        ["schema"] = "msdial-method-file-keys.v1",
+                        ["method_file"] = Path.GetFileName(filepath),
+                        ["method_file_sha256"] = FileDigest(filepath),
+                        ["read_at"] = DateTime.Now.ToString("o", CultureInfo.InvariantCulture),
+                        ["applied"] = _applied,
+                        ["unrecognised"] = _unrecognised,
+                        ["unusable"] = _unusable,
+                        ["blank"] = _blank,
+                    };
+                    var directory = Path.GetDirectoryName(Path.GetFullPath(filepath));
+                    if (string.IsNullOrEmpty(directory)) {
+                        return;
+                    }
+                    var target = Path.Combine(directory, Path.GetFileNameWithoutExtension(filepath) + ".keys.json");
+                    File.WriteAllText(target, JsonConvert.SerializeObject(record, Formatting.Indented), new UTF8Encoding(false));
+                }
+                catch (Exception error) {
+                    Console.WriteLine($"Method file key record could not be written: {error.Message}");
+                }
+            }
+
+            private static string FileDigest(string filepath) {
+                try {
+                    using (var stream = File.OpenRead(filepath))
+                    using (var sha = System.Security.Cryptography.SHA256.Create()) {
+                        var hash = sha.ComputeHash(stream);
+                        var text = new StringBuilder(hash.Length * 2);
+                        foreach (var octet in hash) {
+                            text.Append(octet.ToString("x2", CultureInfo.InvariantCulture));
+                        }
+                        return text.ToString();
+                    }
+                }
+                catch (Exception) {
+                    return string.Empty;
+                }
+            }
+
             public void Report(string filepath) {
+                WriteRecord(filepath);
                 var name = Path.GetFileName(filepath);
                 foreach (var key in _unrecognised) {
                     Console.WriteLine($"Method file '{name}': the parameter '{key}' was not recognised and had NO EFFECT. The built-in default was used instead.");

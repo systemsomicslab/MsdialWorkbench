@@ -3,7 +3,9 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 
@@ -130,6 +132,70 @@ public sealed class ConfigParserTests
 
         Assert.IsTrue(result.IsUnusableValue);
         Assert.AreEqual(before, parameter.NumThreads);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
+    {
+        // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
+        // keeps for as long as it keeps the job, and the contract's retained artifacts do not
+        // include it, so an audit reading a unit's workspace could see the method file's declared
+        // settings and could not see which of them the run had used.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Minimum peak height: 500.0
+            Mass slice width: 0.1
+            Sigma window value: 0.7
+            A parameter that does not exist: 7
+            Smoothing level: 5.7
+            Msp file path:
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        var record = Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json");
+        Assert.IsTrue(File.Exists(record), "the key record must land beside the method file");
+        var parsed = JObject.Parse(File.ReadAllText(record));
+
+        Assert.AreEqual("msdial-method-file-keys.v1", (string?)parsed["schema"]);
+        Assert.AreEqual("method.txt", (string?)parsed["method_file"]);
+        Assert.AreEqual(64, ((string?)parsed["method_file_sha256"])!.Length, "sha256 of the file that was read");
+
+        var applied = parsed["applied"]!.Select(item => (string)item!).ToList();
+        var unrecognised = parsed["unrecognised"]!.Select(item => (string)item!).ToList();
+        var unusable = parsed["unusable"]!.Select(item => (string)item!).ToList();
+        var blank = parsed["blank"]!.Select(item => (string)item!).ToList();
+
+        CollectionAssert.Contains(applied, "Minimum peak height");
+        CollectionAssert.Contains(applied, "Mass slice width");
+        CollectionAssert.Contains(applied, "Sigma window value");
+        CollectionAssert.Contains(unrecognised, "A parameter that does not exist");
+        CollectionAssert.Contains(unusable, "Smoothing level: 5.7");
+        CollectionAssert.Contains(blank, "Msp file path");
+    }
+
+    [TestMethod]
+    public void ReadForLcms_KeyRecordSeparatesAnUnusableValueFromAnUnknownKey()
+    {
+        // The two findings the old bool could not tell apart, now readable from the workspace.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Minimum peak height: quite high
+            Nonexistent parameter: 1
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        var parsed = JObject.Parse(
+            File.ReadAllText(Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json")));
+
+        CollectionAssert.Contains(parsed["unusable"]!.Select(i => (string)i!).ToList(), "Minimum peak height: quite high");
+        CollectionAssert.Contains(parsed["unrecognised"]!.Select(i => (string)i!).ToList(), "Nonexistent parameter");
+        CollectionAssert.DoesNotContain(parsed["applied"]!.Select(i => (string)i!).ToList(), "Minimum peak height");
     }
 
     [TestMethod]
