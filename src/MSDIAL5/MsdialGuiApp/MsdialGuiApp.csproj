@@ -39,6 +39,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Properties.Settings and the ConfigurationErrorsException raised when user.config cannot be read. -->
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
 	<ItemGroup>
 		<None Remove="App.xaml" />
 		<None Remove="Resources\BinVestigate.ico" />
