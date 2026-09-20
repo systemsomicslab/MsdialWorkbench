@@ -1,8 +1,11 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 
@@ -18,11 +21,183 @@ public sealed class ConfigParserTests
 
         var result = ConfigParser.ReadCommonParameter(parameter, "sample max / blank average", "7");
 
-        Assert.IsTrue(result);
+        Assert.IsTrue(result.IsApplied);
         Assert.AreEqual(7f, parameter.SampleMaxOverBlankAverage);
         Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
     }
  
+    [TestMethod]
+    public void ReadCommonParameter_AcceptsAMinimumPeakHeightWrittenAsARealNumber()
+    {
+        // THE REGRESSION. MinimumAmplitude is a double, ParameterBase:589 writes it back as one,
+        // and MS-DIAL Interactive writes it from a Python float, so every method file in the
+        // reanalysis workspace carried "Minimum peak height: 500.0". The arm parsed it with
+        // int.TryParse and returned true regardless, so the value was discarded, MinimumAmplitude
+        // kept its built-in 1000, and the run recorded 500 in its audit trail. Every threshold the
+        // contract's zero-threshold diagnostic produced was thrown away exactly this way.
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "500.0");
+
+        Assert.IsTrue(result.IsApplied);
+        Assert.AreEqual(500d, parameter.MinimumAmplitude);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_StillAcceptsAWholeNumberedThreshold()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "0").IsApplied);
+        Assert.AreEqual(0d, parameter.MinimumAmplitude, "the diagnostic run sets the threshold to zero");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAValueItCannotReadInsteadOfClaimingItApplied()
+    {
+        // The distinction the old bool could not make. An unusable value is not an unknown key:
+        // the key is spelled correctly, so nobody reading the method file would suspect it.
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "minimum peak height", "quite high");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.IsFalse(result.IsApplied);
+        Assert.IsFalse(result.IsUnknownKey);
+        Assert.AreEqual(1000d, parameter.MinimumAmplitude, "the built-in default, untouched");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_KeepsAnUnknownKeyDistinctFromAnUnusableValue()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "a parameter that does not exist", "7");
+
+        Assert.IsTrue(result.IsUnknownKey);
+        Assert.IsFalse(result.IsUnusableValue);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_RefusesACountThatNamesNoWholeNumber()
+    {
+        // "5" and "5.0" are the same count because the writers disagree about which they emit.
+        // "5.7" is not a count, and rounding it to 6 would hide that whoever wrote it believed
+        // this parameter could express something it cannot.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "smoothing level", "5.0").IsApplied);
+        Assert.AreEqual(5, parameter.SmoothingLevel);
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "smoothing level", "5.7").IsUnusableValue);
+        Assert.AreEqual(5, parameter.SmoothingLevel, "the refused value left the previous one alone");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsARealNumberTheSameWayOnEveryMachine()
+    {
+        // A method file is machine-written. It must mean the same thing where the decimal
+        // separator is a comma, so the readers parse with the invariant culture.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "mass slice width", "0.1").IsApplied);
+        Assert.AreEqual(0.1f, parameter.MassSliceWidth, 1e-7f);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsTheTwoKeysABadRenameHadMadeUnreachable()
+    {
+        // A `value` -> `valueLower` rename was applied inside the case labels themselves, so
+        // "Sigma window value" and "Replace true zero values with 1/2 of minimum peak height over
+        // all samples" could never be set from a method file however correctly they were spelled.
+        // Both are written into every exported method file by ParameterBase.
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "sigma window value", "0.7").IsApplied);
+        Assert.AreEqual(0.7f, parameter.SigmaWindowValue, 1e-7f);
+
+        var replace = ConfigParser.ReadCommonParameter(
+            parameter, "replace true zero values with 1/2 of minimum peak height over all samples", "true");
+
+        Assert.IsTrue(replace.IsApplied);
+        Assert.IsTrue(parameter.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_TreatsAThreadCountOutsideTheUsableRangeAsUnusable()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var before = parameter.NumThreads;
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "number of threads", "0");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.AreEqual(before, parameter.NumThreads);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
+    {
+        // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
+        // keeps for as long as it keeps the job, and the contract's retained artifacts do not
+        // include it, so an audit reading a unit's workspace could see the method file's declared
+        // settings and could not see which of them the run had used.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Minimum peak height: 500.0
+            Mass slice width: 0.1
+            Sigma window value: 0.7
+            A parameter that does not exist: 7
+            Smoothing level: 5.7
+            Msp file path:
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        var record = Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json");
+        Assert.IsTrue(File.Exists(record), "the key record must land beside the method file");
+        var parsed = JObject.Parse(File.ReadAllText(record));
+
+        Assert.AreEqual("msdial-method-file-keys.v1", (string?)parsed["schema"]);
+        Assert.AreEqual("method.txt", (string?)parsed["method_file"]);
+        Assert.AreEqual(64, ((string?)parsed["method_file_sha256"])!.Length, "sha256 of the file that was read");
+
+        var applied = parsed["applied"]!.Select(item => (string)item!).ToList();
+        var unrecognised = parsed["unrecognised"]!.Select(item => (string)item!).ToList();
+        var unusable = parsed["unusable"]!.Select(item => (string)item!).ToList();
+        var blank = parsed["blank"]!.Select(item => (string)item!).ToList();
+
+        CollectionAssert.Contains(applied, "Minimum peak height");
+        CollectionAssert.Contains(applied, "Mass slice width");
+        CollectionAssert.Contains(applied, "Sigma window value");
+        CollectionAssert.Contains(unrecognised, "A parameter that does not exist");
+        CollectionAssert.Contains(unusable, "Smoothing level: 5.7");
+        CollectionAssert.Contains(blank, "Msp file path");
+    }
+
+    [TestMethod]
+    public void ReadForLcms_KeyRecordSeparatesAnUnusableValueFromAnUnknownKey()
+    {
+        // The two findings the old bool could not tell apart, now readable from the workspace.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Minimum peak height: quite high
+            Nonexistent parameter: 1
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        var parsed = JObject.Parse(
+            File.ReadAllText(Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json")));
+
+        CollectionAssert.Contains(parsed["unusable"]!.Select(i => (string)i!).ToList(), "Minimum peak height: quite high");
+        CollectionAssert.Contains(parsed["unrecognised"]!.Select(i => (string)i!).ToList(), "Nonexistent parameter");
+        CollectionAssert.DoesNotContain(parsed["applied"]!.Select(i => (string)i!).ToList(), "Minimum peak height");
+    }
+
     [TestMethod]
     public void ReadForGcms_AcceptsEqualsSyntaxQuotesAndGuiFieldNames()
     {
@@ -104,6 +279,176 @@ public sealed class ConfigParserTests
         Assert.IsNull(parsed[1].TargetOmics);
         Assert.AreEqual(0.05F, parsed[0].SearchParameter.Ms2Tolerance, 0.0001F);
         Assert.AreEqual(0.25F, parsed[1].SearchParameter.Ms2Tolerance, 0.0001F);
+    }
+
+    /// <summary>
+    /// A run with no GUI can still say whether a library's spectra were acquired or computed.
+    /// </summary>
+    /// <remarks>
+    /// The GUI asks this through the database-kind dropdown. The reanalysis pipeline never opens
+    /// one, so without this the Console could only ever build DataBaseSource.Msp and an in-silico
+    /// library -- NEIMS, CFM-ID, ICEBERG -- would be published as a reference-spectrum match.
+    /// </remarks>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_ReadsTheLibraryKind()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\n" +
+            $"acquired\t{msp}\tacquired\n" +
+            $"computed\t{msp}\tpredicted\n" +
+            $"silent\t{msp}\t\n");
+        var method = directory.CreateFile(
+            "method.txt",
+            $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(3, parsed.Count);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[1].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[2].DataBaseSource,
+            "silence means acquired, so an existing settings file runs unchanged");
+    }
+
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_AcceptsTheSpellingsPeopleWillActuallyType()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tspectra_source\n" +
+            $"a\t{msp}\tin silico\n" +
+            $"b\t{msp}\tIn-Silico\n" +
+            $"c\t{msp}\tGenerated\n" +
+            $"d\t{msp}\tExperimental\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[0].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[1].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.PredictedMsp, parsed[2].DataBaseSource);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[3].DataBaseSource);
+    }
+
+    /// <summary>
+    /// A typo does not lose the run; it is reported and the library is treated as acquired.
+    /// </summary>
+    /// <remarks>
+    /// The alternative -- failing the run -- costs a whole reanalysis for a misspelt word, and the
+    /// alternative to THAT -- guessing "predicted" -- would publish an in-silico claim nobody made.
+    /// </remarks>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_TreatsAnUnknownLibraryKindAsAcquired()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\n" +
+            $"typo\t{msp}\tpredicated\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+
+        Assert.AreEqual(1, parsed.Count);
+        Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
+    }
+
+    /// <summary>
+    /// A METHOD-FILE KEY THAT HAD NO EFFECT SAYS SO.
+    /// </summary>
+    /// <remarks>
+    /// Every dispatcher used to discard the boolean saying whether a reader had claimed the line,
+    /// under a comment reading "// write something if needed". So a misspelt key, a key from a newer
+    /// MS-DIAL, or a key copied from another mode's template was read, matched nothing, and
+    /// vanished; the run used the built-in default and the analyst had every reason to believe their
+    /// value had been applied. For a reanalysis campaign that is a silently wrong result with a
+    /// method file that appears to document it correctly.
+    ///
+    /// Reported rather than fatal, and that was measured: run against MS-DIAL's own shipped
+    /// lipidomics template this finds twenty-seven such keys, so failing would reject every method
+    /// file in existence.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_ReportsAKeyThatHadNoEffect()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Mass slice width: 0.05" + "\n" +
+            "Mass slize width: 0.5" + "\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(0.05f, parameter.MassSliceWidth, 0.0001f, "the correctly spelled key applies");
+        StringAssert.Contains(report, "Mass slize width");
+        StringAssert.Contains(report, "NO EFFECT");
+        Assert.IsFalse(report.Contains("'Mass slice width'"), "a key that worked is not reported");
+    }
+
+    /// <summary>
+    /// A blank value is reported separately, because it is how a method file says "none".
+    /// </summary>
+    /// <remarks>
+    /// "Msp file path:" with nothing after it is how the templates say there is no MSP library, so
+    /// it is not an error. It is still named, because from the analyst's side it looks identical to
+    /// a value that failed to apply.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_SeparatesABlankValueFromAnUnrecognisedKey()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Msp file path:" + "\n" +
+            "Not a real setting: 3" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        StringAssert.Contains(report, "left blank");
+        StringAssert.Contains(report, "Msp file path");
+        StringAssert.Contains(report, "1 parameter(s) had no effect");
+    }
+
+    /// <summary>
+    /// A method file whose keys are all understood says nothing.
+    /// </summary>
+    /// <remarks>
+    /// The silence matters as much as the warning: a report that fires on every run is one nobody
+    /// reads, and the point of this is that the twenty-seven in the template become visible.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_IsSilentWhenEveryKeyApplies()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Mass slice width: 0.05" + "\n" +
+            "# a comment is not a key" + "\n" +
+            "Number of threads: 4" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    private static (MsdialLcmsParameter, string) ReadLcmsWithReport(string methodFile)
+    {
+        var original = Console.Out;
+        var captured = new StringWriter();
+        try {
+            Console.SetOut(captured);
+            var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+            return (parameter, captured.ToString());
+        }
+        finally {
+            Console.SetOut(original);
+        }
     }
 
     [TestMethod]

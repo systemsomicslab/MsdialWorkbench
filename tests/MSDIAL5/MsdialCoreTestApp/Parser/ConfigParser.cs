@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -11,6 +12,7 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using System.Globalization;
 using System.Text;
 using System.IO;
@@ -25,21 +27,291 @@ namespace CompMs.App.MsdialConsole.Parser
         private ConfigParser() { }
 
         #region // to get analysisparamOfMsdialGcms
+
+        /// <summary>
+        /// Collects the method-file keys a run did not understand, and says so before the run
+        /// starts.
+        /// </summary>
+        /// <remarks>
+        /// WHAT THIS ENDS. Every dispatcher below used to read a line, hand it to the parameter
+        /// readers, and DISCARD the boolean saying whether anything had matched -- under a comment
+        /// reading "// write something if needed". GC-MS, IMMS and LC-IM-MS discarded it twice, once
+        /// for the common reader and once for their own.
+        ///
+        /// So a misspelt key, a key from a newer MS-DIAL, a key copied from another mode's template:
+        /// all were read, matched nothing, and vanished. The run then used the built-in default and
+        /// said nothing, and the analyst had every reason to believe their value had been applied.
+        /// For a reanalysis campaign that is a silently wrong scientific result with a method file
+        /// that appears to document it correctly -- the author called it critical on 2026-09-16.
+        ///
+        /// REPORTED, NOT FATAL, and that is measured rather than assumed. Run against the shipped
+        /// lipidomics template on 2026-09-16, this found TWENTY-SEVEN keys with no effect --
+        /// including "Only report top hit for LBM-based annotation", "Sigma window value",
+        /// "Process option" and "Replace true zero values with 1/2 of minimum peak height over all
+        /// samples", every one of which an analyst would reasonably believe they had set. Failing
+        /// the run would therefore reject every method file in existence, including MS-DIAL's own
+        /// templates. Saying so on every run is what can be done today; making those keys work is a
+        /// separate decision, because settings that have been ignored for years would start taking
+        /// effect and change results.
+        ///
+        /// A BLANK VALUE IS NOT AN ERROR and is reported separately. "Msp file path:" with nothing
+        /// after it is how a method file says there is no MSP library, and it is how the templates
+        /// are written. But it is the same experience from the analyst's side when it was not
+        /// deliberate, so it is named rather than passed over in silence.
+        /// </remarks>
+        /// <summary>
+        /// What happened to one line of a method file.
+        /// </summary>
+        /// <remarks>
+        /// The readers used to answer this with a bool, and every numeric arm was written
+        ///     case "minimum peak height": if (int.TryParse(v, out int x)) param.MinimumAmplitude = x; return true;
+        /// with the `return true` OUTSIDE the `if`. A value the arm could not parse was therefore
+        /// reported as applied, the property kept its constructor default, and nothing said so.
+        /// That is not hypothetical: MinimumAmplitude is a double, ParameterBase writes it back as
+        /// one, and MS-DIAL Interactive writes it as a Python float, so every method file on this
+        /// machine carried "Minimum peak height: 500.0", int.TryParse rejected all of them, and
+        /// every run silently peak-picked at the built-in 1000 while the audit trail recorded 500.
+        ///
+        /// Three outcomes are needed because two of them used to be one. A key no reader claims is
+        /// a spelling mistake or a parameter this mode does not have. A value a reader claims and
+        /// cannot read is a format mismatch between the writer and the reader, and it is the more
+        /// dangerous of the two, because the key looks right to anyone reading the method file.
+        ///
+        /// It converts implicitly from bool so that the ~190 arms that genuinely answer
+        /// applied-or-unknown stay exactly as they were.
+        /// </remarks>
+        public readonly struct MethodKeyOutcome
+        {
+            private const byte UNKNOWN = 0;
+            private const byte APPLIED = 1;
+            private const byte UNUSABLE = 2;
+
+            private readonly byte _state;
+
+            private MethodKeyOutcome(byte state) {
+                _state = state;
+            }
+
+            public static MethodKeyOutcome Applied => new MethodKeyOutcome(APPLIED);
+            public static MethodKeyOutcome UnknownKey => new MethodKeyOutcome(UNKNOWN);
+            public static MethodKeyOutcome UnusableValue => new MethodKeyOutcome(UNUSABLE);
+
+            public static implicit operator MethodKeyOutcome(bool applied) {
+                return applied ? Applied : UnknownKey;
+            }
+
+            public bool IsApplied => _state == APPLIED;
+            public bool IsUnknownKey => _state == UNKNOWN;
+            public bool IsUnusableValue => _state == UNUSABLE;
+        }
+
+        /// <summary>
+        /// Read a real-valued parameter, or report that the value could not be read.
+        /// </summary>
+        /// <remarks>
+        /// Parsed with the invariant culture, because a method file is a machine-written file
+        /// format and not a document typed by a person: the same file must mean the same thing on
+        /// a machine whose decimal separator is a comma.
+        /// </remarks>
+        private static MethodKeyOutcome Number(string text, Action<double> assign) {
+            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double parsed)) {
+                return Assign(parsed, assign);
+            }
+            return MethodKeyOutcome.UnusableValue;
+        }
+
+        /// <summary>
+        /// Apply a parsed value, treating a value the parameter refuses as an unusable value.
+        /// </summary>
+        /// <remarks>
+        /// A few parameters accept only part of their type's range - a positive thread count, a
+        /// weight between zero and one - and the old arms dropped an out-of-range value as
+        /// silently as an unparseable one. Both are the same finding to whoever wrote the file:
+        /// the number in the method file is not the number the run used.
+        /// </remarks>
+        private static MethodKeyOutcome Assign<T>(T parsed, Action<T> assign) {
+            try {
+                assign(parsed);
+            }
+            catch (FormatException) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            catch (ArgumentOutOfRangeException) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            return MethodKeyOutcome.Applied;
+        }
+
+        /// <summary>
+        /// Read a whole-numbered parameter, accepting a value written as a real number when it
+        /// names a whole number.
+        /// </summary>
+        /// <remarks>
+        /// "5" and "5.0" are the same count and both are accepted, because the writers of these
+        /// files disagree about which they emit. "5.7" is not a count and is refused rather than
+        /// rounded: a smoothing level of 5.7 means whoever wrote it believed something this
+        /// parameter cannot express, and silently choosing 6 for them hides that.
+        /// </remarks>
+        private static MethodKeyOutcome Count(string text, Action<int> assign) {
+            if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsed)) {
+                return Assign(parsed, assign);
+            }
+            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double real)
+                && Math.Abs(real - Math.Round(real)) < 1e-9
+                && real >= int.MinValue && real <= int.MaxValue) {
+                return Assign((int)Math.Round(real), assign);
+            }
+            return MethodKeyOutcome.UnusableValue;
+        }
+
+        /// <summary>
+        /// Try the second reader only when the first did not recognise the key.
+        /// </summary>
+        /// <remarks>
+        /// This replaces `first(...) || second(...)`. The difference matters: a key the first
+        /// reader claims and whose value it cannot read must NOT be offered to the second reader,
+        /// or an unusable value comes back as an unknown key and is reported as a misspelling.
+        /// </remarks>
+        private static MethodKeyOutcome Either(MethodKeyOutcome first, Func<MethodKeyOutcome> second) {
+            return first.IsUnknownKey ? second() : first;
+        }
+
+        private sealed class MethodFileKeys
+        {
+            private readonly List<string> _applied = new List<string>();
+            private readonly List<string> _unrecognised = new List<string>();
+            private readonly List<string> _unusable = new List<string>();
+            private readonly List<string> _blank = new List<string>();
+
+            public void Read(string method, string value, Func<MethodKeyOutcome> apply) {
+                if (value.IsEmptyOrNull()) {
+                    _blank.Add(method);
+                    return;
+                }
+                var outcome = apply();
+                if (outcome.IsUnknownKey) {
+                    _unrecognised.Add(method);
+                }
+                else if (outcome.IsUnusableValue) {
+                    _unusable.Add($"{method}: {value}");
+                }
+                else {
+                    _applied.Add(method);
+                }
+            }
+
+            /// <summary>
+            /// True when the method file contained a key no reader claimed.
+            /// </summary>
+            public bool HasUnrecognised => _unrecognised.Count > 0;
+
+            public IReadOnlyList<string> Unrecognised => _unrecognised;
+
+            /// <summary>
+            /// True when a reader claimed a key and could not read its value. The parameter kept
+            /// its built-in default and the method file says otherwise.
+            /// </summary>
+            public bool HasUnusableValues => _unusable.Count > 0;
+
+            public IReadOnlyList<string> UnusableValues => _unusable;
+
+            /// <summary>
+            /// Write what happened to every key beside the method file that was read.
+            /// </summary>
+            /// <remarks>
+            /// The Console said all of this on stdout and nowhere else. Stdout reaches a log the
+            /// caller keeps for as long as it keeps the job, and the project contract's retained
+            /// artifacts do not include it, so an audit reading a unit's workspace could see the
+            /// method file's declared settings and could not see which of them the run had used.
+            /// A parameter that had no effect is invisible in exactly the place it matters.
+            ///
+            /// It lands beside the method file because that is the directory the reader was
+            /// pointed at, which for a repository reanalysis is the unit's own output directory.
+            /// The method file's hash ties the record to the exact file that was read, so a
+            /// check comparing the two cannot be satisfied by a record left over from a different
+            /// method file.
+            ///
+            /// A failure to write it is reported and never stops the run: this describes the run,
+            /// it does not perform it.
+            /// </remarks>
+            private void WriteRecord(string filepath) {
+                try {
+                    var record = new Dictionary<string, object> {
+                        ["schema"] = "msdial-method-file-keys.v1",
+                        ["method_file"] = Path.GetFileName(filepath),
+                        ["method_file_sha256"] = FileDigest(filepath),
+                        ["read_at"] = DateTime.Now.ToString("o", CultureInfo.InvariantCulture),
+                        ["applied"] = _applied,
+                        ["unrecognised"] = _unrecognised,
+                        ["unusable"] = _unusable,
+                        ["blank"] = _blank,
+                    };
+                    var directory = Path.GetDirectoryName(Path.GetFullPath(filepath));
+                    if (string.IsNullOrEmpty(directory)) {
+                        return;
+                    }
+                    var target = Path.Combine(directory, Path.GetFileNameWithoutExtension(filepath) + ".keys.json");
+                    File.WriteAllText(target, JsonConvert.SerializeObject(record, Formatting.Indented), new UTF8Encoding(false));
+                }
+                catch (Exception error) {
+                    Console.WriteLine($"Method file key record could not be written: {error.Message}");
+                }
+            }
+
+            private static string FileDigest(string filepath) {
+                try {
+                    using (var stream = File.OpenRead(filepath))
+                    using (var sha = System.Security.Cryptography.SHA256.Create()) {
+                        var hash = sha.ComputeHash(stream);
+                        var text = new StringBuilder(hash.Length * 2);
+                        foreach (var octet in hash) {
+                            text.Append(octet.ToString("x2", CultureInfo.InvariantCulture));
+                        }
+                        return text.ToString();
+                    }
+                }
+                catch (Exception) {
+                    return string.Empty;
+                }
+            }
+
+            public void Report(string filepath) {
+                WriteRecord(filepath);
+                var name = Path.GetFileName(filepath);
+                foreach (var key in _unrecognised) {
+                    Console.WriteLine($"Method file '{name}': the parameter '{key}' was not recognised and had NO EFFECT. The built-in default was used instead.");
+                }
+                if (_unrecognised.Count > 0) {
+                    Console.WriteLine($"Method file '{name}': {_unrecognised.Count} parameter(s) had no effect. Check the spelling against the template for this mode.");
+                }
+                foreach (var entry in _unusable) {
+                    Console.WriteLine($"Method file '{name}': the value of '{entry}' could not be read and had NO EFFECT. The built-in default was used instead.");
+                }
+                if (_unusable.Count > 0) {
+                    Console.WriteLine($"Method file '{name}': {_unusable.Count} parameter(s) named a value this reader cannot parse. The run did NOT use them.");
+                }
+                if (_blank.Count > 0) {
+                    Console.WriteLine($"Method file '{name}': left blank, so the default applies: {string.Join(", ", _blank)}");
+                }
+            }
+        }
+
         public static MsdialGcmsParameter ReadForGcms(string filepath)
         {
             var param = new MsdialGcmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 while (sr.Peek() > -1)
                 {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadGcmsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadGcmsSpecificParameter(param, method, value)));
                     }
                 }
             }
+            keys.Report(filepath);
             if (param.AccuracyType == AccuracyType.IsNominal) {
                 param.MassSliceWidth = 0.5F;
                 param.CentroidMs1Tolerance = 0.5F;
@@ -52,16 +324,16 @@ namespace CompMs.App.MsdialConsole.Parser
      
         public static MsdialLcmsParameter ReadForLcmsParameter(string filepath) {
             var param = new MsdialLcmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
@@ -277,8 +549,10 @@ namespace CompMs.App.MsdialConsole.Parser
                         Console.WriteLine($"Unknown target_omics '{targetOmicsText}' for MSP annotator '{annotatorId}'. The project Target omics setting will be used.");
                     }
                 }
-                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics));
+                var dataBaseSource = ReadLibraryKind(GetField(fields, headers, "librarykind", "librarytype", "spectrasource", "mspkind"), annotatorId);
+                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics, dataBaseSource));
                 ReportEffectiveAnnotatorSettings("MSP", annotatorId, mspFilePath, priority, searchParameter);
+                Console.WriteLine($"MSP annotator {annotatorId}: library kind {dataBaseSource}");
             }
             return settings;
         }
@@ -386,6 +660,45 @@ namespace CompMs.App.MsdialConsole.Parser
             SetBool(fields, headers, value => parameter.IsUseCcsForAnnotationFiltering = value, "useccsforfiltering", "useccsfiltering");
         }
 
+        /// <summary>
+        /// Whether a library's spectra were acquired or computed, as the settings file states it.
+        /// </summary>
+        /// <remarks>
+        /// The distinction MS-DIAL cannot make by looking: a generated spectrum parses and scores
+        /// exactly like an acquired one, and an MSP carries no field that says which. NEIMS for EI,
+        /// CFM-ID and ICEBERG for MS/MS all produce libraries that arrive looking experimental.
+        /// The answer reaches AnnotationEvidence.ForDatabaseMatch and decides whether a match
+        /// against this library is published as a reference-spectrum match or as in silico.
+        ///
+        /// Silence means acquired, which is what every library was assumed to be before the question
+        /// could be asked -- so an existing settings file runs unchanged. An unrecognised value is
+        /// reported and treated as silence rather than failing the run: a typo here should not lose
+        /// a whole reanalysis, and the run log says what was actually used.
+        /// </remarks>
+        private static DataBaseSource ReadLibraryKind(string text, string annotatorId) {
+            if (text.IsEmptyOrNull()) {
+                return DataBaseSource.Msp;
+            }
+            switch (NormalizeHeader(text)) {
+                case "predicted":
+                case "insilico":
+                case "computed":
+                case "generated":
+                case "predictedmsp":
+                    return DataBaseSource.PredictedMsp;
+                case "acquired":
+                case "experimental":
+                case "measured":
+                case "msp":
+                    return DataBaseSource.Msp;
+                default:
+                    Console.WriteLine(
+                        $"Unknown library_kind '{text}' for MSP annotator '{annotatorId}'. "
+                        + "Expected 'acquired' or 'predicted'; the library will be treated as acquired.");
+                    return DataBaseSource.Msp;
+            }
+        }
+
         private static string NormalizeHeader(string text) {
             return new string((text ?? string.Empty)
                 .Trim()
@@ -445,13 +758,14 @@ namespace CompMs.App.MsdialConsole.Parser
 
         public static MolecularSpectrumNetworkingBaseParameter ReadForMoleculerNetworkingParameter(string filepath) {
             var param = new MolecularSpectrumNetworkingBaseParameter();
+            // Not reported: this reader is given the SAME method file as the mode reader above and
+            // claims only the networking subset, so every other key in the file would be listed as
+            // unrecognised. The mode reader is where a key gets its verdict.
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadMoleculerNetworkingParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        ReadMoleculerNetworkingParameter(param, method, value);
                     }
                 }
             }
@@ -462,46 +776,48 @@ namespace CompMs.App.MsdialConsole.Parser
 
         public static MsdialDimsParameter ReadForDimsParameter(string filepath) {
             var param = new MsdialDimsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            // write something if needed
-                        }
+                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
         public static MsdialLcImMsParameter ReadForLcImMsParameter(string filepath) {
             var param = new MsdialLcImMsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadLcImMsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadLcImMsSpecificParameter(param, method, value)));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
         public static MsdialImmsParameter ReadForImmsParameter(string filepath) {
             var param = new MsdialImmsParameter();
+            var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        if (!ReadCommonParameter(param, method, value)) {
-                            ReadImmsSpecificParameter(param, method, value);
-                        }
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadImmsSpecificParameter(param, method, value)));
                     }
                 }
             }
+            keys.Report(filepath);
             return param;
         }
 
@@ -555,7 +871,7 @@ namespace CompMs.App.MsdialConsole.Parser
             return Path.GetFullPath(Path.Combine(methodDirectory, expanded));
         }
 
-        public static bool ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
+        public static MethodKeyOutcome ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
@@ -579,8 +895,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "alignment index type": if (valueLower == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
                 case "retention index tolerance for alignment":
                 case "retention index alignment tolerance":
-                    if (float.TryParse(valueLower, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align;
-                    return true;
+                    return Number(valueLower, v => param.RetentionIndexAlignmentTolerance = (float)v);
                 case "replace quant mass by user defined value":
                     if (valueLower == "true")
                         param.IsReplaceQuantmassByUserDefinedValue = true; return true;
@@ -591,21 +906,21 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        public static bool ReadLcImMsSpecificParameter(MsdialLcImMsParameter param, string method, string value) {
+        public static MethodKeyOutcome ReadLcImMsSpecificParameter(MsdialLcImMsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
             value = value.ToLower();
             switch (method) {
-                case "drift time begin": if (float.TryParse(value, out float dtBegin)) param.DriftTimeBegin = dtBegin; return true;
-                case "drift time end": if (float.TryParse(value, out float dtEnd)) param.DriftTimeEnd = dtEnd; return true;
-                case "accumulated rt ragne": if (float.TryParse(value, out float accumulatedRtRange)) param.AccumulatedRtRange = accumulatedRtRange; return true;
+                case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
+                case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
+                case "accumulated rt ragne": return Number(value, v => param.AccumulatedRtRange = (float)v);
                 case "accumulate ms2 spectra":
                     if (value == "true")
                         param.IsAccumulateMS2Spectra = true;
                     return true;
-                case "drift time alignment tolerance": if (float.TryParse(value, out float dtaligntol)) param.DriftTimeAlignmentTolerance = dtaligntol; return true;
-                case "drift time alignment factor": if (float.TryParse(value, out float dtalignfactor)) param.DriftTimeAlignmentFactor = dtalignfactor; return true;
+                case "drift time alignment tolerance": return Number(value, v => param.DriftTimeAlignmentTolerance = (float)v);
+                case "drift time alignment factor": return Number(value, v => param.DriftTimeAlignmentFactor = (float)v);
                 case "ion mobility type":
                     if (value == "tims" || value == "dtims" || value == "twims" || value == "ccs")
                         param.IonMobilityType = (IonMobilityType)Enum.Parse(typeof(IonMobilityType), value, true); return true;
@@ -613,16 +928,16 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        public static bool ReadImmsSpecificParameter(MsdialImmsParameter param, string method, string value) {
+        public static MethodKeyOutcome ReadImmsSpecificParameter(MsdialImmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
             value = value.ToLower();
             switch (method) {
-                case "drift time begin": if (float.TryParse(value, out float dtBegin)) param.DriftTimeBegin = dtBegin; return true;
-                case "drift time end": if (float.TryParse(value, out float dtEnd)) param.DriftTimeEnd = dtEnd; return true;
-                case "drift time alignment tolerance": if (float.TryParse(value, out float dtaligntol)) param.DriftTimeAlignmentTolerance = dtaligntol; return true;
-                case "drift time alignment factor": if (float.TryParse(value, out float dtalignfactor)) param.DriftTimeAlignmentFactor = dtalignfactor; return true;
+                case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
+                case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
+                case "drift time alignment tolerance": return Number(value, v => param.DriftTimeAlignmentTolerance = (float)v);
+                case "drift time alignment factor": return Number(value, v => param.DriftTimeAlignmentFactor = (float)v);
                 case "ion mobility type":
                     if (value == "tims" || value == "dtims" || value == "twims" || value == "ccs")
                         param.IonMobilityType = (IonMobilityType)Enum.Parse(typeof(IonMobilityType), value, true); return true;
@@ -630,30 +945,30 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        private static bool ReadMoleculerNetworkingParameter(MolecularSpectrumNetworkingBaseParameter param, string method, string value) {
+        private static MethodKeyOutcome ReadMoleculerNetworkingParameter(MolecularSpectrumNetworkingBaseParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
             var valueLower = value.ToLower();
             switch (method) {
                 case "mnrttolerance":
-                    if (float.TryParse(valueLower, out float mnrttolerance)) param.MnRtTolerance = mnrttolerance; return true;
+                    return Number(valueLower, v => param.MnRtTolerance = (float)v);
                 case "mnioncorrelationsimilaritycutoff":
-                    if (float.TryParse(valueLower, out float mnioncorrelationsimilaritycutoff)) param.MnIonCorrelationSimilarityCutOff = mnioncorrelationsimilaritycutoff; return true;
+                    return Number(valueLower, v => param.MnIonCorrelationSimilarityCutOff = (float)v);
                 case "mnspectrumsimilaritycutoff":
-                    if (float.TryParse(valueLower, out float mnspectrumsimilaritycutoff)) param.MnSpectrumSimilarityCutOff = mnspectrumsimilaritycutoff; return true;
+                    return Number(valueLower, v => param.MnSpectrumSimilarityCutOff = (float)v);
                 case "mnrelativeabundancecutoff":
-                    if (float.TryParse(valueLower, out float mnrelativeabundancecutoff)) param.MnRelativeAbundanceCutOff = mnrelativeabundancecutoff; return true;
+                    return Number(valueLower, v => param.MnRelativeAbundanceCutOff = (float)v);
                 case "mnmasstolerance":
-                    if (float.TryParse(valueLower, out float mnmasstolerance)) param.MnMassTolerance = mnmasstolerance; return true;
+                    return Number(valueLower, v => param.MnMassTolerance = (float)v);
                 case "minimumpeakmatch":
-                    if (float.TryParse(valueLower, out float minimumpeakmatch)) param.MinimumPeakMatch = minimumpeakmatch; return true;
+                    return Number(valueLower, v => param.MinimumPeakMatch = (float)v);
                 case "maxedgenumberpernode":
-                    if (float.TryParse(valueLower, out float maxedgenumberpernode)) param.MaxEdgeNumberPerNode = maxedgenumberpernode; return true;
+                    return Number(valueLower, v => param.MaxEdgeNumberPerNode = (float)v);
                 case "maxprecursordifference":
-                    if (float.TryParse(valueLower, out float maxprecursordifference)) param.MaxPrecursorDifference = maxprecursordifference; return true;
+                    return Number(valueLower, v => param.MaxPrecursorDifference = (float)v);
                 case "mnabsoluteabundancecutoff":
-                    if (float.TryParse(valueLower, out float mnabsoluteabundancecutoff)) param.MnAbsoluteAbundanceCutOff = mnabsoluteabundancecutoff; return true;
+                    return Number(valueLower, v => param.MnAbsoluteAbundanceCutOff = (float)v);
                 case "msmssimilaritycalc":
                     if (value == "Bonanza" || value == "ModDot" || value == "Cosine" || value == "All")
                         param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
@@ -663,7 +978,7 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        public static bool ReadCommonParameter(ParameterBase param, string method, string value) {
+        public static MethodKeyOutcome ReadCommonParameter(ParameterBase param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLower();
@@ -768,33 +1083,33 @@ namespace CompMs.App.MsdialConsole.Parser
                     return true;
 
                 //Data correction
-                case "retention time begin": if (float.TryParse(valueLower, out float rtbegin)) param.RetentionTimeBegin = rtbegin; return true;
-                case "retention time end": if (float.TryParse(valueLower, out float rtend)) param.RetentionTimeEnd = rtend; return true;
-                case "ms1 mass range begin": if (float.TryParse(valueLower, out float ms1begin)) param.MassRangeBegin = ms1begin; return true;
-                case "ms1 mass range end": if (float.TryParse(valueLower, out float ms1end)) param.MassRangeEnd = ms1end; return true;
-                case "ms2 mass range begin": if (float.TryParse(valueLower, out float ms2begin)) param.Ms2MassRangeBegin = ms2begin; return true;
-                case "ms2 mass range end": if (float.TryParse(valueLower, out float ms2end)) param.Ms2MassRangeEnd = ms2end; return true;
+                case "retention time begin": return Number(valueLower, v => param.RetentionTimeBegin = (float)v);
+                case "retention time end": return Number(valueLower, v => param.RetentionTimeEnd = (float)v);
+                case "ms1 mass range begin": return Number(valueLower, v => param.MassRangeBegin = (float)v);
+                case "ms1 mass range end": return Number(valueLower, v => param.MassRangeEnd = (float)v);
+                case "ms2 mass range begin": return Number(valueLower, v => param.Ms2MassRangeBegin = (float)v);
+                case "ms2 mass range end": return Number(valueLower, v => param.Ms2MassRangeEnd = (float)v);
                 case "accuracy type":
                     if (valueLower == "isnominal" || valueLower == "isaccurate")
                         param.AccuracyType = (AccuracyType)Enum.Parse(typeof(AccuracyType), valueLower, true);
                     return true;
 
                 //Centroid parameters
-                case "ms1 tolerance for centroid": if (float.TryParse(valueLower, out float centMs1Tol)) param.CentroidMs1Tolerance = centMs1Tol; return true;
-                case "ms2 tolerance for centroid": if (float.TryParse(valueLower, out float centMs2Tol)) param.CentroidMs2Tolerance = centMs2Tol; return true;
+                case "ms1 tolerance for centroid": return Number(valueLower, v => param.CentroidMs1Tolerance = (float)v);
+                case "ms2 tolerance for centroid": return Number(valueLower, v => param.CentroidMs2Tolerance = (float)v);
 
                 //Peak detection param
                 case "smoothing method":
                     if (Enum.TryParse(value, true, out SmoothingMethod smoothingMethod))
                         param.SmoothingMethod = smoothingMethod;
                     return true;
-                case "smoothing level": if (int.TryParse(valueLower, out int smoothlevel)) param.SmoothingLevel = smoothlevel; return true;
-                case "average peak width": if (int.TryParse(valueLower, out int avepeakwidth)) param.AveragePeakWidth = avepeakwidth; return true;
-                case "minimum peak width": if (int.TryParse(valueLower, out int minpeakwidth)) param.MinimumDatapoints = minpeakwidth; return true;
-                case "minimum peak height": if (int.TryParse(valueLower, out int minpeakheight)) param.MinimumAmplitude = minpeakheight; return true;
-                case "mass slice width": if (float.TryParse(valueLower, out float massSliceWidth)) param.MassSliceWidth = massSliceWidth; return true;
-                case "mass accuracy": if (float.TryParse(valueLower, out float ms1accuracy)) param.CentroidMs1Tolerance = ms1accuracy; return true;
-                case "max charge number": if (int.TryParse(valueLower, out int maxchargenum)) param.MaxChargeNumber = maxchargenum; return true;
+                case "smoothing level": return Count(valueLower, v => param.SmoothingLevel = v);
+                case "average peak width": return Count(valueLower, v => param.AveragePeakWidth = v);
+                case "minimum peak width": return Count(valueLower, v => param.MinimumDatapoints = v);
+                case "minimum peak height": return Count(valueLower, v => param.MinimumAmplitude = v);
+                case "mass slice width": return Number(valueLower, v => param.MassSliceWidth = (float)v);
+                case "mass accuracy": return Number(valueLower, v => param.CentroidMs1Tolerance = (float)v);
+                case "max charge number": return Count(valueLower, v => param.MaxChargeNumber = v);
                 case "searched adduct ions": 
                     if (!value.IsEmptyOrNull()) {
                         param.SearchedAdductIons = new List<AdductIon>();
@@ -810,52 +1125,46 @@ namespace CompMs.App.MsdialConsole.Parser
 
 
                 //Deconvolution
-                case "sigma window valueLower": if (float.TryParse(valueLower, out float sigmaWindow)) param.SigmaWindowValue = sigmaWindow; return true;
-                case "amplitude cut off": if (float.TryParse(valueLower, out float ms2ampthreshold)) param.ChromDecBaseParam.AmplitudeCutoff = ms2ampthreshold; return true;
-                case "relative amplitude cut off": if (float.TryParse(valueLower, out float ms2relativeampthreshold)) param.ChromDecBaseParam.RelativeAmplitudeCutoff = ms2relativeampthreshold; return true;
-                case "keep isotope range": if (float.TryParse(valueLower, out float keepisotoperange)) param.KeptIsotopeRange = keepisotoperange; return true;
+                case "sigma window value": return Number(valueLower, v => param.SigmaWindowValue = (float)v);
+                case "amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.AmplitudeCutoff = (float)v);
+                case "relative amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.RelativeAmplitudeCutoff = (float)v);
+                case "keep isotope range": return Number(valueLower, v => param.KeptIsotopeRange = (float)v);
                 case "exclude after precursor": if (valueLower == "false") param.RemoveAfterPrecursor = false; return true;
                 case "keep original precursor isotopes": if (valueLower == "false") param.KeepOriginalPrecursorIsotopes = false; return true;
-                case "target ce": if (double.TryParse(valueLower, out double targetce)) param.TargetCE = targetce; return true;
+                case "target ce": return Number(valueLower, v => param.TargetCE = v);
 
                 //Identification
-                case "rt tolerance for msp-based annotation": if (float.TryParse(valueLower, out float rttol_ident)) param.MspSearchParam.RtTolerance = rttol_ident; return true;
+                case "rt tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.RtTolerance = (float)v);
                 case "ri tolerance for msp-based annotation":
                 case "ri tolerance for identification":
                 case "retention index tolerance for identification":
-                    if (float.TryParse(valueLower, out float ritol_ident)) param.MspSearchParam.RiTolerance = ritol_ident;
-                    return true;
-                case "ccs tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ccstol_ident)) param.MspSearchParam.CcsTolerance = ccstol_ident; return true;
-                case "mass range begin for msp-based annotation": if (float.TryParse(valueLower, out float msbegin_ident)) param.MspSearchParam.MassRangeBegin = msbegin_ident; return true;
-                case "mass range end for msp-based annotation": if (float.TryParse(valueLower, out float msend_ident)) param.MspSearchParam.MassRangeEnd = msend_ident; return true;
-                case "relative amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float relamp_ident)) param.MspSearchParam.RelativeAmpCutoff = relamp_ident; return true;
-                case "absolute amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float absamp_ident)) param.MspSearchParam.AbsoluteAmpCutoff = absamp_ident; return true;
-                case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqdotproduct)) param.MspSearchParam.SquaredWeightedDotProductCutOff = sqdotproduct; return true;
-                case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqsimpleproduct)) param.MspSearchParam.SquaredSimpleDotProductCutOff = sqsimpleproduct; return true;
-                case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float sqrevdotproduct)) param.MspSearchParam.SquaredReverseDotProductCutOff = sqrevdotproduct; return true;
+                    return Number(valueLower, v => param.MspSearchParam.RiTolerance = (float)v);
+                case "ccs tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.CcsTolerance = (float)v);
+                case "mass range begin for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.MassRangeBegin = (float)v);
+                case "mass range end for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.MassRangeEnd = (float)v);
+                case "relative amplitude cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.RelativeAmpCutoff = (float)v);
+                case "absolute amplitude cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.AbsoluteAmpCutoff = (float)v);
+                case "weighted dot product cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.SquaredWeightedDotProductCutOff = (float)v);
+                case "simple dot product cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.SquaredSimpleDotProductCutOff = (float)v);
+                case "reverse dot product cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.SquaredReverseDotProductCutOff = (float)v);
                 case "weighted dot product cutoff":
                 case "square root of weighted dot product cutoff for msp-based annotation":
-                    if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct;
-                    return true;
+                    return Number(valueLower, v => param.MspSearchParam.WeightedDotProductCutOff = (float)v);
                 case "simple dot product cutoff":
                 case "square root of simple dot product cutoff for msp-based annotation":
-                    if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct;
-                    return true;
+                    return Number(valueLower, v => param.MspSearchParam.SimpleDotProductCutOff = (float)v);
                 case "reverse dot product cutoff":
                 case "square root of reverse dot product cutoff for msp-based annotation":
-                    if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct;
-                    return true;
+                    return Number(valueLower, v => param.MspSearchParam.ReverseDotProductCutOff = (float)v);
                 case "matched peaks percentage cutoff":
                 case "matched peaks percentage cutoff for msp-based annotation":
-                    if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent;
-                    return true;
+                    return Number(valueLower, v => param.MspSearchParam.MatchedPeaksPercentageCutOff = (float)v);
                 case "minimum spectrum match":
                 case "minimum spectrum match for msp-based annotation":
-                    if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch;
-                    return true;
-                case "total score cutoff for msp-based annotation": if (float.TryParse(valueLower, out float cutoff_ident)) param.MspSearchParam.TotalScoreCutoff = cutoff_ident; return true;
-                case "ms1 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms1tol_ident)) param.MspSearchParam.Ms1Tolerance = ms1tol_ident; return true;
-                case "ms2 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms2tol_ident)) param.MspSearchParam.Ms2Tolerance = ms2tol_ident; return true;
+                    return Number(valueLower, v => param.MspSearchParam.MinimumSpectrumMatch = (float)v);
+                case "total score cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.TotalScoreCutoff = (float)v);
+                case "ms1 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms1Tolerance = (float)v);
+                case "ms2 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms2Tolerance = (float)v);
                 case "use retention information for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use retention information for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "use ccs for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
@@ -867,24 +1176,24 @@ namespace CompMs.App.MsdialConsole.Parser
                     return true;
 
                 //Identification
-                case "rt tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float rttol_lbm_ident)) param.LbmSearchParam.RtTolerance = rttol_lbm_ident; return true;
-                case "ri tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ritol_lbm_ident)) param.LbmSearchParam.RiTolerance = ritol_lbm_ident; return true;
-                case "ccs tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ccstol_lbm_ident)) param.LbmSearchParam.CcsTolerance = ccstol_lbm_ident; return true;
-                case "mass range begin for lbm-based annotation": if (float.TryParse(valueLower, out float msbegin_lbm_ident)) param.LbmSearchParam.MassRangeBegin = msbegin_lbm_ident; return true;
-                case "mass range end for lbm-based annotation": if (float.TryParse(valueLower, out float msend_lbm_ident)) param.LbmSearchParam.MassRangeEnd = msend_lbm_ident; return true;
-                case "relative amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float relamp_lbm_ident)) param.LbmSearchParam.RelativeAmpCutoff = relamp_lbm_ident; return true;
-                case "absolute amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float absamp_lbm_ident)) param.LbmSearchParam.AbsoluteAmpCutoff = absamp_lbm_ident; return true;
-                case "weighted dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_sqdotproduct)) param.LbmSearchParam.SquaredWeightedDotProductCutOff = lbm_sqdotproduct; return true;
-                case "simple dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_sqsimpleproduct)) param.LbmSearchParam.SquaredSimpleDotProductCutOff = lbm_sqsimpleproduct; return true;
-                case "reverse dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_sqrevdotproduct)) param.LbmSearchParam.SquaredReverseDotProductCutOff = lbm_sqrevdotproduct; return true;
-                case "square root of weighted dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_dotproduct)) param.LbmSearchParam.WeightedDotProductCutOff = lbm_dotproduct; return true;
-                case "square root of simple dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_simpleproduct)) param.LbmSearchParam.SimpleDotProductCutOff = lbm_simpleproduct; return true;
-                case "square root of reverse dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_revdotproduct)) param.LbmSearchParam.ReverseDotProductCutOff = lbm_revdotproduct; return true;
-                case "matched peaks percentage cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_matchedpeakspercent)) param.LbmSearchParam.MatchedPeaksPercentageCutOff = lbm_matchedpeakspercent; return true;
-                case "minimum spectrum match for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_minpeakmatch)) param.LbmSearchParam.MinimumSpectrumMatch = lbm_minpeakmatch; return true;
-                case "total score cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float cutoff_lbm_ident)) param.LbmSearchParam.TotalScoreCutoff = cutoff_lbm_ident; return true;
-                case "ms1 tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ms1tol_lbm_ident)) param.LbmSearchParam.Ms1Tolerance = ms1tol_lbm_ident; return true;
-                case "ms2 tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ms2tol_lbm_ident)) param.LbmSearchParam.Ms2Tolerance = ms2tol_lbm_ident; return true;
+                case "rt tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RtTolerance = (float)v);
+                case "ri tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RiTolerance = (float)v);
+                case "ccs tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.CcsTolerance = (float)v);
+                case "mass range begin for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MassRangeBegin = (float)v);
+                case "mass range end for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MassRangeEnd = (float)v);
+                case "relative amplitude cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RelativeAmpCutoff = (float)v);
+                case "absolute amplitude cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.AbsoluteAmpCutoff = (float)v);
+                case "weighted dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SquaredWeightedDotProductCutOff = (float)v);
+                case "simple dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SquaredSimpleDotProductCutOff = (float)v);
+                case "reverse dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SquaredReverseDotProductCutOff = (float)v);
+                case "square root of weighted dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.WeightedDotProductCutOff = (float)v);
+                case "square root of simple dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SimpleDotProductCutOff = (float)v);
+                case "square root of reverse dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.ReverseDotProductCutOff = (float)v);
+                case "matched peaks percentage cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MatchedPeaksPercentageCutOff = (float)v);
+                case "minimum spectrum match for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MinimumSpectrumMatch = (float)v);
+                case "total score cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.TotalScoreCutoff = (float)v);
+                case "ms1 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms1Tolerance = (float)v);
+                case "ms2 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms2Tolerance = (float)v);
                 case "use retention information for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use retention information for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "use ccs for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
@@ -893,11 +1202,11 @@ namespace CompMs.App.MsdialConsole.Parser
 
 
                 //Post identification
-                case "rt tolerance for text-based annotation": if (float.TryParse(valueLower, out float rttol_textident)) param.TextDbSearchParam.RtTolerance = rttol_textident; return true;
-                case "ri tolerance for text-based annotation": if (float.TryParse(valueLower, out float ritol_textident)) param.TextDbSearchParam.RiTolerance = ritol_textident; return true;
-                case "ccs tolerance for text-based annotation": if (float.TryParse(valueLower, out float ccstol_textident)) param.TextDbSearchParam.CcsTolerance = ccstol_textident; return true;
-                case "total score cutoff for text-based annotation": if (float.TryParse(valueLower, out float cutoff_textident)) param.TextDbSearchParam.TotalScoreCutoff = cutoff_textident; return true;
-                case "accurate ms1 tolerance for text-based annotation": if (float.TryParse(valueLower, out float ms1tol_textident)) param.TextDbSearchParam.Ms1Tolerance = ms1tol_textident; return true;
+                case "rt tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.RtTolerance = (float)v);
+                case "ri tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.RiTolerance = (float)v);
+                case "ccs tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.CcsTolerance = (float)v);
+                case "total score cutoff for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.TotalScoreCutoff = (float)v);
+                case "accurate ms1 tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.Ms1Tolerance = (float)v);
                 case "use retention information for text-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use retention information for text-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "use ccs for text-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
@@ -905,40 +1214,39 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "only report top hit for text-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInTextDBSearch = bool.Parse(valueLower); return true;
 
                 //Alignment parameters setting
-                case "alignment reference file id": if (int.TryParse(valueLower, out int refID)) param.AlignmentReferenceFileID = refID; return true;
-                case "retention time tolerance for alignment": if (float.TryParse(valueLower, out float rttol_align)) param.RetentionTimeAlignmentTolerance = rttol_align; return true;
-                case "retention time factor for alignment": if (float.TryParse(valueLower, out float rtfactor_align)) param.RetentionTimeAlignmentFactor = rtfactor_align; return true;
-                case "spectrum similarity tolerance for alignment": if (float.TryParse(valueLower, out float specsim_align)) param.SpectrumSimilarityAlignmentTolerance = specsim_align; return true;
-                case "spectrum similarity factor for alignment": if (float.TryParse(valueLower, out float specsimfactor_align)) param.SpectrumSimilarityAlignmentFactor = specsimfactor_align; return true;
-                case "ms1 tolerance for alignment": if (float.TryParse(valueLower, out float ms1aligntol)) param.Ms1AlignmentTolerance = ms1aligntol; return true;
-                case "ms1 factor for alignment": if (float.TryParse(valueLower, out float ms1alignfactor)) param.Ms1AlignmentFactor = ms1alignfactor; return true;
+                case "alignment reference file id": return Count(valueLower, v => param.AlignmentReferenceFileID = v);
+                case "retention time tolerance for alignment": return Number(valueLower, v => param.RetentionTimeAlignmentTolerance = (float)v);
+                case "retention time factor for alignment": return Number(valueLower, v => param.RetentionTimeAlignmentFactor = (float)v);
+                case "spectrum similarity tolerance for alignment": return Number(valueLower, v => param.SpectrumSimilarityAlignmentTolerance = (float)v);
+                case "spectrum similarity factor for alignment": return Number(valueLower, v => param.SpectrumSimilarityAlignmentFactor = (float)v);
+                case "ms1 tolerance for alignment": return Number(valueLower, v => param.Ms1AlignmentTolerance = (float)v);
+                case "ms1 factor for alignment": return Number(valueLower, v => param.Ms1AlignmentFactor = (float)v);
                 case "force insert peaks in gap filling": if (valueLower == "true" || valueLower == "false") param.IsForceInsertForGapFilling = bool.Parse(valueLower); return true;
                 case "together with alignment": if (valueLower == "true" || valueLower == "false") param.TogetherWithAlignment = bool.Parse(valueLower); return true;
 
                 //Filtering
-                case "peak count filter": if (float.TryParse(valueLower, out float peakcountfilter)) param.PeakCountFilter = peakcountfilter; return true;
-                case "n percent detected in one group": if (float.TryParse(valueLower, out float nPercentDetectedInOneGroup)) param.NPercentDetectedInOneGroup = nPercentDetectedInOneGroup; return true;
+                case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);
+                case "n percent detected in one group": return Number(valueLower, v => param.NPercentDetectedInOneGroup = (float)v);
                 case "remove feature based on peak height fold-change": if (valueLower == "true" || valueLower == "false") param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = bool.Parse(valueLower); return true;
                 case "blank filtering":
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
                     return true;
                 case "sample max / blank average":
-                    if (float.TryParse(valueLower, out float sampleMaxOverBlankAverage)) {
-                        param.SampleMaxOverBlankAverage = sampleMaxOverBlankAverage;
-                        param.FoldChangeForBlankFiltering = sampleMaxOverBlankAverage;
-                    }
-                    return true;
-                case "sample average / blank average": if (float.TryParse(valueLower, out float sampleAverageOverBlankAverage)) param.SampleAverageOverBlankAverage = sampleAverageOverBlankAverage; return true;
+                    return Number(valueLower, v => {
+                        param.SampleMaxOverBlankAverage = (float)v;
+                        param.FoldChangeForBlankFiltering = (float)v;
+                    });
+                case "sample average / blank average": return Number(valueLower, v => param.SampleAverageOverBlankAverage = (float)v);
                 case "keep reference matched metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepRefMatchedMetaboliteFeatures = bool.Parse(valueLower); return true;
                 case "keep suggested metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepSuggestedMetaboliteFeatures = bool.Parse(valueLower); return true;
                 case "keep removable features and assigned tag for checking": if (valueLower == "true" || valueLower == "false") param.IsKeepRemovableFeaturesAndAssignedTagForChecking = bool.Parse(valueLower); return true;
-                case "replace true zero valueLowers with 1/2 of minimum peak height over all samples": if (valueLower == "true" || valueLower == "false") param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = bool.Parse(valueLower); return true;
+                case "replace true zero values with 1/2 of minimum peak height over all samples": if (valueLower == "true" || valueLower == "false") param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = bool.Parse(valueLower); return true;
 
                 //Retentiontime correction
                 case "execute rt correction": if (valueLower == "true" || valueLower == "false") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = bool.Parse(valueLower); return true;
                 case "rt correction with smoothing for rt diff": if (valueLower == "true" || valueLower == "false") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = bool.Parse(valueLower); return true;
-                case "user setting intercept": if (float.TryParse(valueLower, out float userintercept)) param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept = userintercept; return true;
+                case "user setting intercept": return Number(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept = (float)v);
                 case "rt diff calc method":
                     if (valueLower == "sampleminussampleaverage" || valueLower == "sampleminusreference")
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.RtDiffCalcMethod = (RtDiffCalcMethod)Enum.Parse(typeof(RtDiffCalcMethod), valueLower, true);
@@ -960,21 +1268,28 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode = peakSelectionMode;
                     return true;
                 case "rt correction peak selection rt weight":
-                    if (double.TryParse(valueLower, NumberStyles.Float, CultureInfo.InvariantCulture, out var rtWeight)
-                        && rtWeight >= 0d && rtWeight <= 1d)
-                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight = rtWeight;
-                    return true;
+                    return Number(valueLower, v => {
+                        if (v < 0d || v > 1d) throw new FormatException($"Peak selection RT weight must be between 0 and 1, not {v}.");
+                        param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight = v;
+                    });
 
                 //Isotope tracking setting
                 case "tracking isotope label": if (valueLower == "true" || valueLower == "false") param.TrackingIsotopeLabels = bool.Parse(valueLower); return true;
                 case "set fully labeled reference file": if (valueLower == "true" || valueLower == "false") param.SetFullyLabeledReferenceFile = bool.Parse(valueLower); return true;
-                case "non labeled reference id": if (int.TryParse(valueLower, out int nonlabeledrefid)) param.NonLabeledReferenceID = nonlabeledrefid; return true;
-                case "fully labeled reference id": if (int.TryParse(valueLower, out int fulllabeledrefid)) param.FullyLabeledReferenceID = fulllabeledrefid; return true;
+                case "non labeled reference id": return Count(valueLower, v => param.NonLabeledReferenceID = v);
+                case "fully labeled reference id": return Count(valueLower, v => param.FullyLabeledReferenceID = v);
                 // ParameterBase writes "Number of threads" into every exported method file,
                 // but nothing read it back, so a method file could describe a thread count
                 // it could never request and every Console run stayed on the default of 2.
-                case "number of threads": if (int.TryParse(valueLower, out int numthreads) && numthreads > 0) param.NumThreads = numthreads; return true;
-                case "isotope tracking dictionary id": if (int.TryParse(valueLower, out int isotopetrackdictionaryid)) param.IsotopeTrackingDictionary.SelectedID = isotopetrackdictionaryid; return true;
+                case "number of threads":
+                    // A thread count of zero or less is refused rather than ignored. ProcessRunner
+                    // now throws on a non-positive count, so accepting it here only moves the
+                    // failure to a place with less context about where the number came from.
+                    return Count(valueLower, v => {
+                        if (v <= 0) throw new FormatException($"Number of threads must be positive, not {v}.");
+                        param.NumThreads = v;
+                    });
+                case "isotope tracking dictionary id": return Count(valueLower, v => param.IsotopeTrackingDictionary.SelectedID = v);
 
                 //CorrDec settings
                 case "corrdec execute":
@@ -983,23 +1298,23 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                     return true;
                 case "corrdec ms2 tolerance":
-                    if (float.TryParse(valueLower, out float corrdecms2tol)) param.CorrDecParam.MS2Tolerance = corrdecms2tol; return true;
+                    return Number(valueLower, v => param.CorrDecParam.MS2Tolerance = (float)v);
                 case "corrdec minimum ms2 peak height":
-                    if (int.TryParse(valueLower, out int corrdecminms2int)) param.CorrDecParam.MinMS2Intensity = corrdecminms2int; return true;
+                    return Count(valueLower, v => param.CorrDecParam.MinMS2Intensity = v);
                 case "corrdec minimum number of detected samples":
-                    if (int.TryParse(valueLower, out int corrdecminnumberofsample)) param.CorrDecParam.MinNumberOfSample = corrdecminnumberofsample; return true;
+                    return Count(valueLower, v => param.CorrDecParam.MinNumberOfSample = v);
                 case "corrdec exclude highly correlated spots":
-                    if (float.TryParse(valueLower, out float corrdecmincorr_ms1)) param.CorrDecParam.MinCorr_MS1 = corrdecmincorr_ms1; return true;
+                    return Number(valueLower, v => param.CorrDecParam.MinCorr_MS1 = (float)v);
                 case "corrdec minimum correlation coefficient (ms2)":
-                    if (float.TryParse(valueLower, out float corrdecmincorr_ms2)) param.CorrDecParam.MinCorr_MS2 = corrdecmincorr_ms2; return true;
+                    return Number(valueLower, v => param.CorrDecParam.MinCorr_MS2 = (float)v);
                 case "corrdec margin 1 (target precursor)":
-                    if (float.TryParse(valueLower, out float corrdeccorrdiff_ms1)) param.CorrDecParam.CorrDiff_MS1 = corrdeccorrdiff_ms1; return true;
+                    return Number(valueLower, v => param.CorrDecParam.CorrDiff_MS1 = (float)v);
                 case "corrdec margin 2 (coeluted precursor)":
-                    if (float.TryParse(valueLower, out float corrdeccorrdiff_ms2)) param.CorrDecParam.CorrDiff_MS2 = corrdeccorrdiff_ms2; return true;
+                    return Number(valueLower, v => param.CorrDecParam.CorrDiff_MS2 = (float)v);
                 case "corrdec minimum detected rate":
-                    if (float.TryParse(valueLower, out float corrdecmindetectedrate)) param.CorrDecParam.MinDetectedPercentToVisualize = corrdecmindetectedrate; return true;
+                    return Number(valueLower, v => param.CorrDecParam.MinDetectedPercentToVisualize = (float)v);
                 case "corrdec minimum ms2 relative intensity":
-                    if (float.TryParse(valueLower, out float corrdecminms2relativeint)) param.CorrDecParam.MinMS2RelativeIntensity = corrdecminms2relativeint; return true;
+                    return Number(valueLower, v => param.CorrDecParam.MinMS2RelativeIntensity = (float)v);
                 case "corrdec remove peaks larger than precursor":
                     if (valueLower == "true" || valueLower == "false") param.CorrDecParam.CorrDecRemoveAfterPrecursor = bool.Parse(valueLower); return true;
                 default: return false;

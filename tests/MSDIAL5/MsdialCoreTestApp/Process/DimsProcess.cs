@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.Common;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
@@ -89,7 +90,15 @@ public sealed class DimsProcess {
             evaluator,
             mapper);
         var process = new ProcessFile(providerFactory, storage, annotationProcess, evaluator);
-        var runner = new ProcessRunner(process, storage.MsdialDimsParameter.NumThreads / 2);
+        // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
+        // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
+        // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
+        // and RunAllAsync returns having peak-picked nothing. The export stage then either crashes
+        // on a missing .pai or, when the raw data already carries .pai files from an earlier run,
+        // SILENTLY EXPORTS THE PREVIOUS RUN'S PEAKS AND PEAK IDS under this run's parameters,
+        // library list and version string. That is the join-breaking case: the artifacts describe a
+        // run that never happened.
+        var runner = new ProcessRunner(process, Math.Max(1, storage.MsdialDimsParameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.MsdialDimsParameter);
@@ -118,7 +127,10 @@ public sealed class DimsProcess {
         }
         await Task.WhenAll(tasks);
 
-        storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
+        // The identity of the build, without the host application's name: this field is the
+        // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
+        // 5.5.241113" said the application twice and the version once, staleness included.
+        storage.MsdialDimsParameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
         if (storage.MsdialDimsParameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();

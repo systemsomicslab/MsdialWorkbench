@@ -57,6 +57,52 @@ namespace CompMs.MsdialCore.Export.Tests
             "Matched peaks percentage",
         };
 
+        /// <summary>
+        /// The evidence-record columns, which must read identically in the two formats for the same
+        /// result -- the property the score columns above did not have until AnnotationScoreFormat
+        /// centralised them, and whose absence is what the PinnedDefect case at the bottom of this
+        /// file records.
+        /// </summary>
+        private static readonly string[] SharedEvidenceColumns = new[] {
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched",
+        };
+
+        [TestMethod]
+        public void TheEvidenceColumnsAgreeBetweenTheTwoFormats() {
+            var result = MsmsMatched();
+            result.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+            result.EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum;
+            result.CandidatesFound = 12;
+            result.CandidatesAboveThreshold = 3;
+            result.CandidatesReferenceMatched = 0;
+
+            var peak = ExportAnalysisRow(result, hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(result, hadProductIonSpectrum: true);
+
+            foreach (var column in SharedEvidenceColumns) {
+                Assert.AreEqual(peak[column], spot[column], column);
+            }
+            Assert.AreEqual("Spectrum|AccurateMass", peak["Measured terms"]);
+            Assert.AreEqual("0", peak["Candidates reference matched"],
+                "a genuine zero, in both formats. The alignment accessor reaches ValueOrNull(float, "
+                + "string) for its score columns, which would have turned this into \"null\"");
+        }
+
+        [TestMethod]
+        public void AnUnrecordedEvidenceRecordReadsNullInBothFormats() {
+            var peak = ExportAnalysisRow(MsmsMatched(), hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(MsmsMatched(), hadProductIonSpectrum: true);
+
+            foreach (var column in SharedEvidenceColumns) {
+                Assert.AreEqual(AnnotationEvidenceFormat.NotRecorded, peak[column], column);
+                Assert.AreEqual(AnnotationEvidenceFormat.NotRecorded, spot[column], column);
+            }
+        }
+
         [TestMethod]
         public void MsmsMatchedReportsEveryScoreInBothFormats() {
             var peak = ExportAnalysisRow(MsmsMatched(), hadProductIonSpectrum: true);
@@ -166,6 +212,78 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.IsTrue(MsmsMatched().IsSpectrumComparisonPerformed);
             Assert.IsTrue(LowScoreComparedAndScoredZero().IsSpectrumComparisonPerformed);
             Assert.IsFalse(TextDatabaseAnnotation().IsSpectrumComparisonPerformed);
+        }
+
+        /// <summary>
+        /// Pins a live divergence between the two exports: a genuine total score of exactly zero is
+        /// written as a number by the analysis file and as "null" by the alignment file.
+        /// </summary>
+        /// <remarks>
+        /// THIS TEST IS MEANT TO FAIL when the two are reconciled. The correct behaviour is the
+        /// analysis file's: by this class's own rule a score column reads "null" only when the score
+        /// was never computed, and TotalScore is always computed -- every annotator assigns it. So a
+        /// zero total is a measurement and the alignment file is discarding it.
+        ///
+        /// The mechanism is overload resolution, which is why centralising the spectral columns in
+        /// AnnotationScoreFormat did not catch it. IMetadataAccessor declares three ValueOrNull
+        /// overloads: (float, string) and (double, string) both test Math.Abs(value) &gt; 1e-10 and
+        /// return "null" below it, while (double?, string) tests only for null. The analysis
+        /// accessor writes ValueOrNull(matchResult?.TotalScore, "F3") -- a float? that widens to
+        /// double?, binding the nullable overload -- and the alignment accessor writes
+        /// ValueOrNull(matchResult.TotalScore, "F3"), binding the float overload. One question mark
+        /// decides whether a zero survives.
+        ///
+        /// Reachable in production, not a contrived value: MsReferenceScorer computes
+        /// scores.DefaultIfEmpty().Average(), which is exactly 0 when no term was included, so any
+        /// candidate for which nothing could be measured carries a genuine zero.
+        ///
+        /// Note that SharedScoreColumns above deliberately omits "Total score", so the
+        /// column-by-column agreement test does not cover it.
+        /// </remarks>
+        [TestMethod]
+        [TestCategory("PinnedDefect")]
+        public void AZeroTotalScoreIsWrittenDifferentlyByTheTwoExports() {
+            var result = ComparedAndScoredZeroOverall();
+
+            var peak = ExportAnalysisRow(result, hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(result, hadProductIonSpectrum: true);
+
+            // CORRECT AFTER THE FIX: both "0.000".
+            Assert.AreEqual("0.000", peak["Total score"], "the analysis file keeps the zero");
+            Assert.AreEqual("null", spot["Total score"], "the alignment file discards it");
+        }
+
+        [TestMethod]
+        public void ANonZeroTotalScoreAgreesBetweenTheTwoExports() {
+            // The control: the divergence is specific to values within 1e-10 of zero, so an
+            // ordinary score must match. This keeps passing after the fix.
+            var peak = ExportAnalysisRow(MsmsMatched(), hadProductIonSpectrum: true);
+            var spot = ExportAlignmentRow(MsmsMatched(), hadProductIonSpectrum: true);
+
+            Assert.AreEqual(peak["Total score"], spot["Total score"]);
+        }
+
+        /// <summary>
+        /// A candidate that was compared and scored zero overall -- what MsReferenceScorer produces
+        /// when no term could be included, via scores.DefaultIfEmpty().Average().
+        /// </summary>
+        private static MsScanMatchResult ComparedAndScoredZeroOverall() {
+            return new MsScanMatchResult
+            {
+                Name = "Reference compound",
+                Source = SourceType.MspDB,
+                AnnotatorID = "msp_annotator_1",
+                IsPrecursorMzMatch = true,
+                IsSpectrumMatch = false,
+                IsAnnotationSuggested = true,
+                SimpleDotProduct = 0f,
+                WeightedDotProduct = 0f,
+                ReverseDotProduct = 0f,
+                MatchedPeaksCount = 0f,
+                MatchedPeaksPercentage = 0f,
+                AcurateMassSimilarity = 0f,
+                TotalScore = 0f,
+            };
         }
 
         private static MsScanMatchResult MsmsMatched() {

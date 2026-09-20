@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -124,7 +124,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -195,7 +195,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             };
 
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -263,7 +263,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -324,7 +324,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -385,7 +385,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -454,7 +454,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EIEIO, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EIEIO, true, DataBaseSource.Msp);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"SquaredWeightedDotProduct: {result.SquaredWeightedDotProduct}");

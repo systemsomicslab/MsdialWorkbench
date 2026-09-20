@@ -57,6 +57,11 @@ namespace CompMs.MsdialLcImMsApi.Export
                 "Spectrum reference file name",
                 "MS1 isotopic spectrum",
                 "MS/MS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 

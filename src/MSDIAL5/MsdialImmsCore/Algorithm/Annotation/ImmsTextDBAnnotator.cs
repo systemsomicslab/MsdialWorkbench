@@ -78,12 +78,25 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
+                // No Spectrum bit: a text database holds no reference spectrum, so nothing here
+                // opens one. That is the fact this record is meant to make visible.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+            // A text database holds no reference spectrum, so nothing here opened one and the
+            // evidence is the precursor mass (with whatever time or CCS terms the mode adds).
+            // ValidateBase then sets IsReferenceMatched from those alone, which is what makes this
+            // record necessary: without it an export cannot separate these names from MS/MS
+            // reference matches.
+            result.EvidenceSource = AnnotationEvidenceSource.PrecursorOnly;
             result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
             return result;

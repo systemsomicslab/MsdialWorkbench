@@ -56,11 +56,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
             switch (storage.Parameter.RetentionType) {
                 case RetentionType.RI:
-                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RI)).ToList();
+                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RI, storage.Parameter.RiCompoundType)).ToList();
                     break;
                 case RetentionType.RT:
                 default:
-                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RT)).ToList();
+                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RT, storage.Parameter.RiCompoundType)).ToList();
                     break;
             }
             switch (storage.Parameter.AlignmentIndexType) {

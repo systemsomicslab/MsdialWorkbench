@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CompMs.Common.Utility;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -80,6 +81,11 @@ namespace CompMs.MsdialCore.Export
                 "Spectrum reference file name",
                 "MS1 isotopic spectrum",
                 "MS/MS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 
@@ -105,7 +111,9 @@ namespace CompMs.MsdialCore.Export
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
-                { "Metabolite name", UnknownIfEmpty(spot.Name) },
+                // The same name the alignment table, mzTab-M and the exported spectra show. What the
+                // prefix used to say is two columns along, in "Evidence source", where it says more.
+                { "Metabolite name", UnknownIfEmpty(AnnotationName.Canonical(spot.Name, matchResult?.IsLipidChainsMatch ?? false)) },
                 { "Adduct type", spot?.AdductType.AdductIonName ?? "null" },
                 { "Post curation result", GetPostCurationResult(spot) },
                 { "Fill %", spot.FillParcentage.ToString("F2") },
@@ -132,6 +140,11 @@ namespace CompMs.MsdialCore.Export
                 { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },
                 { "MS/MS spectrum", GetSpectrumListContent(msdec) },
+                { "Measured terms", AnnotationEvidenceFormat.Terms(matchResult) },
+                { "Evidence source", AnnotationEvidenceFormat.Source(matchResult) },
+                { "Candidates found", AnnotationEvidenceFormat.Count(matchResult?.CandidatesFound) },
+                { "Candidates above threshold", AnnotationEvidenceFormat.Count(matchResult?.CandidatesAboveThreshold) },
+                { "Candidates reference matched", AnnotationEvidenceFormat.Count(matchResult?.CandidatesReferenceMatched) },
             };
         }
 

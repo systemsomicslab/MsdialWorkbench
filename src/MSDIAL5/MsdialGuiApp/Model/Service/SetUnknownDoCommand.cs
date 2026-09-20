@@ -24,7 +24,14 @@ namespace CompMs.App.Msdial.Model.Service
         void IDoCommand.Do()
         {
             _manuallyResutls = _container.GetManuallyResults();
-            _unknownResult = new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown };
+            // The only site that records Manual. Built fresh with no name, no key and no score, so
+            // there is nothing to overwrite and no inherited value; Redo re-enters Do(), so this one
+            // assignment covers the undo/redo cycle. Without it a deliberate human "unknown" is
+            // byte-identical to an unannotated peak from a project written before key 40 existed.
+            _unknownResult = new MsScanMatchResult {
+                Source = SourceType.Manual | SourceType.Unknown,
+                EvidenceSource = AnnotationEvidenceSource.Manual,
+            };
             _previousMolecule = new MoleculeProperty(_molecule.Name, _molecule.Formula, _molecule.Ontology, _molecule.SMILES, _molecule.InChIKey);
             DataAccess.ClearMoleculePropertyInfomation(_molecule);
             _container.RemoveManuallyResults();

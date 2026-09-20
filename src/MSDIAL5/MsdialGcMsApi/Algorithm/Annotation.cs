@@ -24,7 +24,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter)
-            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType), parameter) {
+            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType, parameter.RiCompoundType), parameter) {
 
         }
 
@@ -45,7 +45,28 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var counter = 0;
                 Parallel.For(0, ms1DecResults.Count, index => {
                     var results = containers[index] = new MsScanMatchResultContainer();
-                    results.AddResults(_calculateMatchScore.CalculateMatches(ms1DecResults[index]).Where(result => result.IsSpectrumMatch).OrderByDescending(r => r.TotalScore).Take(5));
+                    // Materialised, unlike every other site: CalculateMatches is a yield-return
+                    // iterator over the retention window of the EI library, so the population size
+                    // is not otherwise knowable here.
+                    //
+                    // The cost, stated plainly because it is not free: the original chain buffered
+                    // only the IsSpectrumMatch survivors, since OrderByDescending sat downstream of
+                    // the Where. This buffers every reference in the retention window instead, so
+                    // peak memory grows with window size times the degree of parallelism of this
+                    // Parallel.For -- and the window is doubled when IsUseTimeForAnnotationFiltering
+                    // is off (see Tolerance in CalculateMatchScore), which is the configuration
+                    // where the largest EI libraries are searched. Values are identical either way.
+                    //
+                    // The cap here is 5, not NUMBER_OF_ANNOTATION_RESULTS.
+                    var scored = _calculateMatchScore.CalculateMatches(ms1DecResults[index]).ToList();
+                    // This path uses no evaluator; IsSpectrumMatch is the filter that stands in for
+                    // FilterByThreshold, so it is the line CandidatesAboveThreshold is drawn at.
+                    var named = scored.Where(result => result.IsSpectrumMatch).ToList();
+                    // No evaluator on this path, so the stored boolean is the run's own definition here --
+                    // CompareEIMSScanProperties sets it from IsSpectrumMatch, TotalScore and the
+                    // retention verdict, and nothing reinterprets it afterwards.
+                    var population = CandidatePopulation.Of(scored, named, result => result.IsReferenceMatched);
+                    results.AddResults(population.RecordOnAll(named.OrderByDescending(r => r.TotalScore).Take(5)));
                     System.Diagnostics.Debug.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Report(Interlocked.Increment(ref counter), ms1DecResults.Count);
                 });

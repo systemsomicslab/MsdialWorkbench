@@ -1,4 +1,29 @@
 <Project>
+  <!--
+    THE ONE PLACE THE MS-DIAL 5 MAIN VERSION IS WRITTEN.
+
+    The rest of a build's identity is derived, not typed: the date comes from the build below, and
+    the commit id is already compiled in by SourceLink, which the .NET SDK enables for every
+    SDK-style project in this tree. See CompMs.Common.MsdialBuildIdentity.
+
+    Raising the main version is a deliberate act and this is the line to change. Everything that
+    used to be a hand-maintained "5.5.241113" string in a .resx becomes MainVersion plus the date
+    of the build that produced the binary.
+  -->
+  <PropertyGroup>
+    <MsdialMainVersion>5.5</MsdialMainVersion>
+    <!--
+      Appended to the displayed version. Empty for a public build, so IsLabPrivate is false, which
+      is what a repository-reanalysis run wants. A laboratory build sets it to "-dev" or "-tada" and
+      GlobalResources.IsLabPrivate keeps working exactly as it did when those suffixes were typed
+      into a .resx by hand.
+
+      It lives here rather than in a hand-edited literal so that marking a build no longer means
+      editing a checked-in resource and remembering to change it back.
+    -->
+    <MsdialVersionSuffix></MsdialVersionSuffix>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug vendor unsupported'">
     <DefineConstants>DEBUG;TRACE;VENDOR_UNSUPPORTED</DefineConstants>
     <Optimize>false</Optimize>

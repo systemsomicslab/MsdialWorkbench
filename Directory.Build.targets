@@ -1,4 +1,30 @@
 <Project>
+  <!--
+    Stamps the main version and the build date into the assembly that hosts MsdialBuildIdentity.
+
+    Opt-in via MsdialEmitBuildIdentity rather than applied to every project, because this runs once
+    per project per target framework and only one assembly is ever read for the answer.
+
+    The commit id is NOT stamped here. SourceLink already writes it into
+    AssemblyInformationalVersion for every SDK-style project that leaves GenerateAssemblyInfo on —
+    verified as "1.0.0+<40 hex>" in the generated AssemblyInfo.cs — so asking git again here would
+    add a build-time dependency on the git executable in exchange for a value already present.
+
+    The date is the BUILD date, not the commit date, and the difference is worth stating: two builds
+    of one commit carry the same commit id and different dates. The commit id is the exact identity;
+    the date is what a person reads and what the update check orders against a release's
+    published_at.
+  -->
+  <Target Name="MsdialStampBuildIdentity"
+          BeforeTargets="GetAssemblyAttributes"
+          Condition="'$(MsdialEmitBuildIdentity)' == 'true'">
+    <ItemGroup>
+      <AssemblyMetadata Include="MsdialMainVersion" Value="$(MsdialMainVersion)" />
+      <AssemblyMetadata Include="MsdialBuildDate" Value="$([System.DateTime]::Now.ToString('yyyy-MM-dd'))" />
+      <AssemblyMetadata Include="MsdialVersionSuffix" Value="$(MsdialVersionSuffix)" Condition="'$(MsdialVersionSuffix)' != ''" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="EvaluateConfiguration">
     <Message Text="Project: $(MSBuildProjectName), Configuration: $(Configuration)" Importance="High"/>
     <MSBuild Projects="@(ProjectReference)" Targets="EvaluateConfiguration" />

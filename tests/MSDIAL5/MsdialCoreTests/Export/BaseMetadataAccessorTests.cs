@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
+using System.Linq;
 namespace CompMs.MsdialCore.Export.Tests
 {
     [TestClass()]
@@ -46,12 +47,47 @@ namespace CompMs.MsdialCore.Export.Tests
             "Spectrum reference file name",
             "MS1 isotopic spectrum",
             "MS/MS spectrum",
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched",
         };
 
         [TestMethod()]
         public void GetHeadersTest() {
             var accessor = new TestMetadataAccessor(null, null);
             CollectionAssert.AreEqual(headers, accessor.GetHeaders());
+        }
+
+        /// <summary>
+        /// The evidence-record columns, named once. They exist so a reader can tell a weak match
+        /// from an unexamined one; see AnnotationEvidenceFormat.
+        /// </summary>
+        private static readonly string[] EvidenceColumns = new[]
+        {
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched",
+        };
+
+        [TestMethod()]
+        public void TheEvidenceColumnsReadNotRecordedWhenTheRunRecordedNothing() {
+            // A spot with no annotation at all. MsScanMatchResultContainer.Representative falls back
+            // to a shared static carrying the type's defaults -- MeasuredTerms.None,
+            // AnnotationEvidenceSource.Unspecified, null counts -- which is also exactly what every
+            // project saved before keys 39-43 existed deserializes to. None of those may print as a
+            // confident-looking word.
+            IMetadataAccessor accessor = new TestMetadataAccessor(new MockRefer(), new ParameterBase { });
+            var spot = new AlignmentSpotProperty { };
+
+            var dict = accessor.GetContent(spot, null);
+
+            foreach (var column in EvidenceColumns) {
+                Assert.AreEqual("null", dict[column], column);
+            }
         }
 
         [TestMethod()]
@@ -89,6 +125,11 @@ namespace CompMs.MsdialCore.Export.Tests
                 MatchedPeaksPercentage = 0.84f,
                 TotalScore = 0.83f,
                 AnnotatorID = "Annotation method1",
+                MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass,
+                EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum,
+                CandidatesFound = 12,
+                CandidatesAboveThreshold = 3,
+                CandidatesReferenceMatched = 0,
             };
             spot.MatchResults.AddResults(new List<MsScanMatchResult> { matchResult, });
             spot.PeakCharacter.IsotopeParentPeakID = 200;
@@ -105,6 +146,36 @@ namespace CompMs.MsdialCore.Export.Tests
             };
 
             var dict = accessor.GetContent(spot, msdecResult);
+            // HEADER/CONTENT PARITY. Every header must have a content key, or an exporter throws
+            // KeyNotFoundException the moment it indexes the content by header name; and every content
+            // key must have a header, or its value is computed and then silently dropped on the floor.
+            // Nothing checked either direction before, which is how "Enhanced dot product" and
+            // "Spectrum entropy" came to be computed on every analysis row and written to no file in
+            // any mode, for as long as they have existed.
+            //
+            // A drop has to be declared here, with a reason. That is the whole mechanism: it does not
+            // forbid dropping a key, it forbids dropping one by accident.
+            var declaredDrops = new HashSet<string>
+            {
+            };
+            foreach (var header in accessor.GetHeaders()) {
+                Assert.IsTrue(dict.ContainsKey(header),
+                    $"header \"{header}\" has no content key, so exporting would throw");
+            }
+            foreach (var key in dict.Keys) {
+                Assert.IsTrue(declaredDrops.Contains(key) || accessor.GetHeaders().Contains(key),
+                    $"content key \"{key}\" has no header, so its value never reaches the file");
+            }
+
+            // The evidence record reaches the file, and a count of zero survives as a measurement.
+            Assert.AreEqual("Spectrum|AccurateMass", dict["Measured terms"]);
+            Assert.AreEqual("ReferenceSpectrum", dict["Evidence source"]);
+            Assert.AreEqual("12", dict["Candidates found"]);
+            Assert.AreEqual("3", dict["Candidates above threshold"]);
+            Assert.AreEqual("0", dict["Candidates reference matched"],
+                "zero reference matches is a fact about the run; routing this through the alignment "
+                + "side's ValueOrNull(float, string) would have written \"null\" instead");
+
 
             Assert.AreEqual("100", dict["Alignment ID"]);
             Assert.AreEqual("AAA", dict["Metabolite name"]);

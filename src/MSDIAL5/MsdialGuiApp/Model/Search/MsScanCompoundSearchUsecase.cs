@@ -52,6 +52,21 @@ internal sealed class MsScanCompoundSearchUsecase : BindableBase, ICompoundSearc
         var scorer = new MsScanMatchResultScorer<IMSScanProperty, MoleculeMsReference>(new SpectrumMatchCalculatorWrapper(SearchParameter));
         foreach (var reference in _selectedDatabase.Database) {
             var result = scorer.Score(target, reference);
+            // Recorded here rather than in the calculator, which sees only a query and a reference
+            // and cannot know what kind of database the reference came from. This dialog's only
+            // populated path is AddDataBase(string) -> LibraryHandler.ReadMspLibrary, an acquired
+            // spectrum library searched with the plain metabolomics calculator -- no lipid rules run
+            // here. Without this the MS-scan dialog would be the one acceptance path whose results
+            // reach a container with no evidence recorded, while the four peak-spot dialogs inherit
+            // the annotator's own value.
+            result.EvidenceSource = AnnotationEvidence.WhenSpectrumCompared(
+                result.MeasuredTerms, AnnotationEvidenceSource.ReferenceSpectrum);
+            // The candidate counts are deliberately NOT recorded here, and this is the clearest
+            // case for why. This dialog applies no search window at all -- it scores every
+            // reference in the selected database -- so a count taken here would be the library
+            // size, a third meaning for a field that already means "references inside the mass
+            // window" in the batch processes. It also applies no threshold: the analyst is the
+            // filter. A number with three meanings is worse than no number.
             results.Add(new CompoundResult(reference, result));
         }
         results.Sort((x, y) => y.MatchResult.TotalScore.CompareTo(x.MatchResult.TotalScore));

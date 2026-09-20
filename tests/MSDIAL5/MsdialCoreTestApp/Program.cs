@@ -1,3 +1,4 @@
+﻿using CompMs.Common;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.Properties;
 using System.CommandLine;
@@ -171,7 +172,7 @@ class Program {
         //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_filtered.edge",
         //     @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_for_model.msp");
 
-        var root = new RootCommand($"MSDIAL Console Application {Resources.VERSION}");
+        var root = new RootCommand($"MSDIAL Console Application {MsdialBuildIdentity.DisplayVersion}");
         if (root.Options.OfType<VersionOption>().SingleOrDefault() is { } versionOption) {
             versionOption.Action = new VersionAction();
         }
@@ -192,8 +193,30 @@ class Program {
 
     internal class VersionAction : SynchronousCommandLineAction
     {
+        /// <summary>
+        /// The version on the first line, the commit on the second.
+        /// </summary>
+        /// <remarks>
+        /// TWO LINES BECAUSE SOMETHING ALREADY PARSES THIS. MS-DIAL Interactive learns which build
+        /// it ran by executing `--version` and matching /(?:^|\s)(\d+\.\d+(?:\.\d+)+)(?:\s|$)/,
+        /// which is how "5.5.241113" reached its publication report -- and why that report said
+        /// 5.5.241113 for two years: it had no knowledge of its own, only what this printed.
+        ///
+        /// "5.5.260915+cd5ff71c" does NOT match that pattern, because the '+' is neither whitespace
+        /// nor end of input. It would have fallen through to a second launch of the executable and a
+        /// looser match on the help banner -- still correct, but at the cost of a process and of the
+        /// commit, which never reaches the report at all.
+        ///
+        /// Printing the version alone on line one satisfies the existing pattern exactly (the
+        /// newline is the whitespace it wants) and the commit on line two is there for anything that
+        /// reads the whole output. Nobody downstream has to change, and what they capture becomes
+        /// true rather than stale.
+        /// </remarks>
         public override int Invoke(ParseResult parseResult) {
-            System.Console.WriteLine(Resources.VERSION);
+            System.Console.WriteLine(MsdialBuildIdentity.DisplayVersion);
+            if (MsdialBuildIdentity.IsCommitKnown) {
+                System.Console.WriteLine($"commit {MsdialBuildIdentity.FullCommitId}");
+            }
             return 0;
         }
     }

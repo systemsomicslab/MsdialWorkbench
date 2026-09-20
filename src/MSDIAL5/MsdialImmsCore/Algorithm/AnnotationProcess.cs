@@ -88,16 +88,20 @@ public sealed class AnnotationProcess
 
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator, ignoreIsotopicPeak: true).FindCandidates();
         var results = mspAnnotator.FilterByThreshold(candidates);
+        // This process keeps ONE result per (peak, annotator). MSRawID2MspIDs on the next line
+        // does retain a library ID per threshold-passing candidate, but that is a list of IDs on
+        // the peak, not a number a reader of an exported annotation row can see.
+        var population = CandidatePopulation.Of(candidates, results, mspAnnotator.IsReferenceMatched);
         chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
         var matches = mspAnnotator.SelectReferenceMatchResults(results);
         if (matches.Count > 0) {
-            var best = matches.Argmax(result => result.TotalScore);
+            var best = population.RecordOn(matches.Argmax(result => result.TotalScore));
             chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
             chromPeakFeature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
             DataAccess.SetMoleculeMsProperty(chromPeakFeature, mspAnnotator.Refer(best), best);
         }
         else if (results.Count > 0) {
-            var best = results.Argmax(result => result.TotalScore);
+            var best = population.RecordOn(results.Argmax(result => result.TotalScore));
             chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
             chromPeakFeature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
             DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, mspAnnotator.Refer(best), best);
@@ -112,11 +116,16 @@ public sealed class AnnotationProcess
             return;
         var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator, ignoreIsotopicPeak: false).FindCandidates();
         var results = textDBAnnotator.FilterByThreshold(candidates);
+        var population = CandidatePopulation.Of(candidates, results, textDBAnnotator.IsReferenceMatched);
         var matches = textDBAnnotator.SelectReferenceMatchResults(results);
         chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));
-        chromPeakFeature.MatchResults.AddTextDbResults(matches);
+        // Every match is stored here, not just one, so every one of them is stamped.
+        chromPeakFeature.MatchResults.AddTextDbResults(population.RecordOnAll(matches));
         if (matches.Count > 0) {
-            var best = results.Argmax(result => result.TotalScore);
+            // Pre-existing quirk kept as-is: `best` is the top of `results`, not of `matches`, so
+            // it can be an object that was never added above. Stamping it is still correct -- it
+            // came from the same population.
+            var best = population.RecordOn(results.Argmax(result => result.TotalScore));
             if (chromPeakFeature.TextDbBasedMatchResult == null || chromPeakFeature.TextDbBasedMatchResult.TotalScore < best.TotalScore) {
                 chromPeakFeature.TextDbBasedMatchResult = best;
                 DataAccess.SetTextDBMoleculeMsProperty(chromPeakFeature, textDBAnnotator.Refer(best), best);
@@ -127,14 +136,15 @@ public sealed class AnnotationProcess
     private static void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, IReadOnlyList<RawPeakElement> spectrum, IAnnotationQueryFactory<MsScanMatchResult> queryFactory, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
         var candidates = queryFactory.Create(chromPeakFeature, msdecResult, spectrum, chromPeakFeature.PeakCharacter, queryFactory.PrepareParameter()).FindCandidates();
         var results = evaluator.FilterByThreshold(candidates);
+        var population = CandidatePopulation.Of(candidates, results, evaluator.IsReferenceMatched);
         var matches = evaluator.SelectReferenceMatchResults(results);
         if (matches.Count > 0) {
             var best = evaluator.SelectTopHit(matches);
-            chromPeakFeature.MatchResults.AddResult(best);
+            chromPeakFeature.MatchResults.AddResult(population.RecordOn(best));
         }
         else if (results.Count > 0) {
             var best = evaluator.SelectTopHit(results);
-            chromPeakFeature.MatchResults.AddResult(best);
+            chromPeakFeature.MatchResults.AddResult(population.RecordOn(best));
         }
     }
 }

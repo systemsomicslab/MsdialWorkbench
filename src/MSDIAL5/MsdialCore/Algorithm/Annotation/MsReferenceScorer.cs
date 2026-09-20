@@ -16,13 +16,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>
     {
-        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2) {
+        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2, DataBaseSource dataBaseSource) {
             this.id = id;
             this.priority = priority;
             this.omics = omics;
             this.source = source;
             this.collisionType = collisionType;
             this.useMs2 = useMs2;
+            _dataBaseSource = dataBaseSource;
         }
 
         private readonly string id;
@@ -31,6 +32,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly SourceType source;
         private readonly CollisionType collisionType;
         private readonly bool useMs2;
+        // Passed in rather than read from a database, because this scorer holds none: its two
+        // owners, LcmsMspAnnotator and EadLipidAnnotator, each read it off the database they hold.
+        private readonly DataBaseSource _dataBaseSource;
 
         public MsScanMatchResult Score(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             return CalculateScore(query.Property, query.NormalizedScan, query.Isotopes, reference, reference.IsotopicPeaks, query.Parameter);
@@ -102,16 +106,40 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 Source = source,
                 AnnotatorID = id,
                 Priority = priority,
+                // Recorded from the locals, not from the fields just assigned: the dot-product
+                // getters clamp the not-computed -1 to 0, and a term that was never computed would
+                // then be indistinguishable from one computed as 0. The Gaussian terms here go
+                // through the unguarded overload, so their presence is tested on the inputs.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var CcsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)CcsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+
+            // Recorded from the completed MeasuredTerms and the omics this scorer was built for.
+            // This one assignment covers LcmsMspAnnotator's two constructors and EadLipidAnnotator's
+            // three collision-type arms, because `omics` and `source` are readonly fields set there:
+            // three near-identical switch arms with no default is exactly where one gets missed and
+            // a whole collision-type mode silently blanks.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
 
             var scores = new List<double> { };
             var dotProductFactor = 3.0;
@@ -183,14 +211,26 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     ValidateOnLipidomics(result, scan, reference, parameter);
                 }
             }
+            // Exempt, not failed. Both verdicts share this clause and FilterByThreshold is
+            // their disjunction, so a reference with no retention time that failed here
+            // would be dropped from the stored results altogether rather than demoted.
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(
+                parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
             result.IsReferenceMatched = result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && rtRequirementMet
                 && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
                 && (!useMs2 || result.IsSpectrumMatch);
+            // No retention clause on the suggestion. "Use retention time for SCORING" must not
+            // reject a candidate -- that is what "use retention time for FILTERING" is for, and
+            // the two settings mean different things. Because both verdicts used to share the
+            // clause and FilterByThreshold is their disjunction, a retention-time disagreement
+            // deleted the candidate from the stored results outright. It now costs the reference
+            // match and leaves the precursor-only suggestion standing, which is what the evidence
+            // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
                 && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
                 && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -215,7 +255,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+                // Recomputed from the values rather than taken from the Gaussian's out
+                // parameter, because Validate is reachable without Score having run. Same
+                // guard either way: no comparison, no match.
+                result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
             }
 
             if (parameter.IsUseCcsForAnnotationScoring) {

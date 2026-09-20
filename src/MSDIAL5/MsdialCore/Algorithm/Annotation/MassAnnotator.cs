@@ -40,10 +40,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             this.sourceKey = sourceKey;
             Priority = priority;
             ReferObject = db;
+            _dataBaseSource = db.DataBaseSource;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(db.Database);
             evaluator = new MsScanMatchResultEvaluator(Parameter);
         }
 
+        // Read off the database rather than passed in: the annotator already holds the library it
+        // is searching, so the fact travels with the thing it is a fact about.
+        private readonly DataBaseSource _dataBaseSource;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
@@ -104,7 +108,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = source, AnnotatorID = sourceKey, Priority = Priority,
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
+            // A TextDB reference carries no spectrum, so the dot products hold the not-computed
+            // sentinel, MeasuredTerms leaves Spectrum clear and this resolves to PrecursorOnly
+            // without needing to test `source`. This is also the annotator a reopened project gets
+            // through StandardLoadAnnotatorVisitor, and the GC-EI annotator, so it covers modes
+            // whose own annotators are not in this list.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 
             return result;
@@ -188,6 +202,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {

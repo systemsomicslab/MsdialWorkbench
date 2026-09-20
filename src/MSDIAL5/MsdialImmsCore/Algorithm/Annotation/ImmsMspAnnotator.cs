@@ -26,12 +26,16 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.db.Sort(comparer);
             this.omics = omics;
             this.ReferObject = mspDB;
+            _dataBaseSource = mspDB.DataBaseSource;
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
 
         private readonly TargetOmics omics;
+        // Read off the database rather than passed in: the annotator already holds the library it
+        // is searching, so the fact travels with the thing it is a fact about.
+        private readonly DataBaseSource _dataBaseSource;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
@@ -92,12 +96,21 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.MspDB, AnnotatorID = sourceKey, Priority = Priority,
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+            // RuleBased when this is a lipidomics run: the spectral comparison above is a
+            // permissive pre-filter there, and the characteristic-ion rules decide the match.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
             return result;
         }
@@ -191,6 +204,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateBase(result, property, reference, parameter);
             result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         //private static readonly double MsdialCcsMatchThreshold = 10d;

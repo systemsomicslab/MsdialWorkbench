@@ -61,6 +61,34 @@ namespace CompMs.MsdialCore.DataObj
         [Key(3)]
         public string DataBaseSourceFilePath { get; } = string.Empty;
 
+        /// <summary>
+        /// What this library can say about itself when no DOI names it: how many records, how many
+        /// compounds, and a digest of the records the run actually searched.
+        /// </summary>
+        /// <remarks>
+        /// Derived rather than stored. MoleculeDataBase has some 220 construction sites, so a stored
+        /// field would be an argument any of them could forget or get wrong, and a value that could
+        /// fall out of step with the records beside it. Computed from <see cref="Database"/>, it
+        /// cannot.
+        ///
+        /// Cached because a large library is hundreds of thousands of records and an export asks
+        /// more than once. Cleared by <see cref="Load"/>, which is the only thing that replaces the
+        /// collection.
+        ///
+        /// See <see cref="LibraryFingerprint"/> for why this is computed from the stored records and
+        /// not from the file at <see cref="DataBaseSourceFilePath"/>.
+        /// </remarks>
+        [IgnoreMember]
+        public int RecordCount => LibraryFingerprint.RecordCount(Database);
+
+        [IgnoreMember]
+        public int CompoundCount => _compoundCount ?? (int)(_compoundCount = LibraryFingerprint.CompoundCount(Database));
+        private int? _compoundCount;
+
+        [IgnoreMember]
+        public string ContentDigest => _contentDigest ?? (_contentDigest = LibraryFingerprint.Digest(Database));
+        private string _contentDigest;
+
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
         public void Save(Stream stream, bool forceSerialize = false) {
@@ -74,6 +102,8 @@ namespace CompMs.MsdialCore.DataObj
             Database?.Clear();
             var db = LargeListMessagePack.Deserialize<MoleculeMsReference>(stream);
             Database = new MoleculeMsReferenceCollection(db);
+            _compoundCount = null;
+            _contentDigest = null;
         }
 
         MoleculeMsReference IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
