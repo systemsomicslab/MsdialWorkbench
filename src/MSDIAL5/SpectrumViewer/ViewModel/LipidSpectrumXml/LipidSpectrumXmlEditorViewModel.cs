@@ -46,9 +46,11 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
             }.Merge();
             refreshFilter.Subscribe(_ => {
                 FilteredEntries.Clear();
-                var keyword = Filter.Value ?? string.Empty;
+                // Space-separated words are ANDed rather than requiring one contiguous match, so
+                // e.g. "PE H+" or "MSL PE" both find "PE [M+H]+ (MSL)" regardless of word order.
+                var keywords = (Filter.Value ?? string.Empty).Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var e in Entries.Where(e =>
-                        (keyword.Length == 0 || e.DisplayName.Value.IndexOf(keyword, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        keywords.All(k => e.DisplayName.Value.IndexOf(k, System.StringComparison.OrdinalIgnoreCase) >= 0)
                         && (!MatchCurrentLipid.Value || Model.GeneratorCandidates.Contains(e.Model)))) {
                     FilteredEntries.Add(e);
                 }
