@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -2682,6 +2683,65 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result02.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result02.AnnotationLevel}");
 
+        }
+        [TestMethod()]
+        public void EtherLPECharacterizationTest_PlasmalogenWhenSn1EtherIonFound()
+        {
+            // LPE P-16:0 [M-H]- (searched as O-16:1); the sn1 ether ion m/z 239.24 marks it as plasmalogen
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 436.2833,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 436.283348, Intensity = 999, },
+                    new SpectrumPeak { Mass = 239.238039, Intensity = 999, },
+                    new SpectrumPeak { Mass = 196.038033, Intensity = 500, },
+                    new SpectrumPeak { Mass = 140.011818, Intensity = 300, },
+                    new SpectrumPeak { Mass = 78.959054, Intensity = 600, },
+                }
+            };
+
+            var result = LipidMsmsCharacterization.JudgeIfEtherlysope(target, 0.025,
+                436.2833, 16, 1,
+                16, 16, 1, 1,
+                AdductIon.GetAdductIon("[M-H]-"));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.EtherLPE, result.LipidClass);
+            Assert.AreEqual("LPE P-16:0", result.LipidName);
+            Assert.AreEqual(2, result.AnnotationLevel);
+            Assert.AreEqual(16, result.TotalCarbonCount);
+            Assert.AreEqual(0, result.TotalDoubleBondCount);
+        }
+
+        [TestMethod()]
+        public void EtherLPECharacterizationTest_AlkylEtherWhenSn1EtherIonMissing()
+        {
+            // LPE O-16:1 [M-H]-: only the class ion [M-H-C2H7N]- (m/z 375.23), no sn1 ether ion m/z 239.24
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 436.2833,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 436.283348, Intensity = 999, },
+                    new SpectrumPeak { Mass = 375.230536, Intensity = 300, },
+                    new SpectrumPeak { Mass = 196.038033, Intensity = 500, },
+                    new SpectrumPeak { Mass = 140.011818, Intensity = 300, },
+                    new SpectrumPeak { Mass = 78.959054, Intensity = 600, },
+                }
+            };
+
+            var result = LipidMsmsCharacterization.JudgeIfEtherlysope(target, 0.025,
+                436.2833, 16, 1,
+                16, 16, 1, 1,
+                AdductIon.GetAdductIon("[M-H]-"));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.EtherLPE, result.LipidClass);
+            Assert.AreEqual("LPE O-16:1", result.LipidName);
+            Assert.AreEqual(2, result.AnnotationLevel);
+            Assert.AreEqual(16, result.TotalCarbonCount);
+            Assert.AreEqual(1, result.TotalDoubleBondCount);
         }
 
     }
