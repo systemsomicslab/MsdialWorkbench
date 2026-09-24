@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CompMs.App.SpectrumViewer.Model
 {
@@ -49,8 +50,146 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public ObservableCollection<ChainSelectionModel> Chains { get; } = new ObservableCollection<ChainSelectionModel>();
 
+        public string QuickChainsText {
+            get => quickChainsText;
+            set => SetProperty(ref quickChainsText, value);
+        }
+        private string quickChainsText = string.Empty;
+
+        // Lets the user type standard chain notation ("36:2", "18:0_18:2", "18:0/18:2", "O-18:1/16:0")
+        // instead of building the same thing by hand through ChainsType + the chain rows below, and
+        // optionally prefix it with a class name ("PE 18:0_18:2", "EtherPE P-18:0/16:0") so the class
+        // doesn't need to be picked separately first - dispatched through the same FacadeLipidParser
+        // Create() below uses, keyed on the first whitespace-separated token (see
+        // FacadeLipidParser.Parse). Falls back to chain-only parsing against whatever LipidClass is
+        // already selected when there's no recognized class prefix (or none at all).
+        public void ApplyQuickChainsText() {
+            var text = (QuickChainsText ?? string.Empty).Trim();
+            if (text.IndexOf(' ') >= 0 && FacadeLipidParser.Default.Parse(text) is ILipid lipid) {
+                LipidClass = lipid.LipidClass;
+                ApplyChains(lipid.Chains);
+                return;
+            }
+            ApplyChains(ParseChainOnlyText(text));
+        }
+
+        // TotalChainParser.Parse() itself is NOT anchored to the full string (each production
+        // {Class}LipidParser wraps it in "^...$" - see LipidParsers.cs), so a stray leading/trailing
+        // fragment (e.g. a typo, or an unsupported plasm prefix) can otherwise match a *substring* and
+        // silently produce chains that don't reflect what was actually typed. Require a full match here.
+        // BuildEtherParser recognizes "O-"/"P-" alkyl/plasmalogen chains too (a strict superset of the
+        // plain-acyl patterns, so non-ether input still parses the same as before).
+        private ITotalChain ParseChainOnlyText(string text) {
+            var parser = TotalChainParser.BuildEtherParser(ChainCount);
+            if (Regex.IsMatch(text, $"^(?:{parser.Pattern})$") && parser.Parse(text) is ITotalChain chains) {
+                return chains;
+            }
+            throw new InvalidOperationException(
+                $"Could not parse '{text}' as \"<class> <chains>\" (e.g. \"PE 18:0_18:2\") or bare chain " +
+                "notation against the Lipid class above (e.g. \"36:2\", \"18:0_18:2\", \"18:0/18:2\", \"O-18:1/16:0\").");
+        }
+
+        private void ApplyChains(ITotalChain chains) {
+            switch (chains) {
+                case PositionLevelChains p:
+                    ChainsType = "PositionLevel";
+                    ReplaceChains(p.GetDeterminedChains());
+                    break;
+                case MolecularSpeciesLevelChains m:
+                    ChainsType = "MolecularSpeciesLevel";
+                    ReplaceChains(m.GetDeterminedChains());
+                    break;
+                default:
+                    ChainsType = "SubMolecularLevel";
+                    ChainsStr = chains.ToString();
+                    break;
+            }
+        }
+
+        // Copies the double-bond/oxidation *positions* too, not just their counts: a plasmalogen
+        // ("P-") alkyl chain is only distinguished from a plain alkyl-ether ("O-") chain by having
+        // an explicit double bond at position 1 (see AlkylChain.IsPlasmalogen). Dropping positions
+        // here used to silently turn "P-18:0" into an undetermined "O-18:1" chain on Apply.
+        private void ReplaceChains(IEnumerable<IChain> chains) {
+            Chains.Clear();
+            foreach (var chain in chains) {
+                var chainModel = new ChainSelectionModel {
+                    ChainType = chain is AlkylChain ? "Alkyl" : "Acyl",
+                    CarbonCount = chain.CarbonCount,
+                    DoubleBondCount = chain.DoubleBondCount,
+                    OxidizedCount = chain.OxidizedCount,
+                };
+                foreach (var bond in chain.DoubleBond.Bonds) {
+                    chainModel.DoubleBonds.Add(new DoubleBondSetModel {
+                        Position = bond.Position,
+                        BondType = bond.State switch {
+                            DoubleBondState.E => "E",
+                            DoubleBondState.Z => "Z",
+                            _ => string.Empty,
+                        },
+                    });
+                }
+                foreach (var position in chain.Oxidized.Oxidises) {
+                    chainModel.Oxidises.Add(new OxidizedSetModel { Position = position });
+                }
+                Chains.Add(chainModel);
+            }
+        }
+
+        // The exact mass is never taken from the manually-editable Mass field: production code
+        // (e.g. PCLipidParser) always derives it from the class-specific skeleton formula plus the
+        // actual chains, so a hand-typed number here could silently drift from the real chains and
+        // throw off every neutral-loss ion (e.g. "M+Proton-SN1Acyl-H2O") computed from it. Route
+        // through the same registered parsers used by the real annotation pipeline instead, and
+        // mirror the resulting mass back into Mass so it's visible (read-only) in the UI.
         public ILipid Create() {
-            return new Lipid(LipidClass, Mass, CreateChains());
+            if (ChainsType != "SubMolecularLevel" && Chains.Count == 0) {
+                // SeparatedChains (the base of MolecularSpeciesLevelChains/PositionLevelChains) throws
+                // a bare ArgumentException("chains") for an empty array; catch it here instead so the
+                // message actually tells the user what to do.
+                throw new InvalidOperationException(
+                    $"No chains are specified for {LipidClass} ({ChainsType}). " +
+                    "Add at least one chain with the + button before generating.");
+            }
+            var chains = CreateChains();
+            var chainsText = chains?.ToString();
+            if (string.IsNullOrEmpty(chainsText)) {
+                throw new InvalidOperationException(
+                    $"No chains are specified for {LipidClass} ({ChainsType}). " +
+                    "Add at least one chain with the + button before generating.");
+            }
+            // Many LbmClass values (OxPC, Cer_NS, HexCer_NS, ASM, ...) are never a parser lookup key by
+            // themselves - a single parser Target ("PC", "Cer", "HexCer", "SM", ...) can emit several
+            // different LbmClass outputs depending on the chains (oxidized count, hydroxylation
+            // pattern, etc.), so "{LipidClass} ..." only resolves for classes whose name equals their
+            // own parser's Target. LipidClassDictionary's DisplayName column is exactly the base name
+            // LipidParsers.tt/the hand-written Cer/HexCer parsers key off (verified against
+            // LipidClassProperties.csv, e.g. "OxPC,PC" / "Cer_NS,Cer" / "HexCer_NS,HexCer" /
+            // "ASM,SM"), so try the class's own name first and fall back to that.
+            var lipid = TryParseLipid(LipidClass, chainsText);
+            if (lipid is null) {
+                var displayName = LipidClassDictionary.Default.LbmItems.TryGetValue(LipidClass, out var prop) ? prop.DisplayName : null;
+                if (!string.IsNullOrEmpty(displayName) && displayName != LipidClass.ToString()) {
+                    lipid = TryParseLipid(displayName, chainsText);
+                }
+            }
+            if (lipid is null) {
+                throw new InvalidOperationException(
+                    $"Could not resolve the exact mass for {LipidClass} {chainsText}: no registered " +
+                    "lipid parser recognizes this class, or the chains above are not in a supported format.");
+            }
+            if (lipid.LipidClass != LipidClass) {
+                throw new InvalidOperationException(
+                    $"Parsing {LipidClass} {chainsText} produced {lipid.LipidClass} instead. The chains " +
+                    "above don't carry whatever distinguishes this class (e.g. an Oxidized count for " +
+                    "Ox* classes, or a hydroxylation pattern for Cer/HexCer subclasses).");
+            }
+            Mass = lipid.Mass;
+            return lipid;
+        }
+
+        private static ILipid TryParseLipid(object lookupClass, string chainsText) {
+            return FacadeLipidParser.Default.Parse($"{lookupClass} {chainsText}");
         }
 
         public ITotalChain CreateChains() {
