@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.Text;
 using System.ComponentModel;
 using System.Text;
+using System.Globalization;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.SourceGenerator;
@@ -160,6 +162,7 @@ namespace CompMs.Common.Lipidomics {
 #pragma warning disable CS8602
 #pragma warning disable CS8603
 #pragma warning disable CS8604
+#pragma warning disable CS0436
 
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
@@ -174,7 +177,7 @@ namespace CompMs.Common.Lipidomics {
 
 """);
 
-        IEnumerable<XElement> lipidMSElements = [];
+        IEnumerable<(XElement Element, string Path)> lipidMSElements = [];
         foreach (var file in files)
         {
             var content = file.GetText(spc.CancellationToken)?.ToString();
@@ -183,17 +186,21 @@ namespace CompMs.Common.Lipidomics {
                 continue;
             }
 
-            var doc = XDocument.Parse(content);
-            lipidMSElements = lipidMSElements.Concat(doc.Descendants("LipidMS").Where(e => e.Elements("LipidClass").Any()));
+            var doc = XDocument.Parse(content, LoadOptions.SetLineInfo);
+            var path = file.Path;
+            lipidMSElements = lipidMSElements.Concat(doc.Descendants("LipidMS").Where(e => e.Elements("LipidClass").Any()).Select(e => (e, path)));
         }
 
         var ctx = new Context([.. constants]);
+        var generatedClasses = new List<(string LipidClass, string TypeName)>();
 
-        foreach (var group in lipidMSElements.GroupBy(e => e.Element("LipidClass").Value))
+        foreach (var group in lipidMSElements.GroupBy(e => e.Element.Element("LipidClass").Value))
         {
             var lipidClass = group.Key;
+            var typeName = $"{lipidClass}{category ?? string.Empty}LipidSpectrumGenerator";
+            generatedClasses.Add((lipidClass, typeName));
 
-            var lipidMSsAll = group.Select(e => ToLipidMS(ctx, e)).ToList();
+            var lipidMSsAll = group.Select(e => ToLipidMS(ctx, e.Element, e.Path, spc.ReportDiagnostic)).ToList();
             var targetKeys = new HashSet<string> { "Precursors", "ChainIons", "ClassIons" };
             var lipidMSs = lipidMSsAll
                 .Select(ms =>
@@ -206,7 +213,7 @@ namespace CompMs.Common.Lipidomics {
                 })
                 .ToList();
             result.AppendLine();
-            result.AppendLine($"    public sealed class {lipidClass}{category ?? string.Empty}LipidSpectrumGenerator  {{");
+            result.AppendLine($"    public sealed class {typeName} : ILipidSpectrumModel {{");
 
             result.AppendLine("""
         public List<SpectrumPeak>? Generate(Lipid lipid, AdductIon adduct) {
@@ -215,6 +222,62 @@ namespace CompMs.Common.Lipidomics {
 """);
 
             var def = defs.FirstOrDefault(d => d.Name == lipidClass);
+            AppendChainDeclarations(result, lipidClass, def);
+            result.AppendLine("""
+            var peaks = new List<SpectrumPeak>();
+            switch (adduct.AdductIonName) {
+""");
+
+            foreach (var lipidMS in lipidMSs)
+            {
+                result.AppendLine($"""
+                case "{lipidMS.Adduct}":
+                    M = lipid.Mass;
+""");
+                AppendChainAssignments(result, lipidClass, def, lipidMS);
+
+                foreach (var ions in lipidMS.Ions)
+                {
+                    if (!ions.Value.Any())
+                    {
+                        continue;
+                    }
+
+                    result.AppendLine($"""
+
+                    // {ions.Key}
+                    peaks.AddRange([
+{ForEachLine("                        ", ions.Value.Select(ion => $"new SpectrumPeak({ion.Mz}, {ion.Intensity}, \"{ion.Comment}\"),"))}
+                    ]);
+""");
+                }
+
+                result.AppendLine("""
+                    return peaks;
+
+""");
+            }
+
+            result.AppendLine("""
+                default: return null;
+            }
+        }
+""");
+
+            AppendModelMembers(result, lipidClass, def, lipidMSsAll);
+
+            result.AppendLine("    }");
+        }
+
+        AppendRegistry(result, category ?? string.Empty, generatedClasses);
+
+        result.AppendLine("}");
+        spc.AddSource($"{category}LipidSpectrumGenerator.g.cs", SourceText.From(result.ToString(), Encoding.UTF8));
+    }
+
+    // Declares the chain mass locals of a generated method. Shared by Generate and GenerateFragments.
+    private static void AppendChainDeclarations(StringBuilder result, string lipidClass, LipidDefinition? def)
+    {
             if (def is not null)
             {
                 if (lipidClass.Contains("Ether"))
@@ -274,17 +337,11 @@ namespace CompMs.Common.Lipidomics {
             {
                 result.AppendLine($"                    (AlkylChain alkyl, AcylChain acyl) = lipid.Chains.Deconstruct<AlkylChain, AcylChain>();");
             }
-            result.AppendLine("""
-            var peaks = new List<SpectrumPeak>();
-            switch (adduct.AdductIonName) {
-""");
+    }
 
-            foreach (var lipidMS in lipidMSs)
-            {
-                result.AppendLine($"""
-                case "{lipidMS.Adduct}":
-                    M = lipid.Mass;
-""");
+    // Assigns the chain mass locals inside one adduct case. Shared by Generate and GenerateFragments.
+    private static void AppendChainAssignments(StringBuilder result, string lipidClass, LipidDefinition? def, LipidMS lipidMS)
+    {
                 if (def is not null)
                 {
                     if (lipidClass.Contains("Ether"))
@@ -442,42 +499,116 @@ namespace CompMs.Common.Lipidomics {
                         }
                     }
                 }
+    }
 
-                foreach (var ions in lipidMS.Ions)
-                {
-                    if (!ions.Value.Any())
-                    {
-                        continue;
-                    }
-
-                    result.AppendLine($"""
-
-                    // {ions.Key}
-                    peaks.AddRange([
-{ForEachLine("                        ", ions.Value.Select(ion => $"new SpectrumPeak({ion.Mz}, {ion.Intensity}, \"{ion.Comment}\"),"))}
-                    ]);
-""");
-                }
-
-                result.AppendLine("""
-                    return peaks;
-
-""");
+    // Emits the ILipidSpectrumModel members: one static rule set per adduct and GenerateFragments,
+    // which evaluates every rule (including invisible and prohibited ions) with the same chain
+    // assignment as Generate.
+    private static void AppendModelMembers(StringBuilder result, string lipidClass, LipidDefinition? def, List<LipidMS> lipidMSs)
+    {
+        result.AppendLine();
+        result.AppendLine($"        public string LipidClassName => {Literal(lipidClass)};");
+        result.AppendLine();
+        for (var i = 0; i < lipidMSs.Count; i++)
+        {
+            var lipidMS = lipidMSs[i];
+            result.AppendLine($"        private static readonly LipidSpectrumRuleSet _ruleSet{i} = new LipidSpectrumRuleSet({Literal(lipidClass)}, {Literal(lipidMS.Adduct)}, LipidSpectrumResolution.{lipidMS.LSILevel}, new LipidFragmentRule[] {{");
+            foreach (var ion in GetModelIons(lipidMS))
+            {
+                result.AppendLine($"            new LipidFragmentRule(LipidFragmentKind.{ion.Kind}, {Literal(ion.Comment)}, {ion.Intensity}, {Bool(ion.IsDiagnostic)}, {Bool(ion.IsPositionDiagnostic)}, {NullableLiteral(ion.DiagnosticIonGroup)}, {ion.DiagnosticIonCount?.ToString(CultureInfo.InvariantCulture) ?? "null"}, {ion.DiagnosticIonIntensity?.ToString("R", CultureInfo.InvariantCulture) ?? "null"}),");
             }
+            result.AppendLine("        });");
+        }
+        result.AppendLine();
+        result.AppendLine($"        private static readonly LipidSpectrumRuleSet[] _ruleSets = new LipidSpectrumRuleSet[] {{ {string.Join(", ", Enumerable.Range(0, lipidMSs.Count).Select(i => $"_ruleSet{i}"))} }};");
+        result.AppendLine();
+        result.AppendLine("        public IReadOnlyList<LipidSpectrumRuleSet> RuleSets => _ruleSets;");
+        result.AppendLine();
+        result.AppendLine("""
+        public LipidSpectrumRuleSet? FindRuleSet(string adductIonName) {
+            switch (adductIonName) {
+""");
+        for (var i = 0; i < lipidMSs.Count; i++)
+        {
+            result.AppendLine($"                case {Literal(lipidMSs[i].Adduct)}: return _ruleSet{i};");
+        }
+        result.AppendLine("""
+                default: return null;
+            }
+        }
 
-            result.AppendLine("""
+        public IReadOnlyList<LipidFragment>? GenerateFragments(Lipid lipid, AdductIon adduct) {
+            double M;
+            var chains = lipid.Chains.GetDeterminedChains();
+""");
+        AppendChainDeclarations(result, lipidClass, def);
+        result.AppendLine("""
+            switch (adduct.AdductIonName) {
+""");
+        for (var i = 0; i < lipidMSs.Count; i++)
+        {
+            var lipidMS = lipidMSs[i];
+            result.AppendLine($"""
+                case "{lipidMS.Adduct}":
+                    M = lipid.Mass;
+""");
+            AppendChainAssignments(result, lipidClass, def, lipidMS);
+            var ions = GetModelIons(lipidMS);
+            result.AppendLine("                    return new LipidFragment[] {");
+            for (var j = 0; j < ions.Count; j++)
+            {
+                result.AppendLine($"                        new LipidFragment(_ruleSet{i}.Rules[{j}], {ions[j].Mz}),");
+            }
+            result.AppendLine("                    };");
+            result.AppendLine();
+        }
+        result.AppendLine("""
                 default: return null;
             }
         }
 """);
-
-
-            result.AppendLine("    }");
-        }
-
-        result.AppendLine("}");
-        spc.AddSource($"{category}LipidSpectrumGenerator.g.cs", SourceText.From(result.ToString(), Encoding.UTF8));
     }
+
+    // Every ion of an entry in XML order, the order the rule set and GenerateFragments share.
+    private static List<Ion> GetModelIons(LipidMS lipidMS)
+    {
+        return lipidMS.Ions.Values.SelectMany(ions => ions).Where(ion => ion.Kind is not null).ToList();
+    }
+
+    private static void AppendRegistry(StringBuilder result, string category, List<(string LipidClass, string TypeName)> generatedClasses)
+    {
+        result.AppendLine();
+        result.AppendLine($$"""
+    /// <summary>Every source generated {{category}} lipid spectrum model, keyed by the XML &lt;LipidClass&gt; text.</summary>
+    public static class {{category}}LipidSpectrumModels {
+        private static readonly ILipidSpectrumModel[] _all = new ILipidSpectrumModel[] {
+""");
+        foreach (var (_, typeName) in generatedClasses)
+        {
+            result.AppendLine($"            new {typeName}(),");
+        }
+        result.AppendLine("""
+        };
+
+        private static readonly Dictionary<string, ILipidSpectrumModel> _byName = _all.ToDictionary(m => m.LipidClassName);
+
+        public static IReadOnlyList<ILipidSpectrumModel> All => _all;
+
+        public static ILipidSpectrumModel? Find(string lipidClassName) {
+            return lipidClassName != null && _byName.TryGetValue(lipidClassName, out var model) ? model : null;
+        }
+    }
+""");
+    }
+
+    private static string Literal(string value)
+    {
+        return "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n") + "\"";
+    }
+
+    private static string NullableLiteral(string? value) => value is null ? "null" : Literal(value);
+
+    private static string Bool(bool value) => value ? "true" : "false";
 
     private static string ForEachLine(string indent, IEnumerable<string> contents)
     {
@@ -486,7 +617,7 @@ namespace CompMs.Common.Lipidomics {
 
     readonly static List<string> _specialElements = ["LipidClass", "LSILevel", "Adduct"];
 
-    private static LipidMS ToLipidMS(Context ctx, XElement element)
+    private static LipidMS ToLipidMS(Context ctx, XElement element, string path, Action<Diagnostic> report)
     {
         var adduct = element.Element("Adduct")?.Value ?? string.Empty;
         var lsiLevelValue = element.Element("LSILevel")?.Value;
@@ -502,6 +633,7 @@ namespace CompMs.Common.Lipidomics {
         else if (!Enum.TryParse<LSILevel>(lsiLevelValue, out lsiLevel))
         {
             lsiLevel = LSILevel.None;
+            report(Diagnostic.Create(InvalidValueRule, GetLocation(path, element.Element("LSILevel") ?? element), "LSILevel", lsiLevelValue ?? "(missing)", "None"));
         }
         var ions = new Dictionary<string, List<Ion>>();
 
@@ -510,42 +642,191 @@ namespace CompMs.Common.Lipidomics {
         foreach (var ionGroup in ionElements)
         {
             var key = ionGroup.Name.LocalName;
+            var kind = _ionKinds.TryGetValue(key, out var k) ? k : (IonKind?)null;
+            if (kind is null)
+            {
+                report(Diagnostic.Create(UnknownIonListRule, GetLocation(path, ionGroup), key));
+            }
+            var parsed = ionGroup.Elements()
+                .Select(e => ToIon(ctx, e, kind, path, report))
+                .OfType<Ion>()
+                .ToList();
             if (!ions.TryGetValue(key, out var list))
             {
-                ions[key] = ionGroup.Elements().Select(e => ToIon(ctx, e)).ToList();
+                ions[key] = parsed;
                 continue;
             }
-            list.AddRange(ionGroup.Elements().Select(e => ToIon(ctx, e)).ToList());
+            list.AddRange(parsed);
         }
 
         return new(adduct, lsiLevel, ions);
     }
 
-    readonly static List<string> _peakElements = ["MZ", "Intensity", "Comment", "Charge", "Formula"];
-
-    private static Ion ToIon(Context ctx, XElement element)
+    enum IonKind
     {
-        var mz = element.Element("MZ")?.Value ?? string.Empty;
-        var intensity = element.Element("Intensity")?.Value ?? "0";
+        Precursor,
+        ClassIon,
+        ChainIon,
+        InvisibleIon,
+        ProhibitedIon,
+    }
+
+    readonly static Dictionary<string, IonKind> _ionKinds = new()
+    {
+        ["Precursors"] = IonKind.Precursor,
+        ["ClassIons"] = IonKind.ClassIon,
+        ["ChainIons"] = IonKind.ChainIon,
+        ["InvisibleIons"] = IonKind.InvisibleIon,
+        ["ProhibitedIons"] = IonKind.ProhibitedIon,
+    };
+
+    readonly static List<string> _peakElements = [
+        "MZ", "Intensity", "Comment", "Charge", "Formula",
+        "InvisibleIonMZ", "InvisibleIonIntensity", "ProhibitedIonMZ", "ProhibitedIonIntensity",
+        "IsDiagnostic", "IsPositionDiagnostic", "DiagnosticIonGroup", "DiagnosticIonCount", "DiagnosticIonIntensity",
+    ];
+
+    readonly static System.Text.RegularExpressions.Regex _bareSnTermRegex = new(@"\bSN\d+\b");
+
+    // Returns null (and reports why) for an ion whose m/z cannot be turned into C#; such an ion is
+    // left out of both Generate and the rule set instead of breaking the whole generated file.
+    private static Ion? ToIon(Context ctx, XElement element, IonKind? kind, string path, Action<Diagnostic> report)
+    {
+        var (mzElement, intensityElement) = kind switch
+        {
+            IonKind.InvisibleIon => ("InvisibleIonMZ", "InvisibleIonIntensity"),
+            IonKind.ProhibitedIon => ("ProhibitedIonMZ", "ProhibitedIonIntensity"),
+            _ => ("MZ", "Intensity"),
+        };
+        var mz = element.Element(mzElement)?.Value ?? string.Empty;
+        var intensity = element.Element(intensityElement)?.Value ?? "0";
         var comment = element.Element("Comment")?.Value ?? string.Empty;
         var charge = element.Element("Charge")?.Value ?? "0";
         var formula = element.Element("Formula")?.Value ?? string.Empty;
+        if (comment.Length == 0 && kind is IonKind.InvisibleIon or IonKind.ProhibitedIon)
+        {
+            // These lists carry no <Comment>; label them with their formula for display.
+            comment = mz;
+        }
 
         using var handle = ctx.CreateRegisterHandle();
         LoadElements(handle, element);
         var parser = new FormulaSentenceParser();
-        if (parser.Parse(mz) is { } mzSentence)
+        try
         {
-            mz = ctx.Resolve(mzSentence);
+            if (parser.Parse(mz) is { } mzSentence)
+            {
+                mz = ctx.Resolve(mzSentence);
+            }
+            else if (charge != "0" && int.TryParse(charge, out var c) && parser.Parse(formula) is { } formulaSentence)
+            {
+                formula = ctx.Resolve(formulaSentence);
+                mz = $"(({formula}) - ({c} * e)) / {Math.Abs(c)}";
+            }
+            else if (kind is IonKind.InvisibleIon or IonKind.ProhibitedIon)
+            {
+                // These lists never reached the generated code before, so there is no established
+                // raw pass-through to keep: an unparsable formula is reported and skipped.
+                report(Diagnostic.Create(UnresolvableIonRule, GetLocation(path, element), mz, "not a formula"));
+                return null;
+            }
         }
-        else if (charge != "0" && int.TryParse(charge, out var c) && parser.Parse(formula) is { } formulaSentence)
+        catch (InvalidOperationException ex)
         {
-            formula = ctx.Resolve(formulaSentence);
-            mz = $"(({formula}) - ({c} * e)) / {Math.Abs(c)}";
+            report(Diagnostic.Create(UnresolvableIonRule, GetLocation(path, element), mz, ex.Message));
+            return null;
+        }
+        // Context passes chain terms through verbatim, so a bare "SN1" (instead of "SN1Acyl" etc.)
+        // would only surface as an undeclared identifier in the generated code.
+        if (_bareSnTermRegex.Match(mz) is { Success: true } bare)
+        {
+            report(Diagnostic.Create(UnresolvableIonRule, GetLocation(path, element), element.Element(mzElement)?.Value ?? mz, $"'{bare.Value}' is not a chain mass (SN{{n}}Acyl, SN{{n}}Alkyl, ...)"));
+            return null;
+        }
+        if (!double.TryParse(intensity, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+        {
+            report(Diagnostic.Create(UnresolvableIonRule, GetLocation(path, element), mz, $"intensity '{intensity}' is not a number"));
+            return null;
         }
 
-        return new() { Mz = mz, Intensity = intensity, Comment = comment };
+        return new()
+        {
+            Mz = mz,
+            Intensity = intensity,
+            Comment = comment,
+            Kind = kind,
+            IsDiagnostic = ReadFlag(element, "IsDiagnostic", path, report),
+            IsPositionDiagnostic = ReadFlag(element, "IsPositionDiagnostic", path, report),
+            DiagnosticIonGroup = element.Element("DiagnosticIonGroup")?.Value,
+            DiagnosticIonCount = ReadNumber(element, "DiagnosticIonCount", path, report, s => int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var v) ? v : (int?)null),
+            DiagnosticIonIntensity = ReadNumber(element, "DiagnosticIonIntensity", path, report, s => double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : (double?)null),
+        };
     }
+
+    private static bool ReadFlag(XElement element, string name, string path, Action<Diagnostic> report)
+    {
+        var child = element.Element(name);
+        switch (child?.Value.Trim())
+        {
+            case null:
+            case "0":
+                return false;
+            case "1":
+                return true;
+            default:
+                report(Diagnostic.Create(InvalidValueRule, GetLocation(path, child), name, child.Value, "false"));
+                return false;
+        }
+    }
+
+    private static T? ReadNumber<T>(XElement element, string name, string path, Action<Diagnostic> report, Func<string, T?> parse) where T : struct
+    {
+        var child = element.Element(name);
+        if (child is null)
+        {
+            return null;
+        }
+        var value = parse(child.Value.Trim());
+        if (value is null)
+        {
+            report(Diagnostic.Create(InvalidValueRule, GetLocation(path, child), name, child.Value, "unset"));
+        }
+        return value;
+    }
+
+    private static Location GetLocation(string path, XElement element)
+    {
+        if (element is IXmlLineInfo info && info.HasLineInfo())
+        {
+            var position = new LinePosition(info.LineNumber - 1, Math.Max(0, info.LinePosition - 1));
+            return Location.Create(path, default, new LinePositionSpan(position, position));
+        }
+        return Location.Create(path, default, default);
+    }
+
+    private static readonly DiagnosticDescriptor UnresolvableIonRule = new(
+        "LSG001",
+        "Ion rule skipped",
+        "Ion '{0}' was skipped: {1}",
+        "LipidSpectrumModel",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    private static readonly DiagnosticDescriptor InvalidValueRule = new(
+        "LSG002",
+        "Unrecognized value",
+        "<{0}> value '{1}' is not recognized; treated as {2}",
+        "LipidSpectrumModel",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
+
+    private static readonly DiagnosticDescriptor UnknownIonListRule = new(
+        "LSG003",
+        "Unknown ion list",
+        "<{0}> is not a known ion list and is ignored",
+        "LipidSpectrumModel",
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
 
     private static void LoadElements(Context.RegisterHandle handle, XElement element)
     {
@@ -585,6 +866,12 @@ namespace CompMs.Common.Lipidomics {
         public string Mz { get; set; } = "0";
         public string Intensity { get; set; } = "0";
         public string Comment { get; set; } = string.Empty;
+        public IonKind? Kind { get; set; }
+        public bool IsDiagnostic { get; set; }
+        public bool IsPositionDiagnostic { get; set; }
+        public string? DiagnosticIonGroup { get; set; }
+        public int? DiagnosticIonCount { get; set; }
+        public double? DiagnosticIonIntensity { get; set; }
     }
 
     class LipidDefinition

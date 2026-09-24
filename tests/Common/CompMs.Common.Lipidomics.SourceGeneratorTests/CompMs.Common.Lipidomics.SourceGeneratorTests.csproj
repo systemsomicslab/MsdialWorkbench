@@ -41,6 +41,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The XML CommonStandard generates from, read by LipidSpectrumModelTests to check the emitted rule metadata. -->
+    <Content Include="..\..\..\src\Common\CommonStandard\Lipidomics\MsdialLipidCidSpectrumModel.xml" Link="MsdialLipidCidSpectrumModel.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="LipidSpectrumGeneratorTest_Others.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
