@@ -33,10 +33,10 @@ public sealed class LcmsProcess
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
         => RunCore(inputFolder, outputFolder, methodFile, isProjectSaved, targetMz, null);
 
-    public int RunWithMolecularNetworking(string inputFolder, string outputFolder, string methodFile, string msnMethodFile, bool isProjectSaved, float targetMz)
-        => RunCore(inputFolder, outputFolder, methodFile, isProjectSaved, targetMz, ConfigParser.ReadForMoleculerNetworkingParameter(msnMethodFile));
+    public int RunWithMolecularNetworking(string inputFolder, string outputFolder, string methodFile, string msnMethodFile, bool isProjectSaved, float targetMz, bool resume = false)
+        => RunCore(inputFolder, outputFolder, methodFile, isProjectSaved, targetMz, ConfigParser.ReadForMoleculerNetworkingParameter(msnMethodFile), resume);
 
-    private int RunCore(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz, MolecularSpectrumNetworkingBaseParameter? networkingParameter)
+    private int RunCore(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz, MolecularSpectrumNetworkingBaseParameter? networkingParameter, bool resume = false)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
@@ -73,8 +73,24 @@ public sealed class LcmsProcess
             }
         }
 
+        var resumeFromAnalysis = false;
+        if (resume && networkingParameter is not null) {
+            if (TryResumeMolecularNetworking(outputFolder, networkingParameter, analysisFiles.Count)) {
+                return 0;
+            }
+            resumeFromAnalysis = HasValidAnalysisResults(analysisFiles);
+            Console.WriteLine(resumeFromAnalysis
+                ? "Resume: valid analysis results found; starting from alignment."
+                : "Resume: no complete valid intermediate results found; starting from analysis.");
+        }
+
         try {
-            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, outputFolder);
+            if (resumeFromAnalysis) {
+                Console.WriteLine("Resume: retention-time correction preparation is skipped.");
+            }
+            else {
+                RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, outputFolder);
+            }
         }
         catch (Exception ex) {
             Console.Error.WriteLine($"RT correction failed: {ex}");
@@ -130,7 +146,7 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, networkingParameter).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, networkingParameter, resumeFromAnalysis).Result;
     }
 
     private async Task<int> ExecuteAsync(
@@ -140,7 +156,8 @@ public sealed class LcmsProcess
         bool isAlignmentLightMode,
         bool exportDetailedAlignmentProvenance,
         bool exportAnnotationCandidates,
-        MolecularSpectrumNetworkingBaseParameter? networkingParameter) {
+        MolecularSpectrumNetworkingBaseParameter? networkingParameter,
+        bool resumeFromAnalysis) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -148,16 +165,18 @@ public sealed class LcmsProcess
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
         var providerFactory = new StandardDataProviderFactory(5, false);
-        var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
-        var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
-        await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
+        if (!resumeFromAnalysis) {
+            var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
+            var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
+            await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
+        }
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Math.Max(1, Environment.ProcessorCount / 2));
-        var tasks = new Task[files.Count];
-        for (int i = 0; i < files.Count; i++) {
+        var tasks = resumeFromAnalysis ? Array.Empty<Task>() : new Task[files.Count];
+        for (int i = 0; i < tasks.Length; i++) {
             var file = files[i];
             tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
@@ -358,6 +377,87 @@ public sealed class LcmsProcess
         }
 
         return 0;
+    }
+
+    private static bool TryResumeMolecularNetworking(
+        string outputFolder,
+        MolecularSpectrumNetworkingBaseParameter parameter,
+        int fileCount) {
+        if (!Directory.Exists(outputFolder)) {
+            return false;
+        }
+        var candidates = Directory.EnumerateFiles(outputFolder, "AlignResult-*.arf*", SearchOption.TopDirectoryOnly)
+            .Where(path => Path.GetExtension(path).Equals(".arf", StringComparison.OrdinalIgnoreCase)
+                || Path.GetExtension(path).Equals(".arf2", StringComparison.OrdinalIgnoreCase))
+            .Where(path => Path.GetFileNameWithoutExtension(path).IndexOf('_') < 0)
+            .OrderByDescending(File.GetLastWriteTimeUtc);
+        foreach (var candidate in candidates) {
+            var logicalPath = candidate.EndsWith(".arf2", StringComparison.OrdinalIgnoreCase)
+                ? candidate.Substring(0, candidate.Length - 1)
+                : candidate;
+            var alignmentFile = new AlignmentFileBean {
+                FilePath = logicalPath,
+                FileName = Path.GetFileNameWithoutExtension(logicalPath),
+                SpectraFilePath = Path.ChangeExtension(logicalPath, ".dcl"),
+            };
+            if (!File.Exists(alignmentFile.SpectraFilePath)) {
+                continue;
+            }
+            try {
+                var result = AlignmentResultContainer.Load(alignmentFile);
+                if (result?.AlignmentSpotProperties is null) {
+                    continue;
+                }
+                MsdecResultsReader.GetSeekPointers(alignmentFile.SpectraFilePath, out _, out var pointers, out _);
+                using var loader = new MSDecLoader(alignmentFile.SpectraFilePath, new List<string>());
+                var spectra = new List<MSDecResult>(result.AlignmentSpotProperties.Count);
+                foreach (var spot in result.AlignmentSpotProperties) {
+                    if (spot.MasterAlignmentID < 0 || spot.MasterAlignmentID >= pointers.Count) {
+                        throw new InvalidDataException($"Alignment spectrum ID {spot.MasterAlignmentID} is out of range.");
+                    }
+                    spectra.Add(loader.LoadMSDecResult(spot.MasterAlignmentID)
+                        ?? throw new InvalidDataException($"Alignment spectrum ID {spot.MasterAlignmentID} could not be loaded."));
+                }
+                Console.WriteLine($"Resume: valid alignment result found; generating molecular network from {Path.GetFileName(candidate)}.");
+                AlignmentMolecularNetworkExporter.Export(
+                    result.AlignmentSpotProperties,
+                    spectra,
+                    parameter,
+                    fileCount,
+                    Path.Combine(outputFolder, "msn"));
+                return true;
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"Resume: ignored invalid alignment result {Path.GetFileName(candidate)}: {ex.Message}");
+            }
+        }
+        return false;
+    }
+
+    private static bool HasValidAnalysisResults(IReadOnlyList<AnalysisFileBean> files) {
+        if (files.Count == 0) {
+            return false;
+        }
+        foreach (var file in files) {
+            var peakPath = File.Exists(file.PeakAreaBeanInformationFilePath)
+                ? file.PeakAreaBeanInformationFilePath
+                : file.PeakAreaBeanInformationFilePath + "2";
+            if (!File.Exists(peakPath) || !File.Exists(file.DeconvolutionFilePath)) {
+                return false;
+            }
+            try {
+                var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out _, out var pointers, out _);
+                if (peaks is null || peaks.Any(peak => peak.GetMSDecResultID() < 0 || peak.GetMSDecResultID() >= pointers.Count)) {
+                    return false;
+                }
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"Resume: invalid analysis result for {file.AnalysisFileName}: {ex.Message}");
+                return false;
+            }
+        }
+        return true;
     }
 
     private static IEnumerable<AlignmentSpotProperty> FlattenSpots(IEnumerable<AlignmentSpotProperty> spots) {

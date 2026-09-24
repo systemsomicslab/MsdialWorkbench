@@ -110,7 +110,7 @@ public class AlignmentMolecularNetworkExporterTests
             Assert.IsTrue(parsed.Errors.Count > 0);
             var msnParameter = Path.Combine(folder, "msn.txt");
             File.WriteAllText(msnParameter, "");
-            parsed = root.Parse(new[] { "lcms-msn", "-i", input, "-o", folder, "-m", lcmsParameter, "-mn", msnParameter });
+            parsed = root.Parse(new[] { "lcms-msn", "-i", input, "-o", folder, "-m", lcmsParameter, "-mn", msnParameter, "--resume" });
             Assert.AreEqual(0, parsed.Errors.Count);
         });
     }

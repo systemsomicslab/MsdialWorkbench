@@ -164,6 +164,9 @@ public static class MainProcess
         {
             Description = "Option to run as target mode. please set m/z",
         };
+        var resumeOpt = new Option<bool>("--resume") {
+            Description = "Resume from the latest valid alignment result, or from completed analysis results when no valid alignment result exists.",
+        };
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<FileSystemInfo>();
             if (input is null || !input.Exists) {
@@ -198,6 +201,7 @@ public static class MainProcess
         cmd.Options.Add(methodOpt);
         cmd.Options.Add(projectOpt);
         cmd.Options.Add(targetOpt);
+        cmd.Options.Add(resumeOpt);
         cmd.SetAction(parseResult => {
             try {
                 var inputFolder = parseResult.GetRequiredValue(inputOpt);
@@ -205,7 +209,7 @@ public static class MainProcess
                 var methodFile = parseResult.GetRequiredValue(methodOpt);
                 var isProjectStore = parseResult.GetValue(projectOpt);
                 var targetMz = parseResult.GetResult(targetOpt)?.GetValueOrDefault<float>() ?? -1f;
-                return new LcmsProcess().RunWithMolecularNetworking(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, parseResult.GetRequiredValue(msnMethodOpt).FullName, isProjectStore, targetMz) == 0 ? 0 : 1;
+                return new LcmsProcess().RunWithMolecularNetworking(inputFolder.FullName, outputFolder.FullName, methodFile.FullName, parseResult.GetRequiredValue(msnMethodOpt).FullName, isProjectStore, targetMz, parseResult.GetValue(resumeOpt)) == 0 ? 0 : 1;
             }
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
