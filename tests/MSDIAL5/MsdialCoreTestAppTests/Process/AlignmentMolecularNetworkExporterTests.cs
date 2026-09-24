@@ -35,7 +35,8 @@ public class AlignmentMolecularNetworkExporterTests
 
             var nodes = File.ReadAllLines(Path.Combine(folder, "node.txt"));
             CollectionAssert.AreEqual(new[] { "7", "19", "35" }, nodes.Skip(1).Select(line => line.Split('\t')[0]).ToArray());
-            Assert.IsTrue(nodes.Skip(1).All(line => int.Parse(line.Split('\t')[8]) >= 20));
+            Assert.AreEqual("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tSpectrum", nodes[0]);
+            Assert.AreEqual("50,100;100,80;150,1", nodes[1].Split('\t')[8]);
             var edges = File.ReadAllLines(Path.Combine(folder, "edge.txt"));
             Assert.AreEqual(2, edges.Length);
             Assert.AreEqual("SourceID\tTargetID\tScore\tMatchPeakCount", edges[0]);

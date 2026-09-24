@@ -6,6 +6,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,19 +39,46 @@ public static class AlignmentMolecularNetworkExporter
         }).ToList();
         Directory.CreateDirectory(outputFolder);
         var network = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, _ => { }, temporaryDirectory: outputFolder);
-        // Equal or zero peak heights have no size range in the shared builder.
-        foreach (var node in network.Root.nodes) {
-            if (node.data.Size < 20 || node.data.Size > 120) {
-                node.data.Size = 20;
-            }
-        }
         network.Root.edges.AddRange(MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(spot => spot.MasterAlignmentID, spot => spot.PeakCharacter)));
         if (parameter.MnIsExportIonCorrelation && fileCount >= 6) {
             network.Root.edges.AddRange(MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode));
         }
-        network.ExportNodeTable(Path.Combine(outputFolder, "node.txt"));
+        ExportNodeTable(network, Path.Combine(outputFolder, "node.txt"));
         ExportEdgeTable(network, Path.Combine(outputFolder, "edge.txt"));
     }
+
+    private static void ExportNodeTable(MolecularNetworkInstance network, string nodeFile) {
+        using var writer = new StreamWriter(nodeFile, false, new UTF8Encoding(false));
+        writer.WriteLine("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tSpectrum");
+        foreach (var nodeObject in network.Root.nodes) {
+            var node = nodeObject.data;
+            writer.WriteLine(String.Join("\t", new[] {
+                node.id.ToString(CultureInfo.InvariantCulture),
+                Sanitize(node.Name),
+                Sanitize(node.Rt),
+                Sanitize(node.Mz),
+                Sanitize(node.Formula),
+                Sanitize(node.Ontology),
+                Sanitize(node.InChiKey),
+                Sanitize(node.Smiles),
+                FormatSpectrum(node.MSMS),
+            }));
+        }
+    }
+
+    private static string FormatSpectrum(IReadOnlyList<List<double>> spectrum) {
+        if (spectrum is null) {
+            return String.Empty;
+        }
+        return String.Join(";", spectrum
+            .Where(peak => peak is { Count: >= 2 })
+            .Select(peak => $"{peak[0].ToString("G17", CultureInfo.InvariantCulture)},{peak[1].ToString("G17", CultureInfo.InvariantCulture)}"));
+    }
+
+    private static string Sanitize(string value) => (value ?? String.Empty)
+        .Replace('\t', ' ')
+        .Replace('\r', ' ')
+        .Replace('\n', ' ');
 
     private static void ExportEdgeTable(MolecularNetworkInstance network, string edgeFile) {
         using var writer = new StreamWriter(edgeFile, false, Encoding.ASCII);
