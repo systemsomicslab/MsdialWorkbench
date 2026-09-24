@@ -1,8 +1,12 @@
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
+using CompMs.Common.Parser;
+using CompMs.Common.Query;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -24,11 +28,14 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
         public LipidSpectrumXmlEditorModel() {
             Entries = new ObservableCollection<LipidMsEntryModel>();
             GeneratorCandidates = new ObservableCollection<LipidMsEntryModel>();
-            PreviewSpectrumModel = new SpectrumModel("Preview");
+            LibraryReferences = new ObservableCollection<MoleculeMsReference>();
+            LibraryCandidates = new ObservableCollection<MoleculeMsReference>();
+            PreviewSpectrumModel = new SplitSpectrumsModel("Preview");
             PreviewLipidModel = new LipidSelectionModel { ChainsType = "SubMolecularLevel" };
             PreviewLipidModel.PropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(LipidSelectionModel.LipidClass)) {
                     RefreshGeneratorCandidates();
+                    RefreshLibraryCandidates();
                 }
             };
             Adducts = new ObservableCollection<AdductIon>(DefaultAdductNames.Select(AdductIon.GetAdductIon));
@@ -154,6 +161,7 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             set {
                 if (SetProperty(ref previewAdduct, value)) {
                     RefreshGeneratorCandidates();
+                    RefreshLibraryCandidates();
                 }
             }
         }
@@ -221,9 +229,106 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             return 1;
         }
 
-        public SpectrumModel PreviewSpectrumModel { get; }
+        // The generated theoretical spectrum lives in the upper pane, an existing library spectrum
+        // (if one is loaded and matched) in the lower - the same mirror-plot component used
+        // elsewhere in the app for comparing two spectra.
+        public SplitSpectrumsModel PreviewSpectrumModel { get; }
 
         private MoleculeMsReference previewedReference;
+
+        public string LibraryFilePath {
+            get => libraryFilePath;
+            private set => SetProperty(ref libraryFilePath, value);
+        }
+        private string libraryFilePath;
+
+        public ObservableCollection<MoleculeMsReference> LibraryReferences { get; }
+
+        // Every loaded library reference whose OntologyOrCompoundClass/adduct matches the lipid
+        // currently built above - the library-comparison analogue of GeneratorCandidates.
+        public ObservableCollection<MoleculeMsReference> LibraryCandidates { get; }
+
+        public MoleculeMsReference SelectedLibraryReference {
+            get => selectedLibraryReference;
+            set {
+                if (SetProperty(ref selectedLibraryReference, value)) {
+                    if (previewedLibraryReference != null) {
+                        PreviewSpectrumModel.LowerSpectrumModel.RemoveScan(previewedLibraryReference);
+                        previewedLibraryReference = null;
+                    }
+                    if (value != null) {
+                        previewedLibraryReference = value;
+                        PreviewSpectrumModel.LowerSpectrumModel.AddScan(value);
+                    }
+                    RecomputeSimilarity();
+                }
+            }
+        }
+        private MoleculeMsReference selectedLibraryReference;
+        private MoleculeMsReference previewedLibraryReference;
+
+        public double? SimilarityScore {
+            get => similarityScore;
+            private set => SetProperty(ref similarityScore, value);
+        }
+        private double? similarityScore;
+
+        private void RecomputeSimilarity() {
+            SimilarityScore = previewedReference != null && SelectedLibraryReference != null
+                ? MsScanMatching.GetSimpleDotProduct(previewedReference, SelectedLibraryReference, 0.01, 0, 2000)
+                : (double?)null;
+        }
+
+        public void OpenLibrary(string path) {
+            var extension = Path.GetExtension(path).ToLowerInvariant();
+            List<MoleculeMsReference> references;
+            try {
+                switch (extension) {
+                    case ".lbm":
+                    case ".lbm2":
+                        var queries = new LipidQueryBean {
+                            SolventType = SolventType.CH3COONH4,
+                            LbmQueries = LbmQueryParcer.GetLbmQueries(isLabUseOnly: true),
+                        };
+                        references = LibraryHandler.ReadLipidMsLibrary(path, queries, PreviewAdduct?.IonMode ?? IonMode.Positive);
+                        break;
+                    case ".msp":
+                    case ".msp2":
+                        references = LibraryHandler.ReadMspLibrary(path);
+                        break;
+                    default:
+                        LastPreviewMessages = new[] { $"Unsupported library file extension: '{extension}' (expected .lbm/.lbm2/.msp/.msp2)." };
+                        return;
+                }
+            }
+            catch (System.Exception ex) {
+                LastPreviewMessages = new[] { $"Could not load library '{path}': {ex.Message}" };
+                return;
+            }
+            LibraryReferences.Clear();
+            foreach (var reference in references) {
+                LibraryReferences.Add(reference);
+            }
+            LibraryFilePath = path;
+            RefreshLibraryCandidates();
+        }
+
+        private void RefreshLibraryCandidates() {
+            LibraryCandidates.Clear();
+            if (LibraryReferences.Count == 0) {
+                return;
+            }
+            var lipidClassName = PreviewLipidModel.LipidClass.ToString();
+            var adductName = PreviewAdduct?.AdductIonName;
+            foreach (var reference in LibraryReferences.Where(r =>
+                    string.Equals(r.OntologyOrCompoundClass, lipidClassName, System.StringComparison.OrdinalIgnoreCase)
+                    && r.AdductType?.AdductIonName == adductName)) {
+                LibraryCandidates.Add(reference);
+            }
+            if (SelectedLibraryReference is null || !LibraryCandidates.Contains(SelectedLibraryReference)) {
+                SelectedLibraryReference = LibraryCandidates.FirstOrDefault();
+            }
+        }
 
         public IReadOnlyList<string> LastPreviewMessages {
             get => lastPreviewMessages;
@@ -334,6 +439,7 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
                 };
                 PreviewSpectrumModel.AddScan(previewedReference);
             }
+            RecomputeSimilarity();
 
             LastPreviewMessages = result.Messages;
         }

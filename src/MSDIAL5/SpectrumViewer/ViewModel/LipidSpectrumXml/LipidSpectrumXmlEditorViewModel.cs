@@ -1,4 +1,5 @@
 using CompMs.App.SpectrumViewer.Model.LipidSpectrumXml;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
 using Microsoft.Win32;
@@ -65,9 +66,17 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
                 }
             }).AddTo(Disposables);
 
-            PreviewSpectrumViewModel = new SpectrumViewModel(Model.PreviewSpectrumModel).AddTo(Disposables);
+            PreviewSpectrumViewModel = new SplitSpectrumsViewModel(Model.PreviewSpectrumModel).AddTo(Disposables);
             PreviewMessages = Model.ObserveProperty(m => m.LastPreviewMessages)
                 .Select(msgs => string.Join("\n", msgs))
+                .ToReadOnlyReactivePropertySlim(string.Empty)
+                .AddTo(Disposables);
+
+            LibraryFilePath = Model.ObserveProperty(m => m.LibraryFilePath).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LibraryCandidates = Model.LibraryCandidates;
+            SelectedLibraryReference = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedLibraryReference).AddTo(Disposables);
+            SimilarityScore = Model.ObserveProperty(m => m.SimilarityScore)
+                .Select(s => s.HasValue ? $"Similarity: {s.Value:F3}" : string.Empty)
                 .ToReadOnlyReactivePropertySlim(string.Empty)
                 .AddTo(Disposables);
 
@@ -75,6 +84,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
             SaveCommand = new ReactiveCommand().WithSubscribe(Model.Save).AddTo(Disposables);
             OpenXmlCommand = new ReactiveCommand().WithSubscribe(OpenXmlViaDialog).AddTo(Disposables);
             OpenConstantsCommand = new ReactiveCommand().WithSubscribe(OpenConstantsViaDialog).AddTo(Disposables);
+            OpenLibraryCommand = new ReactiveCommand().WithSubscribe(OpenLibraryViaDialog).AddTo(Disposables);
             AddEntryCommand = new ReactiveCommand().WithSubscribe(Model.AddEntry).AddTo(Disposables);
             RemoveEntryCommand = new ReactiveCommand().WithSubscribe(() => Model.RemoveEntry(SelectedEntry.Value?.Model)).AddTo(Disposables);
             CloseCommand = new ReactiveCommand().AddTo(Disposables);
@@ -104,9 +114,17 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
 
         public ReactivePropertySlim<AdductIon> PreviewAdduct { get; }
 
-        public SpectrumViewModel PreviewSpectrumViewModel { get; }
+        public SplitSpectrumsViewModel PreviewSpectrumViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<string> PreviewMessages { get; }
+
+        public ReadOnlyReactivePropertySlim<string> LibraryFilePath { get; }
+
+        public ObservableCollection<MoleculeMsReference> LibraryCandidates { get; }
+
+        public ReactivePropertySlim<MoleculeMsReference> SelectedLibraryReference { get; }
+
+        public ReadOnlyReactivePropertySlim<string> SimilarityScore { get; }
 
         public ReactiveCommand GeneratePreviewCommand { get; }
 
@@ -115,6 +133,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
         public ReactiveCommand OpenXmlCommand { get; }
 
         public ReactiveCommand OpenConstantsCommand { get; }
+
+        public ReactiveCommand OpenLibraryCommand { get; }
 
         public ReactiveCommand AddEntryCommand { get; }
 
@@ -139,6 +159,13 @@ namespace CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml
             var dialog = new OpenFileDialog { Filter = "Constants XML (*.xml)|*.xml|All files (*.*)|*.*" };
             if (dialog.ShowDialog() == true) {
                 OpenConstants(dialog.FileName);
+            }
+        }
+
+        private void OpenLibraryViaDialog() {
+            var dialog = new OpenFileDialog { Filter = "Spectral library (*.lbm2;*.lbm;*.msp2;*.msp)|*.lbm2;*.lbm;*.msp2;*.msp|All files (*.*)|*.*" };
+            if (dialog.ShowDialog() == true) {
+                Model.OpenLibrary(dialog.FileName);
             }
         }
     }
