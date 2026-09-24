@@ -67,13 +67,18 @@ namespace CompMs.App.Msdial.Model.Export
         public void Export() {
             var publisher = new TaskProgressPublisher(_broker, "Exporting analysis result");
             using (publisher.Start()) {
-                double all = SelectedFiles.Count;
-                var counter = 0;
-                foreach (var file in SelectedFiles) {
-                    publisher.Progress(counter++ / all, $"Exporting {file.AnalysisFileName}");
-                    foreach (var exporter in AnalysisExports) {
-                        exporter.Export(DestinationFolder, file);
+                try {
+                    double all = SelectedFiles.Count;
+                    var counter = 0;
+                    foreach (var file in SelectedFiles) {
+                        publisher.Progress(counter++ / all, $"Exporting {file.AnalysisFileName}");
+                        foreach (var exporter in AnalysisExports) {
+                            exporter.Export(DestinationFolder, file);
+                        }
                     }
+                }
+                catch (Exception e) {
+                    ExportFailure.Report(_broker, e);
                 }
             }
         }
