@@ -49,7 +49,7 @@ public static class AlignmentMolecularNetworkExporter
 
     private static void ExportNodeTable(MolecularNetworkInstance network, string nodeFile) {
         using var writer = new StreamWriter(nodeFile, false, new UTF8Encoding(false));
-        writer.WriteLine("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tSpectrum");
+        writer.WriteLine("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tPeaks");
         foreach (var nodeObject in network.Root.nodes) {
             var node = nodeObject.data;
             writer.WriteLine(String.Join("\t", new[] {
@@ -61,18 +61,18 @@ public static class AlignmentMolecularNetworkExporter
                 Sanitize(node.Ontology),
                 Sanitize(node.InChiKey),
                 Sanitize(node.Smiles),
-                FormatSpectrum(node.MSMS),
+                FormatPeaks(node.MSMS),
             }));
         }
     }
 
-    private static string FormatSpectrum(IReadOnlyList<List<double>> spectrum) {
-        if (spectrum is null) {
+    private static string FormatPeaks(IReadOnlyList<List<double>> peaks) {
+        if (peaks is null) {
             return String.Empty;
         }
-        return String.Join(";", spectrum
+        return String.Join(";", peaks
             .Where(peak => peak is { Count: >= 2 })
-            .Select(peak => $"{peak[0].ToString("G17", CultureInfo.InvariantCulture)},{peak[1].ToString("G17", CultureInfo.InvariantCulture)}"));
+            .Select(peak => $"{peak[0].ToString("G15", CultureInfo.InvariantCulture)},{peak[1].ToString("G15", CultureInfo.InvariantCulture)}"));
     }
 
     private static string Sanitize(string value) => (value ?? String.Empty)
