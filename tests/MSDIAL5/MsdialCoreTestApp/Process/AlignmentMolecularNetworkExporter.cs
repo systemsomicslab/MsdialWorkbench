@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -48,6 +49,14 @@ public static class AlignmentMolecularNetworkExporter
             network.Root.edges.AddRange(MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode));
         }
         network.ExportNodeTable(Path.Combine(outputFolder, "node.txt"));
-        network.ExportEdgeTable(Path.Combine(outputFolder, "edge.txt"));
+        ExportEdgeTable(network, Path.Combine(outputFolder, "edge.txt"));
+    }
+
+    private static void ExportEdgeTable(MolecularNetworkInstance network, string edgeFile) {
+        using var writer = new StreamWriter(edgeFile, false, Encoding.ASCII);
+        writer.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
+        foreach (var edge in network.Root.edges.Select(edge => edge.data)) {
+            writer.WriteLine($"{edge.source}\t{edge.target}\t{edge.score}\t{edge.matchpeakcount}");
+        }
     }
 }

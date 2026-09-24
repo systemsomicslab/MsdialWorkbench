@@ -38,8 +38,10 @@ public class AlignmentMolecularNetworkExporterTests
             Assert.IsTrue(nodes.Skip(1).All(line => int.Parse(line.Split('\t')[8]) >= 20));
             var edges = File.ReadAllLines(Path.Combine(folder, "edge.txt"));
             Assert.AreEqual(2, edges.Length);
+            Assert.AreEqual("SourceID\tTargetID\tScore\tMatchPeakCount", edges[0]);
             StringAssert.StartsWith(edges[1], "7\t19\t");
-            StringAssert.Contains(edges[1], "ms_similarity");
+            Assert.AreEqual(4, edges[1].Split('\t').Length);
+            Assert.AreEqual("2", edges[1].Split('\t')[3]);
             Assert.AreSame(original, spectra[0].Spectrum);
             Assert.AreEqual(3, spectra[0].Spectrum.Count);
         });
