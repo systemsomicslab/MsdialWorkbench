@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -2682,6 +2683,36 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result02.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result02.AnnotationLevel}");
 
+        }
+        [TestMethod()]
+        public void EtherLPECharacterizationTest()
+        {
+            //
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 436.2833,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 436.283348, Intensity =999, },
+                    new SpectrumPeak { Mass = 239.238039, Intensity =999, },
+                    new SpectrumPeak { Mass = 196.038033, Intensity =500, },
+                    new SpectrumPeak { Mass = 140.011818, Intensity =300, },
+                    new SpectrumPeak { Mass = 78.959054, Intensity =600, },
+                }
+            };
+            var totalCarbon = 16;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var sn1Carbon = 16;
+            var sn1DbBond = 1;
+
+
+            var result = LipidMsmsCharacterization.JudgeIfEtherlysope(target, 0.025,
+                436.2833f, totalCarbon, totalDbBond, 
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon("[M-H]-"));
+            Console.WriteLine($"{result.LipidName}");
+            Console.WriteLine($"{result.AnnotationLevel}");
         }
 
     }

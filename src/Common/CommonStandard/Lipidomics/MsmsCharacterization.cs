@@ -5079,11 +5079,12 @@ namespace CompMs.Common.Lipidomics
                     }
 
                     //
+
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
-                    //               totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
+                    var averageIntensity = 0.0;
+                    var molecule = LipidMsmsCharacterizationUtility.getEtherLysoGpChainMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
+                                    totalDoubleBond, averageIntensity, EtherFrag);
+                    candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPE", LbmClass.EtherLPE, EtherFrag, theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
