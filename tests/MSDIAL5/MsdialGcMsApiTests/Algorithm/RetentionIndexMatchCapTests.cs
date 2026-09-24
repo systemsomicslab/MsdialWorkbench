@@ -25,9 +25,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Tests
     /// argument on CalculateMatchScore rather than a defaulted one. Kovats units run 100 per carbon.
     /// The Fiehn scale is FAME retention in milliseconds -- RetentionIndexHandler's FAME dictionary
     /// runs from 262320 at C8 to 1113100 at C30 -- so it runs near 39,350 per carbon, a factor of
-    /// about 390. A cap chosen on one scale is meaningless on the other. (The same mismatch afflicts
-    /// the RiTolerance default of 20, which is a sensible Kovats window and 20 milliseconds on the
-    /// Fiehn scale. That is a separate defect and is not addressed here.)
+    /// about 390. A cap chosen on one scale is meaningless on the other. (The same mismatch afflicted
+    /// the RiTolerance default of 20, a sensible Kovats window and 20 milliseconds on the Fiehn scale.
+    /// That is the search window rather than the verdict, so it is settled where the parameter is
+    /// chosen -- RetentionIndexToleranceDefault and GcmsIdentificationSettingModelTests -- not here.)
     ///
     /// These tests go through CalculateMatchScore rather than calling the policy directly, so that
     /// they also hold the wiring: the cap has to reach CompareEIMSScanProperties, and it has to be
