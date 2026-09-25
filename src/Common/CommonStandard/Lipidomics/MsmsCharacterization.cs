@@ -3704,7 +3704,7 @@ namespace CompMs.Common.Lipidomics
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 3)
