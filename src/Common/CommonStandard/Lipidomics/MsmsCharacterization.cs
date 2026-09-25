@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
@@ -3704,7 +3704,7 @@ namespace CompMs.Common.Lipidomics
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 3)
@@ -12221,7 +12221,7 @@ AdductIon adduct)
 
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
-                                for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
+                                for (int acylDouble = minAcylDoubleBond; acylDouble <= doubleLimit; acylDouble++)
                                 {
                                     var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                     //if (acylCarbon < maxSphCarbon) break;
@@ -12437,7 +12437,7 @@ AdductIon adduct)
                         var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
                         for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                         {
-                            for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
+                            for (int acylDouble = minAcylDoubleBond; acylDouble <= doubleLimit; acylDouble++)
                             {
                                 var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                 var terminalDouble = totalDoubleBond - sphDouble - acylDouble;
@@ -12551,7 +12551,7 @@ AdductIon adduct)
                         {
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= maxAcylCarbon; acylCarbon++)
                             {
-                                for (int acylDouble = 0; acylDouble <= maxAcylDoubleBond; acylDouble++)
+                                for (int acylDouble = minAcylDoubleBond; acylDouble <= maxAcylDoubleBond; acylDouble++)
                                 {
                                     var omegaAcylCarbon = acylCarbon;
                                     var omegaAcylDouble = acylDouble;
@@ -12990,8 +12990,8 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxSphCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxSphDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
+                            var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
 
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
@@ -20108,7 +20108,7 @@ AdductIon adduct)
         }
         //20260203
         public static LipidMolecule JudgeIfSpehex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
-        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
@@ -20142,7 +20142,7 @@ AdductIon adduct)
             return null;
         }
         public static LipidMolecule JudgeIfSpghex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
-        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
