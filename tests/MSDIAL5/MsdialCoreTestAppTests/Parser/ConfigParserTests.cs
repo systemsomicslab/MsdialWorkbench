@@ -135,6 +135,50 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadCommonParameter_ReadsAutomaticAlignmentRtCorrectionSettings()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var settings = new[] {
+            ("execute automatic rt correction for alignment", "true"),
+            ("automatic rt correction reference file id", "7"),
+            ("automatic rt correction rt bin width", "0.4"),
+            ("automatic rt correction match rt tolerance", "1.2"),
+            ("automatic rt correction minimum anchors", "4"),
+            ("automatic rt correction maximum anchors", "9"),
+            ("automatic rt correction minimum sample coverage", "0.7"),
+            ("automatic rt correction intensity quantile", "0.8"),
+            ("automatic rt correction maximum peak width quantile", "0.6"),
+            ("automatic rt correction minimum signal to noise", "5"),
+            ("automatic rt correction minimum gaussian similarity", "0.3"),
+            ("automatic rt correction minimum ideal slope", "0.4"),
+            ("automatic rt correction outlier mad threshold", "4.5"),
+            ("automatic rt correction reference centrality weight", "0.25"),
+            ("automatic rt correction interpolate blanks by analytical order", "false"),
+        };
+
+        foreach (var (key, value) in settings) {
+            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+        }
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.IsTrue(actual.Execute);
+        Assert.AreEqual(7, actual.ReferenceFileId);
+        Assert.AreEqual(0.4f, actual.RtBinWidth, 1e-7f);
+        Assert.AreEqual(1.2f, actual.MatchRtTolerance, 1e-7f);
+        Assert.AreEqual(4, actual.MinimumAnchorCount);
+        Assert.AreEqual(9, actual.MaximumAnchorCount);
+        Assert.AreEqual(0.7f, actual.MinimumSampleCoverage, 1e-7f);
+        Assert.AreEqual(0.8f, actual.IntensityQuantile, 1e-7f);
+        Assert.AreEqual(0.6f, actual.MaximumPeakWidthQuantile, 1e-7f);
+        Assert.AreEqual(5f, actual.MinimumSignalToNoise, 1e-7f);
+        Assert.AreEqual(0.3f, actual.MinimumGaussianSimilarity, 1e-7f);
+        Assert.AreEqual(0.4f, actual.MinimumIdealSlope, 1e-7f);
+        Assert.AreEqual(4.5f, actual.OutlierMadThreshold, 1e-7f);
+        Assert.AreEqual(0.25f, actual.ReferenceCentralityWeight, 1e-7f);
+        Assert.IsFalse(actual.InterpolateBlankByAnalyticalOrder);
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller

@@ -674,6 +674,21 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for alignment", Ms1AlignmentTolerance.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 factor for alignment", Ms1AlignmentFactor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Force insert peaks in gap filling", IsForceInsertForGapFilling.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Execute automatic RT correction for alignment", AlignmentBaseParam.AutomaticRtCorrection.Execute.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference file ID", AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction RT bin width", AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction match RT tolerance", AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum anchors", AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction maximum anchors", AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum sample coverage", AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction intensity quantile", AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction maximum peak width quantile", AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum signal to noise", AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum Gaussian similarity", AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum ideal slope", AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction outlier MAD threshold", AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -1180,6 +1195,47 @@ namespace CompMs.MsdialCore.Parameter
         public bool TogetherWithAlignment { get; set; } = true;
         [Key(9)]
         public bool UseRefMatchedPeaksOnly { get; set; } = false;
+        [Key(10)]
+        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection { get; set; } = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+    }
+
+    /// <summary>
+    /// Controls LC-MS retention-time correction that is learned from detected features and is
+    /// applied only while alignment is running. Unlike the user-defined RT correction workflow,
+    /// this mode leaves raw spectra, peak picking, and annotation on the original RT axis.
+    /// </summary>
+    [MessagePackObject]
+    public sealed class AutomaticAlignmentRetentionTimeCorrectionParameter {
+        [Key(0)]
+        public bool Execute { get; set; } = false;
+        [Key(1)]
+        public int ReferenceFileId { get; set; } = -1;
+        [Key(2)]
+        public float RtBinWidth { get; set; } = 0.5F;
+        [Key(3)]
+        public float MatchRtTolerance { get; set; } = 0.5F;
+        [Key(4)]
+        public int MinimumAnchorCount { get; set; } = 3;
+        [Key(5)]
+        public int MaximumAnchorCount { get; set; } = 6;
+        [Key(6)]
+        public float MinimumSampleCoverage { get; set; } = 0.5F;
+        [Key(7)]
+        public float IntensityQuantile { get; set; } = 0.75F;
+        [Key(8)]
+        public float MaximumPeakWidthQuantile { get; set; } = 0.5F;
+        [Key(9)]
+        public float MinimumSignalToNoise { get; set; } = 3F;
+        [Key(10)]
+        public float MinimumGaussianSimilarity { get; set; } = 0F;
+        [Key(11)]
+        public float MinimumIdealSlope { get; set; } = 0F;
+        [Key(12)]
+        public float OutlierMadThreshold { get; set; } = 3.5F;
+        [Key(13)]
+        public float ReferenceCentralityWeight { get; set; } = 0.35F;
+        [Key(14)]
+        public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
     }
 
     [MessagePackObject]

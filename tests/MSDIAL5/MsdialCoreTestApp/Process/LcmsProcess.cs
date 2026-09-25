@@ -37,6 +37,16 @@ public sealed class LcmsProcess
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
         var exportAnnotationCandidates = ConfigParser.ReadAnnotationCandidateExport(methodFile);
+        var automaticAlignmentRtCorrection = param.AlignmentBaseParam.AutomaticRtCorrection;
+        if (automaticAlignmentRtCorrection.Execute
+            && param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+            Console.Error.WriteLine("User-defined RT correction and automatic alignment RT correction cannot be enabled together because that would correct the RT axis twice.");
+            return -1;
+        }
+        if (automaticAlignmentRtCorrection.Execute && !param.TogetherWithAlignment) {
+            Console.Error.WriteLine("Automatic alignment RT correction requires Together with alignment: True.");
+            return -1;
+        }
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
@@ -155,6 +165,25 @@ public sealed class LcmsProcess
         }
         await Task.WhenAll(tasks);
 
+        AutomaticAlignmentRetentionTimeCorrectionResult? automaticRtCorrectionResult = null;
+        if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
+            try {
+                Console.WriteLine("Automatic alignment RT correction: selecting anchors after peak picking and annotation.");
+                automaticRtCorrectionResult = AutomaticAlignmentRetentionTimeCorrection.Build(
+                    files,
+                    storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection,
+                    storage.Parameter.Ms1AlignmentTolerance);
+                storage.Parameter.AlignmentReferenceFileID = automaticRtCorrectionResult.Correction.ReferenceFileId;
+                automaticRtCorrectionResult.WriteAudit(outputFolder);
+                Console.WriteLine($"Automatic alignment RT correction reference file ID: {automaticRtCorrectionResult.Correction.ReferenceFileId}");
+                Console.WriteLine("Automatic alignment RT correction audit: automatic_alignment_rt_correction_summary.tsv and automatic_alignment_rt_correction_anchors.tsv");
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"Automatic alignment RT correction failed: {ex.Message}");
+                return -1;
+            }
+        }
+
         // The identity of the build, without the host application's name: this field is the
         // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
         // 5.5.241113" said the application twice and the version once, staleness included.
@@ -168,7 +197,12 @@ public sealed class LcmsProcess
             if (isAlignmentLightMode) {
                 Console.WriteLine("Alignment light mode: streaming peak matrix, file-backed alignment deconvolution access, GUI chromatogram serialization, GUI alignment object serialization, and ion-abundance correlation links are disabled; text exports remain enabled.");
                 Console.WriteLine("Alignment started.");
-                var lightRunner = new LcmsAlignmentLightRunner(storage, evaluator, providerFactory, CreateConsoleProgressReporter("Alignment"));
+                var lightRunner = new LcmsAlignmentLightRunner(
+                    storage,
+                    evaluator,
+                    providerFactory,
+                    CreateConsoleProgressReporter("Alignment"),
+                    automaticRtCorrectionResult?.Correction);
                 LcmsAlignmentLightResult lightResult;
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
@@ -179,8 +213,15 @@ public sealed class LcmsProcess
                 Console.WriteLine("Alignment finished.");
             }
             else {
-                var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
-                var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+                var serializer = automaticRtCorrectionResult is null
+                    ? ChromatogramSerializerFactory.CreateSpotSerializer("CSS1")
+                    : null;
+                if (automaticRtCorrectionResult is not null) {
+                    Console.WriteLine("Automatic alignment RT correction: GUI chromatogram serialization is skipped because this CUI-only mode keeps raw data on the original RT axis.");
+                }
+                var factory = new LcmsAlignmentProcessFactory(storage, evaluator) {
+                    AlignmentRtCorrection = automaticRtCorrectionResult?.Correction,
+                };
                 factory.Progress = CreateConsoleProgressReporter("Alignment");
                 var aligner = factory.CreatePeakAligner();
                 Console.WriteLine("Alignment started.");
