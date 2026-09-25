@@ -262,10 +262,9 @@ public sealed class LcmsProcess
                 foreach (var (_, exportType, suffix) in requestedMatrices.Where(item => item.Requested)) {
                     var matrixFile = Path.Combine(matrixFolder, alignmentFile.FileName + suffix);
                     using (var matrixStream = File.Open(matrixFile, FileMode.Create, FileAccess.Write)) {
-                        new AlignmentCSVExporter().Export(
+                        ExportAlignmentMatrix(
                             matrixStream, result.AlignmentSpotProperties, align_decResults, files,
-                            new MulticlassFileMetaAccessor(0), align_accessor,
-                            new LegacyQuantValueAccessor(exportType, storage.Parameter), matrixStats);
+                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats);
                     }
                     Console.WriteLine($"{exportType} matrix: {matrixFile}");
                 }
@@ -371,6 +370,24 @@ public sealed class LcmsProcess
         GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
         GC.WaitForPendingFinalizers();
         GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+    }
+
+    internal static void ExportAlignmentMatrix(
+        Stream stream,
+        IReadOnlyList<AlignmentSpotProperty> spots,
+        IReadOnlyList<MSDecResult> msdecResults,
+        IReadOnlyList<AnalysisFileBean> files,
+        IMetadataAccessor metadataAccessor,
+        string exportType,
+        ParameterBase parameter,
+        AlignmentLightPeakStore? alignmentLightPeakStore,
+        IReadOnlyList<StatsValue> stats) {
+        IQuantValueAccessor quantAccessor = alignmentLightPeakStore is null
+            ? new LegacyQuantValueAccessor(exportType, parameter)
+            : new AlignmentLightQuantValueAccessor(exportType, parameter, alignmentLightPeakStore);
+        new AlignmentCSVExporter().Export(
+            stream, spots, msdecResults, files,
+            new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, stats);
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
