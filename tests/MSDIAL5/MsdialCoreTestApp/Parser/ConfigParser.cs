@@ -1223,6 +1223,21 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ms1 factor for alignment": return Number(valueLower, v => param.Ms1AlignmentFactor = (float)v);
                 case "force insert peaks in gap filling": if (valueLower == "true" || valueLower == "false") param.IsForceInsertForGapFilling = bool.Parse(valueLower); return true;
                 case "together with alignment": if (valueLower == "true" || valueLower == "false") param.TogetherWithAlignment = bool.Parse(valueLower); return true;
+                case "execute automatic rt correction for alignment": if (valueLower == "true" || valueLower == "false") param.AlignmentBaseParam.AutomaticRtCorrection.Execute = bool.Parse(valueLower); return true;
+                case "automatic rt correction reference file id": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId = v);
+                case "automatic rt correction rt bin width": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth = (float)v);
+                case "automatic rt correction match rt tolerance": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance = (float)v);
+                case "automatic rt correction minimum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount = v);
+                case "automatic rt correction maximum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount = v);
+                case "automatic rt correction minimum sample coverage": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage = (float)v);
+                case "automatic rt correction intensity quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile = (float)v);
+                case "automatic rt correction maximum peak width quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile = (float)v);
+                case "automatic rt correction minimum signal to noise": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise = (float)v);
+                case "automatic rt correction minimum gaussian similarity": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity = (float)v);
+                case "automatic rt correction minimum ideal slope": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope = (float)v);
+                case "automatic rt correction outlier mad threshold": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold = (float)v);
+                case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
+                case "automatic rt correction interpolate blanks by analytical order": if (valueLower == "true" || valueLower == "false") param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = bool.Parse(valueLower); return true;
 
                 //Filtering
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);

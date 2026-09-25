@@ -17,6 +17,7 @@ public class LcmsGapFiller : IGapFiller
     private int _smoothingLevel;
     private bool _isForceInsert; 
     private readonly double _mzTol, _rtTol;
+    private readonly AlignmentRetentionTimeCorrectionCollection? _alignmentRtCorrection;
 
     public LcmsGapFiller(double rtTol, double mzTol, SmoothingMethod smoothingMethod, int smoothingLevel, bool isForceInsert) {
         _rtTol = rtTol;
@@ -26,9 +27,13 @@ public class LcmsGapFiller : IGapFiller
         _isForceInsert = isForceInsert;
     }
 
-    public LcmsGapFiller(MsdialLcmsParameter param)
+    public LcmsGapFiller(
+        MsdialLcmsParameter param,
+        AlignmentRetentionTimeCorrectionCollection? alignmentRtCorrection = null)
         : this(param.RetentionTimeAlignmentTolerance, param.CentroidMs1Tolerance, param.SmoothingMethod,
-              param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
+              param.SmoothingLevel, param.IsForceInsertForGapFilling) {
+        _alignmentRtCorrection = alignmentRtCorrection;
+    }
 
     public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
         GapFill(ms1Spectra, spot, fileID);
@@ -46,12 +51,12 @@ public class LcmsGapFiller : IGapFiller
             Mz = new MzValue(detected.Argmax(peak => peak.PeakHeightTop).Mass),
         };
         var peakWidth = detected.Max(peak => peak.PeakWidth(ChromXType.RT));
-        GapFillCore(target, ms1Spectra, rtCenter, peakWidth);
+        GapFillWithRtMapping(target, ms1Spectra, rtCenter, peakWidth, fileID);
     }
 
     public void GapFill(Ms1Spectra ms1Spectra, AlignmentChromPeakFeature target, ChromXs center, double peakWidth, float estimatedNoise) {
         target.PeakShape.EstimatedNoise = estimatedNoise;
-        GapFillCore(target, ms1Spectra, center, peakWidth);
+        GapFillWithRtMapping(target, ms1Spectra, center, peakWidth, target.FileID);
     }
 
     public bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
@@ -68,6 +73,33 @@ public class LcmsGapFiller : IGapFiller
 
     private float GetEstimatedNoise(IEnumerable<AlignmentChromPeakFeature> peaks) {
         return peaks.Max(n => n.PeakShape.EstimatedNoise);
+    }
+
+    private void GapFillWithRtMapping(
+        AlignmentChromPeakFeature target,
+        Ms1Spectra ms1Spectra,
+        ChromXs correctedCenter,
+        double correctedPeakWidth,
+        int fileId) {
+        if (_alignmentRtCorrection is null || !_alignmentRtCorrection.TryGetModel(fileId, out _)) {
+            GapFillCore(target, ms1Spectra, correctedCenter, correctedPeakWidth);
+            return;
+        }
+
+        var originalCenterRt = _alignmentRtCorrection.Restore(fileId, correctedCenter.RT.Value);
+        var halfWidth = correctedPeakWidth / 2d;
+        var originalLeft = _alignmentRtCorrection.Restore(fileId, correctedCenter.RT.Value - halfWidth);
+        var originalRight = _alignmentRtCorrection.Restore(fileId, correctedCenter.RT.Value + halfWidth);
+        var originalPeakWidth = Math.Max(0d, originalRight - originalLeft);
+        var originalCenter = new ChromXs(
+            new RetentionTime(originalCenterRt, correctedCenter.RT.Unit),
+            correctedCenter.RI,
+            correctedCenter.Drift,
+            correctedCenter.Mz,
+            correctedCenter.MainType);
+
+        GapFillCore(target, ms1Spectra, originalCenter, originalPeakWidth);
+        _alignmentRtCorrection.Correct(target, fileId);
     }
 
     private void GapFillCore(AlignmentChromPeakFeature alignmentChromPeakFeature, Ms1Spectra ms1Spectra, ChromXs center, double peakWidth) {
