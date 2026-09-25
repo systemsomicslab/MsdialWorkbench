@@ -20108,7 +20108,7 @@ AdductIon adduct)
         }
         //20260203
         public static LipidMolecule JudgeIfSpehex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
-        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
@@ -20142,7 +20142,7 @@ AdductIon adduct)
             return null;
         }
         public static LipidMolecule JudgeIfSpghex(string lipidname, IMSScanProperty msScanProp, double ms2Tolerance,
-        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond,
         AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
