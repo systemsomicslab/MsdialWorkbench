@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
@@ -12221,7 +12221,7 @@ AdductIon adduct)
 
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
-                                for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
+                                for (int acylDouble = minAcylDoubleBond; acylDouble <= doubleLimit; acylDouble++)
                                 {
                                     var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                     //if (acylCarbon < maxSphCarbon) break;
@@ -12437,7 +12437,7 @@ AdductIon adduct)
                         var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
                         for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                         {
-                            for (int acylDouble = 0; acylDouble <= doubleLimit; acylDouble++)
+                            for (int acylDouble = minAcylDoubleBond; acylDouble <= doubleLimit; acylDouble++)
                             {
                                 var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                 var terminalDouble = totalDoubleBond - sphDouble - acylDouble;
@@ -12551,7 +12551,7 @@ AdductIon adduct)
                         {
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= maxAcylCarbon; acylCarbon++)
                             {
-                                for (int acylDouble = 0; acylDouble <= maxAcylDoubleBond; acylDouble++)
+                                for (int acylDouble = minAcylDoubleBond; acylDouble <= maxAcylDoubleBond; acylDouble++)
                                 {
                                     var omegaAcylCarbon = acylCarbon;
                                     var omegaAcylDouble = acylDouble;
