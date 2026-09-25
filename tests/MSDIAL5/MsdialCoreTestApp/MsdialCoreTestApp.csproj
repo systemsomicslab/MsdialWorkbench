@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="MsdialCoreTestAppTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialCore\MsdialCore.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialDimsCore\MsdialDimsCore.csproj" />
