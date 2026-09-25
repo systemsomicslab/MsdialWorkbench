@@ -82,6 +82,13 @@ public class LipidSpectrumJudgeIfCompatibilityTests
             {
                 continue;
             }
+            // JudgeIf is chosen by COMPOUNDCLASS, the model by the class the name parses to. A few
+            // fixtures disagree (e.g. Cer_EOS entries whose name reads as Cer_HS); comparing those would
+            // judge one class's spectrum by another class's rules.
+            if (!LipidSpectrumModelSelector.TryResolveLbmClass(reference.CompoundClass, out var compoundClass) || compoundClass != lipid.LipidClass)
+            {
+                continue;
+            }
             IReadOnlyList<LipidFragment>? fragments;
             try
             {
