@@ -12990,8 +12990,8 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxSphCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxSphDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxAcylCarbon);
+                            var doubleLimit = Math.Min(remainDouble, maxAcylDoubleBond);
 
                             for (int acylCarbon = minAcylCarbon; acylCarbon <= carbonLimit; acylCarbon++)
                             {
