@@ -2612,7 +2612,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var totalOxidized = molecule.TotalOxidizedCount;
 
             var result = LipidMsmsCharacterization.JudgeIfSpehex(lipidname,target, 0.025,
-                689.450045f, totalCarbon, totalDbBond, totalOxidized,
+                689.450045f, totalCarbon, totalDbBond, 
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
             Console.WriteLine($"SPEHexTest");
             Console.WriteLine(PRECURSORTYPE);
@@ -2668,7 +2668,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var totalOxidized = molecule.TotalOxidizedCount;
 
             var result01 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target01, 0.025,
-                molMsRef01.PrecursorMz, totalCarbon, totalDbBond, totalOxidized,
+                molMsRef01.PrecursorMz, totalCarbon, totalDbBond, 
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE01));
             Console.WriteLine($"SPGHexTest");
             Console.WriteLine(PRECURSORTYPE01);
@@ -2676,7 +2676,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result01.AnnotationLevel}");
 
             var result02 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target02, 0.025,
-                molMsRef02.PrecursorMz, totalCarbon, totalDbBond, totalOxidized,
+                molMsRef02.PrecursorMz, totalCarbon, totalDbBond, 
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE02));
             Console.WriteLine($"SPGHexTest");
             Console.WriteLine(PRECURSORTYPE02);
