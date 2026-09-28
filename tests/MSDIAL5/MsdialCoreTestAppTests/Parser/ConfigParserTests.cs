@@ -1,6 +1,8 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -120,6 +122,86 @@ public sealed class ConfigParserTests
 
         Assert.IsTrue(replace.IsApplied);
         Assert.IsTrue(parameter.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples);
+    }
+
+    [DataTestMethod]
+    [DataRow("keep original precursor isotopes")]
+    [DataRow("exclude after precursor")]
+    [DataRow("corrdec execute")]
+    [DataRow("is private version")]
+    [DataRow("is private version of tada")]
+    public void ReadCommonParameter_ReadsAnOnOffKeyInBothDirections(string key)
+    {
+        // THE REGRESSION. These arms assigned only one of the two values and returned true for
+        // either, so the other value was reported as applied and silently ignored.
+        // KeepOriginalPrecursorIsotopes defaults to false, so "Keep original precursor isotopes:
+        // True" never took effect while the key record said it had.
+        var parameter = new MsdialLcmsParameter();
+        Func<bool> current = key switch
+        {
+            "keep original precursor isotopes" => () => parameter.KeepOriginalPrecursorIsotopes,
+            "exclude after precursor" => () => parameter.RemoveAfterPrecursor,
+            "corrdec execute" => () => parameter.CorrDecParam.CanExcute,
+            "is private version" => () => parameter.IsLabPrivate,
+            "is private version of tada" => () => parameter.IsLabPrivateVersionTada,
+            _ => throw new ArgumentOutOfRangeException(nameof(key)),
+        };
+
+        AssertReadsBothDirections(value => ConfigParser.ReadCommonParameter(parameter, key, value), current);
+    }
+
+    [DataTestMethod]
+    [DataRow("replace quant mass by user defined value")]
+    [DataRow("is quant mass based on base peak mz")]
+    public void ReadGcmsSpecificParameter_ReadsAnOnOffKeyInBothDirections(string key)
+    {
+        var parameter = new MsdialGcmsParameter();
+        Func<bool> current = key switch
+        {
+            "replace quant mass by user defined value" => () => parameter.IsReplaceQuantmassByUserDefinedValue,
+            "is quant mass based on base peak mz" => () => parameter.IsRepresentativeQuantMassBasedOnBasePeakMz,
+            _ => throw new ArgumentOutOfRangeException(nameof(key)),
+        };
+
+        AssertReadsBothDirections(value => ConfigParser.ReadGcmsSpecificParameter(parameter, key, value), current);
+    }
+
+    [TestMethod]
+    public void ReadLcImMsSpecificParameter_ReadsAccumulateMs2SpectraInBothDirections()
+    {
+        var parameter = new MsdialLcImMsParameter();
+
+        AssertReadsBothDirections(
+            value => ConfigParser.ReadLcImMsSpecificParameter(parameter, "accumulate ms2 spectra", value),
+            () => parameter.IsAccumulateMS2Spectra);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAnUnreadableOnOffValueOnAKeyThatWasAlreadyTwoWay()
+    {
+        // These arms already assigned both values, but still answered true for "yes", so the
+        // key record said a value was applied that the run never saw.
+        var parameter = new MsdialLcmsParameter();
+
+        AssertReadsBothDirections(
+            value => ConfigParser.ReadCommonParameter(parameter, "together with alignment", value),
+            () => parameter.TogetherWithAlignment);
+    }
+
+    private static void AssertReadsBothDirections(Func<string, ConfigParser.MethodKeyOutcome> read, Func<bool> current)
+    {
+        Assert.IsTrue(read("True").IsApplied);
+        Assert.IsTrue(current(), "True takes effect");
+
+        Assert.IsTrue(read("False").IsApplied);
+        Assert.IsFalse(current(), "False takes effect");
+
+        Assert.IsTrue(read("TRUE").IsApplied);
+        Assert.IsTrue(current(), "the letter case does not matter");
+
+        var unusable = read("yes");
+        Assert.IsTrue(unusable.IsUnusableValue, "a value that is neither true nor false is reported, not guessed at");
+        Assert.IsTrue(current(), "the refused value left the previous one alone");
     }
 
     [TestMethod]
