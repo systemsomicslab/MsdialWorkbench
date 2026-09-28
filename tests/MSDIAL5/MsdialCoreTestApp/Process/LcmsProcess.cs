@@ -213,11 +213,9 @@ public sealed class LcmsProcess
                 Console.WriteLine("Alignment finished.");
             }
             else {
-                var serializer = automaticRtCorrectionResult is null
-                    ? ChromatogramSerializerFactory.CreateSpotSerializer("CSS1")
-                    : null;
+                var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
                 if (automaticRtCorrectionResult is not null) {
-                    Console.WriteLine("Automatic alignment RT correction: GUI chromatogram serialization is skipped because this CUI-only mode keeps raw data on the original RT axis.");
+                    Console.WriteLine("Automatic alignment RT correction: GUI EICs retain original sample RT; extraction and gap filling use corrected alignment RT windows mapped back to raw data.");
                 }
                 var factory = new LcmsAlignmentProcessFactory(storage, evaluator) {
                     AlignmentRtCorrection = automaticRtCorrectionResult?.Correction,

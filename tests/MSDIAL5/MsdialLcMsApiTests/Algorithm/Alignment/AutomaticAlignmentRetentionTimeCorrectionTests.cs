@@ -1,9 +1,15 @@
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcMsApi.DataObj;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests;
@@ -24,6 +30,53 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         foreach (var original in new[] { 0.5d, 2d, 6d, 10d }) {
             Assert.AreEqual(original, model.Restore(model.Correct(original)), 1e-9);
         }
+    }
+
+    [TestMethod]
+    public void AlignmentEic_ExtractsCorrectedWindowButSavesOriginalRt() {
+        var model = new PiecewiseLinearAlignmentRetentionTimeCorrectionModel(new[] {
+            new AlignmentRetentionTimeCorrectionControlPoint(1, 100d, 4d, 4.2d, 1d),
+            new AlignmentRetentionTimeCorrectionControlPoint(2, 100d, 6d, 6.4d, 1d),
+        });
+        var correction = new AlignmentRetentionTimeCorrectionCollection(
+            0, new Dictionary<int, IAlignmentRetentionTimeCorrectionModel> { [1] = model });
+        var alignedPeak = new AlignmentChromPeakFeature {
+            FileID = 1, MasterPeakID = 1, PeakID = 1, Mass = 100d,
+            ChromXsLeft = new ChromXs(model.Correct(4.9d)),
+            ChromXsTop = new ChromXs(model.Correct(5d)),
+            ChromXsRight = new ChromXs(model.Correct(5.1d)),
+        };
+        var spot = new AlignmentSpotProperty {
+            TimesCenter = new ChromXs(model.Correct(5d)),
+            AlignedPeakProperties = new List<AlignmentChromPeakFeature> { alignedPeak },
+        };
+        var spectra = new Ms1Spectra(new[] { 4.8d, 4.9d, 5d, 5.1d, 5.2d }
+            .Select((rt, index) => new RawSpectrum {
+                Index = index, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = rt,
+                Spectrum = new[] { new RawPeakElement { Mz = 100d, Intensity = 10d + index } },
+            }).ToArray(), IonMode.Positive, AcquisitionType.DDA);
+        var parameter = new MsdialLcmsParameter { SmoothingLevel = 0 };
+        var storage = new MsdialLcmsDataStorage { MsdialLcmsParameter = parameter };
+        var accessor = new LcmsAlignmentProcessFactory(storage,
+            FacadeMatchResultEvaluator.FromDataBases(DataBaseStorage.CreateEmpty())) {
+            AlignmentRtCorrection = correction,
+        }.CreateDataAccessor();
+
+        var info = accessor.AccumulateChromatogram(alignedPeak, spot, spectra, 0.01f);
+
+        Assert.AreEqual(5.3d, alignedPeak.ChromXsTop.RT.Value, 1e-5);
+        Assert.AreEqual(5d, info.ChromXsTop.RT.Value, 1e-5);
+        Assert.IsTrue(info.Chromatogram.Any(peak => System.Math.Abs(peak.ChromXs.RT.Value - 5d) < 1e-5));
+        Assert.IsTrue(info.Chromatogram.All(peak => peak.ChromXs.RT.Value >= 4.8d && peak.ChromXs.RT.Value <= 5.2d));
+
+        var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1")!;
+        using var stream = new MemoryStream();
+        serializer.SerializeN(stream, new[] { new ChromatogramSpotInfo(new[] { info }, spot.TimesCenter) }, 1);
+        stream.Position = 0;
+        var restored = serializer.DeserializeAt(stream, 0);
+        Assert.AreEqual(5.3d, restored.ChromXs.RT.Value, 1e-5);
+        Assert.AreEqual(5d, restored.PeakInfos[0].ChromXsTop.RT.Value, 1e-5);
+        Assert.IsTrue(restored.PeakInfos[0].Chromatogram.Any(peak => System.Math.Abs(peak.ChromXs.RT.Value - 5d) < 1e-5));
     }
 
     [TestMethod]
