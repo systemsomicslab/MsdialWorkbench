@@ -1,13 +1,22 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MsdialCoreTestAppTests.Parser;
 
@@ -496,6 +505,107 @@ public sealed class ConfigParserTests
         Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(longAlias));
         Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(explicitlyOff));
         Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(nonBoolean));
+    }
+
+    /// <summary>
+    /// The adducts a method file lists are the adducts it searches.
+    /// </summary>
+    /// <remarks>
+    /// PeakCharacterEstimator keeps only adducts marked IsIncluded and otherwise falls back to the
+    /// proton adduct. The reader stored AdductIon.GetAdductIon's shared instances, which are not
+    /// included, so every console run searched [M+H]+ alone whatever the file listed, and the key
+    /// report said the key had been applied.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_MarksTheListedAdductsIncluded()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Searched adduct ions: [M+H]+,[M+Na]+, [M+NH4]+" + "\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+Na]+", "[M+NH4]+" },
+            parameter.SearchedAdductIons.Select(a => a.AdductIonName).ToArray(),
+            "a space after the comma does not drop an adduct");
+        Assert.IsTrue(parameter.SearchedAdductIons.All(a => a.IsIncluded));
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_DoesNotMarkTheSharedAdductInstanceIncluded()
+    {
+        // GetAdductIon hands out one cached instance per name to the whole process. The reader
+        // must include a copy, or every later caller - the GUI among them - would see [M+Na]+
+        // included without anyone having chosen it.
+        var parameter = new MsdialLcmsParameter();
+
+        ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,[M+Na]+");
+
+        Assert.IsFalse(AdductIon.GetAdductIon("[M+Na]+").IsIncluded);
+        Assert.IsFalse(AdductIon.GetAdductIon("[M+H]+").IsIncluded);
+        Assert.AreNotSame(AdductIon.GetAdductIon("[M+Na]+"), parameter.SearchedAdductIons[1]);
+        Assert.AreEqual(AdductIon.GetAdductIon("[M+Na]+").AdductIonAccurateMass, parameter.SearchedAdductIons[1].AdductIonAccurateMass);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_DropsAMistypedAdductAndKeepsTheRest()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,M+Na,[M+NH4]+");
+
+        Assert.IsTrue(result.IsApplied);
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+NH4]+" },
+            parameter.SearchedAdductIons.Select(a => a.AdductIonName).ToArray());
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAnAdductListWithNothingUsableInIt()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var before = parameter.SearchedAdductIons;
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "M+Na,sodium");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.AreSame(before, parameter.SearchedAdductIons, "the built-in list, untouched");
+    }
+
+    [TestMethod]
+    public void PeakCharacterEstimator_SearchesTheAdductsTheMethodFileListed()
+    {
+        var parameter = new MsdialLcmsParameter();
+        ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,[M+Na]+,[M+NH4]+");
+        var estimator = new PeakCharacterEstimator(0, 0);
+
+        estimator.Process(
+            new AnalysisFileBean(),
+            new EmptyDataProvider(),
+            new List<ChromatogramPeakFeature>(),
+            new List<MSDecResult>(),
+            null!,
+            parameter,
+            null);
+
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+Na]+", "[M+NH4]+" },
+            estimator.SearchedAdducts.Select(a => a.AdductIonName).ToArray());
+    }
+
+    private sealed class EmptyDataProvider : IDataProvider
+    {
+        private static readonly ReadOnlyCollection<RawSpectrum> Empty = new List<RawSpectrum>().AsReadOnly();
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() => Empty;
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => Empty;
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => Empty;
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => Task.FromResult(Empty);
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => Task.FromResult(Empty);
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => Task.FromResult(Empty);
     }
 
     private sealed class TemporaryDirectory : IDisposable

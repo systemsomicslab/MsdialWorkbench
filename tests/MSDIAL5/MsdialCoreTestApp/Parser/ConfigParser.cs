@@ -176,6 +176,57 @@ namespace CompMs.App.MsdialConsole.Parser
             return first.IsUnknownKey ? second() : first;
         }
 
+        /// <summary>
+        /// Read a comma-separated list of adduct ions as the adducts the peak character
+        /// estimation searches, or report that none of them could be read.
+        /// </summary>
+        /// <remarks>
+        /// THE ADDUCTS MUST BE MARKED INCLUDED. PeakCharacterEstimator.SearchedAdductInitialize
+        /// keeps only the adducts whose IsIncluded is true and, when none are, falls back to
+        /// [M+H]+ or [M-H]-. Only the GUI's adduct setting ever set that flag. This arm used to
+        /// store what AdductIon.GetAdductIon returned, whose IsIncluded is false, so a method file
+        /// listing "[M+H]+,[M+Na]+,[M+NH4]+" was searched with the proton adduct alone while the
+        /// key report said the key had been applied.
+        ///
+        /// COPIES, NOT THE CACHED INSTANCES. GetAdductIon hands out one shared instance per name
+        /// from a process-wide cache. Setting IsIncluded on it would mark that adduct included for
+        /// every other caller in the process, the GUI among them.
+        ///
+        /// An entry that fails AdductIon.FormatCheck is dropped as before, so one mistyped adduct
+        /// does not discard the rest. When NO entry can be read, nothing the file asked for would
+        /// be searched, so the value is reported as unusable and the built-in list is kept.
+        /// Entries are trimmed because "[M+H]+, [M+Na]+" is how a person types a list.
+        /// </remarks>
+        private static MethodKeyOutcome SearchedAdductIons(string text, Action<List<AdductIon>> assign) {
+            var adducts = new List<AdductIon>();
+            foreach (var adductString in text.Split(',')) {
+                var adductObj = AdductIon.GetAdductIon(adductString.Trim());
+                if (adductObj.FormatCheck) adducts.Add(IncludedCopyOf(adductObj));
+            }
+            if (adducts.Count == 0) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            assign(adducts);
+            return MethodKeyOutcome.Applied;
+        }
+
+        private static AdductIon IncludedCopyOf(AdductIon adduct) {
+#pragma warning disable CS0618 // Type or member is obsolete
+            return new AdductIon() {
+#pragma warning restore CS0618 // Type or member is obsolete
+                AdductIonAccurateMass = adduct.AdductIonAccurateMass,
+                AdductIonXmer = adduct.AdductIonXmer,
+                AdductIonName = adduct.AdductIonName,
+                ChargeNumber = adduct.ChargeNumber,
+                IonMode = adduct.IonMode,
+                FormatCheck = adduct.FormatCheck,
+                M1Intensity = adduct.M1Intensity,
+                M2Intensity = adduct.M2Intensity,
+                IsRadical = adduct.IsRadical,
+                IsIncluded = true,
+            };
+        }
+
         private sealed class MethodFileKeys
         {
             private readonly List<string> _applied = new List<string>();
@@ -1110,16 +1161,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass slice width": return Number(valueLower, v => param.MassSliceWidth = (float)v);
                 case "mass accuracy": return Number(valueLower, v => param.CentroidMs1Tolerance = (float)v);
                 case "max charge number": return Count(valueLower, v => param.MaxChargeNumber = v);
-                case "searched adduct ions": 
-                    if (!value.IsEmptyOrNull()) {
-                        param.SearchedAdductIons = new List<AdductIon>();
-                        var aStrings = value.Split(',');
-                        foreach (var adductString in aStrings) {
-                            var adductObj = AdductIon.GetAdductIon(adductString);
-                            if (adductObj.FormatCheck) param.SearchedAdductIons.Add(adductObj);
-                        }
-                    }
-                    return true;
+                case "searched adduct ions": return SearchedAdductIons(value, adducts => param.SearchedAdductIons = adducts);
 
                 
 
