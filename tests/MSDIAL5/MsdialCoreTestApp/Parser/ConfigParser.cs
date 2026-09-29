@@ -199,6 +199,45 @@ namespace CompMs.App.MsdialConsole.Parser
             return first.IsUnknownKey ? second() : first;
         }
 
+        /// <summary>
+        /// Read a comma-separated list of adduct ions as the adducts the peak character
+        /// estimation searches, or report that none of them could be read.
+        /// </summary>
+        /// <remarks>
+        /// THE ADDUCTS MUST BE MARKED INCLUDED. PeakCharacterEstimator.SearchedAdductInitialize
+        /// keeps only the adducts whose IsIncluded is true and, when none are, falls back to
+        /// [M+H]+ or [M-H]-. Only the GUI's adduct setting ever set that flag. This arm used to
+        /// store what AdductIon.GetAdductIon returned, whose IsIncluded is false, so a method file
+        /// listing "[M+H]+,[M+Na]+,[M+NH4]+" was searched with the proton adduct alone while the
+        /// key report said the key had been applied.
+        ///
+        /// THE FLAG IS SET ON THE CACHED INSTANCES. GetAdductIon hands out one shared instance per
+        /// name from a process-wide cache, so an adduct listed here stays IsIncluded for every
+        /// later caller in the process. That is deliberate: AdductIon is not constructed outside
+        /// its own factory, and the GUI's AdductIonSettingModel already sets IsIncluded on a
+        /// GetAdductIon instance the same way. A console run reads one method file per process.
+        ///
+        /// An entry that fails AdductIon.FormatCheck is dropped as before, so one mistyped adduct
+        /// does not discard the rest. When NO entry can be read, nothing the file asked for would
+        /// be searched, so the value is reported as unusable and the built-in list is kept.
+        /// Entries are trimmed because "[M+H]+, [M+Na]+" is how a person types a list.
+        /// </remarks>
+        private static MethodKeyOutcome SearchedAdductIons(string text, Action<List<AdductIon>> assign) {
+            var adducts = new List<AdductIon>();
+            foreach (var adductString in text.Split(',')) {
+                var adductObj = AdductIon.GetAdductIon(adductString.Trim());
+                if (adductObj.FormatCheck) adducts.Add(adductObj);
+            }
+            if (adducts.Count == 0) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            foreach (var adduct in adducts) {
+                adduct.IsIncluded = true;
+            }
+            assign(adducts);
+            return MethodKeyOutcome.Applied;
+        }
+
         private sealed class MethodFileKeys
         {
             private readonly List<string> _applied = new List<string>();
@@ -1161,16 +1200,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass slice width": return Number(valueLower, v => param.MassSliceWidth = (float)v);
                 case "mass accuracy": return Number(valueLower, v => param.CentroidMs1Tolerance = (float)v);
                 case "max charge number": return Count(valueLower, v => param.MaxChargeNumber = v);
-                case "searched adduct ions": 
-                    if (!value.IsEmptyOrNull()) {
-                        param.SearchedAdductIons = new List<AdductIon>();
-                        var aStrings = value.Split(',');
-                        foreach (var adductString in aStrings) {
-                            var adductObj = AdductIon.GetAdductIon(adductString);
-                            if (adductObj.FormatCheck) param.SearchedAdductIons.Add(adductObj);
-                        }
-                    }
-                    return true;
+                case "searched adduct ions": return SearchedAdductIons(value, adducts => param.SearchedAdductIons = adducts);
 
                 
 
