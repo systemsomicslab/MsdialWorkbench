@@ -1247,7 +1247,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "use retention information for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationScoring = v);
                 case "use retention information for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationFiltering = v);
                 case "use ccs for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationScoring = v);
-                case "use ccs for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "use ccs for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationFiltering = v);
                 case "execute annotation process only for alignment file for lbm-based annotation": return TrueOrFalse(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
 
 

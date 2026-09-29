@@ -49,6 +49,16 @@ public sealed class DimsProcess {
             MsdialDimsParameter = param
         };
 
+        container.DataBaseMapper = new DataBaseMapper();
+        container.DataBases = CreateDataBaseStorage(param, mspDB, lbmDB, txtDB);
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
+
+        var providerFactory = new StandardDataProviderFactory();
+        Console.WriteLine("Start processing..");
+        return ExecuteAsync(container, providerFactory, outputFolder, isProjectSaved).Result;
+    }
+
+    internal static DataBaseStorage CreateDataBaseStorage(MsdialDimsParameter param, MoleculeDataBase? mspDB, MoleculeDataBase? lbmDB, MoleculeDataBase? txtDB) {
         var dbStorage = DataBaseStorage.CreateEmpty();
         if (mspDB is { Database.Count: > 0 }) {
             var mspAnnotator = new DimsMspAnnotator(mspDB, param.MspSearchParam, param.TargetOmics, "MspDB", 1);
@@ -57,7 +67,7 @@ public sealed class DimsProcess {
             ]);
         }
         if (lbmDB is { Database.Count: > 0}) {
-            var annotator = new DimsMspAnnotator(lbmDB, param.MspSearchParam, param.TargetOmics, "LbmDB", 1);
+            var annotator = new DimsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, "LbmDB", 1);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.LbmSearchParam)),
             ]);
@@ -68,13 +78,7 @@ public sealed class DimsProcess {
                 new MetabolomicsAnnotatorParameterPair(textAnnotator.Save(), new AnnotationQueryWithoutIsotopeFactory(textAnnotator, param.TextDbSearchParam)),
             ]);
         }
-        container.DataBaseMapper = new DataBaseMapper();
-        container.DataBases = dbStorage;
-        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
-
-        var providerFactory = new StandardDataProviderFactory();
-        Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, providerFactory, outputFolder, isProjectSaved).Result;
+        return dbStorage;
     }
 
     private async Task<int> ExecuteAsync(MsdialDimsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
