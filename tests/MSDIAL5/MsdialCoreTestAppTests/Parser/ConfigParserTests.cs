@@ -683,6 +683,40 @@ public sealed class ConfigParserTests
         Assert.IsFalse(report.Contains("'Mass slice width'"), "a key that worked is not reported");
     }
 
+    [TestMethod]
+    public void ReadForLcmsParameter_SummarizesManyIgnoredTemplateKeysButRetainsTheirAudit()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            string.Join("\n", Enumerable.Range(1, 7).Select(index => $"Unsupported key {index}: 1")) + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+        var record = JObject.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(method), "method.keys.json")));
+
+        StringAssert.Contains(report, "7 parameter(s) had NO EFFECT");
+        StringAssert.Contains(report, "method.keys.json");
+        Assert.IsFalse(report.Contains("'Unsupported key 1'"));
+        Assert.AreEqual(7, record["unrecognised"]!.Count());
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_SummarizesManyBlankTemplateKeysButRetainsTheirAudit()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            string.Join("\n", Enumerable.Range(1, 7).Select(index => $"Unused path {index}:")) + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+        var record = JObject.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(method), "method.keys.json")));
+
+        StringAssert.Contains(report, "7 parameter(s) were left blank");
+        StringAssert.Contains(report, "method.keys.json");
+        Assert.IsFalse(report.Contains("Unused path 1"));
+        Assert.AreEqual(7, record["blank"]!.Count());
+    }
+
     /// <summary>
     /// A blank value is reported separately, because it is how a method file says "none".
     /// </summary>
