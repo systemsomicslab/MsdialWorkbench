@@ -393,10 +393,13 @@ namespace CompMs.App.MsdialConsole.Parser
             public void Report(string filepath) {
                 WriteRecord(filepath);
                 var name = Path.GetFileName(filepath);
-                foreach (var key in _unrecognised) {
-                    Console.WriteLine($"Method file '{name}': the parameter '{key}' was not recognised and had NO EFFECT. The built-in default was used instead.");
+                if (_unrecognised.Count > 5) {
+                    Console.WriteLine($"Method file '{name}': {_unrecognised.Count} parameter(s) had NO EFFECT in this mode. See '{Path.GetFileNameWithoutExtension(filepath)}.keys.json' for every key and check whether the Console controls that setting elsewhere.");
                 }
-                if (_unrecognised.Count > 0) {
+                else if (_unrecognised.Count > 0) {
+                    foreach (var key in _unrecognised) {
+                        Console.WriteLine($"Method file '{name}': the parameter '{key}' was not recognised and had NO EFFECT. The built-in default was used instead.");
+                    }
                     Console.WriteLine($"Method file '{name}': {_unrecognised.Count} parameter(s) had no effect. Check the spelling against the template for this mode.");
                 }
                 foreach (var entry in _unusable) {
@@ -405,7 +408,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 if (_unusable.Count > 0) {
                     Console.WriteLine($"Method file '{name}': {_unusable.Count} parameter(s) named a value this reader cannot parse. The run did NOT use them.");
                 }
-                if (_blank.Count > 0) {
+                if (_blank.Count > 5) {
+                    Console.WriteLine($"Method file '{name}': {_blank.Count} parameter(s) were left blank; their defaults apply. See '{Path.GetFileNameWithoutExtension(filepath)}.keys.json' for the names.");
+                }
+                else if (_blank.Count > 0) {
                     Console.WriteLine($"Method file '{name}': left blank, so the default applies: {string.Join(", ", _blank)}");
                 }
                 foreach (var repeated in _occurrenceOrder.Where(occurrences => occurrences.Count > 1)) {
