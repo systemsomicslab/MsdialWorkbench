@@ -177,7 +177,7 @@ namespace CompMs.App.MsdialConsole.Parser
         /// at, because ParameterBase writes these keys with bool.ToString() and any other spelling
         /// came from somewhere that did not know the format.
         /// </remarks>
-        private static MethodKeyOutcome Flag(string text, Action<bool> assign) {
+        private static MethodKeyOutcome TrueOrFalse(string text, Action<bool> assign) {
             if (string.Equals(text, "true", StringComparison.OrdinalIgnoreCase)) {
                 return Assign(true, assign);
             }
@@ -477,7 +477,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "alignment light mode":
                 case "alignment light":
                 case "console alignment light mode":
-                    return Flag(value, assign);
+                    return TrueOrFalse(value, assign);
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
@@ -499,7 +499,7 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method.ToLower()) {
                 case "detailed alignment provenance":
                 case "export detailed alignment provenance":
-                    return Flag(value, assign);
+                    return TrueOrFalse(value, assign);
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
@@ -509,7 +509,7 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method.ToLower()) {
                 case "annotation candidates":
                 case "export annotation candidates":
-                    return Flag(value, assign);
+                    return TrueOrFalse(value, assign);
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
@@ -956,9 +956,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "retention index alignment tolerance":
                     return Number(valueLower, v => param.RetentionIndexAlignmentTolerance = (float)v);
                 case "replace quant mass by user defined value":
-                    return Flag(valueLower, v => param.IsReplaceQuantmassByUserDefinedValue = v);
+                    return TrueOrFalse(valueLower, v => param.IsReplaceQuantmassByUserDefinedValue = v);
                 case "is quant mass based on base peak mz":
-                    return Flag(valueLower, v => param.IsRepresentativeQuantMassBasedOnBasePeakMz = v);
+                    return TrueOrFalse(valueLower, v => param.IsRepresentativeQuantMassBasedOnBasePeakMz = v);
                 default: return false;
             }
         }
@@ -973,7 +973,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
                 case "accumulated rt ragne": return Number(value, v => param.AccumulatedRtRange = (float)v);
                 case "accumulate ms2 spectra":
-                    return Flag(value, v => param.IsAccumulateMS2Spectra = v);
+                    return TrueOrFalse(value, v => param.IsAccumulateMS2Spectra = v);
                 case "drift time alignment tolerance": return Number(value, v => param.DriftTimeAlignmentTolerance = (float)v);
                 case "drift time alignment factor": return Number(value, v => param.DriftTimeAlignmentFactor = (float)v);
                 case "ion mobility type":
@@ -1028,7 +1028,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (value == "Bonanza" || value == "ModDot" || value == "Cosine" || value == "All")
                         param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
                 case "mnisexportioncorrelation":
-                    return Flag(valueLower, v => param.MnIsExportIonCorrelation = v);
+                    return TrueOrFalse(valueLower, v => param.MnIsExportIonCorrelation = v);
                 default: return false;
             }
         }
@@ -1129,9 +1129,9 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 // Private version
                 case "is private version of tada":
-                    return Flag(valueLower, v => param.IsLabPrivateVersionTada = v);
+                    return TrueOrFalse(valueLower, v => param.IsLabPrivateVersionTada = v);
                 case "is private version":
-                    return Flag(valueLower, v => param.IsLabPrivate = v);
+                    return TrueOrFalse(valueLower, v => param.IsLabPrivate = v);
 
                 //Data correction
                 case "retention time begin": return Number(valueLower, v => param.RetentionTimeBegin = (float)v);
@@ -1180,8 +1180,8 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.AmplitudeCutoff = (float)v);
                 case "relative amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.RelativeAmplitudeCutoff = (float)v);
                 case "keep isotope range": return Number(valueLower, v => param.KeptIsotopeRange = (float)v);
-                case "exclude after precursor": return Flag(valueLower, v => param.RemoveAfterPrecursor = v);
-                case "keep original precursor isotopes": return Flag(valueLower, v => param.KeepOriginalPrecursorIsotopes = v);
+                case "exclude after precursor": return TrueOrFalse(valueLower, v => param.RemoveAfterPrecursor = v);
+                case "keep original precursor isotopes": return TrueOrFalse(valueLower, v => param.KeepOriginalPrecursorIsotopes = v);
                 case "target ce": return Number(valueLower, v => param.TargetCE = v);
 
                 //Identification
@@ -1216,14 +1216,14 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "total score cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.TotalScoreCutoff = (float)v);
                 case "ms1 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms1Tolerance = (float)v);
                 case "ms2 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms2Tolerance = (float)v);
-                case "use retention information for msp-based annotation scoring": return Flag(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationScoring = v);
-                case "use retention information for msp-based annotation filtering": return Flag(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationFiltering = v);
-                case "use ccs for msp-based annotation scoring": return Flag(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationScoring = v);
-                case "use ccs for msp-based annotation filtering": return Flag(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
-                case "only report top hit for msp-based annotation": return Flag(valueLower, v => param.OnlyReportTopHitInMspSearch = v);
+                case "use retention information for msp-based annotation scoring": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for msp-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for msp-based annotation scoring": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for msp-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "only report top hit for msp-based annotation": return TrueOrFalse(valueLower, v => param.OnlyReportTopHitInMspSearch = v);
                 case "execute annotation process only for alignment file":
                 case "execute annotation process only for alignment file for msp-based annotation":
-                    return Flag(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
+                    return TrueOrFalse(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
 
                 //Identification
                 case "rt tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RtTolerance = (float)v);
@@ -1244,11 +1244,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "total score cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.TotalScoreCutoff = (float)v);
                 case "ms1 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms1Tolerance = (float)v);
                 case "ms2 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms2Tolerance = (float)v);
-                case "use retention information for lbm-based annotation scoring": return Flag(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationScoring = v);
-                case "use retention information for lbm-based annotation filtering": return Flag(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationFiltering = v);
-                case "use ccs for lbm-based annotation scoring": return Flag(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationScoring = v);
-                case "use ccs for lbm-based annotation filtering": return Flag(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
-                case "execute annotation process only for alignment file for lbm-based annotation": return Flag(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
+                case "use retention information for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "execute annotation process only for alignment file for lbm-based annotation": return TrueOrFalse(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
 
 
                 //Post identification
@@ -1257,11 +1257,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ccs tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.CcsTolerance = (float)v);
                 case "total score cutoff for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.TotalScoreCutoff = (float)v);
                 case "accurate ms1 tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.Ms1Tolerance = (float)v);
-                case "use retention information for text-based annotation scoring": return Flag(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationScoring = v);
-                case "use retention information for text-based annotation filtering": return Flag(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationFiltering = v);
-                case "use ccs for text-based annotation scoring": return Flag(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationScoring = v);
-                case "use ccs for text-based annotation filtering": return Flag(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = v);
-                case "only report top hit for text-based annotation": return Flag(valueLower, v => param.OnlyReportTopHitInTextDBSearch = v);
+                case "use retention information for text-based annotation scoring": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for text-based annotation filtering": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for text-based annotation scoring": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for text-based annotation filtering": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "only report top hit for text-based annotation": return TrueOrFalse(valueLower, v => param.OnlyReportTopHitInTextDBSearch = v);
 
                 //Alignment parameters setting
                 case "alignment reference file id": return Count(valueLower, v => param.AlignmentReferenceFileID = v);
@@ -1271,9 +1271,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "spectrum similarity factor for alignment": return Number(valueLower, v => param.SpectrumSimilarityAlignmentFactor = (float)v);
                 case "ms1 tolerance for alignment": return Number(valueLower, v => param.Ms1AlignmentTolerance = (float)v);
                 case "ms1 factor for alignment": return Number(valueLower, v => param.Ms1AlignmentFactor = (float)v);
-                case "force insert peaks in gap filling": return Flag(valueLower, v => param.IsForceInsertForGapFilling = v);
-                case "together with alignment": return Flag(valueLower, v => param.TogetherWithAlignment = v);
-                case "execute automatic rt correction for alignment": return Flag(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.Execute = v);
+                case "force insert peaks in gap filling": return TrueOrFalse(valueLower, v => param.IsForceInsertForGapFilling = v);
+                case "together with alignment": return TrueOrFalse(valueLower, v => param.TogetherWithAlignment = v);
+                case "execute automatic rt correction for alignment": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.Execute = v);
                 case "automatic rt correction reference file id": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId = v);
                 case "automatic rt correction rt bin width": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth = (float)v);
                 case "automatic rt correction match rt tolerance": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance = (float)v);
@@ -1287,12 +1287,12 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "automatic rt correction minimum ideal slope": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope = (float)v);
                 case "automatic rt correction outlier mad threshold": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold = (float)v);
                 case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
-                case "automatic rt correction interpolate blanks by analytical order": return Flag(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
+                case "automatic rt correction interpolate blanks by analytical order": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
 
                 //Filtering
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);
                 case "n percent detected in one group": return Number(valueLower, v => param.NPercentDetectedInOneGroup = (float)v);
-                case "remove feature based on peak height fold-change": return Flag(valueLower, v => param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = v);
+                case "remove feature based on peak height fold-change": return TrueOrFalse(valueLower, v => param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = v);
                 case "blank filtering":
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
@@ -1303,14 +1303,14 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.FoldChangeForBlankFiltering = (float)v;
                     });
                 case "sample average / blank average": return Number(valueLower, v => param.SampleAverageOverBlankAverage = (float)v);
-                case "keep reference matched metabolites": return Flag(valueLower, v => param.IsKeepRefMatchedMetaboliteFeatures = v);
-                case "keep suggested metabolites": return Flag(valueLower, v => param.IsKeepSuggestedMetaboliteFeatures = v);
-                case "keep removable features and assigned tag for checking": return Flag(valueLower, v => param.IsKeepRemovableFeaturesAndAssignedTagForChecking = v);
-                case "replace true zero values with 1/2 of minimum peak height over all samples": return Flag(valueLower, v => param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = v);
+                case "keep reference matched metabolites": return TrueOrFalse(valueLower, v => param.IsKeepRefMatchedMetaboliteFeatures = v);
+                case "keep suggested metabolites": return TrueOrFalse(valueLower, v => param.IsKeepSuggestedMetaboliteFeatures = v);
+                case "keep removable features and assigned tag for checking": return TrueOrFalse(valueLower, v => param.IsKeepRemovableFeaturesAndAssignedTagForChecking = v);
+                case "replace true zero values with 1/2 of minimum peak height over all samples": return TrueOrFalse(valueLower, v => param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = v);
 
                 //Retentiontime correction
-                case "execute rt correction": return Flag(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = v);
-                case "rt correction with smoothing for rt diff": return Flag(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = v);
+                case "execute rt correction": return TrueOrFalse(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = v);
+                case "rt correction with smoothing for rt diff": return TrueOrFalse(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = v);
                 case "user setting intercept": return Number(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept = (float)v);
                 case "rt diff calc method":
                     if (valueLower == "sampleminussampleaverage" || valueLower == "sampleminusreference")
@@ -1339,8 +1339,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     });
 
                 //Isotope tracking setting
-                case "tracking isotope label": return Flag(valueLower, v => param.TrackingIsotopeLabels = v);
-                case "set fully labeled reference file": return Flag(valueLower, v => param.SetFullyLabeledReferenceFile = v);
+                case "tracking isotope label": return TrueOrFalse(valueLower, v => param.TrackingIsotopeLabels = v);
+                case "set fully labeled reference file": return TrueOrFalse(valueLower, v => param.SetFullyLabeledReferenceFile = v);
                 case "non labeled reference id": return Count(valueLower, v => param.NonLabeledReferenceID = v);
                 case "fully labeled reference id": return Count(valueLower, v => param.FullyLabeledReferenceID = v);
                 // ParameterBase writes "Number of threads" into every exported method file,
@@ -1358,7 +1358,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //CorrDec settings
                 case "corrdec execute":
-                    return Flag(valueLower, v => param.CorrDecParam.CanExcute = v);
+                    return TrueOrFalse(valueLower, v => param.CorrDecParam.CanExcute = v);
                 case "corrdec ms2 tolerance":
                     return Number(valueLower, v => param.CorrDecParam.MS2Tolerance = (float)v);
                 case "corrdec minimum ms2 peak height":
@@ -1378,7 +1378,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "corrdec minimum ms2 relative intensity":
                     return Number(valueLower, v => param.CorrDecParam.MinMS2RelativeIntensity = (float)v);
                 case "corrdec remove peaks larger than precursor":
-                    return Flag(valueLower, v => param.CorrDecParam.CorrDecRemoveAfterPrecursor = v);
+                    return TrueOrFalse(valueLower, v => param.CorrDecParam.CorrDecRemoveAfterPrecursor = v);
                 default: return false;
             }
         }
