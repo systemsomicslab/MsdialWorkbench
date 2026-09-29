@@ -329,12 +329,84 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadLcmsConsoleParameter(method, value)));
                     }
                 }
             }
             keys.Report(filepath);
             return param;
+        }
+
+        /// <summary>
+        /// Say what the settings LcmsProcess reads for itself would do with one line.
+        /// </summary>
+        /// <remarks>
+        /// LcmsProcess reads six settings with readers of their own, and calls them after
+        /// ReadForLcmsParameter has already written the key record. The record knew only
+        /// ReadCommonParameter, so it listed those keys as unrecognised with NO EFFECT while they
+        /// governed the run. A repository run's record put "MSP annotator settings file path",
+        /// "LBM annotator priority" and "Alignment light mode" among its twenty-nine keys with no
+        /// effect, and the audits that trust the record were told the opposite of what happened.
+        ///
+        /// This asks the same line readers the side readers use, so the record cannot disagree
+        /// with the run: a value the side reader takes is applied, and a value it passes over --
+        /// "yes" for a switch, "2.0" for a priority -- is unusable, because the run used the
+        /// default. Nothing is assigned here, so which keys take effect is unchanged. A new
+        /// setting LcmsProcess reads for itself belongs in this list.
+        ///
+        /// Only the LC-MS reader asks. No other mode calls these readers, so in a GC-MS, DIMS,
+        /// IMMS or LC-IM-MS method file the same keys really have no effect and are still
+        /// reported as unrecognised.
+        /// </remarks>
+        private static MethodKeyOutcome ReadLcmsConsoleParameter(string method, string value) {
+            foreach (var line in LcmsConsoleLines) {
+                var outcome = line(method, value);
+                if (!outcome.IsUnknownKey) {
+                    return outcome;
+                }
+            }
+            return MethodKeyOutcome.UnknownKey;
+        }
+
+        private static readonly Func<string, string, MethodKeyOutcome>[] LcmsConsoleLines = {
+            (method, value) => MspAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (method, value) => TextAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (method, value) => LbmAnnotatorPriorityLine(method, value, _ => { }),
+            (method, value) => AlignmentLightModeLine(method, value, _ => { }),
+            (method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
+            (method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+        };
+
+        /// <summary>
+        /// Read a setting from the first line its line reader takes.
+        /// </summary>
+        /// <remarks>
+        /// The first usable line wins, where in the main readers a later line overwrites an
+        /// earlier one. That is how these readers have always behaved, and it is kept.
+        /// </remarks>
+        private static T ReadFirst<T>(string filepath, T fallback, Func<string, string, Action<T>, MethodKeyOutcome> line) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    var read = fallback;
+                    if (line(method, value, v => read = v).IsApplied) {
+                        return read;
+                    }
+                }
+            }
+            return fallback;
+        }
+
+        private static MethodKeyOutcome TrueOrFalse(string text, Action<bool> assign) {
+            var valueLower = text.ToLower();
+            if (valueLower == "true" || valueLower == "false") {
+                return Assign(bool.Parse(valueLower), assign);
+            }
+            return MethodKeyOutcome.UnusableValue;
         }
 
         public static List<MspAnnotatorSetting> ReadMspAnnotatorSettings(string filepath, ParameterBase param) {
@@ -362,124 +434,96 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         public static bool ReadAlignmentLightMode(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "alignment light mode":
-                        case "alignment light":
-                        case "console alignment light mode":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, AlignmentLightModeLine);
         }
 
         public static int ReadLbmAnnotatorPriority(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLowerInvariant()) {
-                        case "lbm annotator priority":
-                        case "lbm annotation priority":
-                            if (int.TryParse(value, out var priority)) {
-                                return priority;
-                            }
-                            break;
-                    }
-                }
-            }
-            return 1;
+            return ReadFirst(filepath, 1, LbmAnnotatorPriorityLine);
         }
 
         public static bool ReadDetailedAlignmentProvenance(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "detailed alignment provenance":
-                        case "export detailed alignment provenance":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, DetailedAlignmentProvenanceLine);
         }
 
         public static bool ReadAnnotationCandidateExport(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "annotation candidates":
-                        case "export annotation candidates":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, AnnotationCandidateExportLine);
         }
 
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "msp annotator settings file path":
-                        case "msp annotation settings file path":
-                        case "msp search settings file path":
-                            return value;
-                    }
-                }
-            }
-            return string.Empty;
+            return ReadFirst(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
 
         private static string ReadTextAnnotatorSettingsFilePath(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "text annotator settings file path":
-                        case "text library annotator settings file path":
-                        case "text db annotator settings file path":
-                        case "text annotation settings file path":
-                            return value;
-                    }
-                }
+            return ReadFirst(filepath, string.Empty, TextAnnotatorSettingsFilePathLine);
+        }
+
+        private static MethodKeyOutcome AlignmentLightModeLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "alignment light mode":
+                case "alignment light":
+                case "console alignment light mode":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
             }
-            return string.Empty;
+        }
+
+        private static MethodKeyOutcome LbmAnnotatorPriorityLine(string method, string value, Action<int> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "lbm annotator priority":
+                case "lbm annotation priority":
+                    return int.TryParse(value, out var priority)
+                        ? Assign(priority, assign)
+                        : MethodKeyOutcome.UnusableValue;
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome DetailedAlignmentProvenanceLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "detailed alignment provenance":
+                case "export detailed alignment provenance":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome AnnotationCandidateExportLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "annotation candidates":
+                case "export annotation candidates":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        // A path line is taken even when blank, so a blank line ends the search and a later line
+        // does not override it; that is how these readers have always behaved. The key record
+        // never asks about a blank value, because it lists it as blank first.
+        private static MethodKeyOutcome MspAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
+            switch (method.ToLower()) {
+                case "msp annotator settings file path":
+                case "msp annotation settings file path":
+                case "msp search settings file path":
+                    return Assign(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome TextAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
+            switch (method.ToLower()) {
+                case "text annotator settings file path":
+                case "text library annotator settings file path":
+                case "text db annotator settings file path":
+                case "text annotation settings file path":
+                    return Assign(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
         }
 
         private static List<MspAnnotatorSetting> ReadMspAnnotatorSettingsTable(string filepath, ParameterBase param) {

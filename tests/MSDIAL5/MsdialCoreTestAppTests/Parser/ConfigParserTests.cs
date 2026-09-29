@@ -5,6 +5,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -196,6 +197,147 @@ public sealed class ConfigParserTests
         CollectionAssert.Contains(parsed["unusable"]!.Select(i => (string)i!).ToList(), "Minimum peak height: quite high");
         CollectionAssert.Contains(parsed["unrecognised"]!.Select(i => (string)i!).ToList(), "Nonexistent parameter");
         CollectionAssert.DoesNotContain(parsed["applied"]!.Select(i => (string)i!).ToList(), "Minimum peak height");
+    }
+
+    /// <summary>
+    /// The keys LcmsProcess reads for itself are recorded as applied, not as having no effect.
+    /// </summary>
+    /// <remarks>
+    /// LcmsProcess reads these with readers of their own, after the key record has been written,
+    /// and the record used to know only ReadCommonParameter. A repository run's record listed
+    /// "MSP annotator settings file path", "LBM annotator priority" and "Alignment light mode" as
+    /// unrecognised with NO EFFECT while each of them governed the run, and the reanalysis audits
+    /// trust that record.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_KeyRecordListsTheKeysLcmsProcessReadsForItselfAsApplied()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\n" +
+            $"library\t{msp}\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"""
+            MSP annotator settings file path: {settings}
+            LBM annotator priority: 3
+            Alignment light mode: True
+            A parameter that does not exist: 7
+            """);
+
+        var (_, report) = ReadLcmsWithReport(methodFile);
+
+        var applied = RecordedKeys(methodFile, "applied");
+        foreach (var key in new[] { "MSP annotator settings file path", "LBM annotator priority", "Alignment light mode" }) {
+            CollectionAssert.Contains(applied, key);
+            Assert.IsFalse(report.Contains($"'{key}'"), $"'{key}' took effect and must not be reported as having none");
+        }
+        CollectionAssert.AreEqual(new[] { "A parameter that does not exist" }, RecordedKeys(methodFile, "unrecognised"));
+        StringAssert.Contains(report, "'A parameter that does not exist' was not recognised and had NO EFFECT");
+
+        // And the run really does take them: the record describes what the side readers do.
+        Assert.AreEqual(1, ConfigParser.ReadMspAnnotatorSettings(methodFile, new MsdialLcmsParameter()).Count);
+        Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(methodFile));
+        Assert.IsTrue(ConfigParser.ReadAlignmentLightMode(methodFile));
+    }
+
+    [TestMethod]
+    [DataRow("MSP annotator settings file path", "settings.tsv")]
+    [DataRow("MSP annotation settings file path", "settings.tsv")]
+    [DataRow("MSP search settings file path", "settings.tsv")]
+    [DataRow("Text annotator settings file path", "settings.tsv")]
+    [DataRow("Text library annotator settings file path", "settings.tsv")]
+    [DataRow("Text DB annotator settings file path", "settings.tsv")]
+    [DataRow("Text annotation settings file path", "settings.tsv")]
+    [DataRow("LBM annotator priority", "2")]
+    [DataRow("LBM annotation priority", "2")]
+    [DataRow("Alignment light mode", "true")]
+    [DataRow("Alignment light", "false")]
+    [DataRow("Console alignment light mode", "true")]
+    [DataRow("Detailed alignment provenance", "true")]
+    [DataRow("Export detailed alignment provenance", "false")]
+    [DataRow("Annotation candidates", "true")]
+    [DataRow("Export annotation candidates", "false")]
+    public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", $"{key}: {value}\n");
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        CollectionAssert.AreEqual(new[] { key }, RecordedKeys(methodFile, "applied"));
+        Assert.AreEqual(0, RecordedKeys(methodFile, "unrecognised").Count);
+    }
+
+    /// <summary>
+    /// A value the side reader passes over is recorded as unusable, as the run used the default.
+    /// </summary>
+    /// <remarks>
+    /// "2.0" is not a priority to the reader and "yes" is not a switch, so those lines are skipped
+    /// and a later usable line, or the default, governs. Calling them applied would repeat the
+    /// failure this record exists to end.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_KeyRecordCallsAValueTheSideReaderPassesOverUnusable()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Alignment light mode: yes
+            LBM annotator priority: 2.0
+            LBM annotator priority: 4
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        CollectionAssert.AreEqual(
+            new[] { "Alignment light mode: yes", "LBM annotator priority: 2.0" },
+            RecordedKeys(methodFile, "unusable"));
+        CollectionAssert.AreEqual(new[] { "LBM annotator priority" }, RecordedKeys(methodFile, "applied"));
+        Assert.IsFalse(ConfigParser.ReadAlignmentLightMode(methodFile), "the default the run used");
+        Assert.AreEqual(4, ConfigParser.ReadLbmAnnotatorPriority(methodFile), "the first usable line the run used");
+    }
+
+    /// <summary>
+    /// Only LC-MS reads these keys, so every other mode still reports them as having no effect.
+    /// </summary>
+    [TestMethod]
+    public void OtherModes_StillReportTheLcmsOnlyKeysAsUnrecognised()
+    {
+        var readers = new (string Mode, Action<string> Read)[] {
+            ("gcms", path => ConfigParser.ReadForGcms(path)),
+            ("dims", path => ConfigParser.ReadForDimsParameter(path)),
+            ("imms", path => ConfigParser.ReadForImmsParameter(path)),
+            ("lcimms", path => ConfigParser.ReadForLcImMsParameter(path)),
+        };
+        using var directory = new TemporaryDirectory();
+        foreach (var (mode, read) in readers) {
+            var methodFile = directory.CreateFile(
+                $"{mode}.txt",
+                """
+                MSP annotator settings file path: settings.tsv
+                LBM annotator priority: 3
+                Alignment light mode: true
+                """);
+
+            read(methodFile);
+
+            CollectionAssert.AreEqual(
+                new[] { "MSP annotator settings file path", "LBM annotator priority", "Alignment light mode" },
+                RecordedKeys(methodFile, "unrecognised"),
+                mode);
+        }
+    }
+
+    private static List<string> RecordedKeys(string methodFile, string list)
+    {
+        var record = Path.Combine(
+            Path.GetDirectoryName(methodFile)!,
+            Path.GetFileNameWithoutExtension(methodFile) + ".keys.json");
+        return JObject.Parse(File.ReadAllText(record))[list]!.Select(item => (string)item!).ToList();
     }
 
     [TestMethod]
