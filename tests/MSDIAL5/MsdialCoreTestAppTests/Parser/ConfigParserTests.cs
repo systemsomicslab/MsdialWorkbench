@@ -662,7 +662,7 @@ public sealed class ConfigParserTests
     /// <remarks>
     /// The library is small and its format is easy to get wrong, so it is checked first: before
     /// the analysis files are imported, and so before the annotation libraries and the raw data.
-    /// The input folder here does not exist, so reaching the import would print its own error.
+    /// The input folder here is empty, so reaching the import would print "Loading analysis files".
     /// </remarks>
     [TestMethod]
     public void LcmsProcess_RefusesAMalformedRtCorrectionLibraryBeforeLoadingAnalysisFiles()
@@ -679,30 +679,76 @@ public sealed class ConfigParserTests
             Compounds library file path for RT correction: {library}
             """);
 
+        var (result, output, error) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result);
+        StringAssert.Contains(error, "RT correction library could not be used");
+        StringAssert.Contains(error, "non-numerical value for retention time");
+        Assert.IsFalse(output.Contains("Loading analysis files"), output);
+    }
+
+    /// <summary>
+    /// With RT correction off, a library path set in the method file is warned about, not read.
+    /// </summary>
+    /// <remarks>
+    /// The library has no effect without the correction, so it is neither opened nor checked --
+    /// the path here names no file at all. A path left in place usually means the switch was meant
+    /// to be on, which is why it is still mentioned.
+    /// </remarks>
+    [TestMethod]
+    public void LcmsProcess_WarnsWhenAnRtCorrectionLibraryIsSetButRtCorrectionIsOff()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute RT correction: False
+            Compounds library file path for RT correction: no-such-anchors.txt
+            """);
+
+        var (_, output, error) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "'Execute RT correction' is False, so the library is not used");
+        Assert.IsFalse(error.Contains("RT correction library could not be used"), error);
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysNothingAboutTheRtCorrectionLibraryWhenNoneIsSet()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", "Execute RT correction: False\n");
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        Assert.IsFalse(output.Contains("Compounds library file path for RT correction"), output);
+    }
+
+    /// <summary>
+    /// Run LC-MS on an empty input folder, so it stops at the analysis-file import.
+    /// </summary>
+    private static (int Result, string Output, string Error) RunLcms(TemporaryDirectory directory, string methodFile)
+    {
+        var input = System.IO.Path.Combine(directory.Path, "empty-input");
+        Directory.CreateDirectory(input);
         var originalOut = Console.Out;
         var originalError = Console.Error;
         var output = new StringWriter();
         var error = new StringWriter();
-        int result;
         try {
             Console.SetOut(output);
             Console.SetError(error);
-            result = new LcmsProcess().Run(
-                System.IO.Path.Combine(directory.Path, "no-such-input"),
+            var result = new LcmsProcess().Run(
+                input,
                 System.IO.Path.Combine(directory.Path, "output"),
                 methodFile,
                 isProjectSaved: false,
                 targetMz: -1f);
+            return (result, output.ToString(), error.ToString());
         }
         finally {
             Console.SetOut(originalOut);
             Console.SetError(originalError);
         }
-
-        Assert.AreEqual(-1, result);
-        StringAssert.Contains(error.ToString(), "RT correction library could not be used");
-        StringAssert.Contains(error.ToString(), "non-numerical value for retention time");
-        Assert.IsFalse(output.ToString().Contains("Loading analysis files"), output.ToString());
     }
 
     private static string AnchorLibrary(params string[] names)

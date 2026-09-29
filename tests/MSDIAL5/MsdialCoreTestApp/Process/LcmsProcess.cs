@@ -60,6 +60,11 @@ public sealed class LcmsProcess
                 return -1;
             }
         }
+        else if (!param.CompoundListForRtCorrectionPath.IsEmptyOrNull()) {
+            // Not read and not checked: the library has no effect without RT correction. A path
+            // left in place usually means the switch was meant to be on, so it is said out loud.
+            Console.WriteLine($"Warning: 'Compounds library file path for RT correction' is set ({param.CompoundListForRtCorrectionPath}) but 'Execute RT correction' is False, so the library is not used.");
+        }
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
