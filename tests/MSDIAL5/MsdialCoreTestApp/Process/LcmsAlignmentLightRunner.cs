@@ -35,16 +35,19 @@ internal sealed class LcmsAlignmentLightRunner {
     private readonly double _rttol;
     private readonly double _mzfactor;
     private readonly double _rtfactor;
+    private readonly AlignmentRetentionTimeCorrectionCollection? _alignmentRtCorrection;
 
     public LcmsAlignmentLightRunner(
         IMsdialDataStorage<MsdialLcmsParameter> storage,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         IDataProviderFactory<AnalysisFileBean> providerFactory,
-        IProgress<int>? progress) {
+        IProgress<int>? progress,
+        AlignmentRetentionTimeCorrectionCollection? alignmentRtCorrection = null) {
         _storage = storage;
         _evaluator = evaluator;
         _providerFactory = providerFactory;
         _progress = progress;
+        _alignmentRtCorrection = alignmentRtCorrection;
         _parameter = storage.Parameter;
         _mztol = _parameter.Ms1AlignmentTolerance;
         _rttol = _parameter.RetentionTimeAlignmentTolerance;
@@ -56,6 +59,7 @@ internal sealed class LcmsAlignmentLightRunner {
         var factory = new LcmsAlignmentProcessFactory(_storage, _evaluator) {
             Progress = _progress,
             SkipIonAbundanceCorrelationLinks = true,
+            AlignmentRtCorrection = _alignmentRtCorrection,
         };
         var joiner = (LcmsPeakJoiner)factory.CreatePeakJoiner();
         var accessor = (IFeatureAccessor<ChromatogramPeakFeature>)factory.CreateDataAccessor();
@@ -94,7 +98,7 @@ internal sealed class LcmsAlignmentLightRunner {
 
         Console.WriteLine($"Alignment light mode: {kept.Count} alignment spots retained from {accumulators.Count} master spots.");
         Console.WriteLine("Alignment light mode: gap-fill pass started.");
-        var gapFiller = new LcmsGapFiller(_parameter);
+        var gapFiller = new LcmsGapFiller(_parameter, _alignmentRtCorrection);
         reporter = ReportProgress.FromLength(_progress, 40.0, 40.0);
         counter = 0;
         foreach (var file in analysisFiles) {
