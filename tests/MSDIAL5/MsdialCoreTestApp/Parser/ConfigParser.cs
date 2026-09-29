@@ -244,8 +244,25 @@ namespace CompMs.App.MsdialConsole.Parser
             private readonly List<string> _unrecognised = new List<string>();
             private readonly List<string> _unusable = new List<string>();
             private readonly List<string> _blank = new List<string>();
+            private readonly Dictionary<string, Occurrences> _occurrences = new Dictionary<string, Occurrences>(StringComparer.OrdinalIgnoreCase);
+            private readonly List<Occurrences> _occurrenceOrder = new List<Occurrences>();
+
+            /// <summary>
+            /// Every line one key was written on, and the last value a reader accepted.
+            /// </summary>
+            private sealed class Occurrences
+            {
+                public Occurrences(string key) {
+                    Key = key;
+                }
+
+                public string Key { get; }
+                public int Count { get; set; }
+                public string? Used { get; set; }
+            }
 
             public void Read(string method, string value, Func<MethodKeyOutcome> apply) {
+                var occurrences = Count(method);
                 if (value.IsEmptyOrNull()) {
                     _blank.Add(method);
                     return;
@@ -259,8 +276,43 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
                 else {
                     _applied.Add(method);
+                    occurrences.Used = value;
                 }
             }
+
+            private Occurrences Count(string method) {
+                if (!_occurrences.TryGetValue(method, out var occurrences)) {
+                    occurrences = new Occurrences(method);
+                    _occurrences.Add(method, occurrences);
+                    _occurrenceOrder.Add(occurrences);
+                }
+                occurrences.Count++;
+                return occurrences;
+            }
+
+            /// <summary>
+            /// The keys written on more than one line, and the value the run used for each.
+            /// </summary>
+            /// <remarks>
+            /// Every reader keeps the last line it accepts, so a key written twice is not an error,
+            /// but "applied" alone cannot say WHICH of the two lines was applied, and a method file
+            /// edited by appending a corrected line looks, to anyone reading it top to bottom, as
+            /// if the first value governs. This names the value that did.
+            ///
+            /// The used value is the last line a reader accepted; a blank or unusable later line
+            /// leaves it in place, as it leaves the parameter in place. Keys are matched by
+            /// spelling, ignoring letter case. Two aliases of one setting -- "LBM annotator
+            /// priority" and "LBM annotation priority" -- are different spellings and are not
+            /// matched here, because only the readers know which spellings are one setting.
+            /// </remarks>
+            public IEnumerable<Dictionary<string, object?>> Repeated =>
+                _occurrenceOrder
+                    .Where(occurrences => occurrences.Count > 1)
+                    .Select(occurrences => new Dictionary<string, object?> {
+                        ["key"] = occurrences.Key,
+                        ["lines"] = occurrences.Count,
+                        ["used"] = occurrences.Used,
+                    });
 
             /// <summary>
             /// True when the method file contained a key no reader claimed.
@@ -307,6 +359,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         ["unrecognised"] = _unrecognised,
                         ["unusable"] = _unusable,
                         ["blank"] = _blank,
+                        ["repeated"] = Repeated.ToList(),
                     };
                     var directory = Path.GetDirectoryName(Path.GetFullPath(filepath));
                     if (string.IsNullOrEmpty(directory)) {
@@ -354,6 +407,12 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
                 if (_blank.Count > 0) {
                     Console.WriteLine($"Method file '{name}': left blank, so the default applies: {string.Join(", ", _blank)}");
+                }
+                foreach (var repeated in _occurrenceOrder.Where(occurrences => occurrences.Count > 1)) {
+                    var used = repeated.Used is null
+                        ? "no line was applied"
+                        : $"the last line applied was used: '{repeated.Used}'";
+                    Console.WriteLine($"Method file '{name}': the parameter '{repeated.Key}' is written on {repeated.Count} lines; {used}.");
                 }
             }
         }
@@ -441,26 +500,34 @@ namespace CompMs.App.MsdialConsole.Parser
         };
 
         /// <summary>
-        /// Read a setting from the first line its line reader takes.
+        /// Read a setting from the last line its line reader takes.
         /// </summary>
         /// <remarks>
-        /// The first usable line wins, where in the main readers a later line overwrites an
-        /// earlier one. That is how these readers have always behaved, and it is kept.
+        /// THE LAST USABLE LINE WINS, as it does in the main readers. These readers used to stop
+        /// at the first usable line, so a key written twice meant the later value for every
+        /// setting ReadCommonParameter reads and the earlier value for these six, while the key
+        /// record said both lines had been applied. One rule for the whole file ends that.
+        ///
+        /// A blank value is skipped, as the main readers skip it: "Msp file path:" does not clear
+        /// a path an earlier line set, and neither does a blank settings-file path here. A value
+        /// the line reader cannot use is skipped too, so it leaves the earlier value in place,
+        /// exactly as an unparseable number leaves a main-reader parameter alone.
         /// </remarks>
-        private static T ReadFirst<T>(string filepath, T fallback, Func<string, string, Action<T>, MethodKeyOutcome> line) {
+        private static T ReadLast<T>(string filepath, T fallback, Func<string, string, Action<T>, MethodKeyOutcome> line) {
+            var result = fallback;
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
+                    if (!isReadable || value.IsEmptyOrNull()) {
                         continue;
                     }
                     var read = fallback;
                     if (line(method, value, v => read = v).IsApplied) {
-                        return read;
+                        result = read;
                     }
                 }
             }
-            return fallback;
+            return result;
         }
 
         public static List<MspAnnotatorSetting> ReadMspAnnotatorSettings(string filepath, ParameterBase param) {
@@ -488,27 +555,27 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         public static bool ReadAlignmentLightMode(string filepath) {
-            return ReadFirst(filepath, false, AlignmentLightModeLine);
+            return ReadLast(filepath, false, AlignmentLightModeLine);
         }
 
         public static int ReadLbmAnnotatorPriority(string filepath) {
-            return ReadFirst(filepath, 1, LbmAnnotatorPriorityLine);
+            return ReadLast(filepath, 1, LbmAnnotatorPriorityLine);
         }
 
         public static bool ReadDetailedAlignmentProvenance(string filepath) {
-            return ReadFirst(filepath, false, DetailedAlignmentProvenanceLine);
+            return ReadLast(filepath, false, DetailedAlignmentProvenanceLine);
         }
 
         public static bool ReadAnnotationCandidateExport(string filepath) {
-            return ReadFirst(filepath, false, AnnotationCandidateExportLine);
+            return ReadLast(filepath, false, AnnotationCandidateExportLine);
         }
 
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
-            return ReadFirst(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
+            return ReadLast(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
 
         private static string ReadTextAnnotatorSettingsFilePath(string filepath) {
-            return ReadFirst(filepath, string.Empty, TextAnnotatorSettingsFilePathLine);
+            return ReadLast(filepath, string.Empty, TextAnnotatorSettingsFilePathLine);
         }
 
         private static MethodKeyOutcome AlignmentLightModeLine(string method, string value, Action<bool> assign) {
@@ -554,9 +621,9 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        // A path line is taken even when blank, so a blank line ends the search and a later line
-        // does not override it; that is how these readers have always behaved. The key record
-        // never asks about a blank value, because it lists it as blank first.
+        // ReadLast skips a blank line before asking, so a blank path neither clears an earlier one
+        // nor stops a later one from applying. The key record never asks about a blank value
+        // either, because it lists it as blank first.
         private static MethodKeyOutcome MspAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
             switch (method.ToLower()) {
                 case "msp annotator settings file path":
@@ -1154,16 +1221,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "text db file path": param.TextDBFilePath = value; return true;
                 case "isotope text db file path": param.IsotopeTextDBFilePath = value; return true;
                 case "compounds library file path for target detection": param.CompoundListInTargetModePath = value; return true;
-                case "compounds library file path for rt correction":
-                    param.CompoundListForRtCorrectionPath = value;
-                    if (System.IO.File.Exists(value)) {
-                        var error = string.Empty;
-                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParser.StandardTextLibraryReader(value, out error);
-                        if (error != string.Empty) {
-                            Console.WriteLine(error);
-                        }
-                    }
-                    return true;
+                // Only the path is read here. The library is loaded by RetentionTimeCorrectionProcess,
+                // from the path as it stands when the run starts; see LoadStandards there for why.
+                case "compounds library file path for rt correction": param.CompoundListForRtCorrectionPath = value; return true;
                 case "rt correction peak selection file path": param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = value; return true;
 
                 // Private version

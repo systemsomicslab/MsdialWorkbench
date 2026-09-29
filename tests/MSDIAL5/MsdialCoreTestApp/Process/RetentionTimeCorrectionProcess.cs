@@ -116,7 +116,26 @@ internal static class RetentionTimeCorrectionProcess {
             .ToDictionary(item => item.Key, item => item.Rt);
     }
 
-    private static List<MoleculeMsReference> LoadStandards(ParameterBase parameter) {
+    /// <summary>
+    /// Load the RT correction anchors from the library the parameters name, as they stand now.
+    /// </summary>
+    /// <remarks>
+    /// THIS IS THE ONLY PLACE THE LIBRARY IS LOADED. ConfigParser used to load it as well, the
+    /// moment it read "Compounds library file path for RT correction", from the value exactly as
+    /// written. A relative value was therefore opened from the working directory, and anything
+    /// that rewrote the path afterwards -- GC-MS resolves it against the method file's folder, the
+    /// rt-correction command replaces it with its own library argument -- left the stored library
+    /// and the stored path naming different files. Loading here, after every rewrite, from
+    /// CompoundListForRtCorrectionPath, means the anchors used are the file the parameters name.
+    ///
+    /// Nothing else reads StandardLibrary in the console or in the core code it calls:
+    /// RetentionTimeCorrection.Execute is reached only from Prepare, and ParametersAsText is
+    /// never called by the console. When Execute RT correction is False the library is not read
+    /// at all, so a saved project carries no standards for a correction that was not run.
+    ///
+    /// A library with errors is refused with the parser's own message, which the caller prints.
+    /// </remarks>
+    internal static List<MoleculeMsReference> LoadStandards(ParameterBase parameter) {
         if (parameter.CompoundListForRtCorrectionPath.IsEmptyOrNull()) {
             throw new InvalidOperationException("Compounds library file path for RT correction is required when Execute RT correction is True.");
         }
