@@ -132,6 +132,22 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadCommonParameter_SetsCcsFilteringForLbmAnnotationOnTheLbmParameter()
+    {
+        // This key used to set MspSearchParam, so it switched on CCS filtering for MSP-based
+        // annotation and left LBM-based annotation untouched.
+        var parameter = new MsdialLcmsParameter();
+        Assert.IsFalse(parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering);
+        Assert.IsFalse(parameter.MspSearchParam.IsUseCcsForAnnotationFiltering);
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "use ccs for lbm-based annotation filtering", "true");
+
+        Assert.IsTrue(result.IsApplied);
+        Assert.IsTrue(parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering);
+        Assert.IsFalse(parameter.MspSearchParam.IsUseCcsForAnnotationFiltering);
+    }
+
+    [TestMethod]
     public void ReadCommonParameter_TreatsAThreadCountOutsideTheUsableRangeAsUnusable()
     {
         var parameter = new MsdialLcmsParameter();
