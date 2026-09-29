@@ -1,13 +1,24 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MsdialCoreTestAppTests.Parser;
 
@@ -122,6 +133,102 @@ public sealed class ConfigParserTests
         Assert.IsTrue(parameter.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples);
     }
 
+    [DataTestMethod]
+    [DataRow("keep original precursor isotopes")]
+    [DataRow("exclude after precursor")]
+    [DataRow("corrdec execute")]
+    [DataRow("is private version")]
+    [DataRow("is private version of tada")]
+    public void ReadCommonParameter_ReadsAnOnOffKeyInBothDirections(string key)
+    {
+        // THE REGRESSION. These arms assigned only one of the two values and returned true for
+        // either, so the other value was reported as applied and silently ignored.
+        // KeepOriginalPrecursorIsotopes defaults to false, so "Keep original precursor isotopes:
+        // True" never took effect while the key record said it had.
+        var parameter = new MsdialLcmsParameter();
+        Func<bool> current = key switch
+        {
+            "keep original precursor isotopes" => () => parameter.KeepOriginalPrecursorIsotopes,
+            "exclude after precursor" => () => parameter.RemoveAfterPrecursor,
+            "corrdec execute" => () => parameter.CorrDecParam.CanExcute,
+            "is private version" => () => parameter.IsLabPrivate,
+            "is private version of tada" => () => parameter.IsLabPrivateVersionTada,
+            _ => throw new ArgumentOutOfRangeException(nameof(key)),
+        };
+
+        AssertReadsBothDirections(value => ConfigParser.ReadCommonParameter(parameter, key, value), current);
+    }
+
+    [DataTestMethod]
+    [DataRow("replace quant mass by user defined value")]
+    [DataRow("is quant mass based on base peak mz")]
+    public void ReadGcmsSpecificParameter_ReadsAnOnOffKeyInBothDirections(string key)
+    {
+        var parameter = new MsdialGcmsParameter();
+        Func<bool> current = key switch
+        {
+            "replace quant mass by user defined value" => () => parameter.IsReplaceQuantmassByUserDefinedValue,
+            "is quant mass based on base peak mz" => () => parameter.IsRepresentativeQuantMassBasedOnBasePeakMz,
+            _ => throw new ArgumentOutOfRangeException(nameof(key)),
+        };
+
+        AssertReadsBothDirections(value => ConfigParser.ReadGcmsSpecificParameter(parameter, key, value), current);
+    }
+
+    [TestMethod]
+    public void ReadLcImMsSpecificParameter_ReadsAccumulateMs2SpectraInBothDirections()
+    {
+        var parameter = new MsdialLcImMsParameter();
+
+        AssertReadsBothDirections(
+            value => ConfigParser.ReadLcImMsSpecificParameter(parameter, "accumulate ms2 spectra", value),
+            () => parameter.IsAccumulateMS2Spectra);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAnUnreadableOnOffValueOnAKeyThatWasAlreadyTwoWay()
+    {
+        // These arms already assigned both values, but still answered true for "yes", so the
+        // key record said a value was applied that the run never saw.
+        var parameter = new MsdialLcmsParameter();
+
+        AssertReadsBothDirections(
+            value => ConfigParser.ReadCommonParameter(parameter, "together with alignment", value),
+            () => parameter.TogetherWithAlignment);
+    }
+
+    private static void AssertReadsBothDirections(Func<string, ConfigParser.MethodKeyOutcome> read, Func<bool> current)
+    {
+        Assert.IsTrue(read("True").IsApplied);
+        Assert.IsTrue(current(), "True takes effect");
+
+        Assert.IsTrue(read("False").IsApplied);
+        Assert.IsFalse(current(), "False takes effect");
+
+        Assert.IsTrue(read("TRUE").IsApplied);
+        Assert.IsTrue(current(), "the letter case does not matter");
+
+        var unusable = read("yes");
+        Assert.IsTrue(unusable.IsUnusableValue, "a value that is neither true nor false is reported, not guessed at");
+        Assert.IsTrue(current(), "the refused value left the previous one alone");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_SetsCcsFilteringForLbmAnnotationOnTheLbmParameter()
+    {
+        // This key used to set MspSearchParam, so it switched on CCS filtering for MSP-based
+        // annotation and left LBM-based annotation untouched.
+        var parameter = new MsdialLcmsParameter();
+        Assert.IsFalse(parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering);
+        Assert.IsFalse(parameter.MspSearchParam.IsUseCcsForAnnotationFiltering);
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "use ccs for lbm-based annotation filtering", "true");
+
+        Assert.IsTrue(result.IsApplied);
+        Assert.IsTrue(parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering);
+        Assert.IsFalse(parameter.MspSearchParam.IsUseCcsForAnnotationFiltering);
+    }
+
     [TestMethod]
     public void ReadCommonParameter_TreatsAThreadCountOutsideTheUsableRangeAsUnusable()
     {
@@ -132,6 +239,50 @@ public sealed class ConfigParserTests
 
         Assert.IsTrue(result.IsUnusableValue);
         Assert.AreEqual(before, parameter.NumThreads);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsAutomaticAlignmentRtCorrectionSettings()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var settings = new[] {
+            ("execute automatic rt correction for alignment", "true"),
+            ("automatic rt correction reference file id", "7"),
+            ("automatic rt correction rt bin width", "0.4"),
+            ("automatic rt correction match rt tolerance", "1.2"),
+            ("automatic rt correction minimum anchors", "4"),
+            ("automatic rt correction maximum anchors", "9"),
+            ("automatic rt correction minimum sample coverage", "0.7"),
+            ("automatic rt correction intensity quantile", "0.8"),
+            ("automatic rt correction maximum peak width quantile", "0.6"),
+            ("automatic rt correction minimum signal to noise", "5"),
+            ("automatic rt correction minimum gaussian similarity", "0.3"),
+            ("automatic rt correction minimum ideal slope", "0.4"),
+            ("automatic rt correction outlier mad threshold", "4.5"),
+            ("automatic rt correction reference centrality weight", "0.25"),
+            ("automatic rt correction interpolate blanks by analytical order", "false"),
+        };
+
+        foreach (var (key, value) in settings) {
+            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+        }
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.IsTrue(actual.Execute);
+        Assert.AreEqual(7, actual.ReferenceFileId);
+        Assert.AreEqual(0.4f, actual.RtBinWidth, 1e-7f);
+        Assert.AreEqual(1.2f, actual.MatchRtTolerance, 1e-7f);
+        Assert.AreEqual(4, actual.MinimumAnchorCount);
+        Assert.AreEqual(9, actual.MaximumAnchorCount);
+        Assert.AreEqual(0.7f, actual.MinimumSampleCoverage, 1e-7f);
+        Assert.AreEqual(0.8f, actual.IntensityQuantile, 1e-7f);
+        Assert.AreEqual(0.6f, actual.MaximumPeakWidthQuantile, 1e-7f);
+        Assert.AreEqual(5f, actual.MinimumSignalToNoise, 1e-7f);
+        Assert.AreEqual(0.3f, actual.MinimumGaussianSimilarity, 1e-7f);
+        Assert.AreEqual(0.4f, actual.MinimumIdealSlope, 1e-7f);
+        Assert.AreEqual(4.5f, actual.OutlierMadThreshold, 1e-7f);
+        Assert.AreEqual(0.25f, actual.ReferenceCentralityWeight, 1e-7f);
+        Assert.IsFalse(actual.InterpolateBlankByAnalyticalOrder);
     }
 
     [TestMethod]
@@ -196,6 +347,147 @@ public sealed class ConfigParserTests
         CollectionAssert.Contains(parsed["unusable"]!.Select(i => (string)i!).ToList(), "Minimum peak height: quite high");
         CollectionAssert.Contains(parsed["unrecognised"]!.Select(i => (string)i!).ToList(), "Nonexistent parameter");
         CollectionAssert.DoesNotContain(parsed["applied"]!.Select(i => (string)i!).ToList(), "Minimum peak height");
+    }
+
+    /// <summary>
+    /// The keys LcmsProcess reads for itself are recorded as applied, not as having no effect.
+    /// </summary>
+    /// <remarks>
+    /// LcmsProcess reads these with readers of their own, after the key record has been written,
+    /// and the record used to know only ReadCommonParameter. A repository run's record listed
+    /// "MSP annotator settings file path", "LBM annotator priority" and "Alignment light mode" as
+    /// unrecognised with NO EFFECT while each of them governed the run, and the reanalysis audits
+    /// trust that record.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_KeyRecordListsTheKeysLcmsProcessReadsForItselfAsApplied()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\n" +
+            $"library\t{msp}\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"""
+            MSP annotator settings file path: {settings}
+            LBM annotator priority: 3
+            Alignment light mode: True
+            A parameter that does not exist: 7
+            """);
+
+        var (_, report) = ReadLcmsWithReport(methodFile);
+
+        var applied = RecordedKeys(methodFile, "applied");
+        foreach (var key in new[] { "MSP annotator settings file path", "LBM annotator priority", "Alignment light mode" }) {
+            CollectionAssert.Contains(applied, key);
+            Assert.IsFalse(report.Contains($"'{key}'"), $"'{key}' took effect and must not be reported as having none");
+        }
+        CollectionAssert.AreEqual(new[] { "A parameter that does not exist" }, RecordedKeys(methodFile, "unrecognised"));
+        StringAssert.Contains(report, "'A parameter that does not exist' was not recognised and had NO EFFECT");
+
+        // And the run really does take them: the record describes what the side readers do.
+        Assert.AreEqual(1, ConfigParser.ReadMspAnnotatorSettings(methodFile, new MsdialLcmsParameter()).Count);
+        Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(methodFile));
+        Assert.IsTrue(ConfigParser.ReadAlignmentLightMode(methodFile));
+    }
+
+    [TestMethod]
+    [DataRow("MSP annotator settings file path", "settings.tsv")]
+    [DataRow("MSP annotation settings file path", "settings.tsv")]
+    [DataRow("MSP search settings file path", "settings.tsv")]
+    [DataRow("Text annotator settings file path", "settings.tsv")]
+    [DataRow("Text library annotator settings file path", "settings.tsv")]
+    [DataRow("Text DB annotator settings file path", "settings.tsv")]
+    [DataRow("Text annotation settings file path", "settings.tsv")]
+    [DataRow("LBM annotator priority", "2")]
+    [DataRow("LBM annotation priority", "2")]
+    [DataRow("Alignment light mode", "true")]
+    [DataRow("Alignment light", "false")]
+    [DataRow("Console alignment light mode", "true")]
+    [DataRow("Detailed alignment provenance", "true")]
+    [DataRow("Export detailed alignment provenance", "false")]
+    [DataRow("Annotation candidates", "true")]
+    [DataRow("Export annotation candidates", "false")]
+    public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", $"{key}: {value}\n");
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        CollectionAssert.AreEqual(new[] { key }, RecordedKeys(methodFile, "applied"));
+        Assert.AreEqual(0, RecordedKeys(methodFile, "unrecognised").Count);
+    }
+
+    /// <summary>
+    /// A value the side reader passes over is recorded as unusable, as the run used the default.
+    /// </summary>
+    /// <remarks>
+    /// "2.0" is not a priority to the reader and "yes" is not a switch, so those lines are skipped
+    /// and a later usable line, or the default, governs. Calling them applied would repeat the
+    /// failure this record exists to end.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_KeyRecordCallsAValueTheSideReaderPassesOverUnusable()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Alignment light mode: yes
+            LBM annotator priority: 2.0
+            LBM annotator priority: 4
+            """);
+
+        ConfigParser.ReadForLcmsParameter(methodFile);
+
+        CollectionAssert.AreEqual(
+            new[] { "Alignment light mode: yes", "LBM annotator priority: 2.0" },
+            RecordedKeys(methodFile, "unusable"));
+        CollectionAssert.AreEqual(new[] { "LBM annotator priority" }, RecordedKeys(methodFile, "applied"));
+        Assert.IsFalse(ConfigParser.ReadAlignmentLightMode(methodFile), "the default the run used");
+        Assert.AreEqual(4, ConfigParser.ReadLbmAnnotatorPriority(methodFile), "the first usable line the run used");
+    }
+
+    /// <summary>
+    /// Only LC-MS reads these keys, so every other mode still reports them as having no effect.
+    /// </summary>
+    [TestMethod]
+    public void OtherModes_StillReportTheLcmsOnlyKeysAsUnrecognised()
+    {
+        var readers = new (string Mode, Action<string> Read)[] {
+            ("gcms", path => ConfigParser.ReadForGcms(path)),
+            ("dims", path => ConfigParser.ReadForDimsParameter(path)),
+            ("imms", path => ConfigParser.ReadForImmsParameter(path)),
+            ("lcimms", path => ConfigParser.ReadForLcImMsParameter(path)),
+        };
+        using var directory = new TemporaryDirectory();
+        foreach (var (mode, read) in readers) {
+            var methodFile = directory.CreateFile(
+                $"{mode}.txt",
+                """
+                MSP annotator settings file path: settings.tsv
+                LBM annotator priority: 3
+                Alignment light mode: true
+                """);
+
+            read(methodFile);
+
+            CollectionAssert.AreEqual(
+                new[] { "MSP annotator settings file path", "LBM annotator priority", "Alignment light mode" },
+                RecordedKeys(methodFile, "unrecognised"),
+                mode);
+        }
+    }
+
+    private static List<string> RecordedKeys(string methodFile, string list)
+    {
+        var record = Path.Combine(
+            Path.GetDirectoryName(methodFile)!,
+            Path.GetFileNameWithoutExtension(methodFile) + ".keys.json");
+        return JObject.Parse(File.ReadAllText(record))[list]!.Select(item => (string)item!).ToList();
     }
 
     [TestMethod]
@@ -496,6 +788,105 @@ public sealed class ConfigParserTests
         Assert.IsTrue(ConfigParser.ReadAnnotationCandidateExport(longAlias));
         Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(explicitlyOff));
         Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(nonBoolean));
+    }
+
+    /// <summary>
+    /// The adducts a method file lists are the adducts it searches.
+    /// </summary>
+    /// <remarks>
+    /// PeakCharacterEstimator keeps only adducts marked IsIncluded and otherwise falls back to the
+    /// proton adduct. The reader stored AdductIon.GetAdductIon's shared instances, which are not
+    /// included, so every console run searched [M+H]+ alone whatever the file listed, and the key
+    /// report said the key had been applied.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_MarksTheListedAdductsIncluded()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Searched adduct ions: [M+H]+,[M+Na]+, [M+NH4]+" + "\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+Na]+", "[M+NH4]+" },
+            parameter.SearchedAdductIons.Select(a => a.AdductIonName).ToArray(),
+            "a space after the comma does not drop an adduct");
+        Assert.IsTrue(parameter.SearchedAdductIons.All(a => a.IsIncluded));
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_MarksTheSharedAdductInstancesIncluded()
+    {
+        // The reader does not construct adducts of its own: it stores GetAdductIon's cached
+        // instances and sets IsIncluded on them, as the GUI's adduct setting does.
+        var parameter = new MsdialLcmsParameter();
+
+        ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,[M+Na]+");
+
+        Assert.AreSame(AdductIon.GetAdductIon("[M+H]+"), parameter.SearchedAdductIons[0]);
+        Assert.AreSame(AdductIon.GetAdductIon("[M+Na]+"), parameter.SearchedAdductIons[1]);
+        Assert.IsTrue(AdductIon.GetAdductIon("[M+Na]+").IsIncluded);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_DropsAMistypedAdductAndKeepsTheRest()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,M+Na,[M+NH4]+");
+
+        Assert.IsTrue(result.IsApplied);
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+NH4]+" },
+            parameter.SearchedAdductIons.Select(a => a.AdductIonName).ToArray());
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReportsAnAdductListWithNothingUsableInIt()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var before = parameter.SearchedAdductIons;
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "M+Na,sodium");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.AreSame(before, parameter.SearchedAdductIons, "the built-in list, untouched");
+    }
+
+    [TestMethod]
+    public void PeakCharacterEstimator_SearchesTheAdductsTheMethodFileListed()
+    {
+        var parameter = new MsdialLcmsParameter();
+        ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,[M+Na]+,[M+NH4]+");
+        var estimator = new PeakCharacterEstimator(0, 0);
+
+        estimator.Process(
+            new AnalysisFileBean(),
+            new EmptyDataProvider(),
+            new List<ChromatogramPeakFeature>(),
+            new List<MSDecResult>(),
+            null!,
+            parameter,
+            null);
+
+        CollectionAssert.AreEqual(
+            new[] { "[M+H]+", "[M+Na]+", "[M+NH4]+" },
+            estimator.SearchedAdducts.Select(a => a.AdductIonName).ToArray());
+    }
+
+    private sealed class EmptyDataProvider : IDataProvider
+    {
+        private static readonly ReadOnlyCollection<RawSpectrum> Empty = new List<RawSpectrum>().AsReadOnly();
+
+        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() => Empty;
+        public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() => Empty;
+        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) => Empty;
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) => Task.FromResult(Empty);
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) => Task.FromResult(Empty);
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) => Task.FromResult(Empty);
     }
 
     private sealed class TemporaryDirectory : IDisposable

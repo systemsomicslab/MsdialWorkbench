@@ -165,6 +165,29 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         /// <summary>
+        /// Read an on/off parameter, accepting "true" and "false" in any letter case.
+        /// </summary>
+        /// <remarks>
+        /// Several arms used to assign only one of the two values -
+        ///     case "keep original precursor isotopes": if (valueLower == "false") param.X = false; return true;
+        /// - so the other value was reported as applied and silently ignored. That was harmless
+        /// only while the constructor default happened to equal the value the arm could not
+        /// assign; KeepOriginalPrecursorIsotopes defaults to false, so "True" never took effect.
+        /// Anything other than true or false ("yes", "1", "on") is refused rather than guessed
+        /// at, because ParameterBase writes these keys with bool.ToString() and any other spelling
+        /// came from somewhere that did not know the format.
+        /// </remarks>
+        private static MethodKeyOutcome TrueOrFalse(string text, Action<bool> assign) {
+            if (string.Equals(text, "true", StringComparison.OrdinalIgnoreCase)) {
+                return Assign(true, assign);
+            }
+            if (string.Equals(text, "false", StringComparison.OrdinalIgnoreCase)) {
+                return Assign(false, assign);
+            }
+            return MethodKeyOutcome.UnusableValue;
+        }
+
+        /// <summary>
         /// Try the second reader only when the first did not recognise the key.
         /// </summary>
         /// <remarks>
@@ -174,6 +197,45 @@ namespace CompMs.App.MsdialConsole.Parser
         /// </remarks>
         private static MethodKeyOutcome Either(MethodKeyOutcome first, Func<MethodKeyOutcome> second) {
             return first.IsUnknownKey ? second() : first;
+        }
+
+        /// <summary>
+        /// Read a comma-separated list of adduct ions as the adducts the peak character
+        /// estimation searches, or report that none of them could be read.
+        /// </summary>
+        /// <remarks>
+        /// THE ADDUCTS MUST BE MARKED INCLUDED. PeakCharacterEstimator.SearchedAdductInitialize
+        /// keeps only the adducts whose IsIncluded is true and, when none are, falls back to
+        /// [M+H]+ or [M-H]-. Only the GUI's adduct setting ever set that flag. This arm used to
+        /// store what AdductIon.GetAdductIon returned, whose IsIncluded is false, so a method file
+        /// listing "[M+H]+,[M+Na]+,[M+NH4]+" was searched with the proton adduct alone while the
+        /// key report said the key had been applied.
+        ///
+        /// THE FLAG IS SET ON THE CACHED INSTANCES. GetAdductIon hands out one shared instance per
+        /// name from a process-wide cache, so an adduct listed here stays IsIncluded for every
+        /// later caller in the process. That is deliberate: AdductIon is not constructed outside
+        /// its own factory, and the GUI's AdductIonSettingModel already sets IsIncluded on a
+        /// GetAdductIon instance the same way. A console run reads one method file per process.
+        ///
+        /// An entry that fails AdductIon.FormatCheck is dropped as before, so one mistyped adduct
+        /// does not discard the rest. When NO entry can be read, nothing the file asked for would
+        /// be searched, so the value is reported as unusable and the built-in list is kept.
+        /// Entries are trimmed because "[M+H]+, [M+Na]+" is how a person types a list.
+        /// </remarks>
+        private static MethodKeyOutcome SearchedAdductIons(string text, Action<List<AdductIon>> assign) {
+            var adducts = new List<AdductIon>();
+            foreach (var adductString in text.Split(',')) {
+                var adductObj = AdductIon.GetAdductIon(adductString.Trim());
+                if (adductObj.FormatCheck) adducts.Add(adductObj);
+            }
+            if (adducts.Count == 0) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            foreach (var adduct in adducts) {
+                adduct.IsIncluded = true;
+            }
+            assign(adducts);
+            return MethodKeyOutcome.Applied;
         }
 
         private sealed class MethodFileKeys
@@ -329,12 +391,76 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadLcmsConsoleParameter(method, value)));
                     }
                 }
             }
             keys.Report(filepath);
             return param;
+        }
+
+        /// <summary>
+        /// Say what the settings LcmsProcess reads for itself would do with one line.
+        /// </summary>
+        /// <remarks>
+        /// LcmsProcess reads six settings with readers of their own, and calls them after
+        /// ReadForLcmsParameter has already written the key record. The record knew only
+        /// ReadCommonParameter, so it listed those keys as unrecognised with NO EFFECT while they
+        /// governed the run. A repository run's record put "MSP annotator settings file path",
+        /// "LBM annotator priority" and "Alignment light mode" among its twenty-nine keys with no
+        /// effect, and the audits that trust the record were told the opposite of what happened.
+        ///
+        /// This asks the same line readers the side readers use, so the record cannot disagree
+        /// with the run: a value the side reader takes is applied, and a value it passes over --
+        /// "yes" for a switch, "2.0" for a priority -- is unusable, because the run used the
+        /// default. Nothing is assigned here, so which keys take effect is unchanged. A new
+        /// setting LcmsProcess reads for itself belongs in this list.
+        ///
+        /// Only the LC-MS reader asks. No other mode calls these readers, so in a GC-MS, DIMS,
+        /// IMMS or LC-IM-MS method file the same keys really have no effect and are still
+        /// reported as unrecognised.
+        /// </remarks>
+        private static MethodKeyOutcome ReadLcmsConsoleParameter(string method, string value) {
+            foreach (var line in LcmsConsoleLines) {
+                var outcome = line(method, value);
+                if (!outcome.IsUnknownKey) {
+                    return outcome;
+                }
+            }
+            return MethodKeyOutcome.UnknownKey;
+        }
+
+        private static readonly Func<string, string, MethodKeyOutcome>[] LcmsConsoleLines = {
+            (method, value) => MspAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (method, value) => TextAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (method, value) => LbmAnnotatorPriorityLine(method, value, _ => { }),
+            (method, value) => AlignmentLightModeLine(method, value, _ => { }),
+            (method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
+            (method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+        };
+
+        /// <summary>
+        /// Read a setting from the first line its line reader takes.
+        /// </summary>
+        /// <remarks>
+        /// The first usable line wins, where in the main readers a later line overwrites an
+        /// earlier one. That is how these readers have always behaved, and it is kept.
+        /// </remarks>
+        private static T ReadFirst<T>(string filepath, T fallback, Func<string, string, Action<T>, MethodKeyOutcome> line) {
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable) {
+                        continue;
+                    }
+                    var read = fallback;
+                    if (line(method, value, v => read = v).IsApplied) {
+                        return read;
+                    }
+                }
+            }
+            return fallback;
         }
 
         public static List<MspAnnotatorSetting> ReadMspAnnotatorSettings(string filepath, ParameterBase param) {
@@ -362,124 +488,96 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         public static bool ReadAlignmentLightMode(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "alignment light mode":
-                        case "alignment light":
-                        case "console alignment light mode":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, AlignmentLightModeLine);
         }
 
         public static int ReadLbmAnnotatorPriority(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLowerInvariant()) {
-                        case "lbm annotator priority":
-                        case "lbm annotation priority":
-                            if (int.TryParse(value, out var priority)) {
-                                return priority;
-                            }
-                            break;
-                    }
-                }
-            }
-            return 1;
+            return ReadFirst(filepath, 1, LbmAnnotatorPriorityLine);
         }
 
         public static bool ReadDetailedAlignmentProvenance(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "detailed alignment provenance":
-                        case "export detailed alignment provenance":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, DetailedAlignmentProvenanceLine);
         }
 
         public static bool ReadAnnotationCandidateExport(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "annotation candidates":
-                        case "export annotation candidates":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
-                    }
-                }
-            }
-            return false;
+            return ReadFirst(filepath, false, AnnotationCandidateExportLine);
         }
 
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "msp annotator settings file path":
-                        case "msp annotation settings file path":
-                        case "msp search settings file path":
-                            return value;
-                    }
-                }
-            }
-            return string.Empty;
+            return ReadFirst(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
 
         private static string ReadTextAnnotatorSettingsFilePath(string filepath) {
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
-                    if (!isReadable) {
-                        continue;
-                    }
-                    switch (method.ToLower()) {
-                        case "text annotator settings file path":
-                        case "text library annotator settings file path":
-                        case "text db annotator settings file path":
-                        case "text annotation settings file path":
-                            return value;
-                    }
-                }
+            return ReadFirst(filepath, string.Empty, TextAnnotatorSettingsFilePathLine);
+        }
+
+        private static MethodKeyOutcome AlignmentLightModeLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "alignment light mode":
+                case "alignment light":
+                case "console alignment light mode":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
             }
-            return string.Empty;
+        }
+
+        private static MethodKeyOutcome LbmAnnotatorPriorityLine(string method, string value, Action<int> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "lbm annotator priority":
+                case "lbm annotation priority":
+                    return int.TryParse(value, out var priority)
+                        ? Assign(priority, assign)
+                        : MethodKeyOutcome.UnusableValue;
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome DetailedAlignmentProvenanceLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "detailed alignment provenance":
+                case "export detailed alignment provenance":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome AnnotationCandidateExportLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLower()) {
+                case "annotation candidates":
+                case "export annotation candidates":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        // A path line is taken even when blank, so a blank line ends the search and a later line
+        // does not override it; that is how these readers have always behaved. The key record
+        // never asks about a blank value, because it lists it as blank first.
+        private static MethodKeyOutcome MspAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
+            switch (method.ToLower()) {
+                case "msp annotator settings file path":
+                case "msp annotation settings file path":
+                case "msp search settings file path":
+                    return Assign(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome TextAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
+            switch (method.ToLower()) {
+                case "text annotator settings file path":
+                case "text library annotator settings file path":
+                case "text db annotator settings file path":
+                case "text annotation settings file path":
+                    return Assign(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
         }
 
         private static List<MspAnnotatorSetting> ReadMspAnnotatorSettingsTable(string filepath, ParameterBase param) {
@@ -897,11 +995,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "retention index alignment tolerance":
                     return Number(valueLower, v => param.RetentionIndexAlignmentTolerance = (float)v);
                 case "replace quant mass by user defined value":
-                    if (valueLower == "true")
-                        param.IsReplaceQuantmassByUserDefinedValue = true; return true;
+                    return TrueOrFalse(valueLower, v => param.IsReplaceQuantmassByUserDefinedValue = v);
                 case "is quant mass based on base peak mz":
-                    if (valueLower == "true")
-                        param.IsRepresentativeQuantMassBasedOnBasePeakMz = true; return true;
+                    return TrueOrFalse(valueLower, v => param.IsRepresentativeQuantMassBasedOnBasePeakMz = v);
                 default: return false;
             }
         }
@@ -916,9 +1012,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
                 case "accumulated rt ragne": return Number(value, v => param.AccumulatedRtRange = (float)v);
                 case "accumulate ms2 spectra":
-                    if (value == "true")
-                        param.IsAccumulateMS2Spectra = true;
-                    return true;
+                    return TrueOrFalse(value, v => param.IsAccumulateMS2Spectra = v);
                 case "drift time alignment tolerance": return Number(value, v => param.DriftTimeAlignmentTolerance = (float)v);
                 case "drift time alignment factor": return Number(value, v => param.DriftTimeAlignmentFactor = (float)v);
                 case "ion mobility type":
@@ -973,7 +1067,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (value == "Bonanza" || value == "ModDot" || value == "Cosine" || value == "All")
                         param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
                 case "mnisexportioncorrelation":
-                    if (valueLower == "true" || valueLower == "false") param.MnIsExportIonCorrelation = bool.Parse(valueLower); return true;
+                    return TrueOrFalse(valueLower, v => param.MnIsExportIonCorrelation = v);
                 default: return false;
             }
         }
@@ -1074,13 +1168,9 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 // Private version
                 case "is private version of tada":
-                    if (valueLower == "true")
-                        param.IsLabPrivateVersionTada = true;
-                    return true;
+                    return TrueOrFalse(valueLower, v => param.IsLabPrivateVersionTada = v);
                 case "is private version":
-                    if (valueLower == "true")
-                        param.IsLabPrivate = true;
-                    return true;
+                    return TrueOrFalse(valueLower, v => param.IsLabPrivate = v);
 
                 //Data correction
                 case "retention time begin": return Number(valueLower, v => param.RetentionTimeBegin = (float)v);
@@ -1110,16 +1200,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass slice width": return Number(valueLower, v => param.MassSliceWidth = (float)v);
                 case "mass accuracy": return Number(valueLower, v => param.CentroidMs1Tolerance = (float)v);
                 case "max charge number": return Count(valueLower, v => param.MaxChargeNumber = v);
-                case "searched adduct ions": 
-                    if (!value.IsEmptyOrNull()) {
-                        param.SearchedAdductIons = new List<AdductIon>();
-                        var aStrings = value.Split(',');
-                        foreach (var adductString in aStrings) {
-                            var adductObj = AdductIon.GetAdductIon(adductString);
-                            if (adductObj.FormatCheck) param.SearchedAdductIons.Add(adductObj);
-                        }
-                    }
-                    return true;
+                case "searched adduct ions": return SearchedAdductIons(value, adducts => param.SearchedAdductIons = adducts);
 
                 
 
@@ -1129,8 +1210,8 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.AmplitudeCutoff = (float)v);
                 case "relative amplitude cut off": return Number(valueLower, v => param.ChromDecBaseParam.RelativeAmplitudeCutoff = (float)v);
                 case "keep isotope range": return Number(valueLower, v => param.KeptIsotopeRange = (float)v);
-                case "exclude after precursor": if (valueLower == "false") param.RemoveAfterPrecursor = false; return true;
-                case "keep original precursor isotopes": if (valueLower == "false") param.KeepOriginalPrecursorIsotopes = false; return true;
+                case "exclude after precursor": return TrueOrFalse(valueLower, v => param.RemoveAfterPrecursor = v);
+                case "keep original precursor isotopes": return TrueOrFalse(valueLower, v => param.KeepOriginalPrecursorIsotopes = v);
                 case "target ce": return Number(valueLower, v => param.TargetCE = v);
 
                 //Identification
@@ -1165,15 +1246,14 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "total score cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.TotalScoreCutoff = (float)v);
                 case "ms1 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms1Tolerance = (float)v);
                 case "ms2 tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.Ms2Tolerance = (float)v);
-                case "use retention information for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use retention information for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "use ccs for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use ccs for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "only report top hit for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInMspSearch = bool.Parse(valueLower); return true;
+                case "use retention information for msp-based annotation scoring": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for msp-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for msp-based annotation scoring": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for msp-based annotation filtering": return TrueOrFalse(valueLower, v => param.MspSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "only report top hit for msp-based annotation": return TrueOrFalse(valueLower, v => param.OnlyReportTopHitInMspSearch = v);
                 case "execute annotation process only for alignment file":
                 case "execute annotation process only for alignment file for msp-based annotation":
-                    if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower);
-                    return true;
+                    return TrueOrFalse(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
 
                 //Identification
                 case "rt tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RtTolerance = (float)v);
@@ -1194,11 +1274,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "total score cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.TotalScoreCutoff = (float)v);
                 case "ms1 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms1Tolerance = (float)v);
                 case "ms2 tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.Ms2Tolerance = (float)v);
-                case "use retention information for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use retention information for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "use ccs for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use ccs for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "execute annotation process only for alignment file for lbm-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+                case "use retention information for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for lbm-based annotation scoring": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for lbm-based annotation filtering": return TrueOrFalse(valueLower, v => param.LbmSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "execute annotation process only for alignment file for lbm-based annotation": return TrueOrFalse(valueLower, v => param.IsIdentificationOnlyPerformedForAlignmentFile = v);
 
 
                 //Post identification
@@ -1207,11 +1287,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ccs tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.CcsTolerance = (float)v);
                 case "total score cutoff for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.TotalScoreCutoff = (float)v);
                 case "accurate ms1 tolerance for text-based annotation": return Number(valueLower, v => param.TextDbSearchParam.Ms1Tolerance = (float)v);
-                case "use retention information for text-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use retention information for text-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "use ccs for text-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use ccs for text-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
-                case "only report top hit for text-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInTextDBSearch = bool.Parse(valueLower); return true;
+                case "use retention information for text-based annotation scoring": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for text-based annotation filtering": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for text-based annotation scoring": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for text-based annotation filtering": return TrueOrFalse(valueLower, v => param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = v);
+                case "only report top hit for text-based annotation": return TrueOrFalse(valueLower, v => param.OnlyReportTopHitInTextDBSearch = v);
 
                 //Alignment parameters setting
                 case "alignment reference file id": return Count(valueLower, v => param.AlignmentReferenceFileID = v);
@@ -1221,13 +1301,28 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "spectrum similarity factor for alignment": return Number(valueLower, v => param.SpectrumSimilarityAlignmentFactor = (float)v);
                 case "ms1 tolerance for alignment": return Number(valueLower, v => param.Ms1AlignmentTolerance = (float)v);
                 case "ms1 factor for alignment": return Number(valueLower, v => param.Ms1AlignmentFactor = (float)v);
-                case "force insert peaks in gap filling": if (valueLower == "true" || valueLower == "false") param.IsForceInsertForGapFilling = bool.Parse(valueLower); return true;
-                case "together with alignment": if (valueLower == "true" || valueLower == "false") param.TogetherWithAlignment = bool.Parse(valueLower); return true;
+                case "force insert peaks in gap filling": return TrueOrFalse(valueLower, v => param.IsForceInsertForGapFilling = v);
+                case "together with alignment": return TrueOrFalse(valueLower, v => param.TogetherWithAlignment = v);
+                case "execute automatic rt correction for alignment": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.Execute = v);
+                case "automatic rt correction reference file id": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId = v);
+                case "automatic rt correction rt bin width": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth = (float)v);
+                case "automatic rt correction match rt tolerance": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance = (float)v);
+                case "automatic rt correction minimum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount = v);
+                case "automatic rt correction maximum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount = v);
+                case "automatic rt correction minimum sample coverage": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage = (float)v);
+                case "automatic rt correction intensity quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile = (float)v);
+                case "automatic rt correction maximum peak width quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile = (float)v);
+                case "automatic rt correction minimum signal to noise": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise = (float)v);
+                case "automatic rt correction minimum gaussian similarity": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity = (float)v);
+                case "automatic rt correction minimum ideal slope": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope = (float)v);
+                case "automatic rt correction outlier mad threshold": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold = (float)v);
+                case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
+                case "automatic rt correction interpolate blanks by analytical order": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
 
                 //Filtering
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);
                 case "n percent detected in one group": return Number(valueLower, v => param.NPercentDetectedInOneGroup = (float)v);
-                case "remove feature based on peak height fold-change": if (valueLower == "true" || valueLower == "false") param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = bool.Parse(valueLower); return true;
+                case "remove feature based on peak height fold-change": return TrueOrFalse(valueLower, v => param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = v);
                 case "blank filtering":
                     if (valueLower.ToLower() == "samplemaxoverblankave")
                         param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
@@ -1238,14 +1333,14 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.FoldChangeForBlankFiltering = (float)v;
                     });
                 case "sample average / blank average": return Number(valueLower, v => param.SampleAverageOverBlankAverage = (float)v);
-                case "keep reference matched metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepRefMatchedMetaboliteFeatures = bool.Parse(valueLower); return true;
-                case "keep suggested metabolites": if (valueLower == "true" || valueLower == "false") param.IsKeepSuggestedMetaboliteFeatures = bool.Parse(valueLower); return true;
-                case "keep removable features and assigned tag for checking": if (valueLower == "true" || valueLower == "false") param.IsKeepRemovableFeaturesAndAssignedTagForChecking = bool.Parse(valueLower); return true;
-                case "replace true zero values with 1/2 of minimum peak height over all samples": if (valueLower == "true" || valueLower == "false") param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = bool.Parse(valueLower); return true;
+                case "keep reference matched metabolites": return TrueOrFalse(valueLower, v => param.IsKeepRefMatchedMetaboliteFeatures = v);
+                case "keep suggested metabolites": return TrueOrFalse(valueLower, v => param.IsKeepSuggestedMetaboliteFeatures = v);
+                case "keep removable features and assigned tag for checking": return TrueOrFalse(valueLower, v => param.IsKeepRemovableFeaturesAndAssignedTagForChecking = v);
+                case "replace true zero values with 1/2 of minimum peak height over all samples": return TrueOrFalse(valueLower, v => param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = v);
 
                 //Retentiontime correction
-                case "execute rt correction": if (valueLower == "true" || valueLower == "false") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = bool.Parse(valueLower); return true;
-                case "rt correction with smoothing for rt diff": if (valueLower == "true" || valueLower == "false") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = bool.Parse(valueLower); return true;
+                case "execute rt correction": return TrueOrFalse(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = v);
+                case "rt correction with smoothing for rt diff": return TrueOrFalse(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = v);
                 case "user setting intercept": return Number(valueLower, v => param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept = (float)v);
                 case "rt diff calc method":
                     if (valueLower == "sampleminussampleaverage" || valueLower == "sampleminusreference")
@@ -1274,8 +1369,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     });
 
                 //Isotope tracking setting
-                case "tracking isotope label": if (valueLower == "true" || valueLower == "false") param.TrackingIsotopeLabels = bool.Parse(valueLower); return true;
-                case "set fully labeled reference file": if (valueLower == "true" || valueLower == "false") param.SetFullyLabeledReferenceFile = bool.Parse(valueLower); return true;
+                case "tracking isotope label": return TrueOrFalse(valueLower, v => param.TrackingIsotopeLabels = v);
+                case "set fully labeled reference file": return TrueOrFalse(valueLower, v => param.SetFullyLabeledReferenceFile = v);
                 case "non labeled reference id": return Count(valueLower, v => param.NonLabeledReferenceID = v);
                 case "fully labeled reference id": return Count(valueLower, v => param.FullyLabeledReferenceID = v);
                 // ParameterBase writes "Number of threads" into every exported method file,
@@ -1293,10 +1388,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 //CorrDec settings
                 case "corrdec execute":
-                    if (valueLower.ToLower() == "false") {
-                        param.CorrDecParam.CanExcute = false;
-                    }
-                    return true;
+                    return TrueOrFalse(valueLower, v => param.CorrDecParam.CanExcute = v);
                 case "corrdec ms2 tolerance":
                     return Number(valueLower, v => param.CorrDecParam.MS2Tolerance = (float)v);
                 case "corrdec minimum ms2 peak height":
@@ -1316,7 +1408,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "corrdec minimum ms2 relative intensity":
                     return Number(valueLower, v => param.CorrDecParam.MinMS2RelativeIntensity = (float)v);
                 case "corrdec remove peaks larger than precursor":
-                    if (valueLower == "true" || valueLower == "false") param.CorrDecParam.CorrDecRemoveAfterPrecursor = bool.Parse(valueLower); return true;
+                    return TrueOrFalse(valueLower, v => param.CorrDecParam.CorrDecRemoveAfterPrecursor = v);
                 default: return false;
             }
         }
