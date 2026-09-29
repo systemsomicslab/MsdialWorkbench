@@ -656,6 +656,55 @@ public sealed class ConfigParserTests
         StringAssert.Contains(error.Message, "non-numerical value for retention time");
     }
 
+    /// <summary>
+    /// A malformed RT correction library stops an LC-MS run before anything heavy is read.
+    /// </summary>
+    /// <remarks>
+    /// The library is small and its format is easy to get wrong, so it is checked first: before
+    /// the analysis files are imported, and so before the annotation libraries and the raw data.
+    /// The input folder here does not exist, so reaching the import would print its own error.
+    /// </remarks>
+    [TestMethod]
+    public void LcmsProcess_RefusesAMalformedRtCorrectionLibraryBeforeLoadingAnalysisFiles()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile(
+            "anchors.txt",
+            "Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n" +
+            "Anchor A\tnot a time\t0.1\t100\t0.01\t1000\ttrue\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"""
+            Execute RT correction: True
+            Compounds library file path for RT correction: {library}
+            """);
+
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        var output = new StringWriter();
+        var error = new StringWriter();
+        int result;
+        try {
+            Console.SetOut(output);
+            Console.SetError(error);
+            result = new LcmsProcess().Run(
+                System.IO.Path.Combine(directory.Path, "no-such-input"),
+                System.IO.Path.Combine(directory.Path, "output"),
+                methodFile,
+                isProjectSaved: false,
+                targetMz: -1f);
+        }
+        finally {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+        }
+
+        Assert.AreEqual(-1, result);
+        StringAssert.Contains(error.ToString(), "RT correction library could not be used");
+        StringAssert.Contains(error.ToString(), "non-numerical value for retention time");
+        Assert.IsFalse(output.ToString().Contains("Loading analysis files"), output.ToString());
+    }
+
     private static string AnchorLibrary(params string[] names)
     {
         var text = new StringBuilder("Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n");
