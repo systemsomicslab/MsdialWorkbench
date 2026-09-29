@@ -818,19 +818,17 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
-    public void ReadCommonParameter_DoesNotMarkTheSharedAdductInstanceIncluded()
+    public void ReadCommonParameter_MarksTheSharedAdductInstancesIncluded()
     {
-        // GetAdductIon hands out one cached instance per name to the whole process. The reader
-        // must include a copy, or every later caller - the GUI among them - would see [M+Na]+
-        // included without anyone having chosen it.
+        // The reader does not construct adducts of its own: it stores GetAdductIon's cached
+        // instances and sets IsIncluded on them, as the GUI's adduct setting does.
         var parameter = new MsdialLcmsParameter();
 
         ConfigParser.ReadCommonParameter(parameter, "searched adduct ions", "[M+H]+,[M+Na]+");
 
-        Assert.IsFalse(AdductIon.GetAdductIon("[M+Na]+").IsIncluded);
-        Assert.IsFalse(AdductIon.GetAdductIon("[M+H]+").IsIncluded);
-        Assert.AreNotSame(AdductIon.GetAdductIon("[M+Na]+"), parameter.SearchedAdductIons[1]);
-        Assert.AreEqual(AdductIon.GetAdductIon("[M+Na]+").AdductIonAccurateMass, parameter.SearchedAdductIons[1].AdductIonAccurateMass);
+        Assert.AreSame(AdductIon.GetAdductIon("[M+H]+"), parameter.SearchedAdductIons[0]);
+        Assert.AreSame(AdductIon.GetAdductIon("[M+Na]+"), parameter.SearchedAdductIons[1]);
+        Assert.IsTrue(AdductIon.GetAdductIon("[M+Na]+").IsIncluded);
     }
 
     [TestMethod]

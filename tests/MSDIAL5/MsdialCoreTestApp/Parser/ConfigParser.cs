@@ -211,9 +211,11 @@ namespace CompMs.App.MsdialConsole.Parser
         /// listing "[M+H]+,[M+Na]+,[M+NH4]+" was searched with the proton adduct alone while the
         /// key report said the key had been applied.
         ///
-        /// COPIES, NOT THE CACHED INSTANCES. GetAdductIon hands out one shared instance per name
-        /// from a process-wide cache. Setting IsIncluded on it would mark that adduct included for
-        /// every other caller in the process, the GUI among them.
+        /// THE FLAG IS SET ON THE CACHED INSTANCES. GetAdductIon hands out one shared instance per
+        /// name from a process-wide cache, so an adduct listed here stays IsIncluded for every
+        /// later caller in the process. That is deliberate: AdductIon is not constructed outside
+        /// its own factory, and the GUI's AdductIonSettingModel already sets IsIncluded on a
+        /// GetAdductIon instance the same way. A console run reads one method file per process.
         ///
         /// An entry that fails AdductIon.FormatCheck is dropped as before, so one mistyped adduct
         /// does not discard the rest. When NO entry can be read, nothing the file asked for would
@@ -224,30 +226,16 @@ namespace CompMs.App.MsdialConsole.Parser
             var adducts = new List<AdductIon>();
             foreach (var adductString in text.Split(',')) {
                 var adductObj = AdductIon.GetAdductIon(adductString.Trim());
-                if (adductObj.FormatCheck) adducts.Add(IncludedCopyOf(adductObj));
+                if (adductObj.FormatCheck) adducts.Add(adductObj);
             }
             if (adducts.Count == 0) {
                 return MethodKeyOutcome.UnusableValue;
             }
+            foreach (var adduct in adducts) {
+                adduct.IsIncluded = true;
+            }
             assign(adducts);
             return MethodKeyOutcome.Applied;
-        }
-
-        private static AdductIon IncludedCopyOf(AdductIon adduct) {
-#pragma warning disable CS0618 // Type or member is obsolete
-            return new AdductIon() {
-#pragma warning restore CS0618 // Type or member is obsolete
-                AdductIonAccurateMass = adduct.AdductIonAccurateMass,
-                AdductIonXmer = adduct.AdductIonXmer,
-                AdductIonName = adduct.AdductIonName,
-                ChargeNumber = adduct.ChargeNumber,
-                IonMode = adduct.IonMode,
-                FormatCheck = adduct.FormatCheck,
-                M1Intensity = adduct.M1Intensity,
-                M2Intensity = adduct.M2Intensity,
-                IsRadical = adduct.IsRadical,
-                IsIncluded = true,
-            };
         }
 
         private sealed class MethodFileKeys
