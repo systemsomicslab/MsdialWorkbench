@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -448,7 +449,315 @@ public sealed class ConfigParserTests
             RecordedKeys(methodFile, "unusable"));
         CollectionAssert.AreEqual(new[] { "LBM annotator priority" }, RecordedKeys(methodFile, "applied"));
         Assert.IsFalse(ConfigParser.ReadAlignmentLightMode(methodFile), "the default the run used");
-        Assert.AreEqual(4, ConfigParser.ReadLbmAnnotatorPriority(methodFile), "the first usable line the run used");
+        Assert.AreEqual(4, ConfigParser.ReadLbmAnnotatorPriority(methodFile), "the only usable line, which the run used");
+    }
+
+    /// <summary>
+    /// A key written twice resolves to the later line in the side readers, as in the main ones.
+    /// </summary>
+    /// <remarks>
+    /// These six readers used to stop at the first usable line while ReadCommonParameter kept the
+    /// last, so one method file meant the later value for "Minimum peak height" and the earlier
+    /// value for "LBM annotator priority", and the key record said both lines had applied.
+    /// </remarks>
+    [TestMethod]
+    public void SideReaders_TakeTheLastLineOfAKeyWrittenTwice_AsTheMainReadersDo()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var text = directory.CreateFile("library.txt");
+        var firstMsp = directory.CreateFile("first_msp.tsv", $"annotator_id\tmsp_file_path\nfirst\t{msp}\n");
+        var lastMsp = directory.CreateFile("last_msp.tsv", $"annotator_id\tmsp_file_path\nlast\t{msp}\n");
+        var firstText = directory.CreateFile("first_text.tsv", $"annotator_id\ttext_db_file_path\nfirst\t{text}\n");
+        var lastText = directory.CreateFile("last_text.tsv", $"annotator_id\ttext_db_file_path\nlast\t{text}\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"""
+            Minimum peak height: 100
+            Alignment light mode: True
+            LBM annotator priority: 2
+            Detailed alignment provenance: True
+            Annotation candidates: True
+            MSP annotator settings file path: {firstMsp}
+            Text annotator settings file path: {firstText}
+            Minimum peak height: 200
+            Alignment light mode: False
+            LBM annotator priority: 5
+            Detailed alignment provenance: False
+            Annotation candidates: False
+            MSP annotator settings file path: {lastMsp}
+            Text annotator settings file path: {lastText}
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(200d, parameter.MinimumAmplitude, "the main reader keeps the last line");
+        Assert.IsFalse(ConfigParser.ReadAlignmentLightMode(methodFile));
+        Assert.AreEqual(5, ConfigParser.ReadLbmAnnotatorPriority(methodFile));
+        Assert.IsFalse(ConfigParser.ReadDetailedAlignmentProvenance(methodFile));
+        Assert.IsFalse(ConfigParser.ReadAnnotationCandidateExport(methodFile));
+        CollectionAssert.AreEqual(
+            new[] { "last" },
+            ConfigParser.ReadMspAnnotatorSettings(methodFile, parameter).Select(setting => setting.AnnotatorId).ToArray());
+        CollectionAssert.AreEqual(
+            new[] { "last" },
+            ConfigParser.ReadTextAnnotatorSettings(methodFile, parameter).Select(setting => setting.AnnotatorId).ToArray());
+    }
+
+    /// <summary>
+    /// An unusable or blank later line leaves the earlier value, in the side readers as in the main.
+    /// </summary>
+    /// <remarks>
+    /// "Minimum peak height: quite high" leaves the earlier height in place, and "Msp file path:"
+    /// does not clear an earlier path. The side readers skip such lines the same way. A blank
+    /// settings-file path also used to end the search outright, so a real path after it was
+    /// never read.
+    /// </remarks>
+    [TestMethod]
+    public void SideReaders_SkipABlankOrUnusableLaterLine()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile("msp.tsv", $"annotator_id\tmsp_file_path\nkept\t{msp}\n");
+        var earlierThenBlank = directory.CreateFile(
+            "earlier_then_blank.txt",
+            $"""
+            MSP annotator settings file path: {settings}
+            MSP annotator settings file path:
+            LBM annotator priority: 3
+            LBM annotator priority: 2.0
+            Alignment light mode: True
+            Alignment light mode: yes
+            """);
+        var blankThenLater = directory.CreateFile(
+            "blank_then_later.txt",
+            $"""
+            MSP annotator settings file path:
+            MSP annotator settings file path: {settings}
+            """);
+
+        Assert.AreEqual(1, ConfigParser.ReadMspAnnotatorSettings(earlierThenBlank, new MsdialLcmsParameter()).Count);
+        Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(earlierThenBlank));
+        Assert.IsTrue(ConfigParser.ReadAlignmentLightMode(earlierThenBlank));
+        Assert.AreEqual(1, ConfigParser.ReadMspAnnotatorSettings(blankThenLater, new MsdialLcmsParameter()).Count);
+    }
+
+    /// <summary>
+    /// The key record names a key written on more than one line and the value the run used.
+    /// </summary>
+    /// <remarks>
+    /// "applied" says a key took effect, not which of its lines did. The used value is the last
+    /// line a reader accepted, so an unusable later line does not replace it. Keys are matched by
+    /// spelling without regard to letter case, as the readers match them.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_KeyRecordNamesARepeatedKeyAndTheValueUsed()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Minimum peak height: 100
+            Mass slice width: 0.1
+            minimum peak height: 200
+            LBM annotator priority: 3
+            LBM annotator priority: 2.0
+            Smoothing level: 5.5
+            Smoothing level: 6.5
+            """);
+
+        var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+        var repeated = RepeatedKeys(methodFile);
+        CollectionAssert.AreEqual(
+            new[] { "Minimum peak height", "LBM annotator priority", "Smoothing level" },
+            repeated.Select(entry => (string)entry["key"]!).ToArray(),
+            "in order of first appearance; a key written once is not listed");
+        Assert.AreEqual(2, (int)repeated[0]["lines"]!);
+        Assert.AreEqual("200", (string?)repeated[0]["used"]);
+        Assert.AreEqual(200d, parameter.MinimumAmplitude, "the record names the value the run used");
+        Assert.AreEqual("3", (string?)repeated[1]["used"], "the unusable later line did not replace it");
+        Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(methodFile));
+        Assert.AreEqual(JTokenType.Null, repeated[2]["used"]!.Type, "neither line could be read");
+
+        StringAssert.Contains(report, "'Minimum peak height' is written on 2 lines; the last line applied was used: '200'");
+        StringAssert.Contains(report, "'Smoothing level' is written on 2 lines; no line was applied");
+        Assert.IsFalse(report.Contains("'Mass slice width' is written"), report);
+    }
+
+    private static List<JObject> RepeatedKeys(string methodFile)
+    {
+        var record = Path.Combine(
+            Path.GetDirectoryName(methodFile)!,
+            Path.GetFileNameWithoutExtension(methodFile) + ".keys.json");
+        return JObject.Parse(File.ReadAllText(record))["repeated"]!.Cast<JObject>().ToList();
+    }
+
+    /// <summary>
+    /// Reading a method file does not load the RT correction library.
+    /// </summary>
+    /// <remarks>
+    /// The reader used to open the library the moment it read the key, from the value as written:
+    /// a relative value from the working directory, and before GC-MS resolved the path against
+    /// the method file's folder, so the stored library and the stored path could name different
+    /// files. RetentionTimeCorrectionProcess now loads it, once, from the final path.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcms_RecordsTheRtCorrectionLibraryPathWithoutLoadingIt()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"Compounds library file path for RT correction: {library}\n");
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(library, parameter.CompoundListForRtCorrectionPath);
+        Assert.AreEqual(0, parameter.RetentionTimeCorrectionCommon.StandardLibrary.Count);
+        CollectionAssert.Contains(RecordedKeys(methodFile, "applied"), "Compounds library file path for RT correction");
+    }
+
+    [TestMethod]
+    public void ReadForGcms_TheRtCorrectionLibraryIsLoadedFromThePathAfterItIsResolved()
+    {
+        // The value is relative, and the working directory is not the method file's folder, so
+        // the old parse-time load could not have found it. The resolved path can.
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            "Compounds library file path for RT correction: anchors.txt\n");
+        Assert.AreNotEqual(
+            Path.GetFullPath(directory.Path).TrimEnd(Path.DirectorySeparatorChar),
+            Path.GetFullPath(Environment.CurrentDirectory).TrimEnd(Path.DirectorySeparatorChar));
+
+        var parameter = ConfigParser.ReadForGcms(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(library), parameter.CompoundListForRtCorrectionPath);
+        Assert.AreEqual(0, parameter.RetentionTimeCorrectionCommon.StandardLibrary.Count);
+        CollectionAssert.AreEqual(
+            new[] { "Anchor A", "Anchor B" },
+            RetentionTimeCorrectionProcess.LoadStandards(parameter).Select(standard => standard.Name).ToArray());
+    }
+
+    [TestMethod]
+    public void LoadStandards_RefusesAMalformedLibraryWithTheParserMessage()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile(
+            "anchors.txt",
+            "Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n" +
+            "Anchor A\tnot a time\t0.1\t100\t0.01\t1000\ttrue\n");
+        var parameter = new MsdialLcmsParameter { CompoundListForRtCorrectionPath = library };
+
+        var error = Assert.ThrowsException<InvalidDataException>(() => RetentionTimeCorrectionProcess.LoadStandards(parameter));
+
+        StringAssert.Contains(error.Message, "non-numerical value for retention time");
+    }
+
+    /// <summary>
+    /// A malformed RT correction library stops an LC-MS run before anything heavy is read.
+    /// </summary>
+    /// <remarks>
+    /// The library is small and its format is easy to get wrong, so it is checked first: before
+    /// the analysis files are imported, and so before the annotation libraries and the raw data.
+    /// The input folder here is empty, so reaching the import would print "Loading analysis files".
+    /// </remarks>
+    [TestMethod]
+    public void LcmsProcess_RefusesAMalformedRtCorrectionLibraryBeforeLoadingAnalysisFiles()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile(
+            "anchors.txt",
+            "Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n" +
+            "Anchor A\tnot a time\t0.1\t100\t0.01\t1000\ttrue\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"""
+            Execute RT correction: True
+            Compounds library file path for RT correction: {library}
+            """);
+
+        var (result, output, error) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result);
+        StringAssert.Contains(error, "RT correction library could not be used");
+        StringAssert.Contains(error, "non-numerical value for retention time");
+        Assert.IsFalse(output.Contains("Loading analysis files"), output);
+    }
+
+    /// <summary>
+    /// With RT correction off, a library path set in the method file is warned about, not read.
+    /// </summary>
+    /// <remarks>
+    /// The library has no effect without the correction, so it is neither opened nor checked --
+    /// the path here names no file at all. A path left in place usually means the switch was meant
+    /// to be on, which is why it is still mentioned.
+    /// </remarks>
+    [TestMethod]
+    public void LcmsProcess_WarnsWhenAnRtCorrectionLibraryIsSetButRtCorrectionIsOff()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute RT correction: False
+            Compounds library file path for RT correction: no-such-anchors.txt
+            """);
+
+        var (_, output, error) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "'Execute RT correction' is False, so the library is not used");
+        Assert.IsFalse(error.Contains("RT correction library could not be used"), error);
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysNothingAboutTheRtCorrectionLibraryWhenNoneIsSet()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", "Execute RT correction: False\n");
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        Assert.IsFalse(output.Contains("Compounds library file path for RT correction"), output);
+    }
+
+    /// <summary>
+    /// Run LC-MS on an empty input folder, so it stops at the analysis-file import.
+    /// </summary>
+    private static (int Result, string Output, string Error) RunLcms(TemporaryDirectory directory, string methodFile)
+    {
+        var input = System.IO.Path.Combine(directory.Path, "empty-input");
+        Directory.CreateDirectory(input);
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        var output = new StringWriter();
+        var error = new StringWriter();
+        try {
+            Console.SetOut(output);
+            Console.SetError(error);
+            var result = new LcmsProcess().Run(
+                input,
+                System.IO.Path.Combine(directory.Path, "output"),
+                methodFile,
+                isProjectSaved: false,
+                targetMz: -1f);
+            return (result, output.ToString(), error.ToString());
+        }
+        finally {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+        }
+    }
+
+    private static string AnchorLibrary(params string[] names)
+    {
+        var text = new StringBuilder("Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n");
+        for (var i = 0; i < names.Length; i++) {
+            text.Append($"{names[i]}\t{i + 1}.0\t0.1\t{100 * (i + 1)}.0\t0.01\t1000\ttrue\n");
+        }
+        return text.ToString();
     }
 
     /// <summary>

@@ -47,13 +47,31 @@ public sealed class LcmsProcess
             Console.Error.WriteLine("Automatic alignment RT correction requires Together with alignment: True.");
             return -1;
         }
+        // The RT correction library is checked here, before the analysis files, the annotation
+        // libraries and the raw data are read: it is small and easy to get wrong, and a mistake
+        // in it should stop the run in seconds. Prepare uses what this loaded.
+        List<MoleculeMsReference> rtCorrectionStandards = [];
+        if (param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+            try {
+                rtCorrectionStandards = RetentionTimeCorrectionProcess.LoadStandards(param);
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"RT correction library could not be used: {ex.Message}");
+                return -1;
+            }
+        }
+        else if (!param.CompoundListForRtCorrectionPath.IsEmptyOrNull()) {
+            // Not read and not checked: the library has no effect without RT correction. A path
+            // left in place usually means the switch was meant to be on, so it is said out loud.
+            Console.WriteLine($"Warning: 'Compounds library file path for RT correction' is set ({param.CompoundListForRtCorrectionPath}) but 'Execute RT correction' is False, so the library is not used.");
+        }
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
         }
 
         try {
-            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, outputFolder);
+            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, rtCorrectionStandards, outputFolder);
         }
         catch (Exception ex) {
             Console.Error.WriteLine($"RT correction failed: {ex}");
