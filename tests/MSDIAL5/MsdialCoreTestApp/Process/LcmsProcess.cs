@@ -37,13 +37,41 @@ public sealed class LcmsProcess
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
         var exportAnnotationCandidates = ConfigParser.ReadAnnotationCandidateExport(methodFile);
+        var automaticAlignmentRtCorrection = param.AlignmentBaseParam.AutomaticRtCorrection;
+        if (automaticAlignmentRtCorrection.Execute
+            && param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+            Console.Error.WriteLine("User-defined RT correction and automatic alignment RT correction cannot be enabled together because that would correct the RT axis twice.");
+            return -1;
+        }
+        if (automaticAlignmentRtCorrection.Execute && !param.TogetherWithAlignment) {
+            Console.Error.WriteLine("Automatic alignment RT correction requires Together with alignment: True.");
+            return -1;
+        }
+        // The RT correction library is checked here, before the analysis files, the annotation
+        // libraries and the raw data are read: it is small and easy to get wrong, and a mistake
+        // in it should stop the run in seconds. Prepare uses what this loaded.
+        List<MoleculeMsReference> rtCorrectionStandards = [];
+        if (param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+            try {
+                rtCorrectionStandards = RetentionTimeCorrectionProcess.LoadStandards(param);
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"RT correction library could not be used: {ex.Message}");
+                return -1;
+            }
+        }
+        else if (!param.CompoundListForRtCorrectionPath.IsEmptyOrNull()) {
+            // Not read and not checked: the library has no effect without RT correction. A path
+            // left in place usually means the switch was meant to be on, so it is said out loud.
+            Console.WriteLine($"Warning: 'Compounds library file path for RT correction' is set ({param.CompoundListForRtCorrectionPath}) but 'Execute RT correction' is False, so the library is not used.");
+        }
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
         }
 
         try {
-            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, outputFolder);
+            RetentionTimeCorrectionProcess.Prepare(analysisFiles, param, rtCorrectionStandards, outputFolder);
         }
         catch (Exception ex) {
             Console.Error.WriteLine($"RT correction failed: {ex}");
@@ -155,6 +183,25 @@ public sealed class LcmsProcess
         }
         await Task.WhenAll(tasks);
 
+        AutomaticAlignmentRetentionTimeCorrectionResult? automaticRtCorrectionResult = null;
+        if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
+            try {
+                Console.WriteLine("Automatic alignment RT correction: selecting anchors after peak picking and annotation.");
+                automaticRtCorrectionResult = AutomaticAlignmentRetentionTimeCorrection.Build(
+                    files,
+                    storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection,
+                    storage.Parameter.Ms1AlignmentTolerance);
+                storage.Parameter.AlignmentReferenceFileID = automaticRtCorrectionResult.Correction.ReferenceFileId;
+                automaticRtCorrectionResult.WriteAudit(outputFolder);
+                Console.WriteLine($"Automatic alignment RT correction reference file ID: {automaticRtCorrectionResult.Correction.ReferenceFileId}");
+                Console.WriteLine("Automatic alignment RT correction audit: automatic_alignment_rt_correction_summary.tsv and automatic_alignment_rt_correction_anchors.tsv");
+            }
+            catch (Exception ex) {
+                Console.Error.WriteLine($"Automatic alignment RT correction failed: {ex.Message}");
+                return -1;
+            }
+        }
+
         // The identity of the build, without the host application's name: this field is the
         // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
         // 5.5.241113" said the application twice and the version once, staleness included.
@@ -168,7 +215,12 @@ public sealed class LcmsProcess
             if (isAlignmentLightMode) {
                 Console.WriteLine("Alignment light mode: streaming peak matrix, file-backed alignment deconvolution access, GUI chromatogram serialization, GUI alignment object serialization, and ion-abundance correlation links are disabled; text exports remain enabled.");
                 Console.WriteLine("Alignment started.");
-                var lightRunner = new LcmsAlignmentLightRunner(storage, evaluator, providerFactory, CreateConsoleProgressReporter("Alignment"));
+                var lightRunner = new LcmsAlignmentLightRunner(
+                    storage,
+                    evaluator,
+                    providerFactory,
+                    CreateConsoleProgressReporter("Alignment"),
+                    automaticRtCorrectionResult?.Correction);
                 LcmsAlignmentLightResult lightResult;
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
@@ -180,7 +232,12 @@ public sealed class LcmsProcess
             }
             else {
                 var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
-                var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
+                if (automaticRtCorrectionResult is not null) {
+                    Console.WriteLine("Automatic alignment RT correction: GUI EICs retain original sample RT; extraction and gap filling use corrected alignment RT windows mapped back to raw data.");
+                }
+                var factory = new LcmsAlignmentProcessFactory(storage, evaluator) {
+                    AlignmentRtCorrection = automaticRtCorrectionResult?.Correction,
+                };
                 factory.Progress = CreateConsoleProgressReporter("Alignment");
                 var aligner = factory.CreatePeakAligner();
                 Console.WriteLine("Alignment started.");
@@ -262,10 +319,9 @@ public sealed class LcmsProcess
                 foreach (var (_, exportType, suffix) in requestedMatrices.Where(item => item.Requested)) {
                     var matrixFile = Path.Combine(matrixFolder, alignmentFile.FileName + suffix);
                     using (var matrixStream = File.Open(matrixFile, FileMode.Create, FileAccess.Write)) {
-                        new AlignmentCSVExporter().Export(
+                        ExportAlignmentMatrix(
                             matrixStream, result.AlignmentSpotProperties, align_decResults, files,
-                            new MulticlassFileMetaAccessor(0), align_accessor,
-                            new LegacyQuantValueAccessor(exportType, storage.Parameter), matrixStats);
+                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats);
                     }
                     Console.WriteLine($"{exportType} matrix: {matrixFile}");
                 }
@@ -371,6 +427,24 @@ public sealed class LcmsProcess
         GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
         GC.WaitForPendingFinalizers();
         GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+    }
+
+    internal static void ExportAlignmentMatrix(
+        Stream stream,
+        IReadOnlyList<AlignmentSpotProperty> spots,
+        IReadOnlyList<MSDecResult> msdecResults,
+        IReadOnlyList<AnalysisFileBean> files,
+        IMetadataAccessor metadataAccessor,
+        string exportType,
+        ParameterBase parameter,
+        AlignmentLightPeakStore? alignmentLightPeakStore,
+        IReadOnlyList<StatsValue> stats) {
+        IQuantValueAccessor quantAccessor = alignmentLightPeakStore is null
+            ? new LegacyQuantValueAccessor(exportType, parameter)
+            : new AlignmentLightQuantValueAccessor(exportType, parameter, alignmentLightPeakStore);
+        new AlignmentCSVExporter().Export(
+            stream, spots, msdecResults, files,
+            new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, stats);
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {

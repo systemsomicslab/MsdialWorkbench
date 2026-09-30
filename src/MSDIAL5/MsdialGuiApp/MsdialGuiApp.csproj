@@ -7,7 +7,28 @@
 		<AssemblyName>MSDIAL</AssemblyName>
 		<RootNamespace>CompMs.App.Msdial</RootNamespace>
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
-		<PlatformTarget>AnyCPU</PlatformTarget>
+		<!--
+			MS-DIAL is a 64-bit application, and this is where that is said out loud.
+
+			It already was one: AnyCPU under Microsoft.NET.Sdk leaves Prefer32Bit false, so the
+			binary ran 64-bit on 64-bit Windows. What it did not do was say so. Several of the
+			vendor readers shipped beside it are x64 only - Agilent BaseTof.dll, Waters
+			MassLynxSDK.dll, Bruker timsdata.dll and baf2sql_c.dll - so a 32-bit MS-DIAL is not a
+			degraded MS-DIAL but a broken one, and that requirement deserves to be stated rather
+			than inherited from a default that differs between SDK-style and legacy projects.
+
+			Prefer32Bit is written out as well, so that the legacy default cannot come back if
+			PlatformTarget is ever returned to AnyCPU.
+		-->
+		<PlatformTarget>x64</PlatformTarget>
+		<Prefer32Bit>false</Prefer32Bit>
+		<!--
+			Naming a platform makes the .NET SDK want to restore for a runtime identifier as well,
+			which a .NET Framework project has no assets for. We are not publishing a self-contained
+			application, only saying how the produced binary should be loaded, so the identifier is
+			declined here rather than added to every restore.
+		-->
+		<UseCurrentRuntimeIdentifier>false</UseCurrentRuntimeIdentifier>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 		<Lbm2Url>https://zenodo.org/records/11399747/files/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
 		<LangVersion>12</LangVersion>
@@ -38,6 +59,10 @@
 	</PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Properties.Settings and the ConfigurationErrorsException raised when user.config cannot be read. -->
+    <Reference Include="System.Configuration" />
   </ItemGroup>
 	<ItemGroup>
 		<None Remove="App.xaml" />

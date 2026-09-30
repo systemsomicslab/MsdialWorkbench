@@ -48,17 +48,26 @@ namespace CompMs.App.Msdial.Model.Export
                 var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 broker.Publish(task);
 
-                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles(AlignmentFilesForExport.SelectedFile));
-                var count = 0;
-                void notify(string file) {
-                    broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));
+                try {
+                    var numExportFile = (double)Groups.Sum(group => group.CountExportFiles(AlignmentFilesForExport.SelectedFile));
+                    var count = 0;
+                    void notify(string file) {
+                        broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));
+                    }
+                    foreach (var group in Groups) {
+                        group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
+                    }
+                    _dataExportParameter.ExportFolderPath = ExportDirectory;
                 }
-                foreach (var group in Groups) {
-                    group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
+                catch (Exception e) {
+                    ExportFailure.Report(broker, e);
                 }
-                _dataExportParameter.ExportFolderPath = ExportDirectory;
-
-                broker.Publish(task.End());
+                finally {
+                    // Nothing awaits this task, so an export that ends by throwing would otherwise
+                    // leave its progress entry behind for good, and every later attempt to close
+                    // MS-DIAL would warn that a process is still running.
+                    broker.Publish(task.End());
+                }
             });
         }
     }

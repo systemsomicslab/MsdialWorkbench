@@ -2306,10 +2306,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20260203
                 case LbmClass.SPEHex:
                     return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 case LbmClass.SPGHex:
                     return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }
@@ -3960,10 +3960,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20260203
                 case LbmClass.SPEHex:
                     return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 case LbmClass.SPGHex:
                     return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }
