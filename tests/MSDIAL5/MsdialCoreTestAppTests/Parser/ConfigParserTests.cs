@@ -859,6 +859,149 @@ public sealed class ConfigParserTests
         Assert.AreEqual(2000f, parameter.MspSearchParam.RiTolerance);
     }
 
+    /// <summary>
+    /// Every mode reads a relative library path from the method file's folder, as GC-MS does.
+    /// </summary>
+    [TestMethod]
+    public void ReadForLcmsParameter_ResolvesRelativePathsAgainstTheMethodFile()
+    {
+        using var directory = new TemporaryDirectory();
+        Directory.CreateDirectory(Path.Combine(directory.Path, "libraries"));
+        directory.CreateFile(Path.Combine("libraries", "lipids.msp"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"MSP file path: {Path.Combine("libraries", "lipids.msp")}\n" +
+            $"Text DB file path: {Path.Combine("libraries", "not-there.txt")}\n");
+
+        var (parameter, _) = ReadLcmsWithReport(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(Path.Combine(directory.Path, "libraries", "lipids.msp")), parameter.MspFilePath);
+        Assert.AreEqual(
+            Path.GetFullPath(Path.Combine(directory.Path, "libraries", "not-there.txt")),
+            parameter.TextDBFilePath,
+            "a file found nowhere is named where the rule says it should be");
+    }
+
+    [TestMethod]
+    public void ReadForImmsParameter_ResolvesRelativePathsAgainstTheMethodFile()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("library.msp");
+        var methodFile = directory.CreateFile("method.txt", "MSP file path: library.msp\n");
+
+        var parameter = ConfigParser.ReadForImmsParameter(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(Path.Combine(directory.Path, "library.msp")), parameter.MspFilePath);
+    }
+
+    /// <summary>
+    /// A relative path that only worked from the working directory still works, and says so.
+    /// </summary>
+    /// <remarks>
+    /// Before the rule was shared, LC-MS opened a relative path from wherever the Console ran.
+    /// A job written that way must not silently lose its library when the rule changes.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_FallsBackToTheWorkingDirectoryAndSaysSo()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var library = workingDirectory.CreateFile("library.msp");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(library), parameter.MspFilePath);
+            StringAssert.Contains(report, "MSP file path: library.msp");
+            StringAssert.Contains(report, "working directory was used instead");
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_UsesTheMethodFileFolderSilentlyWhenBothHoldTheSameFile()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        workingDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(expected), parameter.MspFilePath);
+            Assert.IsFalse(report.Contains("working directory"), report);
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    /// <summary>
+    /// A job whose working directory holds a different file of the same name is told which one it
+    /// now reads.
+    /// </summary>
+    /// <remarks>
+    /// Before the rule was shared this job read the working directory's library. It now reads the
+    /// method file's, which is a different library, and that is a change of result.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_NamesBothFilesWhenTheTwoFoldersDisagree()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        var other = workingDirectory.CreateFile("library.msp", "NAME: fructose\n");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(expected), parameter.MspFilePath);
+            StringAssert.Contains(report, "names different files");
+            StringAssert.Contains(report, Path.GetFullPath(expected));
+            StringAssert.Contains(report, Path.GetFullPath(other));
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    /// <summary>
+    /// Two libraries of one length are told apart by their content.
+    /// </summary>
+    [TestMethod]
+    public void ReadForLcmsParameter_NamesBothFilesOfOneLengthWhenTheirContentDiffers()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        var other = workingDirectory.CreateFile("library.msp", "NAME: mannose\n");
+        File.SetCreationTimeUtc(other, File.GetCreationTimeUtc(expected).AddMinutes(-5));
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (_, report) = ReadLcmsWithReport(methodFile);
+
+            StringAssert.Contains(report, "names different files");
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
     [TestMethod]
     public void ReadMspAnnotatorSettings_UsesPerAnnotatorTargetOmics()
     {
