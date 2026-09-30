@@ -924,12 +924,12 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
-    public void ReadForLcmsParameter_PrefersTheMethodFileFolderWhenBothHaveTheFile()
+    public void ReadForLcmsParameter_UsesTheMethodFileFolderSilentlyWhenBothHoldTheSameFile()
     {
         using var methodDirectory = new TemporaryDirectory();
         using var workingDirectory = new TemporaryDirectory();
-        var expected = methodDirectory.CreateFile("library.msp");
-        workingDirectory.CreateFile("library.msp");
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        workingDirectory.CreateFile("library.msp", "NAME: glucose\n");
         var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
         var original = Environment.CurrentDirectory;
         try {
@@ -939,6 +939,63 @@ public sealed class ConfigParserTests
 
             Assert.AreEqual(Path.GetFullPath(expected), parameter.MspFilePath);
             Assert.IsFalse(report.Contains("working directory"), report);
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    /// <summary>
+    /// A job whose working directory holds a different file of the same name is told which one it
+    /// now reads.
+    /// </summary>
+    /// <remarks>
+    /// Before the rule was shared this job read the working directory's library. It now reads the
+    /// method file's, which is a different library, and that is a change of result.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_NamesBothFilesWhenTheTwoFoldersDisagree()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        var other = workingDirectory.CreateFile("library.msp", "NAME: fructose\n");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(expected), parameter.MspFilePath);
+            StringAssert.Contains(report, "names different files");
+            StringAssert.Contains(report, Path.GetFullPath(expected));
+            StringAssert.Contains(report, Path.GetFullPath(other));
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    /// <summary>
+    /// Two libraries of one length are told apart by their content.
+    /// </summary>
+    [TestMethod]
+    public void ReadForLcmsParameter_NamesBothFilesOfOneLengthWhenTheirContentDiffers()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp", "NAME: glucose\n");
+        var other = workingDirectory.CreateFile("library.msp", "NAME: mannose\n");
+        File.SetCreationTimeUtc(other, File.GetCreationTimeUtc(expected).AddMinutes(-5));
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (_, report) = ReadLcmsWithReport(methodFile);
+
+            StringAssert.Contains(report, "names different files");
         }
         finally {
             Environment.CurrentDirectory = original;

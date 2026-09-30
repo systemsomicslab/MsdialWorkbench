@@ -454,11 +454,18 @@ public static class MainProcess
     /// </remarks>
     public static void SetTemplateCommand(Command root) {
         var cmd = new Command("template", "Write a method file template holding the built-in defaults for a processing mode");
-        var modes = Enum.GetValues(typeof(MethodFileMode)).Cast<MethodFileMode>().ToDictionary(MethodFileTemplate.CommandName);
+        var modes = Enum.GetValues(typeof(MethodFileMode)).Cast<MethodFileMode>()
+            .ToDictionary(MethodFileTemplate.CommandName, StringComparer.OrdinalIgnoreCase);
         var mode = new Argument<string>("mode") {
-            Description = "The command the method file is for",
+            Description = "The command the method file is for: " + string.Join(", ", modes.Keys),
         };
-        mode.AcceptOnlyFromAmong(modes.Keys.ToArray());
+        // Not AcceptOnlyFromAmong: it compares case-sensitively, and "LCMS" names the same command.
+        mode.Validators.Add(result => {
+            var value = result.GetValueOrDefault<string>();
+            if (value is null || !modes.ContainsKey(value)) {
+                result.AddError($"Unknown mode '{value}'. Use one of: {string.Join(", ", modes.Keys)}.");
+            }
+        });
         var output = new Option<FileInfo>("--output", "-o") {
             Description = "File to write the template to. Standard output when omitted",
         };
@@ -466,9 +473,17 @@ public static class MainProcess
             Description = "Replace the output file if it already exists",
         };
         var ionMode = new Option<IonMode>("--ionmode") {
-            Description = "Ion mode written into the template; the searched adduct follows it ([M+H]+ or [M-H]-)",
+            Description = "Positive or Negative. The searched adduct follows it ([M+H]+ or [M-H]-)",
             DefaultValueFactory = _ => IonMode.Positive,
         };
+        // IonMode also has Both, and the enum parser takes any number. The method-file reader
+        // understands neither, so a template holding one would run as Positive without saying so.
+        ionMode.Validators.Add(result => {
+            var value = result.GetValueOrDefault<IonMode>();
+            if (value != IonMode.Positive && value != IonMode.Negative) {
+                result.AddError("--ionmode must be Positive or Negative.");
+            }
+        });
         cmd.Arguments.Add(mode);
         cmd.Options.Add(output);
         cmd.Options.Add(force);

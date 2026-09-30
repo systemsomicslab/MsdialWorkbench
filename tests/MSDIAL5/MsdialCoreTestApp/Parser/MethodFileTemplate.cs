@@ -47,7 +47,8 @@ public enum MethodFileMode
 /// writing the fallback out states what the run would do and gives the analyst a line to extend.
 ///
 /// NOT EVERY KEY THE READER ACCEPTS IS WRITTEN. Aliases, lab-internal switches and keys the mode's
-/// processing never consults are left out, so that each line in the template is one that matters.
+/// processing does not use are left out, so that the template stays a list of settings worth
+/// choosing.
 /// So are the features that do not work from the Console yet - isotope tracking, CorrDec, the
 /// isotope text DB - and the target-detection compound list, which is read and then used by no
 /// process. Each library path sits in the section of the annotation that uses it.
@@ -57,6 +58,10 @@ public enum MethodFileMode
 public static class MethodFileTemplate
 {
     public static string Create(MethodFileMode mode, IonMode ionMode = IonMode.Positive) {
+        if (ionMode != IonMode.Positive && ionMode != IonMode.Negative) {
+            // The method-file reader understands only these two, and would run anything else as Positive.
+            throw new ArgumentOutOfRangeException(nameof(ionMode), ionMode, "A method file's ion mode is Positive or Negative.");
+        }
         var w = new Writer();
         w.Header(mode);
         switch (mode) {
@@ -120,6 +125,7 @@ public static class MethodFileTemplate
         w.Value("Use retention information for MSP-based annotation scoring", B(p.MspSearchParam.IsUseTimeForAnnotationScoring));
         w.Value("Use retention information for MSP-based annotation filtering", B(p.MspSearchParam.IsUseTimeForAnnotationFiltering));
         w.Value("Only report top hit for MSP-based annotation", B(p.OnlyReportTopHitInMspSearch));
+        w.Value("Execute annotation process only for alignment file", B(p.IsIdentificationOnlyPerformedForAlignmentFile));
         w.Section("Text-based annotation");
         w.Blank("Text DB file path", "Tab-separated compound list matched by m/z and retention. Leave blank to skip Text-based annotation.");
         w.Value("RT tolerance for Text-based annotation", F(p.TextDbSearchParam.RtTolerance));
@@ -128,15 +134,12 @@ public static class MethodFileTemplate
         w.Value("Total score cutoff for Text-based annotation", F(p.TextDbSearchParam.TotalScoreCutoff));
         w.Value("Use retention information for Text-based annotation scoring", B(p.TextDbSearchParam.IsUseTimeForAnnotationScoring));
         w.Value("Use retention information for Text-based annotation filtering", B(p.TextDbSearchParam.IsUseTimeForAnnotationFiltering));
-        w.Value("Only report top hit for Text-based annotation", B(p.OnlyReportTopHitInTextDBSearch));
         w.Section("Alignment");
         w.Choice("Alignment index type", p.AlignmentIndexType.ToString(), "RT", "RI");
         w.Value("Alignment reference file ID", I(p.AlignmentReferenceFileID));
         w.Value("Retention time tolerance for alignment", F(p.RetentionTimeAlignmentTolerance));
         w.Value("Retention index tolerance for alignment", F(p.RetentionIndexAlignmentTolerance));
         w.Value("Retention time factor for alignment", F(p.RetentionTimeAlignmentFactor));
-        w.Value("Spectrum similarity tolerance for alignment", F(p.SpectrumSimilarityAlignmentTolerance));
-        w.Value("Spectrum similarity factor for alignment", F(p.SpectrumSimilarityAlignmentFactor));
         w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
         w.Value("Replace quant mass by user defined value", B(p.IsReplaceQuantmassByUserDefinedValue));
@@ -158,6 +161,8 @@ public static class MethodFileTemplate
         Adducts(w, p);
         w.Section("Deconvolution");
         LiquidDeconvolution(w, p);
+        // Read into the parameter but consulted by no process yet (2026-09); kept so the setting
+        // has its place in the template when it is made to work.
         w.Value("Target CE", D(p.TargetCE));
         LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true);
         w.Section("Alignment");
@@ -194,7 +199,8 @@ public static class MethodFileTemplate
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
-        LiquidDeconvolution(w, p);
+        // DIMS MS2 deconvolution does not read KeepOriginalPrecursorIsotopes.
+        LiquidDeconvolution(w, p, keepOriginalPrecursorIsotopes: false);
         LiquidAnnotation(w, p, retention: false, mobility: false);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: false);
@@ -295,19 +301,21 @@ public static class MethodFileTemplate
         w.Value("Searched adduct ions", DefaultAdduct(p.IonMode));
     }
 
-    private static void LiquidDeconvolution(Writer w, ParameterBase p) {
+    private static void LiquidDeconvolution(Writer w, ParameterBase p, bool keepOriginalPrecursorIsotopes = true) {
         w.Value("Sigma window value", F(p.SigmaWindowValue));
         w.Value("Amplitude cut off", F(p.ChromDecBaseParam.AmplitudeCutoff));
         w.Value("Keep isotope range", F(p.KeptIsotopeRange));
         w.Value("Exclude after precursor", B(p.RemoveAfterPrecursor));
-        w.Value("Keep original precursor isotopes", B(p.KeepOriginalPrecursorIsotopes));
+        if (keepOriginalPrecursorIsotopes) {
+            w.Value("Keep original precursor isotopes", B(p.KeepOriginalPrecursorIsotopes));
+        }
     }
 
     private static void LiquidAnnotation(Writer w, ParameterBase p, bool retention, bool mobility, bool annotatorTables = false) {
         w.Section("MSP-based annotation");
         w.Blank("MSP file path", "MS/MS spectral library (.msp). Leave blank to skip MSP-based annotation.");
         if (annotatorTables) {
-            w.Blank("MSP annotator settings file path", "Tab-separated table of MSP libraries, each with its own search settings and priority. When given, it is used instead of MSP file path and the settings below.");
+            w.Blank("MSP annotator settings file path", "Tab-separated table of MSP libraries, each with its own search settings and priority. When it has usable rows, they replace MSP file path, and the settings below fill any column the table leaves out.");
         }
         SearchWindow(w, p.MspSearchParam, "MSP", retention, mobility);
         w.Value("Mass range begin for MSP-based annotation", F(p.MspSearchParam.MassRangeBegin));
@@ -318,7 +326,6 @@ public static class MethodFileTemplate
         w.Value("Total score cutoff for MSP-based annotation", F(p.MspSearchParam.TotalScoreCutoff));
         SearchSwitches(w, p.MspSearchParam, "MSP", retention, mobility);
         w.Value("Only report top hit for MSP-based annotation", B(p.OnlyReportTopHitInMspSearch));
-        w.Value("Execute annotation process only for alignment file", B(p.IsIdentificationOnlyPerformedForAlignmentFile));
 
         w.Section("LBM-based annotation (Target omics: Lipidomics)");
         w.Blank("LBM file path", "Lipid library (.lbm). Leave blank to skip LBM-based annotation.");
@@ -343,7 +350,7 @@ public static class MethodFileTemplate
         w.Section("Text-based annotation");
         w.Blank("Text DB file path", "Tab-separated compound list matched by m/z. Leave blank to skip Text-based annotation.");
         if (annotatorTables) {
-            w.Blank("Text annotator settings file path", "Tab-separated table of text libraries, each with its own search settings and priority. When given, it is used instead of Text DB file path and the settings below.");
+            w.Blank("Text annotator settings file path", "Tab-separated table of text libraries, each with its own search settings and priority. When it has usable rows, they replace Text DB file path, and the settings below fill any column the table leaves out.");
         }
         if (retention) {
             w.Value("RT tolerance for Text-based annotation", F(p.TextDbSearchParam.RtTolerance));
@@ -361,7 +368,6 @@ public static class MethodFileTemplate
             w.Value("Use CCS for Text-based annotation scoring", B(p.TextDbSearchParam.IsUseCcsForAnnotationScoring));
             w.Value("Use CCS for Text-based annotation filtering", B(p.TextDbSearchParam.IsUseCcsForAnnotationFiltering));
         }
-        w.Value("Only report top hit for Text-based annotation", B(p.OnlyReportTopHitInTextDBSearch));
     }
 
     private static void SearchWindow(Writer w, MsRefSearchParameterBase s, string kind, bool retention, bool mobility) {
@@ -420,6 +426,7 @@ public static class MethodFileTemplate
         w.Value("Remove feature based on peak height fold-change", B(p.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange));
         w.Choice("Blank filtering", p.BlankFiltering.ToString(), "SampleMaxOverBlankAve");
         w.Value("Sample max / blank average", F(p.SampleMaxOverBlankAverage));
+        // As Target CE: read, not yet consulted by blank filtering (2026-09), kept for when it is.
         w.Value("Sample average / blank average", F(p.SampleAverageOverBlankAverage));
         w.Value("Keep reference matched metabolites", B(p.IsKeepRefMatchedMetaboliteFeatures));
         w.Value("Keep suggested metabolites", B(p.IsKeepSuggestedMetaboliteFeatures));
@@ -429,8 +436,10 @@ public static class MethodFileTemplate
 
     // Invariant culture throughout: the reader parses with it, and a template written on a machine
     // whose decimal separator is a comma must still read back as the same numbers.
-    private static string F(float value) => value.ToString(CultureInfo.InvariantCulture);
-    private static string D(double value) => value.ToString(CultureInfo.InvariantCulture);
+    // "R" because .NET Framework's default float formatting keeps only 7 significant digits and
+    // does not always read back as the same value.
+    private static string F(float value) => value.ToString("R", CultureInfo.InvariantCulture);
+    private static string D(double value) => value.ToString("R", CultureInfo.InvariantCulture);
     private static string I(int value) => value.ToString(CultureInfo.InvariantCulture);
     private static string B(bool value) => value ? "True" : "False";
 

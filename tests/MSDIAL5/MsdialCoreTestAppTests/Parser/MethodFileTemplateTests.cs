@@ -1,4 +1,5 @@
 using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
 
@@ -146,6 +148,42 @@ public sealed class MethodFileTemplateTests
         }
     }
 
+    /// <summary>
+    /// A template cannot hold an ion mode the reader would silently run as Positive.
+    /// </summary>
+    [TestMethod]
+    [DataRow("template lcms --ionmode Both")]
+    [DataRow("template lcms --ionmode 5")]
+    [DataRow("template xyz")]
+    public void TemplateCommand_RefusesWhatTheReaderCannotRun(string commandLine)
+    {
+        var root = new RootCommand();
+        MainProcess.SetTemplateCommand(root);
+
+        var result = root.Parse(commandLine);
+
+        Assert.AreNotEqual(0, result.Errors.Count, commandLine);
+    }
+
+    [TestMethod]
+    [DataRow("template lcms --ionmode Negative")]
+    [DataRow("template LCMS --ionmode negative")]
+    public void TemplateCommand_AcceptsModesAndIonModesInAnyCase(string commandLine)
+    {
+        var root = new RootCommand();
+        MainProcess.SetTemplateCommand(root);
+
+        var result = root.Parse(commandLine);
+
+        Assert.AreEqual(0, result.Errors.Count, string.Join(Environment.NewLine, result.Errors.Select(e => e.Message)));
+    }
+
+    [TestMethod]
+    public void Template_RefusesAnIonModeOtherThanPositiveOrNegative()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => MethodFileTemplate.Create(MethodFileMode.Lcms, IonMode.Both));
+    }
+
     private static ParameterBase CreateDefault(MethodFileMode mode) => mode switch {
         MethodFileMode.Gcms => new MsdialGcmsParameter(),
         MethodFileMode.Lcms => new MsdialLcmsParameter(),
@@ -178,10 +216,17 @@ public sealed class MethodFileTemplateTests
 
     private static JToken Snapshot(ParameterBase parameter)
     {
+        // A property the serializer cannot read would drop out of both snapshots and so never be
+        // compared. It is recorded and fails the test rather than being skipped in silence.
+        var errors = new List<string>();
         var json = JsonConvert.SerializeObject(parameter, new JsonSerializerSettings {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Error = (_, args) => args.ErrorContext.Handled = true,
+            Error = (_, args) => {
+                errors.Add($"{args.ErrorContext.Path}: {args.ErrorContext.Error.Message}");
+                args.ErrorContext.Handled = true;
+            },
         });
+        Assert.AreEqual(0, errors.Count, "properties the snapshot could not read: " + string.Join(Environment.NewLine, errors));
         var token = JToken.Parse(json);
         // Both are DateTime.Now at construction, so two fresh objects never agree on them.
         foreach (var stamp in token.SelectTokens("$..FinalSavedDate").Concat(token.SelectTokens("$..ProjectStartDate")).ToList()) {
