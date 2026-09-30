@@ -258,6 +258,92 @@ public sealed class ConfigParserTests
         Assert.AreEqual(2000f, parameter.MspSearchParam.RiTolerance);
     }
 
+    /// <summary>
+    /// Every mode reads a relative library path from the method file's folder, as GC-MS does.
+    /// </summary>
+    [TestMethod]
+    public void ReadForLcmsParameter_ResolvesRelativePathsAgainstTheMethodFile()
+    {
+        using var directory = new TemporaryDirectory();
+        Directory.CreateDirectory(Path.Combine(directory.Path, "libraries"));
+        directory.CreateFile(Path.Combine("libraries", "lipids.msp"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            $"MSP file path: {Path.Combine("libraries", "lipids.msp")}\n" +
+            $"Text DB file path: {Path.Combine("libraries", "not-there.txt")}\n");
+
+        var (parameter, _) = ReadLcmsWithReport(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(Path.Combine(directory.Path, "libraries", "lipids.msp")), parameter.MspFilePath);
+        Assert.AreEqual(
+            Path.GetFullPath(Path.Combine(directory.Path, "libraries", "not-there.txt")),
+            parameter.TextDBFilePath,
+            "a file found nowhere is named where the rule says it should be");
+    }
+
+    [TestMethod]
+    public void ReadForImmsParameter_ResolvesRelativePathsAgainstTheMethodFile()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("library.msp");
+        var methodFile = directory.CreateFile("method.txt", "MSP file path: library.msp\n");
+
+        var parameter = ConfigParser.ReadForImmsParameter(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(Path.Combine(directory.Path, "library.msp")), parameter.MspFilePath);
+    }
+
+    /// <summary>
+    /// A relative path that only worked from the working directory still works, and says so.
+    /// </summary>
+    /// <remarks>
+    /// Before the rule was shared, LC-MS opened a relative path from wherever the Console ran.
+    /// A job written that way must not silently lose its library when the rule changes.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_FallsBackToTheWorkingDirectoryAndSaysSo()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var library = workingDirectory.CreateFile("library.msp");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(library), parameter.MspFilePath);
+            StringAssert.Contains(report, "MSP file path: library.msp");
+            StringAssert.Contains(report, "working directory was used instead");
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_PrefersTheMethodFileFolderWhenBothHaveTheFile()
+    {
+        using var methodDirectory = new TemporaryDirectory();
+        using var workingDirectory = new TemporaryDirectory();
+        var expected = methodDirectory.CreateFile("library.msp");
+        workingDirectory.CreateFile("library.msp");
+        var methodFile = methodDirectory.CreateFile("method.txt", "MSP file path: library.msp\n");
+        var original = Environment.CurrentDirectory;
+        try {
+            Environment.CurrentDirectory = workingDirectory.Path;
+
+            var (parameter, report) = ReadLcmsWithReport(methodFile);
+
+            Assert.AreEqual(Path.GetFullPath(expected), parameter.MspFilePath);
+            Assert.IsFalse(report.Contains("working directory"), report);
+        }
+        finally {
+            Environment.CurrentDirectory = original;
+        }
+    }
+
     [TestMethod]
     public void ReadMspAnnotatorSettings_UsesPerAnnotatorTargetOmics()
     {
@@ -435,6 +521,60 @@ public sealed class ConfigParserTests
         var (_, report) = ReadLcmsWithReport(method);
 
         Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    /// <summary>
+    /// A key LC-MS reads in a separate pass is not reported as having no effect.
+    /// </summary>
+    /// <remarks>
+    /// These keys are applied by LcmsProcess through their own Read* methods, not by
+    /// ReadCommonParameter, so the key report listed every one of them as NO EFFECT while the
+    /// run used them.
+    /// </remarks>
+    [TestMethod]
+    public void ReadForLcmsParameter_DoesNotReportTheKeysItsSeparatePassesApply()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Alignment light mode: True" + "\n" +
+            "Detailed alignment provenance: False" + "\n" +
+            "Export annotation candidates: True" + "\n" +
+            "LBM annotator priority: 2" + "\n" +
+            "MSP annotator settings file path: msp_annotators.tsv" + "\n" +
+            "Text annotator settings file path: text_annotators.tsv" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_ReportsASeparatePassValueItWillIgnore()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile(
+            "method.txt",
+            "Alignment light mode: yes" + "\n" +
+            "LBM annotator priority: 2.5" + "\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        StringAssert.Contains(report, "Alignment light mode: yes");
+        StringAssert.Contains(report, "LBM annotator priority: 2.5");
+        StringAssert.Contains(report, "2 parameter(s) named a value this reader cannot parse");
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_LbmCcsFilteringSetsTheLbmSearchParameter()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var mspBefore = parameter.MspSearchParam.IsUseCcsForAnnotationFiltering;
+
+        ConfigParser.ReadCommonParameter(parameter, "use ccs for lbm-based annotation filtering", (!parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering).ToString());
+
+        Assert.AreNotEqual(new MsdialLcmsParameter().LbmSearchParam.IsUseCcsForAnnotationFiltering, parameter.LbmSearchParam.IsUseCcsForAnnotationFiltering);
+        Assert.AreEqual(mspBefore, parameter.MspSearchParam.IsUseCcsForAnnotationFiltering, "the MSP search is not the one the key names");
     }
 
     private static (MsdialLcmsParameter, string) ReadLcmsWithReport(string methodFile)

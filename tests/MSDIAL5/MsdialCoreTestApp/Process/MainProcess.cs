@@ -1,3 +1,4 @@
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Enum;
@@ -441,6 +442,60 @@ public static class MainProcess
         });
 
         root.Add(cmd);
+    }
+
+    /// <summary>
+    /// Write a method file for one processing mode, holding the built-in defaults.
+    /// </summary>
+    /// <remarks>
+    /// Written to standard output unless --output is given, so it can be piped or redirected. An
+    /// existing file is not replaced without --force: the file most likely to be named is the method
+    /// file somebody has already edited.
+    /// </remarks>
+    public static void SetTemplateCommand(Command root) {
+        var cmd = new Command("template", "Write a method file template holding the built-in defaults for a processing mode");
+        var modes = Enum.GetValues(typeof(MethodFileMode)).Cast<MethodFileMode>().ToDictionary(MethodFileTemplate.CommandName);
+        var mode = new Argument<string>("mode") {
+            Description = "The command the method file is for",
+        };
+        mode.AcceptOnlyFromAmong(modes.Keys.ToArray());
+        var output = new Option<FileInfo>("--output", "-o") {
+            Description = "File to write the template to. Standard output when omitted",
+        };
+        var force = new Option<bool>("--force", "-f") {
+            Description = "Replace the output file if it already exists",
+        };
+        var ionMode = new Option<IonMode>("--ionmode") {
+            Description = "Ion mode written into the template; the searched adduct follows it ([M+H]+ or [M-H]-)",
+            DefaultValueFactory = _ => IonMode.Positive,
+        };
+        cmd.Arguments.Add(mode);
+        cmd.Options.Add(output);
+        cmd.Options.Add(force);
+        cmd.Options.Add(ionMode);
+        cmd.SetAction(parseResult => {
+            var text = MethodFileTemplate.Create(modes[parseResult.GetRequiredValue(mode)], parseResult.GetValue(ionMode));
+            var file = parseResult.GetValue(output);
+            if (file is null) {
+                Console.Out.Write(text);
+                return 0;
+            }
+            if (file.Exists && !parseResult.GetValue(force)) {
+                Console.Error.WriteLine($"{file.FullName} already exists. Use --force to replace it.");
+                return 1;
+            }
+            try {
+                file.Directory?.Create();
+                File.WriteAllText(file.FullName, text, new System.Text.UTF8Encoding(false));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+                Console.Error.WriteLine($"The template could not be written to {file.FullName}: {ex.Message}");
+                return 1;
+            }
+            Console.WriteLine($"Method file template written to {file.FullName}");
+            return 0;
+        });
+        root.Subcommands.Add(cmd);
     }
 
     public static void SetNormalizeCommand(Command root) {

@@ -329,12 +329,51 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => ReadLcmsConsoleOption(method, value)));
                     }
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
+        }
+
+        // The LC-MS keys below are read by their own pass over the method file, each by one of the
+        // Read* methods that follow, and not by ReadCommonParameter. Their spellings live here once so
+        // that the pass that applies a key and ReadLcmsConsoleOption, which tells the key report the
+        // key was understood, cannot drift apart.
+        private static readonly string[] AlignmentLightModeKeys = { "alignment light mode", "alignment light", "console alignment light mode" };
+        private static readonly string[] LbmAnnotatorPriorityKeys = { "lbm annotator priority", "lbm annotation priority" };
+        private static readonly string[] DetailedAlignmentProvenanceKeys = { "detailed alignment provenance", "export detailed alignment provenance" };
+        private static readonly string[] AnnotationCandidateExportKeys = { "annotation candidates", "export annotation candidates" };
+        private static readonly string[] MspAnnotatorSettingsFilePathKeys = { "msp annotator settings file path", "msp annotation settings file path", "msp search settings file path" };
+        private static readonly string[] TextAnnotatorSettingsFilePathKeys = { "text annotator settings file path", "text library annotator settings file path", "text db annotator settings file path", "text annotation settings file path" };
+
+        /// <summary>
+        /// Say whether an LC-MS key read by one of the separate passes was understood.
+        /// </summary>
+        /// <remarks>
+        /// Nothing is assigned here; the separate pass does that. Without this the key report listed
+        /// every one of these keys as having NO EFFECT, although LcmsProcess applies them, so the
+        /// report contradicted the run it described. A value the pass would ignore - "yes" for a
+        /// switch, "2.5" for a priority - is reported as unusable, because the pass then keeps its
+        /// default exactly as it does for an unreadable number.
+        /// </remarks>
+        public static MethodKeyOutcome ReadLcmsConsoleOption(string method, string value) {
+            if (value.IsEmptyOrNull() || method.IsEmptyOrNull()) return false;
+            var key = method.ToLowerInvariant();
+            var valueLower = value.ToLowerInvariant();
+            if (AlignmentLightModeKeys.Contains(key) || DetailedAlignmentProvenanceKeys.Contains(key) || AnnotationCandidateExportKeys.Contains(key)) {
+                return valueLower == "true" || valueLower == "false" ? MethodKeyOutcome.Applied : MethodKeyOutcome.UnusableValue;
+            }
+            if (LbmAnnotatorPriorityKeys.Contains(key)) {
+                return int.TryParse(value, out _) ? MethodKeyOutcome.Applied : MethodKeyOutcome.UnusableValue;
+            }
+            if (MspAnnotatorSettingsFilePathKeys.Contains(key) || TextAnnotatorSettingsFilePathKeys.Contains(key)) {
+                return MethodKeyOutcome.Applied;
+            }
+            return MethodKeyOutcome.UnknownKey;
         }
 
         public static List<MspAnnotatorSetting> ReadMspAnnotatorSettings(string filepath, ParameterBase param) {
@@ -368,15 +407,11 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
-                        case "alignment light mode":
-                        case "alignment light":
-                        case "console alignment light mode":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
+                    if (AlignmentLightModeKeys.Contains(method.ToLowerInvariant())) {
+                        var valueLower = value.ToLower();
+                        if (valueLower == "true" || valueLower == "false") {
+                            return bool.Parse(valueLower);
+                        }
                     }
                 }
             }
@@ -390,13 +425,10 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLowerInvariant()) {
-                        case "lbm annotator priority":
-                        case "lbm annotation priority":
-                            if (int.TryParse(value, out var priority)) {
-                                return priority;
-                            }
-                            break;
+                    if (LbmAnnotatorPriorityKeys.Contains(method.ToLowerInvariant())) {
+                        if (int.TryParse(value, out var priority)) {
+                            return priority;
+                        }
                     }
                 }
             }
@@ -410,14 +442,11 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
-                        case "detailed alignment provenance":
-                        case "export detailed alignment provenance":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
+                    if (DetailedAlignmentProvenanceKeys.Contains(method.ToLowerInvariant())) {
+                        var valueLower = value.ToLower();
+                        if (valueLower == "true" || valueLower == "false") {
+                            return bool.Parse(valueLower);
+                        }
                     }
                 }
             }
@@ -431,14 +460,11 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
-                        case "annotation candidates":
-                        case "export annotation candidates":
-                            var valueLower = value.ToLower();
-                            if (valueLower == "true" || valueLower == "false") {
-                                return bool.Parse(valueLower);
-                            }
-                            break;
+                    if (AnnotationCandidateExportKeys.Contains(method.ToLowerInvariant())) {
+                        var valueLower = value.ToLower();
+                        if (valueLower == "true" || valueLower == "false") {
+                            return bool.Parse(valueLower);
+                        }
                     }
                 }
             }
@@ -452,11 +478,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
-                        case "msp annotator settings file path":
-                        case "msp annotation settings file path":
-                        case "msp search settings file path":
-                            return value;
+                    if (MspAnnotatorSettingsFilePathKeys.Contains(method.ToLowerInvariant())) {
+                        return value;
                     }
                 }
             }
@@ -470,12 +493,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (!isReadable) {
                         continue;
                     }
-                    switch (method.ToLower()) {
-                        case "text annotator settings file path":
-                        case "text library annotator settings file path":
-                        case "text db annotator settings file path":
-                        case "text annotation settings file path":
-                            return value;
+                    if (TextAnnotatorSettingsFilePathKeys.Contains(method.ToLowerInvariant())) {
+                        return value;
                     }
                 }
             }
@@ -786,6 +805,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -802,6 +822,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -818,6 +839,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -846,18 +868,37 @@ namespace CompMs.App.MsdialConsole.Parser
             isReadable = true;
         }
 
-        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
-            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath);
-            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath);
-            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath);
-            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath);
-            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath);
-            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath);
-            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath);
-            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath);
+        /// <summary>
+        /// Resolve every file path a method file names against the folder of that method file.
+        /// </summary>
+        /// <remarks>
+        /// ONE RULE FOR EVERY MODE. Only GC-MS used to do this (#779); the other readers left a
+        /// relative path as written, so it was opened from whatever directory the Console happened
+        /// to run in, while the annotator settings tables named in the same file were already read
+        /// relative to it. The same method file therefore meant different libraries depending on
+        /// the mode and the shell it was launched from.
+        ///
+        /// A PATH THAT ONLY WORKED THE OLD WAY STILL WORKS, AND SAYS SO. When the method-file
+        /// reading finds nothing but the working-directory reading finds a file, that file is used
+        /// and the run prints which one, so an existing LC-MS job does not lose its library the day
+        /// the rule changes.
+        /// </remarks>
+        private static void ResolveFilePaths(ParameterBase param, string methodFilePath) {
+            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath, "MSP file path");
+            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath, "LBM file path");
+            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath, "Text DB file path");
+            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath, "Isotope text DB file path");
+            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath, "Compounds library file path for target detection");
+            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath, "Compounds library file path for RT correction");
+            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath, "RT correction peak selection file path");
         }
 
-        private static string ResolvePathFromMethodFile(string? path, string methodFilePath) {
+        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
+            ResolveFilePaths(param, methodFilePath);
+            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath, "RI dictionary file path");
+        }
+
+        private static string ResolvePathFromMethodFile(string? path, string methodFilePath, string key) {
             if (path.IsEmptyOrNull()) {
                 return string.Empty;
             }
@@ -868,7 +909,18 @@ namespace CompMs.App.MsdialConsole.Parser
             }
 
             var methodDirectory = Path.GetDirectoryName(Path.GetFullPath(methodFilePath)) ?? Environment.CurrentDirectory;
-            return Path.GetFullPath(Path.Combine(methodDirectory, expanded));
+            var fromMethodFile = Path.GetFullPath(Path.Combine(methodDirectory, expanded));
+            if (!File.Exists(fromMethodFile)) {
+                var fromWorkingDirectory = Path.GetFullPath(expanded);
+                if (File.Exists(fromWorkingDirectory)) {
+                    Console.WriteLine(
+                        $"Method file '{Path.GetFileName(methodFilePath)}': '{key}: {path}' is not in the method file's folder, "
+                        + $"so the file in the working directory was used instead: {fromWorkingDirectory}. "
+                        + "Relative paths are read from the method file's folder; write this one relative to it or in full.");
+                    return fromWorkingDirectory;
+                }
+            }
+            return fromMethodFile;
         }
 
         public static MethodKeyOutcome ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
@@ -914,6 +966,7 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method) {
                 case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
+                case "accumulated rt range":
                 case "accumulated rt ragne": return Number(value, v => param.AccumulatedRtRange = (float)v);
                 case "accumulate ms2 spectra":
                     if (value == "true")
@@ -1197,7 +1250,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "use retention information for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use retention information for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "use ccs for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
-                case "use ccs for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
+                case "use ccs for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "execute annotation process only for alignment file for lbm-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
 
 

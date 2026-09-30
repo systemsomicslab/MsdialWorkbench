@@ -24,3 +24,11 @@ _Avoid_: Project-based EIC, peak-referenced EIC
 **RT correction**:
 Retention time correction used to adjust chromatogram peaks across files before downstream export or alignment.
 _Avoid_: Retention shift, time warping
+
+**Method file**:
+The plain-text `Key: value` file passed to a processing command with `--method`. It holds the processing parameters for one run.
+_Avoid_: Parameter file, config file
+
+**Method file template**:
+A method file written by the `template` command. It holds the built-in defaults for one processing mode, and every key in it is one the reader applies.
+_Avoid_: Sample method file, example parameters
