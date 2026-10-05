@@ -474,6 +474,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -969,6 +970,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -985,6 +987,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -1001,6 +1004,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
             }
             keys.Report(filepath);
+            ResolveFilePaths(param, filepath);
             return param;
         }
 
@@ -1029,18 +1033,38 @@ namespace CompMs.App.MsdialConsole.Parser
             isReadable = true;
         }
 
-        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
-            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath);
-            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath);
-            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath);
-            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath);
-            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath);
-            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath);
-            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath);
-            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath);
+        /// <summary>
+        /// Resolve every file path a method file names against the folder of that method file.
+        /// </summary>
+        /// <remarks>
+        /// ONE RULE FOR EVERY MODE. Only GC-MS used to do this (#779); the other readers left a
+        /// relative path as written, so it was opened from whatever directory the Console happened
+        /// to run in, while the annotator settings tables named in the same file were already read
+        /// relative to it. The same method file therefore meant different libraries depending on
+        /// the mode and the shell it was launched from.
+        ///
+        /// A PATH THAT ONLY WORKED THE OLD WAY STILL WORKS, AND SAYS SO. When the method-file
+        /// reading finds nothing but the working-directory reading finds a file, that file is used
+        /// and the run prints which one, so an existing LC-MS job does not lose its library the day
+        /// the rule changes. When both readings find a file and the two differ, the method file's
+        /// is used and the run names both, because that job now reads a different library.
+        /// </remarks>
+        private static void ResolveFilePaths(ParameterBase param, string methodFilePath) {
+            param.MspFilePath = ResolvePathFromMethodFile(param.MspFilePath, methodFilePath, "MSP file path");
+            param.LbmFilePath = ResolvePathFromMethodFile(param.LbmFilePath, methodFilePath, "LBM file path");
+            param.TextDBFilePath = ResolvePathFromMethodFile(param.TextDBFilePath, methodFilePath, "Text DB file path");
+            param.IsotopeTextDBFilePath = ResolvePathFromMethodFile(param.IsotopeTextDBFilePath, methodFilePath, "Isotope text DB file path");
+            param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath, "Compounds library file path for target detection");
+            param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath, "Compounds library file path for RT correction");
+            param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath, "RT correction peak selection file path");
         }
 
-        private static string ResolvePathFromMethodFile(string? path, string methodFilePath) {
+        private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
+            ResolveFilePaths(param, methodFilePath);
+            param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath, "RI dictionary file path");
+        }
+
+        private static string ResolvePathFromMethodFile(string? path, string methodFilePath, string key) {
             if (path.IsEmptyOrNull()) {
                 return string.Empty;
             }
@@ -1051,7 +1075,99 @@ namespace CompMs.App.MsdialConsole.Parser
             }
 
             var methodDirectory = Path.GetDirectoryName(Path.GetFullPath(methodFilePath)) ?? Environment.CurrentDirectory;
-            return Path.GetFullPath(Path.Combine(methodDirectory, expanded));
+            var fromMethodFile = Path.GetFullPath(Path.Combine(methodDirectory, expanded));
+            var fromWorkingDirectory = Path.GetFullPath(expanded);
+            if (!File.Exists(fromWorkingDirectory) || IsSameFile(fromMethodFile, fromWorkingDirectory)) {
+                return fromMethodFile;
+            }
+            var name = Path.GetFileName(methodFilePath);
+            if (!File.Exists(fromMethodFile)) {
+                Console.WriteLine(
+                    $"Method file '{name}': '{key}: {path}' is not in the method file's folder, "
+                    + $"so the file in the working directory was used instead: {fromWorkingDirectory}. "
+                    + "Relative paths are read from the method file's folder; write this one relative to it or in full.");
+                return fromWorkingDirectory;
+            }
+            // Before the rule was shared, LC-MS, DIMS, IMMS and LC-IM-MS opened this path from the
+            // working directory. A job that still runs from a folder holding a different file of the
+            // same name now reads another library, and that must not happen silently.
+            Console.WriteLine(
+                $"Method file '{name}': '{key}: {path}' names different files in the method file's folder and in the working directory. "
+                + $"The one beside the method file was used: {fromMethodFile}. "
+                + $"Until the Console read relative paths from the method file's folder, some modes used the other one: {fromWorkingDirectory}.");
+            return fromMethodFile;
+        }
+
+        /// <summary>
+        /// Whether two paths hold the same file, by location or by content.
+        /// </summary>
+        /// <remarks>
+        /// NEITHER FILE IS READ IN THE USUAL CASES. The same spelling is the same file. Different
+        /// lengths are different files. Equal length and equal write and creation times are taken
+        /// as one file reached by two spellings - a short 8.3 name, a junction, a mapped drive -
+        /// because a copy gets a creation time of its own. Only what remains, two files of one
+        /// length and different histories, is compared byte by byte, and that stops at the first
+        /// difference.
+        ///
+        /// A wrong "same" costs only the warning: the file beside the method file is used either
+        /// way.
+        /// </remarks>
+        private static bool IsSameFile(string first, string second) {
+            if (string.Equals(first, second, StringComparison.OrdinalIgnoreCase)) {
+                return true;
+            }
+            if (!File.Exists(first) || !File.Exists(second)) {
+                return false;
+            }
+            try {
+                var firstInfo = new FileInfo(first);
+                var secondInfo = new FileInfo(second);
+                if (firstInfo.Length != secondInfo.Length) {
+                    return false;
+                }
+                if (firstInfo.LastWriteTimeUtc == secondInfo.LastWriteTimeUtc
+                    && firstInfo.CreationTimeUtc == secondInfo.CreationTimeUtc) {
+                    return true;
+                }
+                using (var a = File.OpenRead(first))
+                using (var b = File.OpenRead(second)) {
+                    var bufferA = new byte[81920];
+                    var bufferB = new byte[81920];
+                    while (true) {
+                        var readA = ReadFully(a, bufferA);
+                        var readB = ReadFully(b, bufferB);
+                        if (readA != readB) {
+                            return false;
+                        }
+                        if (readA == 0) {
+                            return true;
+                        }
+                        for (var i = 0; i < readA; i++) {
+                            if (bufferA[i] != bufferB[i]) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (IOException) {
+                return false;
+            }
+            catch (UnauthorizedAccessException) {
+                return false;
+            }
+        }
+
+        private static int ReadFully(Stream stream, byte[] buffer) {
+            var total = 0;
+            while (total < buffer.Length) {
+                var read = stream.Read(buffer, total, buffer.Length - total);
+                if (read == 0) {
+                    break;
+                }
+                total += read;
+            }
+            return total;
         }
 
         public static MethodKeyOutcome ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
@@ -1095,6 +1211,7 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method) {
                 case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
+                case "accumulated rt range":
                 case "accumulated rt ragne": return Number(value, v => param.AccumulatedRtRange = (float)v);
                 case "accumulate ms2 spectra":
                     return TrueOrFalse(value, v => param.IsAccumulateMS2Spectra = v);
