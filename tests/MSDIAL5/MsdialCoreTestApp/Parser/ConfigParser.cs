@@ -1061,7 +1061,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        // DimsProcess reads the generated lipid keys itself; asked here only so the
+                        // key record says they took effect.
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => GeneratedLipidAnnotatorLine(method, value, new GeneratedLipidAnnotatorSetting())));
                     }
                 }
             }

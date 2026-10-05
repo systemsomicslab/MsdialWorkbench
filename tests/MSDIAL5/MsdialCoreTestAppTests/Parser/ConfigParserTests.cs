@@ -1210,6 +1210,32 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadForDimsParameter_ReadsTheGeneratedLipidKeysAndTheEadLbmCutoffs()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt",
+            "Target omics: Lipidomics\n" +
+            "Collision type: EAD\n" +
+            "Use generated lipid library: True\n" +
+            "MS2 tolerance for generated lipid annotation: 0.05\n");
+
+        var original = Console.Out;
+        var captured = new StringWriter();
+        CompMs.MsdialDimsCore.Parameter.MsdialDimsParameter parameter;
+        try {
+            Console.SetOut(captured);
+            parameter = ConfigParser.ReadForDimsParameter(method);
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        Assert.IsFalse(captured.ToString().Contains("NO EFFECT"), captured.ToString());
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, ConfigParser.ReadGeneratedLipidAnnotatorSetting(method).SearchParameter.Ms2Tolerance, 1e-6f);
+    }
+
+    [TestMethod]
     public void ReadForLcmsParameter_RecordsGeneratedLipidKeysAsApplied()
     {
         using var directory = new TemporaryDirectory();
