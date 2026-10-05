@@ -424,10 +424,11 @@ public static class MethodFileTemplate
         w.Value("Peak count filter", F(p.PeakCountFilter));
         w.Value("N percent detected in one group", F(p.NPercentDetectedInOneGroup));
         w.Value("Remove feature based on peak height fold-change", B(p.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange));
-        w.Choice("Blank filtering", p.BlankFiltering.ToString(), "SampleMaxOverBlankAve");
-        w.Value("Sample max / blank average", F(p.SampleMaxOverBlankAverage));
-        // As Target CE: read, not yet consulted by blank filtering (2026-09), kept for when it is.
-        w.Value("Sample average / blank average", F(p.SampleAverageOverBlankAverage));
+        // The two settings blank filtering reads. "Sample max / blank average" and "Sample average /
+        // blank average" are shorthand for both at once, and the reader refuses a file in which they
+        // disagree with these, so the template writes only these.
+        w.Choice("Blank filtering", p.BlankFiltering.ToString(), "SampleMaxOverBlankAve", "SampleAveOverBlankAve");
+        w.Value("Fold change for blank filtering", F(p.FoldChangeForBlankFiltering));
         w.Value("Keep reference matched metabolites", B(p.IsKeepRefMatchedMetaboliteFeatures));
         w.Value("Keep suggested metabolites", B(p.IsKeepSuggestedMetaboliteFeatures));
         w.Value("Keep removable features and assigned tag for checking", B(p.IsKeepRemovableFeaturesAndAssignedTagForChecking));

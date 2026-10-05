@@ -119,6 +119,32 @@ public sealed class MethodFileTemplateTests
         Assert.IsTrue(differences.Any(d => d.Contains("MinimumAmplitude") && d.Contains("500")), string.Join(Environment.NewLine, differences));
     }
 
+    /// <summary>
+    /// The blank filtering lines of a template can be edited to either comparison without the
+    /// reader refusing the file.
+    /// </summary>
+    /// <remarks>
+    /// The reader refuses a method file whose blank filtering lines disagree, so a template that
+    /// also carried a ratio shorthand would be refused the moment the analyst changed one line.
+    /// </remarks>
+    [TestMethod]
+    public void Template_BlankFilteringCanBeSwitchedToSampleAverage()
+    {
+        using var directory = new TemporaryDirectory();
+        var template = MethodFileTemplate.Create(MethodFileMode.Lcms);
+        StringAssert.Contains(template, "Blank filtering: SampleMaxOverBlankAve\n");
+        StringAssert.Contains(template, "Fold change for blank filtering: 5\n");
+        var method = directory.CreateFile("method.txt", template
+            .Replace("Blank filtering: SampleMaxOverBlankAve\n", "Blank filtering: SampleAveOverBlankAve\n")
+            .Replace("Fold change for blank filtering: 5\n", "Fold change for blank filtering: 3\n"));
+
+        var (parsed, report) = Read(MethodFileMode.Lcms, method);
+
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, parsed.BlankFiltering);
+        Assert.AreEqual(3f, parsed.FoldChangeForBlankFiltering);
+        Assert.IsFalse(report.Contains("NO EFFECT"), report);
+    }
+
     [TestMethod]
     public void LcmsTemplate_ReadsBackTheConsoleOptionsAsTheirDefaults()
     {
