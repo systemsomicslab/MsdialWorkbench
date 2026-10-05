@@ -90,6 +90,29 @@ public static class GeneratedLipidLibrary
         return db;
     }
 
+    /// <summary>
+    /// The annotation process for a run: the GUI's EAD lipidomics process when a generated lipid
+    /// library is loaded, and the standard process otherwise.
+    /// </summary>
+    /// <remarks>
+    /// The standard process searches the molecule libraries only, so a generated library added to
+    /// the storage would never be searched under it. The EAD process searches the molecule
+    /// libraries first and, for a peak one of them reference-matches, scores the generated lipids
+    /// derived from that match. The choice follows the storage rather than the collision type, so a
+    /// run whose generated library was switched off annotates exactly as it did before.
+    /// </remarks>
+    public static IAnnotationProcess CreateAnnotationProcess(
+        DataBaseStorage dataBases,
+        IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
+        IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+
+        var queryFactories = dataBases.CreateQueryFactories();
+        if (dataBases.EadLipidomicsDatabases.Count > 0) {
+            return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, refer, evaluator);
+        }
+        return new StandardAnnotationProcess(queryFactories.MoleculeQueryFactories, evaluator, refer);
+    }
+
     private static int HighestPriority(DataBaseStorage storage) {
         return storage.MetabolomicsDataBases
             .SelectMany(db => db.Pairs)

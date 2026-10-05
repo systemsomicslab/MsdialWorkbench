@@ -107,6 +107,48 @@ public sealed class GeneratedLipidLibraryTests
         Assert.AreEqual(0.05f, factory.PrepareParameter().Ms2Tolerance);
     }
 
+    [TestMethod]
+    public void TheGeneratedAnnotatorExpandsTheLipidTheLbmLibraryMatched()
+    {
+        var parameter = CreateParameter(TargetOmics.Lipidomics, CollisionType.EIEIO);
+        var storage = DataBaseStorage.CreateEmpty();
+        var mapper = new DataBaseMapper();
+        AddLbm(storage, parameter, priority: 1);
+        GeneratedLipidLibrary.AddTo(storage, parameter, new GeneratedLipidAnnotatorSetting(), mapper);
+        storage.SetDataBaseMapper(mapper);
+
+        // A peak the LBM library has reference-matched, as the molecule step of the EAD process leaves it.
+        var peak = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 760.585, ChromXsLeft = new ChromXs(5), ChromXsTop = new ChromXs(5), ChromXsRight = new ChromXs(5) });
+        peak.MatchResults.AddResult(new MsScanMatchResult {
+            Name = "PC 16:0_18:1", AnnotatorID = "LbmDB", LibraryID = 0, Source = SourceType.MspDB,
+            IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsReferenceMatched = true, Priority = 1,
+        });
+        var factory = GeneratedFactory(storage);
+        var query = factory.Create(peak, new CompMs.MsdialCore.MSDec.MSDecResult(), [], peak.PeakCharacter, factory.PrepareParameter());
+
+        var candidates = query.FindCandidates().ToList();
+
+        Assert.IsTrue(candidates.Count > 0, "the matched lipid was not expanded");
+        Assert.IsTrue(candidates.All(c => c.AnnotatorID == "EadLipidDB"));
+        Assert.IsTrue(candidates.All(c => (c.Source & SourceType.GeneratedLipid) == SourceType.GeneratedLipid));
+        Assert.IsNotNull(mapper.MoleculeMsRefer(candidates[0]), "a generated candidate must be resolvable through the run's mapper");
+    }
+
+    [TestMethod]
+    public void CreateAnnotationProcess_UsesTheEadProcessOnlyWhenAGeneratedLibraryIsLoaded()
+    {
+        var parameter = CreateParameter(TargetOmics.Lipidomics, CollisionType.EIEIO);
+        var mapper = new DataBaseMapper();
+        var withoutGenerated = DataBaseStorage.CreateEmpty();
+        AddLbm(withoutGenerated, parameter, priority: 1);
+        var withGenerated = DataBaseStorage.CreateEmpty();
+        AddLbm(withGenerated, parameter, priority: 1);
+        GeneratedLipidLibrary.AddTo(withGenerated, parameter, new GeneratedLipidAnnotatorSetting(), mapper);
+
+        Assert.IsInstanceOfType(GeneratedLipidLibrary.CreateAnnotationProcess(withoutGenerated, mapper, FacadeMatchResultEvaluator.FromDataBases(withoutGenerated)), typeof(StandardAnnotationProcess));
+        Assert.IsInstanceOfType(GeneratedLipidLibrary.CreateAnnotationProcess(withGenerated, mapper, FacadeMatchResultEvaluator.FromDataBases(withGenerated)), typeof(EadLipidomicsAnnotationProcess));
+    }
+
     private static MsdialLcmsParameter CreateParameter(TargetOmics targetOmics, CollisionType collisionType)
     {
         return new MsdialLcmsParameter {
@@ -117,7 +159,7 @@ public sealed class GeneratedLipidLibraryTests
 
     private static void AddLbm(DataBaseStorage storage, MsdialLcmsParameter parameter, int priority)
     {
-        var reference = new MoleculeMsReference { ScanID = 0, Name = "PC 34:1", PrecursorMz = 760.585 };
+        var reference = new MoleculeMsReference { ScanID = 0, Name = "PC 16:0_18:1", PrecursorMz = 760.585, AdductType = CompMs.Common.DataObj.Property.AdductIon.GetAdductIon("[M+H]+"), CompoundClass = "PC" };
         var lbmDB = new MoleculeDataBase(new[] { reference }, "LbmDB", DataBaseSource.Lbm, SourceType.MspDB, string.Empty);
         var annotator = new LcmsMspAnnotator(lbmDB, parameter.LbmSearchParam, TargetOmics.Lipidomics, "LbmDB", priority);
         storage.AddMoleculeDataBase(lbmDB, [
