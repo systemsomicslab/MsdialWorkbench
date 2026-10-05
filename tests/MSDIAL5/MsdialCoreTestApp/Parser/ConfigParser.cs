@@ -469,7 +469,7 @@ namespace CompMs.App.MsdialConsole.Parser
         /// Say what the settings LcmsProcess reads for itself would do with one line.
         /// </summary>
         /// <remarks>
-        /// LcmsProcess reads six settings with readers of their own, and calls them after
+        /// LcmsProcess reads several settings with readers of their own, and calls them after
         /// ReadForLcmsParameter has already written the key record. The record knew only
         /// ReadCommonParameter, so it listed those keys as unrecognised with NO EFFECT while they
         /// governed the run. A repository run's record put "MSP annotator settings file path",
@@ -503,6 +503,7 @@ namespace CompMs.App.MsdialConsole.Parser
             (method, value) => AlignmentLightModeLine(method, value, _ => { }),
             (method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
             (method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+            (method, value) => GeneratedLipidAnnotatorLine(method, value, new GeneratedLipidAnnotatorSetting()),
         };
 
         /// <summary>
@@ -576,6 +577,28 @@ namespace CompMs.App.MsdialConsole.Parser
             return ReadLast(filepath, false, AnnotationCandidateExportLine);
         }
 
+        /// <summary>
+        /// Read how the in silico lipid library for EAD, OAD and EID spectra is built and searched.
+        /// </summary>
+        /// <remarks>
+        /// Several keys share one setting object, so this cannot be ReadLast, but it keeps
+        /// ReadLast's rules: the last usable line of each key wins, and a blank or unusable line
+        /// leaves the earlier value in place.
+        /// </remarks>
+        public static GeneratedLipidAnnotatorSetting ReadGeneratedLipidAnnotatorSetting(string filepath) {
+            var setting = new GeneratedLipidAnnotatorSetting();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable || value.IsEmptyOrNull()) {
+                        continue;
+                    }
+                    GeneratedLipidAnnotatorLine(method, value, setting);
+                }
+            }
+            return setting;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             return ReadLast(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
@@ -622,6 +645,40 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "annotation candidates":
                 case "export annotation candidates":
                     return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome GeneratedLipidAnnotatorLine(string method, string value, GeneratedLipidAnnotatorSetting setting) {
+            var search = setting.SearchParameter;
+            switch (method.ToLowerInvariant()) {
+                case "use generated lipid library":
+                case "generated lipid annotation":
+                    return TrueOrFalse(value, v => setting.Enabled = v);
+                case "generated lipid annotator priority":
+                case "generated lipid annotation priority":
+                    return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var priority)
+                        ? Assign(priority, v => setting.Priority = v)
+                        : MethodKeyOutcome.UnusableValue;
+                case "ms1 tolerance for generated lipid annotation": return Number(value, v => search.Ms1Tolerance = (float)v);
+                case "ms2 tolerance for generated lipid annotation": return Number(value, v => search.Ms2Tolerance = (float)v);
+                case "mass range begin for generated lipid annotation": return Number(value, v => search.MassRangeBegin = (float)v);
+                case "mass range end for generated lipid annotation": return Number(value, v => search.MassRangeEnd = (float)v);
+                case "relative amplitude cutoff for generated lipid annotation": return Number(value, v => search.RelativeAmpCutoff = (float)v);
+                case "absolute amplitude cutoff for generated lipid annotation": return Number(value, v => search.AbsoluteAmpCutoff = (float)v);
+                case "square root of weighted dot product cutoff for generated lipid annotation": return Number(value, v => search.WeightedDotProductCutOff = (float)v);
+                case "square root of simple dot product cutoff for generated lipid annotation": return Number(value, v => search.SimpleDotProductCutOff = (float)v);
+                case "square root of reverse dot product cutoff for generated lipid annotation": return Number(value, v => search.ReverseDotProductCutOff = (float)v);
+                case "matched peaks percentage cutoff for generated lipid annotation": return Number(value, v => search.MatchedPeaksPercentageCutOff = (float)v);
+                case "minimum spectrum match for generated lipid annotation": return Number(value, v => search.MinimumSpectrumMatch = (float)v);
+                case "total score cutoff for generated lipid annotation": return Number(value, v => search.TotalScoreCutoff = (float)v);
+                case "rt tolerance for generated lipid annotation": return Number(value, v => search.RtTolerance = (float)v);
+                case "ccs tolerance for generated lipid annotation": return Number(value, v => search.CcsTolerance = (float)v);
+                case "use retention information for generated lipid annotation scoring": return TrueOrFalse(value, v => search.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for generated lipid annotation filtering": return TrueOrFalse(value, v => search.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for generated lipid annotation scoring": return TrueOrFalse(value, v => search.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for generated lipid annotation filtering": return TrueOrFalse(value, v => search.IsUseCcsForAnnotationFiltering = v);
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
