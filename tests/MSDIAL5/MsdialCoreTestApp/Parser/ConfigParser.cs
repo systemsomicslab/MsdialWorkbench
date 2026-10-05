@@ -1167,6 +1167,20 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.IonMode = (IonMode)Enum.Parse(typeof(IonMode), valueLower, true);
                     return true;
                 
+                case "collision type":
+                    // EAD is the instrument name for the EIEIO collision type in MS-DIAL.
+                    var collisionName = value.Trim();
+                    if (string.Equals(collisionName, "EAD", StringComparison.OrdinalIgnoreCase)) {
+                        collisionName = nameof(CollisionType.EIEIO);
+                    }
+                    if (!Enum.TryParse(collisionName, true, out CollisionType collisionType)
+                        || !Enum.IsDefined(typeof(CollisionType), collisionType)) {
+                        return MethodKeyOutcome.UnusableValue;
+                    }
+                    param.CollistionType = collisionType;
+                    param.LipidQueryContainer.CollisionType = collisionType;
+                    return MethodKeyOutcome.Applied;
+
                 case "target omics":
                     if (valueLower == "metabolomics" || valueLower == "lipidomics")
                         param.TargetOmics = (TargetOmics)Enum.Parse(typeof(TargetOmics), valueLower, true);

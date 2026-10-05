@@ -26,6 +26,33 @@ namespace MsdialCoreTestAppTests.Parser;
 [TestClass]
 public sealed class ConfigParserTests
 {
+    [DataTestMethod]
+    [DataRow("CID", CollisionType.CID)]
+    [DataRow("cid", CollisionType.CID)]
+    [DataRow("EAD", CollisionType.EIEIO)]
+    [DataRow(" ead ", CollisionType.EIEIO)]
+    [DataRow("EIEIO", CollisionType.EIEIO)]
+    public void ReadCommonParameter_CollisionTypeUpdatesProjectAndLipidSettings(string value, CollisionType expected)
+    {
+        var parameter = new MsdialLcmsParameter();
+        var outcome = ConfigParser.ReadCommonParameter(parameter, "Collision type", value);
+        Assert.IsTrue(outcome.IsApplied);
+        Assert.AreEqual(expected, parameter.CollistionType);
+        Assert.AreEqual(expected, parameter.LipidQueryContainer.CollisionType);
+    }
+
+    [DataTestMethod]
+    [DataRow("invalid")]
+    [DataRow("999")]
+    public void ReadCommonParameter_InvalidCollisionTypePreservesBothSettings(string value)
+    {
+        var parameter = new MsdialLcmsParameter();
+        ConfigParser.ReadCommonParameter(parameter, "Collision type", "CID");
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "Collision type", value).IsUnusableValue);
+        Assert.AreEqual(CollisionType.CID, parameter.CollistionType);
+        Assert.AreEqual(CollisionType.CID, parameter.LipidQueryContainer.CollisionType);
+    }
+
     [TestMethod]
     public void ReadCommonParameter_UpdatesActiveBlankFilteringFoldChange()
     {
