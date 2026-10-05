@@ -320,8 +320,10 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange; set => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = value; }
         [IgnoreMember]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average.")]
         public float SampleMaxOverBlankAverage { get => PostProcessBaseParam.SampleMaxOverBlankAverage; set => PostProcessBaseParam.SampleMaxOverBlankAverage = value; }
         [IgnoreMember]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average.")]
         public float SampleAverageOverBlankAverage { get => PostProcessBaseParam.SampleAverageOverBlankAverage; set => PostProcessBaseParam.SampleAverageOverBlankAverage = value; }
         [IgnoreMember]
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking; set => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking = value; }
@@ -696,8 +698,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "N percent detected in one group", NPercentDetectedInOneGroup.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Remove feature based on peak height fold-change", IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Blank filtering", BlankFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Sample max / blank average", SampleMaxOverBlankAverage.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Sample average / blank average", SampleAverageOverBlankAverage.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Fold change for blank filtering", FoldChangeForBlankFiltering.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Keep reference matched metabolites", IsKeepRefMatchedMetaboliteFeatures.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep suggested metabolites", IsKeepSuggestedMetaboliteFeatures.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep removable features and assigned tag for checking", IsKeepRemovableFeaturesAndAssignedTagForChecking.ToString() }));
@@ -1319,8 +1320,10 @@ namespace CompMs.MsdialCore.Parameter
         [Key(3)]
         public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get; set; } = false;
         [Key(4)]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average. Kept so that MessagePack key 4 stays reserved and existing projects still load.")]
         public float SampleMaxOverBlankAverage { get; set; } = 5;
         [Key(5)]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average. Kept so that MessagePack key 5 stays reserved and existing projects still load.")]
         public float SampleAverageOverBlankAverage { get; set; } = 5;
         [Key(6)]
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get; set; } = true;

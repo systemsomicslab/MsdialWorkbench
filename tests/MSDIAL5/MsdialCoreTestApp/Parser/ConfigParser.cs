@@ -428,6 +428,18 @@ namespace CompMs.App.MsdialConsole.Parser
                         : $"the last line applied was used: '{repeated.Used}'";
                     Console.WriteLine($"Method file '{name}': the parameter '{repeated.Key}' is written on {repeated.Count} lines; {used}.");
                 }
+                // Last, so the record and every other finding above are already out when this refuses the run.
+                var blankFilteringConflict = BlankFilteringConflict(Used);
+                if (blankFilteringConflict != null) {
+                    throw new FormatException($"Method file '{name}': {blankFilteringConflict}");
+                }
+            }
+
+            /// <summary>
+            /// The last value a reader accepted for this key, or null when no line of it was applied.
+            /// </summary>
+            private string? Used(string key) {
+                return _occurrences.TryGetValue(key, out var occurrences) ? occurrences.Used : null;
             }
         }
 
@@ -1258,6 +1270,48 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        /// <summary>
+        /// Why the blank filtering lines of a method file disagree, or null when they do not.
+        /// </summary>
+        /// <remarks>
+        /// "Sample max / blank average: X" means "Blank filtering: SampleMaxOverBlankAve" with
+        /// "Fold change for blank filtering: X", and "Sample average / blank average: X" the same for
+        /// SampleAveOverBlankAve. A file that also says something different through the other keys
+        /// names two comparisons or two fold changes, and whichever line came last would decide
+        /// silently. Earlier text exports wrote "Blank filtering" and both ratio keys, of which only
+        /// "Sample max / blank average" took effect, so such files are refused rather than reinterpreted.
+        /// </remarks>
+        private static string? BlankFilteringConflict(Func<string, string?> used) {
+            var mode = used(BlankFilteringKey);
+            var foldChange = used(FoldChangeForBlankFilteringKey);
+            var sampleMax = used(SampleMaxOverBlankAverageKey);
+            var sampleAverage = used(SampleAverageOverBlankAverageKey);
+            if (sampleMax != null && sampleAverage != null) {
+                return $"'{SampleMaxOverBlankAverageKey}: {sampleMax}' and '{SampleAverageOverBlankAverageKey}: {sampleAverage}' choose different blank filtering comparisons. Write only one of them.";
+            }
+            var (shorthandKey, shorthandValue, shorthandMode) = sampleMax != null
+                ? (SampleMaxOverBlankAverageKey, sampleMax, BlankFiltering.SampleMaxOverBlankAve)
+                : (SampleAverageOverBlankAverageKey, sampleAverage, BlankFiltering.SampleAveOverBlankAve);
+            if (shorthandValue is null) {
+                return null;
+            }
+            var meaning = $"'{shorthandKey}: {shorthandValue}' is shorthand for '{BlankFilteringKey}: {shorthandMode}' with '{FoldChangeForBlankFilteringKey}: {shorthandValue}'";
+            if (mode != null && (BlankFiltering)Enum.Parse(typeof(BlankFiltering), mode, true) != shorthandMode) {
+                return $"'{BlankFilteringKey}: {mode}' and '{shorthandKey}: {shorthandValue}' choose different blank filtering comparisons; {meaning}. Remove one of them.";
+            }
+            if (foldChange != null && ParseFloat(foldChange) != ParseFloat(shorthandValue)) {
+                return $"'{FoldChangeForBlankFilteringKey}: {foldChange}' and '{shorthandKey}: {shorthandValue}' set different fold changes; {meaning}. Remove one of them.";
+            }
+            return null;
+
+            static float ParseFloat(string text) => (float)double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture);
+        }
+
+        private const string BlankFilteringKey = "Blank filtering";
+        private const string FoldChangeForBlankFilteringKey = "Fold change for blank filtering";
+        private const string SampleMaxOverBlankAverageKey = "Sample max / blank average";
+        private const string SampleAverageOverBlankAverageKey = "Sample average / blank average";
+
         public static MethodKeyOutcome ReadCommonParameter(ParameterBase param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
@@ -1516,16 +1570,23 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);
                 case "n percent detected in one group": return Number(valueLower, v => param.NPercentDetectedInOneGroup = (float)v);
                 case "remove feature based on peak height fold-change": return TrueOrFalse(valueLower, v => param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = v);
+                // "Blank filtering" and "Fold change for blank filtering" are the settings. The two ratio keys are
+                // shorthand for both at once; BlankFilteringConflict refuses a file whose lines disagree.
                 case "blank filtering":
-                    if (valueLower.ToLower() == "samplemaxoverblankave")
-                        param.BlankFiltering = (BlankFiltering)Enum.Parse(typeof(BlankFiltering), valueLower, true);
-                    return true;
+                    return Enum.TryParse(value, true, out BlankFiltering blankFiltering) && Enum.IsDefined(typeof(BlankFiltering), blankFiltering)
+                        ? Assign(blankFiltering, v => param.BlankFiltering = v)
+                        : MethodKeyOutcome.UnusableValue;
+                case "fold change for blank filtering": return Number(valueLower, v => param.FoldChangeForBlankFiltering = (float)v);
                 case "sample max / blank average":
                     return Number(valueLower, v => {
-                        param.SampleMaxOverBlankAverage = (float)v;
+                        param.BlankFiltering = BlankFiltering.SampleMaxOverBlankAve;
                         param.FoldChangeForBlankFiltering = (float)v;
                     });
-                case "sample average / blank average": return Number(valueLower, v => param.SampleAverageOverBlankAverage = (float)v);
+                case "sample average / blank average":
+                    return Number(valueLower, v => {
+                        param.BlankFiltering = BlankFiltering.SampleAveOverBlankAve;
+                        param.FoldChangeForBlankFiltering = (float)v;
+                    });
                 case "keep reference matched metabolites": return TrueOrFalse(valueLower, v => param.IsKeepRefMatchedMetaboliteFeatures = v);
                 case "keep suggested metabolites": return TrueOrFalse(valueLower, v => param.IsKeepSuggestedMetaboliteFeatures = v);
                 case "keep removable features and assigned tag for checking": return TrueOrFalse(valueLower, v => param.IsKeepRemovableFeaturesAndAssignedTagForChecking = v);

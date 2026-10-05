@@ -54,17 +54,146 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
-    public void ReadCommonParameter_UpdatesActiveBlankFilteringFoldChange()
+    public void ReadCommonParameter_SampleMaxKeyComparesTheSampleMaxAtItsFoldChange()
     {
-        var parameter = new MsdialLcmsParameter();
+        var parameter = new MsdialLcmsParameter { BlankFiltering = BlankFiltering.SampleAveOverBlankAve };
 
         var result = ConfigParser.ReadCommonParameter(parameter, "sample max / blank average", "7");
 
         Assert.IsTrue(result.IsApplied);
-        Assert.AreEqual(7f, parameter.SampleMaxOverBlankAverage);
+        Assert.AreEqual(BlankFiltering.SampleMaxOverBlankAve, parameter.BlankFiltering);
         Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
     }
- 
+
+    [TestMethod]
+    public void ReadCommonParameter_SampleAverageKeyComparesTheSampleAverageAtItsFoldChange()
+    {
+        // This key used to set a property blank filtering never reads, so it had no effect at all.
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "sample average / blank average", "7");
+
+        Assert.IsTrue(result.IsApplied);
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, parameter.BlankFiltering);
+        Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_BlankFilteringAndItsFoldChangeAreSetByTheirOwnKeys()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Blank filtering: SampleAveOverBlankAve
+            Fold change for blank filtering: 3
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, parameter.BlankFiltering);
+        Assert.AreEqual(3f, parameter.FoldChangeForBlankFiltering);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_BlankFilteringAloneKeepsTheDefaultFoldChange()
+    {
+        // The old reader accepted only SampleMaxOverBlankAve, so a sample-average mode was dropped.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", "Blank filtering: sampleaveoverblankave");
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, parameter.BlankFiltering);
+        Assert.AreEqual(new MsdialLcmsParameter().FoldChangeForBlankFiltering, parameter.FoldChangeForBlankFiltering);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_BlankFilteringReportsAnUnknownModeAsUnusable()
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        var result = ConfigParser.ReadCommonParameter(parameter, "blank filtering", "SampleMedianOverBlankAve");
+
+        Assert.IsTrue(result.IsUnusableValue);
+        Assert.AreEqual(BlankFiltering.SampleMaxOverBlankAve, parameter.BlankFiltering);
+    }
+
+    [TestMethod]
+    [DataRow("Sample max / blank average: 5\nSample average / blank average: 5", "choose different blank filtering comparisons", DisplayName = "both shorthands (earlier text exports)")]
+    [DataRow("Blank filtering: SampleAveOverBlankAve\nSample max / blank average: 7", "choose different blank filtering comparisons", DisplayName = "average mode and sample max shorthand")]
+    [DataRow("Sample average / blank average: 7\nBlank filtering: SampleMaxOverBlankAve", "choose different blank filtering comparisons", DisplayName = "sample average shorthand and max mode")]
+    [DataRow("Fold change for blank filtering: 3\nSample max / blank average: 7", "set different fold changes", DisplayName = "fold change and shorthand value")]
+    public void ReadForLcms_RefusesBlankFilteringLinesThatDisagree(string lines, string reason)
+    {
+        // Whichever line came last would otherwise decide, and the file would say two things.
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", lines);
+
+        var error = Assert.ThrowsException<FormatException>(() => ConfigParser.ReadForLcmsParameter(methodFile));
+
+        StringAssert.Contains(error.Message, "method.txt");
+        StringAssert.Contains(error.Message, reason);
+        Assert.IsTrue(File.Exists(Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json")),
+            "the key record is still written, so every other finding is visible too");
+    }
+
+    [TestMethod]
+    public void ReadForLcms_AcceptsAShorthandThatAgreesWithTheOtherKeys()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Blank filtering: SampleMaxOverBlankAve
+            Fold change for blank filtering: 7.0
+            Sample max / blank average: 7
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(BlankFiltering.SampleMaxOverBlankAve, parameter.BlankFiltering);
+        Assert.AreEqual(7f, parameter.FoldChangeForBlankFiltering);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_OneBlankFilteringKeyWrittenTwiceIsNotAConflict()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Sample average / blank average: 5
+            Sample average / blank average: 3
+            Sample max / blank average:
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, parameter.BlankFiltering);
+        Assert.AreEqual(3f, parameter.FoldChangeForBlankFiltering);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_RunsWithTheBlankFilteringThatParametersAsTextWrote()
+    {
+        // The whole export is read back, so no other line it writes can contradict these two.
+        var written = new MsdialLcmsParameter {
+            BlankFiltering = BlankFiltering.SampleAveOverBlankAve,
+            FoldChangeForBlankFiltering = 3.5f,
+        };
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", string.Join(Environment.NewLine, written.ParametersAsText()));
+
+        var read = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        CollectionAssert.IsSubsetOf(
+            new[] { "Blank filtering: SampleAveOverBlankAve", "Fold change for blank filtering: 3.5" },
+            written.ParametersAsText());
+        Assert.AreEqual(BlankFiltering.SampleAveOverBlankAve, read.BlankFiltering);
+        Assert.AreEqual(3.5f, read.FoldChangeForBlankFiltering);
+    }
+
     [TestMethod]
     public void ReadCommonParameter_AcceptsAMinimumPeakHeightWrittenAsARealNumber()
     {
