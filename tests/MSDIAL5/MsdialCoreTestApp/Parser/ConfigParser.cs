@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -315,6 +316,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     });
 
             /// <summary>
+            /// True when a reader accepted at least one line written with any of these keys.
+            /// </summary>
+            public bool WasApplied(params string[] keys) {
+                return _applied.Any(applied => keys.Contains(applied.Trim(), StringComparer.OrdinalIgnoreCase));
+            }
+
+            /// <summary>
             /// True when the method file contained a key no reader claimed.
             /// </summary>
             public bool HasUnrecognised => _unrecognised.Count > 0;
@@ -461,8 +469,52 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
+            ApplyGeneratedLipidLbmDefaults(param, keys);
             keys.Report(filepath);
             return param;
+        }
+
+        /// <summary>
+        /// Give the LBM annotator the GUI's spectrum cut-offs for EAD, OAD and EID where the method
+        /// file does not set them.
+        /// </summary>
+        /// <remarks>
+        /// In these modes the LBM match is the gate to the generated lipid library: only a peak the
+        /// LBM library reference-matches is expanded into chain and double-bond positions. The GUI
+        /// therefore gives the LBM annotator much lower spectrum cut-offs for these collision types
+        /// (LcmsMspAnnotatorSettingModel) than the built-in search parameter has, which was written
+        /// for a CID spectrum against an acquired library. Without this the Console would pass far
+        /// fewer peaks to the generated library than the GUI does from the same data.
+        ///
+        /// Only the keys the method file leaves unset change, and it is decided after the whole
+        /// file is read, so the order of "Collision type", "Target omics" and the cut-off lines
+        /// does not matter. What changed is said on the console.
+        /// </remarks>
+        private static void ApplyGeneratedLipidLbmDefaults(ParameterBase param, MethodFileKeys keys) {
+            if (GeneratedLipidLibrary.SourceFor(param) is null) {
+                return;
+            }
+            var lbm = param.LbmSearchParam;
+            var changed = new List<string>();
+            void Default(string name, Action apply, params string[] methodKeys) {
+                if (!keys.WasApplied(methodKeys)) {
+                    apply();
+                    changed.Add(name);
+                }
+            }
+            Default("weighted dot product cutoff 0.05", () => lbm.WeightedDotProductCutOff = 0.05F,
+                "weighted dot product cutoff for lbm-based annotation", "square root of weighted dot product cutoff for lbm-based annotation");
+            Default("simple dot product cutoff 0.05", () => lbm.SimpleDotProductCutOff = 0.05F,
+                "simple dot product cutoff for lbm-based annotation", "square root of simple dot product cutoff for lbm-based annotation");
+            Default("reverse dot product cutoff 0.05", () => lbm.ReverseDotProductCutOff = 0.05F,
+                "reverse dot product cutoff for lbm-based annotation", "square root of reverse dot product cutoff for lbm-based annotation");
+            Default("matched peaks percentage cutoff 0", () => lbm.MatchedPeaksPercentageCutOff = 0F,
+                "matched peaks percentage cutoff for lbm-based annotation");
+            Default("minimum spectrum match 1", () => lbm.MinimumSpectrumMatch = 1F,
+                "minimum spectrum match for lbm-based annotation");
+            if (changed.Count > 0) {
+                Console.WriteLine($"LBM-based annotation for collision type {param.CollistionType}: using the GUI defaults for the keys the method file does not set ({string.Join(", ", changed)}).");
+            }
         }
 
         /// <summary>
@@ -1013,6 +1065,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
+            ApplyGeneratedLipidLbmDefaults(param, keys);
             keys.Report(filepath);
             return param;
         }

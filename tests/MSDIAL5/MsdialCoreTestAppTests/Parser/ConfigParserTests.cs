@@ -1175,6 +1175,41 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadForLcmsParameter_EadLipidomicsUsesTheGuiLbmCutoffsForUnsetKeys()
+    {
+        using var directory = new TemporaryDirectory();
+        // The cut-off comes before the lines that decide the mode: the order must not matter.
+        var method = directory.CreateFile("method.txt",
+            "Minimum spectrum match for LBM-based annotation: 2\n" +
+            "Target omics: Lipidomics\n" +
+            "Collision type: EAD\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.SimpleDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.ReverseDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0f, parameter.LbmSearchParam.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(2f, parameter.LbmSearchParam.MinimumSpectrumMatch, "a key the method file sets is kept");
+        StringAssert.Contains(report, "LBM-based annotation for collision type EIEIO");
+    }
+
+    [DataTestMethod]
+    [DataRow("Target omics: Lipidomics\nCollision type: CID\n")]
+    [DataRow("Target omics: Metabolomics\nCollision type: EAD\n")]
+    public void ReadForLcmsParameter_OtherModesKeepTheBuiltInLbmCutoffs(string content)
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt", content);
+
+        var (parameter, _) = ReadLcmsWithReport(method);
+
+        var builtIn = new CompMs.Common.Parameter.MsRefSearchParameterBase();
+        Assert.AreEqual(builtIn.WeightedDotProductCutOff, parameter.LbmSearchParam.WeightedDotProductCutOff);
+        Assert.AreEqual(builtIn.MinimumSpectrumMatch, parameter.LbmSearchParam.MinimumSpectrumMatch);
+    }
+
+    [TestMethod]
     public void ReadForLcmsParameter_RecordsGeneratedLipidKeysAsApplied()
     {
         using var directory = new TemporaryDirectory();
