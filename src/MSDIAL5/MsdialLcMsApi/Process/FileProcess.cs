@@ -87,7 +87,7 @@ public sealed class FileProcess : IFileProcessor {
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 
-    private static async Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+    internal static async Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
         Task t1, t2;
 
         t1 = chromPeakFeatures.SerializeAsync(file);
