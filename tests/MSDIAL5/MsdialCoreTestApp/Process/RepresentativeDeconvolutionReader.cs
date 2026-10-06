@@ -16,9 +16,13 @@ namespace CompMs.App.MsdialConsole.Process;
 /// <remarks>
 /// A file deconvoluted once has its results in DeconvolutionFilePath. An AIF file with several
 /// collision energies has none there: FileProcess writes one "&lt;name&gt;_&lt;CE x 100&gt;.dcl" per
-/// energy and lists them in DeconvolutionFilePathList. The spectrum is taken from the energy the
-/// representative annotation was made at, and otherwise from the first file: the unsuffixed one,
-/// then the energies in ascending order.
+/// energy and lists them in DeconvolutionFilePathList, in ascending energy. The spectrum is taken
+/// from the energy the representative annotation was made at, and otherwise from the first file
+/// of that list.
+/// When the list is not empty, an unsuffixed file beside it is not read: a multi-energy run never
+/// writes one, so it is left over from an earlier run on the same raw folder (the Console's
+/// timestamp has minute resolution and no zero padding, so names can repeat), and its seek
+/// pointers do not belong to this run's peaks.
 /// </remarks>
 internal sealed class RepresentativeDeconvolutionReader : IDisposable
 {
@@ -38,11 +42,13 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
             foreach (var file in files) {
                 var sources = new List<Source>();
                 _sources[file.AnalysisFileId] = sources;
-                if (File.Exists(file.DeconvolutionFilePath)) {
-                    sources.Add(Open(file.DeconvolutionFilePath, -1d));
+                if (file.DeconvolutionFilePathList is { Count: > 0 } collisionEnergyFiles) {
+                    foreach (var path in collisionEnergyFiles) {
+                        sources.Add(Open(path, CollisionEnergyOf(path)));
+                    }
                 }
-                foreach (var path in file.DeconvolutionFilePathList) {
-                    sources.Add(Open(path, CollisionEnergyOf(path)));
+                else if (File.Exists(file.DeconvolutionFilePath)) {
+                    sources.Add(Open(file.DeconvolutionFilePath, -1d));
                 }
                 if (sources.Count == 0) {
                     throw new FileNotFoundException(
