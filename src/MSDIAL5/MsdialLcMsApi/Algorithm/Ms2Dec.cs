@@ -72,7 +72,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             // check target CE ID
-            var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
+            var targetSpecID = DataAccess.GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE);
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
