@@ -1,6 +1,7 @@
 ﻿using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,18 @@ public sealed class AnalysisCSVExporterFactory {
         };
     }
 
+    /// <param name="loaderFactory">
+    /// Opens the deconvolution results to export for a file. The exporter disposes the loader.
+    /// The other overload opens <see cref="AnalysisFileBean.DeconvolutionFilePath"/> when it exists,
+    /// and otherwise the first existing file of <see cref="AnalysisFileBean.DeconvolutionFilePathList"/>.
+    /// </param>
+    public IAnalysisExporter<ChromatogramPeakFeatureCollection> CreateExporter(IDataProviderFactory<AnalysisFileBean> providerFactory, IAnalysisMetadataAccessor metaAccessor, Func<AnalysisFileBean, MSDecLoader> loaderFactory) {
+        return new InternalAnalysisCSVExporter(providerFactory, metaAccessor, loaderFactory ?? throw new ArgumentNullException(nameof(loaderFactory)))
+        {
+            Separator = _separator
+        };
+    }
+
     public IAnalysisExporter<IReadOnlyList<T>> CreateExporter<T>(IAnalysisMetadataAccessor<T> metaAccessor) {
         return new InternalAnalysisCSVExporter<T>(metaAccessor)
         {
@@ -34,16 +47,22 @@ internal sealed class InternalAnalysisCSVExporter : IAnalysisExporter<Chromatogr
 {
     private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
     private readonly IAnalysisMetadataAccessor _metaAccessor;
+    private readonly Func<AnalysisFileBean, MSDecLoader> _loaderFactory;
 
-    public InternalAnalysisCSVExporter(IDataProviderFactory<AnalysisFileBean> providerFactory, IAnalysisMetadataAccessor metaAccessor) {
+    public InternalAnalysisCSVExporter(IDataProviderFactory<AnalysisFileBean> providerFactory, IAnalysisMetadataAccessor metaAccessor)
+        : this(providerFactory, metaAccessor, file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)) {
+    }
+
+    public InternalAnalysisCSVExporter(IDataProviderFactory<AnalysisFileBean> providerFactory, IAnalysisMetadataAccessor metaAccessor, Func<AnalysisFileBean, MSDecLoader> loaderFactory) {
         _providerFactory = providerFactory;
         _metaAccessor = metaAccessor;
+        _loaderFactory = loaderFactory;
     }
 
     public string Separator { get; set; }
 
     public void Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection data, ExportStyle exportStyle) {
-        using var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath, analysisFile.DeconvolutionFilePathList);
+        using var loader = _loaderFactory(analysisFile);
         var msdecResults = loader.LoadMSDecResults();
         var provider = _providerFactory.Create(analysisFile);
 

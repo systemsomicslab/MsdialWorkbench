@@ -31,6 +31,33 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public sealed class LcmsProcess
 {
+    /// <summary>
+    /// Writes one file's .mdpeak and .mdmsp. Both read the deconvolution results through
+    /// <see cref="RepresentativeDeconvolutionReader.OpenPerFileLoader"/>, so a multi-energy AIF file is
+    /// exported from its lowest-energy file and never from an unsuffixed .dcl an earlier run left
+    /// under the same name.
+    /// </summary>
+    internal static void ExportPeakFile(
+        AnalysisFileBean file,
+        ChromatogramPeakFeatureCollection peaks,
+        string outputFolder,
+        AnalysisCSVExporterFactory peakExporterFactory,
+        IDataProviderFactory<AnalysisFileBean> providerFactory,
+        IAnalysisMetadataAccessor peakAccessor,
+        IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
+        ParameterBase parameter) {
+        var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+        using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write)) {
+            peakExporterFactory.CreateExporter(providerFactory, peakAccessor, RepresentativeDeconvolutionReader.OpenPerFileLoader).Export(stream, file, peaks, new ExportStyle());
+        }
+
+        var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
+        using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
+        using var mspLoader = RepresentativeDeconvolutionReader.OpenPerFileLoader(file);
+        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(refer, parameter, _ => mspLoader);
+        peak_MspExporter.Export(mspstream, file, peaks, new ExportStyle());
+    }
+
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
@@ -156,7 +183,6 @@ public sealed class LcmsProcess
         var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
-        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
@@ -167,14 +193,7 @@ public sealed class LcmsProcess
                 await sem.WaitAsync();
                 try {
                     var peak_container = await file.LoadChromatogramPeakFeatureCollectionAsync().ConfigureAwait(false);
-
-                    var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
-                    using var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write);
-                    peakExporterFactory.CreateExporter(providerFactory, peak_accessor).Export(stream, file, peak_container, new ExportStyle());
-
-                    var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
-                    using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
-                    peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
+                    ExportPeakFile(file, peak_container, outputFolder, peakExporterFactory, providerFactory, peak_accessor, storage.DataBaseMapper, storage.Parameter);
                 }
                 finally {
                     sem.Release();
