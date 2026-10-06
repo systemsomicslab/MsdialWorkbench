@@ -1573,8 +1573,33 @@ namespace CompMs.MsdialCore.Export
                         msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
                         break;
                     case (".D"):
-                        msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
-                        msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
+                        // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
+                        // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
+                        if (File.Exists(Path.Combine(analysisFilePath, "analysis.tdf")))
+                        {
+                            msRunFormat = "[MS, MS:1002817, Bruker TDF format, ]";
+                            msRunIDFormat = "[MS, MS:1002818, Bruker TDF nativeID format, ]";
+                        }
+                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.tsf")))
+                        {
+                            msRunFormat = "[MS, MS:1003282, Bruker TSF format, ]";
+                            msRunIDFormat = "[MS, MS:1003283, Bruker TSF nativeID format, ]";
+                        }
+                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.baf")))
+                        {
+                            msRunFormat = "[MS, MS:1000815, Bruker BAF format, ]";
+                            msRunIDFormat = "[MS, MS:1000772, Bruker BAF nativeID format, ]";
+                        }
+                        else if (Directory.Exists(Path.Combine(analysisFilePath, "AcqData")))
+                        {
+                            msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
+                            msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
+                        }
+                        else
+                        {
+                            msRunFormat = "[,, Unknown .d folder format, ]";
+                            msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
+                        }
                         break;
                     case (".CDF"):
                         msRunFormat = "[EDAM, format:3650, netCDF, ]";

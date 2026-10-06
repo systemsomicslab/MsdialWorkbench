@@ -87,7 +87,7 @@ public sealed class FileProcess : IFileProcessor {
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 
-    private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+    private static async Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
         Task t1, t2;
 
         t1 = chromPeakFeatures.SerializeAsync(file);
@@ -100,6 +100,14 @@ public sealed class FileProcess : IFileProcessor {
             t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
         }
 
-        return Task.WhenAll(t1, t2);
+        await Task.WhenAll(t1, t2).ConfigureAwait(false);
+        if (mSDecResultCollections.Count > 1) {
+            // Written in completion order; readers that fall back to "the first" CE file
+            // (MSDecLoader, the alignment's representative spectra) need one fixed order.
+            file.DeconvolutionFilePathList = mSDecResultCollections
+                .OrderBy(collection => collection.CollisionEnergy)
+                .Select(collection => collection.GetDeconvolutionFilePathWithCE(file))
+                .ToList();
+        }
     }
 }

@@ -448,28 +448,9 @@ public sealed class LcmsProcess
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
-        var files = storage.AnalysisFiles;
-
-        var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            pointerss.Add((version, pointers, isAnnotationInfo));
-        }
-
-        var streams = new List<FileStream>();
-        try {
-            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
-            foreach (var spot in spots.OrEmptyIfNull()) {
-                var repID = spot.RepresentativeFileID;
-                var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
-                var decResult = MsdecResultsReader.ReadMSDecResult(
-                    streams[repID], pointerss[repID].pointers[peakID],
-                    pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                yield return decResult;
-            }
-        }
-        finally {
-            streams.ForEach(stream => stream.Close());
+        using var reader = new RepresentativeDeconvolutionReader(storage.AnalysisFiles);
+        foreach (var spot in spots.OrEmptyIfNull()) {
+            yield return reader.Read(spot.AlignedPeakProperties[spot.RepresentativeFileID]);
         }
     }
 }
