@@ -35,8 +35,10 @@ public sealed class AutomaticRtCorrectionFileAudit {
     public double MaximumAbsoluteOffset { get; internal set; }
     public string Note { get; internal set; } = string.Empty;
     /// <summary>
-    /// The file's MS1 cycle time (min): the median spacing of consecutive MS1 scans of the analysed
-    /// polarity, MS2 scans excluded. 0 when unknown.
+    /// The file's MS1 cycle time (min) over the whole run, for information: the time-weighted median
+    /// spacing of consecutive MS1 scans of the analysed polarity, MS2 scans excluded (see
+    /// <see cref="Ms1CycleProfile.CycleTime"/>). 0 when unknown. The outlier test does not use it;
+    /// each anchor is floored at the cycle around it, <see cref="AutomaticRtCorrectionAnchorAudit.Ms1CycleTime"/>.
     /// </summary>
     public double EstimatedScanInterval { get; internal set; }
     public double? FirstAnchorRt { get; internal set; }
@@ -63,8 +65,118 @@ public sealed class AutomaticRtCorrectionAnchorAudit {
     public int LocalSupportCount { get; internal set; }
     /// <summary>Offset the anchor was judged against: the local support median, or the file's anchor median.</summary>
     public double? ExpectedOffset { get; internal set; }
-    /// <summary>Robust scale of the test, max(1.4826 MAD, scan-interval floor), in minutes.</summary>
+    /// <summary>Robust scale of the test, max(1.4826 MAD, <see cref="Ms1CycleTime"/>), in minutes.</summary>
     public double? OutlierScale { get; internal set; }
+    /// <summary>
+    /// The file's MS1 cycle time (min) around the anchor's original RT, the floor of the outlier
+    /// scale (see <see cref="Ms1CycleProfile.CycleTimeAt(double)"/>); 0 when unknown, null when the
+    /// anchor was not matched in the file.
+    /// </summary>
+    public double? Ms1CycleTime { get; internal set; }
+}
+
+/// <summary>
+/// The retention times of a file's MS1 scans of one polarity, the scans the MS1 chromatogram and
+/// so the peak-top RTs come from. A peak-top RT moves in steps of the MS1 cycle at that RT, which
+/// in data-dependent acquisition changes along the run: MS1 scans follow each other closely where
+/// no precursor triggers MS2 (void, wash, re-equilibration) and are spread out where many do.
+/// </summary>
+public sealed class Ms1CycleProfile {
+    /// <summary>Half width (min) of the RT window <see cref="CycleTimeAt(double)"/> reads.</summary>
+    public const double LocalHalfWindow = 0.5d;
+
+    private readonly double[] _times;
+
+    public Ms1CycleProfile(IEnumerable<double> ms1ScanTimes) {
+        if (ms1ScanTimes is null) throw new ArgumentNullException(nameof(ms1ScanTimes));
+        _times = ms1ScanTimes.Where(time => !double.IsNaN(time) && !double.IsInfinity(time)).ToArray();
+        Array.Sort(_times);
+        CycleTime = TimeWeightedMedianSpacing(0, _times.Length - 1);
+    }
+
+    /// <summary>No MS1 scans: every cycle time is 0, unknown.</summary>
+    public static Ms1CycleProfile Empty { get; } = new Ms1CycleProfile(Array.Empty<double>());
+
+    /// <summary>
+    /// The MS1 scans (MsLevel 1) of <paramref name="ionMode"/>'s polarity, as
+    /// RetentionTimeTypedSpectra selects them for the MS1 chromatogram. MS2 scans between them are
+    /// ignored, so DDA and DIA/SWATH files give their MS1 cycle, not the spacing of the raw
+    /// spectrum list.
+    /// </summary>
+    /// <remarks>
+    /// The peaks' ChromScanId values cannot give this: peak spotting sets them to the raw spectrum
+    /// index (ValuePeak.Id), which counts every spectrum, MS2 included.
+    /// </remarks>
+    public static Ms1CycleProfile FromSpectra(IEnumerable<RawSpectrum> spectra, IonMode ionMode) {
+        if (spectra is null) throw new ArgumentNullException(nameof(spectra));
+        var polarity = ionMode == IonMode.Negative ? ScanPolarity.Negative : ScanPolarity.Positive;
+        return new Ms1CycleProfile(spectra
+            .Where(spectrum => spectrum.MsLevel == 1 && spectrum.ScanPolarity == polarity)
+            .Select(spectrum => spectrum.ScanStartTime));
+    }
+
+    public int ScanCount => _times.Length;
+
+    /// <summary>The time-weighted median MS1 spacing (min) over the whole file; 0 with fewer than two scans.</summary>
+    public double CycleTime { get; }
+
+    /// <summary>
+    /// The MS1 cycle time (min) around <paramref name="rt"/>: the time-weighted median spacing of
+    /// the consecutive MS1 scans within <see cref="LocalHalfWindow"/> of it, together with the
+    /// nearest scan outside each side of that window. 0 with fewer than two scans in the file.
+    /// </summary>
+    /// <remarks>
+    /// The median is weighted by duration because a median over scans counts a dense region more
+    /// times than a sparse one of the same length: 0.2 min of 0.0047-min idle scans inside the
+    /// window outnumber 0.8 min of 0.021-min scans, and the plain median would floor an anchor
+    /// that sits in the 0.021-min region at the idle cycle. Weighted by duration, the result is
+    /// the spacing in effect over most of the window. Adding the two scans outside the window
+    /// gives a cycle even where the window holds fewer than two scans.
+    /// </remarks>
+    public double CycleTimeAt(double rt) {
+        if (_times.Length < 2 || double.IsNaN(rt) || double.IsInfinity(rt)) return 0d;
+        // The last scan before the window, and the first scan after it.
+        var first = Math.Max(0, FirstIndexWhere(time => time >= rt - LocalHalfWindow) - 1);
+        var last = Math.Min(_times.Length - 1, FirstIndexWhere(time => time > rt + LocalHalfWindow));
+        if (last <= first) {
+            // The window lies wholly before or after the scans: use the two scans at that end.
+            last = Math.Min(_times.Length - 1, first + 1);
+            first = last - 1;
+        }
+        return TimeWeightedMedianSpacing(first, last);
+    }
+
+    // Binary search over the sorted times for the first index whose time satisfies a monotone
+    // predicate; _times.Length when none does.
+    private int FirstIndexWhere(Func<double, bool> predicate) {
+        int low = 0, high = _times.Length;
+        while (low < high) {
+            var middle = low + (high - low) / 2;
+            if (predicate(_times[middle])) high = middle;
+            else low = middle + 1;
+        }
+        return low;
+    }
+
+    // Over the scans first..last (inclusive): the smallest positive spacing d such that the
+    // spacings of at most d cover at least half the time between consecutive scans.
+    private double TimeWeightedMedianSpacing(int first, int last) {
+        if (last - first < 1) return 0d;
+        var spacings = new List<double>(last - first);
+        for (var index = first + 1; index <= last; index++) {
+            var spacing = _times[index] - _times[index - 1];
+            if (spacing > 0d) spacings.Add(spacing);
+        }
+        if (spacings.Count == 0) return 0d;
+        spacings.Sort();
+        var half = spacings.Sum() / 2d;
+        var covered = 0d;
+        foreach (var spacing in spacings) {
+            covered += spacing;
+            if (covered >= half) return spacing;
+        }
+        return spacings[spacings.Count - 1];
+    }
 }
 
 public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
@@ -113,7 +225,7 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
         var anchorPath = Path.Combine(outputFolder, "automatic_alignment_rt_correction_anchors.tsv");
         using (var writer = new StreamWriter(anchorPath, false, new UTF8Encoding(false))) {
             writer.WriteLine("File ID\tFile name\tAnchor ID\tm/z\tReference RT (min)\tOriginal RT (min)\tOffset (min)\tQuality score\tNon-Blank sample coverage\tUsed\tStatus"
-                + "\tOutlier test\tLocal support count\tExpected offset (min)\tOutlier scale (min)");
+                + "\tOutlier test\tLocal support count\tExpected offset (min)\tOutlier scale (min)\tMS1 cycle at anchor (min)");
             foreach (var anchor in Anchors.OrderBy(anchor => anchor.FileId).ThenBy(anchor => anchor.AnchorId)) {
                 var offset = anchor.OriginalRt.HasValue ? anchor.ReferenceRt - anchor.OriginalRt.Value : (double?)null;
                 writer.WriteLine(string.Join("\t",
@@ -131,7 +243,8 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     anchor.OutlierTest,
                     string.IsNullOrEmpty(anchor.OutlierTest) ? string.Empty : anchor.LocalSupportCount.ToString(CultureInfo.InvariantCulture),
                     anchor.ExpectedOffset?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
-                    anchor.OutlierScale?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty));
+                    anchor.OutlierScale?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    anchor.Ms1CycleTime?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty));
             }
         }
     }
@@ -148,17 +261,18 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     // reference candidates were matched in the same file within the local support window.
     private const int MinimumLocalSupportCount = 3;
 
-    /// <param name="ms1CycleTimeLoader">
-    /// The MS1 cycle time (min) of a file, the floor of the outlier scale; see
-    /// <see cref="EstimateMs1CycleTime(IEnumerable{RawSpectrum}, IonMode)"/>. Return 0 when it is
-    /// unknown: the scale is then the MAD alone, and a MAD of 0 judges nothing.
+    /// <param name="ms1CycleProfileLoader">
+    /// A file's MS1 scan times (<see cref="Ms1CycleProfile.FromSpectra(IEnumerable{RawSpectrum}, IonMode)"/>).
+    /// Each anchor's outlier scale is floored at the MS1 cycle around the anchor's RT in that file.
+    /// Return <see cref="Ms1CycleProfile.Empty"/> when the scans are unknown: the scale is then the
+    /// MAD alone, and a MAD of 0 judges nothing.
     /// </param>
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
         double mzTolerance,
-        Func<AnalysisFileBean, double> ms1CycleTimeLoader) {
-        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath), ms1CycleTimeLoader);
+        Func<AnalysisFileBean, Ms1CycleProfile> ms1CycleProfileLoader) {
+        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath), ms1CycleProfileLoader);
     }
 
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
@@ -166,9 +280,9 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
         double mzTolerance,
         Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader,
-        Func<AnalysisFileBean, double> ms1CycleTimeLoader) {
+        Func<AnalysisFileBean, Ms1CycleProfile> ms1CycleProfileLoader) {
         Validate(files, parameter, mzTolerance, peakLoader);
-        if (ms1CycleTimeLoader is null) throw new ArgumentNullException(nameof(ms1CycleTimeLoader));
+        if (ms1CycleProfileLoader is null) throw new ArgumentNullException(nameof(ms1CycleProfileLoader));
 
         var summaries = files.Select(file => CreateSummary(file, peakLoader(file), parameter, mzTolerance)).ToList();
         var eligibleReferences = summaries
@@ -187,12 +301,11 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         var reference = SelectReference(eligibleReferences, parameter.ReferenceFileId);
 
         var matchesByFile = new Dictionary<int, List<AnchorMatch>>();
-        var scanIntervals = new Dictionary<int, double>();
+        var cycleProfiles = new Dictionary<int, Ms1CycleProfile>();
         var sortedPeakRts = new Dictionary<int, double[]>();
         foreach (var file in files) {
             var features = peakLoader(file);
-            var cycle = ms1CycleTimeLoader(file);
-            scanIntervals[file.AnalysisFileId] = cycle > 0d && !double.IsNaN(cycle) && !double.IsInfinity(cycle) ? cycle : 0d;
+            cycleProfiles[file.AnalysisFileId] = ms1CycleProfileLoader(file) ?? Ms1CycleProfile.Empty;
             var peaks = CreatePeakPoints(features);
             var rts = peaks.Select(peak => peak.Rt).ToArray();
             Array.Sort(rts);
@@ -242,7 +355,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 MatchedAnchorCount = relevantMatches.Count(match => match.Peak is not null),
                 ReferenceScore = summary.ReferenceScore,
                 ModelSource = AutomaticRtCorrectionModelSource.Uncorrected,
-                EstimatedScanInterval = scanIntervals[file.AnalysisFileId],
+                EstimatedScanInterval = cycleProfiles[file.AnalysisFileId].CycleTime,
             };
 
             if (file.AnalysisFileId == reference.File.AnalysisFileId) {
@@ -266,7 +379,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     support,
                     parameter.OutlierMadThreshold,
                     parameter.LocalSupportRtWindow,
-                    scanIntervals[file.AnalysisFileId]);
+                    cycleProfiles[file.AnalysisFileId]);
                 if (accepted.Count >= parameter.MinimumAnchorCount) {
                     foreach (var match in accepted) {
                         match.Status = "Used";
@@ -296,7 +409,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             }
 
             fileAudits.Add(fileAudit);
-            anchorAudits.AddRange(relevantMatches.Select(match => ToAudit(file, match)));
+            anchorAudits.AddRange(relevantMatches.Select(match => ToAudit(file, match, cycleProfiles[file.AnalysisFileId])));
         }
 
         if (parameter.InterpolateBlankByAnalyticalOrder) {
@@ -327,34 +440,6 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         if (parameter.MinimumSampleCoverage < 0d || parameter.MinimumSampleCoverage > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.MinimumSampleCoverage));
         if (parameter.ReferenceCentralityWeight < 0d || parameter.ReferenceCentralityWeight > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.ReferenceCentralityWeight));
         if (parameter.LocalSupportRtWindow < 0d || double.IsNaN(parameter.LocalSupportRtWindow)) throw new ArgumentOutOfRangeException(nameof(parameter.LocalSupportRtWindow));
-    }
-
-    /// <summary>
-    /// The MS1 cycle time (min) of a file: the median difference between the retention times of
-    /// consecutive MS1 scans of <paramref name="ionMode"/>'s polarity, the scans the MS1
-    /// chromatogram is built from. MS2 scans between them are ignored, so DDA and DIA/SWATH files
-    /// give their MS1 cycle, not the spacing of the raw spectrum list. Returns 0 when fewer than
-    /// two such scans exist.
-    /// </summary>
-    /// <remarks>
-    /// The peaks' ChromScanId values cannot give this: peak spotting sets them to the raw spectrum
-    /// index (ValuePeak.Id), which counts every spectrum, MS2 included.
-    /// </remarks>
-    public static double EstimateMs1CycleTime(IEnumerable<RawSpectrum> spectra, IonMode ionMode) {
-        if (spectra is null) throw new ArgumentNullException(nameof(spectra));
-        var polarity = ionMode == IonMode.Negative ? ScanPolarity.Negative : ScanPolarity.Positive;
-        var times = spectra
-            .Where(spectrum => spectrum.MsLevel == 1 && spectrum.ScanPolarity == polarity)
-            .Select(spectrum => spectrum.ScanStartTime)
-            .Where(time => !double.IsNaN(time) && !double.IsInfinity(time))
-            .OrderBy(time => time)
-            .ToList();
-        var differences = new List<double>(Math.Max(0, times.Count - 1));
-        for (var index = 1; index < times.Count; index++) {
-            var difference = times[index] - times[index - 1];
-            if (difference > 0d) differences.Add(difference);
-        }
-        return differences.Count == 0 ? 0d : Median(differences);
     }
 
     private static FileSummary CreateSummary(
@@ -538,9 +623,12 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     /// against the median of all of the file's anchors, as before (status MadOutlier).
     /// </para>
     /// <para>
-    /// The robust scale is max(1.4826 MAD, <paramref name="scaleFloor"/>), the floor being the
-    /// file's MS1 cycle time. Offsets are quantised to whole scans, so a MAD of zero must not disable the
-    /// test, and a one-scan deviation must not count as an outlier.
+    /// The robust scale is max(1.4826 MAD, floor), the floor being the file's MS1 cycle time
+    /// around the judged anchor's RT (<see cref="Ms1CycleProfile.CycleTimeAt(double)"/>). Offsets
+    /// are quantised to whole scans, so a MAD of zero must not disable the test, and a one-scan
+    /// deviation must not count as an outlier. The cycle is read where the anchor is because a
+    /// data-dependent file's MS1 cycle changes along the run; a file-wide value can be the short
+    /// cycle of MS1-only stretches and would again reject one-scan offsets in the gradient.
     /// </para>
     /// </summary>
     private static List<AnchorMatch> RejectOutliersAndNonMonotonic(
@@ -548,15 +636,17 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         IReadOnlyList<AnchorMatch> support,
         double madThreshold,
         double localWindow,
-        double scaleFloor) {
+        Ms1CycleProfile cycleProfile) {
         var accepted = matches.Where(match => match.Peak is not null).ToList();
         var offsets = accepted.Select(Offset).ToList();
         if (offsets.Count > 0 && madThreshold > 0d) {
             var globalMedian = Median(offsets);
-            var globalScale = RobustScale(offsets, globalMedian, scaleFloor);
+            var globalMad = 1.4826d * Median(offsets.Select(value => Math.Abs(value - globalMedian)));
             var rejected = new List<AnchorMatch>();
             foreach (var match in accepted) {
                 var offset = Offset(match);
+                var scaleFloor = cycleProfile.CycleTimeAt(match.Peak!.Rt);
+                match.Ms1CycleTime = scaleFloor;
                 var neighbours = localWindow > 0d
                     ? support
                         .Where(other => !ReferenceEquals(other.Reference, match.Reference)
@@ -577,6 +667,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     }
                 }
                 else {
+                    var globalScale = Math.Max(globalMad, scaleFloor);
                     match.OutlierTest = "Global";
                     match.ExpectedOffset = globalMedian;
                     match.OutlierScale = globalScale;
@@ -628,7 +719,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             match.Peak.QualityScore);
     }
 
-    private static AutomaticRtCorrectionAnchorAudit ToAudit(AnalysisFileBean file, AnchorMatch match) {
+    private static AutomaticRtCorrectionAnchorAudit ToAudit(AnalysisFileBean file, AnchorMatch match, Ms1CycleProfile cycleProfile) {
         return new AutomaticRtCorrectionAnchorAudit {
             FileId = file.AnalysisFileId,
             FileName = file.AnalysisFileName,
@@ -644,6 +735,9 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             LocalSupportCount = match.LocalSupportCount,
             ExpectedOffset = match.ExpectedOffset,
             OutlierScale = match.OutlierScale,
+            // Judged anchors carry the floor they were judged with; the reference file's and Blank
+            // files' anchors are read here, for the record.
+            Ms1CycleTime = match.Peak is null ? null : match.Ms1CycleTime ?? cycleProfile.CycleTimeAt(match.Peak.Rt),
         };
     }
 
@@ -763,5 +857,6 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         public int LocalSupportCount { get; set; }
         public double? ExpectedOffset { get; set; }
         public double? OutlierScale { get; set; }
+        public double? Ms1CycleTime { get; set; }
     }
 }

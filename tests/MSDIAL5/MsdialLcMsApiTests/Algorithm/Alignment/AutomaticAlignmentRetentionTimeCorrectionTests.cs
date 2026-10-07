@@ -113,7 +113,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             parameter,
             0.01d,
             file => peaks[file.AnalysisFileId],
-            _ => 0d);
+            _ => Ms1CycleProfile.Empty);
 
         Assert.AreEqual(1, result.Correction.ReferenceFileId);
         Assert.AreEqual(1d, result.Correction.Correct(0, 0.8d), 1e-8);
@@ -158,7 +158,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             parameter,
             0.01d,
             file => peaks[file.AnalysisFileId],
-            _ => 0d);
+            _ => Ms1CycleProfile.Empty);
 
         var audit = result.Files.Single(file => file.FileId == 1);
         Assert.AreEqual(AutomaticRtCorrectionModelSource.Uncorrected, audit.ModelSource);
@@ -204,7 +204,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             parameter,
             0.01d,
             file => peaks[file.AnalysisFileId],
-            _ => 0d);
+            _ => Ms1CycleProfile.Empty);
 
         CollectionAssert.AreEquivalent(
             new[] { 100d, 200d, 300d },
@@ -217,21 +217,98 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
     // polarity is ignored too. The MS1 cycle is the spacing of the MS1 scans, eleven raw spectra
     // apart, not the spacing of the raw spectrum list.
     [TestMethod]
-    public void EstimateMs1CycleTime_UsesMs1ScansOnlyWhenMs2ScansAreInterleaved() {
+    public void Ms1CycleProfile_UsesMs1ScansOnlyWhenMs2ScansAreInterleaved() {
         const double cycle = 0.0212d;
         const int ms2PerCycle = 10;
         var spectra = InterleavedSpectra(0d, 2d, cycle, ms2PerCycle).ToList();
         spectra.Add(new RawSpectrum { Index = spectra.Count, MsLevel = 1, ScanPolarity = ScanPolarity.Negative, ScanStartTime = 1.0001d });
 
-        Assert.AreEqual(cycle, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra, IonMode.Positive), 1e-9);
+        var profile = Ms1CycleProfile.FromSpectra(spectra, IonMode.Positive);
+        Assert.AreEqual(cycle, profile.CycleTime, 1e-9);
+        Assert.AreEqual(cycle, profile.CycleTimeAt(1d), 1e-9);
         // The raw spectrum list advances once per cycle / 11: the spacing the peak-edge estimate read.
         var rawSpacing = spectra.Where(spectrum => spectrum.ScanPolarity == ScanPolarity.Positive)
             .Select(spectrum => spectrum.ScanStartTime).OrderBy(time => time).Skip(1).First();
         Assert.AreEqual(cycle / (ms2PerCycle + 1), rawSpacing, 1e-9);
         // Spectra listed out of time order give the same cycle.
-        Assert.AreEqual(cycle, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(Enumerable.Reverse(spectra), IonMode.Positive), 1e-9);
-        Assert.AreEqual(0d, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra.Take(1), IonMode.Positive));
-        Assert.AreEqual(0d, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra, IonMode.Negative));
+        var reversed = Ms1CycleProfile.FromSpectra(Enumerable.Reverse(spectra), IonMode.Positive);
+        Assert.AreEqual(cycle, reversed.CycleTime, 1e-9);
+        Assert.AreEqual(profile.CycleTimeAt(1d), reversed.CycleTimeAt(1d));
+        // Outside the scans, the two scans at that end give the cycle.
+        Assert.AreEqual(cycle, profile.CycleTimeAt(-5d), 1e-9);
+        Assert.AreEqual(cycle, profile.CycleTimeAt(30d), 1e-9);
+        Assert.AreEqual(0d, Ms1CycleProfile.FromSpectra(spectra.Take(1), IonMode.Positive).CycleTimeAt(0d));
+        Assert.AreEqual(0d, Ms1CycleProfile.FromSpectra(spectra, IonMode.Negative).CycleTime);
+        Assert.AreEqual(0d, Ms1CycleProfile.Empty.CycleTimeAt(1d));
+    }
+
+    // MTBLS417 (SCIEX IDA): where no precursor triggers MS2, MS1 scans run back to back, about
+    // 0.0047 min apart, against a 0.0212-min cycle in the gradient. Here the MS1-only stretch is
+    // 12 of 20 min and holds about 87% of the MS1 spacings, so any file-wide median is the idle
+    // cycle. The cycle around an RT in the gradient is the gradient cycle, also next to the
+    // stretch, where a median over scans would still be the idle one.
+    [TestMethod]
+    public void Ms1CycleProfile_ReadsTheCycleAroundTheRt_NotTheIdleCycleThatDominatesTheFile() {
+        var spectra = IdleThenGradientSpectra().ToList();
+        var profile = Ms1CycleProfile.FromSpectra(spectra, IonMode.Positive);
+
+        // A file-wide median over all MS1 spacings, the previous floor of every anchor, is the idle cycle.
+        Assert.AreEqual(IdleCycle, PlainMedianMs1Spacing(spectra, double.NegativeInfinity, double.PositiveInfinity), 1e-9);
+        Assert.AreEqual(IdleCycle, profile.CycleTime, 1e-9);
+
+        Assert.AreEqual(GradientCycle, profile.CycleTimeAt(16d), 1e-9);
+        Assert.AreEqual(GradientCycle, profile.CycleTimeAt(GradientStart + 0.5d), 1e-9);
+        Assert.AreEqual(IdleCycle, profile.CycleTimeAt(5d), 1e-9);
+        // 0.3 min into the gradient the window holds 0.2 min of idle scans, about 43 spacings,
+        // and 0.8 min of gradient scans, about 38: a median over scans is the idle cycle, and the
+        // median weighted by duration is the gradient cycle.
+        var nearEdge = GradientStart + 0.3d;
+        Assert.AreEqual(IdleCycle, PlainMedianMs1Spacing(spectra, nearEdge - Ms1CycleProfile.LocalHalfWindow, nearEdge + Ms1CycleProfile.LocalHalfWindow), 1e-9);
+        Assert.AreEqual(GradientCycle, profile.CycleTimeAt(nearEdge), 1e-9);
+    }
+
+    // The same file in the alignment: every anchor sits in the gradient, and each is judged with
+    // the gradient cycle as its floor, so one-scan offsets are kept and a five-scan offset is
+    // rejected. Floored at the file-wide (idle) cycle instead, the one-scan offsets score
+    // 0.0212 / 0.0047 = 4.5 > 3.5 and are rejected, the failure the local floor removes.
+    [TestMethod]
+    public void Build_IdleMs1OnlyStretch_FloorsGradientAnchorsAtTheGradientCycle() {
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(1, 15).Select(index => GradientStart + 0.5d * index).ToArray(); // 12.5 .. 19.5 min
+        var offsets = rts.Select(_ => 0d).ToArray();
+        offsets[3] = GradientCycle;         // one scan late
+        offsets[7] = -GradientCycle;        // one scan early
+        offsets[11] = -5d * GradientCycle;  // five scans: a wrong peak
+        var peaks = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), GradientCycle),
+            [1] = ScannedPeaks(rts, offsets, GradientCycle),
+        };
+        var profile = Ms1CycleProfile.FromSpectra(IdleThenGradientSpectra(), IonMode.Positive);
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId], _ => profile);
+
+        Assert.AreEqual(IdleCycle, result.Files.Single(file => file.FileId == 1).EstimatedScanInterval, 1e-9);
+        var anchors = AnchorsOf(result, 1);
+        Assert.AreEqual(15, anchors.Count);
+        foreach (var anchor in anchors) {
+            Assert.AreEqual(GradientCycle, anchor.Ms1CycleTime!.Value, 1e-9, $"anchor at {anchor.ReferenceRt}");
+        }
+        Assert.IsTrue(AnchorsOf(result, 0).All(anchor => Math.Abs(anchor.Ms1CycleTime!.Value - GradientCycle) < 1e-9));
+        Assert.IsTrue(anchors.All(anchor => anchor.OutlierTest == "Local"));
+        Assert.IsTrue(anchors[3].Used);
+        Assert.IsTrue(anchors[7].Used);
+        Assert.AreEqual("LocalOutlier", anchors[11].Status);
+        Assert.AreEqual(GradientCycle, anchors[11].OutlierScale!.Value, 1e-9);
+        Assert.AreEqual(14, anchors.Count(anchor => anchor.Used));
+
+        // A file-wide floor, the idle cycle, rejects the one-scan offsets.
+        var fileWide = new Ms1CycleProfile(Enumerable.Range(0, (int)(20d / IdleCycle)).Select(index => index * IdleCycle));
+        var fileWideAnchors = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId], _ => fileWide), 1);
+        Assert.AreEqual("LocalOutlier", fileWideAnchors[3].Status);
+        Assert.AreEqual("LocalOutlier", fileWideAnchors[7].Status);
     }
 
     [TestMethod]
@@ -304,7 +381,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         Assert.AreEqual(19, anchors.Count(anchor => anchor.Used));
 
         // Without an MS1 cycle time no floor is known; a zero scale cannot judge, so nothing is rejected.
-        var unscaledResult = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId], _ => 0d);
+        var unscaledResult = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId], _ => Ms1CycleProfile.Empty);
         Assert.AreEqual(0d, unscaledResult.Files.Single(file => file.FileId == 1).EstimatedScanInterval);
         Assert.AreEqual(20, AnchorsOf(unscaledResult, 1).Count(anchor => anchor.Used));
     }
@@ -390,10 +467,14 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             var anchorLines = System.IO.File.ReadAllLines(Path.Combine(folder, "automatic_alignment_rt_correction_anchors.tsv"));
             var anchorHeader = anchorLines[0].Split('\t');
             CollectionAssert.AreEqual(
-                new[] { "Status", "Outlier test", "Local support count", "Expected offset (min)", "Outlier scale (min)" },
+                new[] { "Status", "Outlier test", "Local support count", "Expected offset (min)", "Outlier scale (min)", "MS1 cycle at anchor (min)" },
                 anchorHeader.Skip(10).ToArray());
             Assert.IsTrue(anchorLines.Skip(1).All(line => line.Split('\t').Length == anchorHeader.Length));
             Assert.AreEqual(1, anchorLines.Count(line => line.Split('\t')[10] == "LocalOutlier"));
+            // Every matched anchor, the reference file's included, records the cycle around it.
+            Assert.IsTrue(anchorLines.Skip(1).Select(line => line.Split('\t'))
+                .Where(cells => cells[5].Length > 0)
+                .All(cells => Math.Abs(double.Parse(cells[15], System.Globalization.CultureInfo.InvariantCulture) - cycle) < 1e-9));
         }
         finally {
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
@@ -421,9 +502,37 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
 
     // The MS1 cycle time of a DDA file whose MS1 scans are `cycle` apart with MS2 scans between
     // them, computed as the Console computes it: from the scans' retention times.
-    private static Func<AnalysisFileBean, double> Ms1Cycle(double cycle) {
-        var time = AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(InterleavedSpectra(0d, 20d, cycle, ScannedPeakMs2PerCycle), IonMode.Positive);
-        return _ => time;
+    private static Func<AnalysisFileBean, Ms1CycleProfile> Ms1Cycle(double cycle) {
+        var profile = Ms1CycleProfile.FromSpectra(InterleavedSpectra(0d, 20d, cycle, ScannedPeakMs2PerCycle), IonMode.Positive);
+        return _ => profile;
+    }
+
+    private const double IdleCycle = 0.0047d;
+    private const double GradientCycle = 0.0212d;
+    private const double GradientStart = 12d;
+
+    // MS1-only scans IdleCycle apart from 0 to GradientStart, then a DDA gradient to 20 min:
+    // an MS1 scan every GradientCycle followed by ten MS2 scans.
+    private static IEnumerable<RawSpectrum> IdleThenGradientSpectra() {
+        var index = 0;
+        for (var scan = 0; scan * IdleCycle < GradientStart; scan++) {
+            yield return new RawSpectrum { Index = index++, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = scan * IdleCycle };
+        }
+        foreach (var spectrum in InterleavedSpectra(GradientStart, 20d, GradientCycle, ScannedPeakMs2PerCycle)) {
+            spectrum.Index = index++;
+            yield return spectrum;
+        }
+    }
+
+    // The plain median of the spacings between consecutive MS1 scans starting within [from, to].
+    private static double PlainMedianMs1Spacing(IEnumerable<RawSpectrum> spectra, double from, double to) {
+        var times = spectra.Where(spectrum => spectrum.MsLevel == 1).Select(spectrum => spectrum.ScanStartTime).OrderBy(time => time).ToList();
+        var spacings = times.Zip(times.Skip(1), (a, b) => (Start: a, Spacing: b - a))
+            .Where(pair => pair.Start >= from && pair.Start <= to && pair.Spacing > 0d)
+            .Select(pair => pair.Spacing)
+            .OrderBy(spacing => spacing)
+            .ToList();
+        return spacings[spacings.Count / 2];
     }
 
     private static IEnumerable<RawSpectrum> InterleavedSpectra(double start, double end, double cycle, int ms2PerCycle) {
