@@ -1,6 +1,8 @@
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CompMs.MsdialCore.Utility.Tests;
 
@@ -34,5 +36,31 @@ public class DataAccessTargetCollisionEnergyTests
 
         Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, 6d));
         Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, -1d));
+    }
+
+    [TestMethod()]
+    public void AMissingTargetEnergyIsReportedToTheCallerAndNotPrinted() {
+        var feature = new ChromatogramPeakFeature
+        {
+            MS1RawSpectrumIdTop = 25,
+            MS2RawSpectrumID = 26,
+            MS2RawSpectrumID2CE = new Dictionary<int, double> { [26] = 30d, },
+        };
+        var original = Console.Out;
+        using var output = new StringWriter();
+        Console.SetOut(output);
+        try {
+            Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, 6d, out var missing));
+            Assert.IsTrue(missing, "no scan at 6 eV: the 30 eV scan is borrowed");
+            Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, 30d, out missing));
+            Assert.IsFalse(missing);
+            Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, -1d, out missing));
+            Assert.IsFalse(missing, "no target energy is set");
+            Assert.AreEqual(26, DataAccess.GetTargetCEIndexNearestPeakTop(feature, 6d));
+        }
+        finally {
+            Console.SetOut(original);
+        }
+        Assert.AreEqual(string.Empty, output.ToString());
     }
 }

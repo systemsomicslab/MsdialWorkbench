@@ -269,11 +269,22 @@ namespace CompMs.MsdialCore.Utility {
         /// different scan ranges. <see cref="GetTargetCEIndexForMS2RawSpectrum"/> takes the last matching entry
         /// in enumeration order, which is then not always the nearest one: on a single-energy Thermo AIF file
         /// (ST004304 QC-D2-B) it chose a scan farther from the apex than the nearest one for 841 of 2,346 peaks.
-        /// Returns <see cref="ChromatogramPeakFeature.MS2RawSpectrumID"/> when no scan has the target energy,
-        /// as <see cref="GetTargetCEIndexForMS2RawSpectrum"/> does.
+        /// Returns <see cref="ChromatogramPeakFeature.MS2RawSpectrumID"/>, the product-ion scan of any energy nearest
+        /// the peak top, when no scan has the target energy, as <see cref="GetTargetCEIndexForMS2RawSpectrum"/> does.
+        /// Unlike it, this writes nothing to the console: the caller counts such features through the overload with
+        /// <c>isTargetCEMissing</c> and reports one summary per file and energy.
         /// </remarks>
         public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
+            return GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE, out _);
+        }
+
+        /// <param name="isTargetCEMissing">
+        /// True when a target energy is set (<paramref name="targetCE"/> &gt;= 0) and no product-ion scan of the feature has it,
+        /// so that the returned scan, if any, is of another energy.
+        /// </param>
+        public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE, out bool isTargetCEMissing) {
             var targetSpecID = chromPeakFeature.MS2RawSpectrumID;
+            isTargetCEMissing = false;
             if (targetCE >= 0) {
                 var top = chromPeakFeature.MS1RawSpectrumIdTop;
                 var nearest = chromPeakFeature.MS2RawSpectrumID2CE
@@ -286,7 +297,7 @@ namespace CompMs.MsdialCore.Utility {
                     targetSpecID = id;
                 }
                 else {
-                    Console.WriteLine("Target CE cannot be found.");
+                    isTargetCEMissing = true;
                 }
             }
             return targetSpecID;

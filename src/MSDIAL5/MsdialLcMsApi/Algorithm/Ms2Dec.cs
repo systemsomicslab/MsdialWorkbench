@@ -10,6 +10,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,10 +24,64 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.InitialProgress = InitialProgress;
             this.ProgressMax = ProgressMax;
         }
-       
+
+        private int _featuresSeededFromAnotherEnergy;
+        private int _featuresWithoutProductIonScan;
+
+        /// <summary>
+        /// Features of the last <see cref="GetMS2DecResults"/> call, or of the <see cref="GetMS2DecResult"/> calls since,
+        /// that have no product-ion scan at the target collision energy and were seeded from the nearest scan of another energy.
+        /// </summary>
+        public int FeaturesSeededFromAnotherEnergy => Volatile.Read(ref _featuresSeededFromAnotherEnergy);
+
+        /// <summary>
+        /// Features that have no product-ion scan at the target collision energy nor at any other, and so got an empty spectrum.
+        /// </summary>
+        public int FeaturesWithoutProductIonScan => Volatile.Read(ref _featuresWithoutProductIonScan);
+
+        /// <summary>
+        /// Deconvolutes every feature of one file at one collision energy.
+        /// </summary>
+        /// <remarks>
+        /// A feature without a product-ion scan at <paramref name="targetCE"/> is seeded from its product-ion scan of any
+        /// energy nearest the peak top, as the GUI does. Such features are reported in one console line per call, that is
+        /// per file and energy, and not one line per feature (the former "Target CE cannot be found.").
+        /// </remarks>
         public List<MSDecResult> GetMS2DecResults(AnalysisFileBean file, IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
             IupacDatabase iupac, IProgress<int>? progress, CancellationToken token, double targetCE = -1) {
+            Volatile.Write(ref _featuresSeededFromAnotherEnergy, 0);
+            Volatile.Write(ref _featuresWithoutProductIonScan, 0);
+            var results = GetMS2DecResultsCore(file, provider, chromPeakFeatures, param, summary, iupac, progress, targetCE);
+            var line = FormatTargetCEMissingSummary(file?.AnalysisFileName, targetCE, FeaturesSeededFromAnotherEnergy, FeaturesWithoutProductIonScan);
+            if (line is not null) {
+                Console.WriteLine(line);
+            }
+            return results;
+        }
+
+        /// <summary>
+        /// The one console line for a file and energy, or null when every feature had a scan at the energy.
+        /// </summary>
+        internal static string? FormatTargetCEMissingSummary(string? fileName, double targetCE, int seededFromAnotherEnergy, int withoutProductIonScan) {
+            if (seededFromAnotherEnergy <= 0 && withoutProductIonScan <= 0) {
+                return null;
+            }
+            static string Features(int count) => count.ToString("N0", CultureInfo.InvariantCulture) + (count == 1 ? " feature" : " features");
+            var parts = new List<string>();
+            if (seededFromAnotherEnergy > 0) {
+                parts.Add($"{Features(seededFromAnotherEnergy)} without a scan at that energy; the nearest other-energy scan was used as seed");
+            }
+            if (withoutProductIonScan > 0) {
+                parts.Add($"{Features(withoutProductIonScan)} without a product-ion scan at any energy; their spectrum is empty");
+            }
+            var prefix = string.IsNullOrEmpty(fileName) ? string.Empty : fileName + ": ";
+            return $"{prefix}Target CE {targetCE.ToString("0.##", CultureInfo.InvariantCulture)} eV: {string.Join("; ", parts)}.";
+        }
+
+        private List<MSDecResult> GetMS2DecResultsCore(AnalysisFileBean file, IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
+            IupacDatabase iupac, IProgress<int>? progress, double targetCE) {
 
             var msdecResults = new List<MSDecResult>();
             var numThreads = param.NumThreads == 1 ? 1 : 2;
@@ -72,7 +127,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             // check target CE ID
-            var targetSpecID = DataAccess.GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE);
+            var targetSpecID = DataAccess.GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE, out var isTargetCEMissing);
+            if (isTargetCEMissing) {
+                if (targetSpecID >= 0) {
+                    Interlocked.Increment(ref _featuresSeededFromAnotherEnergy);
+                }
+                else {
+                    Interlocked.Increment(ref _featuresWithoutProductIonScan);
+                }
+            }
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
             if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
