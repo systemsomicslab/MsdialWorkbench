@@ -33,6 +33,14 @@ public sealed class AutomaticRtCorrectionFileAudit {
     public double MedianAbsoluteOffset { get; internal set; }
     public double MaximumAbsoluteOffset { get; internal set; }
     public string Note { get; internal set; } = string.Empty;
+    /// <summary>Median MS1 scan interval (min) estimated from the file's peak features; 0 when unknown.</summary>
+    public double EstimatedScanInterval { get; internal set; }
+    public double? FirstAnchorRt { get; internal set; }
+    public double? LastAnchorRt { get; internal set; }
+    /// <summary>Peaks whose original RT lies before the first used anchor; their offset is held constant.</summary>
+    public int PeaksBeforeFirstAnchor { get; internal set; }
+    /// <summary>Peaks whose original RT lies after the last used anchor; their offset is held constant.</summary>
+    public int PeaksAfterLastAnchor { get; internal set; }
 }
 
 public sealed class AutomaticRtCorrectionAnchorAudit {
@@ -46,6 +54,13 @@ public sealed class AutomaticRtCorrectionAnchorAudit {
     public double SampleCoverage { get; internal set; }
     public bool Used { get; internal set; }
     public string Status { get; internal set; } = string.Empty;
+    /// <summary>"Local", "Global", or empty when the anchor was not judged (unmatched, reference, Blank).</summary>
+    public string OutlierTest { get; internal set; } = string.Empty;
+    public int LocalSupportCount { get; internal set; }
+    /// <summary>Offset the anchor was judged against: the local support median, or the file's anchor median.</summary>
+    public double? ExpectedOffset { get; internal set; }
+    /// <summary>Robust scale of the test, max(1.4826 MAD, scan-interval floor), in minutes.</summary>
+    public double? OutlierScale { get; internal set; }
 }
 
 public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
@@ -66,7 +81,9 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
         Directory.CreateDirectory(outputFolder);
         var summaryPath = Path.Combine(outputFolder, "automatic_alignment_rt_correction_summary.tsv");
         using (var writer = new StreamWriter(summaryPath, false, new UTF8Encoding(false))) {
-            writer.WriteLine("File ID\tFile name\tFile type\tAnalytical order\tCandidate count\tMatched anchors\tUsed anchors\tModel source\tReference score\tMedian absolute offset (min)\tMaximum absolute offset (min)\tNote");
+            // Columns after "Note" were added later; readers that address columns by name are unaffected.
+            writer.WriteLine("File ID\tFile name\tFile type\tAnalytical order\tCandidate count\tMatched anchors\tUsed anchors\tModel source\tReference score\tMedian absolute offset (min)\tMaximum absolute offset (min)\tNote"
+                + "\tEstimated scan interval (min)\tFirst used anchor RT (min)\tLast used anchor RT (min)\tPeaks before first used anchor\tPeaks after last used anchor");
             foreach (var file in Files.OrderBy(file => file.AnalyticalOrder).ThenBy(file => file.FileId)) {
                 writer.WriteLine(string.Join("\t",
                     file.FileId.ToString(CultureInfo.InvariantCulture),
@@ -80,13 +97,19 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     file.ReferenceScore.ToString("G17", CultureInfo.InvariantCulture),
                     file.MedianAbsoluteOffset.ToString("G17", CultureInfo.InvariantCulture),
                     file.MaximumAbsoluteOffset.ToString("G17", CultureInfo.InvariantCulture),
-                    file.Note));
+                    file.Note,
+                    file.EstimatedScanInterval.ToString("G17", CultureInfo.InvariantCulture),
+                    file.FirstAnchorRt?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    file.LastAnchorRt?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    file.FirstAnchorRt.HasValue ? file.PeaksBeforeFirstAnchor.ToString(CultureInfo.InvariantCulture) : string.Empty,
+                    file.LastAnchorRt.HasValue ? file.PeaksAfterLastAnchor.ToString(CultureInfo.InvariantCulture) : string.Empty));
             }
         }
 
         var anchorPath = Path.Combine(outputFolder, "automatic_alignment_rt_correction_anchors.tsv");
         using (var writer = new StreamWriter(anchorPath, false, new UTF8Encoding(false))) {
-            writer.WriteLine("File ID\tFile name\tAnchor ID\tm/z\tReference RT (min)\tOriginal RT (min)\tOffset (min)\tQuality score\tNon-Blank sample coverage\tUsed\tStatus");
+            writer.WriteLine("File ID\tFile name\tAnchor ID\tm/z\tReference RT (min)\tOriginal RT (min)\tOffset (min)\tQuality score\tNon-Blank sample coverage\tUsed\tStatus"
+                + "\tOutlier test\tLocal support count\tExpected offset (min)\tOutlier scale (min)");
             foreach (var anchor in Anchors.OrderBy(anchor => anchor.FileId).ThenBy(anchor => anchor.AnchorId)) {
                 var offset = anchor.OriginalRt.HasValue ? anchor.ReferenceRt - anchor.OriginalRt.Value : (double?)null;
                 writer.WriteLine(string.Join("\t",
@@ -100,7 +123,11 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     anchor.QualityScore.ToString("G17", CultureInfo.InvariantCulture),
                     anchor.SampleCoverage.ToString("G17", CultureInfo.InvariantCulture),
                     anchor.Used.ToString(),
-                    anchor.Status));
+                    anchor.Status,
+                    anchor.OutlierTest,
+                    string.IsNullOrEmpty(anchor.OutlierTest) ? string.Empty : anchor.LocalSupportCount.ToString(CultureInfo.InvariantCulture),
+                    anchor.ExpectedOffset?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    anchor.OutlierScale?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty));
             }
         }
     }
@@ -113,6 +140,10 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
 /// </summary>
 public static class AutomaticAlignmentRetentionTimeCorrection {
     private const int CandidateLimitPerRtBin = 3;
+    // An anchor is judged against its local neighbours only when at least this many other
+    // reference candidates were matched in the same file within the local support window.
+    private const int MinimumLocalSupportCount = 3;
+    private const int MinimumScanIntervalSamples = 10;
 
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
@@ -145,8 +176,15 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         var reference = SelectReference(eligibleReferences, parameter.ReferenceFileId);
 
         var matchesByFile = new Dictionary<int, List<AnchorMatch>>();
+        var scanIntervals = new Dictionary<int, double>();
+        var sortedPeakRts = new Dictionary<int, double[]>();
         foreach (var file in files) {
-            var peaks = CreatePeakPoints(peakLoader(file));
+            var features = peakLoader(file);
+            scanIntervals[file.AnalysisFileId] = EstimateScanInterval(features);
+            var peaks = CreatePeakPoints(features);
+            var rts = peaks.Select(peak => peak.Rt).ToArray();
+            Array.Sort(rts);
+            sortedPeakRts[file.AnalysisFileId] = rts;
             matchesByFile[file.AnalysisFileId] = reference.Candidates
                 .Select(candidate => Match(candidate, peaks, parameter.MatchRtTolerance, mzTolerance))
                 .ToList();
@@ -173,6 +211,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             selectedAnchors[index].AnchorId = index + 1;
         }
 
+        var coveredCandidateSet = new HashSet<PeakPoint>(coveredCandidates);
         var models = new Dictionary<int, IAlignmentRetentionTimeCorrectionModel>();
         var fileAudits = new List<AutomaticRtCorrectionFileAudit>();
         var anchorAudits = new List<AutomaticRtCorrectionAnchorAudit>();
@@ -191,6 +230,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 MatchedAnchorCount = relevantMatches.Count(match => match.Peak is not null),
                 ReferenceScore = summary.ReferenceScore,
                 ModelSource = AutomaticRtCorrectionModelSource.Uncorrected,
+                EstimatedScanInterval = scanIntervals[file.AnalysisFileId],
             };
 
             if (file.AnalysisFileId == reference.File.AnalysisFileId) {
@@ -201,10 +241,20 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 }
                 var points = relevantMatches.Select(ToControlPoint).ToList();
                 models[file.AnalysisFileId] = new PiecewiseLinearAlignmentRetentionTimeCorrectionModel(points);
-                SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.Reference);
+                SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.Reference, sortedPeakRts[file.AnalysisFileId]);
             }
             else if (file.AnalysisFileType != AnalysisFileType.Blank) {
-                var accepted = RejectOutliersAndNonMonotonic(relevantMatches, parameter.OutlierMadThreshold);
+                // Every reference candidate that passed the coverage filter and was matched
+                // uniquely in this file is independent evidence of the file's local RT offset.
+                var support = matchesByFile[file.AnalysisFileId]
+                    .Where(match => match.Peak is not null && coveredCandidateSet.Contains(match.Reference))
+                    .ToList();
+                var accepted = RejectOutliersAndNonMonotonic(
+                    relevantMatches,
+                    support,
+                    parameter.OutlierMadThreshold,
+                    parameter.LocalSupportRtWindow,
+                    scanIntervals[file.AnalysisFileId]);
                 if (accepted.Count >= parameter.MinimumAnchorCount) {
                     foreach (var match in accepted) {
                         match.Status = "Used";
@@ -212,7 +262,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     }
                     var points = accepted.Select(ToControlPoint).ToList();
                     models[file.AnalysisFileId] = new PiecewiseLinearAlignmentRetentionTimeCorrectionModel(points);
-                    SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.DetectedAnchors);
+                    SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.DetectedAnchors, sortedPeakRts[file.AnalysisFileId]);
                 }
                 else {
                     foreach (var match in accepted) {
@@ -264,6 +314,24 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         if (parameter.MaximumPeakWidthQuantile < 0d || parameter.MaximumPeakWidthQuantile > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.MaximumPeakWidthQuantile));
         if (parameter.MinimumSampleCoverage < 0d || parameter.MinimumSampleCoverage > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.MinimumSampleCoverage));
         if (parameter.ReferenceCentralityWeight < 0d || parameter.ReferenceCentralityWeight > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.ReferenceCentralityWeight));
+        if (parameter.LocalSupportRtWindow < 0d || double.IsNaN(parameter.LocalSupportRtWindow)) throw new ArgumentOutOfRangeException(nameof(parameter.LocalSupportRtWindow));
+    }
+
+    /// <summary>
+    /// The median MS1 scan interval of a file, from the peak edges: ChromScanId indexes the MS1
+    /// chromatogram, so (right RT - left RT) / (right index - left index) is one scan cycle.
+    /// Returns 0 when too few peaks carry scan indexes.
+    /// </summary>
+    private static double EstimateScanInterval(IReadOnlyList<ChromatogramPeakFeature> features) {
+        var intervals = new List<double>();
+        foreach (var feature in features) {
+            var peak = feature.PeakFeature;
+            var scans = peak.ChromScanIdRight - peak.ChromScanIdLeft;
+            if (scans <= 0 || peak.ChromXsLeft?.RT is null || peak.ChromXsRight?.RT is null) continue;
+            var interval = (peak.ChromXsRight.RT.Value - peak.ChromXsLeft.RT.Value) / scans;
+            if (interval > 0d && !double.IsNaN(interval) && !double.IsInfinity(interval)) intervals.Add(interval);
+        }
+        return intervals.Count < MinimumScanIntervalSamples ? 0d : Median(intervals);
     }
 
     private static FileSummary CreateSummary(
@@ -435,18 +503,69 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         return selected.OrderBy(candidate => candidate.Rt).ToList();
     }
 
-    private static List<AnchorMatch> RejectOutliersAndNonMonotonic(List<AnchorMatch> matches, double madThreshold) {
+    /// <summary>
+    /// Rejects anchor matches whose offset disagrees with the file's own RT drift, then removes
+    /// matches that would make the map non-monotonic.
+    /// <para>
+    /// An anchor is judged against the median offset of the other reference candidates matched in
+    /// the same file within <paramref name="localWindow"/> minutes of it (status LocalOutlier).
+    /// Judging locally keeps an anchor whose offset follows an RT-dependent drift that independent
+    /// peaks around it share, which a single median over the whole run would reject. Only when
+    /// fewer than <see cref="MinimumLocalSupportCount"/> such neighbours exist is the anchor judged
+    /// against the median of all of the file's anchors, as before (status MadOutlier).
+    /// </para>
+    /// <para>
+    /// The robust scale is max(1.4826 MAD, <paramref name="scaleFloor"/>), the floor being one MS1
+    /// scan interval. Offsets are quantised to whole scans, so a MAD of zero must not disable the
+    /// test, and a one-scan deviation must not count as an outlier.
+    /// </para>
+    /// </summary>
+    private static List<AnchorMatch> RejectOutliersAndNonMonotonic(
+        List<AnchorMatch> matches,
+        IReadOnlyList<AnchorMatch> support,
+        double madThreshold,
+        double localWindow,
+        double scaleFloor) {
         var accepted = matches.Where(match => match.Peak is not null).ToList();
-        var offsets = accepted.Select(match => match.Reference.Rt - match.Peak!.Rt).ToList();
+        var offsets = accepted.Select(Offset).ToList();
         if (offsets.Count > 0 && madThreshold > 0d) {
-            var median = Median(offsets);
-            var mad = Median(offsets.Select(offset => Math.Abs(offset - median)));
-            if (mad > 1e-12) {
-                var scale = 1.4826d * mad;
-                foreach (var match in accepted.Where(match => Math.Abs((match.Reference.Rt - match.Peak!.Rt) - median) / scale > madThreshold).ToList()) {
-                    match.Status = "MadOutlier";
-                    accepted.Remove(match);
+            var globalMedian = Median(offsets);
+            var globalScale = RobustScale(offsets, globalMedian, scaleFloor);
+            var rejected = new List<AnchorMatch>();
+            foreach (var match in accepted) {
+                var offset = Offset(match);
+                var neighbours = localWindow > 0d
+                    ? support
+                        .Where(other => !ReferenceEquals(other.Reference, match.Reference)
+                            && Math.Abs(other.Peak!.Rt - match.Peak!.Rt) <= localWindow)
+                        .Select(Offset)
+                        .ToList()
+                    : new List<double>();
+                match.LocalSupportCount = neighbours.Count;
+                if (neighbours.Count >= MinimumLocalSupportCount) {
+                    var localMedian = Median(neighbours);
+                    var localScale = RobustScale(neighbours, localMedian, scaleFloor);
+                    match.OutlierTest = "Local";
+                    match.ExpectedOffset = localMedian;
+                    match.OutlierScale = localScale;
+                    if (localScale > 0d && Math.Abs(offset - localMedian) / localScale > madThreshold) {
+                        match.Status = "LocalOutlier";
+                        rejected.Add(match);
+                    }
                 }
+                else {
+                    match.OutlierTest = "Global";
+                    match.ExpectedOffset = globalMedian;
+                    match.OutlierScale = globalScale;
+                    // A zero scale (MAD of zero and no scan interval known) cannot judge anything.
+                    if (globalScale > 0d && Math.Abs(offset - globalMedian) / globalScale > madThreshold) {
+                        match.Status = "MadOutlier";
+                        rejected.Add(match);
+                    }
+                }
+            }
+            foreach (var match in rejected) {
+                accepted.Remove(match);
             }
         }
 
@@ -466,6 +585,15 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             }
         }
         return accepted;
+    }
+
+    private static double Offset(AnchorMatch match) {
+        return match.Reference.Rt - match.Peak!.Rt;
+    }
+
+    private static double RobustScale(IReadOnlyList<double> values, double median, double floor) {
+        var mad = Median(values.Select(value => Math.Abs(value - median)));
+        return Math.Max(1.4826d * mad, Math.Max(0d, floor));
     }
 
     private static AlignmentRetentionTimeCorrectionControlPoint ToControlPoint(AnchorMatch match) {
@@ -489,18 +617,31 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             SampleCoverage = match.Reference.SampleCoverage,
             Used = match.Used,
             Status = match.Status,
+            OutlierTest = match.OutlierTest,
+            LocalSupportCount = match.LocalSupportCount,
+            ExpectedOffset = match.ExpectedOffset,
+            OutlierScale = match.OutlierScale,
         };
     }
 
     private static void SetAuditFromPoints(
         AutomaticRtCorrectionFileAudit audit,
         IReadOnlyList<AlignmentRetentionTimeCorrectionControlPoint> points,
-        AutomaticRtCorrectionModelSource source) {
+        AutomaticRtCorrectionModelSource source,
+        double[] sortedPeakRts) {
         var absoluteOffsets = points.Select(point => Math.Abs(point.Offset)).ToList();
         audit.UsedAnchorCount = points.Count;
         audit.ModelSource = source;
         audit.MedianAbsoluteOffset = Median(absoluteOffsets);
         audit.MaximumAbsoluteOffset = absoluteOffsets.Count == 0 ? 0d : absoluteOffsets.Max();
+        if (points.Count > 0) {
+            var first = points.Min(point => point.OriginalRt);
+            var last = points.Max(point => point.OriginalRt);
+            audit.FirstAnchorRt = first;
+            audit.LastAnchorRt = last;
+            audit.PeaksBeforeFirstAnchor = sortedPeakRts.Count(rt => rt < first);
+            audit.PeaksAfterLastAnchor = sortedPeakRts.Count(rt => rt > last);
+        }
     }
 
     private static void InterpolateBlankModels(
@@ -595,5 +736,9 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         public PeakPoint? Peak { get; set; }
         public string Status { get; set; }
         public bool Used { get; set; }
+        public string OutlierTest { get; set; } = string.Empty;
+        public int LocalSupportCount { get; set; }
+        public double? ExpectedOffset { get; set; }
+        public double? OutlierScale { get; set; }
     }
 }

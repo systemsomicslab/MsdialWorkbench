@@ -691,6 +691,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction outlier MAD threshold", AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction local support RT window", AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow.ToString(CultureInfo.InvariantCulture) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -1237,6 +1238,13 @@ namespace CompMs.MsdialCore.Parameter
         public float ReferenceCentralityWeight { get; set; } = 0.35F;
         [Key(14)]
         public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
+        /// <summary>
+        /// Half-width (min) of the window in which an anchor's offset is compared with the offsets of
+        /// the other reference candidates matched in the same file. 0 judges every anchor against the
+        /// median of the file's anchors only.
+        /// </summary>
+        [Key(15)]
+        public float LocalSupportRtWindow { get; set; } = 1.5F;
     }
 
     [MessagePackObject]

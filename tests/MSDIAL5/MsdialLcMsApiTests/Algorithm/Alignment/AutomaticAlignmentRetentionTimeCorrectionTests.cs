@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -207,6 +208,213 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             result.Anchors.Where(anchor => anchor.FileId == 0).Select(anchor => anchor.Mass).ToArray());
         Assert.IsTrue(result.Anchors.All(anchor => anchor.SampleCoverage == 1d));
         Assert.IsTrue(result.Files.All(file => file.ModelSource != AutomaticRtCorrectionModelSource.Uncorrected));
+    }
+
+    [TestMethod]
+    public void DefaultParameter_JudgesAnchorsWithinOneAndAHalfMinutes() {
+        Assert.AreEqual(1.5f, new AutomaticAlignmentRetentionTimeCorrectionParameter().LocalSupportRtWindow, 1e-7f);
+    }
+
+    // MTBKS236 (SCIEX SWATH, MS1 cycle 0.0135 min): offsets are whole scans, most of them 0, so
+    // the MAD of a file's offsets is 0. The pinned #810 skipped the test whenever MAD <= 1e-12 and
+    // kept DEN_4's 5-scan offset (-0.0675 min) at anchor 5, while it rejected 1-scan offsets in
+    // MDX_4. The local test with a one-scan floor rejects the first and keeps the second.
+    [TestMethod]
+    public void Build_ScanQuantisedOffsets_RejectFiveScanAnchorAndKeepOneScanAnchors() {
+        const double cycle = 0.0135d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "DEN_4-like", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(1, 20).Select(index => index * 0.5d).ToArray();
+        var offsets = rts.Select(_ => 0d).ToArray();
+        offsets[3] = cycle;            // one scan late
+        offsets[7] = -cycle;           // one scan early
+        offsets[12] = -5d * cycle;     // five scans: a wrong peak, not drift
+        var peaks = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle),
+            [1] = ScannedPeaks(rts, offsets, cycle),
+        };
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId]);
+
+        var audit = result.Files.Single(file => file.FileId == 1);
+        Assert.AreEqual(cycle, audit.EstimatedScanInterval, 1e-9);
+        var anchors = AnchorsOf(result, 1);
+        Assert.AreEqual(20, anchors.Count);
+        Assert.AreEqual("LocalOutlier", anchors[12].Status);
+        Assert.IsFalse(anchors[12].Used);
+        Assert.AreEqual(cycle, anchors[12].OutlierScale!.Value, 1e-9);
+        Assert.AreEqual(0d, anchors[12].ExpectedOffset!.Value, 1e-9);
+        Assert.IsTrue(anchors[3].Used);
+        Assert.IsTrue(anchors[7].Used);
+        Assert.AreEqual(19, anchors.Count(anchor => anchor.Used));
+        Assert.IsTrue(anchors.All(anchor => anchor.OutlierTest == "Local" && anchor.LocalSupportCount >= 3));
+        // The rejected anchor's peak is mapped by its neighbours, not pulled 5 scans off.
+        Assert.AreEqual(rts[12] + 5d * cycle, result.Correction.Correct(1, rts[12] + 5d * cycle), 1e-9);
+    }
+
+    [TestMethod]
+    public void Build_GlobalTestWithZeroMad_UsesScanIntervalFloorInsteadOfSkipping() {
+        const double cycle = 0.0135d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(1, 20).Select(index => index * 0.5d).ToArray();
+        var offsets = rts.Select(_ => 0d).ToArray();
+        offsets[5] = cycle;
+        offsets[12] = -5d * cycle;
+        var parameter = AllCandidatesAsAnchors();
+        parameter.LocalSupportRtWindow = 0f;
+
+        var withScans = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle),
+            [1] = ScannedPeaks(rts, offsets, cycle),
+        };
+        var anchors = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId]), 1);
+        Assert.IsTrue(anchors.All(anchor => anchor.OutlierTest == "Global"));
+        Assert.AreEqual("MadOutlier", anchors[12].Status);
+        Assert.IsTrue(anchors[5].Used);
+        Assert.AreEqual(19, anchors.Count(anchor => anchor.Used));
+
+        // Without scan indexes no floor is known; a zero scale cannot judge, so nothing is rejected.
+        var withoutScans = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = rts.Select((rt, index) => Peak(index, 100d + 10d * index, rt, 10000d)).ToList(),
+            [1] = rts.Select((rt, index) => Peak(index, 100d + 10d * index, rt - offsets[index], 10000d)).ToList(),
+        };
+        var unscaledResult = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withoutScans[file.AnalysisFileId]);
+        Assert.AreEqual(0d, unscaledResult.Files.Single(file => file.FileId == 1).EstimatedScanInterval);
+        Assert.AreEqual(20, AnchorsOf(unscaledResult, 1).Count(anchor => anchor.Used));
+    }
+
+    // MTBLS417 (60 files, 20-min runs): the anchor at m/z 910.548, 17.0 min, drifts by up to
+    // -0.43 min, and independent peaks around it drift the same way, yet the pinned #810 rejected
+    // it as a MAD outlier in 37 of 59 files because the other anchors sit near 0. The local test
+    // keeps the drifting anchors and still rejects a wrong match inside the drifting region.
+    [TestMethod]
+    public void Build_LateRtDependentDrift_IsKeptWhileAMismatchInsideItIsRejected() {
+        const double cycle = 0.0212d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "drifting", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(0, 37).Select(index => 1d + 0.5d * index).ToArray(); // 1.0 .. 19.0 min
+        var offsets = rts.Select((rt, index) => (rt <= 13d ? 0d : -0.40d * (rt - 13d) / 6d) + (index % 3 - 1) * 0.004d).ToArray();
+        var mismatch = Array.FindIndex(rts, rt => Math.Abs(rt - 17d) < 1e-9);
+        offsets[mismatch] = 0.30d; // a wrong peak, against neighbours at about -0.2 min
+        var peaks = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle),
+            [1] = ScannedPeaks(rts, offsets, cycle),
+        };
+        var parameter = AllCandidatesAsAnchors();
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId]);
+
+        var local = AnchorsOf(result, 1);
+        var last = local.Count - 1;
+        var late = local.Where((anchor, index) => anchor.ReferenceRt >= 15d && index != mismatch && index != last).ToList();
+        Assert.AreEqual(7, late.Count);
+        Assert.IsTrue(late.All(anchor => anchor.Used && anchor.OutlierTest == "Local"),
+            string.Join(", ", late.Select(anchor => $"{anchor.ReferenceRt}:{anchor.Status}")));
+        Assert.AreEqual("LocalOutlier", local[mismatch].Status);
+        // Fewer than three neighbours: the run-wide test (with the scan floor) still decides.
+        Assert.AreEqual("Global", local[last].OutlierTest);
+        var at = Array.FindIndex(rts, rt => Math.Abs(rt - 16.5d) < 1e-9);
+        Assert.AreEqual(rts[at], result.Correction.Correct(1, rts[at] - offsets[at]), 1e-9);
+
+        // The same file judged only against the median of all of its anchors, as the pinned #810
+        // did, loses the late drift: this is the behaviour the local test replaces.
+        parameter.LocalSupportRtWindow = 0f;
+        var global = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId]), 1);
+        Assert.IsTrue(global.Where(anchor => anchor.ReferenceRt >= 15d).All(anchor => anchor.Status == "MadOutlier"),
+            string.Join(", ", global.Select(anchor => $"{anchor.ReferenceRt}:{anchor.Status}")));
+    }
+
+    [TestMethod]
+    public void WriteAudit_AddsOutlierAndCoverageColumnsAfterTheOriginalOnes() {
+        const double cycle = 0.0135d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(1, 20).Select(index => index * 0.5d).ToArray();
+        var offsets = rts.Select(_ => 0d).ToArray();
+        offsets[12] = -5d * cycle;
+        var peaks = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle),
+            [1] = ScannedPeaks(rts, offsets, cycle),
+        };
+        peaks[1].Add(ScannedPeak(99, 999d, 0.2d, 5000d, cycle));  // before the first anchor
+        peaks[1].Add(ScannedPeak(98, 998d, 11.0d, 5000d, cycle)); // after the last anchor
+        peaks[1].Add(ScannedPeak(97, 997d, 12.0d, 5000d, cycle));
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId]);
+        var audit = result.Files.Single(file => file.FileId == 1);
+        Assert.AreEqual(0.5d, audit.FirstAnchorRt!.Value, 1e-9);
+        Assert.AreEqual(10d, audit.LastAnchorRt!.Value, 1e-9);
+        Assert.AreEqual(1, audit.PeaksBeforeFirstAnchor);
+        Assert.AreEqual(2, audit.PeaksAfterLastAnchor);
+
+        var folder = Path.Combine(Path.GetTempPath(), "autort-audit-" + Guid.NewGuid().ToString("N"));
+        try {
+            result.WriteAudit(folder);
+            var summary = System.IO.File.ReadAllLines(Path.Combine(folder, "automatic_alignment_rt_correction_summary.tsv"));
+            var summaryHeader = summary[0].Split('\t');
+            CollectionAssert.AreEqual(
+                new[] { "Note", "Estimated scan interval (min)", "First used anchor RT (min)", "Last used anchor RT (min)", "Peaks before first used anchor", "Peaks after last used anchor" },
+                summaryHeader.Skip(11).ToArray());
+            Assert.IsTrue(summary.Skip(1).All(line => line.Split('\t').Length == summaryHeader.Length));
+
+            var anchorLines = System.IO.File.ReadAllLines(Path.Combine(folder, "automatic_alignment_rt_correction_anchors.tsv"));
+            var anchorHeader = anchorLines[0].Split('\t');
+            CollectionAssert.AreEqual(
+                new[] { "Status", "Outlier test", "Local support count", "Expected offset (min)", "Outlier scale (min)" },
+                anchorHeader.Skip(10).ToArray());
+            Assert.IsTrue(anchorLines.Skip(1).All(line => line.Split('\t').Length == anchorHeader.Length));
+            Assert.AreEqual(1, anchorLines.Count(line => line.Split('\t')[10] == "LocalOutlier"));
+        }
+        finally {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    private static List<AutomaticRtCorrectionAnchorAudit> AnchorsOf(AutomaticAlignmentRetentionTimeCorrectionResult result, int fileId) {
+        return result.Anchors.Where(anchor => anchor.FileId == fileId).OrderBy(anchor => anchor.ReferenceRt).ToList();
+    }
+
+    private static AutomaticAlignmentRetentionTimeCorrectionParameter AllCandidatesAsAnchors() {
+        return new AutomaticAlignmentRetentionTimeCorrectionParameter {
+            Execute = true,
+            ReferenceFileId = 0,
+            RtBinWidth = 0.5f,
+            MatchRtTolerance = 0.5f,
+            MinimumAnchorCount = 3,
+            MaximumAnchorCount = 100,
+            MinimumSampleCoverage = 0.5f,
+            IntensityQuantile = 0f,
+            MaximumPeakWidthQuantile = 1f,
+            MinimumSignalToNoise = 3f,
+        };
+    }
+
+    // Peaks at the reference RT minus the file's offset (offset = reference RT - original RT),
+    // each eight scans wide with scan indexes, so that the scan interval can be estimated.
+    private static List<ChromatogramPeakFeature> ScannedPeaks(IReadOnlyList<double> referenceRts, IReadOnlyList<double> offsets, double cycle) {
+        return referenceRts
+            .Select((rt, index) => ScannedPeak(index, 100d + 10d * index, rt - offsets[index], 10000d + index, cycle))
+            .ToList();
+    }
+
+    private static ChromatogramPeakFeature ScannedPeak(int id, double mz, double rt, double height, double cycle) {
+        var feature = Peak(id, mz, rt, height);
+        var top = (int)Math.Round(rt / cycle);
+        feature.PeakFeature.ChromXsLeft = new ChromXs(rt - 4d * cycle, ChromXType.RT, ChromXUnit.Min);
+        feature.PeakFeature.ChromXsRight = new ChromXs(rt + 4d * cycle, ChromXType.RT, ChromXUnit.Min);
+        feature.PeakFeature.ChromScanIdLeft = top - 4;
+        feature.PeakFeature.ChromScanIdTop = top;
+        feature.PeakFeature.ChromScanIdRight = top + 4;
+        return feature;
     }
 
     private static AnalysisFileBean File(int id, string name, AnalysisFileType type, int order) {

@@ -391,6 +391,7 @@ public sealed class ConfigParserTests
             ("automatic rt correction outlier mad threshold", "4.5"),
             ("automatic rt correction reference centrality weight", "0.25"),
             ("automatic rt correction interpolate blanks by analytical order", "false"),
+            ("automatic rt correction local support rt window", "2.5"),
         };
 
         foreach (var (key, value) in settings) {
@@ -413,6 +414,7 @@ public sealed class ConfigParserTests
         Assert.AreEqual(4.5f, actual.OutlierMadThreshold, 1e-7f);
         Assert.AreEqual(0.25f, actual.ReferenceCentralityWeight, 1e-7f);
         Assert.IsFalse(actual.InterpolateBlankByAnalyticalOrder);
+        Assert.AreEqual(2.5f, actual.LocalSupportRtWindow, 1e-7f);
     }
 
     [TestMethod]
