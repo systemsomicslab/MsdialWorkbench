@@ -357,28 +357,10 @@ internal sealed class LcmsAlignmentLightRunner {
     private static IEnumerable<MSDecResult> EnumerateRepresentativeDeconvolutions(
         IReadOnlyList<AnalysisFileBean> files,
         IReadOnlyList<LightSpotAccumulator> spots) {
-        var deconvolutionInfo = new Dictionary<int, (int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            deconvolutionInfo[file.AnalysisFileId] = (version, pointers, isAnnotationInfo);
-        }
-
-        var streams = files.ToDictionary(file => file.AnalysisFileId, file => File.OpenRead(file.DeconvolutionFilePath));
-        try {
-            foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
-                var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
-                var fileId = representative.FileID;
-                var peakId = representative.MasterPeakID;
-                var info = deconvolutionInfo[fileId];
-                yield return MsdecResultsReader.ReadMSDecResult(
-                    streams[fileId], info.pointers[peakId],
-                    info.version, info.isAnnotationInfo);
-            }
-        }
-        finally {
-            foreach (var stream in streams.Values) {
-                stream.Close();
-            }
+        using var reader = new RepresentativeDeconvolutionReader(files);
+        foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
+            var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
+            yield return reader.Read(representative);
         }
     }
 
