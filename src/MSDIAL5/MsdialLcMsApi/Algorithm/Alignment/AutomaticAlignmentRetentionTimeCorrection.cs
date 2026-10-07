@@ -1,4 +1,5 @@
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -33,6 +34,19 @@ public sealed class AutomaticRtCorrectionFileAudit {
     public double MedianAbsoluteOffset { get; internal set; }
     public double MaximumAbsoluteOffset { get; internal set; }
     public string Note { get; internal set; } = string.Empty;
+    /// <summary>
+    /// The file's MS1 cycle time (min) over the whole run, for information: the time-weighted median
+    /// spacing of consecutive MS1 scans of the analysed polarity, MS2 scans excluded (see
+    /// <see cref="Ms1CycleProfile.CycleTime"/>). 0 when unknown. The outlier test does not use it;
+    /// each anchor is floored at the cycle around it, <see cref="AutomaticRtCorrectionAnchorAudit.Ms1CycleTime"/>.
+    /// </summary>
+    public double EstimatedScanInterval { get; internal set; }
+    public double? FirstAnchorRt { get; internal set; }
+    public double? LastAnchorRt { get; internal set; }
+    /// <summary>Peaks whose original RT lies before the first used anchor; their offset is held constant.</summary>
+    public int PeaksBeforeFirstAnchor { get; internal set; }
+    /// <summary>Peaks whose original RT lies after the last used anchor; their offset is held constant.</summary>
+    public int PeaksAfterLastAnchor { get; internal set; }
 }
 
 public sealed class AutomaticRtCorrectionAnchorAudit {
@@ -46,6 +60,141 @@ public sealed class AutomaticRtCorrectionAnchorAudit {
     public double SampleCoverage { get; internal set; }
     public bool Used { get; internal set; }
     public string Status { get; internal set; } = string.Empty;
+    /// <summary>"Local", "Global", or empty when the anchor was not judged (unmatched, reference, Blank).</summary>
+    public string OutlierTest { get; internal set; } = string.Empty;
+    /// <summary>
+    /// The compounds matched in the file within the local support window of the anchor, other
+    /// than the anchor's own: co-eluting candidates (isotope peaks, adducts) count once.
+    /// </summary>
+    public int LocalSupportCount { get; internal set; }
+    /// <summary>Offset the anchor was judged against: the local support median, or the file's anchor median.</summary>
+    public double? ExpectedOffset { get; internal set; }
+    /// <summary>Robust scale of the test, max(1.4826 MAD, <see cref="Ms1CycleTime"/>), in minutes.</summary>
+    public double? OutlierScale { get; internal set; }
+    /// <summary>
+    /// The file's MS1 cycle time (min) around the anchor's original RT, the floor of the outlier
+    /// scale (see <see cref="Ms1CycleProfile.CycleTimeAt(double)"/>); 0 when unknown, null when the
+    /// anchor was not matched in the file.
+    /// </summary>
+    public double? Ms1CycleTime { get; internal set; }
+}
+
+/// <summary>
+/// The retention times of a file's MS1 scans of one polarity, the scans the MS1 chromatogram and
+/// so the peak-top RTs come from. A peak-top RT moves in steps of the MS1 cycle at that RT, which
+/// in data-dependent acquisition changes along the run: MS1 scans follow each other closely where
+/// no precursor triggers MS2 (void, wash, re-equilibration) and are spread out where many do.
+/// </summary>
+public sealed class Ms1CycleProfile {
+    /// <summary>Half width (min) of the RT window <see cref="CycleTimeAt(double)"/> reads.</summary>
+    public const double LocalHalfWindow = 0.5d;
+
+    private readonly double[] _times;
+
+    public Ms1CycleProfile(IEnumerable<double> ms1ScanTimes) {
+        if (ms1ScanTimes is null) throw new ArgumentNullException(nameof(ms1ScanTimes));
+        _times = ms1ScanTimes.Where(time => !double.IsNaN(time) && !double.IsInfinity(time)).ToArray();
+        Array.Sort(_times);
+        CycleTime = TimeWeightedMedianSpacing(0, _times.Length - 1);
+    }
+
+    /// <summary>No MS1 scans: every cycle time is 0, unknown.</summary>
+    public static Ms1CycleProfile Empty { get; } = new Ms1CycleProfile(Array.Empty<double>());
+
+    /// <summary>
+    /// The MS1 scans (MsLevel 1) of <paramref name="ionMode"/>'s polarity, as
+    /// RetentionTimeTypedSpectra selects them for the MS1 chromatogram. MS2 scans between them are
+    /// ignored, so DDA and DIA/SWATH files give their MS1 cycle, not the spacing of the raw
+    /// spectrum list.
+    /// </summary>
+    /// <remarks>
+    /// The peaks' ChromScanId values cannot give this: peak spotting sets them to the raw spectrum
+    /// index (ValuePeak.Id), which counts every spectrum, MS2 included.
+    /// </remarks>
+    public static Ms1CycleProfile FromSpectra(IEnumerable<RawSpectrum> spectra, IonMode ionMode) {
+        if (spectra is null) throw new ArgumentNullException(nameof(spectra));
+        var polarity = ionMode == IonMode.Negative ? ScanPolarity.Negative : ScanPolarity.Positive;
+        return new Ms1CycleProfile(spectra
+            .Where(spectrum => spectrum.MsLevel == 1 && spectrum.ScanPolarity == polarity)
+            .Select(spectrum => spectrum.ScanStartTime));
+    }
+
+    public int ScanCount => _times.Length;
+
+    /// <summary>The time-weighted median MS1 spacing (min) over the whole file; 0 with fewer than two scans.</summary>
+    public double CycleTime { get; }
+
+    /// <summary>
+    /// The MS1 cycle time (min) around <paramref name="rt"/>: the time-weighted median spacing of
+    /// the consecutive MS1 scans within <see cref="LocalHalfWindow"/> of it, together with the
+    /// nearest scan outside each side of that window. 0 with fewer than two scans in the file.
+    /// </summary>
+    /// <remarks>
+    /// The median is weighted by duration because a median over scans counts a dense region more
+    /// times than a sparse one of the same length: 0.2 min of 0.0047-min idle scans inside the
+    /// window outnumber 0.8 min of 0.021-min scans, and the plain median would floor an anchor
+    /// that sits in the 0.021-min region at the idle cycle. Weighted by duration, the result is
+    /// the spacing in effect over most of the window. Adding the two scans outside the window
+    /// gives a cycle even where the window holds fewer than two scans.
+    /// </remarks>
+    public double CycleTimeAt(double rt) {
+        if (_times.Length < 2 || double.IsNaN(rt) || double.IsInfinity(rt)) return 0d;
+        // The last scan before the window, and the first scan after it.
+        var first = Math.Max(0, FirstIndexWhere(time => time >= rt - LocalHalfWindow) - 1);
+        var last = Math.Min(_times.Length - 1, FirstIndexWhere(time => time > rt + LocalHalfWindow));
+        if (last <= first) {
+            // The window lies wholly before or after the scans: use the two scans at that end.
+            last = Math.Min(_times.Length - 1, first + 1);
+            first = last - 1;
+        }
+        return TimeWeightedMedianSpacing(first, last);
+    }
+
+    /// <summary>
+    /// The position, among the file's MS1 scans in RT order, of the scan nearest
+    /// <paramref name="rt"/>; -1 when the file has no MS1 scans or <paramref name="rt"/> is NaN.
+    /// A peak top lies on an MS1 scan, so the difference of two peak tops' positions is the number
+    /// of MS1 scan steps between them, whatever the spacing of those scans.
+    /// </summary>
+    public int NearestScanIndex(double rt) {
+        if (_times.Length == 0 || double.IsNaN(rt)) return -1;
+        var next = FirstIndexWhere(time => time >= rt);
+        if (next == 0) return 0;
+        if (next == _times.Length) return _times.Length - 1;
+        return rt - _times[next - 1] <= _times[next] - rt ? next - 1 : next;
+    }
+
+    // Binary search over the sorted times for the first index whose time satisfies a monotone
+    // predicate; _times.Length when none does.
+    private int FirstIndexWhere(Func<double, bool> predicate) {
+        int low = 0, high = _times.Length;
+        while (low < high) {
+            var middle = low + (high - low) / 2;
+            if (predicate(_times[middle])) high = middle;
+            else low = middle + 1;
+        }
+        return low;
+    }
+
+    // Over the scans first..last (inclusive): the smallest positive spacing d such that the
+    // spacings of at most d cover at least half the time between consecutive scans.
+    private double TimeWeightedMedianSpacing(int first, int last) {
+        if (last - first < 1) return 0d;
+        var spacings = new List<double>(last - first);
+        for (var index = first + 1; index <= last; index++) {
+            var spacing = _times[index] - _times[index - 1];
+            if (spacing > 0d) spacings.Add(spacing);
+        }
+        if (spacings.Count == 0) return 0d;
+        spacings.Sort();
+        var half = spacings.Sum() / 2d;
+        var covered = 0d;
+        foreach (var spacing in spacings) {
+            covered += spacing;
+            if (covered >= half) return spacing;
+        }
+        return spacings[spacings.Count - 1];
+    }
 }
 
 public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
@@ -66,7 +215,9 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
         Directory.CreateDirectory(outputFolder);
         var summaryPath = Path.Combine(outputFolder, "automatic_alignment_rt_correction_summary.tsv");
         using (var writer = new StreamWriter(summaryPath, false, new UTF8Encoding(false))) {
-            writer.WriteLine("File ID\tFile name\tFile type\tAnalytical order\tCandidate count\tMatched anchors\tUsed anchors\tModel source\tReference score\tMedian absolute offset (min)\tMaximum absolute offset (min)\tNote");
+            // Columns after "Note" were added later; readers that address columns by name are unaffected.
+            writer.WriteLine("File ID\tFile name\tFile type\tAnalytical order\tCandidate count\tMatched anchors\tUsed anchors\tModel source\tReference score\tMedian absolute offset (min)\tMaximum absolute offset (min)\tNote"
+                + "\tEstimated scan interval (min)\tFirst used anchor RT (min)\tLast used anchor RT (min)\tPeaks before first used anchor\tPeaks after last used anchor");
             foreach (var file in Files.OrderBy(file => file.AnalyticalOrder).ThenBy(file => file.FileId)) {
                 writer.WriteLine(string.Join("\t",
                     file.FileId.ToString(CultureInfo.InvariantCulture),
@@ -80,13 +231,19 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     file.ReferenceScore.ToString("G17", CultureInfo.InvariantCulture),
                     file.MedianAbsoluteOffset.ToString("G17", CultureInfo.InvariantCulture),
                     file.MaximumAbsoluteOffset.ToString("G17", CultureInfo.InvariantCulture),
-                    file.Note));
+                    file.Note,
+                    file.EstimatedScanInterval.ToString("G17", CultureInfo.InvariantCulture),
+                    file.FirstAnchorRt?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    file.LastAnchorRt?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    file.FirstAnchorRt.HasValue ? file.PeaksBeforeFirstAnchor.ToString(CultureInfo.InvariantCulture) : string.Empty,
+                    file.LastAnchorRt.HasValue ? file.PeaksAfterLastAnchor.ToString(CultureInfo.InvariantCulture) : string.Empty));
             }
         }
 
         var anchorPath = Path.Combine(outputFolder, "automatic_alignment_rt_correction_anchors.tsv");
         using (var writer = new StreamWriter(anchorPath, false, new UTF8Encoding(false))) {
-            writer.WriteLine("File ID\tFile name\tAnchor ID\tm/z\tReference RT (min)\tOriginal RT (min)\tOffset (min)\tQuality score\tNon-Blank sample coverage\tUsed\tStatus");
+            writer.WriteLine("File ID\tFile name\tAnchor ID\tm/z\tReference RT (min)\tOriginal RT (min)\tOffset (min)\tQuality score\tNon-Blank sample coverage\tUsed\tStatus"
+                + "\tOutlier test\tLocal support count\tExpected offset (min)\tOutlier scale (min)\tMS1 cycle at anchor (min)");
             foreach (var anchor in Anchors.OrderBy(anchor => anchor.FileId).ThenBy(anchor => anchor.AnchorId)) {
                 var offset = anchor.OriginalRt.HasValue ? anchor.ReferenceRt - anchor.OriginalRt.Value : (double?)null;
                 writer.WriteLine(string.Join("\t",
@@ -100,7 +257,12 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     anchor.QualityScore.ToString("G17", CultureInfo.InvariantCulture),
                     anchor.SampleCoverage.ToString("G17", CultureInfo.InvariantCulture),
                     anchor.Used.ToString(),
-                    anchor.Status));
+                    anchor.Status,
+                    anchor.OutlierTest,
+                    string.IsNullOrEmpty(anchor.OutlierTest) ? string.Empty : anchor.LocalSupportCount.ToString(CultureInfo.InvariantCulture),
+                    anchor.ExpectedOffset?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    anchor.OutlierScale?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty,
+                    anchor.Ms1CycleTime?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty));
             }
         }
     }
@@ -113,20 +275,41 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
 /// </summary>
 public static class AutomaticAlignmentRetentionTimeCorrection {
     private const int CandidateLimitPerRtBin = 3;
+    // An anchor is judged against its local neighbours only when at least this many other
+    // compounds (co-eluting groups of reference candidates, see GroupCoElutingSupport) were
+    // matched in the same file within the local support window.
+    private const int MinimumLocalSupportCount = 3;
+    // Two matched reference candidates are one compound (isotope peaks, adducts, in-source
+    // fragments) when their peak tops lie within this many MS1 scan steps of each other in the
+    // reference file and in the judged file. The limit counts scans, not minutes: in
+    // data-dependent acquisition an abundant compound triggers MS2 at its apex, so the MS1 step
+    // there is longer than the median cycle around it, and a limit in median cycles can be
+    // shorter than one real step. Two steps absorb a weak isotope peak or adduct whose top noise
+    // moves a scan or two from the compound's.
+    private const int CoElutionScans = 2;
 
+    /// <param name="ms1CycleProfileLoader">
+    /// A file's MS1 scan times (<see cref="Ms1CycleProfile.FromSpectra(IEnumerable{RawSpectrum}, IonMode)"/>).
+    /// Each anchor's outlier scale is floored at the MS1 cycle around the anchor's RT in that file.
+    /// Return <see cref="Ms1CycleProfile.Empty"/> when the scans are unknown: the scale is then the
+    /// MAD alone, and a MAD of 0 judges nothing.
+    /// </param>
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
-        double mzTolerance) {
-        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath));
+        double mzTolerance,
+        Func<AnalysisFileBean, Ms1CycleProfile> ms1CycleProfileLoader) {
+        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath), ms1CycleProfileLoader);
     }
 
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
         double mzTolerance,
-        Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader) {
+        Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader,
+        Func<AnalysisFileBean, Ms1CycleProfile> ms1CycleProfileLoader) {
         Validate(files, parameter, mzTolerance, peakLoader);
+        if (ms1CycleProfileLoader is null) throw new ArgumentNullException(nameof(ms1CycleProfileLoader));
 
         var summaries = files.Select(file => CreateSummary(file, peakLoader(file), parameter, mzTolerance)).ToList();
         var eligibleReferences = summaries
@@ -145,8 +328,15 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         var reference = SelectReference(eligibleReferences, parameter.ReferenceFileId);
 
         var matchesByFile = new Dictionary<int, List<AnchorMatch>>();
+        var cycleProfiles = new Dictionary<int, Ms1CycleProfile>();
+        var sortedPeakRts = new Dictionary<int, double[]>();
         foreach (var file in files) {
-            var peaks = CreatePeakPoints(peakLoader(file));
+            var features = peakLoader(file);
+            cycleProfiles[file.AnalysisFileId] = ms1CycleProfileLoader(file) ?? Ms1CycleProfile.Empty;
+            var peaks = CreatePeakPoints(features);
+            var rts = peaks.Select(peak => peak.Rt).ToArray();
+            Array.Sort(rts);
+            sortedPeakRts[file.AnalysisFileId] = rts;
             matchesByFile[file.AnalysisFileId] = reference.Candidates
                 .Select(candidate => Match(candidate, peaks, parameter.MatchRtTolerance, mzTolerance))
                 .ToList();
@@ -173,6 +363,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             selectedAnchors[index].AnchorId = index + 1;
         }
 
+        var coveredCandidateSet = new HashSet<PeakPoint>(coveredCandidates);
         var models = new Dictionary<int, IAlignmentRetentionTimeCorrectionModel>();
         var fileAudits = new List<AutomaticRtCorrectionFileAudit>();
         var anchorAudits = new List<AutomaticRtCorrectionAnchorAudit>();
@@ -191,6 +382,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 MatchedAnchorCount = relevantMatches.Count(match => match.Peak is not null),
                 ReferenceScore = summary.ReferenceScore,
                 ModelSource = AutomaticRtCorrectionModelSource.Uncorrected,
+                EstimatedScanInterval = cycleProfiles[file.AnalysisFileId].CycleTime,
             };
 
             if (file.AnalysisFileId == reference.File.AnalysisFileId) {
@@ -201,10 +393,21 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 }
                 var points = relevantMatches.Select(ToControlPoint).ToList();
                 models[file.AnalysisFileId] = new PiecewiseLinearAlignmentRetentionTimeCorrectionModel(points);
-                SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.Reference);
+                SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.Reference, sortedPeakRts[file.AnalysisFileId]);
             }
             else if (file.AnalysisFileType != AnalysisFileType.Blank) {
-                var accepted = RejectOutliersAndNonMonotonic(relevantMatches, parameter.OutlierMadThreshold);
+                // Every reference candidate that passed the coverage filter and was matched
+                // uniquely in this file is independent evidence of the file's local RT offset.
+                var support = matchesByFile[file.AnalysisFileId]
+                    .Where(match => match.Peak is not null && coveredCandidateSet.Contains(match.Reference))
+                    .ToList();
+                var accepted = RejectOutliersAndNonMonotonic(
+                    relevantMatches,
+                    support,
+                    parameter.OutlierMadThreshold,
+                    parameter.LocalSupportRtWindow,
+                    cycleProfiles[file.AnalysisFileId],
+                    cycleProfiles[reference.File.AnalysisFileId]);
                 if (accepted.Count >= parameter.MinimumAnchorCount) {
                     foreach (var match in accepted) {
                         match.Status = "Used";
@@ -212,7 +415,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     }
                     var points = accepted.Select(ToControlPoint).ToList();
                     models[file.AnalysisFileId] = new PiecewiseLinearAlignmentRetentionTimeCorrectionModel(points);
-                    SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.DetectedAnchors);
+                    SetAuditFromPoints(fileAudit, points, AutomaticRtCorrectionModelSource.DetectedAnchors, sortedPeakRts[file.AnalysisFileId]);
                 }
                 else {
                     foreach (var match in accepted) {
@@ -234,7 +437,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             }
 
             fileAudits.Add(fileAudit);
-            anchorAudits.AddRange(relevantMatches.Select(match => ToAudit(file, match)));
+            anchorAudits.AddRange(relevantMatches.Select(match => ToAudit(file, match, cycleProfiles[file.AnalysisFileId])));
         }
 
         if (parameter.InterpolateBlankByAnalyticalOrder) {
@@ -264,6 +467,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         if (parameter.MaximumPeakWidthQuantile < 0d || parameter.MaximumPeakWidthQuantile > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.MaximumPeakWidthQuantile));
         if (parameter.MinimumSampleCoverage < 0d || parameter.MinimumSampleCoverage > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.MinimumSampleCoverage));
         if (parameter.ReferenceCentralityWeight < 0d || parameter.ReferenceCentralityWeight > 1d) throw new ArgumentOutOfRangeException(nameof(parameter.ReferenceCentralityWeight));
+        if (parameter.LocalSupportRtWindow < 0d || double.IsNaN(parameter.LocalSupportRtWindow)) throw new ArgumentOutOfRangeException(nameof(parameter.LocalSupportRtWindow));
     }
 
     private static FileSummary CreateSummary(
@@ -435,18 +639,92 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         return selected.OrderBy(candidate => candidate.Rt).ToList();
     }
 
-    private static List<AnchorMatch> RejectOutliersAndNonMonotonic(List<AnchorMatch> matches, double madThreshold) {
+    /// <summary>
+    /// Rejects anchor matches whose offset disagrees with the file's own RT drift, then removes
+    /// matches that would make the map non-monotonic.
+    /// <para>
+    /// An anchor is judged against the median offset of the other compounds matched in the same
+    /// file within <paramref name="localWindow"/> minutes of it (status LocalOutlier).
+    /// Judging locally keeps an anchor whose offset follows an RT-dependent drift that independent
+    /// peaks around it share, which a single median over the whole run would reject. Only when
+    /// fewer than <see cref="MinimumLocalSupportCount"/> such neighbours exist is the anchor judged
+    /// against the median of all of the file's anchors, as before (status MadOutlier).
+    /// </para>
+    /// <para>
+    /// A neighbour is a compound, not a reference candidate: a compound's isotope peaks and
+    /// adducts are isolated by m/z and so are candidates of their own, but they share its peak-top
+    /// RT and its offset, also when the match is wrong. Candidates whose peak tops coincide in
+    /// both files (<see cref="GroupCoElutingSupport"/>) count once, at their median offset, and
+    /// the judged anchor's own group is no support for it. Otherwise a wrong match and its isotope
+    /// peaks outvote a true neighbour where fewer than three compounds lie within the window.
+    /// </para>
+    /// <para>
+    /// The robust scale is max(1.4826 MAD, floor), the floor being the file's MS1 cycle time
+    /// around the judged anchor's RT (<see cref="Ms1CycleProfile.CycleTimeAt(double)"/>). Offsets
+    /// are quantised to whole scans, so a MAD of zero must not disable the test, and a one-scan
+    /// deviation must not count as an outlier. The cycle is read where the anchor is because a
+    /// data-dependent file's MS1 cycle changes along the run; a file-wide value can be the short
+    /// cycle of MS1-only stretches and would again reject one-scan offsets in the gradient.
+    /// </para>
+    /// </summary>
+    private static List<AnchorMatch> RejectOutliersAndNonMonotonic(
+        List<AnchorMatch> matches,
+        IReadOnlyList<AnchorMatch> support,
+        double madThreshold,
+        double localWindow,
+        Ms1CycleProfile cycleProfile,
+        Ms1CycleProfile referenceCycleProfile) {
         var accepted = matches.Where(match => match.Peak is not null).ToList();
-        var offsets = accepted.Select(match => match.Reference.Rt - match.Peak!.Rt).ToList();
+        var offsets = accepted.Select(Offset).ToList();
         if (offsets.Count > 0 && madThreshold > 0d) {
-            var median = Median(offsets);
-            var mad = Median(offsets.Select(offset => Math.Abs(offset - median)));
-            if (mad > 1e-12) {
-                var scale = 1.4826d * mad;
-                foreach (var match in accepted.Where(match => Math.Abs((match.Reference.Rt - match.Peak!.Rt) - median) / scale > madThreshold).ToList()) {
-                    match.Status = "MadOutlier";
-                    accepted.Remove(match);
+            var groups = localWindow > 0d
+                ? GroupCoElutingSupport(support, cycleProfile, referenceCycleProfile)
+                : new Dictionary<AnchorMatch, int>();
+            var globalMedian = Median(offsets);
+            var globalMad = 1.4826d * Median(offsets.Select(value => Math.Abs(value - globalMedian)));
+            var rejected = new List<AnchorMatch>();
+            foreach (var match in accepted) {
+                var offset = Offset(match);
+                var scaleFloor = cycleProfile.CycleTimeAt(match.Peak!.Rt);
+                match.Ms1CycleTime = scaleFloor;
+                var ownGroup = groups.TryGetValue(match, out var group) ? group : -1;
+                // One offset per co-eluting group: a compound is one neighbour however many of its
+                // ions are candidates, and the anchor's own group is no neighbour of it.
+                var neighbours = localWindow > 0d
+                    ? support
+                        .Where(other => !ReferenceEquals(other.Reference, match.Reference)
+                            && groups[other] != ownGroup
+                            && Math.Abs(other.Peak!.Rt - match.Peak!.Rt) <= localWindow)
+                        .GroupBy(other => groups[other])
+                        .Select(members => Median(members.Select(Offset)))
+                        .ToList()
+                    : new List<double>();
+                match.LocalSupportCount = neighbours.Count;
+                if (neighbours.Count >= MinimumLocalSupportCount) {
+                    var localMedian = Median(neighbours);
+                    var localScale = RobustScale(neighbours, localMedian, scaleFloor);
+                    match.OutlierTest = "Local";
+                    match.ExpectedOffset = localMedian;
+                    match.OutlierScale = localScale;
+                    if (localScale > 0d && Math.Abs(offset - localMedian) / localScale > madThreshold) {
+                        match.Status = "LocalOutlier";
+                        rejected.Add(match);
+                    }
                 }
+                else {
+                    var globalScale = Math.Max(globalMad, scaleFloor);
+                    match.OutlierTest = "Global";
+                    match.ExpectedOffset = globalMedian;
+                    match.OutlierScale = globalScale;
+                    // A zero scale (MAD of zero and no MS1 cycle time known) cannot judge anything.
+                    if (globalScale > 0d && Math.Abs(offset - globalMedian) / globalScale > madThreshold) {
+                        match.Status = "MadOutlier";
+                        rejected.Add(match);
+                    }
+                }
+            }
+            foreach (var match in rejected) {
+                accepted.Remove(match);
             }
         }
 
@@ -468,6 +746,65 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         return accepted;
     }
 
+    /// <summary>
+    /// Numbers the support matches so that matches whose peak tops lie within
+    /// <see cref="CoElutionScans"/> MS1 scan steps of each other both in the reference file and in
+    /// the judged file share a number (single linkage). A peak top is placed at the file's nearest
+    /// MS1 scan (<see cref="Ms1CycleProfile.NearestScanIndex(double)"/>), so the limit follows the
+    /// spacing of the scans at the peak tops, not a median cycle. Where a file's scans are unknown
+    /// only identical peak-top RTs are grouped. Merging two compounds that do elute a scan or two
+    /// apart in both files only lowers the support count, which at worst returns the anchor to the
+    /// run-wide test.
+    /// </summary>
+    private static Dictionary<AnchorMatch, int> GroupCoElutingSupport(
+        IReadOnlyList<AnchorMatch> support,
+        Ms1CycleProfile cycleProfile,
+        Ms1CycleProfile referenceCycleProfile) {
+        var ordered = support.OrderBy(match => match.Peak!.Rt).ToList();
+        var fileRts = ordered.Select(match => match.Peak!.Rt).ToArray();
+        var referenceRts = ordered.Select(match => match.Reference.Rt).ToArray();
+        var fileScans = fileRts.Select(cycleProfile.NearestScanIndex).ToArray();
+        var referenceScans = referenceRts.Select(referenceCycleProfile.NearestScanIndex).ToArray();
+        var parent = Enumerable.Range(0, ordered.Count).ToArray();
+        int Root(int index) {
+            while (parent[index] != index) {
+                parent[index] = parent[parent[index]];
+                index = parent[index];
+            }
+            return index;
+        }
+        for (var i = 0; i < ordered.Count; i++) {
+            for (var j = i + 1; j < ordered.Count; j++) {
+                // Ordered by the judged file's RT, so its nearest-scan positions do not decrease:
+                // once j is too far from i in the judged file, every later j is too.
+                if (!CoElute(fileRts, fileScans, i, j)) break;
+                if (!CoElute(referenceRts, referenceScans, i, j)) continue;
+                parent[Root(j)] = Root(i);
+            }
+        }
+        var groups = new Dictionary<AnchorMatch, int>();
+        for (var index = 0; index < ordered.Count; index++) {
+            groups[ordered[index]] = Root(index);
+        }
+        return groups;
+    }
+
+    // Whether peak tops i and j lie within CoElutionScans MS1 scan steps of each other; with the
+    // file's scans unknown (position -1), whether they are at the same RT.
+    private static bool CoElute(double[] rts, int[] scans, int i, int j) {
+        if (scans[i] < 0 || scans[j] < 0) return Math.Abs(rts[j] - rts[i]) <= 1e-9;
+        return Math.Abs(scans[j] - scans[i]) <= CoElutionScans;
+    }
+
+    private static double Offset(AnchorMatch match) {
+        return match.Reference.Rt - match.Peak!.Rt;
+    }
+
+    private static double RobustScale(IReadOnlyList<double> values, double median, double floor) {
+        var mad = Median(values.Select(value => Math.Abs(value - median)));
+        return Math.Max(1.4826d * mad, Math.Max(0d, floor));
+    }
+
     private static AlignmentRetentionTimeCorrectionControlPoint ToControlPoint(AnchorMatch match) {
         return new AlignmentRetentionTimeCorrectionControlPoint(
             match.Reference.AnchorId,
@@ -477,7 +814,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             match.Peak.QualityScore);
     }
 
-    private static AutomaticRtCorrectionAnchorAudit ToAudit(AnalysisFileBean file, AnchorMatch match) {
+    private static AutomaticRtCorrectionAnchorAudit ToAudit(AnalysisFileBean file, AnchorMatch match, Ms1CycleProfile cycleProfile) {
         return new AutomaticRtCorrectionAnchorAudit {
             FileId = file.AnalysisFileId,
             FileName = file.AnalysisFileName,
@@ -489,18 +826,34 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             SampleCoverage = match.Reference.SampleCoverage,
             Used = match.Used,
             Status = match.Status,
+            OutlierTest = match.OutlierTest,
+            LocalSupportCount = match.LocalSupportCount,
+            ExpectedOffset = match.ExpectedOffset,
+            OutlierScale = match.OutlierScale,
+            // Judged anchors carry the floor they were judged with; the reference file's and Blank
+            // files' anchors are read here, for the record.
+            Ms1CycleTime = match.Peak is null ? null : match.Ms1CycleTime ?? cycleProfile.CycleTimeAt(match.Peak.Rt),
         };
     }
 
     private static void SetAuditFromPoints(
         AutomaticRtCorrectionFileAudit audit,
         IReadOnlyList<AlignmentRetentionTimeCorrectionControlPoint> points,
-        AutomaticRtCorrectionModelSource source) {
+        AutomaticRtCorrectionModelSource source,
+        double[] sortedPeakRts) {
         var absoluteOffsets = points.Select(point => Math.Abs(point.Offset)).ToList();
         audit.UsedAnchorCount = points.Count;
         audit.ModelSource = source;
         audit.MedianAbsoluteOffset = Median(absoluteOffsets);
         audit.MaximumAbsoluteOffset = absoluteOffsets.Count == 0 ? 0d : absoluteOffsets.Max();
+        if (points.Count > 0) {
+            var first = points.Min(point => point.OriginalRt);
+            var last = points.Max(point => point.OriginalRt);
+            audit.FirstAnchorRt = first;
+            audit.LastAnchorRt = last;
+            audit.PeaksBeforeFirstAnchor = sortedPeakRts.Count(rt => rt < first);
+            audit.PeaksAfterLastAnchor = sortedPeakRts.Count(rt => rt > last);
+        }
     }
 
     private static void InterpolateBlankModels(
@@ -595,5 +948,10 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         public PeakPoint? Peak { get; set; }
         public string Status { get; set; }
         public bool Used { get; set; }
+        public string OutlierTest { get; set; } = string.Empty;
+        public int LocalSupportCount { get; set; }
+        public double? ExpectedOffset { get; set; }
+        public double? OutlierScale { get; set; }
+        public double? Ms1CycleTime { get; set; }
     }
 }

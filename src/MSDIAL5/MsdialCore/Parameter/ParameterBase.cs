@@ -691,6 +691,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction outlier MAD threshold", AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction local support RT window", AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow.ToString(CultureInfo.InvariantCulture) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -1237,6 +1238,30 @@ namespace CompMs.MsdialCore.Parameter
         public float ReferenceCentralityWeight { get; set; } = 0.35F;
         [Key(14)]
         public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
+        public const float DefaultLocalSupportRtWindow = 1.5F;
+
+        /// <summary>
+        /// Half-width (min) of the window in which an anchor's offset is compared with the offsets of
+        /// the other reference candidates matched in the same file. 0 judges every anchor against the
+        /// median of the file's anchors only. A project saved before this setting existed loads with
+        /// <see cref="DefaultLocalSupportRtWindow"/>, not 0.
+        /// </summary>
+        [IgnoreMember]
+        public float LocalSupportRtWindow {
+            get => SerializedLocalSupportRtWindow ?? DefaultLocalSupportRtWindow;
+            set => SerializedLocalSupportRtWindow = value;
+        }
+
+        /// <summary>
+        /// The stored form of <see cref="LocalSupportRtWindow"/>; use that property instead.
+        /// MessagePack 1.x sets a member whose key is absent from the data to its type's default,
+        /// not to the member's initialiser. For a float that is 0, which would turn the local test
+        /// off in every project saved before key 15 existed; for this nullable it is null, which
+        /// <see cref="LocalSupportRtWindow"/> reads as the default.
+        /// </summary>
+        [Key(15)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public float? SerializedLocalSupportRtWindow { get; set; } = DefaultLocalSupportRtWindow;
     }
 
     [MessagePackObject]
