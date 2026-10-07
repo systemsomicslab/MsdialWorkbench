@@ -429,6 +429,97 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             string.Join(", ", global.Select(anchor => $"{anchor.ReferenceRt}:{anchor.Status}")));
     }
 
+    // A late, sparse stretch: one compound at 16.8 min and anchor A at 18.0 min with its M+1 and
+    // M+2 isotope peaks, which are isolated by m/z and so are reference candidates of their own.
+    // In the target file A is absent and an isomer 0.3 min later is the unique match for A, A+1
+    // and A+2. Counted as three neighbours, the isotope peaks outvoted the true neighbour: A was
+    // kept (judged against its own isotopes), the anchor at 16.8 min was rejected as a
+    // LocalOutlier, and Correct(17.5) was 17.27. One compound is one neighbour, and an anchor's own
+    // co-eluting peaks are no neighbours at all, so both anchors fall back to the run-wide test,
+    // which rejects A, as the run-wide test alone (window 0) does.
+    [TestMethod]
+    public void Build_IsotopePeaksOfOneCompound_CountAsOneNeighbourAndNotAsTheAnchorsOwnSupport() {
+        const double cycle = 0.0135d;
+        const double isotope = 1.00335d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(0, 29).Select(index => 1d + 0.5d * index).ToArray(); // 1.0 .. 15.0 min
+        List<ChromatogramPeakFeature> Sample(double clusterRt) {
+            var peaks = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle);
+            peaks.Add(ScannedPeak(100, 700d, 16.8d, 50000d, cycle));
+            peaks.Add(ScannedPeak(101, 800d, clusterRt, 90000d, cycle));
+            peaks.Add(ScannedPeak(102, 800d + isotope, clusterRt, 40000d, cycle));
+            // M+2 tops one MS1 scan later: one compound all the same.
+            peaks.Add(ScannedPeak(103, 800d + 2d * isotope, clusterRt + cycle, 10000d, cycle));
+            return peaks;
+        }
+        var peaksByFile = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = Sample(18.0d),
+            [1] = Sample(18.3d),
+        };
+        var parameter = AllCandidatesAsAnchors();
+        parameter.MaximumAnchorCount = 12;
+        Assert.AreEqual(1.5f, parameter.LocalSupportRtWindow, 1e-7f);
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaksByFile[file.AnalysisFileId], Ms1Cycle(cycle));
+
+        var anchors = AnchorsOf(result, 1);
+        Assert.AreEqual(12, anchors.Count);
+        var a = anchors.Single(anchor => Math.Abs(anchor.Mass - 800d) < 1e-9);
+        var neighbour = anchors.Single(anchor => Math.Abs(anchor.Mass - 700d) < 1e-9);
+        // A's isotope peaks are A itself; 16.8 min is its only other compound within 1.5 min.
+        Assert.AreEqual(1, a.LocalSupportCount);
+        Assert.AreEqual("Global", a.OutlierTest);
+        Assert.AreEqual("MadOutlier", a.Status);
+        Assert.IsFalse(a.Used);
+        // A and its isotope peaks are one compound, one neighbour of the anchor at 16.8 min.
+        Assert.AreEqual(1, neighbour.LocalSupportCount);
+        Assert.AreEqual("Global", neighbour.OutlierTest);
+        Assert.IsTrue(neighbour.Used, neighbour.Status);
+        Assert.AreEqual(17.5d, result.Correction.Correct(1, 17.5d), 1e-9);
+
+        // The run-wide test alone decides the same way.
+        parameter.LocalSupportRtWindow = 0f;
+        var global = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaksByFile[file.AnalysisFileId], Ms1Cycle(cycle));
+        Assert.AreEqual("MadOutlier", AnchorsOf(global, 1).Single(anchor => Math.Abs(anchor.Mass - 800d) < 1e-9).Status);
+        Assert.AreEqual(17.5d, global.Correction.Correct(1, 17.5d), 1e-9);
+    }
+
+    // Compounds that elute close together but at different scans are distinct neighbours: in a
+    // dense region, peaks three scans apart count one each and the local test still applies.
+    [TestMethod]
+    public void Build_PeaksAFewScansApart_CountAsDistinctNeighbours() {
+        const double cycle = 0.0135d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        // Pairs of compounds three scans apart every 1 min: 1.0, 1.0405, 2.0, 2.0405, ...
+        var rts = Enumerable.Range(0, 10)
+            .SelectMany(index => new[] { 1d + index, 1d + index + 3d * cycle })
+            .ToArray();
+        var offsets = rts.Select(_ => 0d).ToArray();
+        var peaks = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = ScannedPeaks(rts, offsets, cycle),
+            [1] = ScannedPeaks(rts, offsets, cycle),
+        };
+        var parameter = AllCandidatesAsAnchors();
+        parameter.RtBinWidth = 0.02f;
+        parameter.MatchRtTolerance = 0.02f;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId], Ms1Cycle(cycle));
+
+        var anchors = AnchorsOf(result, 1);
+        Assert.AreEqual(20, anchors.Count);
+        // The anchor at 5.0 min: its partner at 5.04 min and the pairs at 4 and 6 min are five
+        // separate compounds within 1.5 min.
+        var middle = anchors.Single(anchor => Math.Abs(anchor.ReferenceRt - 5d) < 1e-9);
+        Assert.AreEqual("Local", middle.OutlierTest);
+        Assert.AreEqual(5, middle.LocalSupportCount);
+    }
+
     [TestMethod]
     public void WriteAudit_AddsOutlierAndCoverageColumnsAfterTheOriginalOnes() {
         const double cycle = 0.0135d;

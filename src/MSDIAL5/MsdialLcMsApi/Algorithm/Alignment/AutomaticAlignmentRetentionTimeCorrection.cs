@@ -62,6 +62,10 @@ public sealed class AutomaticRtCorrectionAnchorAudit {
     public string Status { get; internal set; } = string.Empty;
     /// <summary>"Local", "Global", or empty when the anchor was not judged (unmatched, reference, Blank).</summary>
     public string OutlierTest { get; internal set; } = string.Empty;
+    /// <summary>
+    /// The compounds matched in the file within the local support window of the anchor, other
+    /// than the anchor's own: co-eluting candidates (isotope peaks, adducts) count once.
+    /// </summary>
     public int LocalSupportCount { get; internal set; }
     /// <summary>Offset the anchor was judged against: the local support median, or the file's anchor median.</summary>
     public double? ExpectedOffset { get; internal set; }
@@ -258,8 +262,14 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
 public static class AutomaticAlignmentRetentionTimeCorrection {
     private const int CandidateLimitPerRtBin = 3;
     // An anchor is judged against its local neighbours only when at least this many other
-    // reference candidates were matched in the same file within the local support window.
+    // compounds (co-eluting groups of reference candidates, see GroupCoElutingSupport) were
+    // matched in the same file within the local support window.
     private const int MinimumLocalSupportCount = 3;
+    // Two matched reference candidates are one compound (isotope peaks, adducts, in-source
+    // fragments) when their peak tops lie within this many MS1 cycles of each other in the
+    // reference file and in the judged file. One cycle is the adjacent scan; the extra half
+    // absorbs a data-dependent cycle that varies around its median.
+    private const double CoElutionCycles = 1.5d;
 
     /// <param name="ms1CycleProfileLoader">
     /// A file's MS1 scan times (<see cref="Ms1CycleProfile.FromSpectra(IEnumerable{RawSpectrum}, IonMode)"/>).
@@ -379,7 +389,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     support,
                     parameter.OutlierMadThreshold,
                     parameter.LocalSupportRtWindow,
-                    cycleProfiles[file.AnalysisFileId]);
+                    cycleProfiles[file.AnalysisFileId],
+                    cycleProfiles[reference.File.AnalysisFileId]);
                 if (accepted.Count >= parameter.MinimumAnchorCount) {
                     foreach (var match in accepted) {
                         match.Status = "Used";
@@ -615,12 +626,20 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     /// Rejects anchor matches whose offset disagrees with the file's own RT drift, then removes
     /// matches that would make the map non-monotonic.
     /// <para>
-    /// An anchor is judged against the median offset of the other reference candidates matched in
-    /// the same file within <paramref name="localWindow"/> minutes of it (status LocalOutlier).
+    /// An anchor is judged against the median offset of the other compounds matched in the same
+    /// file within <paramref name="localWindow"/> minutes of it (status LocalOutlier).
     /// Judging locally keeps an anchor whose offset follows an RT-dependent drift that independent
     /// peaks around it share, which a single median over the whole run would reject. Only when
     /// fewer than <see cref="MinimumLocalSupportCount"/> such neighbours exist is the anchor judged
     /// against the median of all of the file's anchors, as before (status MadOutlier).
+    /// </para>
+    /// <para>
+    /// A neighbour is a compound, not a reference candidate: a compound's isotope peaks and
+    /// adducts are isolated by m/z and so are candidates of their own, but they share its peak-top
+    /// RT and its offset, also when the match is wrong. Candidates whose peak tops coincide in
+    /// both files (<see cref="GroupCoElutingSupport"/>) count once, at their median offset, and
+    /// the judged anchor's own group is no support for it. Otherwise a wrong match and its isotope
+    /// peaks outvote a true neighbour where fewer than three compounds lie within the window.
     /// </para>
     /// <para>
     /// The robust scale is max(1.4826 MAD, floor), the floor being the file's MS1 cycle time
@@ -636,10 +655,14 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         IReadOnlyList<AnchorMatch> support,
         double madThreshold,
         double localWindow,
-        Ms1CycleProfile cycleProfile) {
+        Ms1CycleProfile cycleProfile,
+        Ms1CycleProfile referenceCycleProfile) {
         var accepted = matches.Where(match => match.Peak is not null).ToList();
         var offsets = accepted.Select(Offset).ToList();
         if (offsets.Count > 0 && madThreshold > 0d) {
+            var groups = localWindow > 0d
+                ? GroupCoElutingSupport(support, cycleProfile, referenceCycleProfile)
+                : new Dictionary<AnchorMatch, int>();
             var globalMedian = Median(offsets);
             var globalMad = 1.4826d * Median(offsets.Select(value => Math.Abs(value - globalMedian)));
             var rejected = new List<AnchorMatch>();
@@ -647,11 +670,16 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 var offset = Offset(match);
                 var scaleFloor = cycleProfile.CycleTimeAt(match.Peak!.Rt);
                 match.Ms1CycleTime = scaleFloor;
+                var ownGroup = groups.TryGetValue(match, out var group) ? group : -1;
+                // One offset per co-eluting group: a compound is one neighbour however many of its
+                // ions are candidates, and the anchor's own group is no neighbour of it.
                 var neighbours = localWindow > 0d
                     ? support
                         .Where(other => !ReferenceEquals(other.Reference, match.Reference)
+                            && groups[other] != ownGroup
                             && Math.Abs(other.Peak!.Rt - match.Peak!.Rt) <= localWindow)
-                        .Select(Offset)
+                        .GroupBy(other => groups[other])
+                        .Select(members => Median(members.Select(Offset)))
                         .ToList()
                     : new List<double>();
                 match.LocalSupportCount = neighbours.Count;
@@ -699,6 +727,48 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             }
         }
         return accepted;
+    }
+
+    /// <summary>
+    /// Numbers the support matches so that matches whose peak tops lie within
+    /// <see cref="CoElutionCycles"/> MS1 cycles of each other both in the reference file and in
+    /// the judged file share a number (single linkage). Where a cycle is unknown (0) only
+    /// identical peak-top RTs are grouped. Merging two compounds that do elute about a scan apart
+    /// in both files only lowers the support count, which at worst returns the anchor to the
+    /// run-wide test.
+    /// </summary>
+    private static Dictionary<AnchorMatch, int> GroupCoElutingSupport(
+        IReadOnlyList<AnchorMatch> support,
+        Ms1CycleProfile cycleProfile,
+        Ms1CycleProfile referenceCycleProfile) {
+        const double epsilon = 1e-9;
+        var ordered = support.OrderBy(match => match.Peak!.Rt).ToList();
+        var fileTolerance = ordered.Select(match => CoElutionCycles * cycleProfile.CycleTimeAt(match.Peak!.Rt)).ToArray();
+        var referenceTolerance = ordered.Select(match => CoElutionCycles * referenceCycleProfile.CycleTimeAt(match.Reference.Rt)).ToArray();
+        var maximumFileTolerance = fileTolerance.DefaultIfEmpty(0d).Max();
+        var parent = Enumerable.Range(0, ordered.Count).ToArray();
+        int Root(int index) {
+            while (parent[index] != index) {
+                parent[index] = parent[parent[index]];
+                index = parent[index];
+            }
+            return index;
+        }
+        for (var i = 0; i < ordered.Count; i++) {
+            for (var j = i + 1; j < ordered.Count; j++) {
+                var fileGap = ordered[j].Peak!.Rt - ordered[i].Peak!.Rt;
+                if (fileGap > maximumFileTolerance + epsilon) break;
+                if (fileGap > Math.Max(fileTolerance[i], fileTolerance[j]) + epsilon) continue;
+                var referenceGap = Math.Abs(ordered[j].Reference.Rt - ordered[i].Reference.Rt);
+                if (referenceGap > Math.Max(referenceTolerance[i], referenceTolerance[j]) + epsilon) continue;
+                parent[Root(j)] = Root(i);
+            }
+        }
+        var groups = new Dictionary<AnchorMatch, int>();
+        for (var index = 0; index < ordered.Count; index++) {
+            groups[ordered[index]] = Root(index);
+        }
+        return groups;
     }
 
     private static double Offset(AnchorMatch match) {
