@@ -80,6 +80,46 @@ public sealed class RepresentativeDeconvolutionReaderTests
     }
 
     [TestMethod]
+    public void APeakWhoseRepresentativeIsNoMsMsReferenceMatchTakesTheEnergyWithTheMostProductIons() {
+        // Each representative sits at 10 eV, where peak 0 has 1 ion against 3 at 20 eV.
+        var file = MultiEnergyFile(0, "aif", IonCounts, 10d, 20d, 40d);
+
+        using var reader = new RepresentativeDeconvolutionReader([file]);
+
+        foreach (var (label, result) in NotMsMsReferenceMatches(10d)) {
+            Assert.AreEqual(Marker(20d, 0), reader.Read(PeakWith(file, 0, result)).PrecursorMz, label);
+        }
+    }
+
+    [TestMethod]
+    public void AnLbmRuleBasedLipidMatchIsReadFromItsAnnotationEnergy() {
+        var file = MultiEnergyFile(0, "aif", IonCounts, 10d, 20d, 40d);
+        var lipid = new MsScanMatchResult {
+            Name = "PC 34:1",
+            Source = SourceType.MspDB,
+            TotalScore = 0.6f,
+            CollisionEnergy = 10d,
+            IsPrecursorMzMatch = true,
+            IsLipidClassMatch = true,
+            IsSpectrumMatch = true,
+            IsReferenceMatched = true,
+        };
+
+        using var reader = new RepresentativeDeconvolutionReader([file]);
+
+        Assert.AreEqual(Marker(10d, 0), reader.Read(PeakWith(file, 0, lipid)).PrecursorMz);
+    }
+
+    [TestMethod]
+    public void OnlyAReferenceMatchWithASpectrumMatchCountsAsAnMsMsReferenceMatch() {
+        Assert.IsTrue(RepresentativeDeconvolutionReader.IsMsMsReferenceMatch(MsMsReferenceMatch(10d)));
+        foreach (var (label, result) in NotMsMsReferenceMatches(10d)) {
+            Assert.IsFalse(RepresentativeDeconvolutionReader.IsMsMsReferenceMatch(result), label);
+        }
+        Assert.IsFalse(RepresentativeDeconvolutionReader.IsMsMsReferenceMatch(null));
+    }
+
+    [TestMethod]
     public void TheMostProductIonsRuleCountsTheSpectrumPeaks() {
         static MSDecResult WithIons(int n) => new() { Spectrum = Enumerable.Range(0, n).Select(i => new SpectrumPeak { Mass = 100d + i, Intensity = 1d, }).ToList(), };
 
@@ -182,20 +222,60 @@ public sealed class RepresentativeDeconvolutionReaderTests
     // Which file and which peak a spectrum came from.
     private static double Marker(double energy, int peak) => energy * 1000d + peak;
 
+    // A peak whose representative is an MSP MS/MS reference match at representativeCE, or an unannotated peak.
     private static AlignmentChromPeakFeature Peak(AnalysisFileBean file, int masterPeakId, double? representativeCE) {
+        return PeakWith(file, masterPeakId, representativeCE is double ce ? MsMsReferenceMatch(ce) : null);
+    }
+
+    private static AlignmentChromPeakFeature PeakWith(AnalysisFileBean file, int masterPeakId, MsScanMatchResult? representative) {
         var peak = new AlignmentChromPeakFeature {
             FileID = file.AnalysisFileId,
             FileName = file.AnalysisFileName,
             MasterPeakID = masterPeakId,
         };
-        if (representativeCE is double ce) {
-            peak.MatchResults.AddResult(new MsScanMatchResult {
-                Name = "annotated",
-                Source = SourceType.MspDB,
-                TotalScore = 0.9f,
-                CollisionEnergy = ce,
-            });
+        if (representative is not null) {
+            peak.MatchResults.AddResult(representative);
+            Assert.AreSame(representative, peak.MatchResults.Representative);
         }
         return peak;
+    }
+
+    // The verdicts LcmsMspAnnotator records for a spectrum that matched.
+    internal static MsScanMatchResult MsMsReferenceMatch(double ce) => new() {
+        Name = "annotated",
+        Source = SourceType.MspDB,
+        TotalScore = 0.9f,
+        CollisionEnergy = ce,
+        IsPrecursorMzMatch = true,
+        IsSpectrumMatch = true,
+        IsReferenceMatched = true,
+    };
+
+    // Representatives with a collision energy that do not rest on an MS/MS reference spectrum, with the verdicts
+    // MS-DIAL's annotators record for each.
+    internal static IEnumerable<(string Label, MsScanMatchResult Result)> NotMsMsReferenceMatches(double ce) {
+        // LcmsMspAnnotator: precursor m/z agrees, the spectrum does not (or there is none).
+        yield return ("precursor-only MSP suggestion", new MsScanMatchResult {
+            Name = "suggested", Source = SourceType.MspDB, TotalScore = 0.5f, CollisionEnergy = ce,
+            IsPrecursorMzMatch = true, IsAnnotationSuggested = true,
+        });
+        // LcmsMspAnnotator: a spectrum match but a retention-time disagreement keeps it a suggestion.
+        yield return ("low-score suggestion with a spectrum match", new MsScanMatchResult {
+            Name = "low score", Source = SourceType.MspDB, TotalScore = 0.4f, CollisionEnergy = ce,
+            IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsAnnotationSuggested = true,
+        });
+        // LcmsTextDBAnnotator: reference matched on precursor m/z alone.
+        yield return ("text-database precursor match", new MsScanMatchResult {
+            Name = "text db", Source = SourceType.TextDB, TotalScore = 0.8f, CollisionEnergy = ce,
+            IsPrecursorMzMatch = true, IsReferenceMatched = true,
+        });
+        // MsReferenceScorer without MS2: reference matched with no spectrum verdict.
+        yield return ("reference match without a spectrum match", new MsScanMatchResult {
+            Name = "no ms2", Source = SourceType.MspDB, TotalScore = 0.7f, CollisionEnergy = ce,
+            IsPrecursorMzMatch = true, IsReferenceMatched = true,
+        });
+        yield return ("unknown", new MsScanMatchResult {
+            Name = "unknown", Source = SourceType.Unknown, CollisionEnergy = ce,
+        });
     }
 }

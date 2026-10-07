@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using System;
@@ -17,10 +18,13 @@ namespace CompMs.App.MsdialConsole.Process;
 /// A file deconvoluted once has its results in DeconvolutionFilePath. An AIF file with several
 /// collision energies has none there: FileProcess writes one "&lt;name&gt;_&lt;CE x 100&gt;.dcl" per
 /// energy and lists them in DeconvolutionFilePathList, in ascending energy.
-/// For such a file the spectrum is taken from the energy the representative annotation was made at,
-/// as the GUI does. A peak without an annotation at one of the file's energies takes the energy
-/// whose deconvoluted spectrum has the most product ions, the lowest of those energies on a tie
-/// (the MS-DIAL author's decision of 2026-10-07; the GUI takes the first file of its list).
+/// For such a file the spectrum of an annotated peak is taken from the energy its representative
+/// annotation was made at, as the GUI does. Every other peak takes the energy whose deconvoluted
+/// spectrum has the most product ions, the lowest of those energies on a tie (the MS-DIAL author's
+/// decision of 2026-10-07; the GUI takes the first file of its list). "Annotated" means an MS/MS
+/// reference-spectrum match, see <see cref="IsMsMsReferenceMatch"/>. A precursor-only suggestion is
+/// also stamped with the energy of the collection it was found in, but it scores the same at every
+/// energy, so that energy says nothing about which spectrum represents the peak.
 /// When the list is not empty, an unsuffixed file beside it is not read: a multi-energy run never
 /// writes one, so it is left over from an earlier run on the same raw folder (the Console's
 /// timestamp has minute resolution and no zero padding, so names can repeat), and its seek
@@ -70,8 +74,9 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
 
     /// <summary>
     /// The deconvolution results the per-file export writes, indexed as the file's .dcl files are.
-    /// A multi-energy AIF file takes, for each peak, the energy of its representative annotation, and
-    /// otherwise the energy whose spectrum has the most product ions, by the same rule as <see cref="Read"/>.
+    /// A multi-energy AIF file takes, for each peak, the energy of its representative annotation when
+    /// that is an MS/MS reference-spectrum match, and otherwise the energy whose spectrum has the most
+    /// product ions, by the same rule as <see cref="Read"/>.
     /// Any other file is read from DeconvolutionFilePath. MSDecLoader's own constructor opens
     /// DeconvolutionFilePath whenever it exists, so it would read the stale unsuffixed file the
     /// constructor above ignores.
@@ -90,18 +95,18 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
                 string.Join(", ", file.DeconvolutionFilePathList.Zip(perEnergy, (path, results) => $"{Path.GetFileName(path)} {results.Count}")) + ".");
         }
 
-        var annotatedEnergies = new Dictionary<int, double>();
+        var annotatedIndices = new Dictionary<int, int>();
         foreach (var peak in peaks) {
-            if (peak.MatchResults?.Representative?.CollisionEnergy is double ce) {
-                annotatedEnergies[peak.GetMSDecResultID()] = ce;
+            var index = IndexOfEnergy(energies, peak.MatchResults);
+            if (index >= 0) {
+                annotatedIndices[peak.GetMSDecResultID()] = index;
             }
         }
 
         var chosen = new MSDecResult[count];
         for (int id = 0; id < count; id++) {
             var candidates = perEnergy.Select(results => results[id]).ToList();
-            var index = annotatedEnergies.TryGetValue(id, out var ce) ? IndexOfEnergy(energies, ce) : -1;
-            chosen[id] = candidates[index >= 0 ? index : IndexOfMostProductIons(candidates)];
+            chosen[id] = candidates[annotatedIndices.TryGetValue(id, out var index) ? index : IndexOfMostProductIons(candidates)];
         }
         return chosen;
     }
@@ -121,27 +126,47 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
         if (sources.Count == 1) {
             return sources[0].Read(id);
         }
-        if (peak.MatchResults?.Representative?.CollisionEnergy is double ce) {
-            var index = IndexOfEnergy(sources.Select(s => s.CollisionEnergy).ToList(), ce);
-            if (index >= 0) {
-                return sources[index].Read(id);
-            }
+        var index = IndexOfEnergy(sources.Select(s => s.CollisionEnergy).ToList(), peak.MatchResults);
+        if (index >= 0) {
+            return sources[index].Read(id);
         }
         var candidates = sources.Select(s => s.Read(id)).ToList();
         return candidates[IndexOfMostProductIons(candidates)];
     }
 
     /// <summary>
-    /// The file at the representative annotation's energy, or -1 when no file has it. An unannotated
-    /// peak's representative is the unknown result, whose energy no AIF deconvolution is made at.
+    /// The file at the energy of the representative annotation, or -1 when the peak is not annotated
+    /// by an MS/MS reference-spectrum match (<see cref="IsMsMsReferenceMatch"/>) or no file has that energy.
     /// </summary>
-    private static int IndexOfEnergy(IReadOnlyList<double> energies, double ce) {
+    private static int IndexOfEnergy(IReadOnlyList<double> energies, MsScanMatchResultContainer? matchResults) {
+        var representative = matchResults?.Representative;
+        if (!IsMsMsReferenceMatch(representative)) {
+            return -1;
+        }
+        var ce = representative!.CollisionEnergy;
         for (int i = 0; i < energies.Count; i++) {
             if (energies[i] >= 0 && Math.Abs(energies[i] - ce) < 0.005) {
                 return i;
             }
         }
         return -1;
+    }
+
+    /// <summary>
+    /// Whether a representative annotation rests on an MS/MS reference spectrum: an MSP spectrum match
+    /// or an LBM rule-based lipid match. Read from the verdicts MS-DIAL's annotators record on the
+    /// result. <see cref="MsScanMatchResult.IsReferenceMatched"/> excludes the unknown result, a
+    /// below-threshold suggestion (<see cref="MsScanMatchResult.IsAnnotationSuggested"/>) and an
+    /// MS1-only MSP candidate, but on its own it is not enough: the text-database annotators set it
+    /// on precursor m/z agreement alone, and the lipid scorer sets it without a spectrum for a peak
+    /// that has none. <see cref="MsScanMatchResult.IsSpectrumMatch"/> is the spectrum verdict, and for
+    /// lipidomics it already includes the diagnostic-ion rules of MsmsCharacterization.
+    /// </summary>
+    internal static bool IsMsMsReferenceMatch(MsScanMatchResult? result) {
+        return result is not null
+            && !result.IsUnknown
+            && result.IsReferenceMatched
+            && result.IsSpectrumMatch;
     }
 
     /// <summary>

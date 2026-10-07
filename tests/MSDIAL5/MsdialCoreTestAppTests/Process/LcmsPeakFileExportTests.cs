@@ -24,8 +24,8 @@ namespace MsdialCoreTestAppTests.Process;
 /// exists. A multi-energy AIF run writes none, so an unsuffixed file beside it is left over from an earlier run
 /// under the same name: with fewer peaks the export stopped with ArgumentOutOfRangeException, and with as many it
 /// silently exported the earlier run's spectra. The export now takes the same rule as the alignment's reader:
-/// each peak at the energy of its representative annotation, and otherwise at the energy whose spectrum has the
-/// most product ions (the lowest such energy on a tie).
+/// each peak at the energy of its representative annotation when that is an MS/MS reference-spectrum match, and
+/// otherwise at the energy whose spectrum has the most product ions (the lowest such energy on a tie).
 /// </summary>
 [TestClass]
 public sealed class LcmsPeakFileExportTests
@@ -68,6 +68,27 @@ public sealed class LcmsPeakFileExportTests
         expected = new List<double> { Marker(20d, 0), Marker(20d, 1), Marker(10d, 2), };
         CollectionAssert.AreEqual(expected, MdpeakMarkers(file), "0: 20 eV has more ions; 1: annotated at 20 eV; 2: no file at 30 eV, a tie");
         CollectionAssert.AreEqual(expected, MdmspMarkers(file));
+    }
+
+    [TestMethod]
+    public void APeakWhoseRepresentativeIsNoMsMsReferenceMatchIsExportedAtTheEnergyWithTheMostProductIons() {
+        // Peak 0 has 1 ion at 10 eV and 3 at 20 eV; every representative below sits at 10 eV.
+        var file = MultiEnergyFile("aif", (energy, peak) => (energy, peak) switch
+        {
+            (10d, 0) => 1, (20d, 0) => 3,
+            _ => 2,
+        }, 10d, 20d);
+
+        foreach (var (label, result) in RepresentativeDeconvolutionReaderTests.NotMsMsReferenceMatches(10d)) {
+            Export(file, representatives: new[] { result, null, null, });
+
+            Assert.AreEqual(Marker(20d, 0), MdpeakMarkers(file)[0], label);
+            Assert.AreEqual(Marker(20d, 0), MdmspMarkers(file)[0], label);
+        }
+
+        Export(file, representatives: new[] { RepresentativeDeconvolutionReaderTests.MsMsReferenceMatch(10d), null, null, });
+
+        Assert.AreEqual(Marker(10d, 0), MdpeakMarkers(file)[0], "an MS/MS reference match keeps its energy");
     }
 
     [TestMethod]
@@ -128,6 +149,10 @@ public sealed class LcmsPeakFileExportTests
     }
 
     private void Export(AnalysisFileBean file, double?[]? annotationEnergies = null) {
+        Export(file, annotationEnergies?.Select(e => e is double ce ? RepresentativeDeconvolutionReaderTests.MsMsReferenceMatch(ce) : null).ToArray());
+    }
+
+    private void Export(AnalysisFileBean file, MsScanMatchResult?[]? representatives) {
         var peaks = new ChromatogramPeakFeatureCollection(Enumerable.Range(0, PeakCount).Select(i => {
             var peak = new ChromatogramPeakFeature {
                 MasterPeakID = i,
@@ -135,13 +160,8 @@ public sealed class LcmsPeakFileExportTests
                 MSDecResultIdUsed = i,
             };
             peak.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
-            if (annotationEnergies?[i] is double ce) {
-                peak.MatchResults.AddResult(new MsScanMatchResult {
-                    Name = "annotated",
-                    Source = SourceType.MspDB,
-                    TotalScore = 0.9f,
-                    CollisionEnergy = ce,
-                });
+            if (representatives?[i] is MsScanMatchResult result) {
+                peak.MatchResults.AddResult(result);
             }
             return peak;
         }).ToList());
