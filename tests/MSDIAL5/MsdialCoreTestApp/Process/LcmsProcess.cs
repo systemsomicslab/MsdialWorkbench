@@ -6,6 +6,7 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -31,6 +32,46 @@ namespace CompMs.App.MsdialConsole.Process;
 
 public sealed class LcmsProcess
 {
+    /// <summary>
+    /// Writes one file's .mdpeak and .mdmsp. Both take the deconvolution results of
+    /// <see cref="RepresentativeDeconvolutionReader.LoadPerFileResults"/>, so a multi-energy AIF file exports
+    /// each peak at the energy of its representative annotation, or else at the energy whose spectrum has
+    /// the most product ions, and never from an unsuffixed .dcl an earlier run left under the same name.
+    /// </summary>
+    internal static void ExportPeakFile(
+        AnalysisFileBean file,
+        ChromatogramPeakFeatureCollection peaks,
+        string outputFolder,
+        AnalysisCSVExporterFactory peakExporterFactory,
+        IDataProviderFactory<AnalysisFileBean> providerFactory,
+        IAnalysisMetadataAccessor peakAccessor,
+        IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
+        ParameterBase parameter) {
+        var msdecResults = RepresentativeDeconvolutionReader.LoadPerFileResults(file, peaks.Items);
+
+        var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+        using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write)) {
+            peakExporterFactory.CreateExporter(providerFactory, peakAccessor, _ => msdecResults).Export(stream, file, peaks, new ExportStyle());
+        }
+
+        var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
+        using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
+        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(refer, parameter, _ => new LoadedMSDecResults(msdecResults));
+        peak_MspExporter.Export(mspstream, file, peaks, new ExportStyle());
+    }
+
+    // Indexes the results as MSDecLoader does, by IChromatogramPeak.ID (MasterPeakID).
+    private sealed class LoadedMSDecResults : IMsScanPropertyLoader<ChromatogramPeakFeature>
+    {
+        private readonly IReadOnlyList<MSDecResult> _results;
+
+        public LoadedMSDecResults(IReadOnlyList<MSDecResult> results) {
+            _results = results;
+        }
+
+        public IMSScanProperty Load(ChromatogramPeakFeature source) => _results[source.MasterPeakID];
+    }
+
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
     {
         var param = ConfigParser.ReadForLcmsParameter(methodFile);
@@ -156,7 +197,6 @@ public sealed class LcmsProcess
         var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
-        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
         var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
@@ -167,14 +207,7 @@ public sealed class LcmsProcess
                 await sem.WaitAsync();
                 try {
                     var peak_container = await file.LoadChromatogramPeakFeatureCollectionAsync().ConfigureAwait(false);
-
-                    var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
-                    using var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write);
-                    peakExporterFactory.CreateExporter(providerFactory, peak_accessor).Export(stream, file, peak_container, new ExportStyle());
-
-                    var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
-                    using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
-                    peak_MspExporter.Export(mspstream, file, peak_container, new ExportStyle());
+                    ExportPeakFile(file, peak_container, outputFolder, peakExporterFactory, providerFactory, peak_accessor, storage.DataBaseMapper, storage.Parameter);
                 }
                 finally {
                     sem.Release();
@@ -448,28 +481,9 @@ public sealed class LcmsProcess
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
-        var files = storage.AnalysisFiles;
-
-        var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            pointerss.Add((version, pointers, isAnnotationInfo));
-        }
-
-        var streams = new List<FileStream>();
-        try {
-            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
-            foreach (var spot in spots.OrEmptyIfNull()) {
-                var repID = spot.RepresentativeFileID;
-                var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
-                var decResult = MsdecResultsReader.ReadMSDecResult(
-                    streams[repID], pointerss[repID].pointers[peakID],
-                    pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                yield return decResult;
-            }
-        }
-        finally {
-            streams.ForEach(stream => stream.Close());
+        using var reader = new RepresentativeDeconvolutionReader(storage.AnalysisFiles);
+        foreach (var spot in spots.OrEmptyIfNull()) {
+            yield return reader.Read(spot.AlignedPeakProperties[spot.RepresentativeFileID]);
         }
     }
 }
