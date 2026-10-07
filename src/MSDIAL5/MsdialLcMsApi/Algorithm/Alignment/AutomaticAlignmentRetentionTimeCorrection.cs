@@ -150,6 +150,20 @@ public sealed class Ms1CycleProfile {
         return TimeWeightedMedianSpacing(first, last);
     }
 
+    /// <summary>
+    /// The position, among the file's MS1 scans in RT order, of the scan nearest
+    /// <paramref name="rt"/>; -1 when the file has no MS1 scans or <paramref name="rt"/> is NaN.
+    /// A peak top lies on an MS1 scan, so the difference of two peak tops' positions is the number
+    /// of MS1 scan steps between them, whatever the spacing of those scans.
+    /// </summary>
+    public int NearestScanIndex(double rt) {
+        if (_times.Length == 0 || double.IsNaN(rt)) return -1;
+        var next = FirstIndexWhere(time => time >= rt);
+        if (next == 0) return 0;
+        if (next == _times.Length) return _times.Length - 1;
+        return rt - _times[next - 1] <= _times[next] - rt ? next - 1 : next;
+    }
+
     // Binary search over the sorted times for the first index whose time satisfies a monotone
     // predicate; _times.Length when none does.
     private int FirstIndexWhere(Func<double, bool> predicate) {
@@ -266,10 +280,13 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     // matched in the same file within the local support window.
     private const int MinimumLocalSupportCount = 3;
     // Two matched reference candidates are one compound (isotope peaks, adducts, in-source
-    // fragments) when their peak tops lie within this many MS1 cycles of each other in the
-    // reference file and in the judged file. One cycle is the adjacent scan; the extra half
-    // absorbs a data-dependent cycle that varies around its median.
-    private const double CoElutionCycles = 1.5d;
+    // fragments) when their peak tops lie within this many MS1 scan steps of each other in the
+    // reference file and in the judged file. The limit counts scans, not minutes: in
+    // data-dependent acquisition an abundant compound triggers MS2 at its apex, so the MS1 step
+    // there is longer than the median cycle around it, and a limit in median cycles can be
+    // shorter than one real step. Two steps absorb a weak isotope peak or adduct whose top noise
+    // moves a scan or two from the compound's.
+    private const int CoElutionScans = 2;
 
     /// <param name="ms1CycleProfileLoader">
     /// A file's MS1 scan times (<see cref="Ms1CycleProfile.FromSpectra(IEnumerable{RawSpectrum}, IonMode)"/>).
@@ -731,21 +748,23 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
 
     /// <summary>
     /// Numbers the support matches so that matches whose peak tops lie within
-    /// <see cref="CoElutionCycles"/> MS1 cycles of each other both in the reference file and in
-    /// the judged file share a number (single linkage). Where a cycle is unknown (0) only
-    /// identical peak-top RTs are grouped. Merging two compounds that do elute about a scan apart
-    /// in both files only lowers the support count, which at worst returns the anchor to the
+    /// <see cref="CoElutionScans"/> MS1 scan steps of each other both in the reference file and in
+    /// the judged file share a number (single linkage). A peak top is placed at the file's nearest
+    /// MS1 scan (<see cref="Ms1CycleProfile.NearestScanIndex(double)"/>), so the limit follows the
+    /// spacing of the scans at the peak tops, not a median cycle. Where a file's scans are unknown
+    /// only identical peak-top RTs are grouped. Merging two compounds that do elute a scan or two
+    /// apart in both files only lowers the support count, which at worst returns the anchor to the
     /// run-wide test.
     /// </summary>
     private static Dictionary<AnchorMatch, int> GroupCoElutingSupport(
         IReadOnlyList<AnchorMatch> support,
         Ms1CycleProfile cycleProfile,
         Ms1CycleProfile referenceCycleProfile) {
-        const double epsilon = 1e-9;
         var ordered = support.OrderBy(match => match.Peak!.Rt).ToList();
-        var fileTolerance = ordered.Select(match => CoElutionCycles * cycleProfile.CycleTimeAt(match.Peak!.Rt)).ToArray();
-        var referenceTolerance = ordered.Select(match => CoElutionCycles * referenceCycleProfile.CycleTimeAt(match.Reference.Rt)).ToArray();
-        var maximumFileTolerance = fileTolerance.DefaultIfEmpty(0d).Max();
+        var fileRts = ordered.Select(match => match.Peak!.Rt).ToArray();
+        var referenceRts = ordered.Select(match => match.Reference.Rt).ToArray();
+        var fileScans = fileRts.Select(cycleProfile.NearestScanIndex).ToArray();
+        var referenceScans = referenceRts.Select(referenceCycleProfile.NearestScanIndex).ToArray();
         var parent = Enumerable.Range(0, ordered.Count).ToArray();
         int Root(int index) {
             while (parent[index] != index) {
@@ -756,11 +775,10 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         }
         for (var i = 0; i < ordered.Count; i++) {
             for (var j = i + 1; j < ordered.Count; j++) {
-                var fileGap = ordered[j].Peak!.Rt - ordered[i].Peak!.Rt;
-                if (fileGap > maximumFileTolerance + epsilon) break;
-                if (fileGap > Math.Max(fileTolerance[i], fileTolerance[j]) + epsilon) continue;
-                var referenceGap = Math.Abs(ordered[j].Reference.Rt - ordered[i].Reference.Rt);
-                if (referenceGap > Math.Max(referenceTolerance[i], referenceTolerance[j]) + epsilon) continue;
+                // Ordered by the judged file's RT, so its nearest-scan positions do not decrease:
+                // once j is too far from i in the judged file, every later j is too.
+                if (!CoElute(fileRts, fileScans, i, j)) break;
+                if (!CoElute(referenceRts, referenceScans, i, j)) continue;
                 parent[Root(j)] = Root(i);
             }
         }
@@ -769,6 +787,13 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             groups[ordered[index]] = Root(index);
         }
         return groups;
+    }
+
+    // Whether peak tops i and j lie within CoElutionScans MS1 scan steps of each other; with the
+    // file's scans unknown (position -1), whether they are at the same RT.
+    private static bool CoElute(double[] rts, int[] scans, int i, int j) {
+        if (scans[i] < 0 || scans[j] < 0) return Math.Abs(rts[j] - rts[i]) <= 1e-9;
+        return Math.Abs(scans[j] - scans[i]) <= CoElutionScans;
     }
 
     private static double Offset(AnchorMatch match) {

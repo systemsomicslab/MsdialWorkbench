@@ -487,6 +487,112 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         Assert.AreEqual(17.5d, global.Correction.Correct(1, 17.5d), 1e-9);
     }
 
+    // The same case where the MS1 cycle at the compound's apex is longer than the median cycle
+    // around it: in data-dependent acquisition an abundant compound triggers MS2 at its apex, so
+    // its MS1 scans are 0.0212 min apart there and 0.0047 min apart in the quiet scans around it,
+    // which make up most of the 1-min window CycleTimeAt reads (0.0047 min). The isotope peaks top
+    // one scan apart in a pattern that differs between the files: M+2 one scan after M in the
+    // reference, M+1 one scan after M in the target. Grouped within 1.5 median cycles (0.007 min),
+    // no pair coincided in both files, A's isotope peaks counted as two neighbours besides 16.8 min,
+    // A was kept as Used with Outlier test Local, and Correct(17.5) was 17.36. Counted in MS1 scans,
+    // the gap is one scan and A is one compound.
+    [TestMethod]
+    public void Build_IsotopePeaksOneScanApartWhereTheApexCycleIsLongerThanTheMedian_CountAsOneCompound() {
+        var profiles = new Dictionary<int, Ms1CycleProfile> {
+            [0] = QuietWithBusyApex(18.0d),
+            [1] = QuietWithBusyApex(18.3d),
+        };
+        // The cycle read around the apex is the quiet one, shorter than the scan step at the apex.
+        Assert.AreEqual(IdleCycle, profiles[0].CycleTimeAt(18.0d), 1e-9);
+        Assert.AreEqual(IdleCycle, profiles[1].CycleTimeAt(18.3d), 1e-9);
+
+        AssertIsotopeClusterIsOneCompound(
+            referenceTops: new[] { 0d, 0d, GradientCycle },
+            targetTops: new[] { 0d, GradientCycle, 0d },
+            file => profiles[file.AnalysisFileId],
+            GradientCycle);
+    }
+
+    // Uniform 0.0135-min MS1 scans, and weak isotope peaks that top two scans (0.027 min) off,
+    // M+2 in the reference and M+1 in the target: beyond 1.5 cycles (0.020 min), so A's isotope
+    // peaks counted as neighbours and A was kept. Two scans are within the co-elution limit.
+    [TestMethod]
+    public void Build_IsotopePeaksTwoScansApart_CountAsOneCompound() {
+        const double cycle = 0.0135d;
+        AssertIsotopeClusterIsOneCompound(
+            referenceTops: new[] { 0d, 0d, 2d * cycle },
+            targetTops: new[] { 0d, 2d * cycle, 0d },
+            Ms1Cycle(cycle),
+            cycle);
+    }
+
+    // The isotope case of Build_IsotopePeaksOfOneCompound_CountAsOneNeighbourAndNotAsTheAnchorsOwnSupport,
+    // with M, M+1 and M+2 topping at the given offsets (min) from the cluster RT in each file.
+    private static void AssertIsotopeClusterIsOneCompound(
+        IReadOnlyList<double> referenceTops,
+        IReadOnlyList<double> targetTops,
+        Func<AnalysisFileBean, Ms1CycleProfile> profiles,
+        double peakCycle) {
+        const double isotope = 1.00335d;
+        var files = new[] {
+            File(0, "reference", AnalysisFileType.Sample, 1),
+            File(1, "target", AnalysisFileType.Sample, 2),
+        };
+        var rts = Enumerable.Range(0, 29).Select(index => 1d + 0.5d * index).ToArray(); // 1.0 .. 15.0 min
+        List<ChromatogramPeakFeature> Sample(double clusterRt, IReadOnlyList<double> tops) {
+            var peaks = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), peakCycle);
+            peaks.Add(ScannedPeak(100, 700d, 16.8d, 50000d, peakCycle));
+            peaks.Add(ScannedPeak(101, 800d, clusterRt + tops[0], 90000d, peakCycle));
+            peaks.Add(ScannedPeak(102, 800d + isotope, clusterRt + tops[1], 40000d, peakCycle));
+            peaks.Add(ScannedPeak(103, 800d + 2d * isotope, clusterRt + tops[2], 10000d, peakCycle));
+            return peaks;
+        }
+        var peaksByFile = new Dictionary<int, List<ChromatogramPeakFeature>> {
+            [0] = Sample(18.0d, referenceTops),
+            [1] = Sample(18.3d, targetTops),
+        };
+        var parameter = AllCandidatesAsAnchors();
+        parameter.MaximumAnchorCount = 12;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaksByFile[file.AnalysisFileId], profiles);
+
+        var anchors = AnchorsOf(result, 1);
+        var a = anchors.Single(anchor => Math.Abs(anchor.Mass - 800d) < 1e-9);
+        var neighbour = anchors.Single(anchor => Math.Abs(anchor.Mass - 700d) < 1e-9);
+        // A's isotope peaks are A itself; 16.8 min is its only other compound within 1.5 min.
+        Assert.AreEqual(1, a.LocalSupportCount);
+        Assert.AreEqual("Global", a.OutlierTest);
+        Assert.AreEqual("MadOutlier", a.Status);
+        Assert.IsFalse(a.Used);
+        Assert.AreEqual(1, neighbour.LocalSupportCount);
+        Assert.IsTrue(neighbour.Used, neighbour.Status);
+        Assert.AreEqual(17.5d, result.Correction.Correct(1, 17.5d), 1e-9);
+    }
+
+    // MS1 scans IdleCycle apart from 0 to 20 min, except GradientCycle apart for three scans on
+    // either side of an abundant compound's apex at `apex`, where it triggers MS2.
+    private static Ms1CycleProfile QuietWithBusyApex(double apex) {
+        var busy = Enumerable.Range(-3, 7).Select(step => apex + step * GradientCycle).ToList();
+        var quiet = Enumerable.Range(0, (int)(20d / IdleCycle) + 1)
+            .Select(index => index * IdleCycle)
+            .Where(time => time < busy[0] - 0.5d * GradientCycle || time > busy[busy.Count - 1] + 0.5d * GradientCycle);
+        return new Ms1CycleProfile(quiet.Concat(busy));
+    }
+
+    [TestMethod]
+    public void Ms1CycleProfile_NearestScanIndex_CountsScansWhateverTheirSpacing() {
+        var profile = new Ms1CycleProfile(new[] { 1.0d, 0.0d, 0.1d, 0.11d, 0.5d });
+        Assert.AreEqual(0, profile.NearestScanIndex(-3d));
+        Assert.AreEqual(0, profile.NearestScanIndex(0d));
+        Assert.AreEqual(1, profile.NearestScanIndex(0.06d));
+        Assert.AreEqual(2, profile.NearestScanIndex(0.11d));
+        Assert.AreEqual(3, profile.NearestScanIndex(0.5d));
+        Assert.AreEqual(4, profile.NearestScanIndex(0.8d));
+        Assert.AreEqual(4, profile.NearestScanIndex(30d));
+        Assert.AreEqual(-1, profile.NearestScanIndex(double.NaN));
+        Assert.AreEqual(-1, Ms1CycleProfile.Empty.NearestScanIndex(1d));
+    }
+
     // Compounds that elute close together but at different scans are distinct neighbours: in a
     // dense region, peaks three scans apart count one each and the local test still applies.
     [TestMethod]
