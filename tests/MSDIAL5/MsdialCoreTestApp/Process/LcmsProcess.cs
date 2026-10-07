@@ -187,10 +187,15 @@ public sealed class LcmsProcess
         if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
             try {
                 Console.WriteLine("Automatic alignment RT correction: selecting anchors after peak picking and annotation.");
+                // The outlier test's scale floor is each file's MS1 cycle time, read from the MS1
+                // scans' retention times; the raw data is read once more, one file at a time.
                 automaticRtCorrectionResult = AutomaticAlignmentRetentionTimeCorrection.Build(
                     files,
                     storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection,
-                    storage.Parameter.Ms1AlignmentTolerance);
+                    storage.Parameter.Ms1AlignmentTolerance,
+                    file => AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(
+                        providerFactory.Create(file).LoadMsSpectrums(),
+                        storage.Parameter.IonMode));
                 storage.Parameter.AlignmentReferenceFileID = automaticRtCorrectionResult.Correction.ReferenceFileId;
                 automaticRtCorrectionResult.WriteAudit(outputFolder);
                 Console.WriteLine($"Automatic alignment RT correction reference file ID: {automaticRtCorrectionResult.Correction.ReferenceFileId}");

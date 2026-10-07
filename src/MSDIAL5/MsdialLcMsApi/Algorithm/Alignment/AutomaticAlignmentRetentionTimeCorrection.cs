@@ -1,4 +1,5 @@
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -33,7 +34,10 @@ public sealed class AutomaticRtCorrectionFileAudit {
     public double MedianAbsoluteOffset { get; internal set; }
     public double MaximumAbsoluteOffset { get; internal set; }
     public string Note { get; internal set; } = string.Empty;
-    /// <summary>Median MS1 scan interval (min) estimated from the file's peak features; 0 when unknown.</summary>
+    /// <summary>
+    /// The file's MS1 cycle time (min): the median spacing of consecutive MS1 scans of the analysed
+    /// polarity, MS2 scans excluded. 0 when unknown.
+    /// </summary>
     public double EstimatedScanInterval { get; internal set; }
     public double? FirstAnchorRt { get; internal set; }
     public double? LastAnchorRt { get; internal set; }
@@ -143,21 +147,28 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     // An anchor is judged against its local neighbours only when at least this many other
     // reference candidates were matched in the same file within the local support window.
     private const int MinimumLocalSupportCount = 3;
-    private const int MinimumScanIntervalSamples = 10;
 
+    /// <param name="ms1CycleTimeLoader">
+    /// The MS1 cycle time (min) of a file, the floor of the outlier scale; see
+    /// <see cref="EstimateMs1CycleTime(IEnumerable{RawSpectrum}, IonMode)"/>. Return 0 when it is
+    /// unknown: the scale is then the MAD alone, and a MAD of 0 judges nothing.
+    /// </param>
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
-        double mzTolerance) {
-        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath));
+        double mzTolerance,
+        Func<AnalysisFileBean, double> ms1CycleTimeLoader) {
+        return Build(files, parameter, mzTolerance, file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath), ms1CycleTimeLoader);
     }
 
     public static AutomaticAlignmentRetentionTimeCorrectionResult Build(
         IReadOnlyList<AnalysisFileBean> files,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
         double mzTolerance,
-        Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader) {
+        Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader,
+        Func<AnalysisFileBean, double> ms1CycleTimeLoader) {
         Validate(files, parameter, mzTolerance, peakLoader);
+        if (ms1CycleTimeLoader is null) throw new ArgumentNullException(nameof(ms1CycleTimeLoader));
 
         var summaries = files.Select(file => CreateSummary(file, peakLoader(file), parameter, mzTolerance)).ToList();
         var eligibleReferences = summaries
@@ -180,7 +191,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         var sortedPeakRts = new Dictionary<int, double[]>();
         foreach (var file in files) {
             var features = peakLoader(file);
-            scanIntervals[file.AnalysisFileId] = EstimateScanInterval(features);
+            var cycle = ms1CycleTimeLoader(file);
+            scanIntervals[file.AnalysisFileId] = cycle > 0d && !double.IsNaN(cycle) && !double.IsInfinity(cycle) ? cycle : 0d;
             var peaks = CreatePeakPoints(features);
             var rts = peaks.Select(peak => peak.Rt).ToArray();
             Array.Sort(rts);
@@ -318,20 +330,31 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     }
 
     /// <summary>
-    /// The median MS1 scan interval of a file, from the peak edges: ChromScanId indexes the MS1
-    /// chromatogram, so (right RT - left RT) / (right index - left index) is one scan cycle.
-    /// Returns 0 when too few peaks carry scan indexes.
+    /// The MS1 cycle time (min) of a file: the median difference between the retention times of
+    /// consecutive MS1 scans of <paramref name="ionMode"/>'s polarity, the scans the MS1
+    /// chromatogram is built from. MS2 scans between them are ignored, so DDA and DIA/SWATH files
+    /// give their MS1 cycle, not the spacing of the raw spectrum list. Returns 0 when fewer than
+    /// two such scans exist.
     /// </summary>
-    private static double EstimateScanInterval(IReadOnlyList<ChromatogramPeakFeature> features) {
-        var intervals = new List<double>();
-        foreach (var feature in features) {
-            var peak = feature.PeakFeature;
-            var scans = peak.ChromScanIdRight - peak.ChromScanIdLeft;
-            if (scans <= 0 || peak.ChromXsLeft?.RT is null || peak.ChromXsRight?.RT is null) continue;
-            var interval = (peak.ChromXsRight.RT.Value - peak.ChromXsLeft.RT.Value) / scans;
-            if (interval > 0d && !double.IsNaN(interval) && !double.IsInfinity(interval)) intervals.Add(interval);
+    /// <remarks>
+    /// The peaks' ChromScanId values cannot give this: peak spotting sets them to the raw spectrum
+    /// index (ValuePeak.Id), which counts every spectrum, MS2 included.
+    /// </remarks>
+    public static double EstimateMs1CycleTime(IEnumerable<RawSpectrum> spectra, IonMode ionMode) {
+        if (spectra is null) throw new ArgumentNullException(nameof(spectra));
+        var polarity = ionMode == IonMode.Negative ? ScanPolarity.Negative : ScanPolarity.Positive;
+        var times = spectra
+            .Where(spectrum => spectrum.MsLevel == 1 && spectrum.ScanPolarity == polarity)
+            .Select(spectrum => spectrum.ScanStartTime)
+            .Where(time => !double.IsNaN(time) && !double.IsInfinity(time))
+            .OrderBy(time => time)
+            .ToList();
+        var differences = new List<double>(Math.Max(0, times.Count - 1));
+        for (var index = 1; index < times.Count; index++) {
+            var difference = times[index] - times[index - 1];
+            if (difference > 0d) differences.Add(difference);
         }
-        return intervals.Count < MinimumScanIntervalSamples ? 0d : Median(intervals);
+        return differences.Count == 0 ? 0d : Median(differences);
     }
 
     private static FileSummary CreateSummary(
@@ -515,8 +538,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     /// against the median of all of the file's anchors, as before (status MadOutlier).
     /// </para>
     /// <para>
-    /// The robust scale is max(1.4826 MAD, <paramref name="scaleFloor"/>), the floor being one MS1
-    /// scan interval. Offsets are quantised to whole scans, so a MAD of zero must not disable the
+    /// The robust scale is max(1.4826 MAD, <paramref name="scaleFloor"/>), the floor being the
+    /// file's MS1 cycle time. Offsets are quantised to whole scans, so a MAD of zero must not disable the
     /// test, and a one-scan deviation must not count as an outlier.
     /// </para>
     /// </summary>
@@ -557,7 +580,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                     match.OutlierTest = "Global";
                     match.ExpectedOffset = globalMedian;
                     match.OutlierScale = globalScale;
-                    // A zero scale (MAD of zero and no scan interval known) cannot judge anything.
+                    // A zero scale (MAD of zero and no MS1 cycle time known) cannot judge anything.
                     if (globalScale > 0d && Math.Abs(offset - globalMedian) / globalScale > madThreshold) {
                         match.Status = "MadOutlier";
                         rejected.Add(match);

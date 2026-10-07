@@ -112,7 +112,8 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             files,
             parameter,
             0.01d,
-            file => peaks[file.AnalysisFileId]);
+            file => peaks[file.AnalysisFileId],
+            _ => 0d);
 
         Assert.AreEqual(1, result.Correction.ReferenceFileId);
         Assert.AreEqual(1d, result.Correction.Correct(0, 0.8d), 1e-8);
@@ -156,7 +157,8 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             files,
             parameter,
             0.01d,
-            file => peaks[file.AnalysisFileId]);
+            file => peaks[file.AnalysisFileId],
+            _ => 0d);
 
         var audit = result.Files.Single(file => file.FileId == 1);
         Assert.AreEqual(AutomaticRtCorrectionModelSource.Uncorrected, audit.ModelSource);
@@ -201,13 +203,35 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             files,
             parameter,
             0.01d,
-            file => peaks[file.AnalysisFileId]);
+            file => peaks[file.AnalysisFileId],
+            _ => 0d);
 
         CollectionAssert.AreEquivalent(
             new[] { 100d, 200d, 300d },
             result.Anchors.Where(anchor => anchor.FileId == 0).Select(anchor => anchor.Mass).ToArray());
         Assert.IsTrue(result.Anchors.All(anchor => anchor.SampleCoverage == 1d));
         Assert.IsTrue(result.Files.All(file => file.ModelSource != AutomaticRtCorrectionModelSource.Uncorrected));
+    }
+
+    // A DDA file: each MS1 survey scan is followed by ten MS2 scans, and a scan of the other
+    // polarity is ignored too. The MS1 cycle is the spacing of the MS1 scans, eleven raw spectra
+    // apart, not the spacing of the raw spectrum list.
+    [TestMethod]
+    public void EstimateMs1CycleTime_UsesMs1ScansOnlyWhenMs2ScansAreInterleaved() {
+        const double cycle = 0.0212d;
+        const int ms2PerCycle = 10;
+        var spectra = InterleavedSpectra(0d, 2d, cycle, ms2PerCycle).ToList();
+        spectra.Add(new RawSpectrum { Index = spectra.Count, MsLevel = 1, ScanPolarity = ScanPolarity.Negative, ScanStartTime = 1.0001d });
+
+        Assert.AreEqual(cycle, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra, IonMode.Positive), 1e-9);
+        // The raw spectrum list advances once per cycle / 11: the spacing the peak-edge estimate read.
+        var rawSpacing = spectra.Where(spectrum => spectrum.ScanPolarity == ScanPolarity.Positive)
+            .Select(spectrum => spectrum.ScanStartTime).OrderBy(time => time).Skip(1).First();
+        Assert.AreEqual(cycle / (ms2PerCycle + 1), rawSpacing, 1e-9);
+        // Spectra listed out of time order give the same cycle.
+        Assert.AreEqual(cycle, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(Enumerable.Reverse(spectra), IonMode.Positive), 1e-9);
+        Assert.AreEqual(0d, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra.Take(1), IonMode.Positive));
+        Assert.AreEqual(0d, AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(spectra, IonMode.Negative));
     }
 
     [TestMethod]
@@ -236,9 +260,10 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             [1] = ScannedPeaks(rts, offsets, cycle),
         };
 
-        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId]);
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId], Ms1Cycle(cycle));
 
         var audit = result.Files.Single(file => file.FileId == 1);
+        // The peaks' scan indexes count the interleaved MS2 scans; the floor does not come from them.
         Assert.AreEqual(cycle, audit.EstimatedScanInterval, 1e-9);
         var anchors = AnchorsOf(result, 1);
         Assert.AreEqual(20, anchors.Count);
@@ -272,18 +297,14 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             [0] = ScannedPeaks(rts, rts.Select(_ => 0d).ToArray(), cycle),
             [1] = ScannedPeaks(rts, offsets, cycle),
         };
-        var anchors = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId]), 1);
+        var anchors = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId], Ms1Cycle(cycle)), 1);
         Assert.IsTrue(anchors.All(anchor => anchor.OutlierTest == "Global"));
         Assert.AreEqual("MadOutlier", anchors[12].Status);
         Assert.IsTrue(anchors[5].Used);
         Assert.AreEqual(19, anchors.Count(anchor => anchor.Used));
 
-        // Without scan indexes no floor is known; a zero scale cannot judge, so nothing is rejected.
-        var withoutScans = new Dictionary<int, List<ChromatogramPeakFeature>> {
-            [0] = rts.Select((rt, index) => Peak(index, 100d + 10d * index, rt, 10000d)).ToList(),
-            [1] = rts.Select((rt, index) => Peak(index, 100d + 10d * index, rt - offsets[index], 10000d)).ToList(),
-        };
-        var unscaledResult = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withoutScans[file.AnalysisFileId]);
+        // Without an MS1 cycle time no floor is known; a zero scale cannot judge, so nothing is rejected.
+        var unscaledResult = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => withScans[file.AnalysisFileId], _ => 0d);
         Assert.AreEqual(0d, unscaledResult.Files.Single(file => file.FileId == 1).EstimatedScanInterval);
         Assert.AreEqual(20, AnchorsOf(unscaledResult, 1).Count(anchor => anchor.Used));
     }
@@ -309,7 +330,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         };
         var parameter = AllCandidatesAsAnchors();
 
-        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId]);
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId], Ms1Cycle(cycle));
 
         var local = AnchorsOf(result, 1);
         var last = local.Count - 1;
@@ -326,7 +347,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         // The same file judged only against the median of all of its anchors, as the pinned #810
         // did, loses the late drift: this is the behaviour the local test replaces.
         parameter.LocalSupportRtWindow = 0f;
-        var global = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId]), 1);
+        var global = AnchorsOf(AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, file => peaks[file.AnalysisFileId], Ms1Cycle(cycle)), 1);
         Assert.IsTrue(global.Where(anchor => anchor.ReferenceRt >= 15d).All(anchor => anchor.Status == "MadOutlier"),
             string.Join(", ", global.Select(anchor => $"{anchor.ReferenceRt}:{anchor.Status}")));
     }
@@ -349,7 +370,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         peaks[1].Add(ScannedPeak(98, 998d, 11.0d, 5000d, cycle)); // after the last anchor
         peaks[1].Add(ScannedPeak(97, 997d, 12.0d, 5000d, cycle));
 
-        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId]);
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, AllCandidatesAsAnchors(), 0.01d, file => peaks[file.AnalysisFileId], Ms1Cycle(cycle));
         var audit = result.Files.Single(file => file.FileId == 1);
         Assert.AreEqual(0.5d, audit.FirstAnchorRt!.Value, 1e-9);
         Assert.AreEqual(10d, audit.LastAnchorRt!.Value, 1e-9);
@@ -398,8 +419,29 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         };
     }
 
+    // The MS1 cycle time of a DDA file whose MS1 scans are `cycle` apart with MS2 scans between
+    // them, computed as the Console computes it: from the scans' retention times.
+    private static Func<AnalysisFileBean, double> Ms1Cycle(double cycle) {
+        var time = AutomaticAlignmentRetentionTimeCorrection.EstimateMs1CycleTime(InterleavedSpectra(0d, 20d, cycle, ScannedPeakMs2PerCycle), IonMode.Positive);
+        return _ => time;
+    }
+
+    private static IEnumerable<RawSpectrum> InterleavedSpectra(double start, double end, double cycle, int ms2PerCycle) {
+        var index = 0;
+        for (var scan = 0; start + scan * cycle <= end; scan++) {
+            var rt = start + scan * cycle;
+            yield return new RawSpectrum { Index = index++, MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = rt };
+            for (var ms2 = 1; ms2 <= ms2PerCycle; ms2++) {
+                yield return new RawSpectrum { Index = index++, MsLevel = 2, ScanPolarity = ScanPolarity.Positive, ScanStartTime = rt + ms2 * cycle / (ms2PerCycle + 1) };
+            }
+        }
+    }
+
+    private const int ScannedPeakMs2PerCycle = 10;
+
     // Peaks at the reference RT minus the file's offset (offset = reference RT - original RT),
-    // each eight scans wide with scan indexes, so that the scan interval can be estimated.
+    // each eight MS1 scans wide. Their scan indexes are raw spectrum indexes, as peak spotting
+    // sets them: ten MS2 scans follow each MS1 scan, so the indexes advance 11 per MS1 scan.
     private static List<ChromatogramPeakFeature> ScannedPeaks(IReadOnlyList<double> referenceRts, IReadOnlyList<double> offsets, double cycle) {
         return referenceRts
             .Select((rt, index) => ScannedPeak(index, 100d + 10d * index, rt - offsets[index], 10000d + index, cycle))
@@ -408,12 +450,13 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
 
     private static ChromatogramPeakFeature ScannedPeak(int id, double mz, double rt, double height, double cycle) {
         var feature = Peak(id, mz, rt, height);
-        var top = (int)Math.Round(rt / cycle);
+        const int stride = ScannedPeakMs2PerCycle + 1;
+        var top = (int)Math.Round(rt / cycle) * stride;
         feature.PeakFeature.ChromXsLeft = new ChromXs(rt - 4d * cycle, ChromXType.RT, ChromXUnit.Min);
         feature.PeakFeature.ChromXsRight = new ChromXs(rt + 4d * cycle, ChromXType.RT, ChromXUnit.Min);
-        feature.PeakFeature.ChromScanIdLeft = top - 4;
+        feature.PeakFeature.ChromScanIdLeft = top - 4 * stride;
         feature.PeakFeature.ChromScanIdTop = top;
-        feature.PeakFeature.ChromScanIdRight = top + 4;
+        feature.PeakFeature.ChromScanIdRight = top + 4 * stride;
         return feature;
     }
 
