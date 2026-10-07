@@ -23,7 +23,9 @@ namespace MsdialCoreTestAppTests.Process;
 /// MSDecLoader(DeconvolutionFilePath, DeconvolutionFilePathList), which opens the unsuffixed .dcl whenever it
 /// exists. A multi-energy AIF run writes none, so an unsuffixed file beside it is left over from an earlier run
 /// under the same name: with fewer peaks the export stopped with ArgumentOutOfRangeException, and with as many it
-/// silently exported the earlier run's spectra. The export now takes the same rule as the alignment's reader.
+/// silently exported the earlier run's spectra. The export now takes the same rule as the alignment's reader:
+/// each peak at the energy of its representative annotation, and otherwise at the energy whose spectrum has the
+/// most product ions (the lowest such energy on a tie).
 /// </summary>
 [TestClass]
 public sealed class LcmsPeakFileExportTests
@@ -43,6 +45,39 @@ public sealed class LcmsPeakFileExportTests
         if (Directory.Exists(_scratch)) {
             Directory.Delete(_scratch, recursive: true);
         }
+    }
+
+    [TestMethod]
+    public void EachPeakIsExportedAtItsAnnotationEnergyOrElseAtTheEnergyWithTheMostProductIons() {
+        // Ions at 10 / 20 eV: peak 0 has 1 / 3, peak 1 has 3 / 1, peak 2 has 2 / 2.
+        var file = MultiEnergyFile("aif", (energy, peak) => (energy, peak) switch
+        {
+            (10d, 0) => 1, (20d, 0) => 3,
+            (10d, 1) => 3, (20d, 1) => 1,
+            _ => 2,
+        }, 10d, 20d);
+
+        Export(file, annotationEnergies: new double?[] { 10d, null, null, });
+
+        var expected = new List<double> { Marker(10d, 0), Marker(10d, 1), Marker(10d, 2), };
+        CollectionAssert.AreEqual(expected, MdpeakMarkers(file), "0: annotated at 10 eV; 1: 10 eV has more ions; 2: a tie");
+        CollectionAssert.AreEqual(expected, MdmspMarkers(file));
+
+        Export(file, annotationEnergies: new double?[] { null, 20d, 30d, });
+
+        expected = new List<double> { Marker(20d, 0), Marker(20d, 1), Marker(10d, 2), };
+        CollectionAssert.AreEqual(expected, MdpeakMarkers(file), "0: 20 eV has more ions; 1: annotated at 20 eV; 2: no file at 30 eV, a tie");
+        CollectionAssert.AreEqual(expected, MdmspMarkers(file));
+    }
+
+    [TestMethod]
+    public void EnergyFilesWithDifferentPeakCountsAreRefused() {
+        var file = MultiEnergyFile("aif", 10d, 20d);
+        MsdecResultsWriter.Write(file.DeconvolutionFilePathList[1], new List<MSDecResult> { Result(20d, 0) });
+
+        var ex = Assert.ThrowsException<InvalidDataException>(() => RepresentativeDeconvolutionReader.LoadPerFileResults(file, []));
+
+        StringAssert.Contains(ex.Message, "aif");
     }
 
     [TestMethod]
@@ -86,13 +121,13 @@ public sealed class LcmsPeakFileExportTests
         File.Delete(first);
         MsdecResultsWriter.Write(file.DeconvolutionFilePath, Results(-1d));
 
-        var ex = Assert.ThrowsException<FileNotFoundException>(() => RepresentativeDeconvolutionReader.OpenPerFileLoader(file));
+        var ex = Assert.ThrowsException<FileNotFoundException>(() => RepresentativeDeconvolutionReader.LoadPerFileResults(file, []));
 
         Assert.AreEqual(first, ex.FileName);
         StringAssert.Contains(ex.Message, "aif");
     }
 
-    private void Export(AnalysisFileBean file) {
+    private void Export(AnalysisFileBean file, double?[]? annotationEnergies = null) {
         var peaks = new ChromatogramPeakFeatureCollection(Enumerable.Range(0, PeakCount).Select(i => {
             var peak = new ChromatogramPeakFeature {
                 MasterPeakID = i,
@@ -100,6 +135,14 @@ public sealed class LcmsPeakFileExportTests
                 MSDecResultIdUsed = i,
             };
             peak.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
+            if (annotationEnergies?[i] is double ce) {
+                peak.MatchResults.AddResult(new MsScanMatchResult {
+                    Name = "annotated",
+                    Source = SourceType.MspDB,
+                    TotalScore = 0.9f,
+                    CollisionEnergy = ce,
+                });
+            }
             return peak;
         }).ToList());
         LcmsProcess.ExportPeakFile(
@@ -139,10 +182,12 @@ public sealed class LcmsPeakFileExportTests
 
     // Writes the per-energy files the way FileProcess does for an AIF file with more than one energy,
     // and lists them in ascending energy as FileProcess.SaveToFileAsync does.
-    private AnalysisFileBean MultiEnergyFile(string name, params double[] energies) {
+    private AnalysisFileBean MultiEnergyFile(string name, params double[] energies) => MultiEnergyFile(name, (_, _) => 1, energies);
+
+    private AnalysisFileBean MultiEnergyFile(string name, Func<double, int, int> ions, params double[] energies) {
         var file = NewFile(name);
         foreach (var energy in energies.OrderBy(e => e)) {
-            var collection = new MSDecResultCollection(Results(energy), energy);
+            var collection = new MSDecResultCollection(Enumerable.Range(0, PeakCount).Select(i => Result(energy, i, ions(energy, i))).ToList(), energy);
             var path = collection.GetDeconvolutionFilePathWithCE(file);
             MsdecResultsWriter.Write(path, collection.MSDecResults);
             file.DeconvolutionFilePathList.Add(path);
@@ -156,12 +201,15 @@ public sealed class LcmsPeakFileExportTests
         return Enumerable.Range(0, PeakCount).Select(i => Result(energy, i)).ToList();
     }
 
-    private static MSDecResult Result(double energy, int peak) {
+    // The marker peak, and ions - 1 further peaks of intensity 1 that the .mdmsp reader skips.
+    private static MSDecResult Result(double energy, int peak, int ions = 1) {
         var marker = Marker(energy, peak);
+        var spectrum = new List<SpectrumPeak> { new SpectrumPeak { Mass = marker, Intensity = MarkerIntensity, } };
+        spectrum.AddRange(Enumerable.Range(1, Math.Max(0, ions - 1)).Select(k => new SpectrumPeak { Mass = marker + k, Intensity = 1d, }));
         return new MSDecResult {
             ScanID = peak,
             PrecursorMz = marker,
-            Spectrum = new List<SpectrumPeak> { new SpectrumPeak { Mass = marker, Intensity = MarkerIntensity, } },
+            Spectrum = spectrum,
         };
     }
 

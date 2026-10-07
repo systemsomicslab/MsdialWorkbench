@@ -6,6 +6,7 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -32,10 +33,10 @@ namespace CompMs.App.MsdialConsole.Process;
 public sealed class LcmsProcess
 {
     /// <summary>
-    /// Writes one file's .mdpeak and .mdmsp. Both read the deconvolution results through
-    /// <see cref="RepresentativeDeconvolutionReader.OpenPerFileLoader"/>, so a multi-energy AIF file is
-    /// exported from its lowest-energy file and never from an unsuffixed .dcl an earlier run left
-    /// under the same name.
+    /// Writes one file's .mdpeak and .mdmsp. Both take the deconvolution results of
+    /// <see cref="RepresentativeDeconvolutionReader.LoadPerFileResults"/>, so a multi-energy AIF file exports
+    /// each peak at the energy of its representative annotation, or else at the energy whose spectrum has
+    /// the most product ions, and never from an unsuffixed .dcl an earlier run left under the same name.
     /// </summary>
     internal static void ExportPeakFile(
         AnalysisFileBean file,
@@ -46,16 +47,29 @@ public sealed class LcmsProcess
         IAnalysisMetadataAccessor peakAccessor,
         IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
         ParameterBase parameter) {
+        var msdecResults = RepresentativeDeconvolutionReader.LoadPerFileResults(file, peaks.Items);
+
         var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
         using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write)) {
-            peakExporterFactory.CreateExporter(providerFactory, peakAccessor, RepresentativeDeconvolutionReader.OpenPerFileLoader).Export(stream, file, peaks, new ExportStyle());
+            peakExporterFactory.CreateExporter(providerFactory, peakAccessor, _ => msdecResults).Export(stream, file, peaks, new ExportStyle());
         }
 
         var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
         using var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write);
-        using var mspLoader = RepresentativeDeconvolutionReader.OpenPerFileLoader(file);
-        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(refer, parameter, _ => mspLoader);
+        IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(refer, parameter, _ => new LoadedMSDecResults(msdecResults));
         peak_MspExporter.Export(mspstream, file, peaks, new ExportStyle());
+    }
+
+    // Indexes the results as MSDecLoader does, by IChromatogramPeak.ID (MasterPeakID).
+    private sealed class LoadedMSDecResults : IMsScanPropertyLoader<ChromatogramPeakFeature>
+    {
+        private readonly IReadOnlyList<MSDecResult> _results;
+
+        public LoadedMSDecResults(IReadOnlyList<MSDecResult> results) {
+            _results = results;
+        }
+
+        public IMSScanProperty Load(ChromatogramPeakFeature source) => _results[source.MasterPeakID];
     }
 
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)

@@ -16,14 +16,16 @@ namespace CompMs.App.MsdialConsole.Process;
 /// <remarks>
 /// A file deconvoluted once has its results in DeconvolutionFilePath. An AIF file with several
 /// collision energies has none there: FileProcess writes one "&lt;name&gt;_&lt;CE x 100&gt;.dcl" per
-/// energy and lists them in DeconvolutionFilePathList, in ascending energy. The spectrum is taken
-/// from the energy the representative annotation was made at, and otherwise from the first file
-/// of that list.
+/// energy and lists them in DeconvolutionFilePathList, in ascending energy.
+/// For such a file the spectrum is taken from the energy the representative annotation was made at,
+/// as the GUI does. A peak without an annotation at one of the file's energies takes the energy
+/// whose deconvoluted spectrum has the most product ions, the lowest of those energies on a tie
+/// (the MS-DIAL author's decision of 2026-10-07; the GUI takes the first file of its list).
 /// When the list is not empty, an unsuffixed file beside it is not read: a multi-energy run never
 /// writes one, so it is left over from an earlier run on the same raw folder (the Console's
 /// timestamp has minute resolution and no zero padding, so names can repeat), and its seek
 /// pointers do not belong to this run's peaks. The per-file .mdpeak/.mdmsp export follows the same
-/// rule through <see cref="OpenPerFileLoader"/>.
+/// rules through <see cref="LoadPerFileResults"/>.
 /// </remarks>
 internal sealed class RepresentativeDeconvolutionReader : IDisposable
 {
@@ -34,6 +36,8 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
         public int Version;
         public List<long> Pointers = null!;
         public bool IsAnnotationInfo;
+
+        public MSDecResult Read(int id) => MsdecResultsReader.ReadMSDecResult(Stream, Pointers[id], Version, IsAnnotationInfo);
     }
 
     private readonly Dictionary<int, List<Source>> _sources = new();
@@ -65,27 +69,95 @@ internal sealed class RepresentativeDeconvolutionReader : IDisposable
     }
 
     /// <summary>
-    /// Opens the deconvolution results the per-file export reads: the first listed collision-energy
-    /// file (the lowest energy) when the list is not empty, and DeconvolutionFilePath otherwise.
-    /// MSDecLoader's own constructor opens DeconvolutionFilePath whenever it exists, so it would read
-    /// the stale unsuffixed file the constructor above ignores.
+    /// The deconvolution results the per-file export writes, indexed as the file's .dcl files are.
+    /// A multi-energy AIF file takes, for each peak, the energy of its representative annotation, and
+    /// otherwise the energy whose spectrum has the most product ions, by the same rule as <see cref="Read"/>.
+    /// Any other file is read from DeconvolutionFilePath. MSDecLoader's own constructor opens
+    /// DeconvolutionFilePath whenever it exists, so it would read the stale unsuffixed file the
+    /// constructor above ignores.
     /// </summary>
-    public static MSDecLoader OpenPerFileLoader(AnalysisFileBean file) {
-        var path = HasCollisionEnergyFiles(file) ? file.DeconvolutionFilePathList[0] : file.DeconvolutionFilePath;
-        if (!File.Exists(path)) {
-            throw new FileNotFoundException($"No deconvolution result for {file.AnalysisFileName}: {path} does not exist.", path);
+    public static IReadOnlyList<MSDecResult> LoadPerFileResults(AnalysisFileBean file, IReadOnlyList<ChromatogramPeakFeature> peaks) {
+        if (!HasCollisionEnergyFiles(file)) {
+            return ReadAll(file, file.DeconvolutionFilePath);
         }
-        return new MSDecLoader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
+
+        var energies = file.DeconvolutionFilePathList.Select(CollisionEnergyOf).ToList();
+        var perEnergy = file.DeconvolutionFilePathList.Select(path => ReadAll(file, path)).ToList();
+        var count = perEnergy[0].Count;
+        if (perEnergy.Any(results => results.Count != count)) {
+            throw new InvalidDataException(
+                $"The collision-energy files of {file.AnalysisFileName} hold different numbers of peaks: " +
+                string.Join(", ", file.DeconvolutionFilePathList.Zip(perEnergy, (path, results) => $"{Path.GetFileName(path)} {results.Count}")) + ".");
+        }
+
+        var annotatedEnergies = new Dictionary<int, double>();
+        foreach (var peak in peaks) {
+            if (peak.MatchResults?.Representative?.CollisionEnergy is double ce) {
+                annotatedEnergies[peak.GetMSDecResultID()] = ce;
+            }
+        }
+
+        var chosen = new MSDecResult[count];
+        for (int id = 0; id < count; id++) {
+            var candidates = perEnergy.Select(results => results[id]).ToList();
+            var index = annotatedEnergies.TryGetValue(id, out var ce) ? IndexOfEnergy(energies, ce) : -1;
+            chosen[id] = candidates[index >= 0 ? index : IndexOfMostProductIons(candidates)];
+        }
+        return chosen;
     }
 
     private static bool HasCollisionEnergyFiles(AnalysisFileBean file) => file.DeconvolutionFilePathList is { Count: > 0 };
 
+    private static List<MSDecResult> ReadAll(AnalysisFileBean file, string path) {
+        if (!File.Exists(path)) {
+            throw new FileNotFoundException($"No deconvolution result for {file.AnalysisFileName}: {path} does not exist.", path);
+        }
+        return MsdecResultsReader.ReadMSDecResults(path, out _, out _);
+    }
+
     public MSDecResult Read(AlignmentChromPeakFeature peak) {
         var sources = _sources[peak.FileID];
-        var energy = peak.MatchResults?.Representative?.CollisionEnergy;
-        var source = (energy is double ce ? sources.FirstOrDefault(s => s.CollisionEnergy >= 0 && Math.Abs(s.CollisionEnergy - ce) < 0.005) : null)
-            ?? sources[0];
-        return MsdecResultsReader.ReadMSDecResult(source.Stream, source.Pointers[peak.MasterPeakID], source.Version, source.IsAnnotationInfo);
+        var id = peak.MasterPeakID;
+        if (sources.Count == 1) {
+            return sources[0].Read(id);
+        }
+        if (peak.MatchResults?.Representative?.CollisionEnergy is double ce) {
+            var index = IndexOfEnergy(sources.Select(s => s.CollisionEnergy).ToList(), ce);
+            if (index >= 0) {
+                return sources[index].Read(id);
+            }
+        }
+        var candidates = sources.Select(s => s.Read(id)).ToList();
+        return candidates[IndexOfMostProductIons(candidates)];
+    }
+
+    /// <summary>
+    /// The file at the representative annotation's energy, or -1 when no file has it. An unannotated
+    /// peak's representative is the unknown result, whose energy no AIF deconvolution is made at.
+    /// </summary>
+    private static int IndexOfEnergy(IReadOnlyList<double> energies, double ce) {
+        for (int i = 0; i < energies.Count; i++) {
+            if (energies[i] >= 0 && Math.Abs(energies[i] - ce) < 0.005) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// The candidate whose deconvoluted spectrum has the most peaks; the first, that is the lowest energy, on a tie.
+    /// </summary>
+    internal static int IndexOfMostProductIons(IReadOnlyList<MSDecResult> candidates) {
+        var best = 0;
+        var bestCount = -1;
+        for (int i = 0; i < candidates.Count; i++) {
+            var count = candidates[i]?.Spectrum?.Count ?? 0;
+            if (count > bestCount) {
+                best = i;
+                bestCount = count;
+            }
+        }
+        return best;
     }
 
     public void Dispose() {
