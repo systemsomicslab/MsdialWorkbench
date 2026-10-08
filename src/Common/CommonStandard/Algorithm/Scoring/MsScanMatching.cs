@@ -857,12 +857,15 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static double GetSpectralEntropy(
             List<SpectrumPeak> peaks) {
-            var sumIntensity = peaks.Sum(n => n.Intensity);
-            return -1 * peaks.Sum(n => XLog2X(n.Intensity / sumIntensity));
+            var sumIntensity = peaks.Sum(n => NonNegative(n.Intensity));
+            return -1 * peaks.Sum(n => XLog2X(NonNegative(n.Intensity) / sumIntensity));
         }
 
         // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
         private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
+
+        // A negative intensity has no probability to give; it is counted as 0, not as NaN.
+        private static double NonNegative(double intensity) => Math.Max(intensity, 0d);
 
         // A spectrum binned by frame (int)(mass / bin), with the intensities in each frame summed and
         // then scaled to a unit total. Frames are in ascending order, so two spectra can be walked
@@ -888,15 +891,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 var total = 0d;
                 foreach (var peak in sorted) {
                     var frame = (int)(peak.Mass / bin);
+                    var intensity = NonNegative(peak.Intensity);
                     if (count > 0 && frames[count - 1] == frame) {
-                        intensities[count - 1] += peak.Intensity;
+                        intensities[count - 1] += intensity;
                     }
                     else {
                         frames[count] = frame;
-                        intensities[count] = peak.Intensity;
+                        intensities[count] = intensity;
                         count++;
                     }
-                    total += peak.Intensity;
+                    total += intensity;
                 }
                 for (int i = 0; i < count; i++) {
                     intensities[i] /= total;

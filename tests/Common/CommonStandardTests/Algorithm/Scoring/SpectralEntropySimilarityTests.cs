@@ -177,6 +177,23 @@ public class SpectralEntropySimilarityTests
     }
 
     [TestMethod()]
+    public void GetSpectralEntropy_NegativeIntensity_IsCountedAsZero() {
+        Assert.AreEqual(1d, MsScanMatching.GetSpectralEntropy([new(100d, 1d), new(200d, 1d), new(300d, -5d)]), Tolerance);
+    }
+
+    [TestMethod()]
+    public void Similarity_NegativeIntensity_IsCountedAsZero() {
+        // The negative peak shares frame 2000 with a positive one, and is alone in frame 6000.
+        List<SpectrumPeak> withNegative = [new(100.01, 3d), new(100.02, -2d), new(200d, 1d), new(300d, -4d)];
+        List<SpectrumPeak> withZero = [new(100.01, 3d), new(100.02, 0d), new(200d, 1d), new(300d, 0d)];
+        List<SpectrumPeak> other = [new(100.03, 1d), new(300d, 2d)];
+        Assert.AreEqual(
+            MsScanMatching.GetSpectralEntropySimilarity(withZero, other, Bin),
+            MsScanMatching.GetSpectralEntropySimilarity(withNegative, other, Bin),
+            Tolerance);
+    }
+
+    [TestMethod()]
     public void Similarity_BinHoldingOnlyZeroIntensity_IsIgnored() {
         List<SpectrumPeak> peaks1 = [new(100d, 1d), new(200d, 0d)];
         List<SpectrumPeak> peaks2 = [new(100d, 1d)];
