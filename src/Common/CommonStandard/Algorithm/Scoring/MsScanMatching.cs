@@ -829,18 +829,89 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
-            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
-            var entropy12 = GetSpectralEntropy(combinedSpectrum);
-            var entropy1 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
-            var entropy2 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
+            var p = NormalizedBins.Create(peaks1, bin);
+            var q = NormalizedBins.Create(peaks2, bin);
 
-            return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
+            // The similarity is 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
+            // only one spectrum, say p, contributes exactly p to 2 H(m) - H(p) - H(q), and p and q
+            // each total 1, so everything outside the shared frames cancels against the leading 1:
+            //   similarity = sum over shared frames of ((p + q) log2 (p + q) - p log2 p - q log2 q) / 2
+            // (Li et al., Nat. Methods 18, 1524 (2021); Li & Fiehn, Nat. Methods 20, 1475 (2023)).
+            var similarity = 0d;
+            int i = 0, j = 0;
+            while (i < p.Count && j < q.Count) {
+                if (p.Frames[i] < q.Frames[j]) {
+                    i++;
+                }
+                else if (q.Frames[j] < p.Frames[i]) {
+                    j++;
+                }
+                else {
+                    var pi = p.Intensities[i++];
+                    var qj = q.Intensities[j++];
+                    similarity += XLog2X(pi + qj) - XLog2X(pi) - XLog2X(qj);
+                }
+            }
+            return similarity * .5;
         }
 
         public static double GetSpectralEntropy(
             List<SpectrumPeak> peaks) {
             var sumIntensity = peaks.Sum(n => n.Intensity);
-            return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
+            return -1 * peaks.Sum(n => XLog2X(n.Intensity / sumIntensity));
+        }
+
+        // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
+        private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
+
+        // A spectrum binned by frame (int)(mass / bin), with the intensities in each frame summed and
+        // then scaled to a unit total. Frames are in ascending order, so two spectra can be walked
+        // together without a lookup.
+        private readonly struct NormalizedBins
+        {
+            public readonly int[] Frames;
+            public readonly double[] Intensities;
+            public readonly int Count;
+
+            private NormalizedBins(int[] frames, double[] intensities, int count) {
+                Frames = frames;
+                Intensities = intensities;
+                Count = count;
+            }
+
+            public static NormalizedBins Create(List<SpectrumPeak> peaks, double bin) {
+                // Spectra are almost always sorted by m/z already; sorting is only the fallback.
+                var sorted = IsSortedByMass(peaks) ? peaks : peaks.OrderBy(peak => peak.Mass).ToList();
+                var frames = new int[sorted.Count];
+                var intensities = new double[sorted.Count];
+                var count = 0;
+                var total = 0d;
+                foreach (var peak in sorted) {
+                    var frame = (int)(peak.Mass / bin);
+                    if (count > 0 && frames[count - 1] == frame) {
+                        intensities[count - 1] += peak.Intensity;
+                    }
+                    else {
+                        frames[count] = frame;
+                        intensities[count] = peak.Intensity;
+                        count++;
+                    }
+                    total += peak.Intensity;
+                }
+                for (int i = 0; i < count; i++) {
+                    intensities[i] /= total;
+                }
+                return new NormalizedBins(frames, intensities, count);
+            }
+
+            private static bool IsSortedByMass(List<SpectrumPeak> peaks) {
+                for (int i = 1; i < peaks.Count; i++) {
+                    if (peaks[i - 1].Mass > peaks[i].Mass) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
 
         public static double[] GetModifiedDotProductScore(
