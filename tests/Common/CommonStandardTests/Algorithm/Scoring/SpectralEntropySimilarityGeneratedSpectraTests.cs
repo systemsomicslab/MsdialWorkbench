@@ -1,6 +1,7 @@
 using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
 using CompMs.Common.Lipidomics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -94,14 +95,15 @@ public class SpectralEntropySimilarityGeneratedSpectraTests
     }
 
     // GetSpectralEntropySimilarity and GetSpectralEntropy as they were before the shared-bin rewrite,
-    // kept verbatim so that the comparison is against the code that ran, not against a restatement.
+    // with the SpectrumHandler helpers they called, all kept verbatim so that the comparison is
+    // against the code that ran, not against a restatement.
     private static double LegacySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
         if (peaks1 is null || peaks2 is null || peaks1.Count == 0 || peaks2.Count == 0) return -1d;
 
-        var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
+        var combinedSpectrum = LegacyGetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
         var entropy12 = LegacyEntropy(combinedSpectrum);
-        var entropy1 = LegacyEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
-        var entropy2 = LegacyEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
+        var entropy1 = LegacyEntropy(LegacyGetBinnedSpectrum(peaks1, bin));
+        var entropy2 = LegacyEntropy(LegacyGetBinnedSpectrum(peaks2, bin));
 
         return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
     }
@@ -109,5 +111,57 @@ public class SpectralEntropySimilarityGeneratedSpectraTests
     private static double LegacyEntropy(List<SpectrumPeak> peaks) {
         var sumIntensity = peaks.Sum(n => n.Intensity);
         return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
+    }
+
+    private static List<SpectrumPeak> LegacyGetCombinedSpectrum(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
+        var peaks = new List<SpectrumPeak>();
+        var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
+
+        foreach (var peak in peaks1) {
+            var mass = peak.Mass;
+            var massframe = (int)(mass / bin);
+            if (range2Peaks.ContainsKey(massframe))
+                range2Peaks[massframe].Add(peak);
+            else
+                range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
+        }
+
+        foreach (var peak in peaks2) {
+            var mass = peak.Mass;
+            var massframe = (int)(mass / bin);
+            if (range2Peaks.ContainsKey(massframe))
+                range2Peaks[massframe].Add(peak);
+            else
+                range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
+        }
+
+        foreach (var pair in range2Peaks) {
+            var maxMass = pair.Value.Argmax(n => n.Intensity).Mass;
+            var sumIntensity = pair.Value.Sum(n => n.Intensity) * 0.5;
+            peaks.Add(new SpectrumPeak(maxMass, sumIntensity));
+        }
+
+        return peaks;
+    }
+
+    private static List<SpectrumPeak> LegacyGetBinnedSpectrum(List<SpectrumPeak> spectrum, double bin) {
+        var peaks = new List<SpectrumPeak>();
+        var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
+
+        foreach (var peak in spectrum) {
+            var mass = peak.Mass;
+            var massframe = (int)(mass / bin);
+            if (range2Peaks.ContainsKey(massframe))
+                range2Peaks[massframe].Add(peak);
+            else
+                range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
+        }
+
+        foreach (var pair in range2Peaks) {
+            var maxMass = pair.Value.Argmax(n => n.Intensity).Mass;
+            var sumIntensity = pair.Value.Sum(n => n.Intensity);
+            peaks.Add(new SpectrumPeak(maxMass, sumIntensity));
+        }
+        return peaks;
     }
 }

@@ -829,10 +829,13 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
-            var p = NormalizedBins.Create(peaks1, bin);
-            var q = NormalizedBins.Create(peaks2, bin);
+            var p = FrameBinnedSpectrum.Create(peaks1, bin);
+            var q = FrameBinnedSpectrum.Create(peaks2, bin);
+            var totalP = NonNegativeTotal(p);
+            var totalQ = NonNegativeTotal(q);
 
-            // The similarity is 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
+            // With p and q the frame intensities scaled to a unit total, the similarity is
+            // 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
             // only one spectrum, say p, contributes exactly p to 2 H(m) - H(p) - H(q), and p and q
             // each total 1, so everything outside the shared frames cancels against the leading 1:
             //   similarity = sum over shared frames of ((p + q) log2 (p + q) - p log2 p - q log2 q) / 2
@@ -847,8 +850,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                     j++;
                 }
                 else {
-                    var pi = p.Intensities[i++];
-                    var qj = q.Intensities[j++];
+                    var pi = NonNegative(p.Intensities[i++]) / totalP;
+                    var qj = NonNegative(q.Intensities[j++]) / totalQ;
                     similarity += XLog2X(pi + qj) - XLog2X(pi) - XLog2X(qj);
                 }
             }
@@ -864,58 +867,16 @@ namespace CompMs.Common.Algorithm.Scoring {
         // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
         private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
 
-        // A negative intensity has no probability to give; it is counted as 0, not as NaN.
+        // A negative intensity is not a valid peak and has no probability to give; it is counted as 0,
+        // not as NaN. In the similarity this applies to a frame's summed intensity.
         private static double NonNegative(double intensity) => Math.Max(intensity, 0d);
 
-        // A spectrum binned by frame (int)(mass / bin), with the intensities in each frame summed and
-        // then scaled to a unit total. Frames are in ascending order, so two spectra can be walked
-        // together without a lookup.
-        private readonly struct NormalizedBins
-        {
-            public readonly int[] Frames;
-            public readonly double[] Intensities;
-            public readonly int Count;
-
-            private NormalizedBins(int[] frames, double[] intensities, int count) {
-                Frames = frames;
-                Intensities = intensities;
-                Count = count;
+        private static double NonNegativeTotal(FrameBinnedSpectrum spectrum) {
+            var total = 0d;
+            for (int i = 0; i < spectrum.Count; i++) {
+                total += NonNegative(spectrum.Intensities[i]);
             }
-
-            public static NormalizedBins Create(List<SpectrumPeak> peaks, double bin) {
-                // Spectra are almost always sorted by m/z already; sorting is only the fallback.
-                var sorted = IsSortedByMass(peaks) ? peaks : peaks.OrderBy(peak => peak.Mass).ToList();
-                var frames = new int[sorted.Count];
-                var intensities = new double[sorted.Count];
-                var count = 0;
-                var total = 0d;
-                foreach (var peak in sorted) {
-                    var frame = (int)(peak.Mass / bin);
-                    var intensity = NonNegative(peak.Intensity);
-                    if (count > 0 && frames[count - 1] == frame) {
-                        intensities[count - 1] += intensity;
-                    }
-                    else {
-                        frames[count] = frame;
-                        intensities[count] = intensity;
-                        count++;
-                    }
-                    total += intensity;
-                }
-                for (int i = 0; i < count; i++) {
-                    intensities[i] /= total;
-                }
-                return new NormalizedBins(frames, intensities, count);
-            }
-
-            private static bool IsSortedByMass(List<SpectrumPeak> peaks) {
-                for (int i = 1; i < peaks.Count; i++) {
-                    if (peaks[i - 1].Mass > peaks[i].Mass) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            return total;
         }
 
         public static double[] GetModifiedDotProductScore(
