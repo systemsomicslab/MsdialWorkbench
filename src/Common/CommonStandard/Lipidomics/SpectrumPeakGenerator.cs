@@ -141,6 +141,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     if (bondPositions.Contains(1))
                     {
+                        // A bond at position 1 is the vinyl ether of a plasmalogen. Its C3+H peak is not generated:
+                        // the +H peaks below are added only when factorHGain is above 0.
                         factor = 2.5;
                         factorHLoss = 0.5;
                         factorHGain = 0.0;
@@ -166,12 +168,16 @@ namespace CompMs.Common.Lipidomics
                 if (chain.DoubleBond.Bonds.Count >= 3) {
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H_p3") { SpectrumComment = speccomment_hloss });
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}_p3") { SpectrumComment = speccomment_radical });
-                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H_p3") { SpectrumComment = speccomment_hgain });
+                    if (factorHGain > 0) {
+                        peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H_p3") { SpectrumComment = speccomment_hgain });
+                    }
                 }
                 else {
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment_hloss });
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment_radical });
-                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                    if (factorHGain > 0) {
+                        peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                    }
                 }
             }
 

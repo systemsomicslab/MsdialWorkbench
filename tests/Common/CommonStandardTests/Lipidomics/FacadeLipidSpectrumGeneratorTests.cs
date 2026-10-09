@@ -47,6 +47,33 @@ namespace CompMs.Common.Lipidomics.Tests
             actual = new MockLipid(LbmClass.FA).GenerateSpectrum(generators, AdductIon.GetAdductIon("[M+HCOO]-"));
             Assert.AreEqual(400, actual.Spectrum[0].Intensity);
         }
+
+        // For the vinyl ether of a plasmalogen, a double bond at position 1, the C3+H peak is not generated.
+        // The generators used to add it with intensity 0.
+        [DataTestMethod()]
+        [DataRow("PE P-18:0/20:4(5Z,8Z,11Z,14Z)", "[M+H]+")]
+        [DataRow("PE P-18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z)", "[M+H]+")]
+        [DataRow("PC P-18:0/20:4(5Z,8Z,11Z,14Z)", "[M+H]+")]
+        [DataRow("PC P-18:0/20:4(5Z,8Z,11Z,14Z)", "[M+Na]+")]
+        [DataRow("PE P-18:0/20:4(5Z,8Z,11Z,14Z)", "[M+Na]+")]
+        [DataRow("PC P-18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)", "[M+H]+")]
+        public void GeneratePlasmalogenHasNoPeakOfZeroIntensityTest(string lipidName, string adductName) {
+            var lipid = FacadeLipidParser.Default.Parse(lipidName);
+            var adduct = AdductIon.GetAdductIon(adductName);
+            var generated = 0;
+            foreach (var (name, generator) in new[] { ("EAD", FacadeLipidSpectrumGenerator.Default), ("EID", FacadeLipidSpectrumGenerator.EidLipidGenerator), }) {
+                if (!generator.CanGenerate(lipid, adduct)) {
+                    continue;
+                }
+                var spectrum = lipid.GenerateSpectrum(generator, adduct).Spectrum;
+                Assert.AreNotEqual(0, spectrum.Count, $"{name}: no peaks");
+                foreach (var peak in spectrum) {
+                    Assert.IsTrue(peak.Intensity > 0, $"{name}: {peak.Comment} at m/z {peak.Mass} has intensity {peak.Intensity}");
+                }
+                generated++;
+            }
+            Assert.AreNotEqual(0, generated, "Neither EAD nor EID generates this lipid.");
+        }
     }
 
     class MockLipid : ILipid
