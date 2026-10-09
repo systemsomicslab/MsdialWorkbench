@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -315,6 +316,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     });
 
             /// <summary>
+            /// True when a reader accepted at least one line written with any of these keys.
+            /// </summary>
+            public bool WasApplied(params string[] keys) {
+                return _applied.Any(applied => keys.Contains(applied.Trim(), StringComparer.OrdinalIgnoreCase));
+            }
+
+            /// <summary>
             /// True when the method file contained a key no reader claimed.
             /// </summary>
             public bool HasUnrecognised => _unrecognised.Count > 0;
@@ -473,16 +481,60 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
+            ApplyGeneratedLipidLbmDefaults(param, keys);
             keys.Report(filepath);
             ResolveFilePaths(param, filepath);
             return param;
         }
 
         /// <summary>
+        /// Give the LBM annotator the GUI's spectrum cut-offs for EAD, OAD and EID where the method
+        /// file does not set them.
+        /// </summary>
+        /// <remarks>
+        /// In these modes the LBM match is the gate to the generated lipid library: only a peak the
+        /// LBM library reference-matches is expanded into chain and double-bond positions. The GUI
+        /// therefore gives the LBM annotator much lower spectrum cut-offs for these collision types
+        /// (LcmsMspAnnotatorSettingModel) than the built-in search parameter has, which was written
+        /// for a CID spectrum against an acquired library. Without this the Console would pass far
+        /// fewer peaks to the generated library than the GUI does from the same data.
+        ///
+        /// Only the keys the method file leaves unset change, and it is decided after the whole
+        /// file is read, so the order of "Collision type", "Target omics" and the cut-off lines
+        /// does not matter. What changed is said on the console.
+        /// </remarks>
+        private static void ApplyGeneratedLipidLbmDefaults(ParameterBase param, MethodFileKeys keys) {
+            if (GeneratedLipidLibrary.SourceFor(param) is null) {
+                return;
+            }
+            var lbm = param.LbmSearchParam;
+            var changed = new List<string>();
+            void Default(string name, Action apply, params string[] methodKeys) {
+                if (!keys.WasApplied(methodKeys)) {
+                    apply();
+                    changed.Add(name);
+                }
+            }
+            Default("weighted dot product cutoff 0.05", () => lbm.WeightedDotProductCutOff = 0.05F,
+                "weighted dot product cutoff for lbm-based annotation", "square root of weighted dot product cutoff for lbm-based annotation");
+            Default("simple dot product cutoff 0.05", () => lbm.SimpleDotProductCutOff = 0.05F,
+                "simple dot product cutoff for lbm-based annotation", "square root of simple dot product cutoff for lbm-based annotation");
+            Default("reverse dot product cutoff 0.05", () => lbm.ReverseDotProductCutOff = 0.05F,
+                "reverse dot product cutoff for lbm-based annotation", "square root of reverse dot product cutoff for lbm-based annotation");
+            Default("matched peaks percentage cutoff 0", () => lbm.MatchedPeaksPercentageCutOff = 0F,
+                "matched peaks percentage cutoff for lbm-based annotation");
+            Default("minimum spectrum match 1", () => lbm.MinimumSpectrumMatch = 1F,
+                "minimum spectrum match for lbm-based annotation");
+            if (changed.Count > 0) {
+                Console.WriteLine($"LBM-based annotation for collision type {param.CollistionType}: using the GUI defaults for the keys the method file does not set ({string.Join(", ", changed)}).");
+            }
+        }
+
+        /// <summary>
         /// Say what the settings LcmsProcess reads for itself would do with one line.
         /// </summary>
         /// <remarks>
-        /// LcmsProcess reads six settings with readers of their own, and calls them after
+        /// LcmsProcess reads several settings with readers of their own, and calls them after
         /// ReadForLcmsParameter has already written the key record. The record knew only
         /// ReadCommonParameter, so it listed those keys as unrecognised with NO EFFECT while they
         /// governed the run. A repository run's record put "MSP annotator settings file path",
@@ -516,6 +568,7 @@ namespace CompMs.App.MsdialConsole.Parser
             (method, value) => AlignmentLightModeLine(method, value, _ => { }),
             (method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
             (method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+            (method, value) => GeneratedLipidAnnotatorLine(method, value, new GeneratedLipidAnnotatorSetting()),
         };
 
         /// <summary>
@@ -589,6 +642,28 @@ namespace CompMs.App.MsdialConsole.Parser
             return ReadLast(filepath, false, AnnotationCandidateExportLine);
         }
 
+        /// <summary>
+        /// Read how the in silico lipid library for EAD, OAD and EID spectra is built and searched.
+        /// </summary>
+        /// <remarks>
+        /// Several keys share one setting object, so this cannot be ReadLast, but it keeps
+        /// ReadLast's rules: the last usable line of each key wins, and a blank or unusable line
+        /// leaves the earlier value in place.
+        /// </remarks>
+        public static GeneratedLipidAnnotatorSetting ReadGeneratedLipidAnnotatorSetting(string filepath) {
+            var setting = new GeneratedLipidAnnotatorSetting();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable || value.IsEmptyOrNull()) {
+                        continue;
+                    }
+                    GeneratedLipidAnnotatorLine(method, value, setting);
+                }
+            }
+            return setting;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             return ReadLast(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
@@ -635,6 +710,40 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "annotation candidates":
                 case "export annotation candidates":
                     return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome GeneratedLipidAnnotatorLine(string method, string value, GeneratedLipidAnnotatorSetting setting) {
+            var search = setting.SearchParameter;
+            switch (method.ToLowerInvariant()) {
+                case "use generated lipid library":
+                case "generated lipid annotation":
+                    return TrueOrFalse(value, v => setting.Enabled = v);
+                case "generated lipid annotator priority":
+                case "generated lipid annotation priority":
+                    return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var priority)
+                        ? Assign(priority, v => setting.Priority = v)
+                        : MethodKeyOutcome.UnusableValue;
+                case "ms1 tolerance for generated lipid annotation": return Number(value, v => search.Ms1Tolerance = (float)v);
+                case "ms2 tolerance for generated lipid annotation": return Number(value, v => search.Ms2Tolerance = (float)v);
+                case "mass range begin for generated lipid annotation": return Number(value, v => search.MassRangeBegin = (float)v);
+                case "mass range end for generated lipid annotation": return Number(value, v => search.MassRangeEnd = (float)v);
+                case "relative amplitude cutoff for generated lipid annotation": return Number(value, v => search.RelativeAmpCutoff = (float)v);
+                case "absolute amplitude cutoff for generated lipid annotation": return Number(value, v => search.AbsoluteAmpCutoff = (float)v);
+                case "square root of weighted dot product cutoff for generated lipid annotation": return Number(value, v => search.WeightedDotProductCutOff = (float)v);
+                case "square root of simple dot product cutoff for generated lipid annotation": return Number(value, v => search.SimpleDotProductCutOff = (float)v);
+                case "square root of reverse dot product cutoff for generated lipid annotation": return Number(value, v => search.ReverseDotProductCutOff = (float)v);
+                case "matched peaks percentage cutoff for generated lipid annotation": return Number(value, v => search.MatchedPeaksPercentageCutOff = (float)v);
+                case "minimum spectrum match for generated lipid annotation": return Number(value, v => search.MinimumSpectrumMatch = (float)v);
+                case "total score cutoff for generated lipid annotation": return Number(value, v => search.TotalScoreCutoff = (float)v);
+                case "rt tolerance for generated lipid annotation": return Number(value, v => search.RtTolerance = (float)v);
+                case "ccs tolerance for generated lipid annotation": return Number(value, v => search.CcsTolerance = (float)v);
+                case "use retention information for generated lipid annotation scoring": return TrueOrFalse(value, v => search.IsUseTimeForAnnotationScoring = v);
+                case "use retention information for generated lipid annotation filtering": return TrueOrFalse(value, v => search.IsUseTimeForAnnotationFiltering = v);
+                case "use ccs for generated lipid annotation scoring": return TrueOrFalse(value, v => search.IsUseCcsForAnnotationScoring = v);
+                case "use ccs for generated lipid annotation filtering": return TrueOrFalse(value, v => search.IsUseCcsForAnnotationFiltering = v);
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
@@ -965,10 +1074,14 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        // DimsProcess reads the generated lipid keys itself; asked here only so the
+                        // key record says they took effect.
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => GeneratedLipidAnnotatorLine(method, value, new GeneratedLipidAnnotatorSetting())));
                     }
                 }
             }
+            ApplyGeneratedLipidLbmDefaults(param, keys);
             keys.Report(filepath);
             ResolveFilePaths(param, filepath);
             return param;
@@ -1338,6 +1451,20 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.IonMode = (IonMode)Enum.Parse(typeof(IonMode), valueLower, true);
                     return true;
                 
+                case "collision type":
+                    // EAD is the instrument name for the EIEIO collision type in MS-DIAL.
+                    var collisionName = value.Trim();
+                    if (string.Equals(collisionName, "EAD", StringComparison.OrdinalIgnoreCase)) {
+                        collisionName = nameof(CollisionType.EIEIO);
+                    }
+                    if (!Enum.TryParse(collisionName, true, out CollisionType collisionType)
+                        || !Enum.IsDefined(typeof(CollisionType), collisionType)) {
+                        return MethodKeyOutcome.UnusableValue;
+                    }
+                    param.CollistionType = collisionType;
+                    param.LipidQueryContainer.CollisionType = collisionType;
+                    return MethodKeyOutcome.Applied;
+
                 case "target omics":
                     if (valueLower == "metabolomics" || valueLower == "lipidomics")
                         param.TargetOmics = (TargetOmics)Enum.Parse(typeof(TargetOmics), valueLower, true);

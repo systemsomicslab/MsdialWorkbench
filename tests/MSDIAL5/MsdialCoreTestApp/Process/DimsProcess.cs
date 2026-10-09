@@ -51,6 +51,7 @@ public sealed class DimsProcess {
 
         container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = CreateDataBaseStorage(param, mspDB, lbmDB, txtDB);
+        GeneratedLipidLibrary.AddTo(container.DataBases, param, ConfigParser.ReadGeneratedLipidAnnotatorSetting(methodFile), container.DataBaseMapper);
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         var providerFactory = new StandardDataProviderFactory();
@@ -89,10 +90,7 @@ public sealed class DimsProcess {
         var mapper = storage.DataBaseMapper;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
-        var annotationProcess = new StandardAnnotationProcess(
-            storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories,
-            evaluator,
-            mapper);
+        var annotationProcess = GeneratedLipidLibrary.CreateAnnotationProcess(storage.DataBases, mapper, evaluator);
         var process = new ProcessFile(providerFactory, storage, annotationProcess, evaluator);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
         // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
