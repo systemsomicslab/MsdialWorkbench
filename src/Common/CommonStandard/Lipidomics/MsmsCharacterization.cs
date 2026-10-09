@@ -4283,7 +4283,13 @@ namespace CompMs.Common.Lipidomics
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
                     // seek PreCursor -197(C5H12NO5P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 197.04475958;
+                    var diagnosticMz = theoreticalMz
+                        - (12 * 5
+                            + MassDiffDictionary.HydrogenMass * 12
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        );
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     //
@@ -5062,8 +5068,13 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek PreCursor -197(C5H12NO5P-) , -61(C2H8NO-)
                     var threshold = 10.0;
-                    var diagnosticMz1 = theoreticalMz - 197.0447624;
-                    var diagnosticMz2 = theoreticalMz - 61.052764;
+                    var diagnosticMz = theoreticalMz
+                        - (12 * 5
+                            + MassDiffDictionary.HydrogenMass * 12
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        ); var diagnosticMz2 = theoreticalMz - 61.052764;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found == false && isClassIon2Found == false) return null;
@@ -18522,9 +18533,16 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
-                    // seek PreCursor -197(C5H12NO5P)
+                    // seek PreCursor -197(C5D5H7NO5P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 197.04475958;
+                    var diagnosticMz = theoreticalMz 
+                        - ( 12 * 5 
+                            + MassDiffDictionary.HydrogenMass * 7 
+                            + MassDiffDictionary.Hydrogen2Mass * 5
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        );
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     //
