@@ -19,13 +19,29 @@ namespace CompMs.App.MsdialConsole.Process;
 internal static class RetentionTimeCorrectionProcess {
     private const string SelectionHeader = "File path\tFile name\tStandard ID\tStandard name\tReference RT (min)\tDetected RT (min)\tSelected RT (min)\tUse\tPeak height";
 
-    public static void Prepare(IReadOnlyList<AnalysisFileBean> analysisFiles, ParameterBase parameter, string outputFolder) {
+    /// <summary>
+    /// Detect the anchors in every file and build each file's RT correction.
+    /// </summary>
+    /// <remarks>
+    /// The anchors are passed in, already loaded by LoadStandards, rather than read here. The
+    /// caller loads them before it reads anything heavy, so a malformed library -- a format that
+    /// is easy to get wrong -- stops the run before the raw data and the annotation libraries are
+    /// read, and this reads the file no second time.
+    /// </remarks>
+    public static void Prepare(
+        IReadOnlyList<AnalysisFileBean> analysisFiles,
+        ParameterBase parameter,
+        IReadOnlyList<MoleculeMsReference> standardLibrary,
+        string outputFolder) {
         var rtParameter = parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
         if (!rtParameter.ExcuteRtCorrection) {
             return;
         }
+        if (standardLibrary.Count == 0) {
+            throw new InvalidOperationException("RT correction needs the anchor library loaded by LoadStandards.");
+        }
 
-        var standards = LoadStandards(parameter);
+        var standards = standardLibrary.ToList();
         parameter.RetentionTimeCorrectionCommon.StandardLibrary = standards;
         Console.WriteLine($"RT correction started with {standards.Count} anchor peak(s).");
         var selectionDescription = rtParameter.PeakSelectionMode == RetentionTimeCorrectionPeakSelectionMode.Weighted
@@ -116,15 +132,46 @@ internal static class RetentionTimeCorrectionProcess {
             .ToDictionary(item => item.Key, item => item.Rt);
     }
 
-    private static List<MoleculeMsReference> LoadStandards(ParameterBase parameter) {
+    /// <summary>
+    /// Load and check the RT correction anchors from the library the parameters name, as they
+    /// stand now.
+    /// </summary>
+    /// <remarks>
+    /// CALL THIS BEFORE ANYTHING HEAVY IS READ. The library is small and its format is easy to
+    /// get wrong, so it is checked before the analysis files, the annotation libraries and the
+    /// raw data are touched: a mistake in it costs seconds, not a run. The anchors it returns are
+    /// handed to Prepare, so the file is read once.
+    ///
+    /// CALL IT AFTER EVERY PATH REWRITE. ConfigParser used to load the library the moment it read
+    /// "Compounds library file path for RT correction", from the value exactly as written. A
+    /// relative value was therefore opened from the working directory, and anything that
+    /// rewrote the path afterwards -- GC-MS resolves it against the method file's folder, the
+    /// rt-correction command replaces it with its own library argument -- left the stored library
+    /// and the stored path naming different files. Loaded from CompoundListForRtCorrectionPath
+    /// once the method file has been read, the anchors are the file the parameters name.
+    ///
+    /// Nothing else reads StandardLibrary in the console or in the core code it calls:
+    /// RetentionTimeCorrection.Execute is reached only from Prepare, and ParametersAsText is
+    /// never called by the console.
+    ///
+    /// A library with errors is refused with the parser's own message, which the caller prints.
+    /// </remarks>
+    internal static List<MoleculeMsReference> LoadStandards(ParameterBase parameter) {
         if (parameter.CompoundListForRtCorrectionPath.IsEmptyOrNull()) {
             throw new InvalidOperationException("Compounds library file path for RT correction is required when Execute RT correction is True.");
         }
-        if (!File.Exists(parameter.CompoundListForRtCorrectionPath)) {
-            throw new FileNotFoundException("RT correction anchor library was not found.", parameter.CompoundListForRtCorrectionPath);
+        return LoadStandards(parameter.CompoundListForRtCorrectionPath);
+    }
+
+    /// <summary>
+    /// Load and check the RT correction anchors from one library file.
+    /// </summary>
+    internal static List<MoleculeMsReference> LoadStandards(string libraryPath) {
+        if (!File.Exists(libraryPath)) {
+            throw new FileNotFoundException("RT correction anchor library was not found.", libraryPath);
         }
 
-        var standards = TextLibraryParser.StandardTextLibraryReader(parameter.CompoundListForRtCorrectionPath, out var error)
+        var standards = TextLibraryParser.StandardTextLibraryReader(libraryPath, out var error)
             ?.Where(standard => standard.IsTargetMolecule)
             .OrderBy(standard => standard.ChromXs.RT.Value)
             .ToList() ?? [];

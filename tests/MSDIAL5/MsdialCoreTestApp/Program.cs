@@ -187,6 +187,7 @@ class Program {
         MainProcess.SetEicCommand(root);
         MainProcess.SetRtCorrectionCommand(root);
         MainProcess.SetImageGenerationCommand(root);
+        MainProcess.SetTemplateCommand(root);
         var parseResult = root.Parse(args);
         return parseResult.InvokeAsync();
     }

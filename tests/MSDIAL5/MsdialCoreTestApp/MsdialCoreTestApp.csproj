@@ -21,8 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="MsdialCoreTestAppTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.CommandLine" Version="2.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MsdialCoreTestAppTests" />
   </ItemGroup>
 
   <ItemGroup>

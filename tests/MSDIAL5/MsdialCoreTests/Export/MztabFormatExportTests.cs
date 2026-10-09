@@ -171,6 +171,63 @@ namespace CompMs.MsdialCore.Export.Tests
             return System.Text.Encoding.ASCII.GetString(stream.ToArray()).Split('\n').Select(line => line.TrimEnd('\r')).ToArray();
         }
 
+        /// <summary>
+        /// Agilent and Bruker both write a ".d" folder, and ms_run-format is told apart by what the folder holds.
+        /// A folder that is not on disk when the file is exported (moved, archived, or a project opened on another
+        /// machine) gets a neutral user term, not a vendor it may not be.
+        /// </summary>
+        /// <remarks>
+        /// ms_run-id_format is not checked: SetRawFileMetadataDic overwrites it with "MS-DIAL set Datapoint Number"
+        /// for every format after the switch.
+        /// </remarks>
+        [DataTestMethod()]
+        [DataRow("AcqData/", "[MS, MS:1001509, Agilent MassHunter format, ]")]
+        [DataRow("analysis.baf", "[MS, MS:1000815, Bruker BAF format, ]")]
+        [DataRow("analysis.tdf", "[MS, MS:1002817, Bruker TDF format, ]")]
+        [DataRow("analysis.tsf", "[MS, MS:1003282, Bruker TSF format, ]")]
+        [DataRow("", "[,, Unknown .d folder format, ]")]
+        [DataRow(null, "[,, Unknown .d folder format, ]")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ADotDFolderIsDescribedByWhatItHolds(string content, string expectedFormat) {
+            // content: a file name, a folder name ending in "/", "" for an empty .d folder, null for no folder at all.
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-dotd-{System.Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try {
+                foreach (var file in storage.AnalysisFiles) {
+                    var folder = Path.Combine(scratch, file.AnalysisFileName + ".d");
+                    file.AnalysisFilePath = folder;
+                    if (content is null) {
+                        continue;
+                    }
+                    Directory.CreateDirectory(folder);
+                    if (content.EndsWith("/")) {
+                        Directory.CreateDirectory(Path.Combine(folder, content.TrimEnd('/')));
+                    }
+                    else if (content.Length > 0) {
+                        File.WriteAllBytes(Path.Combine(folder, content), new byte[0]);
+                    }
+                }
+
+                var lines = ExportToLines(storage, container, msdecs);
+
+                var formats = lines.Select(line => line.Split('\t'))
+                    .Where(f => f[0] == "MTD" && f.Length > 2 && f[1].StartsWith("ms_run[") && f[1].EndsWith("]-format"))
+                    .Select(f => f[2])
+                    .ToArray();
+                Assert.AreEqual(storage.AnalysisFiles.Count, formats.Length);
+                Assert.IsTrue(formats.All(format => format == expectedFormat), string.Join(" | ", formats));
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
 
         [TestMethod()]
         //[DeploymentItem(@"Resources\Export\small_test_project.mdproject", @"Resources\Export")]
