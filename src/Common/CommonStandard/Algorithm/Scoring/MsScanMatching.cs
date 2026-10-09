@@ -829,18 +829,54 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
-            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
-            var entropy12 = GetSpectralEntropy(combinedSpectrum);
-            var entropy1 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
-            var entropy2 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
+            var p = FrameBinnedSpectrum.Create(peaks1, bin);
+            var q = FrameBinnedSpectrum.Create(peaks2, bin);
+            var totalP = NonNegativeTotal(p);
+            var totalQ = NonNegativeTotal(q);
 
-            return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
+            // With p and q the frame intensities scaled to a unit total, the similarity is
+            // 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
+            // only one spectrum, say p, contributes exactly p to 2 H(m) - H(p) - H(q), and p and q
+            // each total 1, so everything outside the shared frames cancels against the leading 1:
+            //   similarity = sum over shared frames of ((p + q) log2 (p + q) - p log2 p - q log2 q) / 2
+            // (Li et al., Nat. Methods 18, 1524 (2021); Li & Fiehn, Nat. Methods 20, 1475 (2023)).
+            var similarity = 0d;
+            int i = 0, j = 0;
+            while (i < p.Count && j < q.Count) {
+                if (p.Frames[i] < q.Frames[j]) {
+                    i++;
+                }
+                else if (q.Frames[j] < p.Frames[i]) {
+                    j++;
+                }
+                else {
+                    var pi = NonNegative(p.Intensities[i++]) / totalP;
+                    var qj = NonNegative(q.Intensities[j++]) / totalQ;
+                    similarity += XLog2X(pi + qj) - XLog2X(pi) - XLog2X(qj);
+                }
+            }
+            return similarity * .5;
         }
 
         public static double GetSpectralEntropy(
             List<SpectrumPeak> peaks) {
-            var sumIntensity = peaks.Sum(n => n.Intensity);
-            return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
+            var sumIntensity = peaks.Sum(n => NonNegative(n.Intensity));
+            return -1 * peaks.Sum(n => XLog2X(NonNegative(n.Intensity) / sumIntensity));
+        }
+
+        // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
+        private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
+
+        // A negative intensity is not a valid peak and has no probability to give; it is counted as 0,
+        // not as NaN. In the similarity this applies to a frame's summed intensity.
+        private static double NonNegative(double intensity) => Math.Max(intensity, 0d);
+
+        private static double NonNegativeTotal(FrameBinnedSpectrum spectrum) {
+            var total = 0d;
+            for (int i = 0; i < spectrum.Count; i++) {
+                total += NonNegative(spectrum.Intensities[i]);
+            }
+            return total;
         }
 
         public static double[] GetModifiedDotProductScore(
