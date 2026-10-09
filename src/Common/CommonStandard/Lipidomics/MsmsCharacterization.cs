@@ -18626,9 +18626,20 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
 
-                    var diagnosticMz1 = 241.0118806 + Electron;  // seek C3H6O5P-
+                    var diagnosticMz1 =
+                        12*3
+                        + MassDiffDictionary.HydrogenMass * 6
+                        + MassDiffDictionary.OxygenMass * 5 
+                        + Electron;  // seek C3H6O5P-
                     var threshold1 = 1.0;
-                    var diagnosticMz2 = 315.048656; // seek C9H16O10P-
+                    var diagnosticMz2 = 
+                        12 * 9
+                        + MassDiffDictionary.Hydrogen2Mass * 5
+                        + MassDiffDictionary.HydrogenMass * 11
+                        + MassDiffDictionary.OxygenMass * 10
+                        + MassDiffDictionary.PhosphorusMass * 1 
+                        + Electron
+                        ; // seek C9D5H11O10P-
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;
