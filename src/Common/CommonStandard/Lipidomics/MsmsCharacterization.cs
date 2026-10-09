@@ -18420,7 +18420,10 @@ AdductIon adduct)
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek [M-H] - 59 (C3H9N)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass) - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass * 1);
+                    var diagnosticMz = theoreticalMz 
+                        - (12 + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass *3) 
+                        - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass * 1)
+                        - MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
