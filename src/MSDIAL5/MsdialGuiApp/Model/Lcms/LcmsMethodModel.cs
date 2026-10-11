@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
+        private readonly BrowsingDataProviderFactory _browsingProviderFactory;
         private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
@@ -62,6 +64,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
+            _browsingProviderFactory = new BrowsingDataProviderFactory(_providerFactory);
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             _studyContext = studyContext;
             _broker = broker;
@@ -203,12 +206,19 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
         public ParameterExportModel ParameterExportModel { get; }
 
+        // The LC-MS sample viewer draws what the project stores when the raw data are missing.
+        public override BrowsingWithoutRawData BrowsingWithoutRawData => BrowsingWithoutRawData.Supported;
+
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
-            var provider = _providerFactory.Create(analysisFile.File);
+            // A sample whose raw data file is missing gets a provider that returns nothing at once, instead of
+            // the 5 x 5 s retry on the UI thread and the exception after it. Processing keeps _providerFactory.
+            var provider = _browsingProviderFactory.Create(analysisFile);
             return AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,

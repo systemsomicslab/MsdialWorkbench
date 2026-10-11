@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.ChromSmoothing;
@@ -33,26 +34,41 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
         private readonly IMessageBroker _broker;
 
-        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel?> peak, IObservable<MSDecResult?> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
+        /// <param name="isRawDataAvailable">
+        /// False when the sample was opened without its raw data: the raw chromatogram is then an empty chart that says why,
+        /// shown before any peak is selected, and "Both" cannot be selected.
+        /// </param>
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel?> peak, IObservable<MSDecResult?> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker, bool isRawDataAvailable = true) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
             var smoother = new Smoothing();
-            var rawChromatograms = peak.SkipNull()
-                .SelectSwitch(t => loader.LoadScanAsObservable(t).CombineLatest(NumberOfChromatograms, (scan, number) => (t, spectrum: (scan?.Spectrum ?? new List<SpectrumPeak>(0)).OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
-                .Select(pair => {
-                    var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
-                    var unit = ChromXUnit.Min;
-                    double[] pMzValues = pair.spectrum.Select(peak_ => peak_.Mass).ToArray();
-                    var chromatograms = DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pMzValues, parameter, acquisitionType, type: type, unit: unit);
-                    var smootheds = chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel));
-                    return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
-                })
-                .Select(chromatograms => new ChromatogramsModel(
-                    "Raw MS/MS chromatogram",
-                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F5"))).ToList(),
-                    "Raw MS/MS chromatogram",
-                    "Retention time [min]", // TODO: [magic number] Retention time 
+            IObservable<ChromatogramsModel> rawChromatograms;
+            if (isRawDataAvailable) {
+                rawChromatograms = peak.SkipNull()
+                    .SelectSwitch(t => loader.LoadScanAsObservable(t).CombineLatest(NumberOfChromatograms, (scan, number) => (t, spectrum: (scan?.Spectrum ?? new List<SpectrumPeak>(0)).OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
+                    .Select(pair => {
+                        var type = ChromXType.RT; // TODO: [magic number] ChromXType, ChromXUnit
+                        var unit = ChromXUnit.Min;
+                        double[] pMzValues = pair.spectrum.Select(peak_ => peak_.Mass).ToArray();
+                        var chromatograms = DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pMzValues, parameter, acquisitionType, type: type, unit: unit);
+                        var smootheds = chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel));
+                        return smootheds.Zip(pMzValues, (smoothed, mz) => new ExtractedIonChromatogram(smoothed, ChromXType.RT, ChromXUnit.Min, extractedMz: mz)).ToArray();
+                    })
+                    .Select(chromatograms => new ChromatogramsModel(
+                        "Raw MS/MS chromatogram",
+                        chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, name: chromatogram.ExtractedMz.ToString("F5"))).ToList(),
+                        "Raw MS/MS chromatogram",
+                        "Retention time [min]", // TODO: [magic number] Retention time
+                        "Abundance"));
+            }
+            else {
+                rawChromatograms = peak.Select(_ => new ChromatogramsModel(
+                    RawDataGuard.RawMs2ChromatogramTitle,
+                    new List<DisplayChromatogram>(0),
+                    RawDataGuard.RawMs2ChromatogramTitle,
+                    "Retention time [min]", // TODO: [magic number] Retention time
                     "Abundance"));
+            }
             var deconvolutedChromatograms = msScan.SkipNull()
                 .CombineLatest(NumberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
@@ -72,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             IsRawEnabled = Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsDeconvolutedEnabled = Observable.Return(isSwath).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsBothEnabled = Observable.Return(isSwath).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsBothEnabled = Observable.Return(isSwath && isRawDataAvailable).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             ChromatogramsModel = new[]
             {

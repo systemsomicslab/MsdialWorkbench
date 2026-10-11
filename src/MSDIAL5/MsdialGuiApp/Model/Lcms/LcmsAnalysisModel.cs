@@ -71,6 +71,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _provider = provider;
+            // The provider in use decides what can be drawn: the raw panels stay empty and say why.
+            IsRawDataAvailable = !(provider is RawDataUnavailableProvider);
             DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _parameter = parameter;
@@ -101,8 +103,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
+            var fileTitleSuffix = IsRawDataAvailable ? string.Empty : RawDataGuard.FileTitleSuffix;
             Target.Select(
-                t =>  $"File: {analysisFileModel.AnalysisFileName}" +
+                t =>  $"File: {analysisFileModel.AnalysisFileName}{fileTitleSuffix}" +
                     (t is null
                         ? string.Empty
                         : $" Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
@@ -112,10 +115,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             var usecase = new ChromatogramPeakExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, Ms1Peaks, analysisFileModel, _compoundSearchers, mrmprobsExporter, Target);
             PlotModel.ExportMrmprobs = usecase;
 
-            // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            // Read first: a raw file that is present but unreadable throws here, before the EIC loaders start tasks
+            // that would fault unobserved and surface later as an unexpected exception.
             _rawSpectra = new RawSpectra(provider.LoadMsSpectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
+
+            // Eic chart
+            IChromatogramLoader<ChromatogramPeakFeatureModel> eicLoader;
+            if (IsRawDataAvailable) {
+                eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+                EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            }
+            else {
+                eicLoader = new RawDataUnavailableChromatogramLoader(ChromXType.RT, ChromXUnit.Min);
+                EicLoader = null; // the peak table's chromatogram cells say "No raw data"
+            }
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -144,7 +157,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
 
-            var rawGraphLabels = new GraphLabels("Raw spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            var rawGraphLabels = new GraphLabels(IsRawDataAvailable ? "Raw spectrum" : RawDataGuard.RawSpectrumTitle, "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem measuredHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Blue);
             ObservableMsSpectrum rawObservableMsSpectrum = ObservableMsSpectrum.Create(Target, rawSpectrumLoader, spectraExporter).AddTo(Disposables);
             SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawObservableMsSpectrum, rawObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), rawObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), measuredHueItem, rawGraphLabels).AddTo(Disposables);
@@ -162,13 +175,16 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
             Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawSpectrumLoader).AddTo(Disposables);
+            if (!IsRawDataAvailable) {
+                Ms2SpectrumModel.RawRefSpectrumModels.GraphTitle = RawDataGuard.MeasureVsReferenceTitle;
+            }
             Disposables.Add(ms2ScanMatching.Connect());
             
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(Ms2SpectrumModel.RawRefSpectrumModels.UpperSpectrumModel, Ms2SpectrumModel.DecRefSpectrumModels.UpperSpectrumModel).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, parameter, analysisFileModel.AcquisitionType, broker, isRawDataAvailable: IsRawDataAvailable).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = parameter.MSDataType;
@@ -180,11 +196,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
                     .Select(spectrums =>
                         {
-                            var spectra = DataAccess.GetCentroidMassSpectra(spectrums[t.MS1RawSpectrumIdTop], msdataType, 0, float.MinValue, float.MaxValue);
+                            var index = t.MS1RawSpectrumIdTop;
+                            if (index < 0 || index >= spectrums.Count) {
+                                return new List<SpectrumPeakWrapper>(0);
+                            }
+                            var spectra = DataAccess.GetCentroidMassSpectra(spectrums[index], msdataType, 0, float.MinValue, float.MaxValue);
                             return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                         });
             }).AddTo(Disposables);
-            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity, unavailableTitle: IsRawDataAvailable ? null : RawDataGuard.Ms1SpectrumTitle).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
@@ -244,7 +264,14 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public DataBaseMapper DataBaseMapper { get; }
 
-        public EicLoader EicLoader { get; }
+        /// <summary>
+        /// Whether this sample was opened with its raw data. Without them only what the project stores is drawn,
+        /// and the features that read the raw data say why they cannot run.
+        /// </summary>
+        public bool IsRawDataAvailable { get; }
+
+        /// <summary>Null when the raw data are not available.</summary>
+        public EicLoader? EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
 
@@ -337,8 +364,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (!(Target.Value is ChromatogramPeakFeatureModel target)) {
                 return;
             }
+            var scan = await _rawSpectrumLoader.LoadScanAsObservable(target).FirstAsync();
+            if (scan is null) {
+                return;
+            }
             using (var file = File.Open(filename, FileMode.Create)) {
-                var scan = await _rawSpectrumLoader.LoadScanAsObservable(target).FirstAsync();
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                     file,
