@@ -364,8 +364,16 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() => {
-                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
-                request.Result = result;
+                // Loading a project and switching samples show the wait cursor (ProjectModel, MethodViewModel);
+                // it should not stay over a message that waits for an answer.
+                var cursor = System.Windows.Input.Mouse.OverrideCursor;
+                System.Windows.Input.Mouse.OverrideCursor = null;
+                try {
+                    request.Result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, request.Icon);
+                }
+                finally {
+                    System.Windows.Input.Mouse.OverrideCursor = cursor;
+                }
             });
         }
 

@@ -76,7 +76,21 @@ namespace CompMs.MsdialCore.DataObj
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
+        public static Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
+            return LoadAsync(streamManager, serializer, datasetStreamManagerFactory, newProjectDir, setNewPlacement,
+                datasetLoadFailed: faultedHandle is null ? null : new Action<ProjectBaseParameter, Exception>((parameter, _) => faultedHandle(parameter)));
+        }
+
+        /// <param name="datasetLoadFailed">
+        /// Called once for each dataset that cannot be loaded because a file it reads was not found,
+        /// with the <see cref="FileNotFoundException"/> whose <see cref="FileNotFoundException.FileName"/> names that file.
+        /// When the project was moved and the dataset fails in both folders, the file named is the one missing in the new folder.
+        /// </param>
+        /// <remarks>
+        /// <paramref name="setNewPlacement"/> is asked only when the missing file is the dataset file itself:
+        /// a dataset file picked elsewhere cannot supply a file that is missing beside it.
+        /// </remarks>
+        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter, Exception>? datasetLoadFailed) {
             ProjectDataStorage storage;
             using (var projectStream = await streamManager.Get(SerializationKey).ConfigureAwait(false)) {
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
@@ -85,7 +99,7 @@ namespace CompMs.MsdialCore.DataObj
                 storage.ProjectParameter = ProjectParameter.Load(parameterStream);
             }
 
-            var tasks = storage.ProjectParameters.Select(projectParameter => LoadDataStorage(datasetStreamManagerFactory, projectParameter, serializer, newProjectDir, setNewPlacement, faultedHandle)).ToArray();
+            var tasks = storage.ProjectParameters.Select(projectParameter => LoadDataStorage(datasetStreamManagerFactory, projectParameter, serializer, newProjectDir, setNewPlacement, datasetLoadFailed)).ToArray();
             try {
                 var datas = await Task.WhenAll(tasks).ConfigureAwait(false);
                 var distinctDatas = datas.GroupBy(data => data.Parameter.ProjectParam.ProjectFilePath).Select(ds => ds.First());
@@ -126,11 +140,12 @@ namespace CompMs.MsdialCore.DataObj
             IMsdialSerializer serializer,
             string newProjectDir,
             Func<ProjectBaseParameter, Task<string?>> setNewPlacement,
-            Action<ProjectBaseParameter> faultedHandle) {
+            Action<ProjectBaseParameter, Exception>? datasetLoadFailed) {
 
             var projectDir = projectParameter.ProjectFolderPath;
             var projectFile = projectParameter.ProjectFileName;
 
+            FileNotFoundException? missingInNewFolder = null;
             if (projectDir != newProjectDir) {
                 try {
                     using var streamManager = datasetStreamManagerFactory?.Invoke(newProjectDir);
@@ -139,6 +154,10 @@ namespace CompMs.MsdialCore.DataObj
                     storage.FixDatasetFolder(newProjectDir);
                     KeepPreviousRtCorrectionResult(storage);
                     return storage;
+                }
+                catch (FileNotFoundException ex) {
+                    // The project file is in this folder, so this is the file to name if the stored folder fails too.
+                    missingInNewFolder = ex;
                 }
                 catch {
 
@@ -151,20 +170,20 @@ namespace CompMs.MsdialCore.DataObj
                 streamManager?.Complete();
                 return storage;
             }
-            catch (FileNotFoundException) {
-                faultedHandle?.Invoke(projectParameter);
-                if (setNewPlacement is null) {
+            catch (FileNotFoundException ex) {
+                var reported = missingInNewFolder ?? ex;
+                var reportedDir = missingInNewFolder is null ? projectDir : newProjectDir;
+                datasetLoadFailed?.Invoke(projectParameter, reported);
+                if (setNewPlacement is null || !IsDatasetFile(reported, reportedDir, projectFile)) {
+                    // A sibling of the dataset file is missing (its loaded library, for example): picking another dataset file cannot supply it.
                     throw;
                 }
                 var path = await setNewPlacement.Invoke(projectParameter);
-                if (path is not null) {
-                    projectDir = Path.GetDirectoryName(path);
-                    projectFile = Path.GetFileName(path);
-                }
-                else {
-                    faultedHandle?.Invoke(projectParameter);
+                if (path is null) {
                     throw;
                 }
+                projectDir = Path.GetDirectoryName(path);
+                projectFile = Path.GetFileName(path);
             }
 
             try {
@@ -175,9 +194,21 @@ namespace CompMs.MsdialCore.DataObj
                 KeepPreviousRtCorrectionResult(storage);
                 return storage;
             }
-            catch (FileNotFoundException) {
-                faultedHandle?.Invoke(projectParameter);
+            catch (FileNotFoundException ex) {
+                datasetLoadFailed?.Invoke(projectParameter, ex);
                 throw;
+            }
+        }
+
+        private static bool IsDatasetFile(FileNotFoundException error, string folder, string file) {
+            try {
+                return string.Equals(
+                    Path.GetFullPath(error.FileName ?? error.Message),
+                    Path.GetFullPath(Path.Combine(folder, file)),
+                    StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException) {
+                return false;
             }
         }
 

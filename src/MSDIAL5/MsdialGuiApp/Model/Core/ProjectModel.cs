@@ -1,4 +1,6 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
@@ -127,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Core
                             var newofd = new OpenFileDialog
                             {
                                 Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                                Title = "Import a project file",
+                                Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
                                 RestoreDirectory = true
                             };
                             if (newofd.ShowDialog() == true) {
@@ -136,7 +138,12 @@ namespace CompMs.App.Msdial.Model.Core
                         });
                         return result;
                     },
-                    parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"{parameter.ProjectFilePath} is not found.")));
+                    (parameter, error) => broker.Publish(new ErrorMessageBoxRequest
+                    {
+                        Caption = "Dataset not loaded",
+                        Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
+                        Icon = MessageBoxImage.Error,
+                    }));
                 if (projectDataStorage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     throw new Exception($"Msdial cannot open the project: \n{projectPath}");
