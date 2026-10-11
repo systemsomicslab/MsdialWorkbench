@@ -149,6 +149,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
                 return;
             }
+            // Said before the settings dialog: processing reads the raw data of every sample.
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "All processing")) {
+                return;
+            }
             using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AllProcessMethodSettingModel, _broker);
             vm.MoveToDataCollectionSetting();
             await RunProcess(vm);
@@ -161,6 +165,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
                 return;
             }
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "Identification")) {
+                return;
+            }
             using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.IdentificationProcessMethodSettingModel, _broker);
             vm.MoveToIdentificationSetting();
             await RunProcess(vm);
@@ -171,6 +178,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private async Task ExecuteAlignmentMethodProcess() {
             if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
+                return;
+            }
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "Alignment")) {
                 return;
             }
             using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AlignmentProcessMethodSettingModel, _broker);

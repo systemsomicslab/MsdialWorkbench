@@ -51,7 +51,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             analysisAsObservable
                 .Where(vm => vm is not null)
-                .SelectSwitch(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm!.ExperimentSpectrumViewModel, (a, b) => b))
+                .SelectSwitch(vm => ShowExperimentSpectrumCommand
+                    .Where(_ => vm!.EnsureRawDataAvailable("Show experiment spectrum"))
+                    .WithLatestFrom(vm!.ExperimentSpectrumViewModel, (a, b) => b))
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
 

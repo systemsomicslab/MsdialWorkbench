@@ -1610,16 +1610,22 @@ namespace CompMs.MsdialCore.Export
                         msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
                         break;
                     case (".RAW"):
-                        var isDirectory = System.IO.File.GetAttributes(analysisFilePath).HasFlag(FileAttributes.Directory);
-                        if (isDirectory)
+                        // A Waters .raw is a folder and a Thermo .raw a file; a .raw that is not there is neither,
+                        // and is described as unknown, as a .d folder that holds nothing recognisable is.
+                        if (Directory.Exists(analysisFilePath))
                         {
                             msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
                             msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
                         }
-                        else
+                        else if (File.Exists(analysisFilePath))
                         {
                             msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
                             msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
+                        }
+                        else
+                        {
+                            msRunFormat = "[,, Unknown .raw format, ]";
+                            msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
                         }
                         break;
                     case (".LRP"):

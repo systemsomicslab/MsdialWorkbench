@@ -383,6 +383,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
+            // The peak table reads the raw data only for its MS1 isotope column, which it writes as null without them.
+            // Centroid spectra are read from the raw data, so a sample without them stops the export at once and says why.
+            var tableProviderFactory = new RawDataOptionalProviderFactory(_providerFactory);
+            var centroidProviderFactory = new RawDataRequiredProviderFactory(_providerFactory);
             var spectraTypes = new List<SpectraType>
             {
                 //new SpectraType(
@@ -391,7 +395,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
-                    _providerFactory),
+                    tableProviderFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
@@ -409,7 +413,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Msp",
@@ -418,7 +422,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
-                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Mgf",
@@ -427,7 +431,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
                 })
                 {
                     FilePrefix = "Sdf",
@@ -442,6 +446,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
+                return null;
+            }
+            if (!analysisModel.EnsureRawDataAvailable("Displaying the TIC, BPC and EIC")) {
                 return null;
             }
 

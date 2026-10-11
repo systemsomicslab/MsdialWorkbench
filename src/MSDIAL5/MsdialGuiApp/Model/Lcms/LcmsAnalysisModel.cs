@@ -388,10 +388,31 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ProteinResultContainerModel? ProteinResultContainerModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
+        /// <summary>
+        /// Says that <paramref name="feature"/> needs the raw data of this sample, when it was opened without them.
+        /// </summary>
+        /// <returns>true when the feature can run.</returns>
+        public bool EnsureRawDataAvailable(string feature) {
+            return RawDataGuard.Ensure(IsRawDataAvailable, AnalysisFileModel, _broker, feature);
+        }
+
+        /// <summary>
+        /// Says once for this sample, when it was opened without its raw data, that MS-FINDER receives no MS1 isotope pattern.
+        /// </summary>
+        public void NoticeMsfinderWithoutMs1() {
+            if (IsRawDataAvailable || _msfinderWithoutMs1Noticed) {
+                return;
+            }
+            _msfinderWithoutMs1Noticed = true;
+            _broker.Publish(RawDataGuard.MsfinderWithoutMs1(AnalysisFileModel));
+        }
+        private bool _msfinderWithoutMs1Noticed;
+
         public override void InvokeMsfinder() {
             if (Target.Value is null || MsdecResult.Value is null || MsdecResult.Value.Spectrum.IsEmptyOrNull()) {
                 return;
             }
+            NoticeMsfinderWithoutMs1();
             MsDialToExternalApps.SendToMsFinderProgram(
                 AnalysisFileModel,
                 Target.Value.InnerModel,

@@ -228,6 +228,50 @@ namespace CompMs.MsdialCore.Export.Tests
             }
         }
 
+        /// <summary>
+        /// A .raw is a Waters folder or a Thermo file. One that is not on disk when the file is exported used to throw
+        /// from File.GetAttributes; it gets a neutral user term, as an unrecognisable .d folder does.
+        /// </summary>
+        [DataTestMethod()]
+        [DataRow("folder", "[MS, MS:1000526, Waters raw format, ]")]
+        [DataRow("file", "[MS, MS:1000563, Thermo RAW format, ]")]
+        [DataRow("missing", "[,, Unknown .raw format, ]")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ADotRawPathIsDescribedByWhatItIs(string kind, string expectedFormat) {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-dotraw-{System.Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try {
+                foreach (var file in storage.AnalysisFiles) {
+                    var path = Path.Combine(scratch, file.AnalysisFileName + ".raw");
+                    file.AnalysisFilePath = path;
+                    if (kind == "folder") {
+                        Directory.CreateDirectory(path);
+                    }
+                    else if (kind == "file") {
+                        File.WriteAllBytes(path, new byte[0]);
+                    }
+                }
+
+                var lines = ExportToLines(storage, container, msdecs);
+
+                var formats = lines.Select(line => line.Split('\t'))
+                    .Where(f => f[0] == "MTD" && f.Length > 2 && f[1].StartsWith("ms_run[") && f[1].EndsWith("]-format"))
+                    .Select(f => f[2])
+                    .ToArray();
+                Assert.AreEqual(storage.AnalysisFiles.Count, formats.Length);
+                Assert.IsTrue(formats.All(format => format == expectedFormat), string.Join(" | ", formats));
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
 
         [TestMethod()]
         //[DeploymentItem(@"Resources\Export\small_test_project.mdproject", @"Resources\Export")]
