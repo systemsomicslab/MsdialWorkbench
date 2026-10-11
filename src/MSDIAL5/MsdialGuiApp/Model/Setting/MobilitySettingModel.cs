@@ -110,8 +110,15 @@ namespace CompMs.App.Msdial.Model.Setting
             var calibrationInfoCollection = new List<CcsCalibrationInfoVS>();
             foreach (var file in files) {
                 if (!fileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coef)) {
-                    var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
-                    coef = fileID2CcsCoefficients[file.AnalysisFileId] = new CoefficientsForCcsCalculation(calinfo);
+                    if (!DataAccess.RawDataExists(file.AnalysisFilePath)) {
+                        // Opening a project builds these settings before it says that raw data are missing, so the file is not read,
+                        // and nothing is stored: the calibration is read once the file is back. Processing refuses to run until then.
+                        coef = new CoefficientsForCcsCalculation(new RawCalibrationInfo());
+                    }
+                    else {
+                        var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
+                        coef = fileID2CcsCoefficients[file.AnalysisFileId] = new CoefficientsForCcsCalculation(calinfo);
+                    }
                 }
                 calibrationInfoCollection.Add(new CcsCalibrationInfoVS(file, coef));
             }

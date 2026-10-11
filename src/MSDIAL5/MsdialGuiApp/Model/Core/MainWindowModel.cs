@@ -215,9 +215,13 @@ namespace CompMs.App.Msdial.Model.Core
                         InsertTopProjectHistory(currentCrumb);
                     });
                 }
-                catch {
+                catch (OperationCanceledException) {
+                    // Opening was declined, or what stopped it has already been said. Loading passes no cancellation token.
+                }
+                catch (Exception ex) {
+                    var cause = ex.GetBaseException();
                     await Application.Current.Dispatcher.InvokeAsync(() => {
-                        MessageBox.Show("Failed to load project.\nPlease check your project.");
+                        MessageBox.Show($"Failed to load project.\nPlease check your project.\n\n{cause.GetType().Name}: {cause.Message}");
                         return Task.CompletedTask;
                     });
                 }
@@ -242,9 +246,13 @@ namespace CompMs.App.Msdial.Model.Core
                         InsertTopProjectHistory(currentCrumb);
                     });
                 }
-                catch {
+                catch (OperationCanceledException) {
+                    // Opening was declined, or what stopped it has already been said. Loading passes no cancellation token.
+                }
+                catch (Exception ex) {
+                    var cause = ex.GetBaseException();
                     await Application.Current.Dispatcher.InvokeAsync(() => {
-                        MessageBox.Show("Failed to load project.\nPlease check your project.");
+                        MessageBox.Show($"Failed to load project.\nPlease check your project.\n\n{cause.GetType().Name}: {cause.Message}");
                         return Task.CompletedTask;
                     });
                 }

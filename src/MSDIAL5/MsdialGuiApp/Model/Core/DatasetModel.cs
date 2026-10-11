@@ -141,7 +141,18 @@ namespace CompMs.App.Msdial.Model.Core
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, _projectBaseParameter, StudyContext, ProcessOption.All, _broker);
             var method = factory.BuildMethod();
-            await method.LoadAsync(default).ConfigureAwait(false);
+            try {
+                // Asked once, before the first sample opens; processing reads every sample, so excluded ones count too.
+                var missing = _analysisFileBeanModelCollection.RefreshRawDataAvailability();
+                if (missing.Count > 0 && !RawDataGuard.ConfirmOpen(_broker, method.BrowsingWithoutRawData, missing, _analysisFileBeanModelCollection.Count)) {
+                    throw new OperationCanceledException("Opening was declined because raw data files are missing.");
+                }
+                await method.LoadAsync(default).ConfigureAwait(false);
+            }
+            catch {
+                method.Dispose();
+                throw;
+            }
             Method = method;
         }
 

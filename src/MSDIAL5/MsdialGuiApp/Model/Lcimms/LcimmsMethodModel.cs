@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties, broker) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -174,6 +174,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
             var rawObj = analysisFile.File.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
@@ -196,6 +198,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                AlignmentModel = null;
             }
             return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFileModel,

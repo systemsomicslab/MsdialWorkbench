@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties, broker) {
 
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -228,6 +228,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AlignmentModel = null;
             }
 
             return AlignmentModel = new LcmsAlignmentModel(

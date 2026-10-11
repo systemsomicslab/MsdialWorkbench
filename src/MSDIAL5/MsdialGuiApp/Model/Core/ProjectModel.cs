@@ -13,6 +13,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -116,53 +117,67 @@ namespace CompMs.App.Msdial.Model.Core
                 };
                 message.Show();
 
-                var projectDataStorage = await ProjectDataStorage.LoadAsync(
-                    streamManager,
-                    deserializer,
-                    path => new DirectoryTreeStreamManager(path),
-                    projectDir,
-                    async parameter =>
-                    {
-                        string? result = null;
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                try {
+                    var unloadedDatasets = 0;
+                    var projectDataStorage = await ProjectDataStorage.LoadAsync(
+                        streamManager,
+                        deserializer,
+                        path => new DirectoryTreeStreamManager(path),
+                        projectDir,
+                        async parameter =>
                         {
-                            var newofd = new OpenFileDialog
+                            string? result = null;
+                            await Application.Current.Dispatcher.InvokeAsync(() =>
                             {
-                                Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                                Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
-                                RestoreDirectory = true
-                            };
-                            if (newofd.ShowDialog() == true) {
-                                result = newofd.FileName;
-                            }
+                                var newofd = new OpenFileDialog
+                                {
+                                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
+                                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
+                                    RestoreDirectory = true
+                                };
+                                if (newofd.ShowDialog() == true) {
+                                    result = newofd.FileName;
+                                }
+                            });
+                            return result;
+                        },
+                        (parameter, error) =>
+                        {
+                            Interlocked.Increment(ref unloadedDatasets);
+                            broker.Publish(new ErrorMessageBoxRequest
+                            {
+                                Caption = "Dataset not loaded",
+                                Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
+                                Icon = MessageBoxImage.Error,
+                            });
                         });
-                        return result;
-                    },
-                    (parameter, error) => broker.Publish(new ErrorMessageBoxRequest
-                    {
-                        Caption = "Dataset not loaded",
-                        Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
-                        Icon = MessageBoxImage.Error,
-                    }));
-                if (projectDataStorage == null) {
-                    MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    throw new Exception($"Msdial cannot open the project: \n{projectPath}");
-                }
-                projectDataStorage.FixProjectFolder(projectDir);
-                var model = new ProjectModel(projectDataStorage, broker);
-                model.Datasets.Clear();
-                foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
-                    model.Datasets.Add(dataset);
-                }
-                model.CurrentDataset = model.Datasets.LastOrDefault();
-                if (!(model.CurrentDataset is null)) {
-                    await model.CurrentDataset.LoadAsync();
-                }
+                    if (projectDataStorage == null) {
+                        MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        throw new Exception($"Msdial cannot open the project: \n{projectPath}");
+                    }
+                    if (projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
+                        // A dataset that fails to load is dropped from the project, so a project opened without any of them
+                        // would be saved back empty. What is missing has been named; the project is not opened.
+                        throw new OperationCanceledException("No dataset of the project could be loaded.");
+                    }
+                    projectDataStorage.FixProjectFolder(projectDir);
+                    var model = new ProjectModel(projectDataStorage, broker);
+                    model.Datasets.Clear();
+                    foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
+                        model.Datasets.Add(dataset);
+                    }
+                    model.CurrentDataset = model.Datasets.LastOrDefault();
+                    if (!(model.CurrentDataset is null)) {
+                        await model.CurrentDataset.LoadAsync();
+                    }
 
-                message.Close();
-                Mouse.OverrideCursor = null;
-
-                return model;
+                    return model;
+                }
+                finally {
+                    // Also when opening is declined or fails: neither the window nor the wait cursor may outlive the attempt.
+                    message.Close();
+                    Mouse.OverrideCursor = null;
+                }
             }
         }
 
