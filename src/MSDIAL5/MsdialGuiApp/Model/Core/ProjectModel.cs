@@ -105,7 +105,9 @@ namespace CompMs.App.Msdial.Model.Core
             }
 
             var projectDir = Path.GetDirectoryName(projectPath);
-            using (var fs = File.Open(projectPath, FileMode.Open))
+            // Opening only reads the project file (ZipStreamManager.OpenGet reads the archive), so a project on read-only media
+            // or open in another MS-DIAL can be opened too.
+            using (var fs = File.Open(projectPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var streamManager = ZipStreamManager.OpenGet(fs)) {
                 var deserializer = new MsdialIntegrateSerializer();
 
@@ -119,7 +121,12 @@ namespace CompMs.App.Msdial.Model.Core
 
                 try {
                     var unloadedDatasets = 0;
-                    var projectDataStorage = await ProjectDataStorage.LoadAsync(
+                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                    // Reading the datasets is data work only, and a loaded library can be hundreds of MB: it runs off the UI thread,
+                    // which keeps pumping meanwhile (a minute without pumping is a ContextSwitchDeadlock under the debugger).
+                    // The picker and the messages below go to the dispatcher themselves, and the models are built after the await,
+                    // back on the UI thread.
+                    var projectDataStorage = await Task.Run(() => ProjectDataStorage.LoadAsync(
                         streamManager,
                         deserializer,
                         path => new DirectoryTreeStreamManager(path),
@@ -150,7 +157,8 @@ namespace CompMs.App.Msdial.Model.Core
                                 Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
                                 Icon = MessageBoxImage.Error,
                             });
-                        });
+                        }));
+                    System.Diagnostics.Debug.WriteLine($"Read the datasets of {projectPath} in {stopwatch.Elapsed.TotalSeconds:F1} s.");
                     if (projectDataStorage == null) {
                         MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         throw new Exception($"Msdial cannot open the project: \n{projectPath}");

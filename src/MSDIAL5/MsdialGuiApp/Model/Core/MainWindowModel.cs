@@ -187,6 +187,10 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadAsync() {
+            // The window stays responsive while a project is read; a second project is not opened over it.
+            if (nowLoading.IsBusy) {
+                return;
+            }
             using (nowLoading.ProcessStart()) {
                 try {
                     string projectPath = string.Empty;
@@ -229,6 +233,9 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadProjectAsync(ProjectCrumb projectCrumb) {
+            if (nowLoading.IsBusy) {
+                return;
+            }
             using (nowLoading.ProcessStart()) {
                 try {
                     if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
