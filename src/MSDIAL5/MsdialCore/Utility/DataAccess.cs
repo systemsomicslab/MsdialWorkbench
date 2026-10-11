@@ -43,6 +43,29 @@ namespace CompMs.MsdialCore.Utility {
             return false;
         }
 
+        /// <summary>
+        /// Whether the raw data of a sample are present: a file, or a vendor folder (Agilent or Bruker .d, Waters .raw).
+        /// An imzML file also needs its .ibd beside it. Present does not mean readable.
+        /// </summary>
+        public static bool RawDataExists(string filepath) {
+            if (string.IsNullOrEmpty(filepath)) {
+                return false;
+            }
+            if (System.IO.Directory.Exists(filepath)) {
+                return true;
+            }
+            if (!System.IO.File.Exists(filepath)) {
+                return false;
+            }
+            try {
+                return !string.Equals(System.IO.Path.GetExtension(filepath), ".imzML", StringComparison.OrdinalIgnoreCase)
+                    || System.IO.File.Exists(System.IO.Path.ChangeExtension(filepath, ".ibd"));
+            }
+            catch (ArgumentException) {
+                return false;
+            }
+        }
+
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
