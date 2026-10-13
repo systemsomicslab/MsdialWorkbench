@@ -76,21 +76,32 @@ namespace CompMs.MsdialCore.DataObj
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
+        /// <param name="faultedHandle">Called for a dataset that cannot be loaded because a file it reads was not found.</param>
         public static Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
-            return LoadAsync(streamManager, serializer, datasetStreamManagerFactory, newProjectDir, setNewPlacement,
-                datasetLoadFailed: faultedHandle is null ? null : new Action<ProjectBaseParameter, Exception>((parameter, _) => faultedHandle(parameter)));
+            return LoadReportingFailuresAsync(streamManager, serializer, datasetStreamManagerFactory, newProjectDir, setNewPlacement,
+                faultedHandle is null ? null : new Action<ProjectBaseParameter, Exception>((parameter, error) =>
+                {
+                    if (error is FileNotFoundException) {
+                        faultedHandle(parameter);
+                    }
+                }));
         }
 
+        /// <summary>
+        /// Loads the project as <see cref="LoadAsync"/> does, and says why each dataset that cannot be loaded failed.
+        /// A dataset that fails is left out of the result, so a caller that needs every dataset can tell from these reports.
+        /// </summary>
         /// <param name="datasetLoadFailed">
-        /// Called once for each dataset that cannot be loaded because a file it reads was not found,
-        /// with the <see cref="FileNotFoundException"/> whose <see cref="FileNotFoundException.FileName"/> names that file.
-        /// When the project was moved and the dataset fails in both folders, the file named is the one missing in the new folder.
+        /// Called for each dataset that cannot be loaded, with the exception that stopped it.
+        /// When a file it reads was not found, this is the <see cref="FileNotFoundException"/> whose <see cref="FileNotFoundException.FileName"/> names that file;
+        /// when the project was moved and the dataset fails in both folders, the file named is the one missing in the new folder.
+        /// It is called again if a dataset file picked through <paramref name="setNewPlacement"/> fails too.
         /// </param>
         /// <remarks>
         /// <paramref name="setNewPlacement"/> is asked only when the missing file is the dataset file itself:
         /// a dataset file picked elsewhere cannot supply a file that is missing beside it.
         /// </remarks>
-        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter, Exception>? datasetLoadFailed) {
+        public static async Task<ProjectDataStorage> LoadReportingFailuresAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter, Exception>? datasetLoadFailed) {
             ProjectDataStorage storage;
             using (var projectStream = await streamManager.Get(SerializationKey).ConfigureAwait(false)) {
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
@@ -185,6 +196,11 @@ namespace CompMs.MsdialCore.DataObj
                 projectDir = Path.GetDirectoryName(path);
                 projectFile = Path.GetFileName(path);
             }
+            catch (Exception ex) {
+                // A corrupt or unreadable dataset is dropped from the project as well; it is reported so that this is not silent.
+                datasetLoadFailed?.Invoke(projectParameter, ex);
+                throw;
+            }
 
             try {
                 using var streamManager = datasetStreamManagerFactory(projectDir);
@@ -194,7 +210,7 @@ namespace CompMs.MsdialCore.DataObj
                 KeepPreviousRtCorrectionResult(storage);
                 return storage;
             }
-            catch (FileNotFoundException ex) {
+            catch (Exception ex) {
                 datasetLoadFailed?.Invoke(projectParameter, ex);
                 throw;
             }

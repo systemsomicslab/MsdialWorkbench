@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             }
 
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
-                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder", null, faultedHandle: null);
+                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder", null, null);
 
                 Assert.AreEqual(projectParameter.StartDate, actual.ProjectParameter.StartDate);
                 Console.WriteLine(projectParameter.StartDate);
@@ -119,7 +119,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             serializer.ChangeProjectDir("NewFolder");
 
             using (var streamManager = ZipStreamManager.OpenGet(new_stream)) {
-                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "NewFolder", null, faultedHandle: null);
+                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "NewFolder", null, null);
 
                 Assert.AreEqual(projectParameter.StartDate, actual.ProjectParameter.StartDate);
                 Console.WriteLine(projectParameter.StartDate);
@@ -145,7 +145,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var failures = new List<(ProjectBaseParameter Parameter, Exception Error)>();
             var pickerCalls = 0;
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
-                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder",
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
                     _ => { pickerCalls++; return Task.FromResult<string>(null); },
                     datasetLoadFailed: (parameter, error) => failures.Add((parameter, error)));
                 Assert.AreEqual(0, actual.Storages.Count);
@@ -165,7 +165,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var failures = new List<Exception>();
             var pickerCalls = 0;
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
-                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder",
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
                     _ => { pickerCalls++; return Task.FromResult<string>(null); },
                     datasetLoadFailed: (_, error) => failures.Add(error));
                 Assert.AreEqual(0, actual.Storages.Count);
@@ -187,7 +187,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var failures = new List<Exception>();
             var pickerCalls = 0;
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
-                var actual = await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "NewFolder",
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "NewFolder",
                     _ => { pickerCalls++; return Task.FromResult<string>(null); },
                     datasetLoadFailed: (_, error) => failures.Add(error));
                 Assert.AreEqual(0, actual.Storages.Count);
@@ -211,6 +211,46 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             Assert.AreEqual(1, parameters.Count);
             Assert.AreEqual("Test1", parameters[0].ProjectFileName);
+        }
+
+        [TestMethod()]
+        public async Task OneArgumentOverloadReportsOnlyFilesNotFound() {
+            var serializer = new FaultSerializer();
+            var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
+
+            var parameters = new List<ProjectBaseParameter>();
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder", _ => Task.FromResult<string>(null), parameters.Add);
+            }
+
+            Assert.AreEqual(0, parameters.Count);
+        }
+
+        [TestMethod()]
+        public async Task EveryOtherFailureIsReportedWithItsException() {
+            var serializer = new FaultSerializer();
+            var proj = new ProjectDataStorage(new ProjectParameter(DateTime.Parse("2026/10/13 12:00:00"), "Folder", "TestProject"), new List<IMsdialDataStorage<ParameterBase>>());
+            proj.AddStorage(new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", ProjectFolderPath = "Folder", } });
+            proj.AddStorage(new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", ProjectFolderPath = "Folder", } });
+            var stream = new MemoryStream();
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(stream)) {
+                await proj.Save(streamManager, serializer, null, null);
+                streamManager.Complete();
+            }
+
+            var failures = new List<(ProjectBaseParameter Parameter, Exception Error)>();
+            var pickerCalls = 0;
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
+                    _ => { pickerCalls++; return Task.FromResult<string>(null); },
+                    datasetLoadFailed: (parameter, error) => { lock (failures) { failures.Add((parameter, error)); } });
+                Assert.AreEqual(0, actual.Storages.Count);
+                Assert.AreEqual(0, actual.ProjectParameters.Count);
+            }
+
+            CollectionAssert.AreEquivalent(new[] { "Test1", "Test2", }, failures.Select(f => f.Parameter.ProjectFileName).ToArray());
+            Assert.IsTrue(failures.All(f => f.Error.Message == "Serializer faulted!"));
+            Assert.AreEqual(0, pickerCalls);
         }
 
         [TestMethod()]
@@ -243,7 +283,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 var failures = new List<Exception>();
                 var pickerCalls = 0;
                 using (var streamManager = ZipStreamManager.OpenGet(stream)) {
-                    var actual = await ProjectDataStorage.LoadAsync(streamManager, MsdialDataStorage.Serializer, path => new DirectoryTreeStreamManager(path), folder,
+                    var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, MsdialDataStorage.Serializer, path => new DirectoryTreeStreamManager(path), folder,
                         _ => { pickerCalls++; return Task.FromResult<string>(null); },
                         datasetLoadFailed: (_, error) => failures.Add(error));
                     Assert.AreEqual(0, actual.Storages.Count);

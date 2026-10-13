@@ -130,53 +130,22 @@ namespace CompMs.App.Msdial.Model.Core
             using (var streamManager = ZipStreamManager.OpenGet(fs)) {
                 var deserializer = new MsdialIntegrateSerializer();
 
-                var unloadedDatasets = 0;
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 // Reading the datasets is data work only, and a loaded library can be hundreds of MB: it runs off the UI thread,
                 // which keeps pumping meanwhile (a minute without pumping is a ContextSwitchDeadlock under the debugger).
-                // The picker and the messages below go to the dispatcher themselves, and the models are built after the await,
+                // The picker and the messages go to the dispatcher themselves, and the models are built after the await,
                 // back on the UI thread.
-                var projectDataStorage = await Task.Run(() => ProjectDataStorage.LoadAsync(
+                var projectDataStorage = await Task.Run(() => ReadDatasetsAsync(
                     streamManager,
                     deserializer,
                     path => new DirectoryTreeStreamManager(path),
                     projectDir,
-                    async parameter =>
-                    {
-                        string? result = null;
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            var newofd = new OpenFileDialog
-                            {
-                                Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                                Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
-                                RestoreDirectory = true
-                            };
-                            if (newofd.ShowDialog() == true) {
-                                result = newofd.FileName;
-                            }
-                        });
-                        return result;
-                    },
-                    (parameter, error) =>
-                    {
-                        Interlocked.Increment(ref unloadedDatasets);
-                        broker.Publish(new ErrorMessageBoxRequest
-                        {
-                            Caption = "Dataset not loaded",
-                            Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
-                            Icon = MessageBoxImage.Error,
-                        });
-                    }));
+                    LocateDatasetFileAsync,
+                    broker));
                 System.Diagnostics.Debug.WriteLine($"Read the datasets of {projectPath} in {stopwatch.Elapsed.TotalSeconds:F1} s.");
                 if (projectDataStorage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     throw new Exception($"Msdial cannot open the project: \n{projectPath}");
-                }
-                if (projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
-                    // A dataset that fails to load is dropped from the project, so a project opened without any of them
-                    // would be saved back empty. What is missing has been named; the project is not opened.
-                    throw new OperationCanceledException("No dataset of the project could be loaded.");
                 }
                 projectDataStorage.FixProjectFolder(projectDir);
                 var model = new ProjectModel(projectDataStorage, broker);
@@ -191,6 +160,60 @@ namespace CompMs.App.Msdial.Model.Core
 
                 return model;
             }
+        }
+
+        /// <summary>
+        /// Reads the datasets of a project, and says for each dataset that cannot be loaded why it failed.
+        /// A project none of whose datasets could be loaded is not opened (<see cref="OperationCanceledException"/>):
+        /// a dataset that fails is dropped from the project, so the project would be saved back without any.
+        /// </summary>
+        internal static async Task<ProjectDataStorage> ReadDatasetsAsync(
+            IStreamManager streamManager,
+            IMsdialSerializer deserializer,
+            Func<string, IStreamManager> datasetStreamManagerFactory,
+            string projectDir,
+            Func<ProjectBaseParameter, Task<string?>> locateDatasetFile,
+            IMessageBroker broker) {
+
+            var unloadedDatasets = 0;
+            var projectDataStorage = await ProjectDataStorage.LoadReportingFailuresAsync(
+                streamManager,
+                deserializer,
+                datasetStreamManagerFactory,
+                projectDir,
+                locateDatasetFile,
+                (parameter, error) =>
+                {
+                    Interlocked.Increment(ref unloadedDatasets);
+                    broker.Publish(new ErrorMessageBoxRequest
+                    {
+                        Caption = "Dataset not loaded",
+                        Content = MessageHelper.DatasetNotLoaded(parameter.ProjectFileName, error),
+                        Icon = MessageBoxImage.Error,
+                    });
+                }).ConfigureAwait(false);
+            if (projectDataStorage is not null && projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
+                // What stopped each of them has been said.
+                throw new OperationCanceledException("No dataset of the project could be loaded.");
+            }
+            return projectDataStorage!;
+        }
+
+        private static async Task<string?> LocateDatasetFileAsync(ProjectBaseParameter parameter) {
+            string? result = null;
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                var newofd = new OpenFileDialog
+                {
+                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
+                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
+                    RestoreDirectory = true
+                };
+                if (newofd.ShowDialog() == true) {
+                    result = newofd.FileName;
+                }
+            });
+            return result;
         }
 
         private static async Task<ProjectModel> LoadMddatasetAsync(string  mddata, IMessageBroker broker) {
