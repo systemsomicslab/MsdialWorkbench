@@ -104,6 +104,9 @@ namespace CompMs.App.Msdial.Model.Core
             Mouse.OverrideCursor = Cursors.Wait;
             var message = new ShortMessageWindow()
             {
+                // The main window can be closed while the datasets are read. Owned by it, this window closes with it, and MS-DIAL ends
+                // instead of going on, with no window left, to ask about raw data, build the models or write the project file of a .mddata.
+                Owner = Application.Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Text = "Loading project...",
             };
