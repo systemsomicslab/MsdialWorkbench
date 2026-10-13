@@ -1454,9 +1454,21 @@ namespace CompMs.Common.Lipidomics
             };
             acyls2 = acyls2.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
 
-            var acyls3 = new List<int[]>() {
-                new int[] { sn1Carbon, sn1Double, sn2Carbon, sn2Double }, new int[] { sn3Carbon, sn3Double, sn4Carbon, sn4Double } };
-            acyls3 = acyls3.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
+            var acyls3 = new List<int[]> {
+                new int[] {
+                    acyls[0][0], acyls[0][1],
+                    acyls[1][0], acyls[1][1]
+                },
+                new int[] {
+                    acyls2[0][0], acyls2[0][1],
+                    acyls2[1][0], acyls2[1][1]
+                }
+            }
+            .OrderBy(n => n[1])
+            .ThenBy(n => n[0])
+            .ThenBy(n => n[3])
+            .ThenBy(n => n[2])
+            .ToList();
 
             var sn1CarbonCount = acyls3[0][0];
             var sn1DbCount = acyls3[0][1];
