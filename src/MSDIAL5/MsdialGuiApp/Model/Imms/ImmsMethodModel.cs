@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties, broker) {
             _storage = storage;
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             StudyContext = studyContext;
@@ -238,6 +238,8 @@ namespace CompMs.App.Msdial.Model.Imms
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
 
             var provider = ProviderFactory.Create(analysisFile.File);
@@ -260,6 +262,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                AlignmentModel = null;
             }
 
             return AlignmentModel = new ImmsAlignmentModel(

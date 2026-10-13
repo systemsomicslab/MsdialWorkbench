@@ -364,8 +364,9 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() => {
-                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
-                request.Result = result;
+                // The wait cursor is left to the operations that set it: the message box draws its own arrow,
+                // and an operation that finishes while the box is open clears the cursor itself.
+                request.Result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, request.Icon);
             });
         }
 

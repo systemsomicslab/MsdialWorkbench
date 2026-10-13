@@ -10,6 +10,8 @@ namespace CompMs.App.Msdial.ViewModel.Service
 
         public MessageBoxButton ButtonType { get; set; } = MessageBoxButton.OK;
 
+        public MessageBoxImage Icon { get; set; } = MessageBoxImage.Error;
+
         public MessageBoxResult Result { get; set; } = MessageBoxResult.Cancel;
     }
 }

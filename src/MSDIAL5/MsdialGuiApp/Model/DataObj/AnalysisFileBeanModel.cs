@@ -2,6 +2,7 @@
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,34 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (_file.AnalysisFilePath != value) {
                     _file.AnalysisFilePath = value;
                     OnPropertyChanged(nameof(AnalysisFilePath));
+                    _isRawDataAvailable = null;
+                    OnPropertyChanged(nameof(IsRawDataAvailable));
                 }
+            }
+        }
+
+        /// <summary>
+        /// Whether the raw data file of this sample is present, as last checked. A runtime fact, never saved:
+        /// the first read checks the disk, and <see cref="RefreshRawDataAvailability"/> checks again.
+        /// </summary>
+        public bool IsRawDataAvailable => _isRawDataAvailable ??= DataAccess.RawDataExists(_file.AnalysisFilePath);
+        private bool? _isRawDataAvailable;
+
+        public bool RefreshRawDataAvailability() {
+            SetRawDataAvailability(DataAccess.RawDataExists(_file.AnalysisFilePath));
+            return _isRawDataAvailable!.Value;
+        }
+
+        // The folder the raw data file was in is gone, so the file is too; the collection checks a folder once for all its files.
+        internal void MarkRawDataMissing() {
+            SetRawDataAvailability(false);
+        }
+
+        private void SetRawDataAvailability(bool available) {
+            var previous = _isRawDataAvailable;
+            _isRawDataAvailable = available;
+            if (previous != available) {
+                OnPropertyChanged(nameof(IsRawDataAvailable));
             }
         }
 
@@ -129,6 +157,29 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
+
+        /// <summary>
+        /// The saved peak list that opening this sample reads: the recorded path with a .pai extension is read as .pai2,
+        /// as MessagePackHandler does. Empty when no path is recorded.
+        /// </summary>
+        public string PeakListFilePath {
+            get {
+                var path = _file.PeakAreaBeanInformationFilePath;
+                if (string.IsNullOrEmpty(path)) {
+                    return string.Empty;
+                }
+                return Path.GetExtension(path).Length > 4 ? path : path + "2";
+            }
+        }
+
+        public bool PeakListFileExists() {
+            var path = _file.PeakAreaBeanInformationFilePath;
+            if (string.IsNullOrEmpty(path)) {
+                return false;
+            }
+            // The second check covers the legacy file that MessagePackHandler falls back to.
+            return System.IO.File.Exists(PeakListFilePath) || System.IO.File.Exists(path);
+        }
 
         public MSDecLoader MSDecLoader {
             get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath, _file.DeconvolutionFilePathList).AddTo(Disposables);

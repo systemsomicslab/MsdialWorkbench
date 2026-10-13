@@ -18,6 +18,35 @@ namespace CompMs.MsdialCore.Utility.Tests;
 public class DataAccessTests
 {
     [TestMethod()]
+    public void RawDataExistsTest() {
+        var folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"msdial-rawdataexists-{System.Guid.NewGuid():N}");
+        System.IO.Directory.CreateDirectory(folder);
+        try {
+            var file = System.IO.Path.Combine(folder, "sample.mzML");
+            System.IO.File.WriteAllBytes(file, new byte[0]);
+            var vendorFolder = System.IO.Path.Combine(folder, "sample.d");
+            System.IO.Directory.CreateDirectory(vendorFolder);
+            var imzml = System.IO.Path.Combine(folder, "image.imzML");
+            System.IO.File.WriteAllBytes(imzml, new byte[0]);
+            var imzmlWithIbd = System.IO.Path.Combine(folder, "complete.imzML");
+            System.IO.File.WriteAllBytes(imzmlWithIbd, new byte[0]);
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(folder, "complete.ibd"), new byte[0]);
+
+            Assert.IsTrue(DataAccess.RawDataExists(file));
+            Assert.IsTrue(DataAccess.RawDataExists(vendorFolder));
+            Assert.IsTrue(DataAccess.RawDataExists(imzmlWithIbd));
+            Assert.IsFalse(DataAccess.RawDataExists(imzml), "An imzML without its .ibd cannot be read.");
+            Assert.IsFalse(DataAccess.RawDataExists(System.IO.Path.Combine(folder, "missing.mzML")));
+            Assert.IsFalse(DataAccess.RawDataExists(System.IO.Path.Combine(folder, "missing", "sample.mzML")));
+            Assert.IsFalse(DataAccess.RawDataExists(string.Empty));
+            Assert.IsFalse(DataAccess.RawDataExists(null));
+        }
+        finally {
+            System.IO.Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [TestMethod()]
     public void GetFineIsotopicPeaksTest() {
         var spectrum = new RawSpectrum
         {

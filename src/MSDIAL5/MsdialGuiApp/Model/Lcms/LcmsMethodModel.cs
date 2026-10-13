@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
+        private readonly BrowsingDataProviderFactory _browsingProviderFactory;
         private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
@@ -57,11 +59,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties, broker) {
 
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
+            _browsingProviderFactory = new BrowsingDataProviderFactory(_providerFactory);
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             _studyContext = studyContext;
             _broker = broker;
@@ -203,12 +206,19 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
         public ParameterExportModel ParameterExportModel { get; }
 
+        // The LC-MS sample viewer draws what the project stores when the raw data are missing.
+        public override BrowsingWithoutRawData BrowsingWithoutRawData => BrowsingWithoutRawData.Supported;
+
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
-            var provider = _providerFactory.Create(analysisFile.File);
+            // A sample whose raw data file is missing gets a provider that returns nothing at once, instead of
+            // the 5 x 5 s retry on the UI thread and the exception after it. Processing keeps _providerFactory.
+            var provider = _browsingProviderFactory.Create(analysisFile);
             return AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
@@ -228,6 +238,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AlignmentModel = null;
             }
 
             return AlignmentModel = new LcmsAlignmentModel(
@@ -371,21 +383,33 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
+            var models = CreateAnalysisExports(_providerFactory, _storage.DataBaseMapper, _storage.Parameter, _studyContext, _broker);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
+        }
+
+        /// <summary>
+        /// The per-sample exports of Export &gt; Peak list result, over the raw data provider factory that processing uses.
+        /// </summary>
+        internal static IMsdialAnalysisExport[] CreateAnalysisExports(IDataProviderFactory<AnalysisFileBean> providerFactory, DataBaseMapper dataBaseMapper, MsdialLcmsParameter parameter, StudyContextModel studyContext, IMessageBroker broker) {
+            // The peak table reads the raw data only for its MS1 isotope column, which it writes as null without them.
+            // Centroid spectra are read from the raw data, so a sample without them stops the export at once and says why.
+            var tableProviderFactory = new RawDataOptionalProviderFactory(providerFactory);
+            var centroidProviderFactory = new RawDataRequiredProviderFactory(providerFactory);
             var spectraTypes = new List<SpectraType>
             {
                 //new SpectraType(
                 //    ExportspectraType.deconvoluted,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.deconvoluted)),
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
-                    _providerFactory),
+                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.deconvoluted)),
+                    tableProviderFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.centroid)),
                 //new SpectraType(
                 //    ExportspectraType.profile,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new[]
             {
@@ -394,10 +418,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(dataBaseMapper, parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(dataBaseMapper, parameter, file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Msp",
@@ -406,7 +430,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
-                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Mgf",
@@ -414,22 +438,25 @@ namespace CompMs.App.Msdial.Model.Lcms
                     Label = "MASCOT format (*.mgf)"
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType),parameter),
                 })
                 {
                     FilePrefix = "Sdf",
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
+                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
+            return models;
         }
 
         public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
+                return null;
+            }
+            if (!analysisModel.EnsureRawDataAvailable("Displaying the TIC, BPC and EIC")) {
                 return null;
             }
 

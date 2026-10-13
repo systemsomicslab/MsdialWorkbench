@@ -16,6 +16,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         AlignmentFileBeanModel? AlignmentFile { get; }
 
+        BrowsingWithoutRawData BrowsingWithoutRawData { get; }
+
         Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token);
 
         Task LoadAsync(CancellationToken token);
