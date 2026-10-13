@@ -8059,7 +8059,7 @@ AdductIon adduct)
 
                     if (isClassIonFound == false && candidates.Count == 0) return null;
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PBtOH", LbmClass.PMeOH, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PBtOH", LbmClass.PBtOH, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
