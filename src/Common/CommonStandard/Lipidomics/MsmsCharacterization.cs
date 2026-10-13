@@ -4001,7 +4001,7 @@ namespace CompMs.Common.Lipidomics
             if (maxSn1DoubleBond > totalDoubleBond) maxSn1DoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 5;
@@ -4012,6 +4012,24 @@ namespace CompMs.Common.Lipidomics
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     // if (isClassIon1Found !=true || isClassIon2Found != true) return null;
                     if (isClassIon2Found != true) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    //var averageIntensity = 0.0;
+                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainMoleculeObjAsLevel2("MAG", LbmClass.MAG, totalCarbon, totalDoubleBond,
+                    //               averageIntensity);
+                    //candidates.Add(molecule);
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("MG", LbmClass.MG, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+                else if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 5;
+                    // seek dehydroxy
+                    var diagnosticMz1 = theoreticalMz - H2O;
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    // if (isClassIon1Found !=true || isClassIon2Found != true) return null;
+                    if (isClassIon1Found != true) return null;
 
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
