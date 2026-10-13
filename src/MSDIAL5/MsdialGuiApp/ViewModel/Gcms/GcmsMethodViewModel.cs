@@ -101,18 +101,19 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public static GcmsMethodViewModel Create(GcmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            var analysisAsObservable = Observable.Create<GcmsAnalysisModel?>(observer => {
-                observer.OnNext(model.SelectedAnalysisModel);
-                return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-            }).Where(m => m is not null)
-            .Select(m => new GcmsAnalysisViewModel(m!, peakSpotTableService, focusControlManager, broker))
-            .ToReadOnlyReactivePropertySlim();
-            var alignmentAsObservable = Observable.Create<GcmsAlignmentModel?>(observer => {
-                observer.OnNext(model.SelectedAlignmentModel);
-                return model.ObserveProperty(m => m.SelectedAlignmentModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-            }).Where(m => m is not null)
-            .Select(m => new GcmsAlignmentViewModel(m!, focusControlManager, broker))
-            .ToReadOnlyReactivePropertySlim();
+            // The method disposes the current model before it builds the next one, so a build that fails leaves no model: no view model either.
+            var analysisAsObservable = ToResultViewModel(
+                Observable.Create<GcmsAnalysisModel?>(observer => {
+                    observer.OnNext(model.SelectedAnalysisModel);
+                    return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
+                }),
+                m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker));
+            var alignmentAsObservable = ToResultViewModel(
+                Observable.Create<GcmsAlignmentModel?>(observer => {
+                    observer.OnNext(model.SelectedAlignmentModel);
+                    return model.ObserveProperty(m => m.SelectedAlignmentModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
+                }),
+                m => new GcmsAlignmentViewModel(m, focusControlManager, broker));
 
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);

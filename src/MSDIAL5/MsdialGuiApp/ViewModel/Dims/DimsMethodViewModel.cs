@@ -178,11 +178,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            return method.ObserveProperty(m => m.AlignmentModel)
-                .SkipNull()
-                .Select(m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
+            // As for the samples: an alignment result that fails to open leaves none on screen.
+            return ToResultViewModel(
+                method.ObserveProperty(m => m.AlignmentModel),
+                m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager));
         }
 
         public static DimsMethodViewModel Create(

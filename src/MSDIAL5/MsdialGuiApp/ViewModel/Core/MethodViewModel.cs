@@ -178,6 +178,18 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ViewModelSwitcher ChromatogramViewModels { get; }
         public ViewModelSwitcher MassSpectrumViewModels { get; }
 
+        /// <summary>
+        /// The view model of the method's current analysis or alignment model. No model, as after an open that failed, gives no view model,
+        /// and the previous view model is disposed: nothing on screen stays bound to a model the method has already disposed.
+        /// </summary>
+        internal static ReadOnlyReactivePropertySlim<TViewModel?> ToResultViewModel<TModel, TViewModel>(IObservable<TModel?> models, Func<TModel, TViewModel> create)
+            where TModel : class
+            where TViewModel : class, IDisposable {
+            return models
+                .Select(m => m is null ? null : create(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
+        }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
         private DelegateCommand? _goToMsfinderCommand;
