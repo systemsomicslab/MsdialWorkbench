@@ -20171,7 +20171,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("BisMeLPA", LbmClass.BisMeLPA, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("NAGABA", LbmClass.NAGABA, "", theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
