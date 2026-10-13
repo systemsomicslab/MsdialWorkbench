@@ -14,6 +14,8 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,19 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public static GcmsMethodViewModel Create(GcmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            // The method disposes the current model before it builds the next one, so a build that fails leaves no model: no view model either.
-            var analysisAsObservable = ToResultViewModel(
-                Observable.Create<GcmsAnalysisModel?>(observer => {
-                    observer.OnNext(model.SelectedAnalysisModel);
-                    return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-                }),
-                m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker));
-            var alignmentAsObservable = ToResultViewModel(
-                Observable.Create<GcmsAlignmentModel?>(observer => {
-                    observer.OnNext(model.SelectedAlignmentModel);
-                    return model.ObserveProperty(m => m.SelectedAlignmentModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-                }),
-                m => new GcmsAlignmentViewModel(m, focusControlManager, broker));
+            var analysisAsObservable = ObserveResultViewModel(model, m => m.SelectedAnalysisModel, m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker));
+            var alignmentAsObservable = ObserveResultViewModel(model, m => m.SelectedAlignmentModel, m => new GcmsAlignmentViewModel(m, focusControlManager, broker));
 
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
@@ -125,6 +116,24 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var repref = alignmentAsObservable.Select(m => m?.Ms2SpectrumViewModel);
             var massSpectrumSwitcher = new ViewModelSwitcher(rawdec, repref, rawdec, productscan, rawpurified, repref);
             return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, chromatogramSwitcher, massSpectrumSwitcher, broker, focusControlManager);
+        }
+
+        /// <summary>
+        /// The view model of the sample or alignment result the method has open, from the one open now.
+        /// The method disposes the current model before it builds the next one, so a build that fails leaves no model: no view model either,
+        /// and the view model it replaces is disposed.
+        /// </summary>
+        internal static ReadOnlyReactivePropertySlim<TViewModel?> ObserveResultViewModel<TMethod, TModel, TViewModel>(TMethod method, Expression<Func<TMethod, TModel?>> selectedModel, Func<TModel, TViewModel> create)
+            where TMethod : INotifyPropertyChanged
+            where TModel : class
+            where TViewModel : class, IDisposable {
+            var current = selectedModel.Compile();
+            return ToResultViewModel(
+                Observable.Create<TModel?>(observer => {
+                    observer.OnNext(current(method));
+                    return method.ObserveProperty(selectedModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
+                }),
+                create);
         }
     }
 }

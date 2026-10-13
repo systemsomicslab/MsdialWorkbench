@@ -22,7 +22,9 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -178,10 +180,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            // As for the samples: an alignment result that fails to open leaves none on screen.
-            return ToResultViewModel(
-                method.ObserveProperty(m => m.AlignmentModel),
-                m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager));
+            return ConvertToAlignmentViewModel(method, m => m.AlignmentModel, m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager));
+        }
+
+        /// <summary>
+        /// The view model of the alignment result the method has open. As for the samples: an alignment result that fails to open
+        /// leaves no model, so no view model either, and the view model it replaces is disposed.
+        /// </summary>
+        internal static ReadOnlyReactivePropertySlim<TViewModel?> ConvertToAlignmentViewModel<TMethod, TModel, TViewModel>(TMethod method, Expression<Func<TMethod, TModel?>> alignmentModel, Func<TModel, TViewModel> create)
+            where TMethod : INotifyPropertyChanged
+            where TModel : class
+            where TViewModel : class, IDisposable {
+            return ToResultViewModel(method.ObserveProperty(alignmentModel), create);
         }
 
         public static DimsMethodViewModel Create(

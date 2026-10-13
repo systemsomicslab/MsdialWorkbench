@@ -1,13 +1,15 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
+using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Gcms;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Reactive.Bindings.Extensions;
+using Reactive.Bindings;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -39,12 +41,13 @@ namespace CompMs.App.Msdial.ViewModel.Core.Tests
             Directory.Delete(_folder, recursive: true);
         }
 
-        // GC-MS disposes the sample on screen before it builds the next one, as the other method types do.
+        // Through the pipeline GcmsMethodViewModel.Create builds for the samples, over a method that, as GC-MS now does,
+        // disposes the sample on screen before it builds the next one.
         [TestMethod()]
-        public async Task ASampleThatFailsToOpenLeavesNoViewModelBoundToTheDisposedOne() {
+        public async Task AGcmsSampleThatFailsToOpenLeavesNoViewModelBoundToTheDisposedOne() {
             var files = new[] { Sample("a"), Sample("b"), };
             using var method = new FakeMethodModel(new AnalysisFileBeanModelCollection(files), Alignments(files), _broker);
-            using var viewModel = MethodViewModel.ToResultViewModel(method.ObserveProperty(m => m.SelectedAnalysisModel), m => new FakeViewModel(m));
+            using var viewModel = GcmsMethodViewModel.ObserveResultViewModel(method, m => m.SelectedAnalysisModel, m => new FakeViewModel(m));
             await method.LoadAsync(default);
             var first = viewModel.Value;
             Assert.IsNotNull(first);
@@ -62,13 +65,40 @@ namespace CompMs.App.Msdial.ViewModel.Core.Tests
             Assert.IsFalse(viewModel.Value!.Model.IsDisposed);
         }
 
-        // DIMS and GC-MS alignment results.
         [TestMethod()]
-        public async Task AnAlignmentResultThatFailsToOpenLeavesNoViewModelBoundToTheDisposedOne() {
+        public async Task TheGcmsViewModelStartsFromTheSampleOpenNow() {
+            var files = new[] { Sample("a"), };
+            using var method = new FakeMethodModel(new AnalysisFileBeanModelCollection(files), Alignments(files), _broker);
+            await method.LoadAsync(default);
+
+            using var viewModel = GcmsMethodViewModel.ObserveResultViewModel(method, m => m.SelectedAnalysisModel, m => new FakeViewModel(m));
+
+            Assert.IsNotNull(method.SelectedAnalysisModel);
+            Assert.AreSame(method.SelectedAnalysisModel, viewModel.Value?.Model);
+        }
+
+        [TestMethod()]
+        public async Task AGcmsAlignmentResultThatFailsToOpenLeavesNoViewModelBoundToTheDisposedOne() {
             var files = new[] { Sample("a"), };
             var alignments = Alignments(files, "AlignmentResult1", "AlignmentResult2");
             using var method = new FakeMethodModel(new AnalysisFileBeanModelCollection(files), alignments, _broker);
-            using var viewModel = MethodViewModel.ToResultViewModel(method.ObserveProperty(m => m.SelectedAlignmentModel), m => new FakeViewModel(m));
+            using var viewModel = GcmsMethodViewModel.ObserveResultViewModel(method, m => m.SelectedAlignmentModel, m => new FakeViewModel(m));
+
+            await AnAlignmentResultThatFailsToOpenLeavesNoViewModel(method, alignments, viewModel);
+        }
+
+        // Through the pipeline DimsMethodViewModel.Create builds for the alignment results.
+        [TestMethod()]
+        public async Task ADimsAlignmentResultThatFailsToOpenLeavesNoViewModelBoundToTheDisposedOne() {
+            var files = new[] { Sample("a"), };
+            var alignments = Alignments(files, "AlignmentResult1", "AlignmentResult2");
+            using var method = new FakeMethodModel(new AnalysisFileBeanModelCollection(files), alignments, _broker);
+            using var viewModel = DimsMethodViewModel.ConvertToAlignmentViewModel(method, m => m.SelectedAlignmentModel, m => new FakeViewModel(m));
+
+            await AnAlignmentResultThatFailsToOpenLeavesNoViewModel(method, alignments, viewModel);
+        }
+
+        private async Task AnAlignmentResultThatFailsToOpenLeavesNoViewModel(FakeMethodModel method, AlignmentFileBeanModelCollection alignments, IReadOnlyReactiveProperty<FakeViewModel?> viewModel) {
             await method.LoadAlignmentFileAsync(alignments.Files[0], default);
             var first = viewModel.Value;
             Assert.IsNotNull(first);
@@ -80,6 +110,10 @@ namespace CompMs.App.Msdial.ViewModel.Core.Tests
             Assert.IsNull(viewModel.Value);
             Assert.IsTrue(first.IsDisposed);
             Assert.AreEqual("Alignment result could not be opened", _messages.Single().Caption);
+
+            await method.LoadAlignmentFileAsync(alignments.Files[0], default);
+            Assert.IsNotNull(viewModel.Value);
+            Assert.IsFalse(viewModel.Value!.Model.IsDisposed);
         }
 
         private AnalysisFileBeanModel Sample(string name) {
@@ -98,7 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Core.Tests
         }
 
         /// <summary>
-        /// Builds its models as GC-MS does: the model on screen is disposed and taken away before the next one is built, which may fail.
+        /// Builds its models as GC-MS and DIMS do: the model on screen is disposed and taken away before the next one is built, which may fail.
         /// </summary>
         sealed class FakeMethodModel : MethodModelBase
         {
