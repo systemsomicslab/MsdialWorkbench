@@ -400,6 +400,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
@@ -448,6 +449,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
@@ -508,6 +510,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
@@ -535,6 +538,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
             };
@@ -1840,6 +1844,7 @@ namespace CompMs.Common.Lipidomics
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
                 TotalChainString = totalString,
+                TotalOxidizedCount = totalOxidized,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
@@ -1894,6 +1899,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
@@ -4769,7 +4775,7 @@ namespace CompMs.Common.Lipidomics
                     if (isClassIon2Found == false && candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.EtherOxPC, "e", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+HCO3]-")
                 {
@@ -4842,7 +4848,7 @@ namespace CompMs.Common.Lipidomics
                     if (candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
 
             }
@@ -4945,7 +4951,7 @@ namespace CompMs.Common.Lipidomics
                     }
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.EtherOxPE, "e", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5217,7 +5223,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+HCO3]-")
                 {
@@ -5293,7 +5299,7 @@ namespace CompMs.Common.Lipidomics
                     if (candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5412,7 +5418,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.OxPE, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5533,7 +5539,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PG", LbmClass.OxPG, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5646,7 +5652,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.OxPI, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5756,7 +5762,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.OxPS, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
