@@ -1,5 +1,8 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -97,6 +100,47 @@ namespace CompMs.App.Msdial.Model.Core.Tests
             StringAssert.Contains(_messages.Single().Content, "\"Dataset1.mddata\"");
         }
 
+        // A .mddata opened directly gets a project file beside it, but only once its dataset has opened.
+        [TestMethod()]
+        public async Task ADatasetWhoseOpeningIsDeclinedWritesNoProjectFile() {
+            var dataset = new FakeDatasetModel(() => throw new OperationCanceledException("Opening was declined because raw data files are missing."));
+            var model = ProjectFor(dataset);
+            var writes = 0;
+
+            await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => ProjectModel.OpenThenWriteProjectFileAsync(model, _ => { writes++; return Task.CompletedTask; }));
+
+            Assert.AreEqual(0, writes);
+        }
+
+        [TestMethod()]
+        public async Task TheProjectFileIsWrittenOnceTheDatasetHasOpened() {
+            var steps = new List<string>();
+            var dataset = new FakeDatasetModel(() => { steps.Add("open"); return Task.CompletedTask; });
+            var model = ProjectFor(dataset);
+
+            var actual = await ProjectModel.OpenThenWriteProjectFileAsync(model, storage => { steps.Add("write " + storage.ProjectParameter.Title); return Task.CompletedTask; });
+
+            CollectionAssert.AreEqual(new[] { "open", "write Dataset1.mddata.mdproject", }, steps);
+            Assert.AreSame(dataset, actual.CurrentDataset);
+            Assert.IsFalse(dataset.IsDisposed);
+        }
+
+        [TestMethod()]
+        public async Task AProjectFileThatCannotBeWrittenClosesTheDatasetAgain() {
+            var dataset = new FakeDatasetModel(() => Task.CompletedTask);
+            var model = ProjectFor(dataset);
+
+            await Assert.ThrowsExactlyAsync<IOException>(() => ProjectModel.OpenThenWriteProjectFileAsync(model, _ => throw new IOException("read-only")));
+
+            Assert.IsTrue(dataset.IsDisposed);
+        }
+
+        private ProjectModel ProjectFor(FakeDatasetModel dataset) {
+            var model = new ProjectModel(new ProjectDataStorage(new ProjectParameter(DateTime.Parse("2026/10/13 12:00:00"), "Folder", "Dataset1.mddata.mdproject")), _broker);
+            model.Datasets.Add(dataset);
+            return model;
+        }
+
         private Task<ProjectDataStorage> ReadDatasetsAsync(IStreamManager streamManager, IMsdialSerializer serializer) {
             return ProjectModel.ReadDatasetsAsync(streamManager, serializer, _ => null!, "Folder", (_, _) => Task.FromResult<string?>(null), _broker);
         }
@@ -137,6 +181,35 @@ namespace CompMs.App.Msdial.Model.Core.Tests
                 _storages[projectTitle] = dataStorage;
                 return Task.CompletedTask;
             }
+        }
+
+        /// <summary>
+        /// A dataset whose opening does what it is given, as DatasetModel.LoadAsync asks about missing raw data and opens the first sample.
+        /// </summary>
+        sealed class FakeDatasetModel : BindableBase, IDatasetModel, IDisposable
+        {
+            private readonly Func<Task> _load;
+
+            public FakeDatasetModel(Func<Task> load) {
+                _load = load;
+            }
+
+            public bool IsDisposed { get; private set; }
+
+            public Task LoadAsync() => _load();
+            public void Dispose() => IsDisposed = true;
+
+            public IMethodModel? Method => null;
+            public IMsdialDataStorage<ParameterBase> Storage => throw new NotImplementedException();
+            public AnalysisFileBeanModelCollection AnalysisFiles => throw new NotImplementedException();
+            public MethodSettingModel AllProcessMethodSettingModel => throw new NotImplementedException();
+            public MethodSettingModel IdentificationProcessMethodSettingModel => throw new NotImplementedException();
+            public MethodSettingModel AlignmentProcessMethodSettingModel => throw new NotImplementedException();
+            public AnalysisFilePropertyResetModel AnalysisFilePropertyResetModel => throw new NotImplementedException();
+            public FileClassSetModel FileClassSetModel => throw new NotImplementedException();
+            public Task SaveAsync() => throw new NotImplementedException();
+            public Task SaveAsAsync() => throw new NotImplementedException();
+            public Task SaveParameterAsAsync() => throw new NotImplementedException();
         }
     }
 }

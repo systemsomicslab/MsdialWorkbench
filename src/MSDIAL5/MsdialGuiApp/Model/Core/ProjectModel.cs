@@ -239,6 +239,37 @@ namespace CompMs.App.Msdial.Model.Core
                 storage.AddStorage(data);
             }
 
+            var model = new ProjectModel(storage, broker);
+            model.Datasets.Clear();
+            foreach (var dataset in storage.Storages.Select(data => new DatasetModel(data, broker))){
+                model.Datasets.Add(dataset);
+            }
+            return await OpenThenWriteProjectFileAsync(model, WriteProjectFileAsync);
+        }
+
+        /// <summary>
+        /// Opens the current dataset of a project made for a .mddata opened directly, and only then writes the project file beside the dataset:
+        /// a dataset whose opening is declined (its raw data are missing) or fails leaves the folder as it was.
+        /// </summary>
+        internal static async Task<ProjectModel> OpenThenWriteProjectFileAsync(ProjectModel model, Func<ProjectDataStorage, Task> writeProjectFile) {
+            model.CurrentDataset = model.Datasets.LastOrDefault();
+            if (!(model.CurrentDataset is null)) {
+                await model.CurrentDataset.LoadAsync();
+            }
+            try {
+                await writeProjectFile(model.Storage);
+            }
+            catch {
+                // The project is not opened, so the dataset just opened is closed again.
+                foreach (var dataset in model.Datasets.OfType<IDisposable>()) {
+                    dataset.Dispose();
+                }
+                throw;
+            }
+            return model;
+        }
+
+        private static async Task WriteProjectFileAsync(ProjectDataStorage storage) {
             using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath)) {
                 using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                     var serializer = new MsdialIgnoreSavingSerializer();
@@ -251,17 +282,6 @@ namespace CompMs.App.Msdial.Model.Core
                 }
                 fs.Move();
             }
-
-            var model = new ProjectModel(storage, broker);
-            model.Datasets.Clear();
-            foreach (var dataset in storage.Storages.Select(data => new DatasetModel(data, broker))){
-                model.Datasets.Add(dataset);
-            }
-            model.CurrentDataset = model.Datasets.LastOrDefault();
-            if (!(model.CurrentDataset is null)) {
-                await model.CurrentDataset.LoadAsync();
-            }
-            return model;
         }
     }
 }
