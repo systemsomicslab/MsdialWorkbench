@@ -10,6 +10,7 @@ using CompMs.MsdialIntegrate.Parser;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -167,23 +168,32 @@ namespace CompMs.App.Msdial.Model.Core
         /// A project none of whose datasets could be loaded is not opened (<see cref="OperationCanceledException"/>):
         /// a dataset that fails is dropped from the project, so the project would be saved back without any.
         /// </summary>
+        /// <param name="locateDatasetFile">
+        /// Asked for a dataset a file of which was not found, with the path of that file, which the message has just named:
+        /// the dataset file itself, or a file beside it that a copy of the dataset picked elsewhere has to have.
+        /// </param>
         internal static async Task<ProjectDataStorage> ReadDatasetsAsync(
             IStreamManager streamManager,
             IMsdialSerializer deserializer,
             Func<string, IStreamManager> datasetStreamManagerFactory,
             string projectDir,
-            Func<ProjectBaseParameter, Task<string?>> locateDatasetFile,
+            Func<ProjectBaseParameter, string?, Task<string?>> locateDatasetFile,
             IMessageBroker broker) {
 
             var unloadedDatasets = 0;
+            var missingFiles = new ConcurrentDictionary<ProjectBaseParameter, string>();
             var projectDataStorage = await ProjectDataStorage.LoadReportingFailuresAsync(
                 streamManager,
                 deserializer,
                 datasetStreamManagerFactory,
                 projectDir,
-                locateDatasetFile,
+                // The picker follows the message about the same dataset.
+                parameter => locateDatasetFile(parameter, missingFiles.TryGetValue(parameter, out var missing) ? missing : null),
                 (parameter, error) =>
                 {
+                    if (error is FileNotFoundException notFound && notFound.FileName is not null) {
+                        missingFiles[parameter] = notFound.FileName;
+                    }
                     Interlocked.Increment(ref unloadedDatasets);
                     broker.Publish(new ErrorMessageBoxRequest
                     {
@@ -199,14 +209,14 @@ namespace CompMs.App.Msdial.Model.Core
             return projectDataStorage!;
         }
 
-        private static async Task<string?> LocateDatasetFileAsync(ProjectBaseParameter parameter) {
+        private static async Task<string?> LocateDatasetFileAsync(ProjectBaseParameter parameter, string? missingPath) {
             string? result = null;
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 var newofd = new OpenFileDialog
                 {
                     Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
+                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName, missingPath),
                     RestoreDirectory = true
                 };
                 if (newofd.ShowDialog() == true) {

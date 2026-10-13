@@ -56,6 +56,34 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         }
 
         [TestMethod()]
+        public async Task ThePickerIsToldWhichFileTheMessageNamed() {
+            var missing = Path.Combine("Folder", "Dataset1_Loaded.msp2.dbs");
+            var serializer = new FakeSerializer(title => new FileNotFoundException($"Could not find file '{missing}'.", missing));
+            var stream = await SaveProjectAsync(serializer, "Dataset1.mddata");
+
+            var asked = new List<(string Dataset, string? Missing, int MessagesBefore)>();
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => ProjectModel.ReadDatasetsAsync(streamManager, serializer, _ => null!, "Folder",
+                    (parameter, missingPath) => {
+                        asked.Add((parameter.ProjectFileName, missingPath, _messages.Count));
+                        return Task.FromResult<string?>(null);
+                    },
+                    _broker));
+            }
+
+            Assert.AreEqual(("Dataset1.mddata", missing, 1), asked.Single());
+        }
+
+        [TestMethod()]
+        public void ThePickerAsksForACompleteCopyWhenAFileBesideTheDatasetIsMissing() {
+            Assert.AreEqual("Locate the dataset file Dataset1.mddata", MessageHelper.LocateDatasetFileTitle("Dataset1.mddata", Path.Combine("Folder", "Dataset1.mddata")));
+            Assert.AreEqual("Locate the dataset file Dataset1.mddata", MessageHelper.LocateDatasetFileTitle("Dataset1.mddata", null));
+            Assert.AreEqual(
+                "Locate a copy of the dataset file Dataset1.mddata that has Dataset1_Loaded.msp2.dbs beside it",
+                MessageHelper.LocateDatasetFileTitle("Dataset1.mddata", Path.Combine("Folder", "Dataset1_Loaded.msp2.dbs")));
+        }
+
+        [TestMethod()]
         public async Task AProjectOpensWithTheDatasetsThatLoad() {
             var serializer = new FakeSerializer(title => title == "Dataset1.mddata" ? new InvalidDataException($"{title} is corrupt") : null);
             var stream = await SaveProjectAsync(serializer, "Dataset1.mddata", "Dataset2.mddata");
@@ -70,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         }
 
         private Task<ProjectDataStorage> ReadDatasetsAsync(IStreamManager streamManager, IMsdialSerializer serializer) {
-            return ProjectModel.ReadDatasetsAsync(streamManager, serializer, _ => null!, "Folder", _ => Task.FromResult<string?>(null), _broker);
+            return ProjectModel.ReadDatasetsAsync(streamManager, serializer, _ => null!, "Folder", (_, _) => Task.FromResult<string?>(null), _broker);
         }
 
         private static async Task<MemoryStream> SaveProjectAsync(IMsdialSerializer serializer, params string[] titles) {

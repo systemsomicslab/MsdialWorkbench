@@ -98,8 +98,8 @@ namespace CompMs.MsdialCore.DataObj
         /// It is called again if a dataset file picked through <paramref name="setNewPlacement"/> fails too.
         /// </param>
         /// <remarks>
-        /// <paramref name="setNewPlacement"/> is asked only when the missing file is the dataset file itself:
-        /// a dataset file picked elsewhere cannot supply a file that is missing beside it.
+        /// <paramref name="setNewPlacement"/> is asked, after the report, whenever a file the dataset reads was not found, whether it is the dataset file itself
+        /// or a file beside it such as its loaded library: the dataset is then read from the folder of the file picked, with the files beside that one.
         /// </remarks>
         public static async Task<ProjectDataStorage> LoadReportingFailuresAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, string newProjectDir, Func<ProjectBaseParameter, Task<string?>> setNewPlacement, Action<ProjectBaseParameter, Exception>? datasetLoadFailed) {
             ProjectDataStorage storage;
@@ -182,13 +182,12 @@ namespace CompMs.MsdialCore.DataObj
                 return storage;
             }
             catch (FileNotFoundException ex) {
-                var reported = missingInNewFolder ?? ex;
-                var reportedDir = missingInNewFolder is null ? projectDir : newProjectDir;
-                datasetLoadFailed?.Invoke(projectParameter, reported);
-                if (setNewPlacement is null || !IsDatasetFile(reported, reportedDir, projectFile)) {
-                    // A sibling of the dataset file is missing (its loaded library, for example): picking another dataset file cannot supply it.
+                datasetLoadFailed?.Invoke(projectParameter, missingInNewFolder ?? ex);
+                if (setNewPlacement is null) {
                     throw;
                 }
+                // Also when the missing file is beside the dataset file (its loaded library, for example):
+                // a complete copy of the dataset elsewhere is read with its own files.
                 var path = await setNewPlacement.Invoke(projectParameter);
                 if (path is null) {
                     throw;
@@ -213,18 +212,6 @@ namespace CompMs.MsdialCore.DataObj
             catch (Exception ex) {
                 datasetLoadFailed?.Invoke(projectParameter, ex);
                 throw;
-            }
-        }
-
-        private static bool IsDatasetFile(FileNotFoundException error, string folder, string file) {
-            try {
-                return string.Equals(
-                    Path.GetFullPath(error.FileName ?? error.Message),
-                    Path.GetFullPath(Path.Combine(folder, file)),
-                    StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException) {
-                return false;
             }
         }
 

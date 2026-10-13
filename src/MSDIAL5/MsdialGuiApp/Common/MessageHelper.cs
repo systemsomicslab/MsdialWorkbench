@@ -25,8 +25,28 @@ namespace CompMs.App.Msdial.Common
             return $"The dataset \"{datasetFileName}\" could not be loaded:\n  {cause.GetType().Name}: {cause.Message}";
         }
 
-        public static string LocateDatasetFileTitle(string datasetFileName) {
-            return $"Locate the dataset file {datasetFileName}";
+        /// <summary>
+        /// The title of the picker offered for a dataset a file of which was not found. When that file is beside the dataset file,
+        /// a dataset file picked elsewhere is read with the files beside it, so what to look for is a copy that has that file too.
+        /// </summary>
+        public static string LocateDatasetFileTitle(string datasetFileName, string? missingPath = null) {
+            var missingFile = FileNameOf(missingPath);
+            if (missingFile is null || string.Equals(missingFile, datasetFileName, StringComparison.OrdinalIgnoreCase)) {
+                return $"Locate the dataset file {datasetFileName}";
+            }
+            return $"Locate a copy of the dataset file {datasetFileName} that has {missingFile} beside it";
+        }
+
+        private static string? FileNameOf(string? path) {
+            if (string.IsNullOrEmpty(path)) {
+                return null;
+            }
+            try {
+                return Path.GetFileName(path);
+            }
+            catch (ArgumentException) {
+                return null;
+            }
         }
     }
 }

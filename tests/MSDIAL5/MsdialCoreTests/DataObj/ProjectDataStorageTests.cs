@@ -138,7 +138,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
-        public async Task MissingSiblingIsReportedOnceWithoutPicker() {
+        public async Task MissingSiblingIsReportedOnceThenThePickerIsOffered() {
             var serializer = new MissingFileSerializer((folder, title) => folder == "Folder" ? title + "_Loaded.msp2.dbs" : null);
             var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
 
@@ -146,7 +146,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var pickerCalls = 0;
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
                 var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
-                    _ => { pickerCalls++; return Task.FromResult<string>(null); },
+                    _ => {
+                        pickerCalls++;
+                        Assert.AreEqual(1, failures.Count, "The missing file is named before the picker opens.");
+                        return Task.FromResult<string>(null);
+                    },
                     datasetLoadFailed: (parameter, error) => failures.Add((parameter, error)));
                 Assert.AreEqual(0, actual.Storages.Count);
             }
@@ -154,7 +158,43 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(1, failures.Count);
             Assert.AreEqual("Test1", failures[0].Parameter.ProjectFileName);
             StringAssert.EndsWith(((FileNotFoundException)failures[0].Error).FileName, ".dbs");
-            Assert.AreEqual(0, pickerCalls);
+            Assert.AreEqual(1, pickerCalls);
+        }
+
+        [TestMethod()]
+        public async Task ACompleteCopyPickedElsewhereSuppliesTheMissingSibling() {
+            var serializer = new MissingFileSerializer((folder, title) => folder == "Folder" ? title + "_Loaded.msp2.dbs" : null);
+            var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
+
+            var failures = new List<Exception>();
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
+                    _ => Task.FromResult(Path.Combine("Nas", "Test1")),
+                    datasetLoadFailed: (_, error) => failures.Add(error));
+
+                Assert.AreEqual(1, actual.Storages.Count);
+                Assert.AreEqual("Nas", actual.Storages[0].Parameter.ProjectFolderPath);
+            }
+            Assert.AreEqual(1, failures.Count);
+        }
+
+        [TestMethod()]
+        public async Task PickingTheSameIncompleteCopyAgainNamesTheMissingFileAgain() {
+            var serializer = new MissingFileSerializer((folder, title) => folder == "Folder" ? title + "_Loaded.msp2.dbs" : null);
+            var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
+
+            var failures = new List<Exception>();
+            var pickerCalls = 0;
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Folder",
+                    _ => { pickerCalls++; return Task.FromResult(Path.Combine("Folder", "Test1")); },
+                    datasetLoadFailed: (_, error) => failures.Add(error));
+                Assert.AreEqual(0, actual.Storages.Count);
+            }
+
+            Assert.AreEqual(1, pickerCalls);
+            Assert.AreEqual(2, failures.Count);
+            Assert.IsTrue(failures.All(error => ((FileNotFoundException)error).FileName == Path.Combine("Folder", "Test1_Loaded.msp2.dbs")));
         }
 
         [TestMethod()]
@@ -195,7 +235,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             Assert.AreEqual(1, failures.Count);
             Assert.AreEqual(Path.Combine("NewFolder", "Test1_Loaded.msp2.dbs"), ((FileNotFoundException)failures[0]).FileName);
-            Assert.AreEqual(0, pickerCalls);
+            Assert.AreEqual(1, pickerCalls);
         }
 
         [TestMethod()]
@@ -211,6 +251,21 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             Assert.AreEqual(1, parameters.Count);
             Assert.AreEqual("Test1", parameters[0].ProjectFileName);
+        }
+
+        [TestMethod()]
+        public async Task OneArgumentOverloadOffersThePickerForAMissingSiblingAsBefore() {
+            var serializer = new MissingFileSerializer((folder, title) => folder == "Folder" ? title + "_Loaded.msp2.dbs" : null);
+            var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
+
+            var parameters = new List<ProjectBaseParameter>();
+            var pickerCalls = 0;
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                await ProjectDataStorage.LoadAsync(streamManager, serializer, _ => null, "Folder", _ => { pickerCalls++; return Task.FromResult<string>(null); }, parameters.Add);
+            }
+
+            Assert.AreEqual(1, pickerCalls);
+            Assert.AreEqual(1, parameters.Count);
         }
 
         [TestMethod()]
@@ -291,7 +346,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
                 Assert.AreEqual(1, failures.Count);
                 StringAssert.EndsWith(((FileNotFoundException)failures[0]).FileName, "_Loaded.msp2.dbs");
-                Assert.AreEqual(0, pickerCalls);
+                Assert.AreEqual(1, pickerCalls);
             }
             finally {
                 Directory.Delete(folder, recursive: true);
@@ -417,11 +472,12 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 var path = Path.Combine(projectFolderPath, missing);
                 throw new FileNotFoundException($"Could not find file '{path}'.", path);
             }
-            return Task.FromResult(_storages[$"{prefix}/{projectTitle}"]);
+            return Task.FromResult(_storages[projectTitle]);
         }
 
+        // Saved with the folder as the prefix and read back with none, so a dataset is found by its title alone.
         public Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
-            _storages[$"{prefix}/{projectTitle}"] = dataStorage;
+            _storages[projectTitle] = dataStorage;
             return Task.CompletedTask;
         }
     }
