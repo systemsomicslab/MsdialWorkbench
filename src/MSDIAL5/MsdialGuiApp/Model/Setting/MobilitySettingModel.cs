@@ -19,6 +19,10 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly MsdialImmsParameter? immsParameter;
         private readonly MsdialLcImMsParameter? lcimmsParameter;
+        private readonly Dictionary<int, CoefficientsForCcsCalculation> fileID2CcsCoefficients;
+        private readonly List<CcsCalibrationInfoVS> calibrationInfos = new List<CcsCalibrationInfoVS>();
+        // The files whose raw data were missing when these settings were built, with their row in CalibrationInfoCollection.
+        private readonly List<(int Row, AnalysisFileBean File)> unreadCalibrations = new List<(int Row, AnalysisFileBean File)>();
 
         public MobilitySettingModel(MsdialImmsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             immsParameter = parameter;
@@ -28,7 +32,8 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.FileID2CcsCoefficients is null) {
                 parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
             }
-            CalibrationInfoCollection = InitializeCalibrationInfoCollection(files, parameter.FileID2CcsCoefficients);
+            fileID2CcsCoefficients = parameter.FileID2CcsCoefficients;
+            CalibrationInfoCollection = InitializeCalibrationInfoCollection(files);
         }
 
         public MobilitySettingModel(MsdialLcImMsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
@@ -39,7 +44,8 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.FileID2CcsCoefficients is null) {
                 parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
             }
-            CalibrationInfoCollection = InitializeCalibrationInfoCollection(files, parameter.FileID2CcsCoefficients);
+            fileID2CcsCoefficients = parameter.FileID2CcsCoefficients;
+            CalibrationInfoCollection = InitializeCalibrationInfoCollection(files);
         }
 
         public bool IsReadOnly { get; }
@@ -62,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return true;
             }
+            ReadCalibrationOfRestoredFiles();
             if (!ShowMessageIfHasError()) {
                 return false;
             }
@@ -106,23 +113,46 @@ namespace CompMs.App.Msdial.Model.Setting
             return true;
         }
 
-        private static ReadOnlyCollection<CcsCalibrationInfoVS> InitializeCalibrationInfoCollection(List<AnalysisFileBean> files, Dictionary<int, CoefficientsForCcsCalculation> fileID2CcsCoefficients) {
-            var calibrationInfoCollection = new List<CcsCalibrationInfoVS>();
-            foreach (var file in files) {
-                if (!fileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coef)) {
-                    if (!DataAccess.RawDataExists(file.AnalysisFilePath)) {
-                        // Opening a project builds these settings before it says that raw data are missing, so the file is not read,
-                        // and nothing is stored: the calibration is read once the file is back. Processing refuses to run until then.
-                        coef = new CoefficientsForCcsCalculation(new RawCalibrationInfo());
-                    }
-                    else {
-                        var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
-                        coef = fileID2CcsCoefficients[file.AnalysisFileId] = new CoefficientsForCcsCalculation(calinfo);
-                    }
+        /// <summary>
+        /// Reads and stores the calibration of each file whose raw data were missing when these settings were built and are back now,
+        /// and shows it in that file's row. The settings view calls this before it shows the rows, and committing calls it again,
+        /// so processing, which refuses to run without the raw data, finds the calibration it would have found had the file been there.
+        /// </summary>
+        public void ReadCalibrationOfRestoredFiles() {
+            for (var i = unreadCalibrations.Count - 1; i >= 0; i--) {
+                var (row, file) = unreadCalibrations[i];
+                if (FindOrReadCoefficients(file) is CoefficientsForCcsCalculation coef) {
+                    calibrationInfos[row] = new CcsCalibrationInfoVS(file, coef);
+                    unreadCalibrations.RemoveAt(i);
                 }
-                calibrationInfoCollection.Add(new CcsCalibrationInfoVS(file, coef));
             }
-            return calibrationInfoCollection.AsReadOnly();
+        }
+
+        private ReadOnlyCollection<CcsCalibrationInfoVS> InitializeCalibrationInfoCollection(List<AnalysisFileBean> files) {
+            foreach (var file in files) {
+                if (FindOrReadCoefficients(file) is CoefficientsForCcsCalculation coef) {
+                    calibrationInfos.Add(new CcsCalibrationInfoVS(file, coef));
+                }
+                else {
+                    // Opening a project builds these settings before it says that raw data are missing, so the file is not read
+                    // and nothing is stored; ReadCalibrationOfRestoredFiles reads it once the file is back.
+                    unreadCalibrations.Add((calibrationInfos.Count, file));
+                    calibrationInfos.Add(new CcsCalibrationInfoVS(file, new CoefficientsForCcsCalculation(new RawCalibrationInfo())));
+                }
+            }
+            return calibrationInfos.AsReadOnly();
+        }
+
+        // The stored coefficients of the file, or those read from its raw data, which are then stored; null while the raw data are missing.
+        private CoefficientsForCcsCalculation? FindOrReadCoefficients(AnalysisFileBean file) {
+            if (fileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coef)) {
+                return coef;
+            }
+            if (!DataAccess.RawDataExists(file.AnalysisFilePath)) {
+                return null;
+            }
+            var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();
+            return fileID2CcsCoefficients[file.AnalysisFileId] = new CoefficientsForCcsCalculation(calinfo);
         }
     }
 }
