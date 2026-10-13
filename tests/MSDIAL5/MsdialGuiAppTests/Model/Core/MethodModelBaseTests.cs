@@ -96,10 +96,13 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         public async Task AlignmentsOnlyRefusesASampleWithoutRawDataAndKeepsTheCurrentOne() {
             var files = new[] { Sample("a"), Sample("b"), };
             using var method = CreateMethod(BrowsingWithoutRawData.AlignmentsOnly, files);
+            FindRawDataAsTheDatasetDoes(files);
             await method.LoadAsync(default);
             Assert.AreSame(files[0], method.AnalysisFileModel);
             var current = method.AnalysisModelBase;
+            // Removed after the project opened: opening the sample by hand checks the disk again.
             File.Delete(files[1].AnalysisFilePath);
+            Assert.IsTrue(files[1].IsRawDataAvailable);
 
             await method.LoadAnalysisFileAsync(files[1], default);
 
@@ -108,6 +111,21 @@ namespace CompMs.App.Msdial.Model.Core.Tests
             Assert.AreSame(current, method.AnalysisModelBase);
             Assert.AreEqual(0, ((FakeAnalysisModel)current!).Saves, "The current sample is not saved again when the next one is refused.");
             Assert.AreEqual("Raw data not available", _messages.Single().Caption);
+        }
+
+        [TestMethod()]
+        public async Task AlignmentsOnlyFirstOpensWhatTheDatasetFoundWithoutCheckingTheDiskAgain() {
+            var files = new[] { Sample("a"), Sample("b"), };
+            using var method = CreateMethod(BrowsingWithoutRawData.AlignmentsOnly, files);
+            FindRawDataAsTheDatasetDoes(files);
+            // Gone between the dataset's check and the first open, which uses what the dataset found a moment before.
+            File.Delete(files[0].AnalysisFilePath);
+
+            await method.LoadAsync(default);
+
+            CollectionAssert.AreEqual(new[] { files[0] }, method.Opened);
+            Assert.IsTrue(files[0].IsRawDataAvailable);
+            Assert.AreEqual(0, _messages.Count);
         }
 
         [TestMethod()]
@@ -164,6 +182,13 @@ namespace CompMs.App.Msdial.Model.Core.Tests
                 File.WriteAllBytes(file.PeakListFilePath, new byte[0]);
             }
             return file;
+        }
+
+        // DatasetModel.LoadAsync checks every sample's raw data before the method opens one, and the result is remembered.
+        private static void FindRawDataAsTheDatasetDoes(AnalysisFileBeanModel[] files) {
+            foreach (var file in files) {
+                Assert.IsTrue(file.RefreshRawDataAvailability());
+            }
         }
 
         private FakeMethodModel CreateMethod(BrowsingWithoutRawData mode, AnalysisFileBeanModel[] files) {
