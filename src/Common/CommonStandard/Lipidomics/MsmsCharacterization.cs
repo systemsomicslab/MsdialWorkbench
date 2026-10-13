@@ -13032,15 +13032,20 @@ AdductIon adduct)
                                     var terminalC = totalCarbon - sphCarbon - acylCarbon;
                                     var terminalDB = totalDoubleBond - sphDouble - acylDB;
 
+                                    if (sphCarbon <= 0 || acylCarbon <= 0 || terminalC <= 0) continue;
+                                    if (sphDouble < 0 || acylDB < 0 || terminalDB < 0) continue;
+
                                     var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB) - MassDiffDictionary.HydrogenMass; // 
                                     var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB);
-                                    var acylFragment = esterloss - ((sphCarbon - 3) * 12 + ((sphCarbon - 3) * 2 - 2) * MassDiffDictionary.HydrogenMass);
+                                    var acylFragment = esterloss 
+                                        - ((sphCarbon - 3) * 12 + ((sphCarbon - 3) * 2 - 2 - sphDouble * 2) 
+                                        * MassDiffDictionary.HydrogenMass);
 
-                                    var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
-                                        new SpectrumPeak() { Mass = esterFa, Intensity = 50 },
-                                        new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
-                                    };
+                                    //var query = new List<SpectrumPeak> {   //20261013 comment out
+                                    //    new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
+                                    //    new SpectrumPeak() { Mass = esterFa, Intensity = 50 },
+                                    //    new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
+                                    //};
 
                                     var query1 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
