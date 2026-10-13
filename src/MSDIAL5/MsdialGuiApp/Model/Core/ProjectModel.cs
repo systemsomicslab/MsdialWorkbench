@@ -100,10 +100,29 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public static async Task<ProjectModel> LoadAsync(string projectPath, IMessageBroker broker) {
-            if (projectPath.EndsWith(".mddata")) {
-                return await LoadMddatasetAsync(projectPath, broker).ConfigureAwait(false);
-            }
+            Mouse.OverrideCursor = Cursors.Wait;
+            var message = new ShortMessageWindow()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Text = "Loading project...",
+            };
+            message.Show();
 
+            try {
+                // Both routes read the datasets off the UI thread and come back to it, through these awaits, to build the models.
+                if (projectPath.EndsWith(".mddata")) {
+                    return await LoadMddatasetAsync(projectPath, broker);
+                }
+                return await LoadMdprojectAsync(projectPath, broker);
+            }
+            finally {
+                // Also when opening is declined or fails: neither the window nor the wait cursor may outlive the attempt.
+                message.Close();
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        private static async Task<ProjectModel> LoadMdprojectAsync(string projectPath, IMessageBroker broker) {
             var projectDir = Path.GetDirectoryName(projectPath);
             // Opening only reads the project file (ZipStreamManager.OpenGet reads the archive), so a project on read-only media
             // or open in another MS-DIAL can be opened too.
@@ -111,81 +130,66 @@ namespace CompMs.App.Msdial.Model.Core
             using (var streamManager = ZipStreamManager.OpenGet(fs)) {
                 var deserializer = new MsdialIntegrateSerializer();
 
-                Mouse.OverrideCursor = Cursors.Wait;
-                var message = new ShortMessageWindow()
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Text = "Loading project...",
-                };
-                message.Show();
-
-                try {
-                    var unloadedDatasets = 0;
-                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                    // Reading the datasets is data work only, and a loaded library can be hundreds of MB: it runs off the UI thread,
-                    // which keeps pumping meanwhile (a minute without pumping is a ContextSwitchDeadlock under the debugger).
-                    // The picker and the messages below go to the dispatcher themselves, and the models are built after the await,
-                    // back on the UI thread.
-                    var projectDataStorage = await Task.Run(() => ProjectDataStorage.LoadAsync(
-                        streamManager,
-                        deserializer,
-                        path => new DirectoryTreeStreamManager(path),
-                        projectDir,
-                        async parameter =>
+                var unloadedDatasets = 0;
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                // Reading the datasets is data work only, and a loaded library can be hundreds of MB: it runs off the UI thread,
+                // which keeps pumping meanwhile (a minute without pumping is a ContextSwitchDeadlock under the debugger).
+                // The picker and the messages below go to the dispatcher themselves, and the models are built after the await,
+                // back on the UI thread.
+                var projectDataStorage = await Task.Run(() => ProjectDataStorage.LoadAsync(
+                    streamManager,
+                    deserializer,
+                    path => new DirectoryTreeStreamManager(path),
+                    projectDir,
+                    async parameter =>
+                    {
+                        string? result = null;
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            string? result = null;
-                            await Application.Current.Dispatcher.InvokeAsync(() =>
+                            var newofd = new OpenFileDialog
                             {
-                                var newofd = new OpenFileDialog
-                                {
-                                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
-                                    RestoreDirectory = true
-                                };
-                                if (newofd.ShowDialog() == true) {
-                                    result = newofd.FileName;
-                                }
-                            });
-                            return result;
-                        },
-                        (parameter, error) =>
+                                Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
+                                Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName),
+                                RestoreDirectory = true
+                            };
+                            if (newofd.ShowDialog() == true) {
+                                result = newofd.FileName;
+                            }
+                        });
+                        return result;
+                    },
+                    (parameter, error) =>
+                    {
+                        Interlocked.Increment(ref unloadedDatasets);
+                        broker.Publish(new ErrorMessageBoxRequest
                         {
-                            Interlocked.Increment(ref unloadedDatasets);
-                            broker.Publish(new ErrorMessageBoxRequest
-                            {
-                                Caption = "Dataset not loaded",
-                                Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
-                                Icon = MessageBoxImage.Error,
-                            });
-                        }));
-                    System.Diagnostics.Debug.WriteLine($"Read the datasets of {projectPath} in {stopwatch.Elapsed.TotalSeconds:F1} s.");
-                    if (projectDataStorage == null) {
-                        MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        throw new Exception($"Msdial cannot open the project: \n{projectPath}");
-                    }
-                    if (projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
-                        // A dataset that fails to load is dropped from the project, so a project opened without any of them
-                        // would be saved back empty. What is missing has been named; the project is not opened.
-                        throw new OperationCanceledException("No dataset of the project could be loaded.");
-                    }
-                    projectDataStorage.FixProjectFolder(projectDir);
-                    var model = new ProjectModel(projectDataStorage, broker);
-                    model.Datasets.Clear();
-                    foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
-                        model.Datasets.Add(dataset);
-                    }
-                    model.CurrentDataset = model.Datasets.LastOrDefault();
-                    if (!(model.CurrentDataset is null)) {
-                        await model.CurrentDataset.LoadAsync();
-                    }
+                            Caption = "Dataset not loaded",
+                            Content = MessageHelper.DatasetFileNotFound(parameter.ProjectFileName, (error as FileNotFoundException)?.FileName ?? error.Message),
+                            Icon = MessageBoxImage.Error,
+                        });
+                    }));
+                System.Diagnostics.Debug.WriteLine($"Read the datasets of {projectPath} in {stopwatch.Elapsed.TotalSeconds:F1} s.");
+                if (projectDataStorage == null) {
+                    MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    throw new Exception($"Msdial cannot open the project: \n{projectPath}");
+                }
+                if (projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
+                    // A dataset that fails to load is dropped from the project, so a project opened without any of them
+                    // would be saved back empty. What is missing has been named; the project is not opened.
+                    throw new OperationCanceledException("No dataset of the project could be loaded.");
+                }
+                projectDataStorage.FixProjectFolder(projectDir);
+                var model = new ProjectModel(projectDataStorage, broker);
+                model.Datasets.Clear();
+                foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
+                    model.Datasets.Add(dataset);
+                }
+                model.CurrentDataset = model.Datasets.LastOrDefault();
+                if (!(model.CurrentDataset is null)) {
+                    await model.CurrentDataset.LoadAsync();
+                }
 
-                    return model;
-                }
-                finally {
-                    // Also when opening is declined or fails: neither the window nor the wait cursor may outlive the attempt.
-                    message.Close();
-                    Mouse.OverrideCursor = null;
-                }
+                return model;
             }
         }
 
@@ -196,7 +200,8 @@ namespace CompMs.App.Msdial.Model.Core
             var deserializer = new MsdialIntegrateSerializer();
 
             using (IStreamManager manager = new DirectoryTreeStreamManager(folder)) {
-                var data = await deserializer.LoadAsync(manager, title, folder, string.Empty).ConfigureAwait(false);
+                // As for a project file: the dataset and its loaded library are read off the UI thread, and the await comes back to it.
+                var data = await Task.Run(() => deserializer.LoadAsync(manager, title, folder, string.Empty));
                 manager.Complete();
                 storage.AddStorage(data);
             }
