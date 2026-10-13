@@ -1,16 +1,15 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.MsdialLcMsApi.Export;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -66,15 +65,10 @@ namespace CompMs.App.Msdial.Model.Export.Tests
 
         [TestMethod()]
         public void ThePeakTableIsWrittenFromTheProjectWithItsIsotopeColumnAsNull() {
-            var parameter = new MsdialLcmsParameter();
-            var spectraType = new SpectraType(
-                ExportspectraType.deconvoluted,
-                new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(new DataBaseMapper(), parameter, ExportspectraType.deconvoluted)),
-                new RawDataOptionalProviderFactory(new FailingFactory()));
             var broker = new MessageBroker();
             var messages = new List<object>();
             broker.Subscribe<ShortMessageRequest>(messages.Add);
-            var model = new MsdialAnalysisTableExportModel(new[] { spectraType, }, new[] { new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")), }, broker);
+            var model = CreateExports(broker).OfType<MsdialAnalysisTableExportModel>().Single();
 
             model.Export(_output, _file);
 
@@ -89,42 +83,38 @@ namespace CompMs.App.Msdial.Model.Export.Tests
 
         [TestMethod()]
         public void CentroidSpectraStopAtOnceAndLeaveNoFile() {
-            var parameter = new MsdialLcmsParameter();
-            var centroid = new RawDataRequiredProviderFactory(new FailingFactory());
-            IMsdialAnalysisExport model = new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>>
-            {
-                [ExportspectraType.deconvoluted] = new AnalysisMspExporter(new DataBaseMapper(), parameter),
-                [ExportspectraType.centroid] = new AnalysisMspExporter(new DataBaseMapper(), parameter, file => new CentroidMsScanPropertyLoader(centroid.Create(file), parameter.MS2DataType)),
-            })
-            {
-                FilePrefix = "Msp",
-                FileSuffix = "msp",
-                SelectedType = ExportspectraType.centroid,
-                ShouldExport = true,
-            };
+            var models = CreateExports(new MessageBroker()).OfType<SpectraTypeSelectableMsdialAnalysisExportModel>().ToArray();
+            CollectionAssert.AreEquivalent(new[] { "msp", "mgf", "sdf", }, models.Select(model => model.FileSuffix).ToArray());
 
-            var error = Assert.ThrowsException<RawDataNotAvailableException>(() => model.Export(_output, _file));
+            foreach (var model in models) {
+                model.SelectedType = ExportspectraType.centroid;
+                model.ShouldExport = true;
 
-            Assert.AreEqual(_file.AnalysisFilePath, error.FileName);
+                var error = Assert.ThrowsException<RawDataNotAvailableException>(() => ((IMsdialAnalysisExport)model).Export(_output, _file), model.FileSuffix);
+
+                Assert.AreEqual(_file.AnalysisFilePath, error.FileName, model.FileSuffix);
+            }
             Assert.AreEqual(0, Directory.GetFiles(_output).Length);
         }
 
         [TestMethod()]
         public void DeconvolutedSpectraAreWrittenFromTheProject() {
-            var parameter = new MsdialLcmsParameter();
-            IMsdialAnalysisExport model = new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>>
-            {
-                [ExportspectraType.deconvoluted] = new AnalysisMspExporter(new DataBaseMapper(), parameter),
-            })
-            {
-                FilePrefix = "Msp",
-                FileSuffix = "msp",
-                ShouldExport = true,
-            };
+            foreach (var model in CreateExports(new MessageBroker()).OfType<SpectraTypeSelectableMsdialAnalysisExportModel>()) {
+                model.SelectedType = ExportspectraType.deconvoluted;
+                model.ShouldExport = true;
 
-            model.Export(_output, _file);
+                ((IMsdialAnalysisExport)model).Export(_output, _file);
+            }
 
             StringAssert.Contains(File.ReadAllText(Path.Combine(_output, "Msp_sample.msp")), "100.05");
+            StringAssert.Contains(File.ReadAllText(Path.Combine(_output, "Mgf_sample.mgf")), "100.05");
+            Assert.IsTrue(File.Exists(Path.Combine(_output, "Sdf_sample.sdf")));
+        }
+
+        // The exports Export > Peak list result offers for LC-MS, wired as the method model wires them, over raw data that are missing.
+        private static IMsdialAnalysisExport[] CreateExports(IMessageBroker broker) {
+            var parameter = new MsdialLcmsParameter();
+            return LcmsMethodModel.CreateAnalysisExports(new FailingFactory(), new DataBaseMapper(), parameter, new StudyContextModel(parameter.ProjectParam), broker);
         }
 
         sealed class FailingFactory : IDataProviderFactory<AnalysisFileBean>

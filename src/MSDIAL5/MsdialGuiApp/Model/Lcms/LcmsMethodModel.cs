@@ -383,25 +383,33 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
+            var models = CreateAnalysisExports(_providerFactory, _storage.DataBaseMapper, _storage.Parameter, _studyContext, _broker);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
+        }
+
+        /// <summary>
+        /// The per-sample exports of Export &gt; Peak list result, over the raw data provider factory that processing uses.
+        /// </summary>
+        internal static IMsdialAnalysisExport[] CreateAnalysisExports(IDataProviderFactory<AnalysisFileBean> providerFactory, DataBaseMapper dataBaseMapper, MsdialLcmsParameter parameter, StudyContextModel studyContext, IMessageBroker broker) {
             // The peak table reads the raw data only for its MS1 isotope column, which it writes as null without them.
             // Centroid spectra are read from the raw data, so a sample without them stops the export at once and says why.
-            var tableProviderFactory = new RawDataOptionalProviderFactory(_providerFactory);
-            var centroidProviderFactory = new RawDataRequiredProviderFactory(_providerFactory);
+            var tableProviderFactory = new RawDataOptionalProviderFactory(providerFactory);
+            var centroidProviderFactory = new RawDataRequiredProviderFactory(providerFactory);
             var spectraTypes = new List<SpectraType>
             {
                 //new SpectraType(
                 //    ExportspectraType.deconvoluted,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.deconvoluted)),
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.deconvoluted)),
                     tableProviderFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.centroid)),
                 //new SpectraType(
                 //    ExportspectraType.profile,
-                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+                //    new LcmsAnalysisMetadataAccessor(dataBaseMapper, parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new[]
             {
@@ -410,10 +418,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(dataBaseMapper, parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(dataBaseMapper, parameter, file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Msp",
@@ -422,7 +430,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList)),
-                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType)),
                 })
                 {
                     FilePrefix = "Mgf",
@@ -430,17 +438,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                     Label = "MASCOT format (*.mgf)"
                 },
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),_storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), _storage.Parameter.MS2DataType),_storage.Parameter),
+                    [ExportspectraType.deconvoluted] = new AnalysisSdfExporter(file => new MSDecLoader(file.DeconvolutionFilePath, file.DeconvolutionFilePathList),parameter),
+                    [ExportspectraType.centroid] = new AnalysisSdfExporter(file => new CentroidMsScanPropertyLoader(centroidProviderFactory.Create(file), parameter.MS2DataType),parameter),
                 })
                 {
                     FilePrefix = "Sdf",
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
+                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
+            return models;
         }
 
         public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
