@@ -140,11 +140,18 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, _projectBaseParameter, StudyContext, ProcessOption.All, _broker);
-            var method = factory.BuildMethod();
+            Method = await OpenMethodAsync(factory.BuildMethod(), _analysisFileBeanModelCollection, _broker).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Opens a method just built for the dataset, after asking once whether to go on when the raw data of some samples are missing.
+        /// A method whose opening is declined (<see cref="OperationCanceledException"/>) or fails is disposed.
+        /// </summary>
+        internal static async Task<IMethodModel> OpenMethodAsync(IMethodModel method, AnalysisFileBeanModelCollection files, IMessageBroker broker) {
             try {
                 // Asked once, before the first sample opens; processing reads every sample, so excluded ones count too.
-                var missing = _analysisFileBeanModelCollection.RefreshRawDataAvailability();
-                if (missing.Count > 0 && !RawDataGuard.ConfirmOpen(_broker, method.BrowsingWithoutRawData, missing, _analysisFileBeanModelCollection.Count)) {
+                var missing = files.RefreshRawDataAvailability();
+                if (missing.Count > 0 && !RawDataGuard.ConfirmOpen(broker, method.BrowsingWithoutRawData, missing, files.Count)) {
                     throw new OperationCanceledException("Opening was declined because raw data files are missing.");
                 }
                 await method.LoadAsync(default).ConfigureAwait(false);
@@ -153,7 +160,7 @@ namespace CompMs.App.Msdial.Model.Core
                 method.Dispose();
                 throw;
             }
-            Method = method;
+            return method;
         }
 
         public static async Task<DatasetModel> LoadAsync(string datasetFile, IMessageBroker broker) {
