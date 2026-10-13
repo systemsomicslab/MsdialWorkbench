@@ -160,13 +160,20 @@ namespace CompMs.App.Msdial.Model.Core
             });
         }
 
-        public async Task SaveAsync() {
+        public Task SaveAsync() {
             if (CurrentProject is null) {
-                return;
+                return Task.CompletedTask;
             }
+            return SaveProjectAsync(CurrentProject);
+        }
+
+        /// <summary>
+        /// Saves the given project, which processing passes so that the project it processed is the one saved.
+        /// </summary>
+        public async Task SaveProjectAsync(IProjectModel project) {
             using (nowSaving.ProcessStart()) {
-                await CurrentProject.SaveAsync().ConfigureAwait(false);
-                var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                await project.SaveAsync().ConfigureAwait(false);
+                var currentCrumb = new ProjectCrumb(project.Storage.ProjectParameter);
                 await Application.Current.Dispatcher.InvokeAsync(() => {
                     DeleteSimilarProjectHistories(currentCrumb);
                     InsertTopProjectHistory(currentCrumb);
