@@ -207,7 +207,8 @@ namespace CompMs.App.Msdial.Model.Core
                     if (!File.Exists(projectPath)) {
                         return;
                     }
-                    var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker).ConfigureAwait(false);
+                    // No ConfigureAwait(false): the project is set, and its view models built, on the UI thread.
+                    var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker);
                     if (loadedProject is null) {
                         _broker.Publish(new ShortMessageRequest("Project loading has failed."));
                         return;
@@ -241,7 +242,7 @@ namespace CompMs.App.Msdial.Model.Core
                     if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
                         return;
                     }
-                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(false);
+                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker);
                     if (loadedProject is null) {
                         _broker.Publish(new ShortMessageRequest("Project loading has failed."));
                         return;
