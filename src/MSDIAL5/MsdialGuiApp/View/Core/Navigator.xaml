@@ -48,9 +48,11 @@
                VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                Height="28" Grid.Row="0" />
 
+        <!-- The items are drawn by a template, so TextSearch.TextPath, not DisplayMemberPath, keeps typing a name selecting that sample. -->
         <ListBox Name="ListBox_FileName"
                  ItemsSource="{Binding AnalysisFilesView}"
                  SelectedItem="{Binding SelectedAnalysisFile.Value, Mode=TwoWay}"
+                 TextSearch.TextPath="FileName"
                  IsSynchronizedWithCurrentItem="True"
                  BorderThickness="0"
                  Margin="0,28,0,2"
