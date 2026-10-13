@@ -6160,7 +6160,7 @@ namespace CompMs.Common.Lipidomics
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            //if (foundCount == 1)
+                            //if (foundCount == 1) //because there were many misannotation
                             //{ // 
                             //    var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("MGDG", LbmClass.EtherMGDG, sn1Carbon, sn1Double,
                             //        sn2Carbon, sn2Double, averageIntensity, "e");
@@ -12874,8 +12874,8 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxSphCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxSphDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxExtAcylCarbon); // acyl+ext
+                            var doubleLimit = Math.Min(remainDouble, maxExtAcylDoubleBond);
 
                             for (int extCarbon = minExtAcylCarbon; extCarbon <= carbonLimit; extCarbon++)
                             {
@@ -12883,7 +12883,7 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
-
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
                                     var extAcylloss = diagnosticMz1 - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass;  // 
                                     var extFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
 
@@ -12950,8 +12950,11 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
 
-                                    var extAcylloss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
+                                    var extAcylloss = theoreticalMz 
+                                        - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) 
+                                        - MassDiffDictionary.HydrogenMass + Electron;  // 
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
@@ -12962,7 +12965,7 @@ AdductIon adduct)
                                     var averageIntensity = 0.0;
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                                    if (foundCount == 1)
+                                    if (foundCount == 1) // exsample return SM 32:1;O2(FA 16:0)
                                     { // 
                                         var molecule = LipidMsmsCharacterizationUtility.getAsmMoleculeObjAsLevel2_0("SM", LbmClass.ASM, "d", sphCarbon + acylCarbon,
                                                sphDouble + acylDouble, extCarbon, extDouble, averageIntensity);
