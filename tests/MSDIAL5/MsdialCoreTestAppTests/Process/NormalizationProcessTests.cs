@@ -102,9 +102,15 @@ public sealed class NormalizationProcessTests
         Assert.AreEqual(0, run.ExitCode, run.Error);
         var cer = run.Normalized.Row(Cer);
         Assert.IsTrue(cer.Samples.All(value => value.Length == 0));
+        foreach (var (stat, fileClass) in new[] { ("Average", "SPF"), ("Stdev", "SPF"), ("Average", "Blank"), ("Stdev", "Blank") }) {
+            Assert.AreEqual(string.Empty, cer.Stat(stat, fileClass), $"{stat} {fileClass} of the Any-others-divided values");
+        }
         Assert.AreEqual(
             "NOT QUANTIFIED: the Cer-NS standard Cer 18:1;O2/15:0(d7) did not resolve in this alignment",
             cer.Comment);
+        StringAssert.Contains(run.Output,
+            "WARNING: 1 internal standard(s) did not resolve: Cer 18:1;O2/15:0(d7) (for Cer-NS). "
+            + "Rows in the classes only they would quantify carry no concentration and say so: Cer-NS.");
         Assert.AreEqual(66.4 * 50 / 100, run.Normalized.Row(Pc).Value("s1"), 1e-9);
         Assert.AreEqual(100d * 30 / 1000, run.Normalized.Row(Cardiolipin).Value("s1"), 1e-9,
             "a class with no standard of its own still falls through to Any others");
@@ -138,6 +144,15 @@ public sealed class NormalizationProcessTests
         Assert.IsFalse(run.Normalized.Text.Contains("Normalized unit: Intensity"));
         Assert.AreEqual(66.4 * 50 / 100, run.Normalized.Row(Pc).Value("s1"), 1e-9);
         Assert.AreEqual(20d * 10 / 20, run.Normalized.Row(Cer).Value("s1"), 1e-9);
+        StringAssert.Contains(run.Output,
+            "WARNING: 1 internal standard(s) did not resolve: LPC 18:1(d7) (for Any others). Rows in the classes only "
+            + "they would quantify carry no concentration and say so: any class without a standard of its own.");
+
+        var refused = Run(new Fixture(), Options(peakIdsOnly: true), Header, PcRow, CerRow, "LPC 18:1(d7)\tAny others\t100\t");
+        Assert.AreEqual(2, refused.ExitCode);
+        StringAssert.Contains(refused.Error,
+            "1 internal standard(s) were not found in the alignment: LPC 18:1(d7) (for Any others). Rows in the classes "
+            + "only they would quantify would be left without a concentration: any class without a standard of its own.");
     }
 
     [TestMethod]
@@ -151,6 +166,7 @@ public sealed class NormalizationProcessTests
         Assert.AreEqual(100d * 60 / 500, cardiolipin.Value("s2"), 1e-9);
         Assert.AreEqual(string.Empty, cardiolipin.Cell("blank"), "90 / 1 is not a concentration");
         Assert.AreEqual(string.Empty, cardiolipin.Stat("Average", "Blank"));
+        Assert.AreEqual(string.Empty, cardiolipin.Stat("Stdev", "Blank"));
         Assert.AreEqual((3d + 12d) / 2, double.Parse(cardiolipin.Stat("Average", "SPF"), CultureInfo.CurrentCulture), 1e-9);
         StringAssert.Contains(cardiolipin.Comment,
             "NOT QUANTIFIED in 1 file(s) (blank): the internal standard LPC 18:1(d7) has no peak height there");
@@ -175,6 +191,21 @@ public sealed class NormalizationProcessTests
 
         var guarded = Run(fixture, Options(peakIdsOnly: true), lines);
         Assert.AreEqual(2, guarded.ExitCode, "an unannotated peak is still a mismatch until the caller says so");
+        StringAssert.Contains(guarded.Error,
+            "1 standard(s) are assigned by AssignName to a peak that carries another name or none: "
+            + "PE 15:0_18:1(d7) (alignment ID 7, unannotated).");
+        StringAssert.Contains(guarded.Error, "AssignName renames such a peak only with --allow-mismatched-peak-ids");
+        Assert.IsFalse(guarded.Error.Contains("Correct the PeakID"), guarded.Error);
+        Assert.IsFalse(guarded.Error.Contains("different compound"), guarded.Error);
+
+        // The same peak only taken, not assigned, is the stale-table case the guard is for.
+        var taken = Run(new Fixture(), Options(peakIdsOnly: true), Header, PcRow, CerRow, LpcRow, "PE 15:0_18:1(d7)\tPE\t50\t7");
+        Assert.AreEqual(2, taken.ExitCode);
+        StringAssert.Contains(taken.Error,
+            "1 standard(s) name an alignment ID that holds a different compound or none: "
+            + "PE 15:0_18:1(d7) (alignment ID 7, unannotated). ");
+        StringAssert.Contains(taken.Error, "Correct the PeakID");
+        Assert.IsFalse(taken.Error.Contains("AssignName"), taken.Error);
 
         var run = Run(new Fixture(), Options(peakIdsOnly: true, allowMismatched: true), lines);
         Assert.AreEqual(0, run.ExitCode, run.Error);
@@ -192,6 +223,99 @@ public sealed class NormalizationProcessTests
         }
         Assert.AreEqual(50d, run.Normalized.Row(Unnamed).Value("s1"));
         Assert.AreEqual("300", run.Raw.Row(Unnamed).Cell("s1"));
+    }
+
+    [TestMethod]
+    public void AnAssignedPeakAnnotatedAsAnotherCompoundKeepsNoneOfThatAnnotationsReferenceOrScores() {
+        // The PC 34:1 peak is, by the caller's search, the PE standard. Renamed but otherwise left
+        // alone, its row said PE by name and PC by Ontology, InChIKey and scores.
+        var fixture = new Fixture();
+        var match = fixture.Spots[Pc].MatchResults.Representative;
+        match.TotalScore = 0.9f;
+        match.AcurateMassSimilarity = 0.95f;
+        match.IsPrecursorMzMatch = true;
+        match.IsSpectrumMatch = true;
+        var reference = fixture.Refer.Refer(match)!;
+        reference.InChIKey = "PCPCPCPCPCPCPC-UHFFFAOYSA-N";
+        reference.SMILES = "CCCCCC";
+
+        var before = Run(fixture, Options(peakIdsOnly: true), Header, PcRow, CerRow, LpcRow);
+        Assert.AreEqual(0, before.ExitCode, before.Error);
+        var annotated = before.Raw.Row(Pc);
+        Assert.AreEqual("PC", annotated.Cell("Ontology"));
+        Assert.AreEqual("PCPCPCPCPCPCPC-UHFFFAOYSA-N", annotated.Cell("INCHIKEY"));
+        Assert.AreEqual("0.900", annotated.Cell("Total score"));
+        Assert.AreNotEqual(before.Raw.Row(Unknown).Cell("Annotation tag (VS1.0)"), annotated.Cell("Annotation tag (VS1.0)"));
+
+        var run = Run(fixture, Options(peakIdsOnly: true, allowMismatched: true),
+            Header + "\tAssignName", PcRow + "\t", CerRow + "\t", LpcRow + "\t", "PE 15:0_18:1(d7)\tPE\t50\t1\ttrue");
+        Assert.AreEqual(0, run.ExitCode, run.Error);
+        StringAssert.Contains(run.Output, "ASSIGNED PE 15:0_18:1(d7) to alignment ID 1 (annotated 'PC 34:1')");
+        var columns = new[] {
+            "Reference RT", "Reference m/z", "Formula", "Ontology", "INCHIKEY", "SMILES", "Annotation tag (VS1.0)",
+            "RT matched", "m/z matched", "MS/MS matched", "RT similarity", "m/z similarity", "Simple dot product",
+            "Weighted dot product", "Reverse dot product", "Matched peaks count", "Matched peaks percentage",
+            "Total score", "Measured terms", "Evidence source", "Candidates found", "Candidates above threshold",
+            "Candidates reference matched",
+        };
+        foreach (var matrix in new[] { run.Raw, run.Normalized }) {
+            var assigned = matrix.Row(Pc);
+            var unannotated = matrix.Row(Unknown);
+            Assert.AreEqual("PE 15:0_18:1(d7)", assigned.Name);
+            foreach (var column in columns) {
+                Assert.AreEqual(unannotated.Cell(column), assigned.Cell(column), column);
+            }
+            Assert.AreEqual(
+                "Normalized unit: pmol_per_microL_plasma; Annotation method: internal standard assignment",
+                assigned.Comment);
+            Assert.AreEqual(annotated.Cell("Average Mz"), assigned.Cell("Average Mz"), "what was measured stays");
+        }
+        Assert.AreEqual(50d, run.Normalized.Row(Pc).Value("s1"));
+    }
+
+    [TestMethod]
+    public void UnderTheDefaultUnitAStandardDividedByAnotherStandardIsCheckedLikeAnyOtherRow() {
+        // The default unit divides every peak by the standard of its own class, the standards'
+        // peaks included. An assigned peak MS-DIAL left unnamed is "Unknown" to it, so it is
+        // divided by the Any others standard: 500 x 300 / 1 in the blank, where the LPC has no
+        // height, and its raw 300 when that standard did not resolve.
+        var unit = IonAbundanceUnit.NormalizedByInternalStandardPeakHeight;
+        var lines = new[] {
+            Header + "\tAssignName",
+            PcRow + "\t",
+            CerRow + "\t",
+            LpcRow + "\t",
+            "PE 15:0_18:1(d7)\tPE\t50\t7\ttrue",
+        };
+        var run = Run(new Fixture(lpcHeights: new[] { 1000d, 500d, 0d }),
+            Options(peakIdsOnly: true, allowMismatched: true, unit: unit), lines);
+
+        Assert.AreEqual(0, run.ExitCode, run.Error);
+        var assigned = run.Normalized.Row(Unnamed);
+        Assert.AreEqual("PE 15:0_18:1(d7)", assigned.Name);
+        Assert.AreEqual(500d * 300 / 1000, assigned.Value("s1"), 1e-9);
+        Assert.AreEqual(string.Empty, assigned.Cell("blank"), "500 x 300 / 1 is not a normalized height");
+        StringAssert.Contains(assigned.Comment,
+            "NOT QUANTIFIED in 1 file(s) (blank): the internal standard LPC 18:1(d7) has no peak height there");
+        StringAssert.Contains(assigned.Comment, "Annotation method: internal standard assignment");
+        var lpc = run.Normalized.Row(LpcStandard);
+        Assert.AreEqual(500d, lpc.Value("s1"), 1e-9, "a standard divided by itself is left as the normalizer wrote it");
+        Assert.AreEqual(0d, lpc.Value("blank"));
+        Assert.IsFalse(lpc.Comment.Contains("NOT QUANTIFIED"), lpc.Comment);
+        Assert.AreEqual((100d + 200d + 400d) / 3, run.Normalized.Row(PcStandard).Value("blank"), 1e-9);
+
+        var unresolved = Run(new Fixture(), Options(peakIdsOnly: true, allowMismatched: true, allowUnresolved: true, unit: unit),
+            Header + "\tAssignName",
+            PcRow + "\t",
+            CerRow + "\t",
+            "LPC 18:1(d7)\tAny others\t100\t\t",
+            "PE 15:0_18:1(d7)\tPE\t50\t7\ttrue");
+        Assert.AreEqual(0, unresolved.ExitCode, unresolved.Error);
+        var raw = unresolved.Normalized.Row(Unnamed);
+        Assert.IsTrue(raw.Samples.All(value => value.Length == 0), string.Join(",", raw.Samples));
+        StringAssert.StartsWith(raw.Comment,
+            "NOT QUANTIFIED: no standard of its own class, and the Any others standard LPC 18:1(d7) did not resolve");
+        Assert.IsFalse(unresolved.Normalized.Text.Contains("Normalized unit: Intensity"));
     }
 
     [TestMethod]
@@ -223,15 +347,29 @@ public sealed class NormalizationProcessTests
             AnalysisFile(1, "excluded", "SPF", AnalysisFileType.Sample, dilution: 100d, included: false),
             AnalysisFile(2, "s2", "SPF", AnalysisFileType.Sample, dilution: 4d),
         };
-        var fixture = new Fixture(files: files);
+        // The LPC has no height in the excluded file, a failed injection left out of the run.
+        var fixture = new Fixture(lpcHeights: new[] { 1000d, 0d, 500d }, files: files);
         var run = Run(fixture, Options(peakIdsOnly: true, dilution: true), Header, PcRow, CerRow, LpcRow);
 
         Assert.AreEqual(0, run.ExitCode, run.Error);
-        Assert.AreEqual(66.4 * 50 / 100 * 2, run.Normalized.Row(Pc).Value("s1"), 1e-9);
-        Assert.AreEqual(66.4 * 10 / 400 * 4, run.Normalized.Row(Pc).Value("s2"), 1e-9,
+        var pc = run.Normalized.Row(Pc);
+        Assert.AreEqual(66.4 * 50 / 100 * 2, pc.Value("s1"), 1e-9);
+        Assert.AreEqual(66.4 * 10 / 400 * 4, pc.Value("s2"), 1e-9,
             "paired by position, the third file's values took the second included file's factor");
         Assert.AreEqual(66.4 * 4, run.Normalized.Row(PcStandard).Value("s2"), 1e-9);
         StringAssert.Contains(run.Output, "Dilution factors (multiplied): s1 2, s2 4");
+
+        // The class statistics are those of the files the matrix shows: the excluded file's value
+        // was neither diluted nor shown, and with no standard there it was 100 x 60 / 1.
+        Assert.AreEqual((66.4 * 50 / 100 * 2 + 66.4 * 10 / 400 * 4) / 2, Number(pc.Stat("Average", "SPF")), 1e-9);
+        var cardiolipin = run.Normalized.Row(Cardiolipin);
+        Assert.AreEqual(100d * 30 / 1000 * 2, cardiolipin.Value("s1"), 1e-9);
+        Assert.AreEqual(100d * 90 / 500 * 4, cardiolipin.Value("s2"), 1e-9);
+        Assert.AreEqual((6d + 72d) / 2, Number(cardiolipin.Stat("Average", "SPF")), 1e-9);
+        Assert.AreEqual(Math.Sqrt((33d * 33d) * 2), Number(cardiolipin.Stat("Stdev", "SPF")), 1e-9);
+        Assert.IsFalse(cardiolipin.Comment.Contains("NOT QUANTIFIED"), cardiolipin.Comment);
+        Assert.IsFalse(run.Output.Contains("has no peak height"), run.Output);
+        Assert.AreEqual((50d + 10d) / 2, Number(run.Raw.Row(Pc).Stat("Average", "SPF")), 1e-9);
     }
 
     [TestMethod]
@@ -294,6 +432,11 @@ public sealed class NormalizationProcessTests
         StringAssert.Contains(help, "Multiply each file's normalized values by its dilution factor");
         StringAssert.Contains(help, "AssignName");
         Assert.IsFalse(help.Contains("Divide"));
+        // AssignName renames a peak only with the mismatch option, and both say so.
+        var flat = string.Join(" ", help.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+        StringAssert.Contains(flat, "a peak not already carrying that name is renamed only with --allow-mismatched-peak-ids");
+        StringAssert.Contains(flat, "needed for AssignName to rename a peak");
+        StringAssert.Contains(flat, "leaving the classes no other standard quantifies without a concentration");
     }
 
     [TestMethod]
@@ -352,6 +495,28 @@ public sealed class NormalizationProcessTests
         Assert.AreEqual(100d * 70 / 1000, lipidA.Value("s1"), 1e-9,
             "its standard was never going to be used, so its absence changes nothing");
         Assert.IsFalse(lipidA.Comment.Contains("NOT QUANTIFIED"), lipidA.Comment);
+        StringAssert.Contains(unresolved.Output,
+            "WARNING: 1 internal standard(s) did not resolve and are not needed, so no row is emptied for them: "
+            + "Lipid A std (for LipidA, under which the normalizer looks no peak up).");
+        StringAssert.Contains(unresolved.Output, "Their peaks go to the Any others standard LPC 18:1(d7), not to the one named for them.");
+        Assert.IsFalse(unresolved.Output.Contains("carry no concentration"), unresolved.Output);
+    }
+
+    [TestMethod]
+    public void AClassWithNoMsdialNameSaysWhereItsPeaksGoWhenThereIsNoAnyOthersStandardToTakeThem() {
+        var none = Run(new Fixture(), Options(peakIdsOnly: true),
+            Header, PcRow, CerRow, "PC 15:0_18:1(d7)\tLipidA\t66.4\t0");
+        Assert.AreEqual(0, none.ExitCode, none.Error);
+        StringAssert.Contains(none.Output,
+            "With no Any others standard in the table, their peaks are exported as raw intensities.");
+        StringAssert.Contains(none.Normalized.Row(LipidA).Comment, "Normalized unit: Intensity");
+
+        var unresolved = Run(new Fixture(), Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, CerRow, "LPC 18:1(d7)\tAny others\t100\t", "PC 15:0_18:1(d7)\tLipidA\t66.4\t0");
+        Assert.AreEqual(0, unresolved.ExitCode, unresolved.Error);
+        StringAssert.Contains(unresolved.Output,
+            "Their peaks would go to the Any others standard LPC 18:1(d7), which did not resolve, so they carry no concentration.");
+        Assert.IsTrue(unresolved.Normalized.Row(LipidA).Samples.All(value => value.Length == 0));
     }
 
     [TestMethod]
@@ -413,6 +578,10 @@ public sealed class NormalizationProcessTests
         StringAssert.Contains(cer.Output, "UNRESOLVED Missing Cer std");
         Assert.AreEqual(20d * 10 / 20, cer.Normalized.Row(Cer).Value("s1"), 1e-9);
         Assert.IsFalse(cer.Normalized.Row(Cer).Comment.Contains("NOT QUANTIFIED"));
+        StringAssert.Contains(cer.Output,
+            "WARNING: 1 internal standard(s) did not resolve and are not needed, so no row is emptied for them: "
+            + "Missing Cer std (for Cer_NS, which Cer 18:1;O2/15:0(d7) quantifies).");
+        Assert.IsFalse(cer.Output.Contains("carry no concentration"), cer.Output);
 
         var anyOthers = Run(new Fixture(), Options(peakIdsOnly: true, allowUnresolved: true),
             Header, PcRow, CerRow, "Missing LPC std\tAny others\t100\t", LpcRow);
@@ -420,6 +589,15 @@ public sealed class NormalizationProcessTests
         Assert.AreEqual(0, anyOthers.ExitCode, anyOthers.Error);
         Assert.AreEqual(100d * 30 / 1000, anyOthers.Normalized.Row(Cardiolipin).Value("s1"), 1e-9);
         Assert.IsFalse(anyOthers.Normalized.Text.Contains("NOT QUANTIFIED"));
+        StringAssert.Contains(anyOthers.Output,
+            "Missing LPC std (for Any others, which LPC 18:1(d7) quantifies).");
+        Assert.IsFalse(anyOthers.Output.Contains("carry no concentration"), anyOthers.Output);
+
+        // Nothing is lost, so nothing needs the caller's leave.
+        var unasked = Run(new Fixture(), Options(peakIdsOnly: true),
+            Header, PcRow, "Missing Cer std\tCer_NS\t20\t", CerRow, "Missing LPC std\tAny others\t100\t", LpcRow);
+        Assert.AreEqual(0, unasked.ExitCode, unasked.Error);
+        StringAssert.Contains(unasked.Output, "WARNING: 2 internal standard(s) did not resolve and are not needed");
     }
 
     [TestMethod]
@@ -469,6 +647,8 @@ public sealed class NormalizationProcessTests
             ApplyDilutionFactor = dilution,
         };
     }
+
+    private static double Number(string cell) => double.Parse(cell, CultureInfo.CurrentCulture);
 
     private List<NormalizationProcess.StandardRecord> Records(params string[] lines) {
         return NormalizationProcess.ReadStandards(Table(lines));
