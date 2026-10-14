@@ -520,7 +520,7 @@ public static class MainProcess
         var input = new Option<FileInfo>("--input", "-i") { Required = true };
         input.Description = "MS-DIAL project file holding the alignment to normalize";
         var standards = new Option<FileInfo>("--standards", "-s") { Required = true };
-        standards.Description = "Table of internal standards: StandardName, TargetClass, Concentration, optional PeakID, DilutionRate, MolecularWeight";
+        standards.Description = "Table of internal standards: StandardName, TargetClass, Concentration, optional PeakID, AssignName (true exports the peak at PeakID under StandardName, as an internal standard assignment, with none of the annotation it had; a peak not already carrying that name is renamed only with --allow-mismatched-peak-ids), DilutionRate, MolecularWeight";
         var output = new Option<DirectoryInfo>("--output", "-o") { Required = true };
         output.Description = "Directory to write the raw and normalized alignment matrices into";
         var unit = new Option<IonAbundanceUnit>("--unit", "-u") {
@@ -530,11 +530,13 @@ public static class MainProcess
         var alignment = new Option<int>("--alignment") { DefaultValueFactory = _ => 0 };
         alignment.Description = "Index of the alignment result within the project";
         var dilution = new Option<bool>("--apply-dilution-factor", "-d");
-        dilution.Description = "Divide by each file's dilution factor after normalizing";
+        dilution.Description = "Multiply each file's normalized values by its dilution factor after normalizing";
         var allowUnresolved = new Option<bool>("--allow-unresolved-standards");
-        allowUnresolved.Description = "Continue when a standard is not found, leaving its classes without a concentration";
+        allowUnresolved.Description = "Continue when a standard is not found, leaving the classes no other standard quantifies without a concentration";
         var allowMismatched = new Option<bool>("--allow-mismatched-peak-ids");
-        allowMismatched.Description = "Continue when a standard's alignment ID holds a different compound";
+        allowMismatched.Description = "Continue when a standard's alignment ID holds a different compound or none; needed for AssignName to rename a peak";
+        var peakIdsOnly = new Option<bool>("--peak-ids-only");
+        peakIdsOnly.Description = "Take each standard only from its PeakID: one without a PeakID, or with one not in the alignment, is unresolved and never looked up by name";
         cmd.Options.Add(input);
         cmd.Options.Add(standards);
         cmd.Options.Add(output);
@@ -543,6 +545,7 @@ public static class MainProcess
         cmd.Options.Add(dilution);
         cmd.Options.Add(allowUnresolved);
         cmd.Options.Add(allowMismatched);
+        cmd.Options.Add(peakIdsOnly);
         cmd.SetAction(parseResult => new NormalizationProcess().Run(
             parseResult.GetRequiredValue(input),
             parseResult.GetRequiredValue(standards),
@@ -551,7 +554,8 @@ public static class MainProcess
             parseResult.GetValue(alignment),
             parseResult.GetValue(dilution),
             parseResult.GetValue(allowUnresolved),
-            parseResult.GetValue(allowMismatched)));
+            parseResult.GetValue(allowMismatched),
+            parseResult.GetValue(peakIdsOnly)));
         root.Subcommands.Add(cmd);
     }
 
