@@ -132,5 +132,43 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             CollectionAssert.AreEquivalent(expects, tuples);
         }
+
+        [TestMethod()]
+        public void SeparateOxidizedCountAboveDoubleBondCountTest() {
+            var generator = new TotalChainVariationGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            TotalChain totalChain = new TotalChain(18, 1, 2, 1, 0, 0);
+
+            var actual = generator.Separate(totalChain).Select(chains => chains.GetDeterminedChains()).ToArray();
+
+            Assert.AreEqual(1, actual.Length);
+            var chain = actual[0].Single();
+            Assert.AreEqual((18, 1, 2), (chain.CarbonCount, chain.DoubleBondCount, chain.OxidizedCount));
+        }
+
+        [TestMethod()]
+        public void SeparateOxidizedSaturatedChainsTest() {
+            var generator = new TotalChainVariationGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            TotalChain totalChain = new TotalChain(34, 0, 1, 2, 0, 0);
+
+            var actual = generator.Separate(totalChain).Select(chains => chains.GetDeterminedChains()).ToArray();
+
+            Assert.IsTrue(actual.Length > 0);
+            Assert.IsTrue(actual.All(set => set.Sum(c => c.OxidizedCount) == 1 && set.Sum(c => c.CarbonCount) == 34));
+            Assert.IsTrue(actual.Any(set => (set[0].CarbonCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].OxidizedCount) == (16, 0, 18, 1)));
+        }
+
+        [TestMethod()]
+        public void SeparateSphingoOxidizedAboveDoubleBondCountTest() {
+            var generator = new TotalChainVariationGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            ITotalChain totalChain = new TotalChain(34, 0, 3, 1, 0, 1);
+
+            var tuples = totalChain.GetCandidateSets(generator).Cast<PositionLevelChains>()
+                .Select(chains => chains.GetDeterminedChains())
+                .Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount))
+                .ToArray();
+
+            CollectionAssert.Contains(tuples, (18, 0, 3, 16, 0, 0)); // e.g. Cer 18:0;O3/16:0
+            CollectionAssert.Contains(tuples, (18, 0, 2, 16, 0, 1)); // e.g. Cer 18:0;O2/16:0;O
+        }
     }
 }

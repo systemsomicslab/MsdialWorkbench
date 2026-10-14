@@ -16,10 +16,4 @@ WE	[M+NH4]+	The wax ester alcohol/acid pair (20:4/16:0) is not reproduced from t
 SL	[M-H]-	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
 SL	[M+H]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
 SL	[M+NH4]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
-Cer_ABP	[M-H]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
-Cer_ABP	[M+CH3COO]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
-Cer_ABP	[M+H]+	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
-Cer_ABP	[M+HCOO]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
-OxFA	[M-H]-	TotalChainVariationGenerator caps the acyl oxidized count by the double-bond count, so FA 18:1;O2 is never generated.
-PhytoSph	[M+H]+	The single-sphingoid seed is not expanded to determined chains, so chains cannot be confirmed.
 PI_Cer	[M-H]-	The XML rule set does not pass its own class check (see StagedLipidSelfConsistencyKnownDifferences.tsv).
