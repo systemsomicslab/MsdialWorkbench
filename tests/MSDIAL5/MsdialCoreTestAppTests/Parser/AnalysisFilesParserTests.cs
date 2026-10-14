@@ -52,7 +52,7 @@ public sealed class AnalysisFilesParserTests
         using var directory = MixedFormatFolder();
         var output = new StringWriter();
 
-        var files = AnalysisFilesParser.ReadInput(directory.Path, new UnreadableReader(), output, inputRedirected: true);
+        var files = AnalysisFilesParser.ReadInput(directory.Path, new UnreadableReader(), output, inputRedirected: true, outputRedirected: false);
 
         Assert.IsNotNull(files);
         Assert.AreEqual(3, files.Count);
@@ -62,12 +62,30 @@ public sealed class AnalysisFilesParserTests
     }
 
     [TestMethod]
+    public void ReadInput_MixedFormatsWithRedirectedOutputAndConsoleInput_ContinuesWithoutAskingOrReadingAndWarns()
+    {
+        // MS-DIAL Interactive's local launcher: the Console's output goes into a pipe that becomes the
+        // job log, while its standard input is still the launcher's terminal. The question would appear
+        // only in the log, and the read would wait on a terminal nobody is watching.
+        using var directory = MixedFormatFolder();
+        var output = new StringWriter();
+
+        var files = AnalysisFilesParser.ReadInput(directory.Path, new UnreadableReader(), output, inputRedirected: false, outputRedirected: true);
+
+        Assert.IsNotNull(files);
+        Assert.AreEqual(3, files.Count);
+        var text = output.ToString();
+        StringAssert.Contains(text, "Warning: the input mixes raw data formats (.lcd, .mzml). Nobody at the console can answer whether to go on, so all of them are processed.");
+        Assert.IsFalse(text.Contains("Do you want to continue"), text);
+    }
+
+    [TestMethod]
     public void ReadInput_MixedFormatsWhenReadLineReturnsNull_ContinuesAndWarns()
     {
         using var directory = MixedFormatFolder();
         var output = new StringWriter();
 
-        var files = AnalysisFilesParser.ReadInput(directory.Path, new StringReader(string.Empty), output, inputRedirected: false);
+        var files = AnalysisFilesParser.ReadInput(directory.Path, new StringReader(string.Empty), output, inputRedirected: false, outputRedirected: false);
 
         Assert.IsNotNull(files);
         Assert.AreEqual(3, files.Count);
@@ -104,14 +122,15 @@ public sealed class AnalysisFilesParserTests
     }
 
     [TestMethod]
-    public void ReadInput_PublicOverload_AsksOnlyWhenStandardInputIsNotRedirected()
+    public void ReadInput_PublicOverload_AsksOnlyWhenNeitherStandardInputNorOutputIsRedirected()
     {
-        // Pins that ReadInput(string) passes Console.IsInputRedirected on. Started by dotnet test or by
-        // a workflow, the process's standard input is redirected: then a reader that fails the test when
-        // touched stands in for a pipe that never closes, and must not be read. With standard input on a
-        // console, the question is asked and an empty answer stream ends it with the warning.
+        // Pins that ReadInput(string) passes Console.IsInputRedirected and Console.IsOutputRedirected on.
+        // Started by dotnet test or by a workflow, the process's standard streams are redirected: then a
+        // reader that fails the test when touched stands in for a pipe that never closes, and must not be
+        // read. With both on a console, the question is asked and an empty answer stream ends it with the
+        // warning. Which flag the run exercises depends on how the test host was started.
         using var directory = MixedFormatFolder();
-        var redirected = Console.IsInputRedirected;
+        var redirected = Console.IsInputRedirected || Console.IsOutputRedirected;
         var originalIn = Console.In;
         var originalOut = Console.Out;
         var output = new StringWriter();
@@ -132,7 +151,7 @@ public sealed class AnalysisFilesParserTests
         }
         var text = output.ToString();
         StringAssert.Contains(text, "Warning: the input mixes raw data formats (.lcd, .mzml).");
-        Assert.AreEqual(!redirected, text.Contains("Do you want to continue this process? Y/N"), $"Standard input redirected: {redirected}.{Environment.NewLine}{text}");
+        Assert.AreEqual(!redirected, text.Contains("Do you want to continue this process? Y/N"), $"Standard input redirected: {Console.IsInputRedirected}; standard output redirected: {Console.IsOutputRedirected}.{Environment.NewLine}{text}");
     }
 
     [TestMethod]
@@ -141,7 +160,7 @@ public sealed class AnalysisFilesParserTests
         using var directory = MixedFormatFolder();
         var output = new StringWriter();
 
-        var files = AnalysisFilesParser.ReadInput(directory.Path, new StringReader("n" + Environment.NewLine), output, inputRedirected: false);
+        var files = AnalysisFilesParser.ReadInput(directory.Path, new StringReader("n" + Environment.NewLine), output, inputRedirected: false, outputRedirected: false);
 
         Assert.IsNull(files);
         StringAssert.Contains(output.ToString(), "Do you want to continue this process? Y/N");
@@ -154,7 +173,7 @@ public sealed class AnalysisFilesParserTests
         var output = new StringWriter();
         var answers = new StringReader(string.Join(Environment.NewLine, "maybe", " Y ") + Environment.NewLine);
 
-        var result = AnalysisFilesParser.ContinueWithMultipleFormats(new[] { ".lcd", ".mzml" }, answers, output, inputRedirected: false);
+        var result = AnalysisFilesParser.ContinueWithMultipleFormats(new[] { ".lcd", ".mzml" }, answers, output, inputRedirected: false, outputRedirected: false);
 
         Assert.IsTrue(result);
         var text = output.ToString();
@@ -167,7 +186,7 @@ public sealed class AnalysisFilesParserTests
     {
         var output = new StringWriter();
 
-        var result = AnalysisFilesParser.ContinueWithMultipleFormats(new[] { ".lcd", ".mzml" }, new StringReader("maybe"), output, inputRedirected: false);
+        var result = AnalysisFilesParser.ContinueWithMultipleFormats(new[] { ".lcd", ".mzml" }, new StringReader("maybe"), output, inputRedirected: false, outputRedirected: false);
 
         Assert.IsTrue(result);
         var text = output.ToString();
@@ -183,7 +202,7 @@ public sealed class AnalysisFilesParserTests
         directory.CreateFile("b.mzML");
         var output = new StringWriter();
 
-        var files = AnalysisFilesParser.ReadInput(directory.Path, new UnreadableReader(), output, inputRedirected: false);
+        var files = AnalysisFilesParser.ReadInput(directory.Path, new UnreadableReader(), output, inputRedirected: false, outputRedirected: false);
 
         Assert.IsNotNull(files);
         Assert.AreEqual(2, files.Count);
