@@ -12,7 +12,11 @@ namespace CompMs.App.MsdialConsole.Parser
     {
         private AnalysisFilesParser() { }
 
-        public static List<AnalysisFileBean> ReadInput(string input) {
+        /// <summary>
+        /// Reads the analysis files, asking the person at the console whether to go on when they mix raw data formats.
+        /// Returns null only when that person answers N.
+        /// </summary>
+        public static List<AnalysisFileBean>? ReadInput(string input) {
             return ReadInput(input, Console.In, Console.Out, Console.IsInputRedirected);
         }
 

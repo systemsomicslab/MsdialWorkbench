@@ -104,6 +104,38 @@ public sealed class AnalysisFilesParserTests
     }
 
     [TestMethod]
+    public void ReadInput_PublicOverload_AsksOnlyWhenStandardInputIsNotRedirected()
+    {
+        // Pins that ReadInput(string) passes Console.IsInputRedirected on. Started by dotnet test or by
+        // a workflow, the process's standard input is redirected: then a reader that fails the test when
+        // touched stands in for a pipe that never closes, and must not be read. With standard input on a
+        // console, the question is asked and an empty answer stream ends it with the warning.
+        using var directory = MixedFormatFolder();
+        var redirected = Console.IsInputRedirected;
+        var originalIn = Console.In;
+        var originalOut = Console.Out;
+        var output = new StringWriter();
+        try
+        {
+            Console.SetIn(redirected ? new UnreadableReader() : new StringReader(string.Empty));
+            Console.SetOut(output);
+
+            var files = AnalysisFilesParser.ReadInput(directory.Path);
+
+            Assert.IsNotNull(files);
+            Assert.AreEqual(3, files.Count);
+        }
+        finally
+        {
+            Console.SetIn(originalIn);
+            Console.SetOut(originalOut);
+        }
+        var text = output.ToString();
+        StringAssert.Contains(text, "Warning: the input mixes raw data formats (.lcd, .mzml).");
+        Assert.AreEqual(!redirected, text.Contains("Do you want to continue this process? Y/N"), $"Standard input redirected: {redirected}.{Environment.NewLine}{text}");
+    }
+
+    [TestMethod]
     public void ReadInput_MixedFormatsAnsweredNo_ReturnsNull()
     {
         using var directory = MixedFormatFolder();
