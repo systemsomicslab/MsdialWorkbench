@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.App.MsdialConsole.Process;
 
@@ -60,12 +61,34 @@ public sealed class NormalizationProcess {
         bool allowUnresolvedStandards,
         bool allowMismatchedPeakIds,
         bool peakIdsOnly = false) {
+        var options = new NormalizeOptions {
+            Unit = unit,
+            ApplyDilutionFactor = applyDilutionFactor,
+            AllowUnresolvedStandards = allowUnresolvedStandards,
+            AllowMismatchedPeakIds = allowMismatchedPeakIds,
+            PeakIdsOnly = peakIdsOnly,
+        };
         if (!projectFile.Exists) {
             Console.Error.WriteLine($"Project file was not found: {projectFile.FullName}");
             return -1;
         }
         if (!standardsFile.Exists) {
             Console.Error.WriteLine($"Internal standard table was not found: {standardsFile.FullName}");
+            return -1;
+        }
+
+        // The table first: one the options refuse is refused before a project is loaded for
+        // nothing.
+        List<StandardRecord> records;
+        try {
+            records = ReadStandards(standardsFile.FullName, options.PeakIdsOnly);
+        }
+        catch (FormatException error) {
+            Console.Error.WriteLine(error.Message);
+            return -1;
+        }
+        if (records.Count == 0) {
+            Console.Error.WriteLine("The internal standard table contains no rows.");
             return -1;
         }
 
@@ -113,19 +136,6 @@ public sealed class NormalizationProcess {
             return -1;
         }
 
-        List<StandardRecord> records;
-        try {
-            records = ReadStandards(standardsFile.FullName, peakIdsOnly);
-        }
-        catch (FormatException error) {
-            Console.Error.WriteLine(error.Message);
-            return -1;
-        }
-        if (records.Count == 0) {
-            Console.Error.WriteLine("The internal standard table contains no rows.");
-            return -1;
-        }
-
         var result = NormalizeAndExport(
             files,
             spots,
@@ -136,13 +146,7 @@ public sealed class NormalizationProcess {
             () => MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _),
             outputDirectory.FullName,
             alignmentFile.FileName,
-            new NormalizeOptions {
-                Unit = unit,
-                ApplyDilutionFactor = applyDilutionFactor,
-                AllowUnresolvedStandards = allowUnresolvedStandards,
-                AllowMismatchedPeakIds = allowMismatchedPeakIds,
-                PeakIdsOnly = peakIdsOnly,
-            });
+            options);
         if (result == 0) {
             container.IsNormalized = true;
         }
@@ -195,10 +199,16 @@ public sealed class NormalizationProcess {
         foreach (var line in resolution.Report) {
             Console.WriteLine(line);
         }
+        if (resolution.NeverLookedUp.Count > 0) {
+            Console.WriteLine(
+                $"WARNING: {resolution.NeverLookedUp.Count} class(es) in the internal standard table have no MS-DIAL "
+                + $"lipid class name, so the normalizer never looks a peak up under them: {string.Join("; ", resolution.NeverLookedUp)}. "
+                + $"Their peaks go to the {StandardCompound.AnyOthers} standard, not to the one named for them.");
+        }
         if (resolution.AssignmentConflicts.Count > 0) {
             Console.Error.WriteLine(
-                $"{resolution.AssignmentConflicts.Count} alignment ID(s) would be exported under two different standard "
-                + $"names: {string.Join("; ", resolution.AssignmentConflicts)}. A peak is one standard or the other; "
+                $"{resolution.AssignmentConflicts.Count} alignment ID(s) are assigned to one standard and taken as "
+                + $"another: {string.Join("; ", resolution.AssignmentConflicts)}. A peak is one standard or the other; "
                 + "correct the PeakID or the AssignName column.");
             return 2;
         }
@@ -260,7 +270,7 @@ public sealed class NormalizationProcess {
             ApplyDilutionFactors(files, spots);
         }
 
-        var adjustments = PlanExportAdjustments(files, spots, refer, resolution);
+        var adjustments = PlanExportAdjustments(files, spots, refer, evaluator, resolution);
         foreach (var line in adjustments.Warnings) {
             Console.WriteLine(line);
         }
@@ -381,16 +391,22 @@ public sealed class NormalizationProcess {
     /// concentration's unit several orders of magnitude off. Those cells are emptied, not
     /// the row, because the other files had the standard to divide by.
     ///
-    /// A row's class is read from its reference the way the exported Ontology column
-    /// shows it and compared through <see cref="CanonicalClass"/>, which is how the
-    /// normalizer looks it up. Comparing the column with the table as written missed every
-    /// class spelled one way in the one and the other way in the other: every ceramide,
-    /// hexosylceramide and the like. The standards' own rows are never emptied.
+    /// A row's class is the one the normalizer looked it up under (<see cref="NormalizerClass"/>),
+    /// compared with the table's class as it reached the normalizer. Comparing the exported
+    /// Ontology column with the table as written missed every class spelled one way in the
+    /// one and the other way in the other: every ceramide, hexosylceramide and the like. Nor
+    /// is the Ontology column what the normalizer reads: a peak that is not reference
+    /// matched is "Unknown" to it, and divided by "Any others", whatever the column says;
+    /// emptying it by its label threw away a value the normalizer had given it on the same
+    /// terms as any unknown peak. Whether a row was quantified at all is read from what the
+    /// normalizer did, not from its unit, which a caller may name "Intensity" itself. The
+    /// standards' own rows are never emptied.
     /// </remarks>
     internal static ExportAdjustments PlanExportAdjustments(
         IReadOnlyList<AnalysisFileBean> files,
         IReadOnlyList<AlignmentSpotProperty> spots,
         IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
+        IMatchResultEvaluator<MsScanMatchResult> evaluator,
         StandardResolution resolution) {
         var plan = new ExportAdjustments();
         foreach (var pair in resolution.Assignments) {
@@ -421,14 +437,14 @@ public sealed class NormalizationProcess {
         foreach (var spot in spots) {
             var id = spot.MasterAlignmentID;
             if (standards.ContainsKey(id)) continue;
-            var ontology = OntologyOf(refer.Refer(spot.MatchResults.Representative));
-            if (ontology.Length > 0
-                && resolution.UnresolvedClasses.TryGetValue(CanonicalClass(ontology), out var designated)) {
+            if (resolution.UnresolvedClasses.TryGetValue(NormalizerClass(spot, refer, evaluator), out var designated)) {
                 plan.Redacted[id] =
                     $"NOT QUANTIFIED: the {designated.TargetClass} standard {designated.StandardName} did not resolve in this alignment";
                 continue;
             }
-            if (resolution.UnresolvedFallback.Length > 0 && spot.IonAbundanceUnit == IonAbundanceUnit.Intensity) {
+            // Both ways through the normalizer leave the standard's ID at -1 on a row they
+            // filled with its raw values, and only there.
+            if (resolution.UnresolvedFallback.Length > 0 && spot.InternalStandardAlignmentID < 0) {
                 plan.Redacted[id] =
                     $"NOT QUANTIFIED: no standard of its own class, and the {StandardCompound.AnyOthers} standard "
                     + $"{resolution.UnresolvedFallback} did not resolve in this alignment";
@@ -460,13 +476,19 @@ public sealed class NormalizationProcess {
     /// affected rows keep their identity and lose their numbers, and say why in place of
     /// them. An annotated wrong number is still read by the next script; an empty cell is
     /// not. A class average or deviation that took in an emptied cell is emptied with it.
+    ///
+    /// The exporter writes ASCII, so a file named in kanji heads its column with question
+    /// marks, one for each character it cannot write. The header is compared with the names
+    /// as the exporter wrote them, files are found by their position, which the exporter
+    /// fixes by file ID, and the matrix is written back in the same encoding.
     /// </remarks>
+    /// <param name="fileNames">The included files' names, ordered by file ID.</param>
     /// <returns>The number of rows emptied entirely.</returns>
     internal static int AdjustExport(
         string matrixPath, ExportAdjustments plan, IReadOnlyList<string> fileNames, bool normalized) {
         var removes = normalized && (plan.Redacted.Count > 0 || plan.PartlyRedacted.Count > 0);
         if (!removes && plan.Assigned.Count == 0) return 0;
-        var lines = File.ReadAllLines(matrixPath);
+        var lines = File.ReadAllLines(matrixPath, Encoding.ASCII);
         if (lines.Length <= HeaderRowCount) return 0;
         var header = lines[HeaderRowCount - 1].Split('\t');
         var classes = lines[0].Split('\t');
@@ -475,16 +497,17 @@ public sealed class NormalizationProcess {
         var commentColumn = Array.IndexOf(header, "Comment");
         var firstSample = Array.IndexOf(classes, "Class") + 1;
         var firstStat = firstSample + fileNames.Count;
+        var asWritten = fileNames.Select(name => Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(name)));
         if (idColumn < 0 || nameColumn < 0 || commentColumn < 0 || firstSample <= 0 || firstStat > header.Length
-            || !header.Skip(firstSample).Take(fileNames.Count).SequenceEqual(fileNames)) {
+            || !header.Skip(firstSample).Take(fileNames.Count).SequenceEqual(asWritten)) {
             throw new InvalidDataException(
                 "its layout is not the one this command exports (Alignment ID, Metabolite name, Comment, "
                 + "a Class label row and one column per included file), so the rows that carry no "
                 + "concentration could not be emptied.");
         }
         var fileColumns = new Dictionary<string, int>(StringComparer.Ordinal);
-        for (var column = firstSample; column < firstStat; column++) {
-            fileColumns[header[column]] = column;
+        for (var position = 0; position < fileNames.Count; position++) {
+            fileColumns[fileNames[position]] = firstSample + position;
         }
 
         var redacted = 0;
@@ -530,7 +553,7 @@ public sealed class NormalizationProcess {
             }
         }
         if (changed) {
-            File.WriteAllLines(matrixPath, lines);
+            File.WriteAllLines(matrixPath, lines, Encoding.ASCII);
         }
         return redacted;
     }
@@ -556,10 +579,38 @@ public sealed class NormalizationProcess {
         return string.Join("; ", parts);
     }
 
-    /// <summary>The class a reference is exported under in the Ontology column.</summary>
-    private static string OntologyOf(MoleculeMsReference? reference) {
-        if (!string.IsNullOrEmpty(reference?.CompoundClass)) return reference!.CompoundClass.Trim();
-        return reference?.Ontology?.Trim() ?? string.Empty;
+    private const string UnknownClass = "Unknown", UndefinedClass = "Undefined";
+
+    /// <summary>The MS-DIAL lipid class names, which the normalizer accepts from an Ontology.</summary>
+    private static readonly HashSet<string> LipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
+
+    /// <summary>
+    /// The class the normalizer looks a peak up under: NormalizationTargetSpot.GetAnnotatedLipidClass,
+    /// which MsdialCore keeps internal.
+    /// </summary>
+    /// <remarks>
+    /// "Unknown" for a peak that is not reference matched, whatever its label says. Otherwise
+    /// the reference's CompoundClass, or its Ontology when that is empty and the Ontology is
+    /// an MS-DIAL lipid class name, through the lipid class enumeration; a class the
+    /// enumeration has no name for comes out "Undefined".
+    /// </remarks>
+    internal static string NormalizerClass(
+        AlignmentSpotProperty spot,
+        IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer,
+        IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        if (!spot.IsReferenceMatched(evaluator)) {
+            return UnknownClass;
+        }
+        var reference = refer.Refer(spot.MatchResults.Representative);
+        var lipidClass = reference?.CompoundClass;
+        if (string.IsNullOrEmpty(lipidClass) && reference?.Ontology is string ontology && LipidClasses.Contains(ontology)) {
+            lipidClass = ontology;
+        }
+        if (!string.IsNullOrEmpty(lipidClass)) {
+            lipidClass = LipidomicsConverter.ConvertLbmClassEnumToMsdialClassDefinitionVS2(
+                LipidomicsConverter.ConvertMsdialClassDefinitionToLbmClassEnumVS2(lipidClass!));
+        }
+        return string.IsNullOrEmpty(lipidClass) ? UnknownClass : lipidClass!;
     }
 
     /// <summary>
@@ -570,9 +621,11 @@ public sealed class NormalizationProcess {
     /// lipid class enumeration, so a ceramide whose reference says "Cer_NS" is looked up as
     /// "Cer-NS". A table naming the class the way the exported Ontology column spells it
     /// never matched: those peaks were quantified against "Any others" with nothing to say
-    /// so. A table's class now goes through the same conversion, and so does a row's when
-    /// the redaction compares the two. A name the enumeration does not know is kept as
-    /// written; "Any others" is matched in any case, as the report already did.
+    /// so. A table's class now goes through the same conversion. "Any others" is matched in
+    /// any case, as the report already did. A name the enumeration has no name for is kept
+    /// as written, not made "Undefined": the normalizer looks every such peak up as
+    /// "Undefined", and one standard would then quantify all of them. No peak is looked up
+    /// under it (<see cref="IsLookedUp"/>).
     /// </remarks>
     internal static string CanonicalClass(string? lipidClass) {
         var name = (lipidClass ?? string.Empty).Trim();
@@ -581,7 +634,18 @@ public sealed class NormalizationProcess {
         }
         var converted = LipidomicsConverter.ConvertLbmClassEnumToMsdialClassDefinitionVS2(
             LipidomicsConverter.ConvertMsdialClassDefinitionToLbmClassEnumVS2(name));
-        return converted == "Undefined" ? name : converted;
+        return converted == UndefinedClass ? name : converted;
+    }
+
+    /// <summary>
+    /// Whether the normalizer ever looks a peak up under a table's class: whether it is one
+    /// <see cref="NormalizerClass"/> can return, or "Any others".
+    /// </summary>
+    internal static bool IsLookedUp(string canonicalClass) {
+        return canonicalClass == StandardCompound.AnyOthers
+            || canonicalClass == UnknownClass
+            || canonicalClass == UndefinedClass
+            || LipidClasses.Contains(canonicalClass);
     }
 
     private static IMsdialDataStorage<ParameterBase> LoadProject(string projectFilePath) {
@@ -628,10 +692,16 @@ public sealed class NormalizationProcess {
         /// <summary>
         /// Lipid class, as the normalizer spells it -> the class as the table wrote it and
         /// the standard named for it that could not be found. A class another row resolved
-        /// is not here.
+        /// is not here. Compared exactly, as the normalizer's own lookup is.
         /// </summary>
         public Dictionary<string, (string TargetClass, string StandardName)> UnresolvedClasses =
-            new Dictionary<string, (string TargetClass, string StandardName)>(StringComparer.OrdinalIgnoreCase);
+            new Dictionary<string, (string TargetClass, string StandardName)>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// The table's classes the normalizer never looks a peak up under, each with the
+        /// standard named for it: their peaks go to "Any others" whatever the table says.
+        /// </summary>
+        public List<string> NeverLookedUp = new List<string>();
 
         /// <summary>The "Any others" standard those classes now fall through to.</summary>
         public string FallbackName = string.Empty;
@@ -642,7 +712,10 @@ public sealed class NormalizationProcess {
         /// <summary>Alignment ID -> the standard name AssignName exports it under.</summary>
         public Dictionary<int, string> Assignments = new Dictionary<int, string>();
 
-        /// <summary>Alignment IDs that two rows would assign to different standards.</summary>
+        /// <summary>
+        /// Alignment IDs that one row assigns to a standard and another row, assigning or
+        /// not, takes as a different one.
+        /// </summary>
         public List<string> AssignmentConflicts = new List<string>();
     }
 
@@ -699,6 +772,16 @@ public sealed class NormalizationProcess {
                 PeakID = ParseInt(Cell(peakColumn), -1),
                 MolecularWeight = ParseDouble(Cell(weightColumn), 0d),
             };
+            // Without the option such an ID was looked up by name, and still is. With it, an
+            // ID that is not one would be reported as no ID at all, and a caller could not
+            // tell its own error from a standard it had deliberately left unfound.
+            var peakId = Cell(peakColumn);
+            if (peakIdsOnly && peakId.Length > 0
+                && !int.TryParse(peakId, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) {
+                throw new FormatException(
+                    $"Line {record.LineNumber}: PeakID '{peakId}' for {standardName} is not an alignment ID. "
+                    + "Write a whole number, or leave it empty for a standard that was not found.");
+            }
             var concentration = Cell(concentrationColumn);
             if (!double.TryParse(concentration, NumberStyles.Float, CultureInfo.InvariantCulture, out var value)) {
                 throw new FormatException(
@@ -746,6 +829,13 @@ public sealed class NormalizationProcess {
         var assignedOver = new Dictionary<int, string>();
 
         foreach (var record in records) {
+            // A class with no MS-DIAL lipid class name is passed on as written and never
+            // matches: its peaks are looked up as "Undefined" and go to "Any others".
+            var lookedUp = IsLookedUp(record.CanonicalClass);
+            var unmatched = $"{record.TargetClass} ({record.StandardName})";
+            if (!lookedUp && !result.NeverLookedUp.Contains(unmatched)) {
+                result.NeverLookedUp.Add(unmatched);
+            }
             AlignmentSpotProperty? spot = null;
             var how = string.Empty;
             var why = string.Empty;
@@ -759,17 +849,9 @@ public sealed class NormalizationProcess {
                     result.Mismatched.Add(
                         $"{record.StandardName} (alignment ID {record.PeakID} is annotated '{byIdSpot.Name}')");
                 }
-                if (record.AssignName) {
-                    if (!result.Assignments.TryGetValue(record.PeakID, out var assigned)) {
-                        result.Assignments[record.PeakID] = record.StandardName;
-                        assignedOver[record.PeakID] = byIdSpot.Name ?? string.Empty;
-                    }
-                    else if (!assigned.Equals(record.StandardName, StringComparison.OrdinalIgnoreCase)) {
-                        var conflict = $"alignment ID {record.PeakID} ({assigned} and {record.StandardName})";
-                        if (!result.AssignmentConflicts.Contains(conflict)) {
-                            result.AssignmentConflicts.Add(conflict);
-                        }
-                    }
+                if (record.AssignName && !result.Assignments.ContainsKey(record.PeakID)) {
+                    result.Assignments[record.PeakID] = record.StandardName;
+                    assignedOver[record.PeakID] = byIdSpot.Name ?? string.Empty;
                 }
             }
             else if (peakIdsOnly) {
@@ -817,7 +899,9 @@ public sealed class NormalizationProcess {
             if (!classesOf.TryGetValue(record.StandardName, out var covered)) {
                 classesOf[record.StandardName] = covered = new List<string>();
             }
-            covered.Add(record.TargetClass);
+            if (lookedUp) {
+                covered.Add(record.TargetClass);
+            }
             result.Compounds.Add(new StandardCompound {
                 StandardName = record.StandardName,
                 TargetClass = record.CanonicalClass,
@@ -833,6 +917,19 @@ public sealed class NormalizationProcess {
         }
         if (result.FallbackName.Length > 0) {
             result.UnresolvedFallback = string.Empty;
+        }
+        // A peak AssignName exports as one standard cannot quantify a class as another,
+        // whether or not that row assigns too: the matrix would name it one thing and
+        // the standard's own row would carry whichever amount the normalizer applied last.
+        foreach (var pair in result.Assignments.OrderBy(item => item.Key)) {
+            var others = result.Compounds
+                .Where(compound => compound.PeakID == pair.Key
+                    && !compound.StandardName.Equals(pair.Value, StringComparison.OrdinalIgnoreCase))
+                .Select(compound => compound.StandardName)
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+            foreach (var other in others) {
+                result.AssignmentConflicts.Add($"alignment ID {pair.Key} ({pair.Value} and {other})");
+            }
         }
 
         foreach (var pair in resolvedOnce.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase)) {

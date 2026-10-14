@@ -21,15 +21,18 @@ namespace MsdialCoreTestAppTests.Process;
 /// ties each standard to a peak, and the two matrices it writes.
 /// </summary>
 /// <remarks>
-/// The alignment has three files (two SPF samples and a blank) and eight peaks: standards for
+/// The alignment has three files (two SPF samples and a blank) and eleven peaks: standards for
 /// PC, Cer-NS and "Any others" (an LPC), a PC, a ceramide whose reference spells its class
-/// "Cer_NS", a cardiolipin with no standard of its own, a peak with no annotation, and a second
-/// unannotated peak that a caller can assign as a standard.
+/// "Cer_NS", a cardiolipin with no standard of its own, a peak with no annotation, a second
+/// unannotated peak that a caller can assign as a standard, a ceramide suggestion that is not
+/// reference matched, a ceramide whose reference gives only an Ontology, and a lipid A, a class
+/// with no MS-DIAL lipid class name.
 /// </remarks>
 [TestClass]
 public sealed class NormalizationProcessTests
 {
     private const int PcStandard = 0, Pc = 1, CerStandard = 2, Cer = 3, LpcStandard = 4, Cardiolipin = 5, Unknown = 6, Unnamed = 7;
+    private const int LowScoreCer = 8, OntologyOnlyCer = 9, LipidA = 10;
 
     private const string Header = "StandardName\tTargetClass\tConcentration\tPeakID";
     private const string PcRow = "PC 15:0_18:1(d7)\tPC\t66.4\t0";
@@ -270,7 +273,11 @@ public sealed class NormalizationProcessTests
         Assert.AreEqual("PE-Cer", NormalizationProcess.CanonicalClass("PE_Cer"));
         Assert.AreEqual("PC", NormalizationProcess.CanonicalClass(" PC "));
         Assert.AreEqual("Any others", NormalizationProcess.CanonicalClass("any others"));
-        Assert.AreEqual("LipidA", NormalizationProcess.CanonicalClass("LipidA"), "a class with no VS2 name is kept as written");
+        Assert.AreEqual("LipidA", NormalizationProcess.CanonicalClass("LipidA"),
+            "a class with no VS2 name is kept as written, not made the Undefined every such peak is looked up as");
+        Assert.IsFalse(NormalizationProcess.IsLookedUp("LipidA"));
+        Assert.IsTrue(NormalizationProcess.IsLookedUp("Cer-NS"));
+        Assert.IsTrue(NormalizationProcess.IsLookedUp("Any others"));
     }
 
     [TestMethod]
@@ -289,10 +296,173 @@ public sealed class NormalizationProcessTests
         Assert.IsFalse(help.Contains("Divide"));
     }
 
+    [TestMethod]
+    public void ARowTheNormalizerTreatsAsUnknownKeepsItsAnyOthersValueWhenItsLabelsStandardIsUnresolved() {
+        // The normalizer quantifies a peak that is not reference matched, and one whose reference
+        // gives only an Ontology that is not an MS-DIAL lipid class name, as "Unknown", against
+        // Any others, whatever its label. Emptying it by the label threw away that value.
+        var fixture = new Fixture();
+        var run = Run(fixture, Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, "Cer 18:1;O2/15:0(d7)\tCer-NS\t20\t", LpcRow);
+
+        Assert.AreEqual(0, run.ExitCode, run.Error);
+        StringAssert.StartsWith(run.Normalized.Row(Cer).Comment, "NOT QUANTIFIED: the Cer-NS standard");
+        foreach (var (id, height) in new[] { (LowScoreCer, 40d), (OntologyOnlyCer, 60d) }) {
+            var row = run.Normalized.Row(id);
+            Assert.AreEqual(fixture.Spots[LpcStandard].MasterAlignmentID, fixture.Spots[id].InternalStandardAlignmentID);
+            Assert.IsFalse(row.Comment.Contains("NOT QUANTIFIED"), $"row {id}: {row.Comment}");
+            Assert.AreEqual(100d * height / 1000, row.Value("s1"), 1e-9, $"row {id}");
+        }
+    }
+
+    [TestMethod]
+    public void WithIntensityAsTheUnitAnUnresolvedAnyOthersEmptiesOnlyTheRowsNoStandardDivided() {
+        var fixture = new Fixture();
+        var run = Run(fixture, Options(peakIdsOnly: true, allowUnresolved: true, unit: IonAbundanceUnit.Intensity),
+            Header, PcRow, CerRow, "LPC 18:1(d7)\tAny others\t100\t");
+
+        Assert.AreEqual(0, run.ExitCode, run.Error);
+        Assert.AreEqual(66.4 * 50 / 100, run.Normalized.Row(Pc).Value("s1"), 1e-9,
+            "divided by its own standard, whatever the unit is called");
+        Assert.AreEqual(20d * 10 / 20, run.Normalized.Row(Cer).Value("s1"), 1e-9);
+        var cardiolipin = run.Normalized.Row(Cardiolipin);
+        Assert.IsTrue(cardiolipin.Samples.All(value => value.Length == 0));
+        StringAssert.Contains(cardiolipin.Comment, "the Any others standard LPC 18:1(d7) did not resolve");
+    }
+
+    [TestMethod]
+    public void AClassWithNoMsdialNameIsReportedAsQuantifiedAgainstAnyOthersAndIsNotEmptiedForItsStandard() {
+        // "LipidA" has no MS-DIAL lipid class name: the normalizer looks a lipid A peak up as
+        // "Undefined" and divides it by Any others, whatever standard the table names for it.
+        var fixture = new Fixture();
+        var resolved = Run(fixture, Options(peakIdsOnly: true),
+            Header, PcRow, CerRow, LpcRow, "PC 15:0_18:1(d7)\tLipidA\t66.4\t0");
+
+        Assert.AreEqual(0, resolved.ExitCode, resolved.Error);
+        StringAssert.Contains(resolved.Output, "PC 15:0_18:1(d7) via alignment ID 0, concentration 66.4");
+        StringAssert.Contains(resolved.Output, $"      covers 1 class(es): PC{Environment.NewLine}");
+        StringAssert.Contains(resolved.Output, "WARNING: 1 class(es) in the internal standard table have no MS-DIAL lipid class name");
+        StringAssert.Contains(resolved.Output, "LipidA (PC 15:0_18:1(d7))");
+        Assert.AreEqual(100d * 70 / 1000, resolved.Normalized.Row(LipidA).Value("s1"), 1e-9);
+
+        var unresolved = Run(new Fixture(), Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, CerRow, LpcRow, "Lipid A std\tLipidA\t10\t");
+        Assert.AreEqual(0, unresolved.ExitCode, unresolved.Error);
+        var lipidA = unresolved.Normalized.Row(LipidA);
+        Assert.AreEqual(100d * 70 / 1000, lipidA.Value("s1"), 1e-9,
+            "its standard was never going to be used, so its absence changes nothing");
+        Assert.IsFalse(lipidA.Comment.Contains("NOT QUANTIFIED"), lipidA.Comment);
+    }
+
+    [TestMethod]
+    public void APeakAssignedToOneStandardCannotQuantifyAnotherWhateverTheOtherRowsAssignName() {
+        var assigned = "PE 15:0_18:1(d7)\tPE\t50\t7\ttrue";
+        var other = "PG 15:0_18:1(d7)\tPG\t50\t7\tfalse";
+        foreach (var order in new[] { new[] { assigned, other }, new[] { other, assigned } }) {
+            var run = Run(new Fixture(), Options(peakIdsOnly: true, allowMismatched: true),
+                new[] { Header + "\tAssignName", PcRow + "\t", LpcRow + "\t" }.Concat(order).ToArray());
+
+            Assert.AreEqual(2, run.ExitCode, run.Output);
+            StringAssert.Contains(run.Error, "alignment ID 7 (PE 15:0_18:1(d7) and PG 15:0_18:1(d7))");
+            Assert.IsFalse(File.Exists(run.NormalizedPath));
+        }
+    }
+
+    [TestMethod]
+    public void NonAsciiFileNamesAreEmptiedInTheColumnsTheExporterWroteForThem() {
+        // The exporter writes ASCII, so these names reach the header as "??_01", "??_02" and
+        // "????". The rows are still emptied, rather than the matrix deleted.
+        var files = new[] {
+            AnalysisFile(0, "血漿_01", "SPF", AnalysisFileType.Sample),
+            AnalysisFile(1, "血漿_02", "SPF", AnalysisFileType.Sample),
+            AnalysisFile(2, "ブランク", "Blank", AnalysisFileType.Blank),
+        };
+        var fixture = new Fixture(lpcHeights: new[] { 1000d, 500d, 0d }, files: files);
+        var run = Run(fixture, Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, "Cer 18:1;O2/15:0(d7)\tCer-NS\t20\t", LpcRow);
+
+        Assert.AreEqual(0, run.ExitCode, run.Error);
+        Assert.IsTrue(File.Exists(run.NormalizedPath));
+        Assert.IsTrue(run.Normalized.Row(Cer).Samples.All(value => value.Length == 0));
+        var cardiolipin = run.Normalized.Row(Cardiolipin);
+        Assert.AreEqual(100d * 30 / 1000, cardiolipin.Value("??_01"), 1e-9);
+        Assert.AreEqual(100d * 60 / 500, cardiolipin.Value("??_02"), 1e-9);
+        Assert.AreEqual(string.Empty, cardiolipin.Cell("????"));
+        Assert.AreEqual(string.Empty, cardiolipin.Stat("Average", "Blank"));
+        StringAssert.Contains(cardiolipin.Comment, "NOT QUANTIFIED in 1 file(s) (????)");
+        Assert.AreEqual(66.4 * 50 / 100, run.Normalized.Row(Pc).Value("??_01"), 1e-9);
+    }
+
+    [TestMethod]
+    public void UnderPeakIdsOnlyAPeakIdThatIsNotAnIntegerIsRefusedRatherThanTakenForAMissingOne() {
+        var path = Table(Header, PcRow, "Cer 18:1;O2/15:0(d7)\tCer-NS\t20\t2.0", LpcRow);
+
+        var error = Assert.ThrowsException<FormatException>(() => NormalizationProcess.ReadStandards(path, peakIdsOnly: true));
+        StringAssert.Contains(error.Message, "Line 3");
+        StringAssert.Contains(error.Message, "'2.0'");
+        Assert.AreEqual(-1, NormalizationProcess.ReadStandards(path, peakIdsOnly: false)[1].PeakID,
+            "without the option such an ID is looked up by name, as before");
+    }
+
+    [TestMethod]
+    public void AClassThatAnotherRowResolvedIsQuantifiedRatherThanEmptied() {
+        var cer = Run(new Fixture(), Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, "Missing Cer std\tCer_NS\t20\t", CerRow, LpcRow);
+
+        Assert.AreEqual(0, cer.ExitCode, cer.Error);
+        StringAssert.Contains(cer.Output, "UNRESOLVED Missing Cer std");
+        Assert.AreEqual(20d * 10 / 20, cer.Normalized.Row(Cer).Value("s1"), 1e-9);
+        Assert.IsFalse(cer.Normalized.Row(Cer).Comment.Contains("NOT QUANTIFIED"));
+
+        var anyOthers = Run(new Fixture(), Options(peakIdsOnly: true, allowUnresolved: true),
+            Header, PcRow, CerRow, "Missing LPC std\tAny others\t100\t", LpcRow);
+
+        Assert.AreEqual(0, anyOthers.ExitCode, anyOthers.Error);
+        Assert.AreEqual(100d * 30 / 1000, anyOthers.Normalized.Row(Cardiolipin).Value("s1"), 1e-9);
+        Assert.IsFalse(anyOthers.Normalized.Text.Contains("NOT QUANTIFIED"));
+    }
+
+    [TestMethod]
+    public void ThePeakIdsOnlyOptionReachesTheStandardsTableFromTheCommandLine() {
+        var project = Path.Combine(_scratch, "project.mddata");
+        File.WriteAllText(project, "not a project");
+        var table = Table("StandardName\tTargetClass\tConcentration", "PC 15:0_18:1(d7)\tPC\t66.4");
+        var output = Path.Combine(_scratch, "out");
+
+        var flagged = Invoke("normalize", "-i", project, "-s", table, "-o", output, "--peak-ids-only");
+        Assert.AreEqual(-1, flagged.ExitCode);
+        StringAssert.Contains(flagged.Error, "--peak-ids-only takes each standard from its PeakID");
+
+        // Any other switch in its place leaves the table alone, and the run goes on to the project.
+        var other = Invoke("normalize", "-i", project, "-s", table, "-o", output, "--allow-mismatched-peak-ids");
+        Assert.AreEqual(-1, other.ExitCode);
+        Assert.IsFalse(other.Error.Contains("--peak-ids-only"), other.Error);
+        StringAssert.Contains(other.Error, "could not be read as an MS-DIAL data file");
+    }
+
+    private static (int ExitCode, string Error) Invoke(params string[] args) {
+        var root = new RootCommand("test");
+        MainProcess.SetNormalizeCommand(root);
+        var originalOut = Console.Out;
+        var originalError = Console.Error;
+        var stderr = new StringWriter();
+        try {
+            Console.SetOut(new StringWriter());
+            Console.SetError(stderr);
+            var exitCode = root.Parse(args).Invoke(new InvocationConfiguration { Error = stderr });
+            return (exitCode, stderr.ToString());
+        }
+        finally {
+            Console.SetOut(originalOut);
+            Console.SetError(originalError);
+        }
+    }
+
     private NormalizationProcess.NormalizeOptions Options(
-        bool peakIdsOnly = false, bool allowUnresolved = false, bool allowMismatched = false, bool dilution = false) {
+        bool peakIdsOnly = false, bool allowUnresolved = false, bool allowMismatched = false, bool dilution = false,
+        IonAbundanceUnit unit = IonAbundanceUnit.pmol_per_microL_plasma) {
         return new NormalizationProcess.NormalizeOptions {
-            Unit = IonAbundanceUnit.pmol_per_microL_plasma,
+            Unit = unit,
             PeakIdsOnly = peakIdsOnly,
             AllowUnresolvedStandards = allowUnresolved,
             AllowMismatchedPeakIds = allowMismatched,
@@ -369,16 +539,20 @@ public sealed class NormalizationProcessTests
                 .Select((name, order) => (name, order))
                 .ToDictionary(item => item.name, item => item.order);
 
-            // Name, the class its reference gives, and its height in each of the three files.
-            var peaks = new (string? Name, string? Class, double[] Heights)[] {
-                ("PC 15:0_18:1(d7)", "PC", new[] { 100d, 200d, 400d }),
-                ("PC 34:1", "PC", new[] { 50d, 50d, 10d }),
-                ("Cer 18:1;O2/15:0(d7)", "Cer_NS", new[] { 20d, 40d, 80d }),
-                ("Cer 18:1;O2/16:0", "Cer_NS", new[] { 10d, 10d, 10d }),
-                ("LPC 18:1(d7)", "LPC", lpcHeights ?? new[] { 1000d, 500d, 250d }),
-                ("CL 72:8", "CL", new[] { 30d, 60d, 90d }),
-                (null, null, new[] { 5d, 5d, 5d }),
-                (null, null, new[] { 300d, 300d, 300d }),
+            // Name, the CompoundClass and Ontology its reference gives, whether it is reference
+            // matched, and its height in each of the three files.
+            var peaks = new (string? Name, string? Class, string? Ontology, bool Matched, double[] Heights)[] {
+                ("PC 15:0_18:1(d7)", "PC", null, true, new[] { 100d, 200d, 400d }),
+                ("PC 34:1", "PC", null, true, new[] { 50d, 50d, 10d }),
+                ("Cer 18:1;O2/15:0(d7)", "Cer_NS", null, true, new[] { 20d, 40d, 80d }),
+                ("Cer 18:1;O2/16:0", "Cer_NS", null, true, new[] { 10d, 10d, 10d }),
+                ("LPC 18:1(d7)", "LPC", null, true, lpcHeights ?? new[] { 1000d, 500d, 250d }),
+                ("CL 72:8", "CL", null, true, new[] { 30d, 60d, 90d }),
+                (null, null, null, false, new[] { 5d, 5d, 5d }),
+                (null, null, null, false, new[] { 300d, 300d, 300d }),
+                ("Cer 18:1;O2/18:0", "Cer_NS", null, false, new[] { 40d, 40d, 40d }),
+                ("Cer 18:1;O2/20:0", null, "Cer_NS", true, new[] { 60d, 60d, 60d }),
+                ("Lipid A test", "LipidA", null, true, new[] { 70d, 70d, 70d }),
             };
             var references = new List<MoleculeMsReference?>();
             Spots = new List<AlignmentSpotProperty>();
@@ -396,13 +570,15 @@ public sealed class NormalizationProcessTests
                 };
                 if (peak.Name is not null) {
                     spot.Name = peak.Name;
+                    // A manual result is reference matched by itself; anything else needs an
+                    // evaluator, and the empty one the tests pass matches nothing.
                     spot.MatchResults.AddResult(new MsScanMatchResult {
                         LibraryID = references.Count,
                         Name = peak.Name,
                         AnnotatorID = "LbmDB: test",
-                        Source = SourceType.Manual | SourceType.GeneratedLipid,
+                        Source = peak.Matched ? SourceType.Manual | SourceType.GeneratedLipid : SourceType.GeneratedLipid,
                     });
-                    references.Add(new MoleculeMsReference { Name = peak.Name, CompoundClass = peak.Class });
+                    references.Add(new MoleculeMsReference { Name = peak.Name, CompoundClass = peak.Class, Ontology = peak.Ontology });
                 }
                 Spots.Add(spot);
             }
