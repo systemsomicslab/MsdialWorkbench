@@ -45,6 +45,9 @@
     <Content Include="..\..\..\src\Common\CommonStandard\Lipidomics\MsdialLipidCidSpectrumModel.xml" Link="MsdialLipidCidSpectrumModel.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="StagedLipidSelfConsistencyKnownDifferences.tsv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="LipidSpectrumJudgeIfKnownDifferences.tsv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
