@@ -71,5 +71,9 @@ namespace CompMs.MsdialCore.Parser.Tests
         public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
             throw new NotImplementedException();
         }
+
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase> Visit(StagedLipidRestorationKey key, StagedLipidDatabase database) {
+            throw new NotImplementedException();
+        }
     }
 }

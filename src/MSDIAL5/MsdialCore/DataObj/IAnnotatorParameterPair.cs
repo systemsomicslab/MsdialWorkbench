@@ -9,6 +9,7 @@ namespace CompMs.MsdialCore.DataObj
     [Union(0, typeof(MetabolomicsAnnotatorParameterPair))]
     [Union(1, typeof(ProteomicsAnnotatorParameterPair))]
     [Union(2, typeof(EadLipidAnnotatorParameterPair))]
+    [Union(3, typeof(StagedLipidAnnotatorParameterPair))]
     public interface IAnnotatorParameterPair<TDataBase> where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }

@@ -43,6 +43,10 @@ namespace CompMs.MsdialImmsCore.Parser
         public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
             return new EadLipidAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
         }
+
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase> Visit(StagedLipidRestorationKey key, StagedLipidDatabase database) {
+            return new StagedLipidDatabaseAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
+        }
     }
 
     public sealed class ImmsAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
@@ -82,6 +86,10 @@ namespace CompMs.MsdialImmsCore.Parser
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(EadLipidDatabaseRestorationKey key, IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> finder) {
             return new AnnotationQueryWithReferenceFactory(_refer, finder, _peakPickParameter, key.MsRefSearchParameter, ignoreIsotopicPeak: false);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(StagedLipidRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, key.MsRefSearchParameter, ignoreIsotopicPeak: true);
         }
     }
 }

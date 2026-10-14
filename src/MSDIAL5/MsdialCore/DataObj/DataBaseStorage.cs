@@ -16,10 +16,12 @@ namespace CompMs.MsdialCore.DataObj
         public DataBaseStorage(
             List<DataBaseItem<MoleculeDataBase>> metabolomicsDataBases,
             List<DataBaseItem<ShotgunProteomicsDB>> proteomicsDataBases,
-            List<DataBaseItem<EadLipidDatabase>> eadLipidomicsDataBases) {
+            List<DataBaseItem<EadLipidDatabase>> eadLipidomicsDataBases,
+            List<DataBaseItem<StagedLipidDatabase>> stagedLipidDatabases = null) {
             MetabolomicsDataBases = metabolomicsDataBases ?? new List<DataBaseItem<MoleculeDataBase>>();
             ProteomicsDataBases = proteomicsDataBases ?? new List<DataBaseItem<ShotgunProteomicsDB>>();
             EadLipidomicsDatabases = eadLipidomicsDataBases ?? new List<DataBaseItem<EadLipidDatabase>>();
+            StagedLipidDatabases = stagedLipidDatabases ?? new List<DataBaseItem<StagedLipidDatabase>>();
         }
 
         [Key(nameof(MetabolomicsDataBases))]
@@ -30,6 +32,9 @@ namespace CompMs.MsdialCore.DataObj
 
         [Key(nameof(EadLipidomicsDatabases))]
         public List<DataBaseItem<EadLipidDatabase>> EadLipidomicsDatabases { get; }
+
+        [Key(nameof(StagedLipidDatabases))]
+        public List<DataBaseItem<StagedLipidDatabase>> StagedLipidDatabases { get; }
 
         public void AddMoleculeDataBase(
             MoleculeDataBase db,
@@ -49,10 +54,17 @@ namespace CompMs.MsdialCore.DataObj
             EadLipidomicsDatabases.Add(new DataBaseItem<EadLipidDatabase>(db, annotators));
         }
 
+        public void AddStagedLipidDataBase(
+            StagedLipidDatabase db,
+            List<IAnnotatorParameterPair<StagedLipidDatabase>> annotators) {
+            StagedLipidDatabases.Add(new DataBaseItem<StagedLipidDatabase>(db, annotators));
+        }
+
         private static readonly string StoragePath = "Storage";
         private static readonly string MetabolomicsDataBasePath = "MetabolomicsDB";
         private static readonly string ProteomicsDataBasePath = "ProteomicsDB";
         private static readonly string EadLipidomicsDataBasePath = "EadLipidomicsDB";
+        private static readonly string StagedLipidDataBasePath = "StagedLipidDB";
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true)) {
                 foreach (var item in MetabolomicsDataBases) {
@@ -66,6 +78,10 @@ namespace CompMs.MsdialCore.DataObj
                 foreach (var item in EadLipidomicsDatabases) {
                     item.Save(archive, EadLipidomicsDataBasePath);
                     item.DataBase.SwitchTo(LipidDatabaseFormat.Dictionary);
+                }
+
+                foreach (var item in StagedLipidDatabases) {
+                    item.Save(archive, StagedLipidDataBasePath);
                 }
 
                 var storageEntry = archive.CreateEntry(StoragePath);
@@ -95,6 +111,10 @@ namespace CompMs.MsdialCore.DataObj
                     foreach (var item in result.EadLipidomicsDatabases) {
                         item.Load(archive, EadLipidomicsDataBasePath, visitor, factoryGenerationVisitor, projectFolderPath);
                     }
+
+                    foreach (var item in result.StagedLipidDatabases) {
+                        item.Load(archive, StagedLipidDataBasePath, visitor, factoryGenerationVisitor, projectFolderPath);
+                    }
                 }
             }
             catch (InvalidDataException) {
@@ -122,11 +142,17 @@ namespace CompMs.MsdialCore.DataObj
                     mapper.Add(pair.AnnotatorID, db.DataBase);
                 }
             }
+            foreach (var db in StagedLipidDatabases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.AnnotatorID, db.DataBase);
+                }
+            }
         }
 
         public AnnotationQueryFactoryStorage CreateQueryFactories() {
             return new AnnotationQueryFactoryStorage(
-                MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories()),
+                MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories())
+                    .Concat(StagedLipidDatabases.SelectMany(db => db.CreateQueryFactories())),
                     ProteomicsDataBases.SelectMany(db => db.CreateQueryFactories()),
                     EadLipidomicsDatabases.SelectMany(db => db.CreateQueryFactories()));
         }
@@ -149,6 +175,9 @@ namespace CompMs.MsdialCore.DataObj
             foreach (var dbPair in EadLipidomicsDatabases) {
                 SetDataBaseParameterAsSimpleText(sb, dbPair);
             }  
+            foreach (var dbPair in StagedLipidDatabases) {
+                SetDataBaseParameterAsSimpleText(sb, dbPair);
+            }
             return sb.ToString();
         }
 
