@@ -1,4 +1,5 @@
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,7 +30,9 @@ namespace CompMs.Common.Lipidomics
     /// <para>
     /// The first line is a header; columns are found by name (case-insensitive), so order and extra
     /// columns don't matter. Name is required (a species-level lipid name such as "PC 34:1"); RT
-    /// (minutes), Adduct, PrecursorMz and Formula are optional and may be left empty.
+    /// (minutes), Adduct, PrecursorMz, Formula and Class are optional and may be left empty. Class is an
+    /// LbmClass name; it overrides the class read from the name, which a species-level name can leave
+    /// ambiguous (e.g. "Cer 34:1;O2" for the ceramide subclasses).
     /// </para>
     /// </summary>
     public static class LipidSeedTsvReader
@@ -39,6 +42,7 @@ namespace CompMs.Common.Lipidomics
         public const string AdductColumn = "Adduct";
         public const string PrecursorMzColumn = "PrecursorMz";
         public const string FormulaColumn = "Formula";
+        public const string ClassColumn = "Class";
 
         public static IReadOnlyList<LipidSeed> Read(TextReader reader, out IReadOnlyList<LipidSeedReadError> errors) {
             var seeds = new List<LipidSeed>();
@@ -60,6 +64,7 @@ namespace CompMs.Common.Lipidomics
             var adduct = Array.FindIndex(columns, c => string.Equals(c, AdductColumn, StringComparison.OrdinalIgnoreCase));
             var precursorMz = Array.FindIndex(columns, c => string.Equals(c, PrecursorMzColumn, StringComparison.OrdinalIgnoreCase));
             var formula = Array.FindIndex(columns, c => string.Equals(c, FormulaColumn, StringComparison.OrdinalIgnoreCase));
+            var lipidClass = Array.FindIndex(columns, c => string.Equals(c, ClassColumn, StringComparison.OrdinalIgnoreCase));
 
             var lineNumber = 1;
             string? line;
@@ -80,6 +85,13 @@ namespace CompMs.Common.Lipidomics
                 if (lipid is null) {
                     errorList.Add(new LipidSeedReadError(lineNumber, $"'{lipidName}' is not a lipid name the parser knows"));
                     continue;
+                }
+                if (Cell(lipidClass) is string className) {
+                    if (!System.Enum.TryParse<LbmClass>(className, out var lbmClass)) {
+                        errorList.Add(new LipidSeedReadError(lineNumber, $"class '{className}' is not an LbmClass"));
+                        continue;
+                    }
+                    lipid = WithClass(lipid, lbmClass);
                 }
                 if (!TryParseOptionalDouble(Cell(rt), out var rtValue)) {
                     errorList.Add(new LipidSeedReadError(lineNumber, $"RT '{Cell(rt)}' is not a number"));
@@ -110,6 +122,11 @@ namespace CompMs.Common.Lipidomics
             using (var reader = new StreamReader(path)) {
                 return Read(reader, out errors);
             }
+        }
+
+        /// <summary>The lipid with its class replaced (same mass and chains).</summary>
+        public static ILipid WithClass(ILipid lipid, LbmClass lipidClass) {
+            return lipid.LipidClass == lipidClass ? lipid : new Lipid(lipidClass, lipid.Mass, lipid.Chains);
         }
 
         private static bool TryParseOptionalDouble(string? text, out double? value) {

@@ -154,12 +154,13 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public sealed class StagedLipidSeedRow
     {
-        public StagedLipidSeedRow(string name, double? retentionTime, string? adduct, double? precursorMz, string? formula) {
+        public StagedLipidSeedRow(string name, double? retentionTime, string? adduct, double? precursorMz, string? formula, string? lipidClass = null) {
             Name = name;
             RetentionTime = retentionTime;
             Adduct = adduct;
             PrecursorMz = precursorMz;
             Formula = formula;
+            LipidClass = lipidClass;
         }
 
         [Key(nameof(Name))]
@@ -177,13 +178,20 @@ namespace CompMs.MsdialCore.DataObj
         [Key(nameof(Formula))]
         public string? Formula { get; }
 
+        /// <summary>The LbmClass name; a species-level name alone can be ambiguous.</summary>
+        [Key(nameof(LipidClass))]
+        public string? LipidClass { get; }
+
         public static StagedLipidSeedRow From(LipidSeed seed) {
-            return new StagedLipidSeedRow(seed.Name, seed.RetentionTime, seed.Adduct?.AdductIonName, seed.PrecursorMz, seed.Formula);
+            return new StagedLipidSeedRow(seed.Name, seed.RetentionTime, seed.Adduct?.AdductIonName, seed.PrecursorMz, seed.Formula, seed.Lipid.LipidClass.ToString());
         }
 
         public LipidSeed? ToSeed() {
             if (FacadeLipidParser.Default.Parse(Name) is not ILipid lipid) {
                 return null;
+            }
+            if (LipidClass != null && System.Enum.TryParse<CompMs.Common.Enum.LbmClass>(LipidClass, out var lbmClass)) {
+                lipid = LipidSeedTsvReader.WithClass(lipid, lbmClass);
             }
             var adduct = Adduct is null ? null : AdductIon.GetAdductIon(Adduct);
             return new LipidSeed(Name, lipid, RetentionTime, adduct, adduct is null ? null : PrecursorMz, Formula);

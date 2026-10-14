@@ -46,6 +46,21 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
+        public void ReaderClassColumnOverridesTheClassReadFromTheName() {
+            var text = "Name\tClass\n" +
+                "Cer 34:1;O2\tCer_NDS\n" +
+                "Cer 34:1;O2\t\n" +
+                "Cer 34:1;O2\tNoSuchClass\n";
+
+            var seeds = LipidSeedTsvReader.Read(new StringReader(text), out var errors);
+
+            Assert.AreEqual(2, seeds.Count);
+            Assert.AreEqual(LbmClass.Cer_NDS, seeds[0].Lipid.LipidClass);
+            Assert.AreEqual(seeds[1].Lipid.Mass, seeds[0].Lipid.Mass);
+            Assert.AreEqual(4, errors.Single().LineNumber);
+        }
+
+        [TestMethod()]
         public void ReaderRequiresTheNameColumn() {
             var seeds = LipidSeedTsvReader.Read(new StringReader("RT\n1.0\n"), out var errors);
 

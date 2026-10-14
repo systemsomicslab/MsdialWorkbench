@@ -24,6 +24,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var database = new StagedLipidDatabase("DB", new[] {
                 new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1"), 5.0),
                 new LipidSeed("PE 36:2", FacadeLipidParser.Default.Parse("PE 36:2"), 6.0, AdductIon.GetAdductIon("[M-H]-"), 742.5),
+                new LipidSeed("Cer 34:1;O2", LipidSeedTsvReader.WithClass(FacadeLipidParser.Default.Parse("Cer 34:1;O2"), LbmClass.Cer_NDS), 7.0),
             });
             var lipid = FacadeLipidParser.Default.Parse("PC 16:0_18:1");
             var reference = database.GetOrAddReference(lipid, ProtonAdduct, 760.585, 5.0, new[] { new SpectrumPeak(184.07, 100) });
@@ -34,7 +35,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var loaded = new StagedLipidDatabase("DB", StagedLipidDatabase.CidCategory);
             loaded.Load(memory, null);
 
-            Assert.AreEqual(2, loaded.Seeds.Count);
+            Assert.AreEqual(3, loaded.Seeds.Count);
+            Assert.AreEqual(LbmClass.Cer_NDS, loaded.Seeds[2].Lipid.LipidClass);
             Assert.AreEqual("PC 34:1", loaded.Seeds[0].Name);
             Assert.AreEqual(5.0, loaded.Seeds[0].RetentionTime);
             Assert.IsNull(loaded.Seeds[0].Adduct);
