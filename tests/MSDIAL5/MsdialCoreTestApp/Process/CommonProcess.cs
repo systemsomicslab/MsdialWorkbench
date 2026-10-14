@@ -45,7 +45,8 @@ namespace CompMs.App.MsdialConsole.Process
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
 
             Console.WriteLine("Loading analysis files..");
-            analysisFiles = AnalysisFilesParser.ReadInput(input);
+            // Null when the person at the console declined the mixed formats: reported as no files.
+            analysisFiles = AnalysisFilesParser.ReadInput(input) ?? new List<AnalysisFileBean>();
             if (analysisFiles.IsEmptyOrNull()) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());

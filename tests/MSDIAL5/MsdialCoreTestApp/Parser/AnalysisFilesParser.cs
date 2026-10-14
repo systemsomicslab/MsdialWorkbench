@@ -12,7 +12,29 @@ namespace CompMs.App.MsdialConsole.Parser
     {
         private AnalysisFilesParser() { }
 
-        public static List<AnalysisFileBean> ReadInput(string input) {
+        /// <summary>
+        /// Reads the analysis files, asking the person at the console whether to go on when they mix raw data formats.
+        /// Returns null only when that person answers N.
+        /// </summary>
+        public static List<AnalysisFileBean>? ReadInput(string input) {
+            return ReadInput(input, Console.In, Console.Out, Console.IsInputRedirected, Console.IsOutputRedirected);
+        }
+
+        /// <summary>
+        /// Reads the analysis files, asking whether to go on when they mix raw data formats.
+        /// </summary>
+        /// <remarks>
+        /// The question is only put to a person at the console, which needs both standard input and
+        /// standard output on it. When standard input is redirected (a pipeline, a scheduler, a workflow
+        /// that starts the Console as a child process) nobody can answer: reading would either return
+        /// null at once, which used to end the run with a NullReferenceException, or wait on a pipe that
+        /// never closes. When standard output is redirected (a launcher that reads the Console's output
+        /// into a log but leaves its standard input on a terminal) nobody sees the question, and reading
+        /// would wait on that terminal. In either case, and when an interactive read reaches the end of
+        /// input, the Console prints a warning naming the formats and continues. Returns null only when
+        /// a person answers N.
+        /// </remarks>
+        internal static List<AnalysisFileBean>? ReadInput(string input, TextReader answers, TextWriter output, bool inputRedirected, bool outputRedirected) {
 
             var analysisFiles = new List<AnalysisFileBean>();
 
@@ -32,17 +54,51 @@ namespace CompMs.App.MsdialConsole.Parser
                 analysisFiles = CreateAnalysisFileBeans(list);
             }
 
-            if (isExistMultipleFormats(analysisFiles)) {
-                while (true) {
-                    Console.WriteLine("Your input contains several format files to be processed (abf, cdf, mzml, ibf, wiff)." +
-                        " Do you want to continue this process? Y/N");
-                    var userResponse = Console.ReadLine();
-                    if (userResponse.ToLower() == "n") return null;
-                    else if (userResponse.ToLower() == "y") break;
-                }
+            var formats = DataFormatsOf(analysisFiles);
+            if (formats.Count > 1 && !ContinueWithMultipleFormats(formats, answers, output, inputRedirected, outputRedirected)) {
+                return null;
             }
 
             return analysisFiles;
+        }
+
+        /// <summary>
+        /// Whether to process files of several raw data formats together. A person at the console is asked
+        /// until they answer Y or N; without one, the formats are named in a warning and processing continues.
+        /// Nobody is asked when standard input or standard output is redirected.
+        /// </summary>
+        internal static bool ContinueWithMultipleFormats(IReadOnlyList<string> formats, TextReader answers, TextWriter output, bool inputRedirected, bool outputRedirected) {
+            var named = string.Join(", ", formats);
+            if (!inputRedirected && !outputRedirected) {
+                while (true) {
+                    output.WriteLine($"Your input contains several format files to be processed ({named}). Do you want to continue this process? Y/N");
+                    var userResponse = answers.ReadLine();
+                    if (userResponse is null) break;
+                    var answer = userResponse.Trim().ToLowerInvariant();
+                    if (answer == "n") return false;
+                    if (answer == "y") return true;
+                }
+            }
+            output.WriteLine($"Warning: the input mixes raw data formats ({named}). Nobody at the console can answer whether to go on, so all of them are processed.");
+            return true;
+        }
+
+        /// <summary>
+        /// The extensions of the supported raw data files among the analysis files, lower case and sorted.
+        /// </summary>
+        internal static List<string> DataFormatsOf(List<AnalysisFileBean> files) {
+            var extensions = new List<string>();
+            foreach (var file in files) {
+                var filepath = file.AnalysisFilePath;
+                if (DataAccess.IsDataFormatSupported(filepath)) {
+                    var extension = System.IO.Path.GetExtension(filepath).ToLowerInvariant();
+                    if (!extensions.Contains(extension)) {
+                        extensions.Add(extension);
+                    }
+                }
+            }
+            extensions.Sort(StringComparer.Ordinal);
+            return extensions;
         }
 
         public static bool isCsv(string input) {
@@ -190,20 +246,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         public static bool isExistMultipleFormats(List<AnalysisFileBean> files) {
-
-            var extensions = new List<string>();
-            foreach (var file in files) {
-                var filepath = file.AnalysisFilePath;
-                if (DataAccess.IsDataFormatSupported(filepath)) {
-                    var extension = System.IO.Path.GetExtension(filepath).ToLower();
-                    if (!extensions.Contains(extension)) {
-                        extensions.Add(extension);
-                    }
-                }
-            }
-
-            if (extensions.Count > 1) return true;
-            else return false;
+            return DataFormatsOf(files).Count > 1;
         }
 
         public static List<AnalysisFileBean> ReadFolderContents(string folderpath)
