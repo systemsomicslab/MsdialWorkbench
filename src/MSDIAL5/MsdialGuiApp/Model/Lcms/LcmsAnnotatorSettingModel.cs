@@ -235,6 +235,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 case DataBaseSource.EidLipid:
                 case DataBaseSource.OadLipid:
                     return new LcmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
+                case DataBaseSource.StagedLipid:
+                    return new StagedLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
             }

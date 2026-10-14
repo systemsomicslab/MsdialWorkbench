@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -21,6 +22,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly MoleculeDataBase? _metabolomicsDB;
         private readonly ShotgunProteomicsDB? _proteomicsDB;
         private readonly EadLipidDatabase? _eadLipidDatabase;
+        private readonly StagedLipidDatabase? _stagedLipidDatabase;
         private readonly ParameterBase _parameter;
 
         public DataBaseSettingModel(ParameterBase parameter) {
@@ -46,6 +48,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     _proteomicsDB = pdb;
                     DBSource = pdb.DataBaseSource;
                     ProteomicsParameter = pdb.ProteomicsParameter;
+                    break;
+                case StagedLipidDatabase sdb:
+                    _stagedLipidDatabase = sdb;
+                    DBSource = DataBaseSource.StagedLipid;
                     break;
                 case EadLipidDatabase ldb:
                     _eadLipidDatabase = ldb;
@@ -115,6 +121,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return CreateOadLipidDatabase();
                 case DataBaseSource.EidLipid:
                     return CreateEidLipidDatabase();
+                case DataBaseSource.StagedLipid:
+                    return CreateStagedLipidDatabase();
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
@@ -167,6 +175,35 @@ namespace CompMs.App.Msdial.Model.Setting
                 default:
                     return null;
             }
+        }
+
+        public StagedLipidDatabase? CreateStagedLipidDatabase() {
+            switch (DBSource) {
+                case DataBaseSource.StagedLipid:
+                    return _stagedLipidDatabase ?? LoadStagedLipidDatabase();
+                default:
+                    return null;
+            }
+        }
+
+        // The seed file format is provisional (see LipidSeedTsvReader). Unreadable lines are reported and
+        // skipped; the readable seeds are still used.
+        private StagedLipidDatabase LoadStagedLipidDatabase() {
+            var seeds = LipidSeedTsvReader.Read(DataBasePath, out var errors);
+            if (errors.Count > 0) {
+                const int shown = 10;
+                var lines = errors.Take(shown).Select(e => e.ToString());
+                if (errors.Count > shown) {
+                    lines = lines.Append($"... and {errors.Count - shown} more");
+                }
+                MessageBroker.Default.Publish(new ErrorMessageBoxRequest
+                {
+                    ButtonType = System.Windows.MessageBoxButton.OK,
+                    Content = $"{errors.Count} line(s) of {DataBasePath} were skipped; {seeds.Count} seed(s) were read.{Environment.NewLine}" + string.Join(Environment.NewLine, lines),
+                    Caption = "Some lipid seeds could not be read.",
+                });
+            }
+            return new StagedLipidDatabase(DataBaseID, seeds);
         }
 
         private MoleculeDataBase LoadMspDataBase() {

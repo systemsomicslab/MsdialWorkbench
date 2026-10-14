@@ -38,7 +38,11 @@ namespace CompMs.App.Msdial.Model.Search
                 .EadLipidomicsDatabases
                 .SelectMany(db => db.Pairs)
                 .Select(pair => new CompoundSearcher(pair.AnnotationQueryFactory, mapper));
-            return new CompoundSearcherCollection(metabolomicsSearchers.Concat(lipidomicsSearchers));
+            var stagedLipidSearchers = databases
+                .StagedLipidDatabases
+                .SelectMany(db => db.Pairs)
+                .Select(pair => new CompoundSearcher(pair.AnnotationQueryFactory, mapper));
+            return new CompoundSearcherCollection(metabolomicsSearchers.Concat(lipidomicsSearchers).Concat(stagedLipidSearchers));
         }
     }
 }

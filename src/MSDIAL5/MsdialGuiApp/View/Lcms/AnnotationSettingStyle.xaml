@@ -3,6 +3,7 @@
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
                     xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
                     xmlns:SearchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
+                    xmlns:settingVM="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
@@ -170,6 +171,10 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type localVM:LcmsEadLipidAnnotatorSettingViewModel}">
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LcmsAnnotatorTemplate}"/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type settingVM:StagedLipidAnnotatorSettingViewModel}">
         <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LcmsAnnotatorTemplate}"/>
     </DataTemplate>
 

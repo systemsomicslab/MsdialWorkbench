@@ -184,6 +184,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     return new LcmsProteomicsAnnotatorSettingViewModel(proteomicsModel);
                 case LcmsEadLipidAnnotatorSettingModel eadLipidModel:
                     return new LcmsEadLipidAnnotatorSettingViewModel(eadLipidModel);
+                case StagedLipidAnnotatorSettingModel stagedLipidModel:
+                    return new StagedLipidAnnotatorSettingViewModel(stagedLipidModel);
                 default:
                     throw new NotSupportedException(model.GetType().Name);
             }

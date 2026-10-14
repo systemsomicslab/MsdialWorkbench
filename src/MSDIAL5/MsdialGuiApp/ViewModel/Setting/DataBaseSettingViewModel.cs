@@ -165,7 +165,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBaseSource.Fasta,
             DataBaseSource.EieioLipid,
             DataBaseSource.OadLipid,
-            DataBaseSource.EidLipid
+            DataBaseSource.EidLipid,
+            DataBaseSource.StagedLipid
         ]);
 
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
@@ -203,6 +204,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private static readonly string LbmExtension = "Lbm file(*.lbm)|*.lbm?";
         private static readonly string FastaExtension = "FASTA file(*.fasta)|*.fasta";
         private static readonly string TextExtension = "Text library(*.txt)|*.txt";
+        private static readonly string LipidSeedExtension = "Lipid seed library(*.tsv)|*.tsv";
         private List<string> OrderingExtensions() {
             var filters = new List<string>
             {
@@ -210,6 +212,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                  LbmExtension,
                  FastaExtension,
                  TextExtension,
+                 LipidSeedExtension,
                  "All(*)|*"
             };
             switch (DBSource.Value) {
@@ -224,6 +227,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 case DataBaseSource.Lbm:
                     filters.Remove(LbmExtension);
                     filters.Insert(0, LbmExtension);
+                    break;
+                case DataBaseSource.StagedLipid:
+                    filters.Remove(LipidSeedExtension);
+                    filters.Insert(0, LipidSeedExtension);
                     break;
                 case DataBaseSource.Msp:
                 default:

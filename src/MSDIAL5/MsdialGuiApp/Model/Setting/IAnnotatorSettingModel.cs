@@ -36,6 +36,13 @@ namespace CompMs.App.Msdial.Model.Setting
         IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> CreateRestorationKey(int priority);
     }
 
+    public interface IStagedLipidAnnotatorSettingModel : IAnnotatorSettingModel
+    {
+        MsRefSearchParameterBase SearchParameter { get; }
+        IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, StagedLipidDatabase db, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer);
+        IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase> CreateRestorationKey(int priority);
+    }
+
     public interface IAnnotatorSettingModelFactory
     {
         IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter);
