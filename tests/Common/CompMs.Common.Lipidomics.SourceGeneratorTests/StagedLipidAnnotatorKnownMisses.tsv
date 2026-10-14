@@ -1,0 +1,25 @@
+# Rule sets where StagedLipidAnnotatorTests cannot find the generating lipid back from its species-level seed.
+# Columns (tab separated): LipidClass, Adduct, Reason. A listed rule set that stops missing fails the test.
+LipidClass	Adduct	Reason
+ADGGA	[M+NH4]+	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+Cer_EBDS	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+Cer_EBDS	[M+CH3COO]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+Cer_EBDS	[M+HCOO]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+HBMP	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+HBMP	[M+NH4]+	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+LNAPE	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+LNAPS	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+MLCL	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+LipidA	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
+CL	[M+NH4]+	The fixture names CL as two chain pairs (26:0_34:2); expanding the 4-chain seed never reproduces that shape.
+WE	[M+NH4]+	The wax ester alcohol/acid pair (20:4/16:0) is not reproduced from the total-chain seed.
+SL	[M-H]-	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
+SL	[M+H]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
+SL	[M+NH4]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
+Cer_ABP	[M-H]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
+Cer_ABP	[M+CH3COO]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
+Cer_ABP	[M+H]+	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
+Cer_ABP	[M+HCOO]-	None of the candidates expanded from the 5-oxygen seed could be evaluated (all were skipped); not investigated further.
+OxFA	[M-H]-	TotalChainVariationGenerator caps the acyl oxidized count by the double-bond count, so FA 18:1;O2 is never generated.
+PhytoSph	[M+H]+	The single-sphingoid seed is not expanded to determined chains, so chains cannot be confirmed.
+PI_Cer	[M-H]-	The XML rule set does not pass its own class check (see StagedLipidSelfConsistencyKnownDifferences.tsv).

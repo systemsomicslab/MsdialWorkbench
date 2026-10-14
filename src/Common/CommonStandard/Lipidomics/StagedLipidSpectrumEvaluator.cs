@@ -41,6 +41,12 @@ namespace CompMs.Common.Lipidomics
         NoPositionDiagnosticIon,
         /// <summary>A position-diagnostic ion was not observed above its threshold.</summary>
         PositionDiagnosticIonMissing,
+        /// <summary>Several molecular species explain the spectrum equally well; only the class is reported.</summary>
+        MolecularSpeciesAmbiguous,
+        /// <summary>Several sn orders explain the spectrum equally well; only the molecular species is reported.</summary>
+        PositionAmbiguous,
+        /// <summary>The seed expands to more molecular species than the annotator evaluates; only the class is checked.</summary>
+        TooManyCandidates,
         /// <summary>Every stage passed.</summary>
         Resolved,
     }
@@ -50,14 +56,21 @@ namespace CompMs.Common.Lipidomics
     /// </summary>
     public sealed class StagedLipidEvaluation
     {
-        public StagedLipidEvaluation(StagedLipidLevel level, StagedLipidStopReason stopReason, IReadOnlyList<LipidFragmentMatch> matches) {
+        public StagedLipidEvaluation(StagedLipidLevel level, StagedLipidStopReason stopReason, IReadOnlyList<LipidFragmentMatch> matches, double similarity) {
             Level = level;
             StopReason = stopReason;
             Matches = matches;
+            Similarity = similarity;
         }
 
         public StagedLipidLevel Level { get; }
         public StagedLipidStopReason StopReason { get; }
+
+        /// <summary>
+        /// Cosine similarity (0-1) between the candidate's theoretical spectrum (visible fragments) and the
+        /// whole observed spectrum; unexplained observed peaks lower it. Ranks candidates of the same level.
+        /// </summary>
+        public double Similarity { get; }
 
         /// <summary>Every evaluated fragment with the observed intensity at its m/z (0 when absent).</summary>
         public IReadOnlyList<LipidFragmentMatch> Matches { get; }
@@ -117,32 +130,33 @@ namespace CompMs.Common.Lipidomics
         public StagedLipidEvaluation Evaluate(IReadOnlyList<SpectrumPeak> spectrum, LipidSpectrumResolution resolution, IReadOnlyList<LipidFragment> fragments, bool hasDeterminedChains) {
             var normalized = Normalize(spectrum);
             var matches = fragments.Select(f => Match(normalized, f)).ToList();
+            var similarity = CalculateSimilarity(normalized, fragments.Where(f => f.Rule.IsVisible));
 
             if (resolution == LipidSpectrumResolution.None) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.NotAnnotatable, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.NotAnnotatable, matches, similarity);
             }
             if (matches.Any(m => m.Fragment.Rule.Kind == LipidFragmentKind.ProhibitedIon && m.IsObserved)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ProhibitedIonObserved, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ProhibitedIonObserved, matches, similarity);
             }
             if (!AllObserved(matches, IsClassDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ClassDiagnosticIonMissing, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ClassDiagnosticIonMissing, matches, similarity);
             }
             if (resolution != LipidSpectrumResolution.MolecularSpeciesLevel) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ResolutionLimitedToSpecies, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ResolutionLimitedToSpecies, matches, similarity);
             }
             if (!hasDeterminedChains) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainsNotDetermined, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainsNotDetermined, matches, similarity);
             }
             if (!AllObserved(matches, IsChainDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainDiagnosticIonMissing, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainDiagnosticIonMissing, matches, similarity);
             }
             if (!matches.Any(m => IsPositionDiagnostic(m.Fragment.Rule))) {
-                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.NoPositionDiagnosticIon, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.NoPositionDiagnosticIon, matches, similarity);
             }
             if (!AllObserved(matches, IsPositionDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.PositionDiagnosticIonMissing, matches);
+                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.PositionDiagnosticIonMissing, matches, similarity);
             }
-            return new StagedLipidEvaluation(StagedLipidLevel.Position, StagedLipidStopReason.Resolved, matches);
+            return new StagedLipidEvaluation(StagedLipidLevel.Position, StagedLipidStopReason.Resolved, matches, similarity);
         }
 
         private static bool IsClassDiagnostic(LipidFragmentRule rule) {
@@ -169,6 +183,37 @@ namespace CompMs.Common.Lipidomics
                 }
             }
             return new LipidFragmentMatch(fragment, observed, Threshold(fragment.Rule));
+        }
+
+        // Theoretical peaks that fall on the same observed peak are summed (e.g. SN1 and SN2 ions of
+        // identical chains); theoretical peaks with no observed peak and observed peaks with no
+        // theoretical one both count against the similarity.
+        private double CalculateSimilarity(IReadOnlyList<SpectrumPeak> observed, IEnumerable<LipidFragment> theoretical) {
+            var matched = new double[observed.Count];
+            var unmatchedSquares = 0d;
+            foreach (var fragment in theoretical) {
+                var index = -1;
+                for (var i = 0; i < observed.Count; i++) {
+                    if (Math.Abs(observed[i].Mass - fragment.Mz) < _ms2Tolerance && (index < 0 || observed[i].Intensity > observed[index].Intensity)) {
+                        index = i;
+                    }
+                }
+                if (index >= 0) {
+                    matched[index] += fragment.Intensity;
+                }
+                else {
+                    unmatchedSquares += fragment.Intensity * fragment.Intensity;
+                }
+            }
+            var dot = 0d;
+            var theoreticalSquares = unmatchedSquares;
+            var observedSquares = 0d;
+            for (var i = 0; i < observed.Count; i++) {
+                dot += matched[i] * observed[i].Intensity;
+                theoreticalSquares += matched[i] * matched[i];
+                observedSquares += observed[i].Intensity * observed[i].Intensity;
+            }
+            return theoreticalSquares > 0 && observedSquares > 0 ? dot / Math.Sqrt(theoreticalSquares * observedSquares) : 0d;
         }
 
         private static double Threshold(LipidFragmentRule rule) {
