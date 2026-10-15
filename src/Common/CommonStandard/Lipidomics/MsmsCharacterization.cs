@@ -8384,11 +8384,14 @@ AdductIon adduct)
                                             }
 
                                             var sn2Carbon = sn1_2Carbon - sn1Carbon;
-
-                                            //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
-                                            if (sn2Carbon < minSn2Carbon) { break; }
-
                                             var sn2Double = sn1_2Double - sn1Double;
+
+                                            if (sn2Carbon < minSn2Carbon || sn2Carbon > maxSn2Carbon ||
+                                                sn2Double < minSn2DoubleBond || sn2Double > maxSn2DoubleBond)
+                                            {
+                                                continue;
+                                            }
+                                            //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
                                             if (sn2Double > 0)
                                             {
                                                 if ((double)(sn2Carbon / sn2Double) < 3) continue;
