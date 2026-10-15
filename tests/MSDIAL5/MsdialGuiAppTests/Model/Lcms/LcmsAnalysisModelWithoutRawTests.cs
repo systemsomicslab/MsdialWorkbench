@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj.Tests;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Utility.Tests;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -25,42 +26,29 @@ namespace CompMs.App.Msdial.Model.Lcms.Tests
     public class LcmsAnalysisModelWithoutRawTests
     {
         private string _folder = string.Empty;
+        private AnalysisFileBeanModel? _file;
 
         [TestInitialize()]
         public void Setup() {
             _folder = Path.Combine(Path.GetTempPath(), $"msdial-lcms-without-raw-{Guid.NewGuid():N}");
             Directory.CreateDirectory(_folder);
-            EnsureApplication();
-        }
-
-        // The peak spot filters are attached through Application.Current.Dispatcher, so the model needs an application
-        // whose dispatcher runs; it gets one on its own STA thread, as the application's UI thread would be.
-        private static void EnsureApplication() {
-            if (System.Windows.Application.Current is not null) {
-                return;
-            }
-            using var ready = new System.Threading.ManualResetEventSlim();
-            var thread = new System.Threading.Thread(() => {
-                _ = new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown, };
-                ready.Set();
-                System.Windows.Threading.Dispatcher.Run();
-            })
-            {
-                IsBackground = true,
-            };
-            thread.SetApartmentState(System.Threading.ApartmentState.STA);
-            thread.Start();
-            ready.Wait();
+            // The peak spot filters are attached through Application.Current.Dispatcher, so the model needs an application
+            // whose dispatcher runs.
+            TestApplication.Ensure();
         }
 
         [TestCleanup()]
         public void Cleanup() {
+            // The file model owns the .dcl reader that opening the sample creates, as the dataset's file collection
+            // does in the application, so the folder can be deleted only after it is disposed.
+            _file?.Dispose();
+            TestApplication.WaitForBackgroundWork();
             Directory.Delete(_folder, recursive: true);
         }
 
         [TestMethod()]
         public void ASampleWithoutRawDataOpensFromWhatTheProjectStores() {
-            var file = AnalysisFileBeanModelTestHelper.Create();
+            var file = _file = AnalysisFileBeanModelTestHelper.Create();
             file.AnalysisFileName = "sample";
             file.AnalysisFilePath = Path.Combine(_folder, "sample.mzML"); // not written: the raw data are missing
             file.AcquisitionType = AcquisitionType.DDA;
@@ -123,6 +111,14 @@ namespace CompMs.App.Msdial.Model.Lcms.Tests
                     Assert.AreEqual(RawDataGuard.EicTitle, model.EicModel.GraphTitle);
                     Assert.AreEqual(RawDataGuard.Ms1SpectrumTitle, model.SurveyScanModel.Elements.GraphTitle);
                 }
+                // The model borrows the .dcl reader from the file model, which keeps it for the next time the sample is
+                // opened. Once the file model is disposed too, as closing the dataset does, nothing the project stores
+                // may stay open. This is checked before any collection, so no finalizer closes a leaked stream first.
+                file.Dispose();
+                TestApplication.WaitForBackgroundWork();
+                Assert.IsFalse(TestFiles.IsOpen(file.File.DeconvolutionFilePath), "The .dcl is still open.");
+                Assert.IsFalse(TestFiles.IsOpen(file.PeakListFilePath), "The .pai2 is still open.");
+
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
