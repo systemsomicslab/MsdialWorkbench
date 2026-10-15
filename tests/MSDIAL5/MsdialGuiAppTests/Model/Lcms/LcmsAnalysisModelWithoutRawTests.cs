@@ -95,7 +95,9 @@ namespace CompMs.App.Msdial.Model.Lcms.Tests
                     new MsfinderSearcherFactory(dataBases, mapper, parameter, "MS-FINDER"),
                     new MessageBroker())) {
                     stopwatch.Stop();
-                    Assert.IsTrue(stopwatch.Elapsed < TimeSpan.FromSeconds(2), $"Opening took {stopwatch.Elapsed}.");
+                    // Reading the missing raw data would wait 5 s before its first retry (BaseDataProvider), so any retry
+                    // fails this; a cold CI runner has taken 2.8 s to open the sample without one.
+                    Assert.IsTrue(stopwatch.Elapsed < TimeSpan.FromSeconds(5), $"Opening took {stopwatch.Elapsed}.");
 
                     Assert.IsFalse(model.IsRawDataAvailable);
                     Assert.IsNull(model.EicLoader);
