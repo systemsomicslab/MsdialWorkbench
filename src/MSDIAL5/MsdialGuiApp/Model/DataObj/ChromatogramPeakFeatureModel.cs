@@ -176,11 +176,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             if (value == innerModel.TagCollection.IsSelected(tag)) {
                 return false;
             }
+            // A person's toggle: turning a tag on makes it the person's and lifts a suppression; turning off a tag a tool
+            // set (e.g. the lipid RT check's Confirmed) also suppresses it, so the tool does not set it again.
             if (value) {
-                innerModel.TagCollection.Select(tag);
+                innerModel.TagCollection.SelectByPerson(tag);
             }
             else {
-                innerModel.TagCollection.Deselect(tag);
+                innerModel.TagCollection.DeselectByPerson(tag);
             }
             OnPropertyChanged(propertyname);
             return true;

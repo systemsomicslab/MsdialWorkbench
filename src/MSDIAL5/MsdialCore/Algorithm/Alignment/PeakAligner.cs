@@ -1,8 +1,10 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -27,6 +29,12 @@ public class PeakAligner {
     public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
     private IProgress<int>? Progress { get; set; }
 
+    /// <summary>
+    /// What the lipid RT check did on the last alignment (hook B): its result for the review list, or why it did not
+    /// run. Null when the check does not apply to this kind of project.
+    /// </summary>
+    public LipidRtUnitRun? LipidRtRun { get; private set; }
+
     public PeakAligner(AlignmentProcessFactory factory, IProgress<int>? progress) {
         Accessor = factory.CreateDataAccessor();
         Joiner = factory.CreatePeakJoiner();
@@ -50,6 +58,12 @@ public class PeakAligner {
             (var refined, var ids) = Refiner.Refine(spots);
 
             var container = PackingSpots(refined);
+
+            // Hook B of the lipid RT check, shared by the Console and the GUI: the spots carry their final annotations
+            // here and are saved and exported after this. LC-MS only in this version.
+            if (Param.MachineCategory == MachineCategory.LCMS) {
+                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param);
+            }
 
             if (Param.TrackingIsotopeLabels) {
                 IsotopeTracking.SetIsotopeTrackingID(container, Param, MspDB, null);

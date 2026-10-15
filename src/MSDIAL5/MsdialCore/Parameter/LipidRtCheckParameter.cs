@@ -342,6 +342,34 @@ namespace CompMs.MsdialCore.Parameter
             return IsEnabled ?? targetOmics == TargetOmics.Lipidomics;
         }
 
+        /// <summary>
+        /// Whether processing runs the check: only on a lipidomics project, and only while it is enabled. An explicit
+        /// True on another target omics does not make it run, because the rules are lipid retention rules.
+        /// </summary>
+        public bool RunsFor(TargetOmics targetOmics) {
+            return targetOmics == TargetOmics.Lipidomics && IsEnabledFor(targetOmics);
+        }
+
+        /// <summary>
+        /// The parameter-file lines of the check. The setting lines use the keys of the Console method file, so the
+        /// values can be copied into one; the last three lines record what a run did with them.
+        /// </summary>
+        public List<string> ParametersAsText(TargetOmics targetOmics) {
+            return new List<string>
+            {
+                "Lipid RT check: " + (IsEnabled is bool enabled ? enabled.ToString() : "Auto"),
+                "Lipid RT check operating point: " + OperatingPoint,
+                "Lipid RT check chromatography: " + Chromatography,
+                "Lipid RT check plausibility profile: " + PlausibilityProfile,
+                "Lipid RT check class-level matches: " + ClassLevelPolicy,
+                "Lipid RT check minor duplicates: " + MinorDuplicatePolicy,
+                "Lipid RT check secondary-only features: " + SecondaryOnlyPolicy,
+                "Lipid RT check runs for this project: " + RunsFor(targetOmics),
+                "Lipid RT check rule version: " + RuleVersion,
+                "Lipid RT check parameter hash: " + ComputeHash(),
+            };
+        }
+
         /// <summary>The single-run reasons a Confirmed other-polarity twin may promote, as reason codes.</summary>
         /// <remarks>
         /// Stored as integers so that the parameter has no dependency on the algorithm's enum; the default is

@@ -181,6 +181,7 @@ public static class MethodFileTemplate
         w.Choice("RT correction peak selection mode", p.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode.ToString(), Enum.GetNames(typeof(RetentionTimeCorrectionPeakSelectionMode)));
         w.Comment("Between 0 and 1.");
         w.Value("RT correction peak selection RT weight", D(p.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight));
+        LipidRtCheck(w, p.LipidRtCheckParam);
         w.Section("Console output");
         w.Value("Alignment light mode", "False");
         w.Value("Detailed alignment provenance", "False");
@@ -417,6 +418,26 @@ public static class MethodFileTemplate
         w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
         w.Value("MS1 factor for alignment", F(p.Ms1AlignmentFactor));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
+    }
+
+    private static void LipidRtCheck(Writer w, LipidRtCheckParameter c) {
+        w.Section("Lipid retention-time check (Target omics: Lipidomics)");
+        w.Comment("Confirms a lipid annotation whose class, total carbons, double bonds and oxygens elute in reversed-phase order");
+        w.Comment("among the run's other MS/MS-backed annotations of the class. It only ever sets the Confirmed tag; conflicts go to");
+        w.Comment("<alignment>_lipidrt_review.tsv. Auto runs it when Target omics is Lipidomics; False turns it off.");
+        w.Choice("Lipid RT check", c.IsEnabled is bool enabled ? B(enabled) : "Auto", "Auto", "True", "False");
+        w.Comment("Strict also requires corroboration (in a single-polarity run, a second adduct of the same feature); Mid and Balanced accept weaker support.");
+        w.Choice("Lipid RT check operating point", c.OperatingPoint.ToString(), Enum.GetNames(typeof(LipidRtOperatingPoint)));
+        w.Comment("Other (HILIC, SFC, direct infusion) evaluates nothing; Auto and ReversedPhase both test the data for reversed-phase order.");
+        w.Choice("Lipid RT check chromatography", c.Chromatography.ToString(), Enum.GetNames(typeof(LipidRtChromatography)));
+        w.Comment("Mammalian adds the chain rules: no fatty chain with 7 or more double bonds; sphingolipid N-acyl and base limits. No lipid class is excluded.");
+        w.Choice("Lipid RT check plausibility profile", c.PlausibilityProfile.ToString(), Enum.GetNames(typeof(LipidRtPlausibilityProfileKind)));
+        w.Comment("A class-level-only match: Confirmed with its feature (Consistent), only when corroborated (Corroborated; in a single-polarity run, by a second adduct), or never (Never).");
+        w.Choice("Lipid RT check class-level matches", c.ClassLevelPolicy.ToString(), Enum.GetNames(typeof(LipidRtClassLevelPolicy)));
+        w.Comment("Block withholds a less intense feature of the same species name at another RT.");
+        w.Choice("Lipid RT check minor duplicates", c.MinorDuplicatePolicy.ToString(), Enum.GetNames(typeof(LipidRtMinorDuplicatePolicy)));
+        w.Comment("Block withholds a feature seen only as Na, K, Li or multiply charged ions.");
+        w.Choice("Lipid RT check secondary-only features", c.SecondaryOnlyPolicy.ToString(), Enum.GetNames(typeof(LipidRtSecondaryOnlyPolicy)));
     }
 
     private static void Filtering(Writer w, ParameterBase p) {

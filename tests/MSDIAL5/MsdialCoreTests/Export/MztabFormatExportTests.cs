@@ -508,6 +508,77 @@ namespace CompMs.MsdialCore.Export.Tests
         }
 
         /// <summary>
+        /// The lipid RT check's verdict travels as opt_global_lipid_rt_outcome, _reason and _score,
+        /// after opt_global_Ontology, and a spot it did not evaluate reads "null".
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task TheLipidRtVerdictIsWrittenAfterTheOntology() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var confirmed = container.AlignmentSpotProperties[0];
+            confirmed.LipidRtVerdict = new Algorithm.Annotation.LipidRt.LipidRtVerdict {
+                Outcome = Algorithm.Annotation.LipidRt.LipidRtOutcome.Confirmed,
+                Reason = Algorithm.Annotation.LipidRt.LipidRtReason.ConfirmedRt,
+                Score = 4.35,
+            };
+            var ineligible = container.AlignmentSpotProperties[1];
+            ineligible.LipidRtVerdict = new Algorithm.Annotation.LipidRt.LipidRtVerdict {
+                Outcome = Algorithm.Annotation.LipidRt.LipidRtOutcome.NotEvaluable,
+                Reason = Algorithm.Annotation.LipidRt.LipidRtReason.Ineligible,
+                Score = null,
+            };
+            var other = container.AlignmentSpotProperties[2];
+
+            var lines = ExportToLines(storage, container, msdecs);
+
+            var header = lines.Single(line => line.StartsWith("SMH\t")).Split('\t');
+            CollectionAssert.AreEqual(
+                new[] { "opt_global_Ontology", "opt_global_lipid_rt_outcome", "opt_global_lipid_rt_reason", "opt_global_lipid_rt_score" },
+                header.Skip(header.Length - 4).ToArray());
+            var row = SmallMoleculeRow(lines, confirmed);
+            Assert.AreEqual("Confirmed", row.Value("opt_global_lipid_rt_outcome"));
+            Assert.AreEqual("ConfirmedRt", row.Value("opt_global_lipid_rt_reason"));
+            Assert.AreEqual("4.35", row.Value("opt_global_lipid_rt_score"));
+            row = SmallMoleculeRow(lines, ineligible);
+            Assert.AreEqual("NotEvaluable", row.Value("opt_global_lipid_rt_outcome"));
+            Assert.AreEqual("Ineligible", row.Value("opt_global_lipid_rt_reason"));
+            Assert.AreEqual("null", row.Value("opt_global_lipid_rt_score"));
+            row = SmallMoleculeRow(lines, other);
+            Assert.AreEqual("null", row.Value("opt_global_lipid_rt_outcome"));
+            Assert.AreEqual("null", row.Value("opt_global_lipid_rt_reason"));
+            Assert.AreEqual("null", row.Value("opt_global_lipid_rt_score"));
+            var sml = lines.Where(line => line.StartsWith("SML\t")).Select(line => line.Split('\t')).ToList();
+            Assert.IsTrue(sml.All(f => f.Length == header.Length), "every row has the three columns");
+        }
+
+        /// <summary>
+        /// Without a verdict on any spot - the check off, or a project from before it - the SML
+        /// section is what it was: no lipid RT columns.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task WithoutVerdictsThereAreNoLipidRtColumns() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            Assert.IsTrue(container.AlignmentSpotProperties.All(s => s.LipidRtVerdict is null), "the fixture predates the check");
+
+            var lines = ExportToLines(storage, container, msdecs);
+
+            var header = lines.Single(line => line.StartsWith("SMH\t")).Split('\t');
+            Assert.AreEqual("opt_global_Ontology", header.Last());
+            Assert.IsFalse(header.Any(h => h.StartsWith("opt_global_lipid_rt_")));
+        }
+
+        /// <summary>
         /// Reads one SML row by column NAME, from the SMH line, so that adding a column does not
         /// silently shift what a test asserts.
         /// </summary>

@@ -214,6 +214,22 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual($"Normalized unit: {spot.IonAbundanceUnit}", dict["Comment"]);
         }
 
+        /// <summary>
+        /// A Confirmed tag the lipid RT check set reads in the Comment column exactly as a person's does: the source
+        /// lives in the tag file, not in the exported text.
+        /// </summary>
+        [TestMethod()]
+        public void GetContentWritesAToolsTagAsTag() {
+            IMetadataAccessor accessor = new TestMetadataAccessor(new MockRefer(), new ParameterBase { MachineCategory = MachineCategory.LCMS });
+            var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.Height, };
+            spot.TagCollection.Select(PeakSpotTag.CONFIRMED, "MsdialLipidRtCheck/1.0");
+            var suppressedOnly = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.Height, };
+            suppressedOnly.TagCollection.Suppress(PeakSpotTag.CONFIRMED);
+
+            Assert.AreEqual($"Normalized unit: {spot.IonAbundanceUnit}; Tag: Confirmed", accessor.GetContent(spot, null)["Comment"]);
+            Assert.AreEqual($"Normalized unit: {suppressedOnly.IonAbundanceUnit}", accessor.GetContent(suppressedOnly, null)["Comment"], "a suppression is not a tag");
+        }
+
         [TestMethod()]
         public void GetContentWhenLipidCompoundTest() {
             var refer = new MockRefer();

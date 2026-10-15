@@ -8,6 +8,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -110,7 +111,8 @@ namespace CompMs.MsdialCore.Export
             //SML Header
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2, hasLipidRt);
             //SML data
 
             foreach (var spot in spots)
@@ -118,13 +120,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2, hasLipidRt
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                         );
                 }
             }
@@ -217,7 +219,8 @@ namespace CompMs.MsdialCore.Export
 
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2, hasLipidRt);
 
             var smfTemp = Path.GetTempFileName();
             var smeTemp = Path.GetTempFileName();
@@ -235,7 +238,7 @@ namespace CompMs.MsdialCore.Export
                         var metadata = metaAccessor.GetContent(spot, msdec);
                         WriteSmlDataLine(
                             sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                             );
                         WriteSmfDataLine(
                             smfWriter, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -246,7 +249,7 @@ namespace CompMs.MsdialCore.Export
                         {
                             WriteSmlDataLine(
                                 sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                                 );
                             WriteSmfDataLine(
                                 smfWriter, driftSpot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -424,7 +427,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<string> SmlDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic,
             bool hasComment,
-            bool hasMs2
+            bool hasMs2,
+            bool hasLipidRt
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -537,6 +541,10 @@ namespace CompMs.MsdialCore.Export
                 LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
             }
             LineData.AddRange(SetOntology(spot));  // add 20260127
+            if (hasLipidRt)
+            {
+                LineData.AddRange(SetLipidRtVerdict(spot));
+            }
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -1072,7 +1080,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2, bool hasLipidRt)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -1124,6 +1132,14 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_user_comment");
             }
             SmlDataHeader.Add("opt_global_Ontology");
+            // The lipid RT check's verdict, after the ontology so that no existing column moves. Written when the check
+            // left a verdict on any spot; a spot it did not evaluate reads "null".
+            if (hasLipidRt)
+            {
+                SmlDataHeader.Add("opt_global_lipid_rt_outcome");
+                SmlDataHeader.Add("opt_global_lipid_rt_reason");
+                SmlDataHeader.Add("opt_global_lipid_rt_score");
+            }
 
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
@@ -1263,6 +1279,32 @@ namespace CompMs.MsdialCore.Export
         )
         {
             return new List<string>() { ValueOrNull(spot.Ontology) };
+        }
+
+        private static bool HasLipidRtVerdicts(IReadOnlyList<AlignmentSpotProperty> spots)
+        {
+            return spots.Any(s => s.LipidRtVerdict != null
+                || (s.AlignmentDriftSpotFeatures?.Any(d => d.LipidRtVerdict != null) ?? false));
+        }
+
+        /// <summary>
+        /// opt_global_lipid_rt_outcome, _reason and _score: the outcome and reason names of the lipid RT check
+        /// (e.g. "Confirmed", "ConfirmedRt") and its graded score, "null" where the spot was not evaluated.
+        /// </summary>
+        private static List<string> SetLipidRtVerdict(
+            AlignmentSpotProperty spot
+        )
+        {
+            var verdict = spot.LipidRtVerdict;
+            if (verdict is null)
+            {
+                return new List<string>() { "null", "null", "null" };
+            }
+            return new List<string>() {
+                verdict.Outcome.ToString(),
+                verdict.Reason.ToString(),
+                verdict.Score is double score ? score.ToString("R", CultureInfo.InvariantCulture) : "null",
+            };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots

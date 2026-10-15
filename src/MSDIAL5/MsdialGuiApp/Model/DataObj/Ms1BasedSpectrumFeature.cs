@@ -64,11 +64,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             if (value == _spectrumFeature.TagCollection.IsSelected(tag)) {
                 return false;
             }
+            // A person's toggle; see AlignmentSpotPropertyModel.SetPeakSpotTag.
             if (value) {
-                _spectrumFeature.TagCollection.Select(tag);
+                _spectrumFeature.TagCollection.SelectByPerson(tag);
             }
             else {
-                _spectrumFeature.TagCollection.Deselect(tag);
+                _spectrumFeature.TagCollection.DeselectByPerson(tag);
             }
             OnPropertyChanged(propertyname);
             return true;

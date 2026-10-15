@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.Normalize;
 using MessagePack;
 using System;
@@ -323,6 +324,19 @@ namespace CompMs.MsdialCore.DataObj {
 
         [IgnoreMember]
         public PeakSpotTagCollection TagCollection { get; } = new PeakSpotTagCollection();
+
+        /// <summary>
+        /// The lipid retention-time order check's verdict on this spot, for the evidence sentence and the exports; null when
+        /// the check did not evaluate it.
+        /// </summary>
+        /// <remarks>
+        /// The next key after the post-curation keys (58, 62-65). An alignment written before this key reads it as null,
+        /// because a key absent from the stored array is assigned default(T). The Confirmed tag itself is not here: it is
+        /// in <see cref="TagCollection"/>, with the check as its source. <see cref="Clone"/> copies neither, because a
+        /// clone is a new spot whose annotation a person is about to change.
+        /// </remarks>
+        [Key(66)]
+        public LipidRtVerdict LipidRtVerdict { get; set; }
 
         public AlignmentSpotProperty Clone(ref int masterId, int alignmentId) {
             var driftSpots = new List<AlignmentSpotProperty>(AlignmentDriftSpotFeatures.Count);

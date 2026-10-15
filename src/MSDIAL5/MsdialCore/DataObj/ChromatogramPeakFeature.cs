@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.Utility;
 using MessagePack;
 using System;
@@ -341,6 +342,18 @@ namespace CompMs.MsdialCore.DataObj
 
         [IgnoreMember]
         public PeakSpotTagCollection TagCollection { get; } = new PeakSpotTagCollection();
+
+        /// <summary>
+        /// The lipid retention-time order check's verdict on this peak, from the check on its own analysis file; null when
+        /// the check did not evaluate it.
+        /// </summary>
+        /// <remarks>
+        /// Key 54 is the next key after the highest one in use (53); the unused numbers below it are left alone because an
+        /// older file may hold something else there. A peak file written before this key reads it as null. The Confirmed
+        /// tag itself is in <see cref="TagCollection"/>, with the check as its source.
+        /// </remarks>
+        [Key(54)]
+        public LipidRtVerdict LipidRtVerdict { get; set; }
 
         public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram chromatogram, double mz) {
             if (peakDetectionResult == null) {
