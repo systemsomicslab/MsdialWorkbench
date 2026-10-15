@@ -1,3 +1,4 @@
+#nullable enable
 using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
