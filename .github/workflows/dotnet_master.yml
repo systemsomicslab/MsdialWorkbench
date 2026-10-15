@@ -50,8 +50,11 @@ jobs:
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
       - name: Restore packages
         run: dotnet restore /property:Configuration="Release vendor unsupported"
+      # MsdialGuiApp restores for win-x64, so System.Data.SQLite.Core contributes its
+      # runtimes/win-x64/native/netstandard2.0 and netstandard2.1 SQLite.Interop.dll, two
+      # identical files with one publish path (NETSDK1152).
       - name: Publish
-        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -p:DownloadLibrary=false -o artifact --configuration "Release vendor unsupported" --framework net48
+        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -p:DownloadLibrary=false -p:ErrorOnDuplicatePublishOutputFiles=false -o artifact --configuration "Release vendor unsupported" --framework net48
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
