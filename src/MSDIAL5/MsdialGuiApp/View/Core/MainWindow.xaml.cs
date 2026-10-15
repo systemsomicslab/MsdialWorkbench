@@ -343,9 +343,9 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            // A model can ask from off the UI thread (the dataset picker while a project is read); on it, this runs inline.
             Dispatcher.Invoke(() => {
-                var ofd = new OpenFileDialog() {
+                var ofd = new OpenFileDialog()
+                {
                     Title = request.Title,
                     Filter = request.Filter,
                 };
