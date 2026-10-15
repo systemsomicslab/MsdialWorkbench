@@ -1,0 +1,89 @@
+<Window x:Class="CompMs.App.Msdial.View.Setting.LipidRtCheckSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type viewmodel:LipidRtCheckSettingViewModel}}"
+        Title="Re-run lipid RT check" Width="560" SizeToContent="Height" ResizeMode="NoResize">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBlock" x:Key="SettingLabel">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,2"/>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="Height" Value="24"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <StackPanel Orientation="Vertical" Margin="8">
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,8"
+                   Text="Checks the retention-time order of the lipid annotations of this alignment result and sets Confirmed where the order supports an annotation. It removes only the Confirmed tags it set itself; tags set by a person or another tool stay, and a Confirmed that a person removed is not set again. Each spot's verdict is shown in the peak information panel and on the Confirmed tag."/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Operating point:" Style="{StaticResource SettingLabel}" Grid.Row="0"
+                       ToolTip="Strict: as HighPrecision, and a second adduct must corroborate. HighPrecision (default): lower and upper neighbours on at least two axes. Mid: bracket support or two axes. Balanced: one supporting direction."/>
+            <ComboBox ItemsSource="{Binding OperatingPoints}" SelectedItem="{Binding OperatingPoint.Value}" Grid.Row="0" Grid.Column="1"/>
+
+            <TextBlock Text="Chromatography:" Style="{StaticResource SettingLabel}" Grid.Row="1"
+                       ToolTip="Auto (default): the data decide whether the run shows reversed-phase order. ReversedPhase: the run is reversed phase; the data check still applies. Other: HILIC, SFC or anything else; nothing is evaluated."/>
+            <ComboBox ItemsSource="{Binding Chromatographies}" SelectedItem="{Binding Chromatography.Value}" Grid.Row="1" Grid.Column="1"/>
+
+            <TextBlock Text="Plausibility profile:" Style="{StaticResource SettingLabel}" Grid.Row="2"
+                       ToolTip="None (default): no plausibility rules. Mammalian: chain rules only (no fatty chain with 7 or more double bonds; sphingolipid N-acyl and sphingoid base rules). No lipid class is excluded or penalised."/>
+            <ComboBox ItemsSource="{Binding PlausibilityProfiles}" SelectedItem="{Binding PlausibilityProfile.Value}" Grid.Row="2" Grid.Column="1"/>
+
+            <TextBlock Text="Class-level matches:" Style="{StaticResource SettingLabel}" Grid.Row="3"
+                       ToolTip="Corroborated (default): a match resolved at the class level only is Confirmed only with a second adduct of the same feature. Consistent: Confirmed with its feature. Never: never Confirmed, still used as order evidence."/>
+            <ComboBox ItemsSource="{Binding ClassLevelPolicies}" SelectedItem="{Binding ClassLevelPolicy.Value}" Grid.Row="3" Grid.Column="1"/>
+
+            <TextBlock Text="Minor duplicates:" Style="{StaticResource SettingLabel}" Grid.Row="4"
+                       ToolTip="Allow (default). Block: a less intense feature with the same species name at another RT is not Confirmed; for data with many false positives."/>
+            <ComboBox ItemsSource="{Binding MinorDuplicatePolicies}" SelectedItem="{Binding MinorDuplicatePolicy.Value}" Grid.Row="4" Grid.Column="1"/>
+        </Grid>
+
+        <TextBlock Text="{Binding CannotRunReason, Mode=OneTime}" Foreground="Red" TextWrapping="Wrap" Margin="0,8,0,0"
+                   Visibility="{Binding CannotRun, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}"/>
+        <TextBlock Text="The check is switched off in this project's parameters (Lipid RT check: False). Running it here switches it back to Auto, which is on for lipidomics projects."
+                   TextWrapping="Wrap" Margin="0,8,0,0"
+                   Visibility="{Binding IsSwitchedOff.Value, Converter={StaticResource BooleanToVisibility}}"/>
+        <TextBlock Text="The settings are kept in the project and used by the next processing. The alignment result is saved after the run."
+                   TextWrapping="Wrap" Margin="0,8,0,0" Foreground="Gray"/>
+
+        <TextBox Text="{Binding Summary.Value, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap"
+                 MinHeight="48" Margin="0,8,0,0" VerticalScrollBarVisibility="Auto"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="8,0,0,0"/>
+                    <Setter Property="Height" Value="24"/>
+                    <Setter Property="Width" Value="80"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Run" Command="{Binding RunCommand}"/>
+            <Button Content="Close" Command="Close"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

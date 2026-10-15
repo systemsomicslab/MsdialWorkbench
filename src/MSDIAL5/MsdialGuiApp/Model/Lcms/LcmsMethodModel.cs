@@ -489,5 +489,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             return new MscleanrSettingModel(_storage.Parameter, AlignmentModel.Ms1Spots);
         }
+
+        /// <summary>
+        /// The "Re-run lipid RT check" settings for the loaded alignment result, or null when none is loaded. The run saves
+        /// the result the way the GUI saves it when another result is opened or the project is saved.
+        /// </summary>
+        public LipidRtCheckSettingModel? ShowLipidRtCheckSettingView() {
+            var alignmentModel = AlignmentModel;
+            if (alignmentModel is null) {
+                return null;
+            }
+            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, alignmentModel.SaveAsync);
+        }
     }
 }

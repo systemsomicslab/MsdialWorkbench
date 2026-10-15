@@ -6,6 +6,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -13,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject, IPeakSpotTagEditable {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -185,8 +186,31 @@ namespace CompMs.App.Msdial.Model.DataObj
                 innerModel.TagCollection.DeselectByPerson(tag);
             }
             OnPropertyChanged(propertyname);
+            OnPropertyChanged(nameof(ConfirmedDetail));
             return true;
         }
+
+        public PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag) {
+            return PeakSpotTagState.Capture(innerModel.TagCollection, tag);
+        }
+
+        public void RestorePeakSpotTag(PeakSpotTagState state) {
+            if (state is null) {
+                throw new ArgumentNullException(nameof(state));
+            }
+            state.RestoreTo(innerModel.TagCollection);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(state.Tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
+        /// <summary>The lipid RT check's verdict on this peak (hook A); null when the check has none (addendum B2).</summary>
+        public LipidRtVerdict? LipidRtVerdict => innerModel.LipidRtVerdict;
+
+        /// <summary>
+        /// Who set or removed the Confirmed tag, and the lipid RT check's verdict, for the tag's tooltip; null when there is
+        /// nothing to add to the tag itself.
+        /// </summary>
+        public string? ConfirmedDetail => LipidRtCheckDescription.ConfirmedDetail(innerModel.TagCollection, innerModel.LipidRtVerdict);
 
         public void SwitchPeakSpotTag(PeakSpotTag tag) {
             if (tag == PeakSpotTag.CONFIRMED) {

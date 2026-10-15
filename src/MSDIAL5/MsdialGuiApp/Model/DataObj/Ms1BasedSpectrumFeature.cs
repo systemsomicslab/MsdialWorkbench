@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class Ms1BasedSpectrumFeature : BindableBase, IDisposable, IAnnotatedObject
+    public sealed class Ms1BasedSpectrumFeature : BindableBase, IDisposable, IAnnotatedObject, IPeakSpotTagEditable
     {
         private SpectrumFeature _spectrumFeature;
         private bool _disposedValue;
@@ -72,8 +72,26 @@ namespace CompMs.App.Msdial.Model.DataObj
                 _spectrumFeature.TagCollection.DeselectByPerson(tag);
             }
             OnPropertyChanged(propertyname);
+            OnPropertyChanged(nameof(ConfirmedDetail));
             return true;
         }
+
+        public PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag) {
+            return PeakSpotTagState.Capture(_spectrumFeature.TagCollection, tag);
+        }
+
+        public void RestorePeakSpotTag(PeakSpotTagState state) {
+            if (state is null) {
+                throw new ArgumentNullException(nameof(state));
+            }
+            state.RestoreTo(_spectrumFeature.TagCollection);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(state.Tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
+        /// <summary>Who set or removed the Confirmed tag, for the tag's tooltip; null when a person set it or it is off.</summary>
+        /// <remarks>GC-MS has no lipid RT check, so there is never a verdict here.</remarks>
+        public string? ConfirmedDetail => LipidRtCheckDescription.ConfirmedDetail(_spectrumFeature.TagCollection, null);
 
         public void SwitchPeakSpotTag(PeakSpotTag tag) {
             if (tag == PeakSpotTag.CONFIRMED) {
