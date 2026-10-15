@@ -343,14 +343,17 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            var ofd = new OpenFileDialog() {
-                Title = request.Title,
-                Filter = request.Filter,
-            };
+            // A model can ask from off the UI thread (the dataset picker while a project is read); on it, this runs inline.
+            Dispatcher.Invoke(() => {
+                var ofd = new OpenFileDialog() {
+                    Title = request.Title,
+                    Filter = request.Filter,
+                };
 
-            if (ofd.ShowDialog(this) == true) {
-                request.Run(ofd.FileName);
-            }
+                if (ofd.ShowDialog(this) == true) {
+                    request.Run(ofd.FileName);
+                }
+            });
         }
 
         private void SelectFolderPath(SelectFolderRequest request) {

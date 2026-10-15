@@ -86,6 +86,39 @@ namespace CompMs.App.Msdial.Model.Core.Tests
                 MessageHelper.LocateDatasetFileTitle("Dataset1.mddata", Path.Combine("Folder", "Dataset1_Loaded.msp2.dbs")));
         }
 
+        // The picker is the view's: reading the datasets asks for it through the broker, after the message about the same dataset.
+        [TestMethod()]
+        public async Task ThePickerIsAskedForThroughTheBrokerAfterTheMessage() {
+            var missing = Path.Combine("Folder", "Dataset1_Loaded.msp2.dbs");
+            var serializer = new FakeSerializer(title => new FileNotFoundException($"Could not find file '{missing}'.", missing));
+            var stream = await SaveProjectAsync(serializer, "Dataset1.mddata");
+            var pickers = new List<(OpenFileRequest Request, int MessagesBefore)>();
+            // Nothing is picked, as when the picker is cancelled.
+            _broker.Subscribe<OpenFileRequest>(request => { lock (_messages) { pickers.Add((request, _messages.Count)); } });
+
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => ProjectModel.ReadDatasetsAsync(streamManager, serializer, _ => null!, "Folder",
+                    (parameter, missingPath) => ProjectModel.LocateDatasetFileAsync(_broker, parameter, missingPath),
+                    _broker));
+            }
+
+            var (request, messagesBefore) = pickers.Single();
+            Assert.AreEqual(1, messagesBefore);
+            Assert.AreEqual(MessageHelper.LocateDatasetFileTitle("Dataset1.mddata", missing), request.Title);
+            Assert.AreEqual("Dataset file(.mddata)|*.mddata|All(*)|*", request.Filter);
+            Assert.IsTrue(request.RestoreDirectory);
+        }
+
+        [TestMethod()]
+        public async Task LocatingReturnsTheFilePickedInTheView() {
+            var picked = Path.Combine("Elsewhere", "Dataset1.mddata");
+            _broker.Subscribe<OpenFileRequest>(request => request.Run(picked));
+
+            var actual = await ProjectModel.LocateDatasetFileAsync(_broker, new ProjectBaseParameter { ProjectFileName = "Dataset1.mddata", }, null);
+
+            Assert.AreEqual(picked, actual);
+        }
+
         [TestMethod()]
         public async Task AProjectOpensWithTheDatasetsThatLoad() {
             var serializer = new FakeSerializer(title => title == "Dataset1.mddata" ? new InvalidDataException($"{title} is corrupt") : null);
