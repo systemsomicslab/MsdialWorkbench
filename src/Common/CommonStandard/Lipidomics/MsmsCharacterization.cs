@@ -8391,7 +8391,7 @@ AdductIon adduct)
                                             var sn2Double = sn1_2Double - sn1Double;
                                             if (sn2Double > 0)
                                             {
-                                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                                             }
 
                                             var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
@@ -8495,7 +8495,7 @@ AdductIon adduct)
                                         var sn2Double = sn1_2Double - sn1Double;
                                         if (sn2Double > 0)
                                         {
-                                            if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                            if ((double)(sn2Carbon / sn2Double) < 3) continue;
                                         }
 
                                         var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
@@ -9003,7 +9003,7 @@ AdductIon adduct)
 
                             if (sn2Double > 0)
                             {
-                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                             }
 
                             var NL_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-SN1(HFA)-H]-
@@ -9085,7 +9085,7 @@ AdductIon adduct)
 
                             if (sn2Double > 0)
                             {
-                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                             }
 
                             var NL_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass; // extra FA loss
