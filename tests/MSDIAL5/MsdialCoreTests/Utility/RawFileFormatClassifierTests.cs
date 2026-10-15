@@ -250,6 +250,48 @@ public class RawFileFormatClassifierTests
         Assert.AreEqual(RawFileFormat.Unknown, RawFileFormatClassifier.Resolve(gone));
     }
 
+    /// <summary>
+    /// A recorded format is never replaced, so it can outlive the file it was recorded for: another file of the same
+    /// extension may since have taken its place. A file on disk is described by what is there.
+    /// </summary>
+    [DataTestMethod()]
+    // content: as in ADotDIsToldByWhatItHolds, at the path itself; "file" for a plain file there.
+    [DataRow("sample.raw", "", RawFileFormat.ThermoRaw, RawFileFormat.WatersRaw)]
+    [DataRow("sample.RAW", "file", RawFileFormat.WatersRaw, RawFileFormat.ThermoRaw)]
+    [DataRow("sample.d", "analysis.tdf", RawFileFormat.BrukerBaf, RawFileFormat.BrukerTdf)]
+    [DataRow("sample.d", "AcqData/", RawFileFormat.BrukerTdf, RawFileFormat.AgilentMassHunterD)]
+    [DataRow("SAMPLE.D", "analysis.baf", RawFileFormat.AgilentMassHunterD, RawFileFormat.BrukerBaf)]
+    public void AFileOnDiskIsDescribedByWhatItIsWhateverWasRecorded(string name, string content, RawFileFormat recorded, RawFileFormat expected) {
+        var path = Path.Combine(_folder, name);
+        if (content == "file") {
+            File.WriteAllBytes(path, new byte[0]);
+        }
+        else {
+            Directory.CreateDirectory(path);
+            if (content.EndsWith("/")) {
+                Directory.CreateDirectory(Path.Combine(path, content.TrimEnd('/')));
+            }
+            else if (content.Length > 0) {
+                File.WriteAllBytes(Path.Combine(path, content), new byte[0]);
+            }
+        }
+        var file = new AnalysisFileBean { AnalysisFilePath = path, RawFileFormat = recorded, };
+
+        Assert.AreEqual(expected, RawFileFormatClassifier.Resolve(file));
+        Assert.AreEqual(recorded, file.RawFileFormat, "resolving does not change what is recorded");
+    }
+
+    /// <summary>
+    /// A vendor folder whose marker is gone but which is still there tells nothing, so the recorded format describes it.
+    /// </summary>
+    [TestMethod()]
+    public void AFolderThatNoLongerTellsItsFormatIsDescribedByTheRecord() {
+        var folder = Path.Combine(_folder, "emptied.d");
+        Directory.CreateDirectory(folder);
+
+        Assert.AreEqual(RawFileFormat.BrukerTsf, RawFileFormatClassifier.Resolve(new AnalysisFileBean { AnalysisFilePath = folder, RawFileFormat = RawFileFormat.BrukerTsf, }));
+    }
+
     [TestMethod()]
     public void NothingRecordedIsToldFromTheDisk() {
         var path = Path.Combine(_folder, "sample.raw");

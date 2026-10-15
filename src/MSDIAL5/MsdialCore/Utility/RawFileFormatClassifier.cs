@@ -76,15 +76,22 @@ namespace CompMs.MsdialCore.Utility
         }
 
         /// <summary>
-        /// The format to describe <paramref name="file"/> by: the recorded one when it fits the file's extension, which
-        /// holds after the raw data are gone; otherwise what <see cref="Classify"/> tells from the disk now.
+        /// The format to describe <paramref name="file"/> by: what <see cref="Classify"/> tells from the disk now, and when
+        /// the disk cannot tell (the raw data are deleted or moved), the recorded format when it fits the file's extension.
         /// </summary>
+        /// <remarks>
+        /// The disk comes first because a format is recorded once and never replaced: if another file of the same extension
+        /// later takes the place of the recorded one (a Waters .raw folder where a Thermo .raw file was), the record no
+        /// longer describes what is at the path. A file on disk is therefore described by what is there, and the record is
+        /// used only for what the disk can no longer tell.
+        /// </remarks>
         public static RawFileFormat Resolve(AnalysisFileBean file) {
-            var recorded = file.RawFileFormat;
-            if (recorded != RawFileFormat.Unknown && IsConsistentWith(recorded, ExtensionOrNull(file.AnalysisFilePath))) {
-                return recorded;
+            var onDisk = Classify(file.AnalysisFilePath);
+            if (onDisk != RawFileFormat.Unknown) {
+                return onDisk;
             }
-            return Classify(file.AnalysisFilePath);
+            var recorded = file.RawFileFormat;
+            return IsConsistentWith(recorded, ExtensionOrNull(file.AnalysisFilePath)) ? recorded : RawFileFormat.Unknown;
         }
 
         private static RawFileFormat ClassifyDotRaw(string path) {

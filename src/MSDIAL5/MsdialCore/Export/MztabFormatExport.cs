@@ -1557,9 +1557,9 @@ namespace CompMs.MsdialCore.Export
                 var analysisFilePath = files[i].AnalysisFilePath;
                 var analysisFileExtention = Path.GetExtension(analysisFilePath).ToUpper();
 
-                // The format recorded while the raw data were present comes first, so a file whose raw data have since
-                // been deleted or moved is still described by what it was; a file with nothing recorded (a project saved
-                // before formats were recorded) is described by what the disk shows now.
+                // A file on disk is described by what the disk shows, as before formats were recorded. A file whose raw
+                // data have since been deleted or moved is described by the format recorded while they were present; with
+                // nothing recorded (a project saved before formats were recorded) it gets the unknown terms.
                 var (msRunFormat, msRunIDFormat) = MsRunFormatTerms(RawFileFormatClassifier.Resolve(files[i]), analysisFileExtention);
                 msRunIDFormat = "[,, MS-DIAL set Datapoint Number, ]";
                 var id = files[i].AnalysisFileId + 1;

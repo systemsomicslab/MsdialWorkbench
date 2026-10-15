@@ -382,6 +382,44 @@ namespace CompMs.MsdialCore.Export.Tests
         }
 
         /// <summary>
+        /// A recorded format is never replaced, so it can outlive the file it was recorded for. Raw data on disk are
+        /// described by what is there, exactly as before formats were recorded: a Waters folder where a Thermo file was
+        /// recorded is Waters, and a Thermo file where a Waters folder was recorded is Thermo.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task RawDataOnDiskAreDescribedByWhatIsThereWhateverWasRecorded() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-replaced-{System.Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try {
+                Assert.AreEqual(2, storage.AnalysisFiles.Count);
+                var waters = Path.Combine(scratch, "was_thermo.raw");
+                Directory.CreateDirectory(waters);
+                storage.AnalysisFiles[0].AnalysisFilePath = waters;
+                storage.AnalysisFiles[0].RawFileFormat = RawFileFormat.ThermoRaw;
+                var thermo = Path.Combine(scratch, "was_waters.RAW");
+                File.WriteAllBytes(thermo, new byte[0]);
+                storage.AnalysisFiles[1].AnalysisFilePath = thermo;
+                storage.AnalysisFiles[1].RawFileFormat = RawFileFormat.WatersRaw;
+
+                var formats = MsRunFormats(ExportToLines(storage, container, msdecs));
+
+                CollectionAssert.AreEqual(new[] { "[MS, MS:1000526, Waters raw format, ]", "[MS, MS:1000563, Thermo RAW format, ]" }, formats);
+                Assert.AreEqual(RawFileFormat.ThermoRaw, storage.AnalysisFiles[0].RawFileFormat, "exporting does not change what is recorded");
+                Assert.AreEqual(RawFileFormat.WatersRaw, storage.AnalysisFiles[1].RawFileFormat, "exporting does not change what is recorded");
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        /// <summary>
         /// Registration to export: the format is recorded while the raw data are present, the project is saved, the raw
         /// data are deleted, and the project reloaded from what was saved still names each format with its PSI-MS term.
         /// </summary>
