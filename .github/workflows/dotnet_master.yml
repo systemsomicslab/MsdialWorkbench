@@ -84,10 +84,14 @@ jobs:
             ${{ runner.os }}-nuget-
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      # The console legs restore without locked mode: --runtime makes every project in the
+      # chain restore for a runtime identifier its lock file does not list (NU1004), and on
+      # Linux and macOS the SDK adds reference-assembly packages to the .NET Framework
+      # targets. The test job keeps the locked restore that checks the lock files.
       - name: Restore packages
-        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Release vendor unsupported"
+        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Release vendor unsupported" /property:RestoreLockedMode=false
       - name: Publish
-        run: dotnet publish tests/MSDIAL5/MsdialCoreTestApp/MsdialCoreTestApp.csproj -p:DebugSymbols=false -p:DebugType=None -p:ErrorOnDuplicatePublishOutputFiles=false -p:DownloadLibrary=false -o artifact --configuration "Release vendor unsupported" --runtime ${{ matrix.triple.runtime }} --framework ${{ matrix.triple.framework }}  --self-contained
+        run: dotnet publish tests/MSDIAL5/MsdialCoreTestApp/MsdialCoreTestApp.csproj -p:DebugSymbols=false -p:DebugType=None -p:ErrorOnDuplicatePublishOutputFiles=false -p:DownloadLibrary=false -p:RestoreLockedMode=false -o artifact --configuration "Release vendor unsupported" --runtime ${{ matrix.triple.runtime }} --framework ${{ matrix.triple.framework }}  --self-contained
       - name: Copy licenses
         run: |
             cp LGPL.txt artifact
@@ -148,10 +152,11 @@ jobs:
             ${{ runner.os }}-nuget-
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      # Unlocked restore for the same reasons as publish-msdial5-console.
       - name: Restore packages
-        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Release vendor unsupported"
+        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Release vendor unsupported" /property:RestoreLockedMode=false
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }} -p:DownloadLibrary=false
+        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }} -p:DownloadLibrary=false -p:RestoreLockedMode=false
       - name: Copy licenses
         run: |
             cp LGPL.txt artifact
