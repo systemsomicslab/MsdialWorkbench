@@ -19677,7 +19677,7 @@ AdductIon adduct)
                             for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                             {
                                 var sn2Carbon = totalCarbon - sn1Carbon;
-                                var sn2Double = totalDoubleBond - sn1Double;
+                                var sn2Double = totalDoubleBond - sn1Double - 1;
 
                                 var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + H2O - MassDiffDictionary.HydrogenMass;
 
@@ -19726,7 +19726,7 @@ AdductIon adduct)
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
-                            var sn2Double = totalDoubleBond - sn1Double;
+                            var sn2Double = totalDoubleBond - sn1Double - 1;
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + H2O - MassDiffDictionary.HydrogenMass;
                             var sn2Fragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
