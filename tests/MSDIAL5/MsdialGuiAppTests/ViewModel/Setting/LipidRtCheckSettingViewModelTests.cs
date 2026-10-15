@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Setting.Tests;
 using CompMs.Common.Enum;
@@ -19,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             var parameter = LipidRtTestSpots.Lipidomics();
             var spots = LipidRtTestSpots.Spots();
             var saves = 0;
-            var model = new LipidRtCheckSettingModel(parameter, spots.Select(s => new AlignmentSpotPropertyModel(s)).ToList(), () => { saves++; return Task.CompletedTask; });
+            var model = new LipidRtCheckSettingModel(parameter, spots.Select(s => new AlignmentSpotPropertyModel(s)).ToList(), () => { saves++; return Task.CompletedTask; }, new UndoManager());
             using var viewModel = new LipidRtCheckSettingViewModel(model);
 
             CollectionAssert.AreEqual(new[] { LipidRtOperatingPoint.Strict, LipidRtOperatingPoint.HighPrecision, LipidRtOperatingPoint.Mid, LipidRtOperatingPoint.Balanced }, viewModel.OperatingPoints.ToArray());
@@ -46,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         public void RunIsDisabledWhereTheCheckCannotRun() {
             var parameter = LipidRtTestSpots.Lipidomics();
             parameter.TargetOmics = TargetOmics.Proteomics;
-            var model = new LipidRtCheckSettingModel(parameter, new AlignmentSpotPropertyModel[0], () => Task.CompletedTask);
+            var model = new LipidRtCheckSettingModel(parameter, new AlignmentSpotPropertyModel[0], () => Task.CompletedTask, new UndoManager());
             using var viewModel = new LipidRtCheckSettingViewModel(model);
 
             Assert.IsTrue(viewModel.CannotRun);

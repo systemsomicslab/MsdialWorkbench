@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
@@ -11,6 +12,7 @@ using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -263,6 +265,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var parameter = _storage.Parameter;
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
+            var lipidRtRuns = new List<(string Unit, LipidRtUnitRun? Run)>();
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
@@ -282,6 +285,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
                     return;
                 }
+                lipidRtRuns.AddRange(processor.LipidRtFailures.Select(failure => (failure.File, (LipidRtUnitRun?)failure.Run)));
             }
 
             // Run second process
@@ -292,12 +296,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(_storage))
+                if (!ProcessAlignment(_storage, lipidRtRuns))
                     return;
             }
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;
             AutoParametersSave(starttimestamp, ts, parameter);
+
+            // The lipid RT check reports a failure only on the Console, which the GUI does not show; tell the person once,
+            // after processing, rather than leave results without verdicts looking like ones where it found nothing.
+            if (LipidRtCheckDescription.ProcessingFailures(lipidRtRuns) is string lipidRtNotice) {
+                _broker.Publish(new ShortMessageRequest(lipidRtNotice));
+            }
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
@@ -347,6 +357,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public bool ProcessAlignment(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+            return ProcessAlignment(storage, null);
+        }
+
+        /// <param name="lipidRtRuns">Receives what the lipid RT check did on the alignment (hook B), when not null.</param>
+        private bool ProcessAlignment(IMsdialDataStorage<MsdialLcmsParameter> storage, List<(string Unit, LipidRtUnitRun? Run)>? lipidRtRuns) {
+            (string Unit, LipidRtUnitRun? Run)? lipidRtRun = null;
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm =>
                 {
@@ -360,6 +376,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
                     var alignmentFileModel = AlignmentFiles.Files.Last();
                     var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
+                    lipidRtRun = (alignmentFileModel.FileName, aligner.LipidRtRun);
 
                     if (storage.DataBases.ProteomicsDataBases.Any()) {
                         new ProteomeDataAnnotator().MappingToProteinDatabase(
@@ -379,6 +396,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                     await Task.WhenAll(tasks).ConfigureAwait(false);
                 });
             _broker.Publish(request);
+            if (lipidRtRun.HasValue) {
+                lipidRtRuns?.Add(lipidRtRun.Value);
+            }
             return request.Result ?? false;
         }
 
@@ -499,7 +519,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (alignmentModel is null) {
                 return null;
             }
-            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, alignmentModel.SaveAsync);
+            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, alignmentModel.SaveAsync, alignmentModel.UndoManager);
         }
     }
 }

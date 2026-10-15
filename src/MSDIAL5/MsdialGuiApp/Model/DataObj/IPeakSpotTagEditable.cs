@@ -10,6 +10,12 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         bool Confirmed { get; set; }
 
+        /// <summary>
+        /// A person turns the tag on, or takes it over where a tool set it: afterwards it is selected as the person's, so
+        /// the tool will not withdraw it, and not suppressed. Setting a tag property does nothing for a tag that is on.
+        /// </summary>
+        void SelectPeakSpotTagByPerson(PeakSpotTag tag);
+
         PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag);
 
         void RestorePeakSpotTag(PeakSpotTagState state);

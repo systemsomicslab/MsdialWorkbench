@@ -8,14 +8,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
 {
     /// <summary>
-    /// The new MessagePack keys: the verdict on ChromatogramPeakFeature (key 54) and AlignmentSpotProperty (key 66), and
+    /// The new MessagePack keys: the verdict on ChromatogramPeakFeature (key 56) and AlignmentSpotProperty (key 66), and
     /// the check's parameter on ParameterBase (key 18). A file written before each key must load, and must not come back
-    /// claiming a verdict or losing the check's defaults.
+    /// claiming a verdict or losing the check's defaults. A peak file must also still open in both directions with the
+    /// MS-DIAL 5.6 line, which holds an enum at keys 54 and 55 of ChromatogramPeakFeature.
     /// </summary>
     /// <remarks>
-    /// "Written before the key" is a real payload re-encoded one element shorter, as in
-    /// MsScanMatchResultBackwardCompatibilityTests: an int-keyed object is an array indexed by key, so the payload of the
-    /// version before is the current one without its last element.
+    /// "Written before the key" is a real payload re-encoded shorter, as in MsScanMatchResultBackwardCompatibilityTests: an
+    /// int-keyed object is an array indexed by key, so the payload of the version before is the current one without its
+    /// last elements.
     /// </remarks>
     [TestClass]
     public class LipidRtPersistenceTests
@@ -46,11 +47,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
         }
 
         [TestMethod]
-        public void APeakWrittenBeforeKey54LoadsWithoutAVerdict() {
+        public void APeakWrittenBeforeKey56LoadsWithoutAVerdict() {
             var peak = Peak();
             peak.LipidRtVerdict = Verdict();
             var full = MessagePackSerializer.Serialize(peak);
-            Assert.AreEqual(55, MessagePackBinary.ReadArrayHeader(full, 0, out _), "key 54 is the last key");
+            Assert.AreEqual(57, MessagePackBinary.ReadArrayHeader(full, 0, out _), "key 56 is the last key");
 
             var actual = MessagePackSerializer.Deserialize<ChromatogramPeakFeature>(Truncate(full, 54));
 
@@ -58,6 +59,52 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             Assert.AreEqual(42, actual.MasterPeakID, "the members that were present survive");
             Assert.AreEqual(760.5851, actual.PeakFeature.Mass, 1e-9);
             Assert.IsNull(actual.LipidRtVerdict, "an older peak file claims no verdict");
+            Assert.AreEqual(0, actual.ReservedRawDataIDType);
+        }
+
+        [TestMethod]
+        public void APeakFileOfTheMsdial56LineLoadsWithoutAVerdictAndKeepsItsKeys54And55() {
+            // A 5.6 peak file: 56 elements, with SpectrumIDType integers (1 = Raw) at keys 54 and 55 and nothing after.
+            var peak = Peak();
+            peak.ReservedRawDataIDType = 1;
+            peak.ReservedAccumulatedDataIDType = 1;
+            var msdial56 = Truncate(MessagePackSerializer.Serialize(peak), 56);
+            Assert.AreEqual(1, ReadInt32At(msdial56, 54));
+            Assert.AreEqual(1, ReadInt32At(msdial56, 55));
+
+            var actual = MessagePackSerializer.Deserialize<ChromatogramPeakFeature>(msdial56);
+
+            Assert.AreEqual(42, actual.MasterPeakID);
+            Assert.IsNull(actual.LipidRtVerdict, "the integer at key 54 is not read as a verdict");
+            Assert.AreEqual(1, actual.ReservedRawDataIDType);
+            Assert.AreEqual(1, actual.ReservedAccumulatedDataIDType);
+
+            var saved = MessagePackSerializer.Serialize(actual);
+            Assert.AreEqual(1, ReadInt32At(saved, 54), "saving here keeps what 5.6 wrote");
+            Assert.AreEqual(1, ReadInt32At(saved, 55));
+        }
+
+        [TestMethod]
+        public void APeakFileWrittenHereOpensInTheMsdial56Line() {
+            var peak = Peak();
+            peak.LipidRtVerdict = Verdict();
+            var full = MessagePackSerializer.Serialize(peak);
+
+            var read = MessagePackSerializer.Deserialize<PeakAsMsdial56ReadsIt>(full);
+
+            Assert.AreEqual(Msdial56SpectrumIDType.Index, read.RawDataIDType, "the raw spectrum IDs here are indices");
+            Assert.AreEqual(Msdial56SpectrumIDType.Index, read.AccumulatedDataIDType);
+            Assert.AreEqual(42, read.MasterPeakID);
+        }
+
+        [TestMethod]
+        public void TheMsdial56LineCannotReadNilAtKey54() {
+            // Why keys 54 and 55 are written as integers rather than left to MessagePack, which writes nil for a key with
+            // no member: the 5.6 reader's enum formatter does not accept nil, so such a file would not open there.
+            var withNil = MessagePackSerializer.Serialize(new PeakWithNothingAtKeys54And55 { MasterPeakID = 42 });
+            Assert.AreEqual(MessagePackType.Nil, MessagePackBinary.GetMessagePackType(withNil, OffsetOf(withNil, 54)));
+
+            Assert.ThrowsException<System.InvalidOperationException>(() => MessagePackSerializer.Deserialize<PeakAsMsdial56ReadsIt>(withNil));
         }
 
         [TestMethod]
@@ -177,6 +224,53 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
                 Name = "TG 52:2",
                 IsRmdFilteredByPostCurator = true,
             };
+        }
+
+        /// <summary>The key of ChromatogramPeakFeature.MasterPeakID, the same in both lines.</summary>
+        private const int MasterPeakIdKey = 11;
+
+        /// <summary>SpectrumIDType of the MS-DIAL 5.6 line, which this line does not have.</summary>
+        public enum Msdial56SpectrumIDType
+        {
+            Index,
+            Raw,
+        }
+
+        /// <summary>What a reader of the MS-DIAL 5.6 line reads at keys 54 and 55 of a peak, and one key before them.</summary>
+        [MessagePackObject]
+        public sealed class PeakAsMsdial56ReadsIt
+        {
+            [Key(MasterPeakIdKey)]
+            public int MasterPeakID { get; set; }
+            [Key(54)]
+            public Msdial56SpectrumIDType RawDataIDType { get; set; }
+            [Key(55)]
+            public Msdial56SpectrumIDType AccumulatedDataIDType { get; set; }
+        }
+
+        /// <summary>
+        /// A peak with no member at keys 54 and 55 and one after them, as ChromatogramPeakFeature would be with the verdict
+        /// at key 56 and no reserved keys.
+        /// </summary>
+        [MessagePackObject]
+        public sealed class PeakWithNothingAtKeys54And55
+        {
+            [Key(MasterPeakIdKey)]
+            public int MasterPeakID { get; set; }
+            [Key(56)]
+            public LipidRtVerdict LipidRtVerdict { get; set; }
+        }
+
+        private static int OffsetOf(byte[] payload, int key) {
+            MessagePackBinary.ReadArrayHeader(payload, 0, out var offset);
+            for (var i = 0; i < key; i++) {
+                offset += MessagePackBinary.ReadNextBlock(payload, offset);
+            }
+            return offset;
+        }
+
+        private static int ReadInt32At(byte[] payload, int key) {
+            return MessagePackBinary.ReadInt32(payload, OffsetOf(payload, key), out _);
         }
 
         private static byte[] Truncate(byte[] full, int length) {

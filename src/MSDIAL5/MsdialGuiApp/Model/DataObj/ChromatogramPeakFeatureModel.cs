@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject, IPeakSpotTagEditable {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject, IPeakSpotTagEditable, ILipidRtCheckedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -190,6 +190,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
+        public void SelectPeakSpotTagByPerson(PeakSpotTag tag) {
+            innerModel.TagCollection.SelectByPerson(tag);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
         public PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag) {
             return PeakSpotTagState.Capture(innerModel.TagCollection, tag);
         }
@@ -203,6 +209,25 @@ namespace CompMs.App.Msdial.Model.DataObj
             OnPropertyChanged(nameof(ConfirmedDetail));
         }
 
+        public LipidRtCheckState CaptureLipidRtCheck() {
+            return new LipidRtCheckState(PeakSpotTagState.Capture(innerModel.TagCollection, PeakSpotTag.CONFIRMED), innerModel.LipidRtVerdict);
+        }
+
+        public void WithdrawLipidRtCheck() {
+            LipidRtTagProtocol.Withdraw(innerModel.TagCollection);
+            innerModel.LipidRtVerdict = null;
+            RaiseLipidRtCheckChanged();
+        }
+
+        public void RestoreLipidRtCheck(LipidRtCheckState state) {
+            if (state is null) {
+                throw new ArgumentNullException(nameof(state));
+            }
+            state.Confirmed.RestoreTo(innerModel.TagCollection);
+            innerModel.LipidRtVerdict = state.Verdict;
+            RaiseLipidRtCheckChanged();
+        }
+
         /// <summary>The lipid RT check's verdict on this peak (hook A); null when the check has none (addendum B2).</summary>
         public LipidRtVerdict? LipidRtVerdict => innerModel.LipidRtVerdict;
 
@@ -211,6 +236,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         /// nothing to add to the tag itself.
         /// </summary>
         public string? ConfirmedDetail => LipidRtCheckDescription.ConfirmedDetail(innerModel.TagCollection, innerModel.LipidRtVerdict);
+
+        private void RaiseLipidRtCheckChanged() {
+            OnPropertyChanged(nameof(Confirmed));
+            OnPropertyChanged(nameof(LipidRtVerdict));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
 
         public void SwitchPeakSpotTag(PeakSpotTag tag) {
             if (tag == PeakSpotTag.CONFIRMED) {

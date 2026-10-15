@@ -88,12 +88,16 @@ namespace CompMs.App.Msdial.View.Tests
         [TestMethod]
         public void TheSettingWindowLoadsAndBindsToItsViewModel() {
             OnUiThread(() => {
-                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], () => Task.CompletedTask);
+                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], () => Task.CompletedTask, new Model.Service.UndoManager());
                 using var viewModel = new LipidRtCheckSettingViewModel(model);
                 var view = new LipidRtCheckSettingView { DataContext = viewModel, };
                 DoEvents();
                 try {
                     var elements = Logical(view).ToList();
+                    var description = elements.OfType<TextBlock>().First().Text;
+                    StringAssert.Contains(description, "When a person removes a Confirmed that the check set, the check does not set it again.");
+                    StringAssert.Contains(description, "if the person removes it again, the check may set it on a later run",
+                        "the window promises only what the tag protocol does (addendum B1)");
                     var combos = elements.OfType<ComboBox>().ToList();
                     Assert.AreEqual(5, combos.Count);
                     Assert.AreSame(viewModel.OperatingPoints, combos[0].ItemsSource);

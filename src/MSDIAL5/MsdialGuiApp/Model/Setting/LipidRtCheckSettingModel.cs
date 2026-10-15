@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
@@ -26,20 +27,27 @@ namespace CompMs.App.Msdial.Model.Setting
     /// way, and replaces every spot's verdict. A person's tags, another tool's tags, a Misannotation and a suppressed
     /// Confirmed are left as they are. Cross-polarity corroboration is not applied here (v1.1).
     /// </para>
+    /// <para>
+    /// A run is not undoable, and it clears the result's undo history: an earlier tag edit's undo would put back tags as
+    /// they were before the run, such as a Confirmed credited to the check that the new verdicts contradict.
+    /// </para>
     /// </remarks>
     internal sealed class LipidRtCheckSettingModel : BindableBase
     {
         private readonly ParameterBase _parameter;
         private readonly IReadOnlyList<AlignmentSpotPropertyModel> _spots;
         private readonly Func<Task> _saveAsync;
+        private readonly UndoManager _undoManager;
 
         /// <param name="parameter">The project's parameter; its lipid RT check settings are read and, on a run, written.</param>
         /// <param name="spots">The spots of the loaded alignment result.</param>
         /// <param name="saveAsync">Saves the loaded alignment result (spots with their verdicts, and the tag file).</param>
-        public LipidRtCheckSettingModel(ParameterBase parameter, IReadOnlyList<AlignmentSpotPropertyModel> spots, Func<Task> saveAsync) {
+        /// <param name="undoManager">The undo history of the loaded alignment result's edits, cleared by a run.</param>
+        public LipidRtCheckSettingModel(ParameterBase parameter, IReadOnlyList<AlignmentSpotPropertyModel> spots, Func<Task> saveAsync, UndoManager undoManager) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _spots = spots ?? throw new ArgumentNullException(nameof(spots));
             _saveAsync = saveAsync ?? throw new ArgumentNullException(nameof(saveAsync));
+            _undoManager = undoManager ?? throw new ArgumentNullException(nameof(undoManager));
 
             var current = parameter.LipidRtCheckParam;
             _operatingPoint = current.OperatingPoint;
@@ -106,9 +114,10 @@ namespace CompMs.App.Msdial.Model.Setting
         private LipidRtUnitRun? _lastRun;
 
         /// <summary>
-        /// Writes the settings into the project's parameter, runs the check on the spots, tells the spots' views, and saves
-        /// the alignment result. A failure of the check is reported in <see cref="Summary"/> (the hook has then withdrawn the
-        /// check's tags and verdicts, which is saved too); a failure of the save is reported there as well.
+        /// Writes the settings into the project's parameter, runs the check on the spots, clears the undo history, tells the
+        /// spots' views, and saves the alignment result. A failure of the check is reported in <see cref="Summary"/> (the
+        /// hook has then withdrawn the check's tags and verdicts, which is saved too); a failure of the save is reported
+        /// there as well.
         /// </summary>
         /// <returns>The run; null when the check cannot run on this project, in which case nothing is changed.</returns>
         public async Task<LipidRtUnitRun?> RunAsync() {
@@ -122,20 +131,26 @@ namespace CompMs.App.Msdial.Model.Setting
             // The check reads and writes the spots themselves, not their views, so it may run off the UI thread; the views
             // are told afterwards, on the caller's thread.
             var run = await Task.Run(() => LipidRtCheckHooks.RunOnSpots(spots, parameter));
+            _undoManager.Clear();
             foreach (var spot in _spots) {
                 spot.RaiseLipidRtCheckChanged();
             }
             LastRun = run;
 
+            var description = $"Lipid RT check on {spots.Count} spots: {run.Describe()}";
+            Summary = description + " Saving the alignment result...";
             string saved;
             try {
-                await _saveAsync();
+                // The save writes the whole result, which takes a while on a large alignment, so it runs off the UI thread
+                // as the check does. The window is modal and does not close while this runs, so no one edits the spots.
+                var saveAsync = _saveAsync;
+                await Task.Run(() => saveAsync());
                 saved = "The alignment result was saved.";
             }
             catch (Exception ex) {
                 saved = $"The alignment result could not be saved ({ex.GetType().Name}: {ex.Message}); the tags and verdicts are changed in this session only.";
             }
-            Summary = $"Lipid RT check on {spots.Count} spots: {run.Describe()} {saved}";
+            Summary = description + " " + saved;
             return run;
         }
 

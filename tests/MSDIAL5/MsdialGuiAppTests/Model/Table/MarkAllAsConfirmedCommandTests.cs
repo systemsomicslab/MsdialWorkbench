@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -66,15 +67,45 @@ namespace CompMs.App.Msdial.Model.Table.Tests
             Assert.IsTrue(suppressed.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
             Assert.IsNull(suppressed.TagCollection.GetSource(PeakSpotTag.CONFIRMED), "turned on by a person");
             Assert.IsFalse(suppressed.TagCollection.IsSuppressed(PeakSpotTag.CONFIRMED));
-            Assert.AreEqual(CheckSource, byCheck.TagCollection.GetSource(PeakSpotTag.CONFIRMED), "a tag that is already on keeps its source");
+            Assert.IsTrue(byCheck.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+            Assert.IsNull(byCheck.TagCollection.GetSource(PeakSpotTag.CONFIRMED), "a Confirmed the check had set is taken over by the person");
 
             command.Undo();
 
             Assert.IsFalse(suppressed.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
             Assert.IsTrue(suppressed.TagCollection.IsSuppressed(PeakSpotTag.CONFIRMED), "the person's earlier removal holds again");
             Assert.AreEqual(PeakSpotTagCollection.PersonSource, suppressed.TagCollection.GetSuppressionSource(PeakSpotTag.CONFIRMED));
-            Assert.AreEqual(CheckSource, byCheck.TagCollection.GetSource(PeakSpotTag.CONFIRMED));
+            Assert.AreEqual(CheckSource, byCheck.TagCollection.GetSource(PeakSpotTag.CONFIRMED), "the check's again");
             Assert.IsFalse(models[0].Confirmed);
+        }
+
+        [TestMethod]
+        public void MarkAllAsConfirmedKeepsEveryRowConfirmedThroughALaterRunOfTheCheck() {
+            var byCheck = new AlignmentSpotProperty();
+            byCheck.TagCollection.Select(PeakSpotTag.CONFIRMED, CheckSource);
+            byCheck.TagCollection.Select(PeakSpotTag.COELUTION);
+            var byPerson = new AlignmentSpotProperty();
+            byPerson.TagCollection.Select(PeakSpotTag.CONFIRMED);
+            var untagged = new AlignmentSpotProperty();
+            var models = new List<AlignmentSpotPropertyModel>
+            {
+                new AlignmentSpotPropertyModel(byCheck), new AlignmentSpotPropertyModel(byPerson), new AlignmentSpotPropertyModel(untagged),
+            };
+            var changed = new List<string>();
+            models[0].PropertyChanged += (s, e) => changed.Add(e.PropertyName);
+            var command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(models, true);
+
+            command.Do();
+            // What the check does first on every re-run or re-annotation: withdraw the Confirmed tags it set itself.
+            foreach (var spot in new[] { byCheck, byPerson, untagged }) {
+                LipidRtTagProtocol.Withdraw(spot.TagCollection);
+            }
+
+            Assert.IsTrue(byCheck.TagCollection.IsSelected(PeakSpotTag.CONFIRMED), "the person confirmed it, so the check no longer takes it back");
+            Assert.AreEqual("Confirmed|Coelution (mixed spectra)", byCheck.TagCollection.ToString(), "in its place");
+            Assert.IsTrue(byPerson.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+            Assert.IsTrue(untagged.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+            CollectionAssert.Contains(changed, nameof(AlignmentSpotPropertyModel.ConfirmedDetail), "the tooltip no longer credits the check");
         }
 
         [TestMethod]

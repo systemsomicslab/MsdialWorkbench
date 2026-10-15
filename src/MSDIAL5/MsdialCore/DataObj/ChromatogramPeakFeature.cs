@@ -114,6 +114,19 @@ namespace CompMs.MsdialCore.DataObj
         public int MS1AccumulatedMs1RawSpectrumIdLeft { get; set; } // used for LC-IM-MS/MS
         [Key(47)]
         public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
+
+        // Keys 54 and 55 belong to the MS-DIAL 5.6 line (tags MSDIAL-v5.6.*), where they are RawDataIDType and
+        // AccumulatedDataIDType: a SpectrumIDType enum (0 = Index, 1 = Raw) saying what kind of ID the raw spectrum IDs
+        // above are. This line has no such enum, and its IDs are always indices. The two keys are kept here as plain
+        // integers so that a peak file of either line opens in the other: a 5.6 file keeps its values when it is read and
+        // saved here, and a file written here holds integers (0 = Index, which is what its IDs are) where a 5.6 reader
+        // reads the enum, not the nil MessagePack writes for a missing key, which that reader cannot read. When the 5.6
+        // line is merged, replace these two with its members; never give these keys to anything else.
+        [Key(54)]
+        public int ReservedRawDataIDType { get; set; }
+        [Key(55)]
+        public int ReservedAccumulatedDataIDType { get; set; }
+
         [Key(18)]
         public int MS2RawSpectrumID { get; set; } = -1; // representative ID
         [Key(19)]
@@ -348,11 +361,12 @@ namespace CompMs.MsdialCore.DataObj
         /// the check did not evaluate it.
         /// </summary>
         /// <remarks>
-        /// Key 54 is the next key after the highest one in use (53); the unused numbers below it are left alone because an
-        /// older file may hold something else there. A peak file written before this key reads it as null. The Confirmed
-        /// tag itself is in <see cref="TagCollection"/>, with the check as its source.
+        /// Key 56 is the next key after the highest one in use on any branch or release tag: 53 here, and 54-55 in the
+        /// MS-DIAL 5.6 line (<see cref="ReservedRawDataIDType"/>). The unused numbers below it are left alone because an
+        /// older file may hold something else there. A peak file written before this key, by this line or by 5.6, reads it
+        /// as null. The Confirmed tag itself is in <see cref="TagCollection"/>, with the check as its source.
         /// </remarks>
-        [Key(54)]
+        [Key(56)]
         public LipidRtVerdict LipidRtVerdict { get; set; }
 
         public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram chromatogram, double mz) {

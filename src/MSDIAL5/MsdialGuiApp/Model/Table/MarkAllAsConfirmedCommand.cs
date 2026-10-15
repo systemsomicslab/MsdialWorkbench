@@ -7,13 +7,20 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Table
 {
     /// <summary>
-    /// "Mark all as confirmed" and "Mark all as unconfirmed" of the peak tables: a person's toggle of Confirmed on every
-    /// peak or spot of the table that is not already in that state.
+    /// "Mark all as confirmed" and "Mark all as unconfirmed" of the peak tables: a person's decision on Confirmed for every
+    /// peak or spot of the table.
     /// </summary>
     /// <remarks>
-    /// The toggle is the person's path (addendum B1): turning Confirmed off where a tool such as the lipid RT check set it
-    /// also suppresses it, and turning it on makes it the person's. Undo therefore does not toggle back; it puts each
-    /// changed tag back exactly as it was, with its source and its suppression, so the check's own tags stay the check's.
+    /// <para>
+    /// The decision is the person's (addendum B1). "Mark all as confirmed" leaves every row with the person's Confirmed:
+    /// it turns Confirmed on where it is off, and takes it over where a tool such as the lipid RT check had set it, so a
+    /// later run of that tool, which withdraws only its own tags, does not take back what the person confirmed. "Mark all
+    /// as unconfirmed" turns Confirmed off wherever it is on; where a tool had set it, that also suppresses it.
+    /// </para>
+    /// <para>
+    /// Undo does not toggle back; it puts each changed tag back exactly as it was, with its source and its suppression,
+    /// so the check's own tags are the check's again.
+    /// </para>
     /// </remarks>
     internal sealed class MarkAllAsConfirmedCommand<T> : IDoCommand where T : IPeakSpotTagEditable
     {
@@ -30,11 +37,20 @@ namespace CompMs.App.Msdial.Model.Table
         public void Do() {
             _changed.Clear();
             foreach (var peak in _peaks) {
-                if (peak.Confirmed != _status) {
-                    var before = peak.CapturePeakSpotTag(PeakSpotTag.CONFIRMED);
-                    peak.Confirmed = _status;
-                    _changed.Add((peak, before));
+                var before = peak.CapturePeakSpotTag(PeakSpotTag.CONFIRMED);
+                if (_status) {
+                    if (before.IsSelected && before.Source is null && !before.IsSuppressed) {
+                        continue; // already the person's
+                    }
+                    peak.SelectPeakSpotTagByPerson(PeakSpotTag.CONFIRMED);
                 }
+                else {
+                    if (!before.IsSelected) {
+                        continue;
+                    }
+                    peak.Confirmed = false;
+                }
+                _changed.Add((peak, before));
             }
         }
 

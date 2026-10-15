@@ -58,8 +58,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
 
     /// <summary>
     /// Where processing runs the lipid RT check (SPEC section 11, addendum B3): hook A on the peaks of one analysis file
-    /// between annotation and saving, and hook B on the spots of an alignment right after they are packed. Both are
-    /// shared by the Console and the GUI, and both apply the verdicts through <see cref="LipidRtTagProtocol"/>.
+    /// between annotation and saving, and hook B on the spots of an alignment once they are packed and their annotations
+    /// are final (after isotope tracking, which clears some), before they are saved. Both are shared by the Console and
+    /// the GUI, and both apply the verdicts through <see cref="LipidRtTagProtocol"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -88,7 +89,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                 (result, hash) => LipidRtTagProtocol.ApplyToPeaks(peaks, result, hash));
         }
 
-        /// <summary>Hook B: the spots of one alignment, after they are packed and before the result is saved or exported.</summary>
+        /// <summary>
+        /// Hook B: the spots of one alignment, after they are packed and every step that changes their annotations has run,
+        /// and before the result is saved or exported.
+        /// </summary>
         public static LipidRtUnitRun RunOnSpots(IReadOnlyList<AlignmentSpotProperty> spots, ParameterBase parameter) {
             if (spots is null) throw new ArgumentNullException(nameof(spots));
             if (parameter is null) throw new ArgumentNullException(nameof(parameter));

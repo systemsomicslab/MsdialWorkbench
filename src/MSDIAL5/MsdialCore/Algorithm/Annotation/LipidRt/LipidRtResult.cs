@@ -29,7 +29,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// <summary>The feature's RT minus the neighbour's (min).</summary>
         public double Gap { get; }
 
-        public bool IsLowerBound => Direction == "C<" || Direction == "D>" || Direction == "O>";
+        public bool IsLowerBound => IsLowerBoundDirection(Direction);
+
+        /// <summary>True for "C&lt;", "D&gt;" and "O&gt;", the directions of a lower bound.</summary>
+        public static bool IsLowerBoundDirection(string direction) {
+            return direction == "C<" || direction == "D>" || direction == "O>";
+        }
     }
 
     /// <summary>A feature whose order contradicts this one.</summary>
@@ -150,7 +155,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
 
         public int Ties { get; internal set; }
 
-        /// <summary>Up to the configured number of supporting neighbours, by |gap| descending then direction.</summary>
+        /// <summary>
+        /// Up to the configured number of supporting neighbours, listed by |gap| descending then direction; the strongest
+        /// lower and upper bound, and the strongest of each direction, are kept before the rest.
+        /// </summary>
         public IReadOnlyList<LipidRtNeighbour> Support { get; internal set; } = Array.Empty<LipidRtNeighbour>();
 
         /// <summary>Up to the configured number of discordant partners, by weight descending then RT.</summary>

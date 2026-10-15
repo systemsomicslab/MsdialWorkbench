@@ -76,6 +76,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
+        public void SelectPeakSpotTagByPerson(PeakSpotTag tag) {
+            _spectrumFeature.TagCollection.SelectByPerson(tag);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
         public PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag) {
             return PeakSpotTagState.Capture(_spectrumFeature.TagCollection, tag);
         }

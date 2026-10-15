@@ -149,11 +149,16 @@ namespace CompMs.MsdialCore.DataObj
         /// A person turns a tag on: it is selected as the person's and any suppression of it is lifted.
         /// </summary>
         /// <remarks>
-        /// A tag that is already on keeps its source: turning on a tag that is on changes nothing, which is also what the
-        /// GUI's toggles do, since they never call this for a tag that is already selected.
+        /// A tag that is already on because a tool set it becomes the person's: it keeps its place among the selected tags
+        /// and loses its source, so the tool no longer counts it as its own and will not withdraw it. "Mark all as
+        /// confirmed" relies on this; the GUI's single toggles never call this for a tag that is already selected.
         /// </remarks>
         public void SelectByPerson(PeakSpotTag type) {
+            if (type is null) {
+                return;
+            }
             Select(type);
+            _sources.Remove(type);
             Unsuppress(type);
         }
 
@@ -161,6 +166,11 @@ namespace CompMs.MsdialCore.DataObj
         /// A person turns a tag off. When a tool had set it, the tag is also suppressed so that the tool does not set it
         /// again; a tag a person set is simply removed.
         /// </summary>
+        /// <remarks>
+        /// A suppression records that a person removed a tool's tag (addendum B1). A tag the person turned on again is
+        /// the person's, and turning it off once more removes the person's own tag, which is not suppressed: a tool may
+        /// then set it again.
+        /// </remarks>
         public void DeselectByPerson(PeakSpotTag type) {
             var setByTool = IsSelected(type) && GetSource(type) != null;
             Deselect(type);

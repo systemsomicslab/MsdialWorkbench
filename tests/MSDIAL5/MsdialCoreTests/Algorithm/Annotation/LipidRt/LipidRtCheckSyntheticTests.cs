@@ -361,6 +361,58 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
         }
 
         [TestMethod]
+        public void TheEvidenceKeepsBothSidesOfTheBracketWhenFarUpperBoundsOutrankTheOnlyLowerBound() {
+            // TG 52:1 with one lower bound, TG 52:2 (D>, +0.25 min), and five upper bounds, three of them later isomers of
+            // TG 54:1 and TG 52:0 whose gaps (0.35-0.50 min) exceed the lower bound's. TG 50:1, the other lower bound, is
+            // left out. The first four by |gap| are all upper bounds.
+            var run = new LipidRtSyntheticRun();
+            var sp = run.TgGrid(skip: new[] { (50, 1) });
+            var tg541 = sp.Single(s => s.Carbon == 54 && s.DoubleBondEquivalent == 1);
+            var tg520 = sp.Single(s => s.Carbon == 52 && s.DoubleBondEquivalent == 0);
+            sp.Add(run.Mk("TG", 54, 1, tg541.Rt + 0.10, molecular: "TG 18:0_18:0_18:1"));
+            sp.Add(run.Mk("TG", 54, 1, tg541.Rt + 0.20, molecular: "TG 16:0_18:0_20:1"));
+            sp.Add(run.Mk("TG", 52, 0, tg520.Rt + 0.10, molecular: "TG 16:0_18:0_18:0"));
+            var id = LipidRtSyntheticRun.Find(sp, "TG", 52, 1);
+
+            var r = LipidRtSyntheticRun.Run(sp)[id];
+
+            Assert.AreEqual(LipidRtOutcome.Confirmed, r.Outcome, r.Sentence);
+            Assert.AreEqual("C>D<D>", r.Evidence.Directions);
+            Assert.AreEqual(4, r.Evidence.Support.Count);
+            Assert.AreEqual(1, r.Evidence.Support.Count(n => n.IsLowerBound), "the only lower bound is kept");
+            Assert.AreEqual("D>", r.Evidence.Support.Single(n => n.IsLowerBound).Direction);
+            CollectionAssert.AreEqual(
+                r.Evidence.Support.OrderByDescending(n => Math.Abs(n.Gap)).ThenBy(n => n.Direction, StringComparer.Ordinal).ToList(),
+                r.Evidence.Support.ToList(), "still listed by |gap| then direction");
+            StringAssert.StartsWith(r.Sentence, "Confirmed: TG 52:1 elutes after TG 52:2 (+0.25 min), and before ");
+        }
+
+        [TestMethod]
+        public void SupportSelectionKeepsTheStrongestOfEachSideAndDirectionFirst() {
+            var support = new List<(string, int, double)>
+            {
+                ("C>", 1, -0.50), ("C>", 2, -0.40), ("D<", 3, -0.35), ("C>", 4, -0.30), ("D<", 5, -0.25), ("D>", 6, 0.25), ("O>", 7, 0.10),
+            };
+
+            var four = LipidRtCheck.SelectSupport(support, 4);
+            CollectionAssert.AreEqual(new[] { 1, 3, 6, 7 }, four.Select(s => s.Index).ToArray(),
+                "the strongest upper (C>) and lower (D>) bound, then the strongest D< and O>; listed by |gap|");
+
+            var three = LipidRtCheck.SelectSupport(support, 3);
+            CollectionAssert.AreEqual(new[] { 1, 3, 6 }, three.Select(s => s.Index).ToArray(), "one per side, then the strongest other direction");
+
+            var two = LipidRtCheck.SelectSupport(support, 2);
+            CollectionAssert.AreEqual(new[] { 1, 6 }, two.Select(s => s.Index).ToArray(), "one per side");
+
+            var five = LipidRtCheck.SelectSupport(support, 5);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3, 6, 7 }, five.Select(s => s.Index).ToArray(), "then the rest by |gap|");
+
+            CollectionAssert.AreEqual(new[] { 1, 2, 3, 4, 5, 6, 7 }, LipidRtCheck.SelectSupport(support, 10).Select(s => s.Index).ToArray(),
+                "nothing to drop: the order of SPEC section 8");
+            Assert.AreEqual(0, LipidRtCheck.SelectSupport(support, 0).Count);
+        }
+
+        [TestMethod]
         public void TheReviewListHoldsOrderConflictsAndArtefacts() {
             var run = new LipidRtSyntheticRun();
             var sp = run.TgGrid(skip: new[] { (52, 1) });

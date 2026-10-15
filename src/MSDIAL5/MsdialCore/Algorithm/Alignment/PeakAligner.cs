@@ -59,14 +59,16 @@ public class PeakAligner {
 
             var container = PackingSpots(refined);
 
-            // Hook B of the lipid RT check, shared by the Console and the GUI: the spots carry their final annotations
-            // here and are saved and exported after this. LC-MS only in this version.
-            if (Param.MachineCategory == MachineCategory.LCMS) {
-                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param);
-            }
-
             if (Param.TrackingIsotopeLabels) {
                 IsotopeTracking.SetIsotopeTrackingID(container, Param, MspDB, null);
+            }
+
+            // Hook B of the lipid RT check, shared by the Console and the GUI. It runs after every step that changes the
+            // spots' annotations (isotope tracking clears those of spots represented by a labelled file) and before the
+            // result is saved and exported, so its verdicts and tags describe the annotations that are saved. Isotope
+            // tracking replaces the spot collection, so it is read from the container here. LC-MS only in this version.
+            if (Param.MachineCategory == MachineCategory.LCMS) {
+                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param);
             }
 
             if (chromPeakInfoSerializer != null)

@@ -88,6 +88,34 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod]
+        public void APersonTurningOnAToolsTagTakesItOverInPlace() {
+            var tags = new PeakSpotTagCollection();
+            tags.Select(PeakSpotTag.CONFIRMED, Tool);
+            tags.Select(PeakSpotTag.COELUTION);
+
+            tags.SelectByPerson(PeakSpotTag.CONFIRMED);
+
+            Assert.IsNull(tags.GetSource(PeakSpotTag.CONFIRMED), "now the person's, out of the tool's reach");
+            Assert.AreEqual("Confirmed|Coelution (mixed spectra)", tags.ToString(), "the tag keeps its place, so the exported text does not change");
+            Assert.IsFalse(tags.IsSuppressed(PeakSpotTag.CONFIRMED));
+        }
+
+        [TestMethod]
+        public void OnlyTheRemovalOfAToolsTagIsSuppressed() {
+            // Addendum B1: a suppression records that a person removed a tool's tag. Once the person turned it on again it
+            // is the person's, and removing it again is the removal of the person's own tag.
+            var tags = new PeakSpotTagCollection();
+            tags.Select(PeakSpotTag.CONFIRMED, Tool);
+            tags.DeselectByPerson(PeakSpotTag.CONFIRMED);
+            tags.SelectByPerson(PeakSpotTag.CONFIRMED);
+
+            tags.DeselectByPerson(PeakSpotTag.CONFIRMED);
+
+            Assert.IsFalse(tags.IsSelected(PeakSpotTag.CONFIRMED));
+            Assert.IsFalse(tags.IsSuppressed(PeakSpotTag.CONFIRMED));
+        }
+
+        [TestMethod]
         public void SuppressionsKeepTheirSource() {
             var tags = new PeakSpotTagCollection();
             tags.Suppress(PeakSpotTag.CONFIRMED, "Agent/curator/2");

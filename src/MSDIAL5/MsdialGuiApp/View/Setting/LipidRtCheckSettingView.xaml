@@ -27,7 +27,7 @@
 
     <StackPanel Orientation="Vertical" Margin="8">
         <TextBlock TextWrapping="Wrap" Margin="0,0,0,8"
-                   Text="Checks the retention-time order of the lipid annotations of this alignment result and sets Confirmed where the order supports an annotation. It removes only the Confirmed tags it set itself; tags set by a person or another tool stay, and a Confirmed that a person removed is not set again. Each spot's verdict is shown in the peak information panel and on the Confirmed tag."/>
+                   Text="Checks the retention-time order of the lipid annotations of this alignment result and sets Confirmed where the order supports an annotation. It removes only the Confirmed tags it set itself; tags set by a person or another tool stay. When a person removes a Confirmed that the check set, the check does not set it again. A Confirmed that a person turns on is the person's; if the person removes it again, the check may set it on a later run. Each spot's verdict is shown in the peak information panel and on the Confirmed tag."/>
 
         <Grid>
             <Grid.ColumnDefinitions>

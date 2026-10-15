@@ -894,9 +894,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
             }
 
             var max = Math.Max(p.MaxEvidenceItems, 0);
-            var support = f.Support
-                .OrderByDescending(s => Math.Abs(s.Gap)).ThenBy(s => s.Label, StringComparer.Ordinal)
-                .Take(max)
+            var support = SelectSupport(f.Support, max)
                 .Select(s => new LipidRtNeighbour(s.Label, fs[s.Index].Format(), fs[s.Index].Rt, s.Gap))
                 .ToList();
             var discordantPartners = f.Discordant.Take(max)
@@ -974,6 +972,46 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                 };
                 results[s.Id] = Single(s, memberOutcome, memberReason, score - penalty, evidence);
             }
+        }
+
+        /// <summary>
+        /// The supporting neighbours kept in the evidence record: at most <paramref name="max"/>, listed by |gap|
+        /// descending then direction (SPEC section 8).
+        /// </summary>
+        /// <remarks>
+        /// Which ones are kept is not simply the first <paramref name="max"/> of that order. Far neighbours, isomers among
+        /// them, have the largest gaps and can all lie on one side, so the strongest lower bound and the strongest upper
+        /// bound are kept first, then the strongest neighbour of each other direction, then the rest by |gap|. A Confirmed
+        /// rests on a bracket, and its sentence then still shows both sides of it. The reference implementation keeps the
+        /// first <paramref name="max"/>; only this free text differs, never an outcome or a score.
+        /// </remarks>
+        internal static List<(string Label, int Index, double Gap)> SelectSupport(IReadOnlyList<(string Label, int Index, double Gap)> support, int max) {
+            var ordered = support
+                .OrderByDescending(s => Math.Abs(s.Gap)).ThenBy(s => s.Label, StringComparer.Ordinal)
+                .ToList();
+            if (ordered.Count <= max) {
+                return ordered;
+            }
+            var priority = new List<int>(ordered.Count);
+            var lower = ordered.FindIndex(s => LipidRtNeighbour.IsLowerBoundDirection(s.Label));
+            var upper = ordered.FindIndex(s => !LipidRtNeighbour.IsLowerBoundDirection(s.Label));
+            foreach (var i in new[] { lower, upper }.Where(i => i >= 0).OrderBy(i => i)) {
+                priority.Add(i);
+            }
+            var directions = new HashSet<string>(priority.Select(i => ordered[i].Label), StringComparer.Ordinal);
+            for (var i = 0; i < ordered.Count; i++) {
+                if (directions.Add(ordered[i].Label)) {
+                    priority.Add(i);
+                }
+            }
+            var kept = new HashSet<int>(priority);
+            for (var i = 0; i < ordered.Count && priority.Count < max; i++) {
+                if (kept.Add(i)) {
+                    priority.Add(i);
+                }
+            }
+            var selected = new HashSet<int>(priority.Take(max));
+            return ordered.Where((s, i) => selected.Contains(i)).ToList();
         }
 
         // ------------------------------------------------------------------------------------------------- numerics

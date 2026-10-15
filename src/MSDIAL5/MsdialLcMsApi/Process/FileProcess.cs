@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,7 @@ public sealed class FileProcess : IFileProcessor {
     private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
     private readonly PeakAnnotationProcess _peakAnnotationProcess;
     private readonly MsdialLcmsParameter _parameter;
+    private readonly ConcurrentQueue<(string File, LipidRtUnitRun Run)> _lipidRtFailures = new ConcurrentQueue<(string, LipidRtUnitRun)>();
 
     public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
         if (storage is null) {
@@ -40,6 +42,13 @@ public sealed class FileProcess : IFileProcessor {
         _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
         _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
     }
+
+    /// <summary>
+    /// The analysis files on which the lipid RT check (hook A) failed in this processor's runs, with what it reported. A
+    /// failure does not stop the processing: the file is saved without the check's verdicts and tags. The Console prints
+    /// it; a caller without a console, such as the GUI, reads it here to tell the person.
+    /// </summary>
+    public IReadOnlyList<(string File, LipidRtUnitRun Run)> LipidRtFailures => _lipidRtFailures.ToArray();
 
     public async Task RunAsync(AnalysisFileBean analysisFile, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
         if (!option.HasFlag(ProcessOption.PeakSpotting) && !option.HasFlag(ProcessOption.Identification)) {
@@ -64,6 +73,9 @@ public sealed class FileProcess : IFileProcessor {
             var lipidRt = LipidRtCheckHooks.RunOnPeaks(chromPeakFeatures.Items, _parameter);
             if (lipidRt.Ran || lipidRt.Error != null || lipidRt.Tags.Withdrawn > 0) {
                 Console.WriteLine($"Lipid RT check ({analysisFile.AnalysisFileName}): {lipidRt.Describe()}");
+            }
+            if (lipidRt.Error != null) {
+                _lipidRtFailures.Enqueue((analysisFile.AnalysisFileName, lipidRt));
             }
         }
 

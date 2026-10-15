@@ -1,4 +1,6 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Table;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
@@ -7,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting.Tests
@@ -26,13 +29,15 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
                 Parameter = parameter ?? LipidRtTestSpots.Lipidomics();
                 Spots = LipidRtTestSpots.Spots();
                 Models = Spots.Select(s => new AlignmentSpotPropertyModel(s)).ToList();
-                Model = new LipidRtCheckSettingModel(Parameter, Models, save ?? (() => { Saves++; return Task.CompletedTask; }));
+                UndoManager = new UndoManager();
+                Model = new LipidRtCheckSettingModel(Parameter, Models, save ?? (() => { Saves++; return Task.CompletedTask; }), UndoManager);
             }
 
             public ParameterBase Parameter { get; }
             public List<AlignmentSpotProperty> Spots { get; }
             public List<AlignmentSpotPropertyModel> Models { get; }
             public LipidRtCheckSettingModel Model { get; }
+            public UndoManager UndoManager { get; }
             public int Saves { get; private set; }
 
             public AlignmentSpotProperty Find(int c, int db) => LipidRtTestSpots.Find(Spots, c, db);
@@ -207,6 +212,80 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
             StringAssert.Contains(fixture.Model.Summary, "could not be saved");
             StringAssert.Contains(fixture.Model.Summary, "disk full");
             Assert.IsTrue(fixture.Find(52, 1).TagCollection.IsSelected(PeakSpotTag.CONFIRMED), "the session keeps the result");
+        }
+
+        [TestMethod]
+        public async Task ARunClearsTheUndoHistorySoNoEarlierEditPutsBackTheChecksOldTags() {
+            var fixture = new Fixture();
+            await fixture.Model.RunAsync();
+            var tg521 = fixture.Find(52, 1);
+            Assert.AreEqual(CheckSource, tg521.TagCollection.GetSource(PeakSpotTag.CONFIRMED));
+            IDoCommand markAll = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(fixture.Models, false);
+            markAll.Do();
+            fixture.UndoManager.Add(markAll);
+            Assert.IsTrue(tg521.TagCollection.IsSuppressed(PeakSpotTag.CONFIRMED), "the person removed the check's tag");
+
+            fixture.Model.Chromatography = LipidRtChromatography.Other;
+            await fixture.Model.RunAsync();
+            Assert.AreEqual(LipidRtReason.Gate, tg521.LipidRtVerdict.Reason);
+
+            fixture.UndoManager.Undo();
+
+            Assert.IsFalse(tg521.TagCollection.IsSelected(PeakSpotTag.CONFIRMED),
+                "no Confirmed credited to the check comes back against its new NotEvaluable verdict");
+            Assert.IsTrue(tg521.TagCollection.IsSuppressed(PeakSpotTag.CONFIRMED), "the person's removal holds");
+        }
+
+        [TestMethod]
+        public async Task TheSaveRunsOffTheCallersThreadAndTheSummarySaysItIsSaving() {
+            var ui = new InlineSynchronizationContext();
+            bool? savedOnTheCallersContext = null;
+            string? summaryWhileSaving = null;
+            Fixture? fixture = null;
+            fixture = new Fixture(save: () => {
+                savedOnTheCallersContext = SynchronizationContext.Current == ui;
+                summaryWhileSaving = fixture!.Model.Summary;
+                return Task.CompletedTask;
+            });
+
+            // RunAsync starts on a UI-like context, so its continuations come back to that context, as on the dispatcher.
+            Task<LipidRtUnitRun?> running;
+            var previous = SynchronizationContext.Current;
+            SynchronizationContext.SetSynchronizationContext(ui);
+            try {
+                running = fixture.Model.RunAsync();
+            }
+            finally {
+                SynchronizationContext.SetSynchronizationContext(previous);
+            }
+            await running;
+
+            Assert.AreEqual(false, savedOnTheCallersContext, "the save of the whole result does not hold the UI thread");
+            StringAssert.Contains(summaryWhileSaving, "Saving the alignment result");
+            StringAssert.Contains(fixture.Model.Summary, "The alignment result was saved.");
+        }
+
+        /// <summary>
+        /// A synchronization context that runs what is posted to it at once, on the posting thread, as itself: code that
+        /// continues on it sees it as <see cref="SynchronizationContext.Current"/>, as code on the WPF dispatcher sees the
+        /// dispatcher's.
+        /// </summary>
+        private sealed class InlineSynchronizationContext : SynchronizationContext
+        {
+            public override void Post(SendOrPostCallback d, object? state) => Run(d, state);
+
+            public override void Send(SendOrPostCallback d, object? state) => Run(d, state);
+
+            private void Run(SendOrPostCallback d, object? state) {
+                var previous = Current;
+                SetSynchronizationContext(this);
+                try {
+                    d(state);
+                }
+                finally {
+                    SetSynchronizationContext(previous);
+                }
+            }
         }
     }
 }
