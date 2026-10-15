@@ -731,10 +731,13 @@ namespace CompMs.Common.Lipidomics
             var sn2Carbon2 = sn2Carbon; var sn2Double2 = sn2Double;
             var sn3Carbon2 = sn3Carbon; var sn3Double2 = sn3Double;
 
-            if (sn2Carbon > sn3Carbon || sn2Double > sn3Double)
+            if (sn2Double > sn3Double ||
+                (sn2Double == sn3Double && sn2Carbon > sn3Carbon))
             {
-                sn2Carbon2 = sn3Carbon; sn2Double2 = sn3Double;
-                sn3Carbon2 = sn2Carbon; sn3Double2 = sn2Double;
+                sn2Carbon2 = sn3Carbon;
+                sn2Double2 = sn3Double;
+                sn3Carbon2 = sn2Carbon;
+                sn3Double2 = sn2Double;
             }
 
             var acyls = new List<int[]>() {
