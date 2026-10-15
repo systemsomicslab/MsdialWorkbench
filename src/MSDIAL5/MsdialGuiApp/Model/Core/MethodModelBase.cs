@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
@@ -75,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Core
         /// Opening by hand checks the disk again; the automatic first open uses what the dataset found a moment before,
         /// so that a folder that is gone is not checked once for every sample in it.
         /// </summary>
-        private ErrorMessageBoxRequest? CannotOpenReason(AnalysisFileBeanModel file, bool checkAgain) {
+        private MessageRequest? CannotOpenReason(AnalysisFileBeanModel file, bool checkAgain) {
             if (BrowsingWithoutRawData == BrowsingWithoutRawData.NotSupported) {
                 // Imaging: opening a file selects its image, and the project only opened because the raw data are there.
                 return null;

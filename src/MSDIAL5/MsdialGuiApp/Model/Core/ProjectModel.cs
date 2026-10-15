@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
@@ -198,11 +198,11 @@ namespace CompMs.App.Msdial.Model.Core
                         missingFiles[parameter] = notFound.FileName;
                     }
                     Interlocked.Increment(ref unloadedDatasets);
-                    broker.Publish(new ErrorMessageBoxRequest
+                    broker.Publish(new MessageRequest
                     {
                         Caption = "Dataset not loaded",
                         Content = MessageHelper.DatasetNotLoaded(parameter.ProjectFileName, error),
-                        Icon = MessageBoxImage.Error,
+                        Severity = MessageSeverity.Error,
                     });
                 }).ConfigureAwait(false);
             if (projectDataStorage is not null && projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {

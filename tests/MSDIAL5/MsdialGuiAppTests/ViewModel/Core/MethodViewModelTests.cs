@@ -1,9 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Dims;
 using CompMs.App.Msdial.ViewModel.Gcms;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -25,15 +25,15 @@ namespace CompMs.App.Msdial.ViewModel.Core.Tests
     {
         private string _folder = string.Empty;
         private MessageBroker _broker = new MessageBroker();
-        private List<ErrorMessageBoxRequest> _messages = new List<ErrorMessageBoxRequest>();
+        private List<MessageRequest> _messages = new List<MessageRequest>();
 
         [TestInitialize()]
         public void Setup() {
             _folder = Path.Combine(Path.GetTempPath(), $"msdial-methodviewmodel-{Guid.NewGuid():N}");
             Directory.CreateDirectory(_folder);
             _broker = new MessageBroker();
-            _messages = new List<ErrorMessageBoxRequest>();
-            _broker.Subscribe<ErrorMessageBoxRequest>(_messages.Add);
+            _messages = new List<MessageRequest>();
+            _broker.Subscribe<MessageRequest>(_messages.Add);
         }
 
         [TestCleanup()]

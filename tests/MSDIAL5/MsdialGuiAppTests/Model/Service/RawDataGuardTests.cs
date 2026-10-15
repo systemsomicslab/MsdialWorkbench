@@ -1,14 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
-using CompMs.App.Msdial.ViewModel.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Service.Tests
 {
@@ -44,16 +42,16 @@ namespace CompMs.App.Msdial.Model.Service.Tests
         [TestMethod()]
         public void ConfirmOpenAsksNothingWhenNothingIsMissing() {
             var broker = new MessageBroker();
-            var requests = Listen(broker, MessageBoxResult.No);
+            var requests = Listen(broker, false);
 
             Assert.IsTrue(RawDataGuard.ConfirmOpen(broker, BrowsingWithoutRawData.Supported, new AnalysisFileBeanModel[0], 3));
             Assert.AreEqual(0, requests.Count);
         }
 
         [TestMethod()]
-        [DataRow(MessageBoxResult.Yes, true)]
-        [DataRow(MessageBoxResult.No, false)]
-        public void ConfirmOpenForLcmsAsksYesOrNo(MessageBoxResult answer, bool expected) {
+        [DataRow(true, true)]
+        [DataRow(false, false)]
+        public void ConfirmOpenForLcmsAsksYesOrNo(bool answer, bool expected) {
             var broker = new MessageBroker();
             var requests = Listen(broker, answer);
             var missing = Missing("a", "b");
@@ -61,8 +59,9 @@ namespace CompMs.App.Msdial.Model.Service.Tests
             Assert.AreEqual(expected, RawDataGuard.ConfirmOpen(broker, BrowsingWithoutRawData.Supported, missing, 4));
 
             Assert.AreEqual(1, requests.Count);
-            Assert.AreEqual(MessageBoxButton.YesNo, requests[0].ButtonType);
-            Assert.AreEqual(MessageBoxImage.Warning, requests[0].Icon);
+            Assert.AreEqual("Raw data not found", requests[0].Caption);
+            Assert.IsTrue(requests[0].AsksYesNo);
+            Assert.AreEqual(MessageSeverity.Warning, requests[0].Severity);
             StringAssert.StartsWith(requests[0].Content, "Raw data are not available for 2 of 4 samples in this dataset, so only the information saved in the project will be drawn for them.");
             StringAssert.Contains(requests[0].Content, $"  {missing[0].AnalysisFilePath}\n  {missing[1].AnalysisFilePath}");
             StringAssert.EndsWith(requests[0].Content, "Continue?");
@@ -71,23 +70,24 @@ namespace CompMs.App.Msdial.Model.Service.Tests
         [TestMethod()]
         public void ConfirmOpenForAlignmentsOnlySaysTheViewerReadsTheRawData() {
             var broker = new MessageBroker();
-            var requests = Listen(broker, MessageBoxResult.Yes);
+            var requests = Listen(broker, true);
 
             Assert.IsTrue(RawDataGuard.ConfirmOpen(broker, BrowsingWithoutRawData.AlignmentsOnly, Missing("a"), 2));
 
-            Assert.AreEqual(MessageBoxButton.YesNo, requests.Single().ButtonType);
+            Assert.IsTrue(requests.Single().AsksYesNo);
+            Assert.AreEqual(MessageSeverity.Warning, requests[0].Severity);
             StringAssert.Contains(requests[0].Content, "For this type of project the peak spot viewer reads the raw data");
         }
 
         [TestMethod()]
         public void ConfirmOpenForImagingRefuses() {
             var broker = new MessageBroker();
-            var requests = Listen(broker, MessageBoxResult.Yes);
+            var requests = Listen(broker, true);
 
             Assert.IsFalse(RawDataGuard.ConfirmOpen(broker, BrowsingWithoutRawData.NotSupported, Missing("a"), 1));
 
-            Assert.AreEqual(MessageBoxButton.OK, requests.Single().ButtonType);
-            Assert.AreEqual(MessageBoxImage.Error, requests[0].Icon);
+            Assert.IsFalse(requests.Single().AsksYesNo);
+            Assert.AreEqual(MessageSeverity.Error, requests[0].Severity);
         }
 
         [TestMethod()]
@@ -100,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Service.Tests
         [TestMethod()]
         public void EnsureSaysWhyOnlyWhenTheRawDataAreMissing() {
             var broker = new MessageBroker();
-            var requests = Listen(broker, MessageBoxResult.OK);
+            var requests = Listen(broker, true);
             var file = Missing("a")[0];
 
             Assert.IsTrue(RawDataGuard.Ensure(true, file, broker, "Save raw spectra"));
@@ -108,13 +108,16 @@ namespace CompMs.App.Msdial.Model.Service.Tests
 
             Assert.IsFalse(RawDataGuard.Ensure(false, file, broker, "Save raw spectra"));
             Assert.AreEqual(1, requests.Count);
+            Assert.AreEqual("Raw data not available", requests[0].Caption);
+            Assert.IsFalse(requests[0].AsksYesNo);
+            Assert.AreEqual(MessageSeverity.Information, requests[0].Severity);
             StringAssert.StartsWith(requests[0].Content, "Save raw spectra needs the raw data, and the raw data file of a was not found:");
         }
 
         [TestMethod()]
         public void EnsureAllChecksEveryFileAgain() {
             var broker = new MessageBroker();
-            var requests = Listen(broker, MessageBoxResult.OK);
+            var requests = Listen(broker, true);
             var path = Path.Combine(_folder, "present.mzML");
             var file = AnalysisFileBeanModelTestHelper.Create();
             file.AnalysisFileName = "present";
@@ -131,9 +134,12 @@ namespace CompMs.App.Msdial.Model.Service.Tests
             StringAssert.StartsWith(requests[0].Content, "Alignment cannot run because the raw data files of 2 of 3 samples were not found.");
         }
 
-        private static List<ErrorMessageBoxRequest> Listen(MessageBroker broker, MessageBoxResult answer) {
-            var requests = new List<ErrorMessageBoxRequest>();
-            broker.Subscribe<ErrorMessageBoxRequest>(request => {
+        /// <summary>
+        /// Keeps what is published, and answers it as the view does: true for Yes or OK, false for No.
+        /// </summary>
+        private static List<MessageRequest> Listen(MessageBroker broker, bool answer) {
+            var requests = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(request => {
                 requests.Add(request);
                 request.Result = answer;
             });

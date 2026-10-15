@@ -1,7 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -22,13 +22,13 @@ namespace CompMs.App.Msdial.Model.Core.Tests
     public class ProjectModelTests
     {
         private MessageBroker _broker = new MessageBroker();
-        private List<ErrorMessageBoxRequest> _messages = new List<ErrorMessageBoxRequest>();
+        private List<MessageRequest> _messages = new List<MessageRequest>();
 
         [TestInitialize()]
         public void Setup() {
             _broker = new MessageBroker();
-            _messages = new List<ErrorMessageBoxRequest>();
-            _broker.Subscribe<ErrorMessageBoxRequest>(request => { lock (_messages) { _messages.Add(request); } });
+            _messages = new List<MessageRequest>();
+            _broker.Subscribe<MessageRequest>(request => { lock (_messages) { _messages.Add(request); } });
         }
 
         [TestMethod()]

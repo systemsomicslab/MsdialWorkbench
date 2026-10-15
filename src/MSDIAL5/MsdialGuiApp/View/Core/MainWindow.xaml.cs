@@ -75,6 +75,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorConfirmationMessage);
+            broker.ToObservable<MessageRequest>()
+                .Subscribe(ShowMessage);
             broker.ToObservable<RiDictionarySettingViewModel>()
                 .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
@@ -364,9 +366,26 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() => {
+                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
+                request.Result = result;
+            });
+        }
+
+        private void ShowMessage(MessageRequest request) {
+            Dispatcher.Invoke(() => {
                 // The wait cursor is left to the operations that set it: the message box draws its own arrow,
                 // and an operation that finishes while the box is open clears the cursor itself.
-                request.Result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, request.Icon);
+                var result = MessageBox.Show(
+                    request.Content,
+                    request.Caption,
+                    request.AsksYesNo ? MessageBoxButton.YesNo : MessageBoxButton.OK,
+                    request.Severity switch
+                    {
+                        MessageSeverity.Information => MessageBoxImage.Information,
+                        MessageSeverity.Warning => MessageBoxImage.Warning,
+                        _ => MessageBoxImage.Error,
+                    });
+                request.Result = result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
             });
         }
 
