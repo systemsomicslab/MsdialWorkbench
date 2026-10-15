@@ -378,17 +378,8 @@ namespace CompMs.App.Msdial.View.Core
             Dispatcher.Invoke(() => {
                 // The wait cursor is left to the operations that set it: the message box draws its own arrow,
                 // and an operation that finishes while the box is open clears the cursor itself.
-                var result = MessageBox.Show(
-                    request.Content,
-                    request.Caption,
-                    request.AsksYesNo ? MessageBoxButton.YesNo : MessageBoxButton.OK,
-                    request.Severity switch
-                    {
-                        MessageSeverity.Information => MessageBoxImage.Information,
-                        MessageSeverity.Warning => MessageBoxImage.Warning,
-                        _ => MessageBoxImage.Error,
-                    });
-                request.Result = result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
+                var result = MessageBox.Show(request.Content, request.Caption, MessageRequestBox.ButtonsOf(request), MessageRequestBox.IconOf(request));
+                request.Result = MessageRequestBox.IsAccepted(result);
             });
         }
 

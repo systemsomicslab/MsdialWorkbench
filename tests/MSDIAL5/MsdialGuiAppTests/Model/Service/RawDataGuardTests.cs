@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
+using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -131,7 +132,33 @@ namespace CompMs.App.Msdial.Model.Service.Tests
             var missing = Missing("a", "b");
             Assert.IsFalse(RawDataGuard.EnsureAll(missing.Prepend(file), broker, "Alignment"));
             Assert.AreEqual(1, requests.Count);
+            Assert.AreEqual("Raw data not available", requests[0].Caption);
+            Assert.IsFalse(requests[0].AsksYesNo);
+            Assert.AreEqual(MessageSeverity.Information, requests[0].Severity);
             StringAssert.StartsWith(requests[0].Content, "Alignment cannot run because the raw data files of 2 of 3 samples were not found.");
+        }
+
+        // The refusals and the open failures keep the caption, the OK button and the icon they had as ErrorMessageBoxRequests.
+        [TestMethod()]
+        public void RefusalsAreInformationAndFailuresAreErrorsWithAnOkButton() {
+            var file = Missing("a")[0];
+            var alignment = new AlignmentFileBeanModel(new AlignmentFileBean { FileName = "alignment", }, new List<AnalysisFileBean>());
+            var error = new InvalidOperationException("broken");
+
+            var expected = new (MessageRequest Request, string Caption, MessageSeverity Severity)[]
+            {
+                (RawDataGuard.SampleNeedsRawData(file), "Raw data not available", MessageSeverity.Information),
+                (RawDataGuard.PeakListMissing(file), "Saved results not found", MessageSeverity.Information),
+                (RawDataGuard.MsfinderWithoutMs1(file), "Raw data not available", MessageSeverity.Information),
+                (RawDataGuard.SampleOpenFailed(file, error), "Sample could not be opened", MessageSeverity.Error),
+                (RawDataGuard.AlignmentOpenFailed(alignment, error), "Alignment result could not be opened", MessageSeverity.Error),
+            };
+
+            foreach (var (request, caption, severity) in expected) {
+                Assert.AreEqual(caption, request.Caption);
+                Assert.AreEqual(severity, request.Severity, caption);
+                Assert.IsFalse(request.AsksYesNo, caption);
+            }
         }
 
         /// <summary>

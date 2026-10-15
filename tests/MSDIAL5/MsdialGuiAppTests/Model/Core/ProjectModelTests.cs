@@ -41,6 +41,8 @@ namespace CompMs.App.Msdial.Model.Core.Tests
             }
 
             Assert.AreEqual("Dataset not loaded", _messages.Single().Caption);
+            Assert.AreEqual(MessageSeverity.Error, _messages[0].Severity);
+            Assert.IsFalse(_messages[0].AsksYesNo);
             StringAssert.Contains(_messages[0].Content, "\"Dataset1.mddata\"");
             StringAssert.Contains(_messages[0].Content, "InvalidDataException: Dataset1.mddata is corrupt");
         }
