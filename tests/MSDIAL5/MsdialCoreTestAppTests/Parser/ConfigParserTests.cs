@@ -26,6 +26,33 @@ namespace MsdialCoreTestAppTests.Parser;
 [TestClass]
 public sealed class ConfigParserTests
 {
+    [DataTestMethod]
+    [DataRow("CID", CollisionType.CID)]
+    [DataRow("cid", CollisionType.CID)]
+    [DataRow("EAD", CollisionType.EIEIO)]
+    [DataRow(" ead ", CollisionType.EIEIO)]
+    [DataRow("EIEIO", CollisionType.EIEIO)]
+    public void ReadCommonParameter_CollisionTypeUpdatesProjectAndLipidSettings(string value, CollisionType expected)
+    {
+        var parameter = new MsdialLcmsParameter();
+        var outcome = ConfigParser.ReadCommonParameter(parameter, "Collision type", value);
+        Assert.IsTrue(outcome.IsApplied);
+        Assert.AreEqual(expected, parameter.CollistionType);
+        Assert.AreEqual(expected, parameter.LipidQueryContainer.CollisionType);
+    }
+
+    [DataTestMethod]
+    [DataRow("invalid")]
+    [DataRow("999")]
+    public void ReadCommonParameter_InvalidCollisionTypePreservesBothSettings(string value)
+    {
+        var parameter = new MsdialLcmsParameter();
+        ConfigParser.ReadCommonParameter(parameter, "Collision type", "CID");
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "Collision type", value).IsUnusableValue);
+        Assert.AreEqual(CollisionType.CID, parameter.CollistionType);
+        Assert.AreEqual(CollisionType.CID, parameter.LipidQueryContainer.CollisionType);
+    }
+
     [TestMethod]
     public void ReadCommonParameter_SampleMaxKeyComparesTheSampleMaxAtItsFoldChange()
     {
@@ -1369,6 +1396,142 @@ public sealed class ConfigParserTests
 
         Assert.AreEqual(1, ConfigParser.ReadLbmAnnotatorPriority(defaultMethod));
         Assert.AreEqual(3, ConfigParser.ReadLbmAnnotatorPriority(configuredMethod));
+    }
+
+    [TestMethod]
+    public void ReadGeneratedLipidAnnotatorSetting_DefaultsFollowTheProjectAndTheGui()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("default.txt", "Ion mode: Negative\n");
+
+        var setting = ConfigParser.ReadGeneratedLipidAnnotatorSetting(method);
+
+        Assert.IsNull(setting.Enabled);
+        Assert.IsNull(setting.Priority);
+        Assert.AreEqual(0.15f, setting.SearchParameter.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.15f, setting.SearchParameter.SimpleDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.3f, setting.SearchParameter.ReverseDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0f, setting.SearchParameter.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(1f, setting.SearchParameter.MinimumSpectrumMatch);
+    }
+
+    [TestMethod]
+    public void ReadGeneratedLipidAnnotatorSetting_ReadsEveryKeyAndKeepsTheLastUsableLine()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt",
+            "Use generated lipid library: False\n" +
+            "Use generated lipid library: True\n" +
+            "Generated lipid annotator priority: 7\n" +
+            "Generated lipid annotator priority: high\n" +
+            "MS1 tolerance for generated lipid annotation: 0.005\n" +
+            "MS2 tolerance for generated lipid annotation: 0.05\n" +
+            "Square root of weighted dot product cutoff for generated lipid annotation: 0.2\n" +
+            "Square root of simple dot product cutoff for generated lipid annotation: 0.25\n" +
+            "Square root of reverse dot product cutoff for generated lipid annotation: 0.4\n" +
+            "Matched peaks percentage cutoff for generated lipid annotation: 0.1\n" +
+            "Minimum spectrum match for generated lipid annotation: 2\n" +
+            "Total score cutoff for generated lipid annotation: 0.5\n" +
+            "Total score cutoff for generated lipid annotation:\n");
+
+        var setting = ConfigParser.ReadGeneratedLipidAnnotatorSetting(method);
+
+        Assert.AreEqual(true, setting.Enabled);
+        Assert.AreEqual(7, setting.Priority, "an unusable later line leaves the earlier value");
+        Assert.AreEqual(0.005f, setting.SearchParameter.Ms1Tolerance, 1e-6f);
+        Assert.AreEqual(0.05f, setting.SearchParameter.Ms2Tolerance, 1e-6f);
+        Assert.AreEqual(0.2f, setting.SearchParameter.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.25f, setting.SearchParameter.SimpleDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.4f, setting.SearchParameter.ReverseDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.1f, setting.SearchParameter.MatchedPeaksPercentageCutOff, 1e-6f);
+        Assert.AreEqual(2f, setting.SearchParameter.MinimumSpectrumMatch);
+        Assert.AreEqual(0.5f, setting.SearchParameter.TotalScoreCutoff, 1e-6f, "a blank later line leaves the earlier value");
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_EadLipidomicsUsesTheGuiLbmCutoffsForUnsetKeys()
+    {
+        using var directory = new TemporaryDirectory();
+        // The cut-off comes before the lines that decide the mode: the order must not matter.
+        var method = directory.CreateFile("method.txt",
+            "Minimum spectrum match for LBM-based annotation: 2\n" +
+            "Target omics: Lipidomics\n" +
+            "Collision type: EAD\n");
+
+        var (parameter, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.SimpleDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.ReverseDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0f, parameter.LbmSearchParam.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(2f, parameter.LbmSearchParam.MinimumSpectrumMatch, "a key the method file sets is kept");
+        StringAssert.Contains(report, "LBM-based annotation for collision type EIEIO");
+    }
+
+    [DataTestMethod]
+    [DataRow("Target omics: Lipidomics\nCollision type: CID\n")]
+    [DataRow("Target omics: Metabolomics\nCollision type: EAD\n")]
+    public void ReadForLcmsParameter_OtherModesKeepTheBuiltInLbmCutoffs(string content)
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt", content);
+
+        var (parameter, _) = ReadLcmsWithReport(method);
+
+        var builtIn = new CompMs.Common.Parameter.MsRefSearchParameterBase();
+        Assert.AreEqual(builtIn.WeightedDotProductCutOff, parameter.LbmSearchParam.WeightedDotProductCutOff);
+        Assert.AreEqual(builtIn.MinimumSpectrumMatch, parameter.LbmSearchParam.MinimumSpectrumMatch);
+    }
+
+    [TestMethod]
+    public void ReadForDimsParameter_ReadsTheGeneratedLipidKeysAndTheEadLbmCutoffs()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt",
+            "Target omics: Lipidomics\n" +
+            "Collision type: EAD\n" +
+            "Use generated lipid library: True\n" +
+            "MS2 tolerance for generated lipid annotation: 0.05\n");
+
+        var original = Console.Out;
+        var captured = new StringWriter();
+        CompMs.MsdialDimsCore.Parameter.MsdialDimsParameter parameter;
+        try {
+            Console.SetOut(captured);
+            parameter = ConfigParser.ReadForDimsParameter(method);
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        Assert.IsFalse(captured.ToString().Contains("NO EFFECT"), captured.ToString());
+        Assert.AreEqual(0.05f, parameter.LbmSearchParam.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.05f, ConfigParser.ReadGeneratedLipidAnnotatorSetting(method).SearchParameter.Ms2Tolerance, 1e-6f);
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_RecordsGeneratedLipidKeysAsApplied()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt",
+            "Use generated lipid library: True\n" +
+            "Generated lipid annotator priority: 3\n" +
+            "MS2 tolerance for generated lipid annotation: 0.05\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        Assert.AreEqual(string.Empty, report.Trim(), report);
+    }
+
+    [TestMethod]
+    public void ReadForLcmsParameter_ReportsAnUnusableGeneratedLipidValue()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt", "Use generated lipid library: yes\n");
+
+        var (_, report) = ReadLcmsWithReport(method);
+
+        StringAssert.Contains(report, "Use generated lipid library: yes");
     }
 
     [TestMethod]

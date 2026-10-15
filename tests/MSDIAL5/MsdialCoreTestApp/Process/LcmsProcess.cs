@@ -135,6 +135,9 @@ public sealed class LcmsProcess
             MsdialLcmsParameter = param
         };
 
+        // Created before the libraries: the generated lipid annotator looks up the molecule
+        // library's match through it, and SetDataBaseMapper fills it once they are all added.
+        var dataBaseMapper = new DataBaseMapper();
         var dbStorage = DataBaseStorage.CreateEmpty();
         foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
             var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
@@ -163,7 +166,8 @@ public sealed class LcmsProcess
                 dbStorage.AddMoleculeDataBase(textDB.DataBase, annotatorPairs);
             }
         }
-        container.DataBaseMapper = new DataBaseMapper();
+        GeneratedLipidLibrary.AddTo(dbStorage, param, ConfigParser.ReadGeneratedLipidAnnotatorSetting(methodFile), dataBaseMapper);
+        container.DataBaseMapper = dataBaseMapper;
         container.DataBases = dbStorage;
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
@@ -183,7 +187,7 @@ public sealed class LcmsProcess
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
+        var annotationProcess = GeneratedLipidLibrary.CreateAnnotationProcess(storage.DataBases, storage.DataBaseMapper, evaluator);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
