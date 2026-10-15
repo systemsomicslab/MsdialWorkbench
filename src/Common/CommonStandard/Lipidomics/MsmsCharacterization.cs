@@ -4748,7 +4748,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
-
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
                                 if (sn2Double > 0)
                                 {
                                     if ((double)(sn2Carbon / sn2Double) < 3) break;
