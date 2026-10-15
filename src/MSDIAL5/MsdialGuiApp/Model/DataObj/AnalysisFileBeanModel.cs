@@ -93,6 +93,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             set {
                 if (_file.AnalysisFilePath != value) {
                     _file.AnalysisFilePath = value;
+                    // Another raw data file: what was recorded for the previous one no longer describes it.
+                    _file.RawFileFormat = RawFileFormatClassifier.Classify(value);
                     OnPropertyChanged(nameof(AnalysisFilePath));
                     _isRawDataAvailable = null;
                     OnPropertyChanged(nameof(IsRawDataAvailable));
@@ -104,12 +106,22 @@ namespace CompMs.App.Msdial.Model.DataObj
         /// Whether the raw data file of this sample is present, as last checked. A runtime fact, never saved:
         /// the first read checks the disk, and <see cref="RefreshRawDataAvailability"/> checks again.
         /// </summary>
-        public bool IsRawDataAvailable => _isRawDataAvailable ??= DataAccess.RawDataExists(_file.AnalysisFilePath);
+        public bool IsRawDataAvailable => _isRawDataAvailable ??= CheckRawDataExists();
         private bool? _isRawDataAvailable;
 
         public bool RefreshRawDataAvailability() {
-            SetRawDataAvailability(DataAccess.RawDataExists(_file.AnalysisFilePath));
+            SetRawDataAvailability(CheckRawDataExists());
             return _isRawDataAvailable!.Value;
+        }
+
+        // Every check of the disk comes here. A project saved before raw data formats were recorded learns the format
+        // of a file the first time its raw data are found, and keeps it when the project is saved.
+        private bool CheckRawDataExists() {
+            var exists = DataAccess.RawDataExists(_file.AnalysisFilePath);
+            if (exists) {
+                RawFileFormatClassifier.RecordIfUnknown(_file);
+            }
+            return exists;
         }
 
         // The folder the raw data file was in is gone, so the file is too; the collection checks a folder once for all its files.
