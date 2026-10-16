@@ -1,19 +1,17 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel.Service;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Service
 {
     /// <summary>
     /// What MS-DIAL says when the raw data files of a project are missing: the prompt shown when a dataset opens,
     /// why a sample or a command is refused, and the titles of the panels that stay empty.
-    /// Every message here names a path or an exception, so each goes through <see cref="ErrorMessageBoxRequest"/>,
-    /// a message box that fits them.
+    /// Every message here names a path or an exception, so each goes through <see cref="MessageRequest"/>,
+    /// which the view shows as a message box that fits them.
     /// </summary>
     internal static class RawDataGuard
     {
@@ -39,10 +37,10 @@ namespace CompMs.App.Msdial.Model.Service
             }
             var counts = $"Raw data are not available for {missing.Count} of {sampleCount} samples in this dataset";
             var list = "Raw data files not found:\n" + FormatPaths(missing.Select(file => file.AnalysisFilePath).ToList());
-            ErrorMessageBoxRequest request;
+            MessageRequest request;
             switch (mode) {
                 case BrowsingWithoutRawData.Supported:
-                    request = new ErrorMessageBoxRequest
+                    request = new MessageRequest
                     {
                         Caption = RawDataNotFoundCaption,
                         Content = $"{counts}, so only the information saved in the project will be drawn for them.\n\n"
@@ -52,12 +50,12 @@ namespace CompMs.App.Msdial.Model.Service
                             + "the export of centroid spectra, and reprocessing.\n\n"
                             + $"{list}\n\n"
                             + "Continue?",
-                        ButtonType = MessageBoxButton.YesNo,
-                        Icon = MessageBoxImage.Warning,
+                        AsksYesNo = true,
+                        Severity = MessageSeverity.Warning,
                     };
                     break;
                 case BrowsingWithoutRawData.AlignmentsOnly:
-                    request = new ErrorMessageBoxRequest
+                    request = new MessageRequest
                     {
                         Caption = RawDataNotFoundCaption,
                         Content = $"{counts}, so only the information saved in the project will be drawn.\n\n"
@@ -65,25 +63,24 @@ namespace CompMs.App.Msdial.Model.Service
                             + "so these samples cannot be opened in it, and reprocessing is not available.\n\n"
                             + $"{list}\n\n"
                             + "Continue?",
-                        ButtonType = MessageBoxButton.YesNo,
-                        Icon = MessageBoxImage.Warning,
+                        AsksYesNo = true,
+                        Severity = MessageSeverity.Warning,
                     };
                     break;
                 default:
-                    broker.Publish(new ErrorMessageBoxRequest
+                    broker.Publish(new MessageRequest
                     {
                         Caption = RawDataNotFoundCaption,
                         Content = $"{counts}.\n\n"
                             + "Imaging projects draw their ion images from the raw data, so this project cannot be opened without them.\n\n"
                             + $"{list}\n\n"
                             + "Put the files back at these paths and open the project again.",
-                        ButtonType = MessageBoxButton.OK,
-                        Icon = MessageBoxImage.Error,
+                        Severity = MessageSeverity.Error,
                     });
                     return false;
             }
             broker.Publish(request);
-            return request.Result == MessageBoxResult.Yes;
+            return request.Result == true;
         }
 
         /// <summary>
@@ -94,14 +91,13 @@ namespace CompMs.App.Msdial.Model.Service
             if (isRawDataAvailable) {
                 return true;
             }
-            broker.Publish(new ErrorMessageBoxRequest
+            broker.Publish(new MessageRequest
             {
                 Caption = RawDataNotAvailableCaption,
                 Content = $"{feature} needs the raw data, and the raw data file of {file.AnalysisFileName} was not found:\n"
                     + $"  {file.AnalysisFilePath}\n\n"
                     + "Put the file back at this path, then open another sample and this one again to reload it.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Information,
+                Severity = MessageSeverity.Information,
             });
             return false;
         }
@@ -116,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Service
             if (missing.Count == 0) {
                 return true;
             }
-            broker.Publish(new ErrorMessageBoxRequest
+            broker.Publish(new MessageRequest
             {
                 Caption = RawDataNotAvailableCaption,
                 Content = $"{feature} cannot run because the raw data files of {missing.Count} of {all.Count} samples were not found. "
@@ -124,69 +120,63 @@ namespace CompMs.App.Msdial.Model.Service
                     + "Raw data files not found:\n"
                     + $"{FormatPaths(missing.Select(file => file.AnalysisFilePath).ToList())}\n\n"
                     + "Put the files back at these paths to run it. The saved results can still be browsed.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Information,
+                Severity = MessageSeverity.Information,
             });
             return false;
         }
 
-        public static ErrorMessageBoxRequest SampleNeedsRawData(AnalysisFileBeanModel file) {
-            return new ErrorMessageBoxRequest
+        public static MessageRequest SampleNeedsRawData(AnalysisFileBeanModel file) {
+            return new MessageRequest
             {
                 Caption = RawDataNotAvailableCaption,
                 Content = $"{file.AnalysisFileName} cannot be opened in the peak spot viewer: for this type of project the viewer reads the raw data, "
                     + "and the raw data file was not found:\n"
                     + $"  {file.AnalysisFilePath}\n\n"
                     + "Alignment results can still be browsed.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Information,
+                Severity = MessageSeverity.Information,
             };
         }
 
-        public static ErrorMessageBoxRequest PeakListMissing(AnalysisFileBeanModel file) {
-            return new ErrorMessageBoxRequest
+        public static MessageRequest PeakListMissing(AnalysisFileBeanModel file) {
+            return new MessageRequest
             {
                 Caption = "Saved results not found",
                 Content = $"{file.AnalysisFileName} cannot be opened in the peak spot viewer because its saved peak list was not found:\n"
                     + $"  {file.PeakListFilePath}",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Information,
+                Severity = MessageSeverity.Information,
             };
         }
 
-        public static ErrorMessageBoxRequest SampleOpenFailed(AnalysisFileBeanModel file, Exception error) {
-            return new ErrorMessageBoxRequest
+        public static MessageRequest SampleOpenFailed(AnalysisFileBeanModel file, Exception error) {
+            return new MessageRequest
             {
                 Caption = "Sample could not be opened",
                 Content = $"{file.AnalysisFileName} could not be opened in the peak spot viewer.\n\n"
                     + $"{error.GetType().Name}: {error.Message}\n\n"
                     + "The project is still open. You can select another sample or an alignment result.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Error,
+                Severity = MessageSeverity.Error,
             };
         }
 
-        public static ErrorMessageBoxRequest AlignmentOpenFailed(AlignmentFileBeanModel file, Exception error) {
-            return new ErrorMessageBoxRequest
+        public static MessageRequest AlignmentOpenFailed(AlignmentFileBeanModel file, Exception error) {
+            return new MessageRequest
             {
                 Caption = "Alignment result could not be opened",
                 Content = $"{file.FileName} could not be opened in the alignment viewer.\n\n"
                     + $"{error.GetType().Name}: {error.Message}\n\n"
                     + "The project is still open. You can select a sample or another alignment result.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Error,
+                Severity = MessageSeverity.Error,
             };
         }
 
-        public static ErrorMessageBoxRequest MsfinderWithoutMs1(AnalysisFileBeanModel file) {
-            return new ErrorMessageBoxRequest
+        public static MessageRequest MsfinderWithoutMs1(AnalysisFileBeanModel file) {
+            return new MessageRequest
             {
                 Caption = RawDataNotAvailableCaption,
                 Content = $"The raw data file of {file.AnalysisFileName} was not found, so its MS1 isotope pattern cannot be read. "
                     + "MS-FINDER receives the MS/MS spectrum only, and its formula ranking may differ from a run with the raw data.\n\n"
                     + "Sending the same feature from the alignment result includes the isotope pattern saved with the alignment spot.",
-                ButtonType = MessageBoxButton.OK,
-                Icon = MessageBoxImage.Information,
+                Severity = MessageSeverity.Information,
             };
         }
 

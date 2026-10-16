@@ -1,13 +1,12 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialIntegrate.Parser;
-using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Concurrent;
@@ -137,14 +136,14 @@ namespace CompMs.App.Msdial.Model.Core
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 // Reading the datasets is data work only, and a loaded library can be hundreds of MB: it runs off the UI thread,
                 // which keeps pumping meanwhile (a minute without pumping is a ContextSwitchDeadlock under the debugger).
-                // The picker and the messages go to the dispatcher themselves, and the models are built after the await,
-                // back on the UI thread.
+                // The picker and the messages are published on the broker, whose view takes them to the dispatcher,
+                // and the models are built after the await, back on the UI thread.
                 var projectDataStorage = await Task.Run(() => ReadDatasetsAsync(
                     streamManager,
                     deserializer,
                     path => new DirectoryTreeStreamManager(path),
                     projectDir,
-                    LocateDatasetFileAsync,
+                    (parameter, missingPath) => LocateDatasetFileAsync(broker, parameter, missingPath),
                     broker));
                 System.Diagnostics.Debug.WriteLine($"Read the datasets of {projectPath} in {stopwatch.Elapsed.TotalSeconds:F1} s.");
                 if (projectDataStorage == null) {
@@ -198,11 +197,11 @@ namespace CompMs.App.Msdial.Model.Core
                         missingFiles[parameter] = notFound.FileName;
                     }
                     Interlocked.Increment(ref unloadedDatasets);
-                    broker.Publish(new ErrorMessageBoxRequest
+                    broker.Publish(new MessageRequest
                     {
                         Caption = "Dataset not loaded",
                         Content = MessageHelper.DatasetNotLoaded(parameter.ProjectFileName, error),
-                        Icon = MessageBoxImage.Error,
+                        Severity = MessageSeverity.Error,
                     });
                 }).ConfigureAwait(false);
             if (projectDataStorage is not null && projectDataStorage.Storages.Count == 0 && unloadedDatasets > 0) {
@@ -212,21 +211,20 @@ namespace CompMs.App.Msdial.Model.Core
             return projectDataStorage!;
         }
 
-        private static async Task<string?> LocateDatasetFileAsync(ProjectBaseParameter parameter, string? missingPath) {
+        /// <summary>
+        /// Asks the view, through the broker, to pick the dataset file or a copy of it, and returns the file picked, or null when none was.
+        /// It is asked from the thread that reads the datasets: the view shows the picker on the UI thread, and the answer is there once Publish returns.
+        /// </summary>
+        internal static Task<string?> LocateDatasetFileAsync(IMessageBroker broker, ProjectBaseParameter parameter, string? missingPath) {
             string? result = null;
-            await Application.Current.Dispatcher.InvokeAsync(() =>
+            var request = new OpenFileRequest(path => result = path)
             {
-                var newofd = new OpenFileDialog
-                {
-                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                    Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName, missingPath),
-                    RestoreDirectory = true
-                };
-                if (newofd.ShowDialog() == true) {
-                    result = newofd.FileName;
-                }
-            });
-            return result;
+                Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
+                Title = MessageHelper.LocateDatasetFileTitle(parameter.ProjectFileName, missingPath),
+                RestoreDirectory = true,
+            };
+            broker.Publish(request);
+            return Task.FromResult(result);
         }
 
         private static async Task<ProjectModel> LoadMddatasetAsync(string  mddata, IMessageBroker broker) {

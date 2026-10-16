@@ -1,7 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Export.Tests
 {
@@ -37,6 +41,21 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             var description = ExportFailure.Describe(new IOException("There is not enough space on the disk."));
 
             StringAssert.StartsWith(description, "MS-DIAL could not write the exported files.");
+        }
+
+        [TestMethod()]
+        public void AFailureIsReportedAsAnErrorMessage() {
+            var broker = new MessageBroker();
+            var requests = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(requests.Add);
+            var error = new IOException("There is not enough space on the disk.");
+
+            ExportFailure.Report(broker, error);
+
+            Assert.AreEqual("Export failed", requests.Single().Caption);
+            Assert.AreEqual(ExportFailure.Describe(error), requests[0].Content);
+            Assert.AreEqual(MessageSeverity.Error, requests[0].Severity);
+            Assert.IsFalse(requests[0].AsksYesNo);
         }
     }
 }

@@ -75,6 +75,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorConfirmationMessage);
+            broker.ToObservable<MessageRequest>()
+                .Subscribe(ShowMessage);
             broker.ToObservable<RiDictionarySettingViewModel>()
                 .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
@@ -343,14 +345,17 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            var ofd = new OpenFileDialog() {
-                Title = request.Title,
-                Filter = request.Filter,
-            };
+            Dispatcher.Invoke(() => {
+                var ofd = new OpenFileDialog()
+                {
+                    Title = request.Title,
+                    Filter = request.Filter,
+                };
 
-            if (ofd.ShowDialog(this) == true) {
-                request.Run(ofd.FileName);
-            }
+                if (ofd.ShowDialog(this) == true) {
+                    request.Run(ofd.FileName);
+                }
+            });
         }
 
         private void SelectFolderPath(SelectFolderRequest request) {
@@ -366,9 +371,17 @@ namespace CompMs.App.Msdial.View.Core
 
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() => {
+                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
+                request.Result = result;
+            });
+        }
+
+        private void ShowMessage(MessageRequest request) {
+            Dispatcher.Invoke(() => {
                 // The wait cursor is left to the operations that set it: the message box draws its own arrow,
                 // and an operation that finishes while the box is open clears the cursor itself.
-                request.Result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, request.Icon);
+                var result = MessageBox.Show(request.Content, request.Caption, MessageRequestBox.ButtonsOf(request), MessageRequestBox.IconOf(request));
+                request.Result = MessageRequestBox.IsAccepted(result);
             });
         }
 

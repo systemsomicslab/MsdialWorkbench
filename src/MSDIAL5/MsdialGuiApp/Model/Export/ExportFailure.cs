@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.Model.Service;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Export
     internal static class ExportFailure
     {
         public static void Report(IMessageBroker broker, Exception error) {
-            broker.Publish(new ErrorMessageBoxRequest
+            broker.Publish(new MessageRequest
             {
                 Caption = "Export failed",
                 Content = Describe(error),

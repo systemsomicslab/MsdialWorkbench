@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.DataObj.Tests;
-using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core.Tests
 {
@@ -22,17 +21,17 @@ namespace CompMs.App.Msdial.Model.Core.Tests
     {
         private string _folder = string.Empty;
         private MessageBroker _broker = new MessageBroker();
-        private List<ErrorMessageBoxRequest> _messages = new List<ErrorMessageBoxRequest>();
-        private MessageBoxResult _answer = MessageBoxResult.None;
+        private List<MessageRequest> _messages = new List<MessageRequest>();
+        private bool? _answer = null;
 
         [TestInitialize()]
         public void Setup() {
             _folder = Path.Combine(Path.GetTempPath(), $"msdial-datasetmodel-{Guid.NewGuid():N}");
             Directory.CreateDirectory(_folder);
             _broker = new MessageBroker();
-            _messages = new List<ErrorMessageBoxRequest>();
-            _answer = MessageBoxResult.None;
-            _broker.Subscribe<ErrorMessageBoxRequest>(request => {
+            _messages = new List<MessageRequest>();
+            _answer = null;
+            _broker.Subscribe<MessageRequest>(request => {
                 _messages.Add(request);
                 request.Result = _answer;
             });
@@ -59,11 +58,11 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         public async Task DecliningOpensNoSampleAndDisposesTheMethod() {
             var files = new AnalysisFileBeanModelCollection(new[] { Sample("a", raw: false), Sample("b"), });
             var method = CreateMethod(BrowsingWithoutRawData.Supported, files);
-            _answer = MessageBoxResult.No;
+            _answer = false;
 
             await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => DatasetModel.OpenMethodAsync(method, files, _broker));
 
-            Assert.AreEqual(MessageBoxButton.YesNo, _messages.Single().ButtonType);
+            Assert.IsTrue(_messages.Single().AsksYesNo);
             StringAssert.StartsWith(_messages[0].Content, "Raw data are not available for 1 of 2 samples in this dataset");
             Assert.AreEqual(0, method.Opened.Count);
             Assert.IsTrue(method.IsDisposed);
@@ -73,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         public async Task AcceptingOpensTheMethodWithWhatTheProjectStores() {
             var files = new AnalysisFileBeanModelCollection(new[] { Sample("a", raw: false), Sample("b"), });
             var method = CreateMethod(BrowsingWithoutRawData.Supported, files);
-            _answer = MessageBoxResult.Yes;
+            _answer = true;
 
             Assert.AreSame(method, await DatasetModel.OpenMethodAsync(method, files, _broker));
 
@@ -90,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Core.Tests
             excluded.AnalysisFileIncluded = false;
             var files = new AnalysisFileBeanModelCollection(new[] { excluded, Sample("b"), });
             var method = CreateMethod(BrowsingWithoutRawData.Supported, files);
-            _answer = MessageBoxResult.No;
+            _answer = false;
 
             await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => DatasetModel.OpenMethodAsync(method, files, _broker));
 
@@ -102,11 +101,11 @@ namespace CompMs.App.Msdial.Model.Core.Tests
         public async Task ImagingWithoutRawDataIsRefusedAndTheMethodDisposed() {
             var files = new AnalysisFileBeanModelCollection(new[] { Sample("a", raw: false), });
             var method = CreateMethod(BrowsingWithoutRawData.NotSupported, files);
-            _answer = MessageBoxResult.OK;
+            _answer = true;
 
             await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => DatasetModel.OpenMethodAsync(method, files, _broker));
 
-            Assert.AreEqual(MessageBoxButton.OK, _messages.Single().ButtonType);
+            Assert.IsFalse(_messages.Single().AsksYesNo);
             Assert.AreEqual(0, method.Opened.Count);
             Assert.IsTrue(method.IsDisposed);
         }
