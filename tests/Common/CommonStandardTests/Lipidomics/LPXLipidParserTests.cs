@@ -141,5 +141,29 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
     }
+    [TestClass()]
+    public class LNAPLipidParserTests
+    {
+        [TestMethod()]
+        public void LNAPEParseTest()
+        {
+            var parser = new LNAPELipidParser();
+            var lipid = parser.Parse("LPE-N (FA 18:2)16:0");
+            Assert.AreEqual(715.5152, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LNAPE, lipid.LipidClass);
+            var lipid2 = parser.Parse("LPE-N(FA)34:2");
+            Assert.AreEqual(715.5152, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LNAPE, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void LNAPSParseTest()
+        {
+            var parser = new LNAPSLipidParser();
+            var lipid = parser.Parse("LPS-N (FA 18:2)16:0");
+            Assert.AreEqual(759.5050, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LNAPS, lipid.LipidClass);
+
+        }
+    }
 
 }
